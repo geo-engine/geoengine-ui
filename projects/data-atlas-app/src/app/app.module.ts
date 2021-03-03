@@ -22,11 +22,7 @@ import {PortalModule} from '@angular/cdk/portal';
 import {LegendComponent} from './legend/legend.component';
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        MockLayersComponent,
-        LegendComponent,
-    ],
+    declarations: [AppComponent, MockLayersComponent, LegendComponent],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,
@@ -53,5 +49,4 @@ import {LegendComponent} from './legend/legend.component';
     ],
     bootstrap: [AppComponent],
 })
-export class AppModule {
-}
+export class AppModule {}

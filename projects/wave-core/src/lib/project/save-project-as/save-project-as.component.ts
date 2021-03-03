@@ -1,4 +1,3 @@
-
 import {BehaviorSubject} from 'rxjs';
 import {first} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
@@ -16,16 +15,16 @@ import {Projections} from '../../operators/projection.model';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SaveProjectAsComponent implements OnInit, AfterViewInit {
-
     form: FormGroup;
 
     created$ = new BehaviorSubject(false);
 
-    constructor(private formBuilder: FormBuilder,
-                private storageService: StorageService,
-                private projectService: ProjectService,
-                private notificationService: NotificationService) {
-    }
+    constructor(
+        private formBuilder: FormBuilder,
+        private storageService: StorageService,
+        private projectService: ProjectService,
+        private notificationService: NotificationService,
+    ) {}
 
     ngOnInit() {
         this.form = this.formBuilder.group({
@@ -36,9 +35,12 @@ export class SaveProjectAsComponent implements OnInit, AfterViewInit {
             ],
             projection: [Projections.WEB_MERCATOR, Validators.required],
         });
-        this.projectService.getProjectionStream().pipe(first()).subscribe(projection => {
-            this.form.controls['projection'].setValue(projection);
-        });
+        this.projectService
+            .getProjectionStream()
+            .pipe(first())
+            .subscribe((projection) => {
+                this.form.controls['projection'].setValue(projection);
+            });
     }
 
     ngAfterViewInit() {
@@ -55,5 +57,4 @@ export class SaveProjectAsComponent implements OnInit, AfterViewInit {
         this.created$.next(true);
         this.notificationService.info(`Switched to project »${projectName}«`);
     }
-
 }

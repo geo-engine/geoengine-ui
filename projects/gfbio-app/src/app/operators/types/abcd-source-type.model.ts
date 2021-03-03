@@ -50,7 +50,7 @@ export class ABCDSourceType extends OperatorType {
         super();
         this.provider = config.provider;
         this.id = config.id;
-        this.units = (config.units) ? config.units : [];
+        this.units = config.units ? config.units : [];
         this.columns = config.columns;
     }
 
@@ -59,7 +59,7 @@ export class ABCDSourceType extends OperatorType {
             provider: dict.provider,
             id: dict.id,
             units: dict.units,
-            columns: (dict.columns) ? dict.columns : {textual: [], numeric: []},
+            columns: dict.columns ? dict.columns : {textual: [], numeric: []},
         });
     }
 
@@ -79,7 +79,7 @@ export class ABCDSourceType extends OperatorType {
         return [
             ['archive', this.provider],
             ['id', this.id],
-            ['units', this.units.join((', '))],
+            ['units', this.units.join(', ')],
         ];
     }
 

@@ -25,9 +25,15 @@ export class RScriptType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(RScriptType._TYPE);
     private static _NAME = 'R Script';
 
-    static get TYPE(): string { return RScriptType._TYPE; }
-    static get ICON_URL(): string { return RScriptType._ICON_URL; }
-    static get NAME(): string { return RScriptType._NAME; }
+    static get TYPE(): string {
+        return RScriptType._TYPE;
+    }
+    static get ICON_URL(): string {
+        return RScriptType._ICON_URL;
+    }
+    static get NAME(): string {
+        return RScriptType._NAME;
+    }
 
     private code: string;
     private resultType: ResultType;

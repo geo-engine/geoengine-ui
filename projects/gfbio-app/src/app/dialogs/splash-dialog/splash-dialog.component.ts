@@ -9,15 +9,12 @@ import {GFBioUserService} from '../../users/user.service';
     selector: 'wave-gfbio-splash-dialog',
     templateUrl: './splash-dialog.component.html',
     styleUrls: ['./splash-dialog.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SplashDialogComponent {
-
-    constructor(@Inject(UserService) private readonly userService: GFBioUserService) {
-    }
+    constructor(@Inject(UserService) private readonly userService: GFBioUserService) {}
 
     changeTick(event: MatCheckboxChange) {
         this.userService.setIntroductoryPopup(!event.checked);
     }
-
 }

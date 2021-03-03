@@ -3,11 +3,8 @@ import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChan
 import {MappingSource, SourceVectorLayerDescription} from '../mapping-source.model';
 import {Projection, Projections} from '../../../projection.model';
 import {DataType, DataTypes} from '../../../datatype.model';
-import { VectorLayer} from '../../../../layers/layer.model';
-import {
-    PointSymbology,
-    VectorSymbology, LineSymbology,
-} from '../../../../layers/symbology/symbology.model';
+import {VectorLayer} from '../../../../layers/layer.model';
+import {PointSymbology, VectorSymbology, LineSymbology} from '../../../../layers/symbology/symbology.model';
 import {Operator} from '../../../operator.model';
 import {ProjectService} from '../../../../project/project.service';
 import {DataSource} from '@angular/cdk/table';
@@ -24,32 +21,26 @@ import {NotificationService} from '../../../../notification.service';
     styleUrls: ['./vector-source-dataset.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
 export class VectorSourceDatasetComponent implements OnInit, OnChanges {
-
     @Input() dataset: MappingSource;
     @Input() searchTerm: string;
     _useRawData = false;
     _showPreview = false;
     _showDescription = false;
     _tableSource: LayerTableDataSource;
-    _displayedColumns  = ['title'];
-
+    _displayedColumns = ['title'];
 
     constructor(
         private projectService: ProjectService,
         private randomColorService: RandomColorService,
         private notificationService: NotificationService,
-    ) {
-
-    }
+    ) {}
 
     ngOnInit(): void {
         this._tableSource = new LayerTableDataSource(this.dataset.vectorLayer);
     }
 
     add(layer: SourceVectorLayerDescription) {
-
         let operator;
         if (this.dataset.operator === OgrSourceType.TYPE) {
             operator = this.createOgrSourceOperator(layer);
@@ -63,7 +54,7 @@ export class VectorSourceDatasetComponent implements OnInit, OnChanges {
             case ResultTypes.POINTS: {
                 symbology = PointSymbology.createClusterSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
-                    fillColorizer: layer.colorizer
+                    fillColorizer: layer.colorizer,
                 });
                 clustered = true;
                 break;
@@ -71,7 +62,7 @@ export class VectorSourceDatasetComponent implements OnInit, OnChanges {
             case ResultTypes.POLYGONS: {
                 symbology = VectorSymbology.createSymbology({
                     fillRGBA: this.randomColorService.getRandomColorRgba(),
-                    fillColorizer: layer.colorizer
+                    fillColorizer: layer.colorizer,
                 });
                 break;
             }
@@ -103,12 +94,12 @@ export class VectorSourceDatasetComponent implements OnInit, OnChanges {
                     // check if there is any time-validity start/end data. If there is start/end data show the column of this data.
                     case 'dataset': {
                         this.dataset.rasterLayer.forEach((element) => {
-                            if (element.time_start && this.dataset.time_start && !(this.dataset.time_start.isSame(element.time_start))) {
+                            if (element.time_start && this.dataset.time_start && !this.dataset.time_start.isSame(element.time_start)) {
                                 if (!this._displayedColumns.includes('start')) {
                                     this._displayedColumns.push('start');
                                 }
                             }
-                            if (element.time_end && this.dataset.time_end && !(this.dataset.time_end.isSame(element.time_end))) {
+                            if (element.time_end && this.dataset.time_end && !this.dataset.time_end.isSame(element.time_end)) {
                                 if (!this._displayedColumns.includes('end')) {
                                     this._displayedColumns.push('end');
                                 }
@@ -153,10 +144,9 @@ export class VectorSourceDatasetComponent implements OnInit, OnChanges {
      * Creates a gdal_source operator and a wrapping expression operator to transform values if needed.
      */
     createOgrSourceOperator(layer: SourceVectorLayerDescription): Operator {
-
         if (!layer.geometryType) {
             this.notificationService.error(
-                'No geometry type defined in [' + this.dataset.name + '] assuming "POINTS". (channel.id: ' + layer.id + ')'
+                'No geometry type defined in [' + this.dataset.name + '] assuming "POINTS". (channel.id: ' + layer.id + ')',
             );
             layer.geometryType = 'POINTS';
         }
@@ -165,7 +155,7 @@ export class VectorSourceDatasetComponent implements OnInit, OnChanges {
 
         if (!layer.coords || !layer.coords.crs) {
             this.notificationService.error(
-                'No projection or EPSG code defined in [' + this.dataset.name + '] assuming EPSG:4326. (channel.id: ' + layer.id + ')'
+                'No projection or EPSG code defined in [' + this.dataset.name + '] assuming EPSG:4326. (channel.id: ' + layer.id + ')',
             );
             layer.coords = {crs: 'EPSG:4326'};
         }
@@ -179,8 +169,7 @@ export class VectorSourceDatasetComponent implements OnInit, OnChanges {
             dataset_id: this.dataset.name,
             layer_id: layer.id,
             textual: layer.textual,
-            numeric: layer.numeric
-
+            numeric: layer.numeric,
         });
 
         const sourceOperator = new Operator({
@@ -207,6 +196,5 @@ class LayerTableDataSource extends DataSource<SourceVectorLayerDescription> {
         return observableOf(this.layers);
     }
 
-    disconnect() {
-    }
+    disconnect() {}
 }

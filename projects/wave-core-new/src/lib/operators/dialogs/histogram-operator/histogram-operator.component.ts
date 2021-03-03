@@ -23,10 +23,12 @@ function isVectorLayer(layer: Layer): boolean {
 
 interface HistogramParams extends OperatorParams {
     column_name?: string;
-    bounds: {
-        min: number,
-        max: number,
-    } | 'data';
+    bounds:
+        | {
+              min: number;
+              max: number;
+          }
+        | 'data';
     buckets?: number;
     interactive?: boolean;
 }
@@ -54,10 +56,11 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
     /**
      * DI for services
      */
-    constructor(private readonly projectService: ProjectService,
-                private readonly notificationService: NotificationService,
-                private readonly formBuilder: FormBuilder) {
-    }
+    constructor(
+        private readonly projectService: ProjectService,
+        private readonly notificationService: NotificationService,
+        private readonly formBuilder: FormBuilder,
+    ) {}
 
     ngOnInit() {
         const layerControl = this.formBuilder.control(undefined, Validators.required);
@@ -65,48 +68,51 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
         this.form = this.formBuilder.group({
             name: ['Filtered Values', [Validators.required, WaveValidators.notOnlyWhitespace]],
             layer: layerControl,
-            attribute: [undefined, WaveValidators.conditionalValidator(
-                Validators.required, () => isVectorLayer(layerControl.value)
-            )],
+            attribute: [undefined, WaveValidators.conditionalValidator(Validators.required, () => isVectorLayer(layerControl.value))],
             rangeType: rangeTypeControl,
-            range: this.formBuilder.group({
-                min: [undefined],
-                max: [undefined],
-            }, {
-                validator: WaveValidators.conditionalValidator(
-                    WaveValidators.minAndMax('min', 'max', {checkBothExist: true}),
-                    () => rangeTypeControl.value === 'custom'
-                )
-            }),
+            range: this.formBuilder.group(
+                {
+                    min: [undefined],
+                    max: [undefined],
+                },
+                {
+                    validator: WaveValidators.conditionalValidator(
+                        WaveValidators.minAndMax('min', 'max', {checkBothExist: true}),
+                        () => rangeTypeControl.value === 'custom',
+                    ),
+                },
+            ),
             autoBuckets: [true, Validators.required],
             numberOfBuckets: [20, Validators.required],
-        })
-        ;
+        });
 
         this.subscriptions.push(
-            this.form.controls['layer'].valueChanges.pipe(
-                tap(() => this.form.controls['attribute'].setValue(undefined)),
-                mergeMap((layer: Layer) => {
-                    if (layer instanceof VectorLayer) {
-                        return this.projectService.getLayerMetadata(layer).pipe(
-                            map((metadata: VectorLayerMetadata) => metadata.columns
-                                .filter(columnType => columnType.code === 'Number' || columnType.code === 'Decimal')
-                                .keySeq()
-                                .toList()),
-                        );
-                    } else {
-                        return of([]);
-                    }
-                }),
-            ).subscribe(this.attributes$)
+            this.form.controls['layer'].valueChanges
+                .pipe(
+                    tap(() => this.form.controls['attribute'].setValue(undefined)),
+                    mergeMap((layer: Layer) => {
+                        if (layer instanceof VectorLayer) {
+                            return this.projectService.getLayerMetadata(layer).pipe(
+                                map((metadata: VectorLayerMetadata) =>
+                                    metadata.columns
+                                        .filter((columnType) => columnType.code === 'Number' || columnType.code === 'Decimal')
+                                        .keySeq()
+                                        .toList(),
+                                ),
+                            );
+                        } else {
+                            return of([]);
+                        }
+                    }),
+                )
+                .subscribe(this.attributes$),
         );
 
         this.subscriptions.push(
-            this.form.controls['rangeType'].valueChanges
-                .subscribe(() => this.form.controls['range'].updateValueAndValidity())
+            this.form.controls['rangeType'].valueChanges.subscribe(() => this.form.controls['range'].updateValueAndValidity()),
         );
 
-        this.isVectorLayer$ = this.form.controls['layer'].valueChanges.pipe(map(layer => isVectorLayer(layer)));
+        this.isVectorLayer$ = this.form.controls['layer'].valueChanges.pipe(map((layer) => isVectorLayer(layer)));
     }
 
     ngAfterViewInit() {
@@ -117,7 +123,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
     }
 
     ngOnDestroy() {
-        this.subscriptions.forEach(subscription => subscription.unsubscribe());
+        this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
     /**
@@ -129,9 +135,9 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
 
         const attributeName = this.form.controls['attribute'].value as string;
 
-        let range: { min: number, max: number } | string = this.form.controls['rangeType'].value as string;
+        let range: {min: number; max: number} | string = this.form.controls['rangeType'].value as string;
         if (range === 'custom') {
-            range = this.form.controls['range'].value as { min: number, max: number };
+            range = this.form.controls['range'].value as {min: number; max: number};
         }
 
         let buckets: number;
@@ -141,30 +147,38 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
 
         const outputName: string = this.form.controls['name'].value;
 
-        this.projectService.getWorkflow(inputLayer.workflowId).pipe(
-            mergeMap((inputWorkflow: WorkflowDict) => this.projectService.registerWorkflow({
-                type: 'Plot',
-                operator: {
-                    type: 'Histogram',
-                    params: {
-                        column_name: attributeName,
-                        buckets,
-                        bounds: range,
-                    } as HistogramParams,
-                    raster_sources: inputWorkflow.type === 'Raster' ? [inputWorkflow.operator] : [],
-                    vector_sources: inputWorkflow.type === 'Vector' ? [inputWorkflow.operator] : [],
-                }
-            })),
-            mergeMap(workflowId => this.projectService.addPlot(new Plot({
-                workflowId,
-                name: outputName,
-            }))),
-        ).subscribe(
-            () => {
-                // success
-            },
-            error => this.notificationService.error(error),
-        );
+        this.projectService
+            .getWorkflow(inputLayer.workflowId)
+            .pipe(
+                mergeMap((inputWorkflow: WorkflowDict) =>
+                    this.projectService.registerWorkflow({
+                        type: 'Plot',
+                        operator: {
+                            type: 'Histogram',
+                            params: {
+                                column_name: attributeName,
+                                buckets,
+                                bounds: range,
+                            } as HistogramParams,
+                            raster_sources: inputWorkflow.type === 'Raster' ? [inputWorkflow.operator] : [],
+                            vector_sources: inputWorkflow.type === 'Vector' ? [inputWorkflow.operator] : [],
+                        },
+                    }),
+                ),
+                mergeMap((workflowId) =>
+                    this.projectService.addPlot(
+                        new Plot({
+                            workflowId,
+                            name: outputName,
+                        }),
+                    ),
+                ),
+            )
+            .subscribe(
+                () => {
+                    // success
+                },
+                (error) => this.notificationService.error(error),
+            );
     }
-
 }

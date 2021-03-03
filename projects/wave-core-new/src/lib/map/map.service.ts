@@ -39,8 +39,7 @@ export class MapService {
     private mapComponent: MapContainerComponent;
     private isGridStream = new BehaviorSubject(false);
 
-    constructor() {
-    }
+    constructor() {}
 
     /**
      * Returns events that indicate if the map is in grid or default mode
@@ -141,8 +140,8 @@ export class MapService {
  * Is the extent of `vps1` contained in the extent of `vps2`?
  */
 function extentContains(vps1: ViewportSize, vps2: ViewportSize): boolean {
-    const e1 = (vps1.maxExtent) ? olExtentGetIntersection(vps1.extent, vps1.maxExtent) : vps1.extent;
-    const e2 = (vps2.maxExtent) ? olExtentGetIntersection(vps2.extent, vps2.maxExtent) : vps2.extent;
+    const e1 = vps1.maxExtent ? olExtentGetIntersection(vps1.extent, vps1.maxExtent) : vps1.extent;
+    const e2 = vps2.maxExtent ? olExtentGetIntersection(vps2.extent, vps2.maxExtent) : vps2.extent;
     return olExtentContainsExtent(e1, e2);
 }
 

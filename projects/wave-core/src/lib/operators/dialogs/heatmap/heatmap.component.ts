@@ -37,9 +37,7 @@ export class HeatmapOperatorComponent implements OnInit, OnDestroy {
 
     private subscription: Subscription;
 
-    constructor(private randomColorService: RandomColorService,
-                private projectService: ProjectService,
-                private formBuilder: FormBuilder) {
+    constructor(private randomColorService: RandomColorService, private projectService: ProjectService, private formBuilder: FormBuilder) {
         this.form = formBuilder.group({
             name: ['Heatmap', [Validators.required, WaveValidators.notOnlyWhitespace]],
             pointLayer: [undefined, Validators.required],
@@ -116,13 +114,14 @@ export class HeatmapOperatorComponent implements OnInit, OnDestroy {
             pointSources: [pointOperator],
         });
 
-        this.projectService.addLayer(new RasterLayer({
-            name,
-            operator,
-            symbology: MappingRasterSymbology.createSymbology({
-                unit,
+        this.projectService.addLayer(
+            new RasterLayer({
+                name,
+                operator,
+                symbology: MappingRasterSymbology.createSymbology({
+                    unit,
+                }),
             }),
-        }));
+        );
     }
-
 }

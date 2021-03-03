@@ -30,9 +30,9 @@ export interface CsvParameters {
 }
 
 export interface Csv {
-  name: string;
-  params: CsvParameters;
-  geometry_type?: 'points' | 'lines' | 'polygons';
+    name: string;
+    params: CsvParameters;
+    geometry_type?: 'points' | 'lines' | 'polygons';
 }
 
 export interface CsvColumn {

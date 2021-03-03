@@ -152,5 +152,4 @@ export class OgrRawSourceType extends OperatorType {
     cloneWithModifications(options?: OperatorTypeCloneOptions): OperatorType {
         return new OgrRawSourceType(this.config);
     }
-
 }

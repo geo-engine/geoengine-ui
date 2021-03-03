@@ -7,12 +7,15 @@
         <wave-zoom-handles (zoomIn)="map.zoomIn()" (zoomOut)="map.zoomOut()" class="mat-elevation-z4"></wave-zoom-handles>
         <wave-small-time-interaction class="mat-elevation-z4"></wave-small-time-interaction>
         <!--        <wave-ticker-interaction *ngIf="config.COMPONENTS.PLAYBACK.AVAILABLE" class="mat-elevation-z4"></wave-ticker-interaction>-->
-        <div></div> <!-- moves Time Interaction to center (cf. space-around @ flex) -->
+        <div></div>
+        <!-- moves Time Interaction to center (cf. space-around @ flex) -->
     </div>
     <wave-navigation [buttons]="navigationButtons"></wave-navigation>
-        <wave-layer-list class="mat-elevation-z4"
-                         [height]="middleContainerHeight$ | async"
-                         [addAFirstLayerSidenavConfig]="addAFirstLayerConfig">
+    <wave-layer-list
+        class="mat-elevation-z4"
+        [height]="middleContainerHeight$ | async"
+        [addAFirstLayerSidenavConfig]="addAFirstLayerConfig"
+    >
         <div class="logo">
             <mat-icon mat-list-izcon svgIcon="geoengine:logo" aria-label="Geo Engine"></mat-icon>
         </div>
@@ -22,18 +25,22 @@
         <wave-map-container #map [grid]="mapIsGrid$ | async">
             <ng-template ngFor let-layer [ngForOf]="layersReverse$ | async" [ngForTrackBy]="idFromLayer">
                 <ng-template [ngIf]="layer.layerType === 'vector'">
-                    <wave-ol-vector-layer [layerId]="layer.id"
-                                          [workflow]="layer.workflowId"
-                                          [symbology]="layer.symbology"
-                                          [isVisible]="layer.isVisible"
-                                          (mapRedraw)="map.layerForcesRedraw()"></wave-ol-vector-layer>
+                    <wave-ol-vector-layer
+                        [layerId]="layer.id"
+                        [workflow]="layer.workflowId"
+                        [symbology]="layer.symbology"
+                        [isVisible]="layer.isVisible"
+                        (mapRedraw)="map.layerForcesRedraw()"
+                    ></wave-ol-vector-layer>
                 </ng-template>
                 <ng-template [ngIf]="layer.layerType === 'raster'">
-                    <wave-ol-raster-layer [layerId]="layer.id"
-                                          [workflow]="layer.workflowId"
-                                          [symbology]="layer.symbology"
-                                          [isVisible]="layer.isVisible"
-                                          (mapRedraw)="map.layerForcesRedraw()"></wave-ol-raster-layer>
+                    <wave-ol-raster-layer
+                        [layerId]="layer.id"
+                        [workflow]="layer.workflowId"
+                        [symbology]="layer.symbology"
+                        [isVisible]="layer.isVisible"
+                        (mapRedraw)="map.layerForcesRedraw()"
+                    ></wave-ol-raster-layer>
                 </ng-template>
             </ng-template>
         </wave-map-container>

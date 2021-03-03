@@ -4,14 +4,10 @@ import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
     selector: 'wave-gfbio-help',
     templateUrl: './help.component.html',
     styleUrls: ['./help.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HelpComponent implements OnInit {
+    constructor() {}
 
-    constructor() {
-    }
-
-    ngOnInit(): void {
-    }
-
+    ngOnInit(): void {}
 }

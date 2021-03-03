@@ -11,25 +11,24 @@ export interface RScriptSaveComponentConfig {
     script: RScript;
 }
 
-
 @Component({
     selector: 'wave-r-script-save',
     templateUrl: './r-script-save.component.html',
     styleUrls: ['./r-script-save.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RScriptSaveComponent implements OnInit, AfterViewInit {
-
     form: FormGroup;
 
     loading$ = new BehaviorSubject<boolean>(false);
 
-    constructor(private storageService: StorageService,
-                private formBuilder: FormBuilder,
-                private dialogRef: MatDialogRef<RScriptSaveComponent>,
-                @Inject(MAT_DIALOG_DATA) private config: RScriptSaveComponentConfig,
-                private notificationService: NotificationService) {
-    }
+    constructor(
+        private storageService: StorageService,
+        private formBuilder: FormBuilder,
+        private dialogRef: MatDialogRef<RScriptSaveComponent>,
+        @Inject(MAT_DIALOG_DATA) private config: RScriptSaveComponentConfig,
+        private notificationService: NotificationService,
+    ) {}
 
     ngOnInit() {
         this.form = this.formBuilder.group({
@@ -48,12 +47,10 @@ export class RScriptSaveComponent implements OnInit, AfterViewInit {
         const scriptName: string = this.form.controls['name'].value;
         const script: RScript = this.form.controls['script'].value;
 
-        this.storageService.saveRScript(scriptName, script)
-            .subscribe(() => {
-                this.loading$.next(false);
-                this.notificationService.info(`Stored R script »${scriptName}«`);
-                this.dialogRef.close();
-            });
+        this.storageService.saveRScript(scriptName, script).subscribe(() => {
+            this.loading$.next(false);
+            this.notificationService.info(`Stored R script »${scriptName}«`);
+            this.dialogRef.close();
+        });
     }
-
 }

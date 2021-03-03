@@ -28,9 +28,15 @@ export class BoxPlotType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(BoxPlotType._TYPE);
     private static _NAME = 'Box Plot';
 
-    static get TYPE(): string { return BoxPlotType._TYPE; }
-    static get ICON_URL(): string { return BoxPlotType._ICON_URL; }
-    static get NAME(): string { return BoxPlotType._NAME; }
+    static get TYPE(): string {
+        return BoxPlotType._TYPE;
+    }
+    static get ICON_URL(): string {
+        return BoxPlotType._ICON_URL;
+    }
+    static get NAME(): string {
+        return BoxPlotType._NAME;
+    }
 
     private code: string;
     private notch: boolean;
@@ -67,9 +73,11 @@ export class BoxPlotType extends OperatorType {
 
             if (length(features) > 0) {
 
-                ${this.attributes.map((attribute, i) => {
-                    return `dat${i} <- data.frame(group = "${attribute}", value = features$\`${attribute}\`);`;
-                }).join('\n')}
+                ${this.attributes
+                    .map((attribute, i) => {
+                        return `dat${i} <- data.frame(group = "${attribute}", value = features$\`${attribute}\`);`;
+                    })
+                    .join('\n')}
 
                 plot.data <- rbind(
                     ${this.attributes.map((attribute, i) => `dat${i}`).join(', ')}
@@ -79,7 +87,11 @@ export class BoxPlotType extends OperatorType {
                     ggplot(plot.data, aes(x=group, y=value, fill=group))
                     + geom_boxplot(notch = ${this.notch.toString().toUpperCase()}, coef = ${this.range})
                     ${this.mean ? '+ stat_summary(fun.y=mean, colour="darkred", geom="point", show_guide = FALSE, shape=18, size=3)' : ''}
-                    ${this.mean ? '+ stat_summary(fun.y=mean, colour="black",   geom="text",  show_guide = FALSE, vjust=-0.7, aes(label=round(..y.., digits=1)))' : ''}
+                    ${
+                        this.mean
+                            ? '+ stat_summary(fun.y=mean, colour="black",   geom="text",  show_guide = FALSE, vjust=-0.7, aes(label=round(..y.., digits=1)))'
+                            : ''
+                    }
                 );
 
                 print(p);

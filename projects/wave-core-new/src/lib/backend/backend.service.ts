@@ -30,42 +30,30 @@ import {
 } from './backend.model';
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class BackendService {
-
     readonly wmsUrl = `${this.config.API_URL}/wms`;
 
-    constructor(protected readonly http: HttpClient,
-                protected readonly config: Config) {
-    }
+    constructor(protected readonly http: HttpClient, protected readonly config: Config) {}
 
-    registerUser(request: {
-        email: string,
-        password: string,
-        real_name: string,
-    }): Observable<RegistrationDict> {
+    registerUser(request: {email: string; password: string; real_name: string}): Observable<RegistrationDict> {
         return this.http.post<RegistrationDict>(this.config.API_URL + '/user', request);
     }
 
-    loginUser(request: {
-        email: string,
-        password: string,
-    }): Observable<SessionDict> {
+    loginUser(request: {email: string; password: string}): Observable<SessionDict> {
         return this.http.post<SessionDict>(this.config.API_URL + '/login', request);
     }
 
     getSession(sessionId: UUID): Observable<SessionDict> {
         return this.http.get<SessionDict>(this.config.API_URL + '/session', {
-            headers: new HttpHeaders()
-                .set('Authorization', `Bearer ${sessionId}`)
+            headers: new HttpHeaders().set('Authorization', `Bearer ${sessionId}`),
         });
     }
 
     logoutUser(sessionId: UUID): Observable<{}> {
         return this.http.post<{}>(this.config.API_URL + '/logout', null, {
-            headers: new HttpHeaders()
-                .set('Authorization', `Bearer ${sessionId}`)
+            headers: new HttpHeaders().set('Authorization', `Bearer ${sessionId}`),
         });
     }
 
@@ -75,12 +63,13 @@ export class BackendService {
 
     createProject(
         request: {
-            name: string,
-            description: string,
-            bounds: STRectangleDict,
-            time_step: TimeStepDict,
+            name: string;
+            description: string;
+            bounds: STRectangleDict;
+            time_step: TimeStepDict;
         },
-        sessionId: UUID): Observable<CreateProjectResponseDict> {
+        sessionId: UUID,
+    ): Observable<CreateProjectResponseDict> {
         return this.http.post<CreateProjectResponseDict>(this.config.API_URL + '/project', request, {
             headers: BackendService.authorizationHeader(sessionId),
         });
@@ -88,15 +77,16 @@ export class BackendService {
 
     updateProject(
         request: {
-            id: UUID,
-            name?: string,
-            description?: string,
-            layers?: Array<LayerDict | 'none' | 'delete'>,
-            plots?: Array<PlotDict | 'none' | 'delete'>,
-            bounds?: STRectangleDict,
-            time_step?: TimeStepDict,
+            id: UUID;
+            name?: string;
+            description?: string;
+            layers?: Array<LayerDict | 'none' | 'delete'>;
+            plots?: Array<PlotDict | 'none' | 'delete'>;
+            bounds?: STRectangleDict;
+            time_step?: TimeStepDict;
         },
-        sessionId: UUID): Observable<void> {
+        sessionId: UUID,
+    ): Observable<void> {
         return this.http.patch<void>(`${this.config.API_URL}/project/${request.id}`, request, {
             headers: BackendService.authorizationHeader(sessionId),
         });
@@ -121,16 +111,17 @@ export class BackendService {
 
     listProjects(
         request: {
-            permissions: Array<ProjectPermissionDict>,
-            filter: ProjectFilterDict,
-            order: ProjectOrderByDict,
-            offset: number,
-            limit: number,
+            permissions: Array<ProjectPermissionDict>;
+            filter: ProjectFilterDict;
+            order: ProjectOrderByDict;
+            offset: number;
+            limit: number;
         },
-        sessionId: UUID): Observable<Array<ProjectListingDict>> {
+        sessionId: UUID,
+    ): Observable<Array<ProjectListingDict>> {
         const params = new NullDiscardingHttpParams();
         params.setMapped('permissions', request.permissions, JSON.stringify);
-        params.setMapped('filter', request.filter, filter => filter === 'None' ? 'None' : JSON.stringify(filter));
+        params.setMapped('filter', request.filter, (filter) => (filter === 'None' ? 'None' : JSON.stringify(filter)));
         params.set('order', request.order);
         params.setMapped('offset', request.offset, JSON.stringify);
         params.setMapped('limit', request.limit, JSON.stringify);
@@ -153,8 +144,10 @@ export class BackendService {
         });
     }
 
-    getWorkflowMetadata(workflowId: UUID,
-                        sessionId: UUID): Observable<RasterResultDescriptorDict | VectorResultDescriptorDict | PlotResultDescriptorDict> {
+    getWorkflowMetadata(
+        workflowId: UUID,
+        sessionId: UUID,
+    ): Observable<RasterResultDescriptorDict | VectorResultDescriptorDict | PlotResultDescriptorDict> {
         return this.http.get<RasterResultDescriptorDict | VectorResultDescriptorDict | PlotResultDescriptorDict>(
             this.config.API_URL + `/workflow/${workflowId}/metadata`,
             {
@@ -165,25 +158,29 @@ export class BackendService {
 
     setSessionProject(projectId: UUID, sessionId: UUID): Observable<void> {
         const response = new Subject<void>();
-        this.http.post<void>(`${this.config.API_URL}/session/project/${projectId}`, null, {
-            headers: BackendService.authorizationHeader(sessionId),
-        }).subscribe(response);
+        this.http
+            .post<void>(`${this.config.API_URL}/session/project/${projectId}`, null, {
+                headers: BackendService.authorizationHeader(sessionId),
+            })
+            .subscribe(response);
         return response;
     }
 
-    wfsGetFeature(request: {
-                      typeNames: string,
-                      bbox: BBoxDict,
-                      time?: TimeIntervalDict,
-                      srsName?: SrsString,
-                      namespaces?: string,
-                      count?: number,
-                      sortBy?: string
-                      resultType?: string
-                      filter?: string
-                      propertyName?: string,
-                  },
-                  sessionId: UUID): Observable<any> {
+    wfsGetFeature(
+        request: {
+            typeNames: string;
+            bbox: BBoxDict;
+            time?: TimeIntervalDict;
+            srsName?: SrsString;
+            namespaces?: string;
+            count?: number;
+            sortBy?: string;
+            resultType?: string;
+            filter?: string;
+            propertyName?: string;
+        },
+        sessionId: UUID,
+    ): Observable<any> {
         const params = new NullDiscardingHttpParams();
 
         params.set('service', 'WFS');
@@ -192,8 +189,8 @@ export class BackendService {
         params.set('outputFormat', 'application/json');
 
         params.set('typeNames', request.typeNames);
-        params.setMapped('bbox', request.bbox, bbox => bboxDictToExtent(bbox).join(','));
-        params.setMapped('time', request.time, time => `${unixTimestampToIsoString(time.start)}/${unixTimestampToIsoString(time.end)}`);
+        params.setMapped('bbox', request.bbox, (bbox) => bboxDictToExtent(bbox).join(','));
+        params.setMapped('time', request.time, (time) => `${unixTimestampToIsoString(time.start)}/${unixTimestampToIsoString(time.end)}`);
         params.set('srsName', request.srsName);
 
         // these probably do not work yet
@@ -213,17 +210,17 @@ export class BackendService {
     getPlot(
         workflowId: UUID,
         request: {
-            bbox: BBoxDict,
-            time: TimeIntervalDict,
-            spatial_resolution: [number, number],
+            bbox: BBoxDict;
+            time: TimeIntervalDict;
+            spatial_resolution: [number, number];
         },
         sessionId: UUID,
     ): Observable<PlotDataDict> {
         const params = new NullDiscardingHttpParams();
 
-        params.setMapped('bbox', request.bbox, bbox => bboxDictToExtent(bbox).join(','));
-        params.setMapped('time', request.time, time => `${unixTimestampToIsoString(time.start)}/${unixTimestampToIsoString(time.end)}`);
-        params.setMapped('spatial_resolution', request.spatial_resolution, resolution => resolution.join(','));
+        params.setMapped('bbox', request.bbox, (bbox) => bboxDictToExtent(bbox).join(','));
+        params.setMapped('time', request.time, (time) => `${unixTimestampToIsoString(time.start)}/${unixTimestampToIsoString(time.end)}`);
+        params.setMapped('spatial_resolution', request.spatial_resolution, (resolution) => resolution.join(','));
 
         return this.http.get<PlotDataDict>(this.config.API_URL + `/plot/${workflowId}`, {
             headers: BackendService.authorizationHeader(sessionId),
@@ -232,8 +229,7 @@ export class BackendService {
     }
 
     private static authorizationHeader(sessionId: UUID): HttpHeaders {
-        return new HttpHeaders()
-            .set('Authorization', `Bearer ${sessionId}`);
+        return new HttpHeaders().set('Authorization', `Bearer ${sessionId}`);
     }
 
     // TODO: turn into paginated data source

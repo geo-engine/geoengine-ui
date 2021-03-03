@@ -12,14 +12,11 @@ mat-divider {
     min-width: 2rem;
     min-height: 2rem;
     color: black !important;
-    text-shadow:
-        -1px -1px 0 #fff,
-        1px -1px 0 #fff,
-        -1px 1px 0 #fff,
-        1px 1px 0 #fff !important;
+    text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff !important;
 }
 
-td:first-child, td:last-child {
+td:first-child,
+td:last-child {
     width: 1%;
     white-space: nowrap;
 }

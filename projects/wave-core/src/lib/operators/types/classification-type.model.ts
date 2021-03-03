@@ -13,9 +13,7 @@ interface ClassificationTypeMappingDict extends OperatorTypeMappingDict {
     RemapRange: [Array<number>, Array<number>];
 }
 
-export interface ClassificationTypeDict extends OperatorTypeDict, ClassificationTypeConfig  {
-
-}
+export interface ClassificationTypeDict extends OperatorTypeDict, ClassificationTypeConfig {}
 
 /**
  * The classification type.
@@ -25,9 +23,15 @@ export class ClassificationType extends OperatorType {
     private static _ICON_URL = 'assets/operator-type-icons/classification.png';
     private static _NAME = 'Classification';
 
-    static get TYPE(): string { return ClassificationType._TYPE; }
-    static get ICON_URL(): string { return ClassificationType._ICON_URL; }
-    static get NAME(): string { return ClassificationType._NAME; }
+    static get TYPE(): string {
+        return ClassificationType._TYPE;
+    }
+    static get ICON_URL(): string {
+        return ClassificationType._ICON_URL;
+    }
+    static get NAME(): string {
+        return ClassificationType._NAME;
+    }
 
     private reclassNoData: boolean;
     private noDataClass: number;

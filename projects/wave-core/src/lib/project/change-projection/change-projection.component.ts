@@ -7,19 +7,16 @@ import {Observable} from 'rxjs';
     selector: 'wave-change-projection',
     templateUrl: './change-projection.component.html',
     styleUrls: ['./change-projection.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChangeProjectionComponent implements OnInit {
-
     readonly Projections = Projections;
 
     projection$: Observable<Projection>;
 
-    constructor(public projectService: ProjectService) {
-    }
+    constructor(public projectService: ProjectService) {}
 
     ngOnInit() {
         this.projection$ = this.projectService.getProjectionStream();
     }
-
 }

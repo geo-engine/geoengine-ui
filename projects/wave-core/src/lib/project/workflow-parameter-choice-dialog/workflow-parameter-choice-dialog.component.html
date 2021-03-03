@@ -1,32 +1,26 @@
-<wave-dialog-header>{{config?.dialogTitle}}</wave-dialog-header>
+<wave-dialog-header>{{ config?.dialogTitle }}</wave-dialog-header>
 <mat-dialog-content class="mat-typography">
-    <p *ngIf="config?.layers?.length <= 0">
-        There is no layer available from the {{config?.sourceName}}.
-    </p>
+    <p *ngIf="config?.layers?.length <= 0">There is no layer available from the {{ config?.sourceName }}.</p>
     <ng-container *ngIf="config?.layers?.length > 0">
-        <p *ngIf="config?.layers?.length === 1">
-            There is a layer available from the {{config?.sourceName}}:
-        </p>
-        <p *ngIf="config?.layers?.length > 1">
-            There are {{config?.layers?.length}} layers available from the {{config?.sourceName}}:
-        </p>
+        <p *ngIf="config?.layers?.length === 1">There is a layer available from the {{ config?.sourceName }}:</p>
+        <p *ngIf="config?.layers?.length > 1">There are {{ config?.layers?.length }} layers available from the {{ config?.sourceName }}:</p>
         <mat-list dense>
-            <mat-list-item *ngFor="let layer of config?.layers">{{layer.name}}</mat-list-item>
+            <mat-list-item *ngFor="let layer of config?.layers">{{ layer.name }}</mat-list-item>
         </mat-list>
     </ng-container>
     <ng-container *ngIf="config?.nonAvailableNames.length > 0">
         <p>The following input is not available or not visualizable:</p>
         <mat-list dense>
-            <mat-list-item *ngFor="let name of config?.nonAvailableNames">{{name}}</mat-list-item>
+            <mat-list-item *ngFor="let name of config?.nonAvailableNames">{{ name }}</mat-list-item>
         </mat-list>
     </ng-container>
-    <p *ngIf="config?.layers?.length > 0">
-        You have the following options:
-    </p>
+    <p *ngIf="config?.layers?.length > 0">You have the following options:</p>
 </mat-dialog-content>
 <mat-dialog-actions align="end" *ngIf="config?.layers?.length > 0">
     <button mat-raised-button color="primary" (click)="append()">Append to layers</button>
-    <button mat-raised-button color="primary" (click)="replace()" *ngIf="config?.numberOfLayersInProject > 0">Replace current layers</button>
+    <button mat-raised-button color="primary" (click)="replace()" *ngIf="config?.numberOfLayersInProject > 0">
+        Replace current layers
+    </button>
     <span fxFlex></span>
     <button mat-raised-button color="default" (click)="ignore()">Ignore</button>
 </mat-dialog-actions>

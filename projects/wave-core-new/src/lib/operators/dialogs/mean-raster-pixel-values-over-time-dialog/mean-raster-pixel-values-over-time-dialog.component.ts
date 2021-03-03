@@ -34,16 +34,20 @@ interface TimePositionOption {
 export class MeanRasterPixelValuesOverTimeDialogComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly inputTypes = [ResultTypes.RASTER];
 
-    readonly timePositionOptions: Array<TimePositionOption> = [{
-        value: 'start',
-        label: 'Time start',
-    }, {
-        value: 'center',
-        label: 'In the center between start and end',
-    }, {
-        value: 'end',
-        label: 'Time end',
-    }];
+    readonly timePositionOptions: Array<TimePositionOption> = [
+        {
+            value: 'start',
+            label: 'Time start',
+        },
+        {
+            value: 'center',
+            label: 'In the center between start and end',
+        },
+        {
+            value: 'end',
+            label: 'Time end',
+        },
+    ];
 
     form: FormGroup;
     disallowSubmit: Observable<boolean>;
@@ -51,10 +55,11 @@ export class MeanRasterPixelValuesOverTimeDialogComponent implements OnInit, Aft
     /**
      * DI for services
      */
-    constructor(private readonly projectService: ProjectService,
-                private readonly notificationService: NotificationService,
-                private readonly formBuilder: FormBuilder) {
-    }
+    constructor(
+        private readonly projectService: ProjectService,
+        private readonly notificationService: NotificationService,
+        private readonly formBuilder: FormBuilder,
+    ) {}
 
     ngOnInit() {
         this.form = this.formBuilder.group({
@@ -63,7 +68,7 @@ export class MeanRasterPixelValuesOverTimeDialogComponent implements OnInit, Aft
             timePosition: [this.timePositionOptions[0].value, Validators.required],
             area: [true, Validators.required],
         });
-        this.disallowSubmit = this.form.statusChanges.pipe(map(status => status !== 'VALID'));
+        this.disallowSubmit = this.form.statusChanges.pipe(map((status) => status !== 'VALID'));
     }
 
     ngAfterViewInit() {
@@ -73,8 +78,7 @@ export class MeanRasterPixelValuesOverTimeDialogComponent implements OnInit, Aft
         });
     }
 
-    ngOnDestroy() {
-    }
+    ngOnDestroy() {}
 
     /**
      * Uses the user input to create the plot.
@@ -92,26 +96,34 @@ export class MeanRasterPixelValuesOverTimeDialogComponent implements OnInit, Aft
             area,
         };
 
-        this.projectService.getWorkflow(inputLayer.workflowId).pipe(
-            mergeMap((inputWorkflow: WorkflowDict) => this.projectService.registerWorkflow({
-                type: 'Plot',
-                operator: {
-                    type: 'MeanRasterPixelValuesOverTime',
-                    params,
-                    raster_sources: [inputWorkflow.operator],
-                    vector_sources: [],
-                }
-            })),
-            mergeMap(workflowId => this.projectService.addPlot(new Plot({
-                workflowId,
-                name: outputName,
-            }))),
-        ).subscribe(
-            () => {
-                // success
-            },
-            error => this.notificationService.error(error),
-        );
+        this.projectService
+            .getWorkflow(inputLayer.workflowId)
+            .pipe(
+                mergeMap((inputWorkflow: WorkflowDict) =>
+                    this.projectService.registerWorkflow({
+                        type: 'Plot',
+                        operator: {
+                            type: 'MeanRasterPixelValuesOverTime',
+                            params,
+                            raster_sources: [inputWorkflow.operator],
+                            vector_sources: [],
+                        },
+                    }),
+                ),
+                mergeMap((workflowId) =>
+                    this.projectService.addPlot(
+                        new Plot({
+                            workflowId,
+                            name: outputName,
+                        }),
+                    ),
+                ),
+            )
+            .subscribe(
+                () => {
+                    // success
+                },
+                (error) => this.notificationService.error(error),
+            );
     }
-
 }

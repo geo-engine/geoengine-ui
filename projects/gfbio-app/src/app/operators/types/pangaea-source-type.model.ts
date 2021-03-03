@@ -67,9 +67,8 @@ export class PangaeaSourceType extends OperatorType {
         return [
             ['doi', this.doi],
             ['geometry', this.csvParameters.geometry],
-            ['separator', (this.csvParameters.separator) ?
-                this.csvParameters.separator : ''],
-            ['time', (this.csvParameters.time) ? this.csvParameters.time : ''],
+            ['separator', this.csvParameters.separator ? this.csvParameters.separator : ''],
+            ['time', this.csvParameters.time ? this.csvParameters.time : ''],
         ];
     }
 
@@ -90,5 +89,4 @@ export class PangaeaSourceType extends OperatorType {
     cloneWithModifications(options?: {}): OperatorType {
         return PangaeaSourceType.fromDict(this.toDict()); // TODO: add modifications
     }
-
 }

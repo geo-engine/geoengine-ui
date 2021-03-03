@@ -1,6 +1,5 @@
 import {OperatorType, OperatorTypeCloneOptions, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 
-
 interface ChronicleDBSourceTypeConfig {
     filename: string;
     layer_name?: string;
@@ -153,5 +152,4 @@ export class ChronicleDBSourceType extends OperatorType {
     cloneWithModifications(options?: OperatorTypeCloneOptions): OperatorType {
         return new ChronicleDBSourceType(this.config);
     }
-
 }

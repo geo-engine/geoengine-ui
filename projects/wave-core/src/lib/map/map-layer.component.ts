@@ -20,11 +20,7 @@ import {Projection} from '../operators/projection.model';
  */
 @Directive()
 // tslint:disable-next-line:directive-class-suffix
-export abstract class MapLayerComponent<OL extends OlLayer,
-    OS extends OlSource,
-    S extends AbstractSymbology,
-    L extends Layer<S>> {
-
+export abstract class MapLayerComponent<OL extends OlLayer, OS extends OlSource, S extends AbstractSymbology, L extends Layer<S>> {
     /**
      * A raster or vector layer
      */
@@ -42,8 +38,7 @@ export abstract class MapLayerComponent<OL extends OlLayer,
     /**
      * Setup of DI
      */
-    protected constructor(protected projectService: ProjectService) {
-    }
+    protected constructor(protected projectService: ProjectService) {}
 
     /**
      * Return the open layers layer element that displays our layer type
@@ -62,10 +57,9 @@ export abstract class MapLayerComponent<OL extends OlLayer,
  * The vector layer abstraction for a map layer
  */
 @Directive()
-export abstract class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector,
-    OlVectorSource,
-    AbstractVectorSymbology,
-    VectorLayer<AbstractVectorSymbology>> implements OnInit, OnDestroy {
+export abstract class OlVectorLayerComponent
+    extends MapLayerComponent<OlLayerVector, OlVectorSource, AbstractVectorSymbology, VectorLayer<AbstractVectorSymbology>>
+    implements OnInit, OnDestroy {
     private dataSubscription: Subscription;
     private layerChangesSubscription: Subscription;
 
@@ -87,7 +81,8 @@ export abstract class OlVectorLayerComponent extends MapLayerComponent<OlLayerVe
             this.updateOlLayer({symbology: this.layer.symbology}); // FIXME: HACK until data is a part of a layer
         });
 
-        this.layerChangesSubscription = this.projectService.getLayerChangesStream(this.layer)
+        this.layerChangesSubscription = this.projectService
+            .getLayerChangesStream(this.layer)
             .subscribe((changes: LayerChanges<AbstractVectorSymbology>) => {
                 this.updateOlLayer(changes);
             });
@@ -173,9 +168,9 @@ export class OlPolygonLayerComponent extends OlVectorLayerComponent implements O
     providers: [{provide: MapLayerComponent, useExisting: OlRasterLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTileSource,
-    MappingRasterSymbology, RasterLayer<MappingRasterSymbology>> implements OnInit, OnDestroy {
-
+export class OlRasterLayerComponent
+    extends MapLayerComponent<OlLayerTile, OlTileSource, MappingRasterSymbology, RasterLayer<MappingRasterSymbology>>
+    implements OnInit, OnDestroy {
     private dataSubscription: Subscription;
     private layerChangesSubscription: Subscription;
     private timeSubscription: Subscription;
@@ -183,9 +178,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
     private projection: Projection;
     private time: Time;
 
-    constructor(protected projectService: ProjectService,
-                protected mappingQueryService: MappingQueryService,
-                private config: Config) {
+    constructor(protected projectService: ProjectService, protected mappingQueryService: MappingQueryService, private config: Config) {
         super(projectService);
     }
 
@@ -205,10 +198,10 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
             if (this.config.MAP.REFRESH_LAYERS_ON_CHANGE) {
                 this.source.refresh();
             }
-
         });
 
-        this.layerChangesSubscription = this.projectService.getLayerChangesStream(this.layer)
+        this.layerChangesSubscription = this.projectService
+            .getLayerChangesStream(this.layer)
             .subscribe((changes: LayerChanges<MappingRasterSymbology>) => {
                 this.updateOlLayer(changes);
                 if (this.config.MAP.REFRESH_LAYERS_ON_CHANGE) {
@@ -241,7 +234,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
         if (changes.symbology !== undefined) {
             this._mapLayer.setOpacity(this.layer.symbology.opacity);
             this.source.updateParams({
-                colors: this.layer.symbology.mappingColorizerRequestString()
+                colors: this.layer.symbology.mappingColorizerRequestString(),
             });
         }
         if (changes.operator !== undefined) {
@@ -265,7 +258,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
         if (this.source) {
             this.source.updateParams({
                 time: this.time.asRequestString(),
-                colors: this.layer.symbology.mappingColorizerRequestString()
+                colors: this.layer.symbology.mappingColorizerRequestString(),
             });
         }
     }
@@ -282,7 +275,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
             url: this.createWmsQueryUrl(),
             params: {
                 time: this.time.asRequestString(),
-                colors: this.layer.symbology.mappingColorizerRequestString()
+                colors: this.layer.symbology.mappingColorizerRequestString(),
             },
             projection: this.projection.getCode(),
             wrapX: false,
@@ -296,7 +289,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
         return this.mappingQueryService.getWMSQueryUrl({
             operator: this.layer.operator,
             time: this.time,
-            projection: this.projection
+            projection: this.projection,
         });
     }
 

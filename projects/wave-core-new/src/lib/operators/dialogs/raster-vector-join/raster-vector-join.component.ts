@@ -39,11 +39,13 @@ export class RasterVectorJoinComponent implements OnDestroy {
 
     private subscriptions: Array<Subscription> = [];
 
-    constructor(private readonly projectService: ProjectService,
-                private readonly randomColorService: RandomColorService,
-                private readonly notificationService: NotificationService,
-                private readonly formBuilder: FormBuilder,
-                private readonly changeDetectorRef: ChangeDetectorRef) {
+    constructor(
+        private readonly projectService: ProjectService,
+        private readonly randomColorService: RandomColorService,
+        private readonly notificationService: NotificationService,
+        private readonly formBuilder: FormBuilder,
+        private readonly changeDetectorRef: ChangeDetectorRef,
+    ) {
         this.form = this.formBuilder.group({
             vectorLayer: [undefined, Validators.required],
             rasterLayers: [undefined, Validators.required],
@@ -56,13 +58,13 @@ export class RasterVectorJoinComponent implements OnDestroy {
     }
 
     ngOnDestroy() {
-        this.subscriptions.forEach(subscription => subscription.unsubscribe());
+        this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
     private reCheckValueNames() {
         setTimeout(() => {
             const valueNames = this.form.controls['valueNames'] as FormArray;
-            valueNames.controls.forEach(control => {
+            valueNames.controls.forEach((control) => {
                 control.updateValueAndValidity({
                     onlySelf: false,
                     emitEvent: false,
@@ -73,24 +75,26 @@ export class RasterVectorJoinComponent implements OnDestroy {
     }
 
     private setupNameValidation() {
-        const vectorLayerSubscription = this.form.controls['vectorLayer'].valueChanges.pipe(
-            filter((vectorLayer: VectorLayer) => !!vectorLayer),
-            mergeMap((vectorLayer: VectorLayer) => this.projectService.getLayerMetadata(vectorLayer)),
-            map(metadata => {
-                if (!(metadata instanceof VectorLayerMetadata)) {
-                    throw Error('expected to get vector metadata');
-                }
+        const vectorLayerSubscription = this.form.controls['vectorLayer'].valueChanges
+            .pipe(
+                filter((vectorLayer: VectorLayer) => !!vectorLayer),
+                mergeMap((vectorLayer: VectorLayer) => this.projectService.getLayerMetadata(vectorLayer)),
+                map((metadata) => {
+                    if (!(metadata instanceof VectorLayerMetadata)) {
+                        throw Error('expected to get vector metadata');
+                    }
 
-                return metadata.columns.keySeq().toArray();
-            })
-        ).subscribe(columns => {
-            this.vectorColumns = columns;
-            this.reCheckValueNames();
-        });
+                    return metadata.columns.keySeq().toArray();
+                }),
+            )
+            .subscribe((columns) => {
+                this.vectorColumns = columns;
+                this.reCheckValueNames();
+            });
         this.subscriptions.push(vectorLayerSubscription);
 
         // update valueNames
-        const rasterLayersSubscription = this.form.controls['rasterLayers'].valueChanges.subscribe(rasters => {
+        const rasterLayersSubscription = this.form.controls['rasterLayers'].valueChanges.subscribe((rasters) => {
             const valueNames = this.form.controls['valueNames'] as FormArray;
 
             if (valueNames.length > rasters.length) {
@@ -103,23 +107,21 @@ export class RasterVectorJoinComponent implements OnDestroy {
                 // add name fields
                 for (let i = valueNames.length; i < rasters.length; i++) {
                     const control = this.formBuilder.control(
-                        rasters[i].name, Validators.compose([
-                            Validators.required,
-                            this.valueNameCollision(this.form.controls['valueNames'] as FormArray),
-                        ])
+                        rasters[i].name,
+                        Validators.compose([Validators.required, this.valueNameCollision(this.form.controls['valueNames'] as FormArray)]),
                     );
                     valueNames.push(control);
                     this.valueNameUserChanges.push(false);
 
                     this.subscriptions.push(
-                        control.valueChanges.subscribe(valueName => {
+                        control.valueChanges.subscribe((valueName) => {
                             const rasterName = rasters[i].name;
                             if (valueName !== rasterName) {
                                 this.valueNameUserChanges[i] = true;
                             }
 
                             this.reCheckValueNames();
-                        })
+                        }),
                     );
                 }
             } else {
@@ -141,9 +143,9 @@ export class RasterVectorJoinComponent implements OnDestroy {
      * Uses `startsWith` semantics.
      */
     private valueNameCollision(valueNames: FormArray) {
-        return (control: FormControl): { [key: string]: boolean } => {
+        return (control: FormControl): {[key: string]: boolean} => {
             const errors: {
-                duplicateName?: boolean,
+                duplicateName?: boolean;
             } = {};
 
             const valueName: string = control.value;
@@ -156,7 +158,8 @@ export class RasterVectorJoinComponent implements OnDestroy {
                 }
             }
 
-            if (duplicates < 1) { // check for conflicts with extisting column in input
+            if (duplicates < 1) {
+                // check for conflicts with extisting column in input
                 for (const otherValueName of this.vectorColumns) {
                     if (otherValueName === valueName) {
                         duplicates++;
@@ -186,33 +189,38 @@ export class RasterVectorJoinComponent implements OnDestroy {
             aggregation,
         };
 
-        const workflowIds = [
-            vectorLayer.workflowId,
-            ...rasterLayers.map(rasterLayer => rasterLayer.workflowId),
-        ];
-        combineLatest(workflowIds.map(workflowId => this.projectService.getWorkflow(workflowId))).pipe(
-            mergeMap(([vectorWorkflow, ...rasterWorkflows]) => this.projectService.registerWorkflow({
-                type: 'Vector',
-                operator: {
-                    type: 'RasterVectorJoin',
-                    params,
-                    vector_sources: [vectorWorkflow.operator],
-                    raster_sources: rasterWorkflows.map(workflow => workflow.operator),
-                }
-            })),
-            mergeMap(workflowId => this.projectService.addLayer(new VectorLayer({
-                workflowId,
-                name: outputLayerName,
-                symbology: this.symbologyWithNewColor(vectorLayer.symbology),
-                isLegendVisible: false,
-                isVisible: true,
-            }))),
-        ).subscribe(
-            () => {
-                // success
-            },
-            error => this.notificationService.error(error),
-        );
+        const workflowIds = [vectorLayer.workflowId, ...rasterLayers.map((rasterLayer) => rasterLayer.workflowId)];
+        combineLatest(workflowIds.map((workflowId) => this.projectService.getWorkflow(workflowId)))
+            .pipe(
+                mergeMap(([vectorWorkflow, ...rasterWorkflows]) =>
+                    this.projectService.registerWorkflow({
+                        type: 'Vector',
+                        operator: {
+                            type: 'RasterVectorJoin',
+                            params,
+                            vector_sources: [vectorWorkflow.operator],
+                            raster_sources: rasterWorkflows.map((workflow) => workflow.operator),
+                        },
+                    }),
+                ),
+                mergeMap((workflowId) =>
+                    this.projectService.addLayer(
+                        new VectorLayer({
+                            workflowId,
+                            name: outputLayerName,
+                            symbology: this.symbologyWithNewColor(vectorLayer.symbology),
+                            isLegendVisible: false,
+                            isVisible: true,
+                        }),
+                    ),
+                ),
+            )
+            .subscribe(
+                () => {
+                    // success
+                },
+                (error) => this.notificationService.error(error),
+            );
     }
 
     private symbologyWithNewColor(inputSymbology: VectorSymbology): VectorSymbology {

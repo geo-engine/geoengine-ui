@@ -1,6 +1,8 @@
 import {
-    DataPropertiesDict, FormStatus,
-    SpatialPropertiesDict, TemporalPropertiesDict
+    DataPropertiesDict,
+    FormStatus,
+    SpatialPropertiesDict,
+    TemporalPropertiesDict,
 } from '../csv-config/csv-properties/csv-properties.component';
 import {Subject, BehaviorSubject, Subscription, Observable} from 'rxjs';
 import {Injectable} from '@angular/core';
@@ -35,7 +37,7 @@ export class CsvPropertiesService {
     private header = new BehaviorSubject<{value: string}[]>([]);
     private formStatus = new BehaviorSubject<FormStatus>(null);
 
-    xyColumn$: BehaviorSubject<{x: number, y?: number}> = new BehaviorSubject<{x: number, y?: number}>({x: 0, y: 0});
+    xyColumn$: BehaviorSubject<{x: number; y?: number}> = new BehaviorSubject<{x: number; y?: number}>({x: 0, y: 0});
 
     dataProperties$ = this.dataProperties.asObservable();
     spatialProperties$ = this.spatialProperties.asObservable();

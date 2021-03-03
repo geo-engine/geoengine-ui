@@ -11,7 +11,8 @@ mat-icon {
 }
 
 .help-content ::ng-deep {
-    div, p {
+    div,
+    p {
         text-align: justify;
     }
 }

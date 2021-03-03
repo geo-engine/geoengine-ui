@@ -14,7 +14,7 @@ interface OgrSourceTypeMappingDict extends OperatorTypeMappingDict {
     textual: string[];
 }
 
-export interface OgrSourceTypeDict extends OperatorTypeDict  {
+export interface OgrSourceTypeDict extends OperatorTypeDict {
     dataset_id: string;
     layer_id: string | number;
     numeric: string[];
@@ -29,9 +29,15 @@ export class OgrSourceType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(OgrSourceType._TYPE);
     private static _NAME = 'GDAL OGR Source';
 
-    static get TYPE(): string { return OgrSourceType._TYPE; }
-    static get ICON_URL(): string { return OgrSourceType._ICON_URL; }
-    static get NAME(): string { return OgrSourceType._NAME; }
+    static get TYPE(): string {
+        return OgrSourceType._TYPE;
+    }
+    static get ICON_URL(): string {
+        return OgrSourceType._ICON_URL;
+    }
+    static get NAME(): string {
+        return OgrSourceType._NAME;
+    }
 
     dataset_id: string;
     layer_id: string | number;
@@ -93,5 +99,4 @@ export class OgrSourceType extends OperatorType {
     cloneWithModifications(options?: {}): OperatorType {
         return OgrSourceType.fromDict(this.toDict()); // TODO: add modifications
     }
-
 }

@@ -11,15 +11,9 @@
         "moduleResolution": "node",
         "importHelpers": true,
         "target": "es2015",
-        "lib": [
-            "es2018",
-            "dom"
-        ],
+        "lib": ["es2018", "dom"],
         "paths": {
-            "wave-core": [
-                "dist/wave-core/wave-core",
-                "dist/wave-core"
-            ]
+            "wave-core": ["dist/wave-core/wave-core", "dist/wave-core"]
         },
         // TODO: remove once vega-lite fixes (https://github.com/visjs/vis-network/issues/67)
         "allowSyntheticDefaultImports": true,

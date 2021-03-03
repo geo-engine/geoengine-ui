@@ -34,10 +34,10 @@ export class Project {
     private _timeStepDuration: TimeStepDuration;
 
     static fromJSON(parameters: {
-        json: string,
-        config: Config,
-        notificationService: NotificationService,
-        operatorMap?: Map<number, Operator>,
+        json: string;
+        config: Config;
+        notificationService: NotificationService;
+        operatorMap?: Map<number, Operator>;
     }): Project {
         if (!parameters.operatorMap) {
             parameters.operatorMap = new Map<number, Operator>();
@@ -49,7 +49,7 @@ export class Project {
                 dict: dict,
                 config: parameters.config,
                 notificationService: parameters.notificationService,
-                operatorMap: parameters.operatorMap
+                operatorMap: parameters.operatorMap,
             });
         } catch (error) {
             parameters.notificationService.error(`Invalid JSON from project due to »${error}«`);
@@ -63,14 +63,13 @@ export class Project {
                 timeStepDuration: {durationAmount: 1, durationUnit: 'months'}, // TODO: move to DEFAULTS!
             });
         }
-
     }
 
     static fromDict(parameters: {
-        dict: ProjectDict,
-        config: Config,
-        notificationService: NotificationService,
-        operatorMap?: Map<number, Operator>
+        dict: ProjectDict;
+        config: Config;
+        notificationService: NotificationService;
+        operatorMap?: Map<number, Operator>;
     }): Project {
         if (!parameters.operatorMap) {
             parameters.operatorMap = new Map<number, Operator>();
@@ -79,7 +78,7 @@ export class Project {
         let plots: Array<Plot>;
         if (parameters.dict.plots) {
             plots = parameters.dict.plots
-                .map(plotDict => {
+                .map((plotDict) => {
                     try {
                         return Plot.fromDict(plotDict, parameters.operatorMap);
                     } catch (error) {
@@ -87,7 +86,7 @@ export class Project {
                         return undefined;
                     }
                 })
-                .filter(plot => plot !== undefined);
+                .filter((plot) => plot !== undefined);
         } else {
             plots = [];
         }
@@ -111,7 +110,7 @@ export class Project {
         let layers: Array<Layer<AbstractSymbology>>;
         if (parameters.dict.layers) {
             layers = parameters.dict.layers
-                .map(layerDict => {
+                .map((layerDict) => {
                     try {
                         return Layer.fromDict(layerDict, parameters.operatorMap);
                     } catch (error) {
@@ -119,7 +118,7 @@ export class Project {
                         return undefined;
                     }
                 })
-                .filter(layer => layer !== undefined);
+                .filter((layer) => layer !== undefined);
         } else {
             layers = [];
         }
@@ -166,7 +165,7 @@ export class Project {
     }
 
     get layers(): Array<Layer<AbstractSymbology>> {
-            return this._layers;
+        return this._layers;
     }
 
     get timeStepDuration(): TimeStepDuration {
@@ -178,14 +177,13 @@ export class Project {
             name: this.name,
             projection: this._projection.getCode(),
             time: this._time.asDict(),
-            plots: this._plots.map(plot => plot.toDict()),
-            layers: this._layers.map(layer => layer.toDict()),
-            timeStepDuration: this._timeStepDuration
+            plots: this._plots.map((plot) => plot.toDict()),
+            layers: this._layers.map((layer) => layer.toDict()),
+            timeStepDuration: this._timeStepDuration,
         };
     }
 
     toJSON(): string {
         return JSON.stringify(this.toDict());
     }
-
 }

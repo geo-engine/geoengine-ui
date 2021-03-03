@@ -13,15 +13,15 @@ import {SpatialReferences} from '../../operators/spatial-reference.model';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SaveProjectAsComponent implements OnInit, AfterViewInit {
-
     form: FormGroup;
 
     created$ = new BehaviorSubject(false);
 
-    constructor(private formBuilder: FormBuilder,
-                private projectService: ProjectService,
-                private notificationService: NotificationService) {
-    }
+    constructor(
+        private formBuilder: FormBuilder,
+        private projectService: ProjectService,
+        private notificationService: NotificationService,
+    ) {}
 
     ngOnInit() {
         this.form = this.formBuilder.group({
@@ -32,7 +32,7 @@ export class SaveProjectAsComponent implements OnInit, AfterViewInit {
             ],
             projection: [SpatialReferences.WEB_MERCATOR, Validators.required],
         });
-        this.projectService.getProjectOnce().subscribe(project => {
+        this.projectService.getProjectOnce().subscribe((project) => {
             this.form.controls['name'].setValue(project.name);
         });
     }
@@ -48,11 +48,10 @@ export class SaveProjectAsComponent implements OnInit, AfterViewInit {
     save() {
         const projectName: string = this.form.controls['name'].value;
 
-        this.projectService.cloneProject(projectName).subscribe(project => {
+        this.projectService.cloneProject(projectName).subscribe((project) => {
             this.projectService.setProject(project);
             this.created$.next(true);
             this.notificationService.info(`Saved project to »${project.name}« and switched to it`);
         });
     }
-
 }

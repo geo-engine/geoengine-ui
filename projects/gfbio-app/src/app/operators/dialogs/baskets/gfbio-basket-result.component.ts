@@ -1,6 +1,5 @@
 import {Input, Directive, Inject} from '@angular/core';
 
-
 import {
     Operator,
     ResultTypes,
@@ -12,7 +11,7 @@ import {
     RandomColorService,
     UserService,
     ProjectService,
-    UnexpectedResultType
+    UnexpectedResultType,
 } from 'wave-core';
 
 import {GFBioMappingQueryService} from '../../../queries/mapping-query.service';
@@ -24,13 +23,13 @@ import {GFBioUserService} from '../../../users/user.service';
 export abstract class BasketResultComponent<T extends IBasketResult> {
     @Input() result: T;
 
-
-    protected constructor(@Inject(MappingQueryService) protected readonly mappingQueryService: GFBioMappingQueryService,
-                          protected readonly layerService: LayerService,
-                          protected readonly randomColorService: RandomColorService,
-                          @Inject(UserService) protected readonly userService: GFBioUserService,
-                          protected readonly projectService: ProjectService) {
-    }
+    protected constructor(
+        @Inject(MappingQueryService) protected readonly mappingQueryService: GFBioMappingQueryService,
+        protected readonly layerService: LayerService,
+        protected readonly randomColorService: RandomColorService,
+        @Inject(UserService) protected readonly userService: GFBioUserService,
+        protected readonly projectService: ProjectService,
+    ) {}
 
     protected createAndAddLayer(operator: Operator, name: string) {
         let clustered = false;

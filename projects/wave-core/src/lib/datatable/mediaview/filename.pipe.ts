@@ -1,14 +1,13 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
-    name: 'fileName'
+    name: 'fileName',
 })
 /**
  * FileNamePipe
  * Transforms a given string with a file-url to only the filename
  */
 export class FileNamePipe implements PipeTransform {
-
     /**
      * Transforms a given string with a file-url to only the file-name
      * @param value url directing to a file
@@ -20,5 +19,4 @@ export class FileNamePipe implements PipeTransform {
 
         return split2[split2.length - 1];
     }
-
 }

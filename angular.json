@@ -44,13 +44,8 @@
                 "lint": {
                     "builder": "@angular-devkit/build-angular:tslint",
                     "options": {
-                        "tsConfig": [
-                            "projects/wave-core/tsconfig.lib.json",
-                            "projects/wave-core/tsconfig.spec.json"
-                        ],
-                        "exclude": [
-                            "**/node_modules/**"
-                        ]
+                        "tsConfig": ["projects/wave-core/tsconfig.lib.json", "projects/wave-core/tsconfig.spec.json"],
+                        "exclude": ["**/node_modules/**"]
                     }
                 }
             }
@@ -96,13 +91,8 @@
                 "lint": {
                     "builder": "@angular-devkit/build-angular:tslint",
                     "options": {
-                        "tsConfig": [
-                            "projects/wave-core-new/tsconfig.lib.json",
-                            "projects/wave-core-new/tsconfig.spec.json"
-                        ],
-                        "exclude": [
-                            "**/node_modules/**"
-                        ]
+                        "tsConfig": ["projects/wave-core-new/tsconfig.lib.json", "projects/wave-core-new/tsconfig.spec.json"],
+                        "exclude": ["**/node_modules/**"]
                     }
                 }
             }
@@ -208,13 +198,8 @@
                         "polyfills": "projects/wave-app/src/polyfills.ts",
                         "tsConfig": "projects/wave-app/tsconfig.spec.json",
                         "karmaConfig": "projects/wave-app/karma.conf.js",
-                        "assets": [
-                            "projects/wave-app/src/favicon.ico",
-                            "projects/wave-app/src/assets"
-                        ],
-                        "styles": [
-                            "projects/wave-app/src/styles.scss"
-                        ],
+                        "assets": ["projects/wave-app/src/favicon.ico", "projects/wave-app/src/assets"],
+                        "styles": ["projects/wave-app/src/styles.scss"],
                         "scripts": []
                     }
                 },
@@ -226,9 +211,7 @@
                             "projects/wave-app/tsconfig.spec.json",
                             "projects/wave-app/e2e/tsconfig.json"
                         ],
-                        "exclude": [
-                            "**/node_modules/**"
-                        ]
+                        "exclude": ["**/node_modules/**"]
                     }
                 },
                 "e2e": {
@@ -346,13 +329,8 @@
                         "polyfills": "projects/geoengine-app/src/polyfills.ts",
                         "tsConfig": "projects/geoengine-app/tsconfig.spec.json",
                         "karmaConfig": "projects/geoengine-app/karma.conf.js",
-                        "assets": [
-                            "projects/geoengine-app/src/favicon.ico",
-                            "projects/geoengine-app/src/assets"
-                        ],
-                        "styles": [
-                            "projects/geoengine-app/src/styles.scss"
-                        ],
+                        "assets": ["projects/geoengine-app/src/favicon.ico", "projects/geoengine-app/src/assets"],
+                        "styles": ["projects/geoengine-app/src/styles.scss"],
                         "scripts": []
                     }
                 },
@@ -364,9 +342,7 @@
                             "projects/geoengine-app/tsconfig.spec.json",
                             "projects/geoengine-app/e2e/tsconfig.json"
                         ],
-                        "exclude": [
-                            "**/node_modules/**"
-                        ]
+                        "exclude": ["**/node_modules/**"]
                     }
                 },
                 "e2e": {
@@ -484,13 +460,8 @@
                         "polyfills": "projects/data-atlas-app/src/polyfills.ts",
                         "tsConfig": "projects/data-atlas-app/tsconfig.spec.json",
                         "karmaConfig": "projects/data-atlas-app/karma.conf.js",
-                        "assets": [
-                            "projects/data-atlas-app/src/favicon.ico",
-                            "projects/data-atlas-app/src/assets"
-                        ],
-                        "styles": [
-                            "projects/data-atlas-app/src/styles.scss"
-                        ],
+                        "assets": ["projects/data-atlas-app/src/favicon.ico", "projects/data-atlas-app/src/assets"],
+                        "styles": ["projects/data-atlas-app/src/styles.scss"],
                         "scripts": []
                     }
                 },
@@ -502,9 +473,7 @@
                             "projects/data-atlas-app/tsconfig.spec.json",
                             "projects/data-atlas-app/e2e/tsconfig.json"
                         ],
-                        "exclude": [
-                            "**/node_modules/**"
-                        ]
+                        "exclude": ["**/node_modules/**"]
                     }
                 },
                 "e2e": {
@@ -622,13 +591,8 @@
                         "polyfills": "projects/gfbio-app/src/polyfills.ts",
                         "tsConfig": "projects/gfbio-app/tsconfig.spec.json",
                         "karmaConfig": "projects/gfbio-app/karma.conf.js",
-                        "assets": [
-                            "projects/gfbio-app/src/favicon.ico",
-                            "projects/gfbio-app/src/assets"
-                        ],
-                        "styles": [
-                            "projects/gfbio-app/src/styles.scss"
-                        ],
+                        "assets": ["projects/gfbio-app/src/favicon.ico", "projects/gfbio-app/src/assets"],
+                        "styles": ["projects/gfbio-app/src/styles.scss"],
                         "scripts": []
                     }
                 },
@@ -640,9 +604,7 @@
                             "projects/gfbio-app/tsconfig.spec.json",
                             "projects/gfbio-app/e2e/tsconfig.json"
                         ],
-                        "exclude": [
-                            "**/node_modules/**"
-                        ]
+                        "exclude": ["**/node_modules/**"]
                     }
                 },
                 "e2e": {
@@ -760,13 +722,8 @@
                         "polyfills": "projects/nature40-app/src/polyfills.ts",
                         "tsConfig": "projects/nature40-app/tsconfig.spec.json",
                         "karmaConfig": "projects/nature40-app/karma.conf.js",
-                        "assets": [
-                            "projects/nature40-app/src/favicon.ico",
-                            "projects/nature40-app/src/assets"
-                        ],
-                        "styles": [
-                            "projects/nature40-app/src/styles.scss"
-                        ],
+                        "assets": ["projects/nature40-app/src/favicon.ico", "projects/nature40-app/src/assets"],
+                        "styles": ["projects/nature40-app/src/styles.scss"],
                         "scripts": []
                     }
                 },
@@ -778,9 +735,7 @@
                             "projects/nature40-app/tsconfig.spec.json",
                             "projects/nature40-app/e2e/tsconfig.json"
                         ],
-                        "exclude": [
-                            "**/node_modules/**"
-                        ]
+                        "exclude": ["**/node_modules/**"]
                     }
                 },
                 "e2e": {

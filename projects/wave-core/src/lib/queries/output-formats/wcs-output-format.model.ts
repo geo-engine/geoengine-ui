@@ -3,18 +3,14 @@ import {OutputFormat} from '../output-format.model';
 /**
  * Base class for WCS Output Formats
  */
-export class WCSOutputFormat extends OutputFormat {
-}
+export class WCSOutputFormat extends OutputFormat {}
 
 /**
  * WFS Output format for export
  */
 class ExportWCSOutputFormat extends WCSOutputFormat {
     constructor(outputFormat: WCSOutputFormat) {
-        super(
-            'application/x-export;' + outputFormat.getFormat(),
-            outputFormat.toString()
-        );
+        super('application/x-export;' + outputFormat.getFormat(), outputFormat.toString());
     }
 }
 
@@ -29,12 +25,11 @@ export class WCSOutputFormatCollection {
     private _TYPES = [this._TIFF];
     private _EXPORT_TYPES = [this._EXPORT_TIFF];
 
-    protected constructor() {
-    }
+    protected constructor() {}
 
     get TIFF(): WCSOutputFormat {
         return this._TIFF;
-    };
+    }
 
     get TYPES(): Array<WCSOutputFormat> {
         return this._TYPES;

@@ -1,4 +1,4 @@
-<div class='container' [style.height.px]='height'>
+<div class="container" [style.height.px]="height">
     <ng-template [ngIf]="layerService.getIsAnyLayerSelectedStream() | async">
         <mat-list dense>
             <mat-list-item *ngFor="let p of provenance$ | async; let last = last">
@@ -8,7 +8,7 @@
                     <dt>License</dt>
                     <dd [innerHtml]="p.license | waveNbsp"></dd>
                     <dt>URI</dt>
-                    <dd><a [href]="p.uri" target='_blank' [innerHtml]="p.uri | waveNbsp"></a></dd>
+                    <dd><a [href]="p.uri" target="_blank" [innerHtml]="p.uri | waveNbsp"></a></dd>
                 </dl>
                 <mat-divider *ngIf="!last"></mat-divider>
             </mat-list-item>

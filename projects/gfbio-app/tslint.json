@@ -1,17 +1,7 @@
 {
-  "extends": "../../tslint.json",
-  "rules": {
-    "directive-selector": [
-      true,
-      "attribute",
-      "waveGfbio",
-      "camelCase"
-    ],
-    "component-selector": [
-      true,
-      "element",
-      "wave-gfbio",
-      "kebab-case"
-    ]
-  }
+    "extends": "../../tslint.json",
+    "rules": {
+        "directive-selector": [true, "attribute", "waveGfbio", "camelCase"],
+        "component-selector": [true, "element", "wave-gfbio", "kebab-case"]
+    }
 }

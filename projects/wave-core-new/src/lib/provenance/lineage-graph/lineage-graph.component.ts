@@ -34,7 +34,6 @@ const GRAPH_STYLE = {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LineageGraphComponent implements OnInit, AfterViewInit {
-
     @ViewChild('svg', {static: true}) svg: ElementRef;
     @ViewChild('g', {static: true}) g: ElementRef;
 
@@ -51,27 +50,27 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
 
     selectedOperator$ = new ReplaySubject<OperatorDict | SourceOperatorDict>(1);
     selectedOperatorIcon$ = new ReplaySubject<string>(1);
-    parameters$ = new ReplaySubject<Array<{ key: string, value: string }>>(1);
+    parameters$ = new ReplaySubject<Array<{key: string; value: string}>>(1);
 
     private maxWidth$ = new BehaviorSubject<number>(1);
     private maxHeight$ = new BehaviorSubject<number>(1);
 
     private svgRatio = 0.7;
 
-
-    constructor(private elementRef: ElementRef,
-                private projectService: ProjectService,
-                private layoutService: LayoutService,
-                private dialogRef: MatDialogRef<LineageGraphComponent>,
-                @Inject(MAT_DIALOG_DATA) private config: { layer: Layer }) {
-    }
+    constructor(
+        private elementRef: ElementRef,
+        private projectService: ProjectService,
+        private layoutService: LayoutService,
+        private dialogRef: MatDialogRef<LineageGraphComponent>,
+        @Inject(MAT_DIALOG_DATA) private config: {layer: Layer},
+    ) {}
 
     ngOnInit() {
-        this.svgWidth$ = this.maxWidth$.pipe(map(width => Math.ceil(this.svgRatio * width)));
+        this.svgWidth$ = this.maxWidth$.pipe(map((width) => Math.ceil(this.svgRatio * width)));
         this.svgHeight$ = this.maxHeight$;
 
-        this.loaderDiameter$ = this.svgWidth$.pipe(map(width => width / 6));
-        this.loaderLeft$ = this.loaderDiameter$.pipe(map(diameter => `calc(50% - ${diameter}px / 2)`));
+        this.loaderDiameter$ = this.svgWidth$.pipe(map((width) => width / 6));
+        this.loaderLeft$ = this.loaderDiameter$.pipe(map((diameter) => `calc(50% - ${diameter}px / 2)`));
 
         this.layer = this.config.layer;
         this.title = `Lineage for ${this.layer.name}`;
@@ -103,18 +102,12 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
     }
 
     private drawGraph() {
-        this.projectService.getWorkflow(this.layer.workflowId).subscribe(workflow => {
-            const graph = new dagreD3.graphlib.Graph()
-                .setGraph({})
-                .setDefaultEdgeLabel(() => ({label: ''}) as any);
+        this.projectService.getWorkflow(this.layer.workflowId).subscribe((workflow) => {
+            const graph = new dagreD3.graphlib.Graph().setGraph({}).setDefaultEdgeLabel(() => ({label: ''} as any));
 
             LineageGraphComponent.addOperatorsToGraph(graph, workflow.operator);
 
-            LineageGraphComponent.addLayerToGraph(
-                graph,
-                this.layer,
-                0,
-            );
+            LineageGraphComponent.addLayerToGraph(graph, this.layer, 0);
 
             // create the renderer
             const render = new dagreD3.render();
@@ -140,8 +133,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         });
     }
 
-    private static addOperatorsToGraph(graph: dagre.graphlib.Graph,
-                                       initialOperator: OperatorDict | SourceOperatorDict) {
+    private static addOperatorsToGraph(graph: dagre.graphlib.Graph, initialOperator: OperatorDict | SourceOperatorDict) {
         let nextOperatorId = 0;
 
         const operatorQueue: Array<[number, OperatorDict | SourceOperatorDict]> = [[nextOperatorId++, initialOperator]];
@@ -166,8 +158,8 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
                     <table>
                         <tr>
                         ${this.parametersDisplayList(operator)
-                    .map(kv => `<td class='key'>${kv.key}</td><td class='value'>${kv.value}</td>`)
-                    .join('</tr><tr>')}
+                            .map((kv) => `<td class='key'>${kv.key}</td><td class='value'>${kv.value}</td>`)
+                            .join('</tr><tr>')}
                         </tr>
                     </table>
                 </div>
@@ -198,9 +190,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         // console.log(graph.edges(), graph);
     }
 
-    private static addLayerToGraph(graph: dagre.graphlib.Graph,
-                                   layer: Layer,
-                                   workflow_id: number) {
+    private static addLayerToGraph(graph: dagre.graphlib.Graph, layer: Layer, workflow_id: number) {
         // add node
         graph.setNode(`layer_${layer.workflowId}`, {
             class: 'layer',
@@ -218,9 +208,13 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         });
     }
 
-    private addZoomSupport(svg: d3.Selection<SVGElement, any, any, any>, svgGroup: d3.Selection<SVGElement, any, any, any>,
-                           graph: dagre.graphlib.Graph,
-                           svgWidth: number, svgHeight: number) {
+    private addZoomSupport(
+        svg: d3.Selection<SVGElement, any, any, any>,
+        svgGroup: d3.Selection<SVGElement, any, any, any>,
+        graph: dagre.graphlib.Graph,
+        svgWidth: number,
+        svgHeight: number,
+    ) {
         // calculate available space after subtracting the margin
         const paddedWidth = svgWidth - GRAPH_STYLE.surrounding.margin;
         const paddedHeight = svgHeight - GRAPH_STYLE.surrounding.margin;
@@ -229,11 +223,11 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         const scale = Math.min(
             paddedWidth / graph.graph().width,
             paddedHeight / graph.graph().height,
-            1 // do not scale more than 100% of size initially
+            1, // do not scale more than 100% of size initially
         );
 
-        const initialX = (svgWidth - (scale * graph.graph().width)) / 2;
-        const initialY = (svgHeight - (scale * graph.graph().height)) / 2;
+        const initialX = (svgWidth - scale * graph.graph().width) / 2;
+        const initialY = (svgHeight - scale * graph.graph().height) / 2;
 
         // create zoom behavior
         const zoom = d3.zoom();
@@ -245,17 +239,14 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         zoom.on('zoom', (zoomEvent: d3.D3ZoomEvent<any, any>) => {
             const zoomTranslate = isNaN(zoomEvent.transform.x) ? [0, 0] : [zoomEvent.transform.x, zoomEvent.transform.y];
             const zoomScale = isNaN(zoomEvent.transform.k) ? 0 : zoomEvent.transform.k;
-            svgGroup.attr(
-                'transform',
-                `translate(${zoomTranslate})scale(${zoomScale})`
-            );
+            svgGroup.attr('transform', `translate(${zoomTranslate})scale(${zoomScale})`);
         });
         svg.call(zoom);
     }
 
     private addClickHandler(svg: d3.Selection<SVGElement, any, any, any>, graph: dagre.graphlib.Graph) {
         svg.selectAll('.node').on('click', (_event, theNodeId) => {
-            const nodeId = theNodeId as any as string; // conversion since the signature is of the wrong type
+            const nodeId = (theNodeId as any) as string; // conversion since the signature is of the wrong type
 
             const node = graph.node(nodeId);
             if (node.type === 'operator') {
@@ -276,7 +267,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         });
     }
 
-    private static parametersDisplayList(operator: OperatorDict | SourceOperatorDict): Array<{ key: string, value: string }> {
+    private static parametersDisplayList(operator: OperatorDict | SourceOperatorDict): Array<{key: string; value: string}> {
         const list = [];
 
         const params = operator.params;
@@ -308,14 +299,9 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         svg.selectAll('.label > g').attr('transform', undefined);
     }
 
-    private setupWidthObservables(graph: dagre.graphlib.Graph): { width: number, height: number } {
+    private setupWidthObservables(graph: dagre.graphlib.Graph): {width: number; height: number} {
         const widthBound = (maxWidth: number, graphWidth: number) => {
-            return Math.min(
-                maxWidth
-                - GRAPH_STYLE.surrounding.detailComponentWidth
-                - GRAPH_STYLE.surrounding.margin,
-                graphWidth
-            );
+            return Math.min(maxWidth - GRAPH_STYLE.surrounding.detailComponentWidth - GRAPH_STYLE.surrounding.margin, graphWidth);
         };
         const heightBound = (maxWidth: number, _graphWidth: number) => {
             // return Math.min(maxWidth, graphWidth + GRAPH_STYLE.surrounding.margin);
@@ -329,5 +315,4 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
             height: heightBound(this.maxHeight$.getValue(), graph.graph().height),
         };
     }
-
 }

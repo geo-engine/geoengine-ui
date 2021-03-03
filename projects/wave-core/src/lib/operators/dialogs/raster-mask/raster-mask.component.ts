@@ -16,7 +16,6 @@ import {ExpressionType} from '../../types/expression-type.model';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RasterMaskComponent {
-
     readonly RASTER_TYPE = [ResultTypes.RASTER];
 
     form: FormGroup;
@@ -30,16 +29,16 @@ export class RasterMaskComponent {
             name: new FormControl('Masked Layer', [Validators.required]),
         });
 
-        this.formIsInvalid$ = this.form.statusChanges.pipe(map(status => status !== 'VALID'));
+        this.formIsInvalid$ = this.form.statusChanges.pipe(map((status) => status !== 'VALID'));
 
-        this.availableMaskLayers$ = combineLatest([this.form.controls.input.valueChanges, this.projectService.getLayerStream()])
-            .pipe(
-                map(([selectedLayer, list]: [Layer<AbstractSymbology>, Array<Layer<AbstractSymbology>>]) => {
-                    return list.filter(layer => layer !== selectedLayer);
-                })
-            );
+        this.availableMaskLayers$ = combineLatest([this.form.controls.input.valueChanges, this.projectService.getLayerStream()]).pipe(
+            map(([selectedLayer, list]: [Layer<AbstractSymbology>, Array<Layer<AbstractSymbology>>]) => {
+                return list.filter((layer) => layer !== selectedLayer);
+            }),
+        );
 
-        setTimeout(() => { // calculate validity to enforce invalid state upfront
+        setTimeout(() => {
+            // calculate validity to enforce invalid state upfront
             this.form.controls.input.updateValueAndValidity({emitEvent: true});
             this.form.updateValueAndValidity();
         });
@@ -50,25 +49,24 @@ export class RasterMaskComponent {
         const maskLayer: RasterLayer<AbstractRasterSymbology> = this.form.controls.mask.value;
         const name = this.form.controls.name.value as string;
 
-        this.projectService.addLayer(new RasterLayer({
-            name,
-            operator: new Operator({
-                attributes: inputLayer.operator.attributes,
-                dataTypes: inputLayer.operator.dataTypes,
-                operatorType: new ExpressionType({
-                    datatype: inputLayer.operator.dataTypes.get('value'),
-                    expression: 'B != 0 ? A : out_info->no_data',
-                    unit: inputLayer.operator.units.get('value'),
+        this.projectService.addLayer(
+            new RasterLayer({
+                name,
+                operator: new Operator({
+                    attributes: inputLayer.operator.attributes,
+                    dataTypes: inputLayer.operator.dataTypes,
+                    operatorType: new ExpressionType({
+                        datatype: inputLayer.operator.dataTypes.get('value'),
+                        expression: 'B != 0 ? A : out_info->no_data',
+                        unit: inputLayer.operator.units.get('value'),
+                    }),
+                    projection: inputLayer.operator.projection,
+                    rasterSources: [inputLayer.operator, maskLayer.operator],
+                    resultType: inputLayer.operator.resultType,
+                    units: inputLayer.operator.units,
                 }),
-                projection: inputLayer.operator.projection,
-                rasterSources: [
-                    inputLayer.operator,
-                    maskLayer.operator,
-                ],
-                resultType: inputLayer.operator.resultType,
-                units: inputLayer.operator.units
+                symbology: inputLayer.symbology,
             }),
-            symbology: inputLayer.symbology,
-        }));
+        );
     }
 }

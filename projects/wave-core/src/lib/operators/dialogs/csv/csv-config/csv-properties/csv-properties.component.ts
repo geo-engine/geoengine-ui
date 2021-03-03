@@ -2,8 +2,15 @@ import {Observable, BehaviorSubject, Subscription, ReplaySubject} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {
-    Component, ChangeDetectionStrategy, OnInit, AfterViewInit, Input, OnDestroy, ChangeDetectorRef, ViewChild,
-    ElementRef
+    Component,
+    ChangeDetectionStrategy,
+    OnInit,
+    AfterViewInit,
+    Input,
+    OnDestroy,
+    ChangeDetectorRef,
+    ViewChild,
+    ElementRef,
 } from '@angular/core';
 import {FormGroup, Validators, FormControl, ValidatorFn, AbstractControl} from '@angular/forms';
 import {IntervalFormat} from '../../interval.enum';
@@ -52,16 +59,22 @@ export const INTERVAL_TYPE_SELECT_ID = 'csv_interval_select',
     LAYER_NAME_INPUT_ID = 'csv_layer_name_input',
     IS_TIME_TOGGLE_ID = 'csv_is_time_toggle';
 
-export enum FormStatus { DataProperties, SpatialProperties, TemporalProperties, TypingProperties, LayerProperties, Loading }
+export enum FormStatus {
+    DataProperties,
+    SpatialProperties,
+    TemporalProperties,
+    TypingProperties,
+    LayerProperties,
+    Loading,
+}
 
 @Component({
     selector: 'wave-csv-properties',
     templateUrl: './csv-properties-template.component.html',
     styleUrls: ['./csv-properties.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy {
-
     Projections = Projections;
     FormStatus = FormStatus;
     IntervalFormat = IntervalFormat;
@@ -71,14 +84,14 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
 
     isSpatialVisited = false;
 
-    delimiters: {def: string, value: string}[] = [
+    delimiters: {def: string; value: string}[] = [
         {def: 'TAB', value: '\t'},
         {def: 'COMMA', value: ','},
-        {def: 'SEMICOLON', value: ';'}
+        {def: 'SEMICOLON', value: ';'},
     ];
 
     // http://man7.org/linux/man-pages/man3/strptime.3.html
-    timeFormats: Array<{display: string, value: string}> = [
+    timeFormats: Array<{display: string; value: string}> = [
         {display: 'yyyy-MM-ddTHH:mm:ssZ', value: '%Y-%m-%dT%H:%M:%SZ'},
         {display: 'yyyy-MM-ddTHH:mmZ', value: '%Y-%m-%dT%H:%MZ'},
         {display: 'dd-MM-yyyy HH:mm:ss', value: '%d-%m-%Y %H:%M:%S'},
@@ -88,7 +101,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
         {display: 'dd.MM.yyyy', value: '%d.%m.%Y'},
         {display: 'yyyy-MM-dd', value: '%Y-%m-%d'},
     ];
-    durationFormats: Array<{display: string, value: string}> = [
+    durationFormats: Array<{display: string; value: string}> = [
         // {display: 'days', value: 'd'},
         // {display: 'hours', value: 'h'},
         {display: 'seconds', value: 'seconds'},
@@ -100,7 +113,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
         {display: '[Start, Start+Constant]', value: IntervalFormat.StartConst, requiredColumns: 1},
     ];
     decimalSeparators: string[] = [',', '.'];
-    textQualifiers: string[] = ['"', '\''];
+    textQualifiers: string[] = ['"', "'"];
     coordinateFormats: string[] = ['Degrees Minutes Seconds', 'Degrees Decimal Minutes', 'Decimal Degrees'];
     vectorTypes = ResultTypes.VECTOR_TYPES;
 
@@ -145,27 +158,30 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
     storageName$ = new ReplaySubject<string>(1);
     reservedNames$ = new BehaviorSubject<Array<string>>([]);
 
-    @Input() data: {file: File, content: string, progress: number, configured: boolean, isNumberArray: boolean[]};
-    @ViewChild('csv_form_status_stepper', { static: true }) public stepper: MatStepper;
+    @Input() data: {file: File; content: string; progress: number; configured: boolean; isNumberArray: boolean[]};
+    @ViewChild('csv_form_status_stepper', {static: true}) public stepper: MatStepper;
 
     actualPage$: BehaviorSubject<FormGroup> = new BehaviorSubject<FormGroup>(null);
 
     private subscriptions: Array<Subscription> = [];
     private header: {value: string}[] = [];
 
-    constructor(private userService: UserService,
-                private _changeDetectorRef: ChangeDetectorRef,
-                public propertiesService: CsvPropertiesService) {
-        setTimeout( () => this._changeDetectorRef.markForCheck(), 10);
-        this.isDataProperties$ = this.formStatus$.pipe(map(status => status === this.FormStatus.DataProperties));
-        this.isSpatialProperties$ = this.formStatus$.pipe(map(status => status === this.FormStatus.SpatialProperties));
-        this.isTemporalProperties$ = this.formStatus$.pipe(map(status => status === this.FormStatus.TemporalProperties));
-        this.isTypingProperties$ = this.formStatus$.pipe(map(status => status === this.FormStatus.TypingProperties));
-        this.isLayerProperties$ = this.formStatus$.pipe(map(status => status === this.FormStatus.LayerProperties));
+    constructor(
+        private userService: UserService,
+        private _changeDetectorRef: ChangeDetectorRef,
+        public propertiesService: CsvPropertiesService,
+    ) {
+        setTimeout(() => this._changeDetectorRef.markForCheck(), 10);
+        this.isDataProperties$ = this.formStatus$.pipe(map((status) => status === this.FormStatus.DataProperties));
+        this.isSpatialProperties$ = this.formStatus$.pipe(map((status) => status === this.FormStatus.SpatialProperties));
+        this.isTemporalProperties$ = this.formStatus$.pipe(map((status) => status === this.FormStatus.TemporalProperties));
+        this.isTypingProperties$ = this.formStatus$.pipe(map((status) => status === this.FormStatus.TypingProperties));
+        this.isLayerProperties$ = this.formStatus$.pipe(map((status) => status === this.FormStatus.LayerProperties));
 
-        this.userService.getFeatureDBList().pipe(
-            map(entries => entries.map(entry => entry.name)))
-            .subscribe(names => this.reservedNames$.next(names));
+        this.userService
+            .getFeatureDBList()
+            .pipe(map((entries) => entries.map((entry) => entry.name)))
+            .subscribe((names) => this.reservedNames$.next(names));
 
         this.layerProperties = new FormGroup({
             layerName: new FormControl('', [
@@ -184,7 +200,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
         this.storageName$.next(this.data.file.name);
         this.layerProperties.patchValue({layerName: this.data.file.name});
         this.subscriptions.push(
-            this.formStatus$.subscribe(status => {
+            this.formStatus$.subscribe((status) => {
                 switch (status) {
                     case this.FormStatus.DataProperties:
                         this.dialogTitle = 'CSV Settings';
@@ -214,7 +230,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.update(10);
                 setTimeout(() => this.update(10), 10);
             }),
-            this.propertiesService.header$.subscribe(h => {
+            this.propertiesService.header$.subscribe((h) => {
                 this.header = h;
 
                 this.disabledInvalidOptions();
@@ -226,8 +242,11 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                 }
                 if (this.isTime()) {
                     arr.push(this.temporalProperties.controls['startColumn'].value);
-                    if ([this.IntervalFormat.StartEnd, this.IntervalFormat.StartDur]
-                        .indexOf(this.temporalProperties.controls['endColumn'].value) >= 0) {
+                    if (
+                        [this.IntervalFormat.StartEnd, this.IntervalFormat.StartDur].indexOf(
+                            this.temporalProperties.controls['endColumn'].value,
+                        ) >= 0
+                    ) {
                         arr.push(this.temporalProperties.controls['endColumn'].value);
                     }
                 }
@@ -241,13 +260,13 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                     }
                 }
             }),
-            this.dataProperties.valueChanges.subscribe(data => {
+            this.dataProperties.valueChanges.subscribe((data) => {
                 this.propertiesService.changeDataProperties(this.getDataPropertiesDict());
             }),
-            this.spatialProperties.valueChanges.subscribe(spatial => {
+            this.spatialProperties.valueChanges.subscribe((spatial) => {
                 this.propertiesService.changeSpatialProperties(this.getSpatialPropertiesDict());
             }),
-            this.spatialProperties.controls['isWkt'].valueChanges.subscribe(wkt => {
+            this.spatialProperties.controls['isWkt'].valueChanges.subscribe((wkt) => {
                 if (wkt) {
                     this.spatialProperties.controls['yColumn'].disable();
                     this.spatialProperties.controls['wktResultType'].enable();
@@ -257,7 +276,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                     this.fetchYColumnAndCorrectTemporal();
                 }
             }),
-            this.spatialProperties.controls['xColumn'].valueChanges.subscribe(x => {
+            this.spatialProperties.controls['xColumn'].valueChanges.subscribe((x) => {
                 if (!this.isWkt()) {
                     if (x === this.spatialProperties.controls['yColumn'].value) {
                         if (x === this.header.length - 1) {
@@ -274,7 +293,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                     this.propertiesService.xyColumn$.next({x: x});
                 }
             }),
-            this.spatialProperties.controls['yColumn'].valueChanges.subscribe(y => {
+            this.spatialProperties.controls['yColumn'].valueChanges.subscribe((y) => {
                 if (y === this.spatialProperties.controls['xColumn'].value) {
                     if (y === this.header.length - 1) {
                         this.spatialProperties.controls['xColumn'].setValue(this.spatialProperties.controls['xColumn'].value - 1);
@@ -289,10 +308,10 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                     this.propertiesService.xyColumn$.next({x: this.spatialProperties.controls['xColumn'].value});
                 }
             }),
-            this.temporalProperties.valueChanges.subscribe(temporal => {
+            this.temporalProperties.valueChanges.subscribe((temporal) => {
                 this.propertiesService.changeTemporalProperties(this.getTemporalPropertiesDict());
             }),
-            this.temporalProperties.controls['startColumn'].valueChanges.subscribe(start => {
+            this.temporalProperties.controls['startColumn'].valueChanges.subscribe((start) => {
                 if (start === this.temporalProperties.controls['endColumn'].value) {
                     if (start === this.header.length - 1) {
                         this.temporalProperties.controls['endColumn'].setValue(this.temporalProperties.controls['endColumn'].value - 1);
@@ -303,11 +322,11 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                 if (this.formStatus$.getValue() === this.FormStatus.TemporalProperties) {
                     this.propertiesService.xyColumn$.next({
                         x: start,
-                        y: this.temporalProperties.controls['endColumn'].value
+                        y: this.temporalProperties.controls['endColumn'].value,
                     });
                 }
             }),
-            this.temporalProperties.controls['endColumn'].valueChanges.subscribe(end => {
+            this.temporalProperties.controls['endColumn'].valueChanges.subscribe((end) => {
                 if (end === this.temporalProperties.controls['startColumn'].value) {
                     if (end === this.header.length - 1) {
                         this.temporalProperties.controls['startColumn'].setValue(this.temporalProperties.controls['startColumn'].value - 1);
@@ -318,11 +337,11 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                 if (this.formStatus$.getValue() === this.FormStatus.TemporalProperties) {
                     this.propertiesService.xyColumn$.next({
                         x: this.temporalProperties.controls['startColumn'].value,
-                        y: end
+                        y: end,
                     });
                 }
             }),
-            this.temporalProperties.controls['isTime'].valueChanges.subscribe(value => {
+            this.temporalProperties.controls['isTime'].valueChanges.subscribe((value) => {
                 if (value === false) {
                     this.temporalProperties.controls['startColumn'].disable();
                     this.temporalProperties.controls['startFormat'].disable();
@@ -341,11 +360,13 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                     this.temporalProperties.controls['intervalType'].enable();
                 }
                 if (this.formStatus$.getValue() === this.FormStatus.TemporalProperties) {
-                    this.propertiesService.xyColumn$.next({x: this.temporalProperties.controls['startColumn'].value,
-                        y: this.temporalProperties.controls['endColumn'].value});
+                    this.propertiesService.xyColumn$.next({
+                        x: this.temporalProperties.controls['startColumn'].value,
+                        y: this.temporalProperties.controls['endColumn'].value,
+                    });
                 }
             }),
-            this.temporalProperties.controls['intervalType'].valueChanges.subscribe(value => {
+            this.temporalProperties.controls['intervalType'].valueChanges.subscribe((value) => {
                 if ([IntervalFormat.StartInf].indexOf(value) >= 0 || !this.isTime()) {
                     this.temporalProperties.controls['endFormat'].disable();
                     this.temporalProperties.controls['endColumn'].disable();
@@ -372,19 +393,20 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
     ngAfterViewInit() {
         this.dataProperties.updateValueAndValidity({
             onlySelf: false,
-            emitEvent: true
+            emitEvent: true,
         });
     }
 
     ngOnDestroy() {
-        this.subscriptions.forEach(sub => sub.unsubscribe());
+        this.subscriptions.forEach((sub) => sub.unsubscribe());
     }
 
     next(event) {
         let group: FormGroup;
         let status: FormStatus;
         switch (event.selectedIndex) {
-            case 0: group = this.dataProperties;
+            case 0:
+                group = this.dataProperties;
                 status = this.FormStatus.DataProperties;
                 break;
             case 1:
@@ -398,13 +420,16 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
                 group = this.spatialProperties;
                 status = this.FormStatus.SpatialProperties;
                 break;
-            case 2: group = this.temporalProperties;
+            case 2:
+                group = this.temporalProperties;
                 status = this.FormStatus.TemporalProperties;
                 break;
-            case 3: group = this.typingProperties;
+            case 3:
+                group = this.typingProperties;
                 status = this.FormStatus.TypingProperties;
                 break;
-            case 4: group = this.layerProperties;
+            case 4:
+                group = this.layerProperties;
                 status = this.FormStatus.LayerProperties;
                 group.controls['layerName'].updateValueAndValidity();
                 break;
@@ -413,12 +438,16 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
         this.actualPage$.next(group);
         this.formStatus$.next(status);
         if (status === this.FormStatus.TemporalProperties) {
-            this.propertiesService.xyColumn$.next({x: this.temporalProperties.controls['startColumn'].value,
-                y: this.temporalProperties.controls['endColumn'].value});
+            this.propertiesService.xyColumn$.next({
+                x: this.temporalProperties.controls['startColumn'].value,
+                y: this.temporalProperties.controls['endColumn'].value,
+            });
         }
         if (status === this.FormStatus.SpatialProperties) {
-            this.propertiesService.xyColumn$.next({x: this.spatialProperties.controls['xColumn'].value,
-                y: this.spatialProperties.controls['yColumn'].value});
+            this.propertiesService.xyColumn$.next({
+                x: this.spatialProperties.controls['xColumn'].value,
+                y: this.spatialProperties.controls['yColumn'].value,
+            });
         }
         this.update(100);
     }
@@ -447,25 +476,27 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
             } else if (this.temporalProperties.controls['startColumn'].value === this.header.length - 1) {
                 direction = -1;
             }
-            this.temporalProperties.controls['startColumn'].setValue(
-                this.temporalProperties.controls['startColumn'].value + direction, {emitEvent: false}
-            );
+            this.temporalProperties.controls['startColumn'].setValue(this.temporalProperties.controls['startColumn'].value + direction, {
+                emitEvent: false,
+            });
         }
         this.temporalProperties.updateValueAndValidity();
         if (!this.temporalProperties.controls['endColumn'].disabled) {
             direction = 1;
-            arr = [this.spatialProperties.controls['xColumn'].value,
+            arr = [
+                this.spatialProperties.controls['xColumn'].value,
                 this.spatialProperties.controls['yColumn'].value,
-                this.temporalProperties.controls['startColumn'].value];
+                this.temporalProperties.controls['startColumn'].value,
+            ];
             while (arr.indexOf(this.temporalProperties.controls['endColumn'].value) >= 0) {
                 if (this.temporalProperties.controls['endColumn'].value === 0) {
                     direction = 1;
                 } else if (this.temporalProperties.controls['endColumn'].value === this.header.length - 1) {
                     direction = -1;
                 }
-                this.temporalProperties.controls['endColumn'].setValue(
-                    this.temporalProperties.controls['endColumn'].value + direction, {emitEvent: false}
-                );
+                this.temporalProperties.controls['endColumn'].setValue(this.temporalProperties.controls['endColumn'].value + direction, {
+                    emitEvent: false,
+                });
             }
         }
         this.temporalProperties.updateValueAndValidity();
@@ -477,8 +508,7 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
             this.temporalProperties.controls['isTime'].setValue(false);
             this.temporalProperties.controls['isTime'].disable();
         } else if (this.header.length <= requiredColumns + 1) {
-            if ([IntervalFormat.StartEnd, IntervalFormat.StartDur]
-                .indexOf(this.temporalProperties.controls['intervalType'].value) >= 0) {
+            if ([IntervalFormat.StartEnd, IntervalFormat.StartDur].indexOf(this.temporalProperties.controls['intervalType'].value) >= 0) {
                 this.temporalProperties.controls['intervalType'].setValue(IntervalFormat.StartInf);
             }
             this.temporalProperties.controls['isTime'].enable();
@@ -496,8 +526,10 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
     fetchYColumnAndCorrectTemporal() {
         this.updateAdmissibilityOfTemporalSpecifications();
         let x = this.spatialProperties.controls['xColumn'].value;
-        if (this.spatialProperties.controls['yColumn'].value < 0 ||
-            this.spatialProperties.controls['yColumn'].value >= this.header.length) {
+        if (
+            this.spatialProperties.controls['yColumn'].value < 0 ||
+            this.spatialProperties.controls['yColumn'].value >= this.header.length
+        ) {
             for (let i = 0; i < this.header.length; i++) {
                 if (i !== this.spatialProperties.controls['xColumn'].value) {
                     this.spatialProperties.controls['yColumn'].setValue(i);
@@ -508,8 +540,10 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
         this.spatialProperties.controls['yColumn'].enable();
         this.spatialProperties.controls['xColumn'].setValue(x);
         this.spatialProperties.controls['wktResultType'].disable();
-        this.propertiesService.xyColumn$.next({x: this.spatialProperties.controls['xColumn'].value,
-            y: this.spatialProperties.controls['yColumn'].value});
+        this.propertiesService.xyColumn$.next({
+            x: this.spatialProperties.controls['xColumn'].value,
+            y: this.spatialProperties.controls['yColumn'].value,
+        });
     }
 
     noAvailableColumnsForTimeSpecification(isWkt: boolean, requiredColumns: number): boolean {
@@ -577,16 +611,19 @@ export class CsvPropertiesComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     get isValid(): boolean {
-        return this.dataProperties.valid &&
+        return (
+            this.dataProperties.valid &&
             this.spatialProperties.valid &&
             this.temporalProperties.valid &&
             this.typingProperties.valid &&
-            this.layerProperties.valid;
+            this.layerProperties.valid
+        );
     }
 }
 export function layerNameNoDuplicateValidator(reservedNames: BehaviorSubject<Array<string>>): ValidatorFn {
-    return (control: AbstractControl): { [key: string]: any } => {
-        return reservedNames.getValue().indexOf(control.value) < 0 ? null :
-            {'layerNameNoDuplicate': {value: 'Layer name already in use ' + control.value}};
+    return (control: AbstractControl): {[key: string]: any} => {
+        return reservedNames.getValue().indexOf(control.value) < 0
+            ? null
+            : {layerNameNoDuplicate: {value: 'Layer name already in use ' + control.value}};
     };
 }

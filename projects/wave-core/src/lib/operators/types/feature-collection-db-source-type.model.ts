@@ -23,9 +23,15 @@ export class FeatureCollectionDBSourceType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(FeatureCollectionDBSourceType._TYPE);
     private static _NAME = 'Feature Collection DB Source';
 
-    static get TYPE(): string { return FeatureCollectionDBSourceType._TYPE; }
-    static get ICON_URL(): string { return FeatureCollectionDBSourceType._ICON_URL; }
-    static get NAME(): string { return FeatureCollectionDBSourceType._NAME; }
+    static get TYPE(): string {
+        return FeatureCollectionDBSourceType._TYPE;
+    }
+    static get ICON_URL(): string {
+        return FeatureCollectionDBSourceType._ICON_URL;
+    }
+    static get NAME(): string {
+        return FeatureCollectionDBSourceType._NAME;
+    }
 
     private owner: string;
     private data_set_name: string;
@@ -41,7 +47,6 @@ export class FeatureCollectionDBSourceType extends OperatorType {
         super();
         this.owner = config.owner;
         this.data_set_name = config.data_set_name;
-
     }
 
     getMappingName(): string {

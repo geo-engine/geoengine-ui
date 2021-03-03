@@ -12,17 +12,14 @@ import {WaveValidators} from '../../../util/form.validators';
     selector: 'wave-scatter-plot-operator',
     templateUrl: './scatter-plot-operator.component.html',
     styleUrls: ['./scatter-plot-operator.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScatterPlotComponent implements OnInit, AfterViewInit, OnDestroy {
-
     form: FormGroup;
     ResultTypes = ResultTypes;
     DataTypes = DataTypes;
 
-    constructor(private formBuilder: FormBuilder,
-                private projectService: ProjectService) {
-    }
+    constructor(private formBuilder: FormBuilder, private projectService: ProjectService) {}
 
     ngOnInit() {
         this.form = this.formBuilder.group({
@@ -57,14 +54,13 @@ export class ScatterPlotComponent implements OnInit, AfterViewInit, OnDestroy {
         this.projectService.addPlot(plot);
     }
 
-    ngOnDestroy() {
-    }
+    ngOnDestroy() {}
 
     ngAfterViewInit() {
         setTimeout(() => {
             this.form.updateValueAndValidity({
                 onlySelf: false,
-                emitEvent: true
+                emitEvent: true,
             });
             this.form.controls['vLayer'].updateValueAndValidity();
         });

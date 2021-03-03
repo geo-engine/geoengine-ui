@@ -1,6 +1,13 @@
 import {
-    Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChange, ViewChild, AfterViewInit,
-    ElementRef, OnDestroy,
+    Component,
+    Input,
+    ChangeDetectionStrategy,
+    OnChanges,
+    SimpleChange,
+    ViewChild,
+    AfterViewInit,
+    ElementRef,
+    OnDestroy,
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 
@@ -18,25 +25,23 @@ const LANGUAGES = ['r'];
  */
 @Component({
     selector: 'wave-code-editor',
-    template: `
-    <textarea #editor></textarea>
-    `,
-    styles: [`
-    :host {
-        display: block;
-    }
-    div {
-        height: 100%;
-        width: 100%;
-    }
-    `],
-    providers: [ {provide: NG_VALUE_ACCESSOR, useExisting: CodeEditorComponent, multi: true, },
+    template: ` <textarea #editor></textarea> `,
+    styles: [
+        `
+            :host {
+                display: block;
+            }
+            div {
+                height: 100%;
+                width: 100%;
+            }
+        `,
     ],
+    providers: [{provide: NG_VALUE_ACCESSOR, useExisting: CodeEditorComponent, multi: true}],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CodeEditorComponent
-    implements ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy {
-    @ViewChild('editor', { static: true }) editorRef: ElementRef;
+export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy {
+    @ViewChild('editor', {static: true}) editorRef: ElementRef;
 
     @Input() language: string;
 
@@ -55,7 +60,7 @@ export class CodeEditorComponent
                         this.editor.setOption('mode', this.language);
                         break;
                     default:
-                        // do nothing
+                    // do nothing
                 }
             }
         }
@@ -82,7 +87,7 @@ export class CodeEditorComponent
         //     }
         // });
         this.editor.setValue(this.code$.value);
-        this.editor.scrollIntoView({ line: 0, ch: 0 });
+        this.editor.scrollIntoView({line: 0, ch: 0});
 
         // add value observer
         CodeMirror.on(this.editor, 'change', () => {
@@ -128,7 +133,7 @@ export class CodeEditorComponent
     writeValue(value: string): void {
         if (this.editor) {
             this.editor.setValue(value);
-            this.editor.scrollIntoView({ line: 0, ch: 0 });
+            this.editor.scrollIntoView({line: 0, ch: 0});
         } else {
             this.code$.next(value);
         }
@@ -137,7 +142,7 @@ export class CodeEditorComponent
     /** Implemented as part of ControlValueAccessor. */
     registerOnChange(fn: () => {}) {
         if (this.changeSubscription) {
-          this.changeSubscription.unsubscribe();
+            this.changeSubscription.unsubscribe();
         }
         this.changeSubscription = this.code$.subscribe(fn);
     }

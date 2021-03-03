@@ -58,10 +58,10 @@ export class Color implements IRgba, RgbaStruct {
 
     clone(): Color {
         return new Color({
-                r: this.r,
-                g: this.g,
-                b: this.b,
-                a: this.a,
+            r: this.r,
+            g: this.g,
+            b: this.b,
+            a: this.a,
         });
     }
 
@@ -80,7 +80,7 @@ export class Color implements IRgba, RgbaStruct {
             throw new Error('Invalid RGB(A) tuple size!');
         }
 
-        const alpha = (rgbaTuple.length < 4) ? 1.0 : rgbaTuple[3];
+        const alpha = rgbaTuple.length < 4 ? 1.0 : rgbaTuple[3];
         return {r: rgbaTuple[0], g: rgbaTuple[1], b: rgbaTuple[2], a: alpha};
     }
 
@@ -91,7 +91,8 @@ export class Color implements IRgba, RgbaStruct {
      * @returns {Color}
      */
     static fromRgbaLike(rgba: RgbaLike, clone: boolean = true): Color {
-        if (!rgba) { // return some default on empty deserialization
+        if (!rgba) {
+            // return some default on empty deserialization
             return BLACK;
         }
 
@@ -111,7 +112,7 @@ export class Color implements IRgba, RgbaStruct {
         }
 
         if ((<RgbaStruct>rgba).a || (<RgbaStruct>rgba).a === 0) {
-            return new Color((<RgbaStruct>rgba));
+            return new Color(<RgbaStruct>rgba);
         }
 
         if ((<RgbStruct>rgba).r) {
@@ -123,7 +124,7 @@ export class Color implements IRgba, RgbaStruct {
                 a: 1.0,
             });
         }
-/*
+        /*
         if (isString(rgba)) {
             return new Color(stringToRgbaStruct(rgba as string))
         }
@@ -155,8 +156,8 @@ export class Color implements IRgba, RgbaStruct {
             r: ra.r * (1 - fraction) + rb.r * fraction,
             g: ra.g * (1 - fraction) + rb.g * fraction,
             b: ra.b * (1 - fraction) + rb.b * fraction,
-            a: ra.a * (1 - fraction) + rb.a * fraction
-        }
+            a: ra.a * (1 - fraction) + rb.a * fraction,
+        };
         return Color.fromRgbaLike(clr, false);
     }
 
@@ -164,11 +165,8 @@ export class Color implements IRgba, RgbaStruct {
         const ra = Color.fromRgbaLike(a, false).rgbTuple();
         const rb = Color.fromRgbaLike(b, false).rgbTuple();
 
-        return ra.map(
-            (baseColor, i) => Math.pow(baseColor - rb[i], 2)
-        ).reduce((acc, value) => acc + value);
+        return ra.map((baseColor, i) => Math.pow(baseColor - rb[i], 2)).reduce((acc, value) => acc + value);
     }
-
 }
 
 export const BLACK = Color.fromRgbaLike([0, 0, 0, 1]);
@@ -186,16 +184,16 @@ export function stringToRgbaStruct(rgbaCssString: string): RgbaStruct {
     }
 
     let rgba =
-        rgbaCssString.match(/^rgba\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+.*\d*)\s*\)$/i)
-        || rgbaCssString.match(/^rgba\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i)
-        || rgbaCssString.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
+        rgbaCssString.match(/^rgba\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+.*\d*)\s*\)$/i) ||
+        rgbaCssString.match(/^rgba\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i) ||
+        rgbaCssString.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
 
     if (rgba) {
         return {
             r: parseInt(rgba[1], 10),
             g: parseInt(rgba[2], 10),
             b: parseInt(rgba[3], 10),
-            a: rgba[4] === undefined ? 1 : parseFloat(rgba[4])
+            a: rgba[4] === undefined ? 1 : parseFloat(rgba[4]),
         };
     }
 

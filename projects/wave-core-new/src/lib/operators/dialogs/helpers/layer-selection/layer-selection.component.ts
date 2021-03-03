@@ -14,12 +14,9 @@ import {first} from 'rxjs/operators';
     templateUrl: './layer-selection.component.html',
     styleUrls: ['./layer-selection.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [
-        {provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => LayerSelectionComponent), multi: true},
-    ],
+    providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => LayerSelectionComponent), multi: true}],
 })
 export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlValueAccessor {
-
     /**
      * An array of possible layers.
      */
@@ -45,9 +42,9 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
 
     constructor(private readonly projectService: ProjectService) {
         this.subscriptions.push(
-            this.filteredLayers.subscribe(filteredLayers => {
+            this.filteredLayers.subscribe((filteredLayers) => {
                 if (filteredLayers.length > 0) {
-                    this.selectedLayer.pipe(first()).subscribe(selectedLayer => {
+                    this.selectedLayer.pipe(first()).subscribe((selectedLayer) => {
                         if (!selectedLayer) {
                             this.selectedLayer.next(filteredLayers[0]);
                             return;
@@ -63,15 +60,15 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
                 } else {
                     this.selectedLayer.next(undefined);
                 }
-            })
+            }),
         );
 
         this.subscriptions.push(
-            this.selectedLayer.subscribe(selectedLayer => {
+            this.selectedLayer.subscribe((selectedLayer) => {
                 if (this.onChange) {
                     this.onChange(selectedLayer);
                 }
-            })
+            }),
         );
     }
 
@@ -84,26 +81,26 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
     ngOnChanges(changes: SimpleChanges) {
         if (changes.layers || changes.types) {
             if (this.layers instanceof Observable) {
-                this.layers.pipe(first()).subscribe(layers => {
+                this.layers.pipe(first()).subscribe((layers) => {
                     this.filteredLayers.next(
                         layers.filter((layer: Layer) => {
-                            return this.types.map(t => t.getCode()).indexOf(layer.layerType) >= 0;
-                        })
+                            return this.types.map((t) => t.getCode()).indexOf(layer.layerType) >= 0;
+                        }),
                     );
                 });
             } else if (this.layers instanceof Array) {
                 this.filteredLayers.next(
                     this.layers.filter((layer: Layer) => {
-                        return this.types.map(t => t.getCode()).indexOf(layer.layerType) >= 0;
-                    })
+                        return this.types.map((t) => t.getCode()).indexOf(layer.layerType) >= 0;
+                    }),
                 );
             }
 
             if (this.title === undefined) {
                 // set title out of types
                 this.title = this.types
-                    .map(type => type.toString())
-                    .map(name => name.endsWith('s') ? name.substr(0, name.length - 1) : name)
+                    .map((type) => type.toString())
+                    .map((name) => (name.endsWith('s') ? name.substr(0, name.length - 1) : name))
                     .join(', ');
             }
         }

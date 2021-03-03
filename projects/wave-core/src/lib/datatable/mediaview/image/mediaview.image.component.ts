@@ -5,7 +5,7 @@ import {MediaviewImageDialogComponent} from '../image-dialog/mediaview.image-dia
 @Component({
     selector: 'wave-mediaview-image',
     templateUrl: './mediaview.image.component.html',
-    styleUrls: ['./mediaview.image.component.scss']
+    styleUrls: ['./mediaview.image.component.scss'],
 })
 
 /**
@@ -15,7 +15,6 @@ import {MediaviewImageDialogComponent} from '../image-dialog/mediaview.image-dia
  * The component receives an array of urls to images (imageURLS) and the id of the image to show first (currentImage) as inputs.
  */
 export class MediaviewImageComponent {
-
     /**
      * Input: An array of image-urls to display in the dialog
      */
@@ -37,11 +36,7 @@ export class MediaviewImageComponent {
      * @param dialog reference to MDDialog
      * @param viewContainerRef reference to ViewContainer
      */
-    constructor(
-        private dialog: MatDialog,
-        private viewContainerRef: ViewContainerRef
-    ) {
-    }
+    constructor(private dialog: MatDialog, private viewContainerRef: ViewContainerRef) {}
 
     /**
      * Shows the next image in the list of image-urls
@@ -79,6 +74,6 @@ export class MediaviewImageComponent {
         this.dialogRef.componentInstance.imageURLs = this.imageURLs;
         this.dialogRef.componentInstance.currentImage = this.currentImage;
 
-        this.dialogRef.afterClosed().subscribe(() => this.dialogRef = null);
+        this.dialogRef.afterClosed().subscribe(() => (this.dialogRef = null));
     }
 }

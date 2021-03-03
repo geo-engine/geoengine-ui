@@ -4,15 +4,15 @@ import {Operator, OperatorDict} from '../operators/operator.model';
  * Schema for plot data.
  */
 export interface PlotData {
-   type: string;
-   data: Array<number> | string;
-   lines?: Array<{name: string, pos: number}>;
-   metadata?: {
-       numberOfBuckets?: number,
-       min?: number,
-       max?: number,
-       nodata?: number,
-   };
+    type: string;
+    data: Array<number> | string;
+    lines?: Array<{name: string; pos: number}>;
+    metadata?: {
+        numberOfBuckets?: number;
+        min?: number;
+        max?: number;
+        nodata?: number;
+    };
 }
 
 /**
@@ -41,10 +41,7 @@ export class Plot {
     /**
      * De-Serialization
      */
-    static fromDict(
-        dict: PlotDict,
-        operatorMap = new Map<number, Operator>()
-    ): Plot {
+    static fromDict(dict: PlotDict, operatorMap = new Map<number, Operator>()): Plot {
         const operator = Operator.fromDict(dict.operator, operatorMap);
         return new Plot({
             name: dict.name,
@@ -80,5 +77,4 @@ export class Plot {
             operator: this.operator.toDict(),
         };
     }
-
 }

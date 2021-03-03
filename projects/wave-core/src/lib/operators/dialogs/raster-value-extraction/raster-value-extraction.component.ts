@@ -5,11 +5,7 @@ import {RandomColorService} from '../../../util/services/random-color.service';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {Subscription} from 'rxjs';
 import {VectorLayer} from '../../../layers/layer.model';
-import {
-    AbstractVectorSymbology,
-    PointSymbology,
-    VectorSymbology
-} from '../../../layers/symbology/symbology.model';
+import {AbstractVectorSymbology, PointSymbology, VectorSymbology} from '../../../layers/symbology/symbology.model';
 import {Operator} from '../../operator.model';
 import {RasterValueExtractionType} from '../../types/raster-value-extraction-type.model';
 import {WaveValidators} from '../../../util/form.validators';
@@ -20,9 +16,9 @@ import {ProjectService} from '../../../project/project.service';
  * Uses `startsWith` semantics.
  */
 function valueNameCollision(vectorLayerControl: FormControl, valueNames: FormArray) {
-    return (control: FormControl): { [key: string]: boolean } => {
+    return (control: FormControl): {[key: string]: boolean} => {
         const errors: {
-            duplicateName?: boolean,
+            duplicateName?: boolean;
         } = {};
 
         const valueName: string = control.value;
@@ -72,10 +68,12 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
 
     private subscriptions: Array<Subscription> = [];
 
-    constructor(private projectService: ProjectService,
-                private randomColorService: RandomColorService,
-                private formBuilder: FormBuilder,
-                private changeDetectorRef: ChangeDetectorRef) {
+    constructor(
+        private projectService: ProjectService,
+        private randomColorService: RandomColorService,
+        private formBuilder: FormBuilder,
+        private changeDetectorRef: ChangeDetectorRef,
+    ) {
         this.form = this.formBuilder.group({
             vectorLayer: [undefined, Validators.required],
             rasterLayers: [undefined, Validators.required],
@@ -85,7 +83,7 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
 
         this.subscriptions.push(
             // update valueNames
-            this.form.controls['rasterLayers'].valueChanges.subscribe(rasters => {
+            this.form.controls['rasterLayers'].valueChanges.subscribe((rasters) => {
                 const valueNames = this.form.controls['valueNames'] as FormArray;
 
                 if (valueNames.length > rasters.length) {
@@ -98,19 +96,20 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
                     // add name fields
                     for (let i = valueNames.length; i < rasters.length; i++) {
                         const control = this.formBuilder.control(
-                            rasters[i].name, Validators.compose([
+                            rasters[i].name,
+                            Validators.compose([
                                 Validators.required,
                                 valueNameCollision(
                                     this.form.controls['vectorLayer'] as FormControl,
                                     this.form.controls['valueNames'] as FormArray,
-                                )
-                            ])
+                                ),
+                            ]),
                         );
                         valueNames.push(control);
                         this.valueNameChanges.push(false);
 
                         this.subscriptions.push(
-                            control.valueChanges.subscribe(valueName => {
+                            control.valueChanges.subscribe((valueName) => {
                                 // const rasterName = this.form.controls['rasterLayers'].value[i].name;
                                 const rasterName = rasters[i].name;
                                 if (valueName !== rasterName) {
@@ -118,14 +117,18 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
                                 }
 
                                 // check validity of other valueName controls
-                                setTimeout(() => valueNames.controls.forEach(myControl => {
-                                    myControl.updateValueAndValidity({
-                                        onlySelf: false,
-                                        emitEvent: false
-                                    });
-                                    this.changeDetectorRef.markForCheck();
-                                }), 0);
-                            })
+                                setTimeout(
+                                    () =>
+                                        valueNames.controls.forEach((myControl) => {
+                                            myControl.updateValueAndValidity({
+                                                onlySelf: false,
+                                                emitEvent: false,
+                                            });
+                                            this.changeDetectorRef.markForCheck();
+                                        }),
+                                    0,
+                                );
+                            }),
                         );
                     }
                 } else {
@@ -137,12 +140,12 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
                         // TODO: change name if other layer is selected
                     }
                 }
-            })
+            }),
         );
     }
 
     ngOnDestroy() {
-        this.subscriptions.forEach(subscription => subscription.unsubscribe());
+        this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
     add(event: any) {
@@ -150,8 +153,8 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
         const projection = vectorOperator.projection;
         const resultType = vectorOperator.resultType;
 
-        const rasterOperators: Array<Operator> = this.form.controls['rasterLayers'].value.map(
-            inputLayer => inputLayer.operator.getProjectedOperator(projection)
+        const rasterOperators: Array<Operator> = this.form.controls['rasterLayers'].value.map((inputLayer) =>
+            inputLayer.operator.getProjectedOperator(projection),
         );
 
         const valueNames: Array<string> = this.form.controls['valueNames'].value;
@@ -175,13 +178,13 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
             case ResultTypes.POINTS:
                 clustered = this.form.controls['vectorLayer'].value.clustered;
 
-                symbology = clustered ?
-                    PointSymbology.createClusterSymbology({
-                        fillRGBA: this.randomColorService.getRandomColorRgba(),
-                    }) :
-                    PointSymbology.createSymbology({
-                        fillRGBA: this.randomColorService.getRandomColorRgba(),
-                    });
+                symbology = clustered
+                    ? PointSymbology.createClusterSymbology({
+                          fillRGBA: this.randomColorService.getRandomColorRgba(),
+                      })
+                    : PointSymbology.createSymbology({
+                          fillRGBA: this.randomColorService.getRandomColorRgba(),
+                      });
 
                 for (let i = 0; i < rasterOperators.length; i++) {
                     units.set(valueNames[i], rasterOperators[i].getUnit('value'));
@@ -218,8 +221,8 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
             }),
             resultType,
             projection,
-            attributes: attributes.asImmutable(),  // immutable!
-            dataTypes: dataTypes.asImmutable(),  // immutable!
+            attributes: attributes.asImmutable(), // immutable!
+            dataTypes: dataTypes.asImmutable(), // immutable!
             units: units.asImmutable(), // immutable!
             pointSources: resultType === ResultTypes.POINTS ? [vectorOperator] : undefined,
             lineSources: resultType === ResultTypes.LINES ? [vectorOperator] : undefined,
@@ -236,5 +239,4 @@ export class RasterValueExtractionOperatorComponent implements OnDestroy {
 
         this.projectService.addLayer(layer);
     }
-
 }

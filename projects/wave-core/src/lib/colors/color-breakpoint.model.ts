@@ -25,7 +25,7 @@ export class ColorBreakpoint implements ColorBreakpointDict {
     clone(): ColorBreakpoint {
         return new ColorBreakpoint({
             value: this.value,
-            rgba: this.rgba.clone()
+            rgba: this.rgba.clone(),
         });
     }
 
@@ -53,7 +53,7 @@ export class ColorBreakpoint implements ColorBreakpointDict {
     toDict(): ColorBreakpointDict {
         return {
             value: this.value,
-            rgba: this.rgba.rgbaTuple()
+            rgba: this.rgba.rgbaTuple(),
         };
     }
 

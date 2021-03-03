@@ -3,18 +3,14 @@ import {OutputFormat} from '../output-format.model';
 /**
  * Base class for WFS Output Formats
  */
-export class WFSOutputFormat extends OutputFormat {
-}
+export class WFSOutputFormat extends OutputFormat {}
 
 /**
  * WFS Output format for export
  */
 class ExportWFSOutputFormat extends WFSOutputFormat {
     constructor(outputFormat: WFSOutputFormat) {
-        super(
-            'application/x-export;' + outputFormat.getFormat(),
-            outputFormat.toString()
-        );
+        super('application/x-export;' + outputFormat.getFormat(), outputFormat.toString());
     }
 }
 
@@ -31,16 +27,15 @@ export class WFSOutputFormatCollection {
     private _TYPES = [this._JSON, this._CSV];
     private _EXPORT_TYPES = [this._JSON_ZIP, this._CSV_ZIP];
 
-    protected constructor() {
-    }
+    protected constructor() {}
 
     get JSON(): WFSOutputFormat {
         return this._JSON;
-    };
+    }
 
     get CSV(): WFSOutputFormat {
         return this._CSV;
-    };
+    }
 
     get JSON_ZIP(): WFSOutputFormat {
         return this._JSON_ZIP;

@@ -1,12 +1,18 @@
-
 import {map} from 'rxjs/operators';
 /**
  * Created by Julian on 09/05/2017.
  */
 import {IntervalFormat} from '../../interval.enum';
 import {
-    Component, ChangeDetectionStrategy, Input, ViewChild, ElementRef, OnInit, AfterViewInit,
-    ChangeDetectorRef, OnDestroy
+    Component,
+    ChangeDetectionStrategy,
+    Input,
+    ViewChild,
+    ElementRef,
+    OnInit,
+    AfterViewInit,
+    ChangeDetectorRef,
+    OnDestroy,
 } from '@angular/core';
 import {DataPropertiesDict, FormStatus} from '../csv-properties/csv-properties.component';
 import * as Papa from 'papaparse';
@@ -26,10 +32,9 @@ export const HEADER_TABLE_ID = 'CSV_TABLE_HEADER_TABLE',
     selector: 'wave-csv-table',
     templateUrl: './csv-table-template.component.html',
     styleUrls: ['./csv-table.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
-
     HEADER_TABLE_ID = HEADER_TABLE_ID;
     HEADER_DIV_ID = HEADER_DIV_ID;
     BODY_TABLE_ID = BODY_TABLE_ID;
@@ -56,8 +61,8 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(TABLE_FRAME_ID, {static: true}) tableFrame: ElementRef;
 
     parsedData: Array<Array<string>>;
-    customHeader: { value: string }[] = [];
-    header: { value: string }[] = [];
+    customHeader: {value: string}[] = [];
+    header: {value: string}[] = [];
     elements: string[][] = [];
     cellSizes: number[] = [];
     dataProperties: DataPropertiesDict;
@@ -76,24 +81,25 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
     private subscriptions: Array<Subscription> = [];
 
     constructor(public _changeDetectorRef: ChangeDetectorRef, public propertiesService: CsvPropertiesService) {
-        this.isDataProperties$ = this.propertiesService.formStatus$.pipe(map(status => status === FormStatus.DataProperties));
-        this.isSpatialProperties$ = this.propertiesService.formStatus$.pipe(map(status => status === FormStatus.SpatialProperties));
-        this.isTemporalProperties$ = this.propertiesService.formStatus$.pipe(map(status => status === FormStatus.TemporalProperties));
-        this.isTypingProperties$ = this.propertiesService.formStatus$.pipe(map(status => status === FormStatus.TypingProperties));
-        this.isLayerProperties$ = this.propertiesService.formStatus$.pipe(map(status => status === FormStatus.LayerProperties));
-        this.xColumn$ = this.propertiesService.xyColumn$.pipe(map(xy => xy.x));
-        this.yColumn$ = this.propertiesService.xyColumn$.pipe(map(xy => xy.y));
+        this.isDataProperties$ = this.propertiesService.formStatus$.pipe(map((status) => status === FormStatus.DataProperties));
+        this.isSpatialProperties$ = this.propertiesService.formStatus$.pipe(map((status) => status === FormStatus.SpatialProperties));
+        this.isTemporalProperties$ = this.propertiesService.formStatus$.pipe(map((status) => status === FormStatus.TemporalProperties));
+        this.isTypingProperties$ = this.propertiesService.formStatus$.pipe(map((status) => status === FormStatus.TypingProperties));
+        this.isLayerProperties$ = this.propertiesService.formStatus$.pipe(map((status) => status === FormStatus.LayerProperties));
+        this.xColumn$ = this.propertiesService.xyColumn$.pipe(map((xy) => xy.x));
+        this.yColumn$ = this.propertiesService.xyColumn$.pipe(map((xy) => xy.y));
 
         setTimeout(() => this._changeDetectorRef.markForCheck(), 0); // FIXME: update to Angular 7 -> changed to lambda, 0
-        this.untypedColumns = new BehaviorSubject(
-            [this.propertiesService.xyColumn$.getValue().x, this.propertiesService.xyColumn$.getValue().y]
-        );
+        this.untypedColumns = new BehaviorSubject([
+            this.propertiesService.xyColumn$.getValue().x,
+            this.propertiesService.xyColumn$.getValue().y,
+        ]);
         this.isWkt = new BehaviorSubject(false);
     }
 
     ngOnInit() {
         this.subscriptions.push(
-            this.propertiesService.dataProperties$.subscribe(data => {
+            this.propertiesService.dataProperties$.subscribe((data) => {
                 if (!!this.dataProperties) {
                     if (this.dataProperties.isHeaderRow !== data.isHeaderRow) {
                         if (data.isHeaderRow === true) {
@@ -123,14 +129,14 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
                     setTimeout(() => this.resize(), 0); // FIXME: update to Angular 7 -> changed to lambda, 0
                 }
             }),
-            this.propertiesService.formStatus$.subscribe(formStatus => {
+            this.propertiesService.formStatus$.subscribe((formStatus) => {
                 if ([formStatus, this.formStatus].indexOf(FormStatus.TypingProperties) >= 0) {
                     this.resize();
                     this.bodyScroll();
                 }
                 this.formStatus = formStatus;
             }),
-            this.propertiesService.spatialProperties$.subscribe(data => {
+            this.propertiesService.spatialProperties$.subscribe((data) => {
                 let untypedColumns = [data.xColumn];
                 if (!data.isWkt) {
                     untypedColumns.push(data.yColumn);
@@ -143,7 +149,7 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.isWkt.next(data.isWkt);
                 this.update(10);
             }),
-            this.propertiesService.temporalProperties$.subscribe(data => {
+            this.propertiesService.temporalProperties$.subscribe((data) => {
                 let untypedColumns = [this.untypedColumns.getValue()[0]];
                 if (!this.isWkt.getValue()) {
                     untypedColumns.push(this.untypedColumns.getValue()[1]);
@@ -171,23 +177,24 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.subscriptions.forEach(sub => sub.unsubscribe());
+        this.subscriptions.forEach((sub) => sub.unsubscribe());
     }
 
     parse() {
         if (!!this.dataProperties) {
-            let textQualifier: string = this.dataProperties.isTextQualifier ?
-                this.dataProperties.textQualifier : null;
-            let prev: number = this.dataProperties.isHeaderRow ?
-                this.dataProperties.headerRow + this.linesToParse + 1 : this.linesToParse;
-            let parsed = Papa.parse(this.data.content as string, {
-                delimiter: this.dataProperties.delimiter,
-                newline: '',
-                quoteChar: textQualifier,
-                header: false,
-                skipEmptyLines: true,
-                preview: prev,
-            } as any);
+            let textQualifier: string = this.dataProperties.isTextQualifier ? this.dataProperties.textQualifier : null;
+            let prev: number = this.dataProperties.isHeaderRow ? this.dataProperties.headerRow + this.linesToParse + 1 : this.linesToParse;
+            let parsed = Papa.parse(
+                this.data.content as string,
+                {
+                    delimiter: this.dataProperties.delimiter,
+                    newline: '',
+                    quoteChar: textQualifier,
+                    header: false,
+                    skipEmptyLines: true,
+                    preview: prev,
+                } as any,
+            );
             this.parsedData = parsed.data;
             // this.csvProperty.dataProperties.controls['delimiter'].setValue(parsed.meta.delimiter, {emitEvent: false});
             if (this.dataProperties.isHeaderRow) {
@@ -195,8 +202,10 @@ export class CsvTableComponent implements OnInit, AfterViewInit, OnDestroy {
                 for (let i = 0; i < this.header.length; i++) {
                     this.header[i] = {value: this.parsedData[this.dataProperties.headerRow][i]};
                 }
-                this.elements = this.parsedData.slice(this.dataProperties.headerRow + 1,
-                    this.dataProperties.headerRow + this.linesToParse + 1);
+                this.elements = this.parsedData.slice(
+                    this.dataProperties.headerRow + 1,
+                    this.dataProperties.headerRow + this.linesToParse + 1,
+                );
             } else {
                 this.elements = this.parsedData;
                 if (this.header.length !== this.elements[0].length) {

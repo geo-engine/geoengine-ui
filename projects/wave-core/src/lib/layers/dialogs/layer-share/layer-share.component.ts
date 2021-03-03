@@ -11,18 +11,16 @@ interface LayerShareComponentConfig {
     selector: 'wave-layer-share-dialog',
     templateUrl: './layer-share.component.html',
     styleUrls: ['./layer-share.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerShareComponent implements OnInit {
-
     layer: Layer<AbstractSymbology>;
     link: string;
 
-    @ViewChild('linkInput', { static: true })
+    @ViewChild('linkInput', {static: true})
     private linkInput: ElementRef;
 
-    constructor(@Inject(MAT_DIALOG_DATA) private config: LayerShareComponentConfig) {
-    }
+    constructor(@Inject(MAT_DIALOG_DATA) private config: LayerShareComponentConfig) {}
 
     ngOnInit() {
         this.layer = this.config.layer;
@@ -42,5 +40,4 @@ export class LayerShareComponent implements OnInit {
 
         this.linkInput.nativeElement.disabled = disabled;
     }
-
 }

@@ -88,5 +88,4 @@ export class HeatmapType extends OperatorType {
     cloneWithModifications(options?: {}): OperatorType {
         return HeatmapType.fromDict(this.toDict()); // TODO: add modifications
     }
-
 }

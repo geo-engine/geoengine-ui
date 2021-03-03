@@ -37,7 +37,7 @@ import {
     OperatorListButtonGroups,
     TimeConfigComponent,
     PlotListComponent,
-    SidenavConfig
+    SidenavConfig,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
@@ -73,26 +73,26 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     private windowHeight$ = new BehaviorSubject<number>(window.innerHeight);
 
-    constructor(@Inject(Config) readonly config: AppConfig,
-                readonly layoutService: LayoutService,
-                readonly projectService: ProjectService,
-                readonly vcRef: ViewContainerRef, // reference used by color picker
-                private userService: UserService,
-                private changeDetectorRef: ChangeDetectorRef,
-                private dialog: MatDialog,
-                private iconRegistry: MatIconRegistry,
-                private randomColorService: RandomColorService,
-                private activatedRoute: ActivatedRoute,
-                private notificationService: NotificationService,
-                private mapService: MapService,
-                private sanitizer: DomSanitizer) {
+    constructor(
+        @Inject(Config) readonly config: AppConfig,
+        readonly layoutService: LayoutService,
+        readonly projectService: ProjectService,
+        readonly vcRef: ViewContainerRef, // reference used by color picker
+        private userService: UserService,
+        private changeDetectorRef: ChangeDetectorRef,
+        private dialog: MatDialog,
+        private iconRegistry: MatIconRegistry,
+        private randomColorService: RandomColorService,
+        private activatedRoute: ActivatedRoute,
+        private notificationService: NotificationService,
+        private mapService: MapService,
+        private sanitizer: DomSanitizer,
+    ) {
         this.registerIcons();
 
         vcRef.length; // tslint:disable-line:no-unused-expression // just get rid of unused warning
 
-        this.layersReverse$ = this.projectService.getLayerStream().pipe(
-            map(layers => layers.slice(0).reverse())
-        );
+        this.layersReverse$ = this.projectService.getLayerStream().pipe(map((layers) => layers.slice(0).reverse()));
 
         this.layerListVisible$ = this.layoutService.getLayerListVisibilityStream();
         this.layerDetailViewVisible$ = this.layoutService.getLayerDetailViewVisibilityStream();
@@ -116,14 +116,12 @@ export class AppComponent implements OnInit, AfterViewInit {
         // TODO: remove if table is back
         this.layoutService.setLayerDetailViewVisibility(false);
 
-        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(this.windowHeight$).pipe(
-            tap(() => this.mapComponent.resize()),
-        );
+        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(this.windowHeight$).pipe(tap(() => this.mapComponent.resize()));
         this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(this.windowHeight$);
     }
 
     ngAfterViewInit() {
-        this.layoutService.getSidenavContentComponentStream().subscribe(sidenavConfig => {
+        this.layoutService.getSidenavContentComponentStream().subscribe((sidenavConfig) => {
             this.rightSidenavContainer.load(sidenavConfig);
             if (sidenavConfig) {
                 this.rightSidenav.open();
@@ -131,7 +129,8 @@ export class AppComponent implements OnInit, AfterViewInit {
                 this.rightSidenav.close();
             }
         });
-        this.projectService.getNewPlotStream()
+        this.projectService
+            .getNewPlotStream()
             .subscribe(() => this.layoutService.setSidenavContentComponent({component: PlotListComponent}));
 
         // set the stored tab index
@@ -199,7 +198,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 description: 'Mock data sets',
                 iconSrc: AddDataComponent.createIconDataUrl('mock'),
                 sidenavConfig: {component: MockLayersComponent, keepParent: true},
-            }
+            },
             // SourceOperatorListComponent.createDrawFeaturesButton(),
             // ...SourceOperatorListComponent.createCustomFeaturesButtons(),
             // {
@@ -265,5 +264,4 @@ export class AppComponent implements OnInit, AfterViewInit {
     idFromLayer(index: number, layer: Layer): number {
         return layer.id;
     }
-
 }

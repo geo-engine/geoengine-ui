@@ -28,7 +28,6 @@ import {filter, map, startWith} from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerListComponent implements OnDestroy {
-
     /**
      * The desired height of the list
      */
@@ -72,27 +71,31 @@ export class LayerListComponent implements OnDestroy {
     /**
      * The component constructor. It injects angular and wave services.
      */
-    constructor(public dialog: MatDialog,
-                public layoutService: LayoutService,
-                public projectService: ProjectService,
-                public layerService: LayerService,
-                public mapService: MapService,
-                public config: Config,
-                public changeDetectorRef: ChangeDetectorRef) {
+    constructor(
+        public dialog: MatDialog,
+        public layoutService: LayoutService,
+        public projectService: ProjectService,
+        public layerService: LayerService,
+        public mapService: MapService,
+        public config: Config,
+        public changeDetectorRef: ChangeDetectorRef,
+    ) {
         this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
 
-        this.subscriptions.push(this.projectService.getLayerStream().subscribe(layerList => {
-            if (layerList !== this.layerList) {
-                this.layerList = layerList;
-            }
-            this.changeDetectorRef.markForCheck();
-        }));
+        this.subscriptions.push(
+            this.projectService.getLayerStream().subscribe((layerList) => {
+                if (layerList !== this.layerList) {
+                    this.layerList = layerList;
+                }
+                this.changeDetectorRef.markForCheck();
+            }),
+        );
 
         this.mapIsGrid$ = this.mapService.isGrid$;
     }
 
     ngOnDestroy() {
-        this.subscriptions.forEach(s => s.unsubscribe());
+        this.subscriptions.forEach((s) => s.unsubscribe());
     }
 
     /**
@@ -117,7 +120,7 @@ export class LayerListComponent implements OnDestroy {
         return this.projectService.getLayerChangesStream(layer).pipe(
             startWith(layer),
             filter((lc) => !!lc.symbology),
-            map(() => layer.symbology)
+            map(() => layer.symbology),
         );
     }
 
@@ -129,8 +132,10 @@ export class LayerListComponent implements OnDestroy {
     }
 
     showChannelParameterSlider(layer: Layer<AbstractSymbology>): boolean {
-        return layer.operator.operatorType.toString() === 'GDAL Source'
-            && !!layer.operator.operatorTypeParameterOptions
-            && layer.operator.operatorTypeParameterOptions.getParameterOption('channelConfig').hasTicks();
+        return (
+            layer.operator.operatorType.toString() === 'GDAL Source' &&
+            !!layer.operator.operatorTypeParameterOptions &&
+            layer.operator.operatorTypeParameterOptions.getParameterOption('channelConfig').hasTicks()
+        );
     }
 }

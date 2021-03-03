@@ -20,10 +20,7 @@ import {AppConfig} from './app-config.service';
 import {MockLayersComponent} from './mock-layers/mock-layers.component';
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        MockLayersComponent,
-    ],
+    declarations: [AppComponent, MockLayersComponent],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,
@@ -49,5 +46,4 @@ import {MockLayersComponent} from './mock-layers/mock-layers.component';
     ],
     bootstrap: [AppComponent],
 })
-export class AppModule {
-}
+export class AppModule {}

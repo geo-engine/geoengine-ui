@@ -50,27 +50,27 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     datasetPortal: ComponentPortal<MockLayersComponent>;
 
-    constructor(@Inject(Config) readonly config: AppConfig,
-                readonly layoutService: LayoutService,
-                readonly projectService: ProjectService,
-                readonly _vcRef: ViewContainerRef, // reference used by color picker
-                private userService: UserService,
-                private changeDetectorRef: ChangeDetectorRef,
-                private dialog: MatDialog,
-                private iconRegistry: MatIconRegistry,
-                private randomColorService: RandomColorService,
-                private activatedRoute: ActivatedRoute,
-                private notificationService: NotificationService,
-                private mapService: MapService,
-                private sanitizer: DomSanitizer) {
+    constructor(
+        @Inject(Config) readonly config: AppConfig,
+        readonly layoutService: LayoutService,
+        readonly projectService: ProjectService,
+        readonly _vcRef: ViewContainerRef, // reference used by color picker
+        private userService: UserService,
+        private changeDetectorRef: ChangeDetectorRef,
+        private dialog: MatDialog,
+        private iconRegistry: MatIconRegistry,
+        private randomColorService: RandomColorService,
+        private activatedRoute: ActivatedRoute,
+        private notificationService: NotificationService,
+        private mapService: MapService,
+        private sanitizer: DomSanitizer,
+    ) {
         this.registerIcons();
 
-        this.layersReverse$ = this.projectService.getLayerStream().pipe(
-            map(layers => layers.slice(0).reverse()),
-        );
+        this.layersReverse$ = this.projectService.getLayerStream().pipe(map((layers) => layers.slice(0).reverse()));
         this.selectedLayer$ = this.layersReverse$.pipe(
-            map(layers => {
-                if ((layers.length === 0) || !(layers[0] instanceof RasterLayer)) {
+            map((layers) => {
+                if (layers.length === 0 || !(layers[0] instanceof RasterLayer)) {
                     return undefined;
                 }
                 return layers[0] as RasterLayer;
@@ -93,8 +93,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.mapService.registerMapComponent(this.mapComponent);
     }
 
-    ngAfterViewInit() {
-    }
+    ngAfterViewInit() {}
 
     @HostListener('window:resize')
     private windowHeight() {

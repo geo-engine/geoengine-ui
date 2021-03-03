@@ -1,5 +1,5 @@
-import { getTestBed, TestBed, ComponentFixture } from '@angular/core/testing';
-import { } from 'jasmine'; // get beforeAll, beforeEach, afterAll, afterEach environments
+import {getTestBed, TestBed, ComponentFixture} from '@angular/core/testing';
+import {} from 'jasmine'; // get beforeAll, beforeEach, afterAll, afterEach environments
 
 /**
  * A function that removes a memory leak caused by CSS. One should always run this in the afterAll environment. When using
@@ -62,7 +62,7 @@ export const configureWaveTesting = (beforeEachFn: () => void) => {
     beforeAll(() => {
         TestBed.resetTestingModule(); // recompile TestBed once.
         TestBed.resetTestingModule = () => TestBed; // Don't recompile until this function is set to default again,
-                                                    // i.e. until afterAll is called.
+        // i.e. until afterAll is called.
     });
 
     beforeEach(() => {
@@ -71,13 +71,13 @@ export const configureWaveTesting = (beforeEachFn: () => void) => {
 
     afterEach(() => {
         testBedApi._activeFixtures.forEach((fixture: ComponentFixture<any>) => fixture.destroy()); // Do the necessary part that is done
-                                                    // in resetTestingModule() manually.
+        // in resetTestingModule() manually.
         testBedApi._instantiated = false;
     });
 
     afterAll(() => {
-        TestBed.resetTestingModule = oldTestBedReset;   // Reset the resetTestingModule function to default
-        TestBed.resetTestingModule();                   // Reset the TestingModule for the next tests.
-        cleanStylesFromDOM();                           // Removes a memory leak caused by css.
+        TestBed.resetTestingModule = oldTestBedReset; // Reset the resetTestingModule function to default
+        TestBed.resetTestingModule(); // Reset the TestingModule for the next tests.
+        cleanStylesFromDOM(); // Removes a memory leak caused by css.
     });
 };

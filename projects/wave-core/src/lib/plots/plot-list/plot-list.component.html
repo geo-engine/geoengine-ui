@@ -1,40 +1,44 @@
 <wave-sidenav-header>Plots</wave-sidenav-header>
 <p *ngIf="(projectService.getPlotStream() | async)?.length == 0" class="no-plots">
     no plots available
-    <br>
+    <br />
     <button mat-button (click)="goToOperatorsTab()">⇢ go to operators tab to create a plot ⇢</button>
 </p>
-<mat-card *ngFor="let plot of (projectService.getPlotStream() | async)">
+<mat-card *ngFor="let plot of projectService.getPlotStream() | async">
     <mat-card-header>
-        <img mat-card-avatar [src]="plot.operator.operatorType.getIconUrl()" [alt]="plot.operator.resultType.toString()">
-        <mat-card-title>{{plot.name}}</mat-card-title>
-        <mat-card-subtitle>{{plot.operator.operatorType.toString()}}</mat-card-subtitle>
+        <img mat-card-avatar [src]="plot.operator.operatorType.getIconUrl()" [alt]="plot.operator.resultType.toString()" />
+        <mat-card-title>{{ plot.name }}</mat-card-title>
+        <mat-card-subtitle>{{ plot.operator.operatorType.toString() }}</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.LOADING">
         <mat-spinner></mat-spinner>
     </mat-card-content>
-    <mat-card-content *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.OK"
-                      [ngSwitch]="(projectService.getPlotDataStream(plot) | async)?.type">
+    <mat-card-content
+        *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.OK"
+        [ngSwitch]="(projectService.getPlotDataStream(plot) | async)?.type"
+    >
         <ng-template ngSwitchCase="text">
-            <pre [style.maxHeight.px]="cardWidth$ | async">{{(projectService.getPlotDataStream(plot) | async)?.data}}</pre>
+            <pre [style.maxHeight.px]="cardWidth$ | async">{{ (projectService.getPlotDataStream(plot) | async)?.data }}</pre>
         </ng-template>
         <ng-template ngSwitchCase="png">
-            <img src="data:image/png;base64,{{(projectService.getPlotDataStream(plot) | async)?.data}}" alt="{{plot.name}}">
+            <img src="data:image/png;base64,{{ (projectService.getPlotDataStream(plot) | async)?.data }}" alt="{{ plot.name }}" />
         </ng-template>
         <ng-template ngSwitchCase="histogram">
-            <wave-histogram *ngIf="cardWidth$ | async"
-                            [data]="projectService.getPlotDataStream(plot) | async"
-                            [interactable]="false"
-                            [autoResize]="true"></wave-histogram>
+            <wave-histogram
+                *ngIf="cardWidth$ | async"
+                [data]="projectService.getPlotDataStream(plot) | async"
+                [interactable]="false"
+                [autoResize]="true"
+            ></wave-histogram>
         </ng-template>
         <ng-template ngSwitchCase="layer_statistics">
             <wave-layer-statistics-view [data]="(projectService.getPlotDataStream(plot) | async)?.data"></wave-layer-statistics-view>
         </ng-template>
         <ng-template ngSwitchCase="json">
-            <pre>{{(projectService.getPlotDataStream(plot) | async)?.data | json}}</pre>
+            <pre>{{ (projectService.getPlotDataStream(plot) | async)?.data | json }}</pre>
         </ng-template>
         <ng-template ngSwitchDefault>
-            <pre>{{(projectService.getPlotDataStream(plot) | async)?.data}}</pre>
+            <pre>{{ (projectService.getPlotDataStream(plot) | async)?.data }}</pre>
         </ng-template>
     </mat-card-content>
     <mat-card-actions *ngIf="(projectService.getPlotDataStatusStream(plot) | async) === LoadingState.OK" fxLayout="row">
@@ -43,8 +47,13 @@
         </button>
         <span fxFlex></span>
         <button
-            *ngIf="plot.operator.operatorType.getMappingName() === RScriptType.TYPE && editExceptions.indexOf(plot.operator.operatorType.toString()) < 0"
-            mat-button (click)="editRPlot(plot)">
+            *ngIf="
+                plot.operator.operatorType.getMappingName() === RScriptType.TYPE &&
+                editExceptions.indexOf(plot.operator.operatorType.toString()) < 0
+            "
+            mat-button
+            (click)="editRPlot(plot)"
+        >
             <mat-icon>mode_edit</mat-icon>
         </button>
         <button mat-button (click)="projectService.removePlot(plot)">
@@ -56,8 +65,7 @@
             <mat-icon>replay</mat-icon>
         </button>
         <span fxFlex></span>
-        <button *ngIf="plot.operator.operatorType.getMappingName() === RScriptType.TYPE"
-                mat-button (click)="editRPlot(plot)">
+        <button *ngIf="plot.operator.operatorType.getMappingName() === RScriptType.TYPE" mat-button (click)="editRPlot(plot)">
             <mat-icon>mode_edit</mat-icon>
         </button>
         <button mat-button (click)="projectService.removePlot(plot)">

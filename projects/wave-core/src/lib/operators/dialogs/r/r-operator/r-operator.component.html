@@ -1,46 +1,52 @@
 <wave-sidenav-header>R Operator</wave-sidenav-header>
-<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)" fxLayout="column">
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault(); add($event)" fxLayout="column">
     <div fxFlex class="container">
         <ng-template [ngIf]="!editable">
             <wave-multi-layer-selection
                 [types]="[ResultTypes.LINES]"
                 formControlName="lineLayers"
-                [min]="0" [max]="5" [initialAmount]="0"
+                [min]="0"
+                [max]="5"
+                [initialAmount]="0"
             ></wave-multi-layer-selection>
             <wave-multi-layer-selection
                 [types]="[ResultTypes.POINTS]"
                 formControlName="pointLayers"
-                [min]="0" [max]="5" [initialAmount]="0"
+                [min]="0"
+                [max]="5"
+                [initialAmount]="0"
             ></wave-multi-layer-selection>
             <wave-multi-layer-selection
                 [types]="[ResultTypes.POLYGONS]"
                 formControlName="polygonLayers"
-                [min]="0" [max]="5" [initialAmount]="0"
+                [min]="0"
+                [max]="5"
+                [initialAmount]="0"
             ></wave-multi-layer-selection>
             <wave-multi-layer-selection
                 [types]="[ResultTypes.RASTER]"
                 formControlName="rasterLayers"
-                [min]="0" [max]="5" [initialAmount]="0"
+                [min]="0"
+                [max]="5"
+                [initialAmount]="0"
             ></wave-multi-layer-selection>
         </ng-template>
         <ng-template [ngIf]="editable">
             <wave-dialog-section-heading title="Lines" subtitle="Select input Lines"></wave-dialog-section-heading>
-            <p *ngFor="let operator of editableSourceLines">{{operator.operatorType}}</p>
+            <p *ngFor="let operator of editableSourceLines">{{ operator.operatorType }}</p>
             <p *ngIf="!editableSourceLines">No Input Available</p>
             <wave-dialog-section-heading title="Points" subtitle="Select input Points"></wave-dialog-section-heading>
-            <p *ngFor="let operator of editableSourcePoints">{{operator.operatorType}}</p>
+            <p *ngFor="let operator of editableSourcePoints">{{ operator.operatorType }}</p>
             <p *ngIf="!editableSourcePoints">No Input Available</p>
-            <wave-dialog-section-heading title="Polygons"
-                                         subtitle="Select input Polygons"></wave-dialog-section-heading>
-            <p *ngFor="let operator of editableSourcePolygons">{{operator.operatorType}}</p>
+            <wave-dialog-section-heading title="Polygons" subtitle="Select input Polygons"></wave-dialog-section-heading>
+            <p *ngFor="let operator of editableSourcePolygons">{{ operator.operatorType }}</p>
             <p *ngIf="!editableSourcePolygons">No Input Available</p>
             <wave-dialog-section-heading title="Raster" subtitle="Input Raster"></wave-dialog-section-heading>
-            <p *ngFor="let operator of editableSourceRasters">{{operator.operatorType}}</p>
+            <p *ngFor="let operator of editableSourceRasters">{{ operator.operatorType }}</p>
             <p *ngIf="!editableSourceRasters">No Input Available</p>
         </ng-template>
 
-        <wave-dialog-section-heading title="Configuration"
-                                     subtitle="Specify the operator"></wave-dialog-section-heading>
+        <wave-dialog-section-heading title="Configuration" subtitle="Specify the operator"></wave-dialog-section-heading>
 
         <mat-expansion-panel>
             <mat-expansion-panel-header>
@@ -52,10 +58,10 @@
             </mat-expansion-panel-header>
             <mat-card-content>
                 <p>
-                    The <em>R operator</em> allows executing arbitrary <em>R</em> code on <em>VAT</em> data.
-                    The result can either be a new raster or vector layer, a plot or plain text.
-                    For accessing the input data there exists a <code>mapping</code> object that offers the following
-                    functionality:</p>
+                    The <em>R operator</em> allows executing arbitrary <em>R</em> code on <em>VAT</em> data. The result can either be a new
+                    raster or vector layer, a plot or plain text. For accessing the input data there exists a <code>mapping</code> object
+                    that offers the following functionality:
+                </p>
                 <table>
                     <tr>
                         <th>Functionality</th>
@@ -65,10 +71,8 @@
                         <td><code>loadRaster(rasterId, queryRectangle)</code></td>
                         <td>
                             Load the <code>rasterId</code>th input raster as an <em>R</em>
-                            <a
-                                href="https://cran.r-project.org/web/packages/raster/raster.pdf"
-                                target="_blank"
-                            ><code>raster</code></a>.
+                            <a href="https://cran.r-project.org/web/packages/raster/raster.pdf" target="_blank"><code>raster</code></a
+                            >.
                         </td>
                     </tr>
                     <tr>
@@ -83,10 +87,9 @@
                         <td><code>loadPoints(pointId, queryRectangle)</code></td>
                         <td>
                             Load the <code>pointId</code>th input point collection as an <em>R</em>
-                            <a
-                                href="https://cran.r-project.org/web/packages/sp/sp.pdf"
-                                target="_blank"
-                            ><code>SpatialPointsDataFrame</code></a>.
+                            <a href="https://cran.r-project.org/web/packages/sp/sp.pdf" target="_blank"
+                                ><code>SpatialPointsDataFrame</code></a
+                            >.
                         </td>
                     </tr>
                     <tr>
@@ -97,10 +100,9 @@
                         <td><code>loadLines(lineId, queryRectangle)</code></td>
                         <td>
                             Load the <code>lineId</code>th input line collection as an <em>R</em>
-                            <a
-                                href="https://cran.r-project.org/web/packages/sp/sp.pdf"
-                                target="_blank"
-                            ><code>SpatialLinesDataFrame</code></a>.
+                            <a href="https://cran.r-project.org/web/packages/sp/sp.pdf" target="_blank"
+                                ><code>SpatialLinesDataFrame</code></a
+                            >.
                         </td>
                     </tr>
                     <tr>
@@ -111,10 +113,9 @@
                         <td><code>loadPolygons(polygonId, queryRectangle)</code></td>
                         <td>
                             Load the <code>polygonId</code>th input polygon collection as an <em>R</em>
-                            <a
-                                href="https://cran.r-project.org/web/packages/sp/sp.pdf"
-                                target="_blank"
-                            ><code>SpatialPolygonDataFrame</code></a>.
+                            <a href="https://cran.r-project.org/web/packages/sp/sp.pdf" target="_blank"
+                                ><code>SpatialPolygonDataFrame</code></a
+                            >.
                         </td>
                     </tr>
                     <tr>
@@ -144,16 +145,13 @@
         <mat-form-field>
             <mat-select formControlName="resultType" placeholder="Result Type">
                 <mat-option *ngFor="let resultType of outputTypes" [value]="resultType">
-                    {{resultType}}
+                    {{ resultType }}
                 </mat-option>
             </mat-select>
         </mat-form-field>
 
         <wave-operator-output-name formControlName="name">
-            <mat-hint
-                align="end" class="error"
-                *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
-            >
+            <mat-hint align="end" class="error" *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace">
                 The name must be non-empty.
             </mat-hint>
         </wave-operator-output-name>

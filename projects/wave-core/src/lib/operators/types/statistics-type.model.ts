@@ -75,7 +75,7 @@ export class StatisticsType extends OperatorType {
         if (this.raster_width || this.raster_height) {
             return {
                 raster_height: this.raster_height,
-                raster_width: this.raster_width
+                raster_width: this.raster_width,
             };
         }
 
@@ -87,7 +87,7 @@ export class StatisticsType extends OperatorType {
             return {
                 operatorType: StatisticsType.TYPE,
                 raster_height: this.raster_height,
-                raster_width: this.raster_width
+                raster_width: this.raster_width,
             };
         }
 
@@ -99,5 +99,4 @@ export class StatisticsType extends OperatorType {
     cloneWithModifications(options?: {}): OperatorType {
         return StatisticsType.fromDict(this.toDict()); // TODO: add modifications
     }
-
 }

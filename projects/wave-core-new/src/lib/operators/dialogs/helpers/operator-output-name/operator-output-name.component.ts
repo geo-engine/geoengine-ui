@@ -1,19 +1,14 @@
-import {
-    Component, ChangeDetectionStrategy, OnChanges, SimpleChange, ChangeDetectorRef, Input, AfterViewInit
-} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnChanges, SimpleChange, ChangeDetectorRef, Input, AfterViewInit} from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 
 @Component({
     selector: 'wave-operator-output-name',
     templateUrl: './operator-output-name.component.html',
     styleUrls: ['./operator-output-name.component.scss'],
-    providers: [
-        {provide: NG_VALUE_ACCESSOR, useExisting: OperatorOutputNameComponent, multi: true},
-    ],
+    providers: [{provide: NG_VALUE_ACCESSOR, useExisting: OperatorOutputNameComponent, multi: true}],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OperatorOutputNameComponent implements ControlValueAccessor, OnChanges, AfterViewInit {
-
     @Input() type: 'Layer' | 'Plot' = 'Layer';
     @Input() suggestion = '';
 
@@ -23,8 +18,7 @@ export class OperatorOutputNameComponent implements ControlValueAccessor, OnChan
     private onTouched: () => void;
     private onChange: (_: string) => void = undefined;
 
-    constructor(private changeDetectorRef: ChangeDetectorRef) {
-    }
+    constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
     set name(name: string) {
         this._name = name;
@@ -44,7 +38,8 @@ export class OperatorOutputNameComponent implements ControlValueAccessor, OnChan
     }
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
-        for (let propName in changes) { // tslint:disable-line:forin
+        for (let propName in changes) {
+            // tslint:disable-line:forin
             switch (propName) {
                 case 'suggestion':
                     if (!this.userChanged) {
@@ -83,5 +78,4 @@ export class OperatorOutputNameComponent implements ControlValueAccessor, OnChan
             this.onTouched();
         }
     }
-
 }

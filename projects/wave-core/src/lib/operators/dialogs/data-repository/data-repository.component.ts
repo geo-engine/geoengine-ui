@@ -11,14 +11,11 @@ import {UserService} from '../../../users/user.service';
     styleUrls: ['./data-repository.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
 export class DataRepositoryComponent {
-
     searchTerm: string = '';
     sources: Observable<Array<MappingSource>>;
 
-    constructor(public userService: UserService
-    ) {
+    constructor(public userService: UserService) {
         this.sources = this.userService.getRasterSourcesStream();
     }
 

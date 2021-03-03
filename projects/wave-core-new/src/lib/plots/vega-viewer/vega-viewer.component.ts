@@ -11,11 +11,10 @@ import {Spec as VgSpec} from 'vega';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VegaViewerComponent implements OnInit, OnChanges {
-
     @Input()
     chartData: {
-        vega_string: string,
-        selection_name?: string,
+        vega_string: string;
+        selection_name?: string;
     };
 
     @Input()
@@ -27,17 +26,15 @@ export class VegaViewerComponent implements OnInit, OnChanges {
     @ViewChild('chart', {static: true}) protected chartContainer: ElementRef;
 
     private vegaHandle: {
-        view: View,
-        spec: VlSpec | VgSpec,
-        vgSpec: VgSpec,
-        finalize: () => void,
+        view: View;
+        spec: VlSpec | VgSpec;
+        vgSpec: VgSpec;
+        finalize: () => void;
     } = undefined;
 
-    constructor() {
-    }
+    constructor() {}
 
-    ngOnInit() {
-    }
+    ngOnInit() {}
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.chartData || changes.width || changes.height) {
@@ -52,31 +49,29 @@ export class VegaViewerComponent implements OnInit, OnChanges {
         const div = this.chartContainer.nativeElement;
 
         const width = this.width ?? div.clientWidth;
-        const height = this.height ?? (width / 2);
+        const height = this.height ?? width / 2;
 
         const spec = JSON.parse(this.chartData.vega_string);
 
-        vegaEmbed(
-            div,
-            spec,
-            {
-                actions: false,
-                theme: 'ggplot2',
-                renderer: 'svg',
-                config: {
-                    autosize: {
-                        type: 'fit',
-                        contains: 'padding',
-                    },
+        vegaEmbed(div, spec, {
+            actions: false,
+            theme: 'ggplot2',
+            renderer: 'svg',
+            config: {
+                autosize: {
+                    type: 'fit',
+                    contains: 'padding',
                 },
-                width,
-                height,
             },
-        ).then(result => {
-            this.vegaHandle = result;
-        }).catch(_error => {
-            // TODO: react on error
-        });
+            width,
+            height,
+        })
+            .then((result) => {
+                this.vegaHandle = result;
+            })
+            .catch((_error) => {
+                // TODO: react on error
+            });
     }
 
     private clearContents() {

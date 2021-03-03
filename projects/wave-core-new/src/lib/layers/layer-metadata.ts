@@ -5,7 +5,7 @@ import * as Immutable from 'immutable';
 import {Measurement} from './measurement';
 
 export abstract class LayerMetadata implements HasLayerType {
-    readonly abstract layerType: LayerType;
+    abstract readonly layerType: LayerType;
 }
 
 export class VectorLayerMetadata extends LayerMetadata {
@@ -14,7 +14,7 @@ export class VectorLayerMetadata extends LayerMetadata {
     readonly dataType: VectorDataType;
     readonly columns: Immutable.Map<string, VectorColumnDataType>;
 
-    constructor(dataType: VectorDataType, columns: { [index: string]: VectorColumnDataType }) {
+    constructor(dataType: VectorDataType, columns: {[index: string]: VectorColumnDataType}) {
         super();
 
         this.dataType = dataType;
@@ -24,7 +24,7 @@ export class VectorLayerMetadata extends LayerMetadata {
     static fromDict(dict: VectorResultDescriptorDict): VectorLayerMetadata {
         const dataType = VectorDataTypes.fromCode(dict.data_type);
 
-        const columns: { [index: string]: VectorColumnDataType } = {};
+        const columns: {[index: string]: VectorColumnDataType} = {};
         for (const columnName of Object.keys(dict.columns)) {
             columns[columnName] = VectorColumnDataTypes.fromCode(dict.columns[columnName]);
         }

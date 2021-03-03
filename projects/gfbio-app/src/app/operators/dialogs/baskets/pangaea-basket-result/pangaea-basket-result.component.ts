@@ -11,7 +11,7 @@ import {
     DataTypes,
     Unit,
     ResultTypes,
-    Operator
+    Operator,
 } from 'wave-core';
 
 import {CsvColumns, CsvParameters} from '../csv.model';
@@ -28,7 +28,6 @@ import {GFBioUserService} from '../../../../users/user.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PangaeaBasketResultComponent extends BasketResultComponent<IBasketPangaeaResult> {
-
     static createOperatorFromPangaeaData(result: IBasketPangaeaResult): Operator {
         const csvColumns: CsvColumns = {
             numeric: [],
@@ -66,7 +65,6 @@ export class PangaeaBasketResultComponent extends BasketResultComponent<IBasketP
             on_error: 'keep', // TODO: let the user decide on this
         };
 
-
         return new Operator({
             operatorType: new PangaeaSourceType({
                 doi: result.doi,
@@ -80,11 +78,13 @@ export class PangaeaBasketResultComponent extends BasketResultComponent<IBasketP
         });
     }
 
-    constructor(@Inject(MappingQueryService) protected readonly mappingQueryService: GFBioMappingQueryService,
-                protected readonly layerService: LayerService,
-                protected readonly randomColorService: RandomColorService,
-                @Inject(UserService) protected readonly userService: GFBioUserService,
-                protected readonly projectService: ProjectService) {
+    constructor(
+        @Inject(MappingQueryService) protected readonly mappingQueryService: GFBioMappingQueryService,
+        protected readonly layerService: LayerService,
+        protected readonly randomColorService: RandomColorService,
+        @Inject(UserService) protected readonly userService: GFBioUserService,
+        protected readonly projectService: ProjectService,
+    ) {
         super(mappingQueryService, layerService, randomColorService, userService, projectService);
     }
 
@@ -95,5 +95,4 @@ export class PangaeaBasketResultComponent extends BasketResultComponent<IBasketP
     addDataset() {
         this.createAndAddLayer(this.createResultOperator(), this.result.title);
     }
-
 }

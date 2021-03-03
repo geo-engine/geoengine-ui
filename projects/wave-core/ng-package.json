@@ -40,7 +40,5 @@
             "proj4": "proj4"
         }
     },
-    "assets": [
-        "assets"
-    ]
+    "assets": ["assets"]
 }

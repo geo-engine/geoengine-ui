@@ -22,14 +22,15 @@ wave-layer-list {
     left: 16vw;
     right: 16vw;
 
-    wave-ticker-interaction, wave-small-time-interaction, wave-zoom-handles {
+    wave-ticker-interaction,
+    wave-small-time-interaction,
+    wave-zoom-handles {
         background-color: rgba(255, 255, 255, 0.87);
         border-bottom-left-radius: 2px;
         border-bottom-right-radius: 2px;
         z-index: 3;
     }
 }
-
 
 :host ::ng-deep .mat-sidenav-content {
     overflow: hidden;

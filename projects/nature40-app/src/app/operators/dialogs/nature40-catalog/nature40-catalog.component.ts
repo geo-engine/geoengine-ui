@@ -23,7 +23,8 @@ import {
     ResultTypes,
     Projections,
     GdalSourceType,
-    Provenance, UserService,
+    Provenance,
+    UserService,
 } from 'wave-core';
 
 import {Nature40CatalogEntry, Nature40UserService} from '../../../users/nature40-user.service';
@@ -42,16 +43,17 @@ export class Nature40CatalogComponent implements OnInit, OnDestroy {
     readonly catalog$: Observable<Map<string, Array<Nature40CatalogEntry>>>;
     isResolving = new Map<Nature40CatalogEntry, BehaviorSubject<boolean>>();
 
-    constructor(@Inject(Config) private readonly config: AppConfig,
-                @Inject(UserService) private readonly userService: Nature40UserService,
-                private readonly projectService: ProjectService,
-                private readonly notificationService: NotificationService,
-                private readonly http: HttpClient) {
+    constructor(
+        @Inject(Config) private readonly config: AppConfig,
+        @Inject(UserService) private readonly userService: Nature40UserService,
+        private readonly projectService: ProjectService,
+        private readonly notificationService: NotificationService,
+        private readonly http: HttpClient,
+    ) {
         this.catalog$ = this.userService.getNature40Catalog();
     }
 
-    ngOnInit() {
-    }
+    ngOnInit() {}
 
     ngOnDestroy() {
         this.isResolving.forEach((subject, _entry) => subject.complete());
@@ -62,7 +64,7 @@ export class Nature40CatalogComponent implements OnInit, OnDestroy {
             this.isResolving.set(entry, new BehaviorSubject(false));
         }
 
-        return this.isResolving.get(entry).pipe(map(value => !value));
+        return this.isResolving.get(entry).pipe(map((value) => !value));
     }
 
     add(entry: Nature40CatalogEntry) {
@@ -72,44 +74,43 @@ export class Nature40CatalogComponent implements OnInit, OnDestroy {
             this.isResolving.set(entry, new BehaviorSubject<boolean>(true));
         }
 
-        this.queryMetadata(entry).pipe(
-            first(),
-            flatMap(metadata => {
-                if (!metadata) {
-                    return throwError(`Datatype of »${entry.title}« is not yet supported`);
-                }
+        this.queryMetadata(entry)
+            .pipe(
+                first(),
+                flatMap((metadata) => {
+                    if (!metadata) {
+                        return throwError(`Datatype of »${entry.title}« is not yet supported`);
+                    }
 
-                switch (metadata.type) {
-                    case 'gdal_source':
-                        return of(Nature40CatalogComponent.createGdalSourceLayer(entry, metadata as GdalSourceMetadata));
-                    default:
-                        return throwError(`Layer type »${metadata.type}« is not yet supported`);
-                }
-            }),
-        ).subscribe(
-            layer => {
-                this.isResolving.get(entry).next(false);
-                this.projectService.addLayer(layer);
-            },
-            error => {
-                this.isResolving.get(entry).next(false);
-                this.notificationService.error(error);
-            },
-        );
+                    switch (metadata.type) {
+                        case 'gdal_source':
+                            return of(Nature40CatalogComponent.createGdalSourceLayer(entry, metadata as GdalSourceMetadata));
+                        default:
+                            return throwError(`Layer type »${metadata.type}« is not yet supported`);
+                    }
+                }),
+            )
+            .subscribe(
+                (layer) => {
+                    this.isResolving.get(entry).next(false);
+                    this.projectService.addLayer(layer);
+                },
+                (error) => {
+                    this.isResolving.get(entry).next(false);
+                    this.notificationService.error(error);
+                },
+            );
     }
 
-    private static createGdalSourceLayer(entry: Nature40CatalogEntry,
-                                         metadata: GdalSourceMetadata): RasterLayer<MappingRasterSymbology> {
-        for (const channel of metadata.channels) { // TODO: smart layer for other channels
+    private static createGdalSourceLayer(entry: Nature40CatalogEntry, metadata: GdalSourceMetadata): RasterLayer<MappingRasterSymbology> {
+        for (const channel of metadata.channels) {
+            // TODO: smart layer for other channels
             const datatype = DataTypes.fromCode(Nature40CatalogComponent.rsdbToMappingDataType(channel.datatype));
             const unit = Unit.fromMappingDict(channel.unit);
 
             const operator = new Operator({
                 attributes: [Operator.RASTER_ATTRIBTE_NAME],
-                dataTypes: ImmutableMap<string, DataType>().set(
-                    Operator.RASTER_ATTRIBTE_NAME,
-                    datatype,
-                ),
+                dataTypes: ImmutableMap<string, DataType>().set(Operator.RASTER_ATTRIBTE_NAME, datatype),
                 operatorType: new GdalSourceType({
                     channelConfig: {
                         displayValue: channel.name,
@@ -118,25 +119,24 @@ export class Nature40CatalogComponent implements OnInit, OnDestroy {
                     sourcename: channel.file_name,
                     transform: false,
                     gdal_params: {
-                        channels: [{
-                            channel: channel.channel,
-                            datatype: datatype.getCode(),
-                            file_name: channel.file_name,
-                            unit,
-                        }],
+                        channels: [
+                            {
+                                channel: channel.channel,
+                                datatype: datatype.getCode(),
+                                file_name: channel.file_name,
+                                unit,
+                            },
+                        ],
                         coords: {
                             crs: channel.crs,
                         },
                         provenance: Nature40CatalogComponent.provenanceOfEntry(entry),
-                    }
+                    },
                 }),
                 operatorTypeParameterOptions: undefined,
                 projection: Projections.fromCode(channel.crs),
                 resultType: ResultTypes.RASTER,
-                units: ImmutableMap<string, Unit>().set(
-                    Operator.RASTER_ATTRIBTE_NAME,
-                    unit,
-                )
+                units: ImmutableMap<string, Unit>().set(Operator.RASTER_ATTRIBTE_NAME, unit),
             });
 
             return new RasterLayer({
@@ -169,19 +169,22 @@ export class Nature40CatalogComponent implements OnInit, OnDestroy {
             parameters: {entry: JSON.stringify(entry)},
         });
 
-        return this.http.post<{ result: boolean | string, metadata?: Nature40CatalogEntryMetadata }>(
-            this.config.MAPPING_URL,
-            parameters.toMessageBody(true),
-            {headers: parameters.getHeaders()},
-        ).pipe(
-            flatMap(response => {
-                if (typeof response.result === 'string') { // error string is in the field
-                    return throwError(response.result);
-                }
+        return this.http
+            .post<{result: boolean | string; metadata?: Nature40CatalogEntryMetadata}>(
+                this.config.MAPPING_URL,
+                parameters.toMessageBody(true),
+                {headers: parameters.getHeaders()},
+            )
+            .pipe(
+                flatMap((response) => {
+                    if (typeof response.result === 'string') {
+                        // error string is in the field
+                        return throwError(response.result);
+                    }
 
-                return of(response.metadata);
-            }),
-        );
+                    return of(response.metadata);
+                }),
+            );
     }
 }
 

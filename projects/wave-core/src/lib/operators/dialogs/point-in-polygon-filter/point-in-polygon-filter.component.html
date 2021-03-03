@@ -1,29 +1,15 @@
 <wave-sidenav-header>Point in Polygon Filter</wave-sidenav-header>
-<form [formGroup]="form" (ngSubmit)="$event.preventDefault();add($event)" fxLayout="column">
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault(); add($event)" fxLayout="column">
     <div fxFlex class="container">
-        <wave-layer-selection
-            [types]="[ResultTypes.POINTS]"
-            formControlName="pointLayer"
-        ></wave-layer-selection>
-        <wave-layer-selection
-            [types]="[ResultTypes.POLYGONS]"
-            formControlName="polygonLayer"
-        ></wave-layer-selection>
+        <wave-layer-selection [types]="[ResultTypes.POINTS]" formControlName="pointLayer"></wave-layer-selection>
+        <wave-layer-selection [types]="[ResultTypes.POLYGONS]" formControlName="polygonLayer"></wave-layer-selection>
         <wave-operator-output-name formControlName="name">
-            <mat-hint
-                align="end" class="error"
-                *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
-            >
+            <mat-hint align="end" class="error" *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace">
                 The name must be non-empty.
             </mat-hint>
         </wave-operator-output-name>
     </div>
     <div class="actions">
-        <button
-            type="submit"
-            mat-raised-button
-            color="primary"
-            [disabled]="form.invalid"
-        >Apply</button>
+        <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid">Apply</button>
     </div>
 </form>

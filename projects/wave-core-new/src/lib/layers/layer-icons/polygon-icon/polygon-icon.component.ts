@@ -19,10 +19,9 @@ export interface PolygonIconStyle {
     selector: 'wave-polygon-icon',
     templateUrl: './polygon-icon.component.svg',
     styleUrls: ['./polygon-icon.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PolygonIconComponent implements OnInit, OnChanges {
-
     // the style to use for the icon
     @Input()
     iconStyle: PolygonIconStyle;
@@ -31,8 +30,7 @@ export class PolygonIconComponent implements OnInit, OnChanges {
     strokeColor = BLACK.rgbaCssString();
     fillColor = WHITE.rgbaCssString();
 
-    constructor() {
-    }
+    constructor() {}
 
     ngOnInit(): void {
         if (this.iconStyle) {
@@ -52,5 +50,4 @@ export class PolygonIconComponent implements OnInit, OnChanges {
         this.strokeColor = this.iconStyle.strokeRGBA.rgbaCssString();
         this.fillColor = this.iconStyle.fillRGBA.rgbaCssString();
     }
-
 }

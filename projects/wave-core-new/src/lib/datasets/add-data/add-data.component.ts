@@ -15,21 +15,17 @@ export interface AddDataListButton {
     selector: 'wave-add-data',
     templateUrl: './add-data.component.html',
     styleUrls: ['./add-data.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddDataComponent implements OnInit {
-
     /**
      * A list of data source dialogs to display
      */
     @Input() buttons!: Array<AddDataListButton>;
 
-    constructor(private layoutService: LayoutService) {
-    }
+    constructor(private layoutService: LayoutService) {}
 
-    ngOnInit(): void {
-    }
-
+    ngOnInit(): void {}
 
     /**
      * Load a selected component into the sidenav
@@ -60,7 +56,8 @@ export class AddDataComponent implements OnInit {
         // TODO: replace with proper icons
         // from `http://stackoverflow.com/questions/3426404/
         // create-a-hexadecimal-colour-based-on-a-string-with-javascript`
-        const hashCode = (str: string) => { // java String#hashCode
+        const hashCode = (str: string) => {
+            // java String#hashCode
             let hash = 0;
             for (let i = 0; i < str.length; i++) {
                 hash = str.charCodeAt(i) + ((hash << 5) - hash); // tslint:disable-line:no-bitwise
@@ -68,7 +65,7 @@ export class AddDataComponent implements OnInit {
             return hash;
         };
         const intToRGB = (i: number) => {
-            const c = (i & 0x00FFFFFF).toString(16).toUpperCase(); // tslint:disable-line:no-bitwise
+            const c = (i & 0x00ffffff).toString(16).toUpperCase(); // tslint:disable-line:no-bitwise
 
             return '00000'.substring(0, 6 - c.length) + c;
         };

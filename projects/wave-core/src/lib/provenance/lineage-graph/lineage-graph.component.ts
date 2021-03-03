@@ -35,10 +35,9 @@ const GRAPH_STYLE = {
     selector: 'wave-lineage-graph',
     templateUrl: './lineage-graph.component.html',
     styleUrls: ['./lineage-graph.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LineageGraphComponent implements OnInit, AfterViewInit {
-
     @ViewChild('svg', {static: true}) svg: ElementRef;
     @ViewChild('g', {static: true}) g: ElementRef;
 
@@ -48,7 +47,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
     title$ = new BehaviorSubject<string>('Operator Lineage');
 
     selectedOperator$ = new ReplaySubject<Operator>(1);
-    parameters$ = new ReplaySubject<Array<{ key: string, value: string }>>(1);
+    parameters$ = new ReplaySubject<Array<{key: string; value: string}>>(1);
 
     private selectedLayer: Layer<AbstractSymbology> = undefined;
 
@@ -57,15 +56,16 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
 
     private svgRatio = 0.7;
 
-    constructor(private elementRef: ElementRef,
-                private projectService: ProjectService,
-                private layoutService: LayoutService,
-                private dialogRef: MatDialogRef<LineageGraphComponent>,
-                @Inject(MAT_DIALOG_DATA) private config: { layer?: Layer<AbstractSymbology> }) {
-    }
+    constructor(
+        private elementRef: ElementRef,
+        private projectService: ProjectService,
+        private layoutService: LayoutService,
+        private dialogRef: MatDialogRef<LineageGraphComponent>,
+        @Inject(MAT_DIALOG_DATA) private config: {layer?: Layer<AbstractSymbology>},
+    ) {}
 
     ngOnInit() {
-        this.svgWidth$ = this.maxWidth$.pipe(map(width => Math.ceil(this.svgRatio * width)));
+        this.svgWidth$ = this.maxWidth$.pipe(map((width) => Math.ceil(this.svgRatio * width)));
         this.svgHeight$ = this.maxHeight$;
 
         if (this.config) {
@@ -99,62 +99,54 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
     }
 
     private drawGraph() {
-        this.projectService.getProjectStream().pipe(first()).subscribe(project => {
-            const graph = new dagreD3.graphlib.Graph()
-                .setGraph({})
-                .setDefaultEdgeLabel(() => ({label: ''}) as any);
+        this.projectService
+            .getProjectStream()
+            .pipe(first())
+            .subscribe((project) => {
+                const graph = new dagreD3.graphlib.Graph().setGraph({}).setDefaultEdgeLabel(() => ({label: ''} as any));
 
-            if (this.selectedLayer) {
-                this.title$.next(`Lineage for ${this.selectedLayer.name}`);
+                if (this.selectedLayer) {
+                    this.title$.next(`Lineage for ${this.selectedLayer.name}`);
 
-                const operatorIdsInGraph = this.addOperatorsToGraph(graph, [this.selectedLayer.operator], [this.selectedLayer]);
-                LineageGraphComponent.addLayersToGraph(
-                    graph,
-                    project.layers,
-                    [this.selectedLayer],
-                    operatorIdsInGraph
-                );
-            } else {
-                const operatorIdsInGraph = this.addOperatorsToGraph(
-                    graph,
-                    project.layers.map(layer => layer.operator),
-                    project.layers
-                );
-                LineageGraphComponent.addLayersToGraph(
-                    graph,
-                    project.layers,
-                    [],
-                    operatorIdsInGraph
-                );
-            }
+                    const operatorIdsInGraph = this.addOperatorsToGraph(graph, [this.selectedLayer.operator], [this.selectedLayer]);
+                    LineageGraphComponent.addLayersToGraph(graph, project.layers, [this.selectedLayer], operatorIdsInGraph);
+                } else {
+                    const operatorIdsInGraph = this.addOperatorsToGraph(
+                        graph,
+                        project.layers.map((layer) => layer.operator),
+                        project.layers,
+                    );
+                    LineageGraphComponent.addLayersToGraph(graph, project.layers, [], operatorIdsInGraph);
+                }
 
-            // create the renderer
-            const render = new dagreD3.render();
+                // create the renderer
+                const render = new dagreD3.render();
 
-            // Set up an SVG group so that we can translate the final graph.
-            // console.log(this.graphContainer.nativeElement);
-            const svg = d3.select(this.svg.nativeElement);
-            const svgGroup = d3.select(this.g.nativeElement);
+                // Set up an SVG group so that we can translate the final graph.
+                // console.log(this.graphContainer.nativeElement);
+                const svg = d3.select(this.svg.nativeElement);
+                const svgGroup = d3.select(this.g.nativeElement);
 
-            // Run the renderer. This is what draws the final graph.
-            render(svgGroup, graph);
+                // Run the renderer. This is what draws the final graph.
+                render(svgGroup, graph);
 
+                LineageGraphComponent.fixLabelPosition(svg);
 
-            LineageGraphComponent.fixLabelPosition(svg);
-
-            // do this asynchronously to start a new cycle of change detection
-            setTimeout(() => {
-                // this.dialog.setTitle(title); // TODO: set title
-                const sizes = this.setupWidthObservables(graph);
-                this.addZoomSupport(svg, svgGroup, graph, sizes.width, sizes.height);
-                this.addClickHandler(svg, graph);
+                // do this asynchronously to start a new cycle of change detection
+                setTimeout(() => {
+                    // this.dialog.setTitle(title); // TODO: set title
+                    const sizes = this.setupWidthObservables(graph);
+                    this.addZoomSupport(svg, svgGroup, graph, sizes.width, sizes.height);
+                    this.addClickHandler(svg, graph);
+                });
             });
-        });
     }
 
-    private addOperatorsToGraph(graph: dagre.graphlib.Graph,
-                                initialOperators: Array<Operator>,
-                                _layers: Array<Layer<AbstractSymbology>>): Array<number> {
+    private addOperatorsToGraph(
+        graph: dagre.graphlib.Graph,
+        initialOperators: Array<Operator>,
+        _layers: Array<Layer<AbstractSymbology>>,
+    ): Array<number> {
         const operatorIdsInGraph: Array<number> = [];
 
         const operators: Array<Operator> = [...initialOperators];
@@ -179,11 +171,13 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
                 <div class='parameters'>
                     <table>
                         <tr>
-                        ${operator.operatorType.getParametersAsStrings()
-                    .map(([key, value]: [string, string]) => {
-                        return `<td class='key'>${key}</td>
+                        ${operator.operatorType
+                            .getParametersAsStrings()
+                            .map(([key, value]: [string, string]) => {
+                                return `<td class='key'>${key}</td>
                                 <td class='value'>${value}</td>`;
-                    }).join('</tr><tr>')}
+                            })
+                            .join('</tr><tr>')}
                         </tr>
                     </table>
                 </div>
@@ -195,7 +189,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
 
             // add children
             for (const resultType of ResultTypes.INPUT_TYPES) {
-                operator.getSources(resultType).forEach(child => {
+                operator.getSources(resultType).forEach((child) => {
                     operators.push(child);
                     edges.push([child.id, operator.id]);
                 });
@@ -213,10 +207,12 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         return operatorIdsInGraph;
     }
 
-    private static addLayersToGraph(graph: dagre.graphlib.Graph,
-                                    layers: Array<Layer<AbstractSymbology>>,
-                                    layersToAccent: Array<Layer<AbstractSymbology>>,
-                                    operatorIdsInGraph: Array<number>) {
+    private static addLayersToGraph(
+        graph: dagre.graphlib.Graph,
+        layers: Array<Layer<AbstractSymbology>>,
+        layersToAccent: Array<Layer<AbstractSymbology>>,
+        operatorIdsInGraph: Array<number>,
+    ) {
         for (const layer of layers) {
             // operator of layer is contained in graph
             if (operatorIdsInGraph.indexOf(layer.operator.id) >= 0) {
@@ -240,9 +236,13 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         }
     }
 
-    private addZoomSupport(svg: d3.Selection<SVGElement, any, any, any>, svgGroup: d3.Selection<SVGElement, any, any, any>,
-                           graph: dagre.graphlib.Graph,
-                           svgWidth: number, svgHeight: number) {
+    private addZoomSupport(
+        svg: d3.Selection<SVGElement, any, any, any>,
+        svgGroup: d3.Selection<SVGElement, any, any, any>,
+        graph: dagre.graphlib.Graph,
+        svgWidth: number,
+        svgHeight: number,
+    ) {
         // calculate available space after subtracting the margin
         const paddedWidth = svgWidth - GRAPH_STYLE.surrounding.margin;
         const paddedHeight = svgHeight - GRAPH_STYLE.surrounding.margin;
@@ -251,11 +251,11 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         const scale = Math.min(
             paddedWidth / graph.graph().width,
             paddedHeight / graph.graph().height,
-            1 // do not scale more than 100% of size initially
+            1, // do not scale more than 100% of size initially
         );
 
-        const initialX = (svgWidth - (scale * graph.graph().width)) / 2;
-        const initialY = (svgHeight - (scale * graph.graph().height)) / 2;
+        const initialX = (svgWidth - scale * graph.graph().width) / 2;
+        const initialY = (svgHeight - scale * graph.graph().height) / 2;
 
         // create zoom behavior
         const zoom = d3.zoom();
@@ -267,17 +267,14 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         zoom.on('zoom', (zoomEvent: d3.D3ZoomEvent<any, any>) => {
             const zoomTranslate = isNaN(zoomEvent.transform.x) ? [0, 0] : [zoomEvent.transform.x, zoomEvent.transform.y];
             const zoomScale = isNaN(zoomEvent.transform.k) ? 0 : zoomEvent.transform.k;
-            svgGroup.attr(
-                'transform',
-                `translate(${zoomTranslate})scale(${zoomScale})`
-            );
+            svgGroup.attr('transform', `translate(${zoomTranslate})scale(${zoomScale})`);
         });
         svg.call(zoom);
     }
 
     private addClickHandler(svg: d3.Selection<SVGElement, any, any, any>, graph: dagre.graphlib.Graph) {
         svg.selectAll('.node').on('click', (_event, theNodeId) => {
-            const nodeId = theNodeId as any as string; // conversion since the signature is of the wrong type
+            const nodeId = (theNodeId as any) as string; // conversion since the signature is of the wrong type
 
             const node = graph.node(nodeId);
             if (node.type === 'operator') {
@@ -293,7 +290,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
                             key,
                             value: value.toString(),
                         };
-                    })
+                    }),
                 );
 
                 // de-select all
@@ -319,14 +316,9 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         svg.selectAll('.label > g').attr('transform', undefined);
     }
 
-    private setupWidthObservables(graph: dagre.graphlib.Graph): { width: number, height: number } {
+    private setupWidthObservables(graph: dagre.graphlib.Graph): {width: number; height: number} {
         const widthBound = (maxWidth: number, graphWidth: number) => {
-            return Math.min(
-                maxWidth
-                - GRAPH_STYLE.surrounding.detailComponentWidth
-                - GRAPH_STYLE.surrounding.margin,
-                graphWidth
-            );
+            return Math.min(maxWidth - GRAPH_STYLE.surrounding.detailComponentWidth - GRAPH_STYLE.surrounding.margin, graphWidth);
         };
         const heightBound = (maxWidth: number, _graphWidth: number) => {
             // return Math.min(maxWidth, graphWidth + GRAPH_STYLE.surrounding.margin);
@@ -340,5 +332,4 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
             height: heightBound(this.maxHeight$.getValue(), graph.graph().height),
         };
     }
-
 }

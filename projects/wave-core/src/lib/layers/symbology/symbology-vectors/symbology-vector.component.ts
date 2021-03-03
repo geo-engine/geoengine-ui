@@ -6,7 +6,10 @@ import {
     StrokeDashStyle,
     SymbologyType,
     DEFAULT_POINT_CLUSTER_RADIUS_ATTRIBUTE,
-    MAX_ALLOWED_POINT_RADIUS, MIN_ALLOWED_POINT_RADIUS, DEFAULT_POINT_CLUSTER_TEXT_ATTRIBUTE, MAX_ALLOWED_TEXT_LENGTH
+    MAX_ALLOWED_POINT_RADIUS,
+    MIN_ALLOWED_POINT_RADIUS,
+    DEFAULT_POINT_CLUSTER_TEXT_ATTRIBUTE,
+    MAX_ALLOWED_TEXT_LENGTH,
 } from '../symbology.model';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {MatSliderChange} from '@angular/material/slider';
@@ -29,12 +32,9 @@ interface Attribute {
 @Component({
     selector: 'wave-symbology-vector',
     templateUrl: `symbology-vector.component.html`,
-    styleUrls: [
-        './symbology-vector.component.scss'
-    ],
+    styleUrls: ['./symbology-vector.component.scss'],
 })
 export class SymbologyVectorComponent implements OnChanges, OnInit {
-
     // the min valid stroke width
     static minStrokeWidth = 0;
 
@@ -69,11 +69,11 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     attributes: Array<Attribute>;
     numericAttributes: Array<Attribute>;
 
-    constructor() {
-    }
+    constructor() {}
 
     ngOnChanges(changes: SimpleChanges) {
-        for (const propName in changes) { // tslint:disable-line:forin
+        for (const propName in changes) {
+            // tslint:disable-line:forin
             switch (propName) {
                 case 'layer':
                     this.updateSymbologyFromLayer();
@@ -97,7 +97,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
             this.symbology.fillColorizer.clear();
             this.symbology.fillColorizer.addBreakpoint({
                 rgba: this.symbology.fillRGBA,
-                value: (this.fillColorAttribute.type === 'number') ? 0 : '',
+                value: this.fillColorAttribute.type === 'number' ? 0 : '',
             });
         } else {
             this.symbology.clearFillColorAndAttribute();
@@ -143,7 +143,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
             this.symbology.strokeColorizer.clear();
             this.symbology.strokeColorizer.addBreakpoint({
                 rgba: this.symbology.strokeRGBA,
-                value: (this.strokeColorAttribute.type === 'number') ? 0 : '',
+                value: this.strokeColorAttribute.type === 'number' ? 0 : '',
             });
         } else {
             this.symbology.clearStrokeColorAndAttribute();
@@ -168,7 +168,6 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
                 this.symbology.setRadiusAttributeAndFactor(this.radiusAttribute.name);
             } else {
                 this.symbology.clearRadiusAttribute();
-
             }
             this.update();
         }
@@ -211,15 +210,15 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
         this.fillByAttribute = !!symbology.fillColorAttribute;
         this.strokeByAttribute = !!symbology.strokeColorAttribute;
         this.gatherAttributes();
-        this.fillColorAttribute = this.attributes.find(x => x.name === symbology.fillColorAttribute);
+        this.fillColorAttribute = this.attributes.find((x) => x.name === symbology.fillColorAttribute);
         this.fillByAttribute = !!this.fillColorAttribute;
-        this.strokeColorAttribute = this.attributes.find(x => x.name === symbology.strokeColorAttribute);
+        this.strokeColorAttribute = this.attributes.find((x) => x.name === symbology.strokeColorAttribute);
         this.strokeByAttribute = !!this.strokeColorAttribute;
         if (symbology instanceof PointSymbology) {
-            this.radiusAttribute = this.attributes.find(x => x.name === symbology.radiusAttribute);
+            this.radiusAttribute = this.attributes.find((x) => x.name === symbology.radiusAttribute);
             this.radiusByAttribute = !!this.radiusAttribute;
         }
-        this.textAttribute = this.attributes.find(x => x.name === symbology.textAttribute);
+        this.textAttribute = this.attributes.find((x) => x.name === symbology.textAttribute);
         this.textByAttribute = !!this.textAttribute;
     }
 
@@ -227,7 +226,6 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
         const attributes: Array<Attribute> = [];
         const numericAttributes: Array<Attribute> = [];
         this.layer.operator.dataTypes.forEach((datatype, attribute) => {
-
             if (DataTypes.ALL_NUMERICS.indexOf(datatype) >= 0) {
                 numericAttributes.push({
                     name: attribute,
@@ -276,7 +274,6 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
      * update the stroke dash unsing the slider value
      */
     updateRadius(event: MatSliderChange) {
-
         if (!(this.symbology instanceof PointSymbology)) {
             throw new Error('SymbologyVectorComponent: cant change radius for non point symbology');
         }
@@ -331,15 +328,15 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     }
 
     get fillColorAttributePlaceholder(): string {
-        return (this.fillByAttribute) ? 'Default Fill Color' : 'Fill Color';
+        return this.fillByAttribute ? 'Default Fill Color' : 'Fill Color';
     }
 
     get strokeColorAttributePlaceholder(): string {
-        return (this.strokeByAttribute) ? 'Default Stroke Color' : 'Stroke Color';
+        return this.strokeByAttribute ? 'Default Stroke Color' : 'Stroke Color';
     }
 
     get radiusAttributePlaceholder(): string {
-        return (this.radiusByAttribute || this.isClusteredPointSymbology) ? 'Default Radius' : 'Radius';
+        return this.radiusByAttribute || this.isClusteredPointSymbology ? 'Default Radius' : 'Radius';
     }
 
     get isClusteredPointSymbology(): boolean {

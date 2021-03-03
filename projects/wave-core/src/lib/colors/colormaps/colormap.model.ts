@@ -7,7 +7,7 @@ import {
     colormap_plasma_data,
     colormap_viridis_data,
     MPL_COLORMAP_NAMES,
-    MplColormapName
+    MplColormapName,
 } from './mpl-colormaps';
 import {coolwarm_data, MORELAND_COLORMAP_NAMES, MorelandColormapName} from './moreland-colormaps';
 import {
@@ -37,9 +37,10 @@ import {
     colormap_tofino_data,
     colormap_tokyo_data,
     colormap_turku_data,
-    colormap_vik_data, colormap_viko_data,
+    colormap_vik_data,
+    colormap_viko_data,
     SCIENTIFIC_COLORMAP_NAMES,
-    ScientificColormapName
+    ScientificColormapName,
 } from './scientific-colormaps/scientific-colormaps';
 import {colormap_rainbow_data, GENERIC_COLORMAP_NAMES, GenericColormapName} from './generic-colormaps';
 
@@ -56,8 +57,12 @@ export type ColormapNames = MplColormapName | MorelandColormapName | ScientificC
 /**
  * A list of all `Colormap` names.
  */
-export const COLORMAP_NAMES: Array<ColormapNames> = [...MPL_COLORMAP_NAMES, ...MORELAND_COLORMAP_NAMES, ...SCIENTIFIC_COLORMAP_NAMES,
-    ...GENERIC_COLORMAP_NAMES];
+export const COLORMAP_NAMES: Array<ColormapNames> = [
+    ...MPL_COLORMAP_NAMES,
+    ...MORELAND_COLORMAP_NAMES,
+    ...SCIENTIFIC_COLORMAP_NAMES,
+    ...GENERIC_COLORMAP_NAMES,
+];
 
 /**
  * The `Colormap` step scaling methods.
@@ -80,19 +85,17 @@ export const COLORMAP_STEP_SCALES_WITH_BOUNDS: Array<BoundedColormapStepScale> =
     {stepScaleName: 'linear'},
     {stepScaleName: 'log', requiresValueAbove: 0},
     {stepScaleName: 'square root', requiresValueBelow: 5000},
-    {stepScaleName: 'square', requiresValueBelow: 5000}
+    {stepScaleName: 'square', requiresValueBelow: 5000},
 ];
 
 /**
  * Abstract class for common `Colormap` functions.
  */
 export abstract class Colormap {
-
     /**
      * Resolves the `Colormap` data for a `Colormap` name.
      */
     static getColormapForName(colormapName: ColormapNames): ColormapData {
-
         switch (colormapName) {
             case 'INFERNO':
                 return colormap_inferno_data;
@@ -166,7 +169,10 @@ export abstract class Colormap {
     }
 
     private static calculateStepScales(
-        stepScale: ColormapStepScale, stepFractions: Array<number>, min: number, max: number
+        stepScale: ColormapStepScale,
+        stepFractions: Array<number>,
+        min: number,
+        max: number,
     ): Array<number> {
         switch (stepScale) {
             case 'linear':
@@ -175,9 +181,8 @@ export abstract class Colormap {
                 return Colormap.logNormInverse(stepFractions, min, max);
             case 'square root':
                 return Colormap.powerNormInverse(stepFractions, min, max, 0.5);
-            case 'square' :
+            case 'square':
                 return Colormap.powerNormInverse(stepFractions, min, max, 2);
-
         }
     }
 
@@ -187,17 +192,17 @@ export abstract class Colormap {
 
     static createColorizerDataWithName(
         colormapName: ColormapNames,
-        min: number, max: number,
+        min: number,
+        max: number,
         steps: number | undefined = 16,
         stepScale: ColormapStepScale = 'linear',
-        reverseColors: boolean = false
+        reverseColors: boolean = false,
     ): ColorizerData {
-
         let colormap = Colormap.getColormapForName(colormapName);
         if (reverseColors) {
             colormap = [...colormap].reverse(); // use a clone since 'reverse' mutates the original array
         }
-        const trueSteps = (steps && steps <= colormap.length) ? steps : colormap.length;
+        const trueSteps = steps && steps <= colormap.length ? steps : colormap.length;
         const colormapStepFractions = Colormap.generateLinearStepFractions(trueSteps);
         const colormapValues = Colormap.calculateStepScales(stepScale, colormapStepFractions, min, max);
         const breakpoints = Colormap.createColormapColorizerBreakpoints(colormap, colormapStepFractions, colormapValues);
@@ -208,19 +213,21 @@ export abstract class Colormap {
     }
 
     private static logNormInverse(stepFractions: Array<number>, min: number, max: number): Array<number> {
-        return stepFractions.map(x => min * Math.pow((max / min), x));
+        return stepFractions.map((x) => min * Math.pow(max / min, x));
     }
 
     private static powerNormInverse(stepFractions: Array<number>, min: number, max: number, gamma: number = 2): Array<number> {
-        return stepFractions.map(x => Math.pow(x, 1. / gamma) * (max - min) + min);
+        return stepFractions.map((x) => Math.pow(x, 1 / gamma) * (max - min) + min);
     }
 
     private static linearNormInverse(stepFractions: Array<number>, min: number, max: number): Array<number> {
-        return stepFractions.map(x => min + x * (max - min));
+        return stepFractions.map((x) => min + x * (max - min));
     }
 
     private static createColormapColorizerBreakpoints(
-        colormap: ColormapData, colorStepScales: Array<number>, colormapValues: Array<number>
+        colormap: ColormapData,
+        colorStepScales: Array<number>,
+        colormapValues: Array<number>,
     ): Array<ColorBreakpointDict> {
         if (!colorStepScales || !colormapValues || colorStepScales.length !== colormapValues.length || colorStepScales.length < 2) {
             throw new Error('colormap creation requires colorMapStepScales and colormapValues with identical length >2');
@@ -233,7 +240,7 @@ export abstract class Colormap {
             const color = Color.fromRgbaLike(Colormap.colormapColorToRgb(colorMapValue), false);
             breakpoints[i] = {
                 value,
-                rgba: color
+                rgba: color,
             };
         }
         return breakpoints;
@@ -245,8 +252,9 @@ export abstract class Colormap {
         stepFractions[0] = 0;
         stepFractions[maxIndex] = 1;
 
-        for (let i = 1; i < maxIndex; i++) { // fill the values between 0 and 1.
-            stepFractions[i] = i / (maxIndex);
+        for (let i = 1; i < maxIndex; i++) {
+            // fill the values between 0 and 1.
+            stepFractions[i] = i / maxIndex;
         }
 
         return stepFractions;

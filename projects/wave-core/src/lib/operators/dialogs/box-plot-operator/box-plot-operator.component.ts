@@ -15,23 +15,20 @@ import {DataTypes} from '../../datatype.model';
     selector: 'wave-box-plot-operator',
     templateUrl: './box-plot-operator.component.html',
     styleUrls: ['./box-plot-operator.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BoxPlotComponent implements OnInit, AfterViewInit, OnDestroy {
-
     readonly ResultTypes = ResultTypes;
 
     form: FormGroup;
     layers: Array<Layer<AbstractSymbology>>;
-    selectedLayers = new BehaviorSubject<Array<{ attr: string }>>([]);
+    selectedLayers = new BehaviorSubject<Array<{attr: string}>>([]);
     hasNumerics = new BehaviorSubject<boolean>(false);
     max = 5;
 
     private subscriptions: Array<Subscription> = [];
 
-    constructor(private formBuilder: FormBuilder,
-                private projectService: ProjectService) {
-    }
+    constructor(private formBuilder: FormBuilder, private projectService: ProjectService) {}
 
     ngOnInit() {
         this.form = this.formBuilder.group({
@@ -42,10 +39,10 @@ export class BoxPlotComponent implements OnInit, AfterViewInit, OnDestroy {
             name: ['', [Validators.required, WaveValidators.notOnlyWhitespace]],
         });
         this.subscriptions.push(
-            this.form.controls['vLayer'].valueChanges.subscribe(change => {
+            this.form.controls['vLayer'].valueChanges.subscribe((change) => {
                 this.selectedLayers.next([]);
                 const inputOperator = change.operator as Operator;
-                this.hasNumerics.next(inputOperator.dataTypes.some(dataType => DataTypes.ALL_NUMERICS.includes(dataType)));
+                this.hasNumerics.next(inputOperator.dataTypes.some((dataType) => DataTypes.ALL_NUMERICS.includes(dataType)));
             }),
         );
     }
@@ -101,7 +98,7 @@ export class BoxPlotComponent implements OnInit, AfterViewInit, OnDestroy {
         setTimeout(() => {
             this.form.updateValueAndValidity({
                 onlySelf: false,
-                emitEvent: true
+                emitEvent: true,
             });
             this.form.controls['vLayer'].updateValueAndValidity();
 
@@ -117,12 +114,12 @@ export class BoxPlotComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     nonNegative(val: number): ValidatorFn {
-        return (control: AbstractControl): { [key: string]: any } => {
+        return (control: AbstractControl): {[key: string]: any} => {
             return val < 0 ? {negativeNumber: {value: control.value}} : null;
         };
     }
 
     ngOnDestroy() {
-        this.subscriptions.forEach(sub => sub.unsubscribe());
+        this.subscriptions.forEach((sub) => sub.unsubscribe());
     }
 }

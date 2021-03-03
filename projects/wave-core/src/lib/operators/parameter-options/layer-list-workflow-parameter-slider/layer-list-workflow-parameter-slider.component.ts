@@ -13,10 +13,9 @@ import {ParameterValue} from '../../operator-type.model';
     selector: 'wave-layer-list-workflow-parameter-slider',
     templateUrl: 'layer-list-workflow-parameter-slider.component.html',
     styleUrls: ['layer-list-workflow-parameter-slider.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerListWorkflowParameterSliderComponent<L extends AbstractSymbology> implements OnChanges, OnInit {
-
     /**
      * The layer which is updated
      */
@@ -42,13 +41,11 @@ export class LayerListWorkflowParameterSliderComponent<L extends AbstractSymbolo
     // the selected parameter option value
     parameterValue: ParameterValue;
 
-    constructor(
-        public changeDetectorRef: ChangeDetectorRef,
-        public projectService: ProjectService) {
-    }
+    constructor(public changeDetectorRef: ChangeDetectorRef, public projectService: ProjectService) {}
 
     ngOnChanges(changes: SimpleChanges): void {
-        for (const propName in changes) { // tslint:disable-line:forin
+        for (const propName in changes) {
+            // tslint:disable-line:forin
             switch (propName) {
                 case 'parameterDisplayName':
                 case 'parameterName': {
@@ -60,14 +57,15 @@ export class LayerListWorkflowParameterSliderComponent<L extends AbstractSymbolo
                     this.changeDetectorRef.markForCheck();
                     break;
                 }
-                default: {// DO NOTHING
+                default: {
+                    // DO NOTHING
                 }
             }
         }
     }
 
     get parameterDisplayString(): string {
-        return (this.parameterDisplayName) ? this.parameterDisplayName : this.parameterName;
+        return this.parameterDisplayName ? this.parameterDisplayName : this.parameterName;
     }
 
     get parameterDisplayValue(): string {
@@ -87,8 +85,9 @@ export class LayerListWorkflowParameterSliderComponent<L extends AbstractSymbolo
 
             this.sliderRangeStart = this.parameterOptionContainer.firstTick;
             this.sliderRangeStop = this.parameterOptionContainer.lastTick;
-            this.sliderValue = (this.parameterOptionContainer as AbstractParameterContainer<ParameterValue>)
-                .getTickForValue(this.parameterValue);
+            this.sliderValue = (this.parameterOptionContainer as AbstractParameterContainer<ParameterValue>).getTickForValue(
+                this.parameterValue,
+            );
         }
     }
 
@@ -107,12 +106,12 @@ export class LayerListWorkflowParameterSliderComponent<L extends AbstractSymbolo
 
         // clone the operator with the new operator type supplied as modification.
         const operatorClone = this.layer.operator.cloneWithModifications({
-            operatorType: operatorTypeClone
+            operatorType: operatorTypeClone,
         });
 
         // clone the layer with the new operator as modification.
         const layerCloneOptions = {
-            operator: operatorClone
+            operator: operatorClone,
         };
         // check if layer name is identical to the current parameter display value. If true change the layer name to match the new parameter
         if (this.layer.name === this.layer.operator.operatorType.getParameterDisplayValue(this.parameterName)) {
@@ -126,6 +125,4 @@ export class LayerListWorkflowParameterSliderComponent<L extends AbstractSymbolo
     ngOnInit(): void {
         this.updateParameterOptions();
     }
-
-
 }

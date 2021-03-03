@@ -1,5 +1,10 @@
 import {
-    Observable, Subscription, fromEvent as observableFromEvent, combineLatest as observableCombineLatest, BehaviorSubject, Subject
+    Observable,
+    Subscription,
+    fromEvent as observableFromEvent,
+    combineLatest as observableCombineLatest,
+    BehaviorSubject,
+    Subject,
 } from 'rxjs';
 import {skip, first, filter, tap, debounceTime} from 'rxjs/operators';
 
@@ -32,32 +37,33 @@ export class StorageService {
     private projectSubscription: Subscription;
     private layoutSubscription: Subscription;
 
-    private pendingWorkspace: { project: Project };
+    private pendingWorkspace: {project: Project};
     private pendingWorkspaceSubscription: Subscription;
 
     private storageStatus$ = new BehaviorSubject(StorageStatus.PENDING);
 
-    constructor(private config: Config,
-                private projectService: ProjectService,
-                private layoutService: LayoutService,
-                private userService: UserService,
-                private notificationService: NotificationService,
-                private http: HttpClient) {
+    constructor(
+        private config: Config,
+        private projectService: ProjectService,
+        private layoutService: LayoutService,
+        private userService: UserService,
+        private notificationService: NotificationService,
+        private http: HttpClient,
+    ) {
         // load stored values on session change
-        this.userService.getSessionStream()
-            .subscribe(session => {
-                this.storageStatus$.next(StorageStatus.PENDING);
+        this.userService.getSessionStream().subscribe((session) => {
+            this.storageStatus$.next(StorageStatus.PENDING);
 
-                // check validity
-                this.userService.isSessionValid(session).subscribe(valid => {
-                    if (valid) {
-                        this.resetStorageProvider();
-                    } else {
-                        // TODO: highlight or jump to login
-                        this.userService.guestLogin();
-                    }
-                });
+            // check validity
+            this.userService.isSessionValid(session).subscribe((valid) => {
+                if (valid) {
+                    this.resetStorageProvider();
+                } else {
+                    // TODO: highlight or jump to login
+                    this.userService.guestLogin();
+                }
             });
+        });
     }
 
     /**
@@ -117,11 +123,7 @@ export class StorageService {
 
         // create suitable provider
         if (this.userService.isGuestUser()) {
-            this.storageProvider = new BrowserStorageProvider(
-                this.config,
-                this.projectService,
-                this.notificationService
-            );
+            this.storageProvider = new BrowserStorageProvider(this.config, this.projectService, this.notificationService);
         } else {
             this.storageProvider = new MappingStorageProvider({
                 config: this.config,
@@ -136,69 +138,71 @@ export class StorageService {
 
         const workspaceLoading$ = new Subject<void>();
         const layoutLoading$ = new Subject<void>();
-        observableCombineLatest(workspaceLoading$, layoutLoading$).pipe(
-            first())
+        observableCombineLatest(workspaceLoading$, layoutLoading$)
+            .pipe(first())
             .subscribe(() => this.storageStatus$.next(StorageStatus.OK));
 
         // load workspace
-        this.storageProvider.loadWorkspace().subscribe(workspace => {
+        this.storageProvider.loadWorkspace().subscribe((workspace) => {
             const newProject = workspace.project ? workspace.project : this.projectService.createDefaultProject();
 
             this.projectService.setProject(newProject);
 
             // setup storage
-            this.projectSubscription = this.projectService.getProjectStream().pipe(
-                filter(project => project !== newProject), // skip saving the previously loaded project
-                tap(project => {
-                    // save pending change
-                    this.pendingWorkspace = {
-                        project: project
-                    };
-                }),
-                debounceTime(this.config.DELAYS.STORAGE_DEBOUNCE),
-                tap(() => {
-                    // store pending change
-                    this.pendingWorkspace = undefined;
-                }))
-                .subscribe(project => {
+            this.projectSubscription = this.projectService
+                .getProjectStream()
+                .pipe(
+                    filter((project) => project !== newProject), // skip saving the previously loaded project
+                    tap((project) => {
+                        // save pending change
+                        this.pendingWorkspace = {
+                            project: project,
+                        };
+                    }),
+                    debounceTime(this.config.DELAYS.STORAGE_DEBOUNCE),
+                    tap(() => {
+                        // store pending change
+                        this.pendingWorkspace = undefined;
+                    }),
+                )
+                .subscribe((project) => {
                     this.storageProvider.saveWorkspace({
                         project: project,
                     });
                 });
 
-            this.pendingWorkspaceSubscription = observableFromEvent(window, 'beforeunload')
-                .subscribe(() => {
-                    if (this.pendingWorkspace) {
-                        this.storageProvider.saveWorkspace(this.pendingWorkspace)
-                            .subscribe(() => this.pendingWorkspace = undefined);
+            this.pendingWorkspaceSubscription = observableFromEvent(window, 'beforeunload').subscribe(() => {
+                if (this.pendingWorkspace) {
+                    this.storageProvider.saveWorkspace(this.pendingWorkspace).subscribe(() => (this.pendingWorkspace = undefined));
 
-                        // this is basically sleep via busy waiting
-                        let start = new Date().getTime();
-                        for (let i = 0; i < 1e7; i++) {
-                            if (!this.pendingWorkspace) {
-                                break;
-                            }
-                            if ((new Date().getTime() - start) > this.config.DELAYS.STORAGE_DEBOUNCE) {
-                                break;
-                            }
+                    // this is basically sleep via busy waiting
+                    let start = new Date().getTime();
+                    for (let i = 0; i < 1e7; i++) {
+                        if (!this.pendingWorkspace) {
+                            break;
+                        }
+                        if (new Date().getTime() - start > this.config.DELAYS.STORAGE_DEBOUNCE) {
+                            break;
                         }
                     }
-                });
+                }
+            });
 
             workspaceLoading$.next();
             workspaceLoading$.complete();
         });
 
         // load layout
-        this.storageProvider.loadLayoutSettings().subscribe(layoutSettings => {
+        this.storageProvider.loadLayoutSettings().subscribe((layoutSettings) => {
             if (layoutSettings) {
                 this.layoutService.setLayoutDict(layoutSettings);
             }
 
             // setup storage
-            this.layoutSubscription = this.layoutService.getLayoutDictStream().pipe(
-                skip(1)) // don't save the loaded stuff directly again
-                .subscribe(layout => {
+            this.layoutSubscription = this.layoutService
+                .getLayoutDictStream()
+                .pipe(skip(1)) // don't save the loaded stuff directly again
+                .subscribe((layout) => {
                     this.storageProvider.saveLayoutSettings(layout).subscribe();
                 });
 
@@ -206,5 +210,4 @@ export class StorageService {
             layoutLoading$.complete();
         });
     }
-
 }

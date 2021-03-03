@@ -25,9 +25,15 @@ export class WKTSourceType extends OperatorType {
     private static _ICON_URL = OperatorType.createIconDataUrl(WKTSourceType._TYPE);
     private static _NAME = 'WKT Source';
 
-    static get TYPE(): string { return WKTSourceType._TYPE; }
-    static get ICON_URL(): string { return WKTSourceType._ICON_URL; }
-    static get NAME(): string { return WKTSourceType._NAME; }
+    static get TYPE(): string {
+        return WKTSourceType._TYPE;
+    }
+    static get ICON_URL(): string {
+        return WKTSourceType._ICON_URL;
+    }
+    static get NAME(): string {
+        return WKTSourceType._NAME;
+    }
 
     private type: ResultType;
     private wkt: string;
@@ -40,7 +46,7 @@ export class WKTSourceType extends OperatorType {
 
     static fromDict(dict: WKTSourceTypeDict): WKTSourceType {
         return new WKTSourceType({
-            type:  ResultTypes.fromCode(dict.type),
+            type: ResultTypes.fromCode(dict.type),
             wkt: dict.wkt,
         });
     }

@@ -9,19 +9,15 @@ import {SaveProjectAsComponent} from '../save-project-as/save-project-as.compone
     selector: 'wave-workspace-settings',
     templateUrl: './workspace-settings.component.html',
     styleUrls: ['./workspace-settings.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WorkspaceSettingsComponent implements OnInit {
-
     readonly ChangeProjectionComponent = ChangeProjectionComponent;
     readonly NewProjectComponent = NewProjectComponent;
     readonly LoadProjectComponent = LoadProjectComponent;
     readonly SaveProjectAsComponent = SaveProjectAsComponent;
 
-    constructor(public layoutService: LayoutService) {
-    }
+    constructor(public layoutService: LayoutService) {}
 
-    ngOnInit() {
-    }
-
+    ngOnInit() {}
 }

@@ -4,15 +4,16 @@
         <wave-multi-layer-selection [types]="allowedLayerTypes" [min]="1" [max]="4" formControlName="layers"></wave-multi-layer-selection>
 
         <wave-operator-output-name formControlName="name" [suggestion]="outputNameSuggestion | async">
-            <mat-hint align="end" class="error"
-                      *ngIf="form.controls['name'].errors?.required || form.controls['name'].errors?.onlyWhitespace">
+            <mat-hint
+                align="end"
+                class="error"
+                *ngIf="form.controls['name'].errors?.required || form.controls['name'].errors?.onlyWhitespace"
+            >
                 The name must be non-empty.
             </mat-hint>
         </wave-operator-output-name>
     </div>
     <div class="actions">
-        <button type="submit" mat-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">
-            Create
-        </button>
+        <button type="submit" mat-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">Create</button>
     </div>
 </form>

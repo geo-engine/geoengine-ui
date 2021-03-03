@@ -29,9 +29,7 @@ import {ABCDSourceType, ABCDSourceTypeDict} from './operators/types/abcd-source-
 import {AbcdRepositoryComponent} from './operators/dialogs/abcd-repository/abcd-repository.component';
 import {BasketResultGroupByDatasetPipe} from './operators/dialogs/baskets/gfbio-basket.pipe';
 import {GfbioBasketsComponent} from './operators/dialogs/baskets/gfbio-baskets.component';
-import {
-    GroupedAbcdBasketResultComponent
-} from './operators/dialogs/baskets/grouped-abcd-basket-result/grouped-abcd-basket-result.component';
+import {GroupedAbcdBasketResultComponent} from './operators/dialogs/baskets/grouped-abcd-basket-result/grouped-abcd-basket-result.component';
 import {PangaeaBasketResultComponent} from './operators/dialogs/baskets/pangaea-basket-result/pangaea-basket-result.component';
 import {TerminologyLookupOperatorComponent} from './operators/dialogs/terminology-lookup/terminology-lookup.component';
 import {GFBioMappingQueryService} from './queries/mapping-query.service';
@@ -55,7 +53,7 @@ import {HelpComponent} from './help/help.component';
         BrowserAnimationsModule,
         BrowserModule,
         HttpClientModule,
-        RouterModule.forRoot([{path: '**', component: AppComponent},], {useHash: true, initialNavigation: 'disabled'}),
+        RouterModule.forRoot([{path: '**', component: AppComponent}], {useHash: true, initialNavigation: 'disabled'}),
         WaveCoreModule,
     ],
     providers: [
@@ -85,23 +83,15 @@ import {HelpComponent} from './help/help.component';
     ],
     bootstrap: [AppComponent],
 })
-export class AppModule {
-}
+export class AppModule {}
 
 function setupOperatorTypes(): Promise<void> {
     return new Promise((resolve, _reject) => {
-        OperatorTypeFactory.addType(
-            TerminologyLookupType.TYPE,
-            dict => TerminologyLookupType.fromDict(dict as TerminologyLookupTypeDict),
+        OperatorTypeFactory.addType(TerminologyLookupType.TYPE, (dict) =>
+            TerminologyLookupType.fromDict(dict as TerminologyLookupTypeDict),
         );
-        OperatorTypeFactory.addType(
-            PangaeaSourceType.TYPE,
-            dict => PangaeaSourceType.fromDict(dict as PangaeaSourceTypeDict),
-        );
-        OperatorTypeFactory.addType(
-            ABCDSourceType.TYPE,
-            dict => ABCDSourceType.fromDict(dict as ABCDSourceTypeDict),
-        );
+        OperatorTypeFactory.addType(PangaeaSourceType.TYPE, (dict) => PangaeaSourceType.fromDict(dict as PangaeaSourceTypeDict));
+        OperatorTypeFactory.addType(ABCDSourceType.TYPE, (dict) => ABCDSourceType.fromDict(dict as ABCDSourceTypeDict));
 
         resolve();
     });

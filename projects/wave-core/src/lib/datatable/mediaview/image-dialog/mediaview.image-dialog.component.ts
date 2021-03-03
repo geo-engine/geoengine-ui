@@ -4,7 +4,7 @@ import {MatDialogRef} from '@angular/material/dialog';
 @Component({
     selector: 'wave-mediaview-image-dialog',
     templateUrl: './mediaview.image-dialog.component.html',
-    styleUrls: ['./mediaview.image-dialog.component.scss']
+    styleUrls: ['./mediaview.image-dialog.component.scss'],
 })
 
 /**
@@ -14,7 +14,6 @@ import {MatDialogRef} from '@angular/material/dialog';
  * The component receives an array of urls to images (imageURLS) and the id of the image to show first (currentImage) as inputs.
  */
 export class MediaviewImageDialogComponent {
-
     /**
      * Input: An array of image-urls to display in the dialog
      */
@@ -35,7 +34,8 @@ export class MediaviewImageDialogComponent {
      * Sets up all variables
      * @param dialogRef reference to this Dialog-Type
      */
-    constructor(public dialogRef: MatDialogRef<MediaviewImageDialogComponent>) {     // , @Inject(ElementRef) elementRef: ElementRef
+    constructor(public dialogRef: MatDialogRef<MediaviewImageDialogComponent>) {
+        // , @Inject(ElementRef) elementRef: ElementRef
         this.loading = true;
 
         // this.domNode = elementRef.nativeElement;

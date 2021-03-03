@@ -4,11 +4,7 @@ import {CsvSourceType, CSVParameters} from '../../../types/csv-source-type.model
 import {Operator} from '../../../operator.model';
 import {ResultTypes} from '../../../result-type.model';
 import {UserService} from '../../../../users/user.service';
-import {
-    AbstractVectorSymbology,
-    PointSymbology,
-    VectorSymbology
-} from '../../../../layers/symbology/symbology.model';
+import {AbstractVectorSymbology, PointSymbology, VectorSymbology} from '../../../../layers/symbology/symbology.model';
 import {VectorLayer} from '../../../../layers/layer.model';
 import {RandomColorService} from '../../../../util/services/random-color.service';
 import {MatDialogRef, MatDialog, MAT_DIALOG_DATA} from '@angular/material/dialog';
@@ -29,22 +25,21 @@ import {HttpErrorResponse} from '@angular/common/http';
     providers: [CsvPropertiesService],
 })
 export class CsvDialogComponent implements OnInit {
-
     IntervalFormat = IntervalFormat;
     @ViewChild(CsvPropertiesComponent) csvProperties;
     @ViewChild(CsvTableComponent) csvTable;
     data: UploadData;
     uploading$ = new BehaviorSubject(false);
 
-    constructor(private userService: UserService,
-                private randomColorService: RandomColorService,
-                private projectService: ProjectService,
-                private dialogRef: MatDialogRef<CsvDialogComponent>,
-                private errorDialog: MatDialog) {
-    }
+    constructor(
+        private userService: UserService,
+        private randomColorService: RandomColorService,
+        private projectService: ProjectService,
+        private dialogRef: MatDialogRef<CsvDialogComponent>,
+        private errorDialog: MatDialog,
+    ) {}
 
-    ngOnInit() {
-    }
+    ngOnInit() {}
 
     submit() {
         this.uploading$.next(true);
@@ -60,12 +55,15 @@ export class CsvDialogComponent implements OnInit {
             header[i] = this.csvTable.header[i].value;
         }
         const columnX = header[this.csvProperties.spatialProperties.controls['xColumn'].value];
-        const columnY = this.csvProperties.spatialProperties.controls['isWkt'].value ?
-            '' : header[this.csvProperties.spatialProperties.controls['yColumn'].value];
-        const time1 = this.csvProperties.temporalProperties.controls['isTime'].value ?
-            header[this.csvProperties.temporalProperties.controls['startColumn'].value] : '';
-        const time2 = this.csvProperties.temporalProperties.controls['isTime'].value ?
-            header[this.csvProperties.temporalProperties.controls['endColumn'].value] : '';
+        const columnY = this.csvProperties.spatialProperties.controls['isWkt'].value
+            ? ''
+            : header[this.csvProperties.spatialProperties.controls['yColumn'].value];
+        const time1 = this.csvProperties.temporalProperties.controls['isTime'].value
+            ? header[this.csvProperties.temporalProperties.controls['startColumn'].value]
+            : '';
+        const time2 = this.csvProperties.temporalProperties.controls['isTime'].value
+            ? header[this.csvProperties.temporalProperties.controls['endColumn'].value]
+            : '';
         const numericColumns = header.filter((name, index) => {
             return this.csvTable.isNumberArray[index] === 1 && untypedCols.indexOf(index) < 0;
         });
@@ -73,23 +71,26 @@ export class CsvDialogComponent implements OnInit {
             return this.csvTable.isNumberArray[index] === 0 && untypedCols.indexOf(index) < 0;
         });
         const onError = this.csvProperties.layerProperties.controls['onError'].value;
-        const columns = this.csvProperties.spatialProperties.controls['isWkt'].value ? {
-            x: columnX,
-            numeric: numericColumns,
-            textual: textualColumns,
-        } : {
-            x: columnX,
-            y: columnY,
-            numeric: numericColumns,
-            textual: textualColumns,
-        };
+        const columns = this.csvProperties.spatialProperties.controls['isWkt'].value
+            ? {
+                  x: columnX,
+                  numeric: numericColumns,
+                  textual: textualColumns,
+              }
+            : {
+                  x: columnX,
+                  y: columnY,
+                  numeric: numericColumns,
+                  textual: textualColumns,
+              };
         const parameters: CSVParameters = {
             fieldSeparator,
             geometry,
-            time: (time.indexOf('constant') < 0) ?
-                time as ('none' | 'start+inf' | 'start+end' | 'start+duration' | { use: 'start', duration: number }) :
-                {use: 'start', duration: this.csvProperties.temporalProperties.controls['constantDuration'].value},
-            header: (this.csvProperties.dataProperties.controls['isHeaderRow'].value ? null : header),
+            time:
+                time.indexOf('constant') < 0
+                    ? (time as 'none' | 'start+inf' | 'start+end' | 'start+duration' | {use: 'start'; duration: number})
+                    : {use: 'start', duration: this.csvProperties.temporalProperties.controls['constantDuration'].value},
+            header: this.csvProperties.dataProperties.controls['isHeaderRow'].value ? null : header,
             columns,
             onError,
         };
@@ -113,7 +114,7 @@ export class CsvDialogComponent implements OnInit {
                 time1: {
                     format: 'custom',
                     customFormat: time1Format,
-                }
+                },
             };
             parameters.columns.time1 = time1;
 
@@ -149,25 +150,29 @@ export class CsvDialogComponent implements OnInit {
 
         const operator = new Operator({
             operatorType: csvSourceType,
-            resultType: this.csvProperties.spatialProperties.controls['isWkt'].value ?
-                this.csvProperties.spatialProperties.controls['wktResultType'].value : ResultTypes.POINTS,
+            resultType: this.csvProperties.spatialProperties.controls['isWkt'].value
+                ? this.csvProperties.spatialProperties.controls['wktResultType'].value
+                : ResultTypes.POINTS,
             projection: this.csvProperties.spatialProperties.controls['spatialReferenceSystem'].value,
         }).getProjectedOperator(Projections.WGS_84);
         this.uploading$.next(true);
 
-        this.userService.addFeatureToDB(this.csvProperties.layerProperties.controls['layerName'].value, operator)
-            .subscribe(data => { // Regular query processing
-                    this.addLayer(data);
+        this.userService.addFeatureToDB(this.csvProperties.layerProperties.controls['layerName'].value, operator).subscribe(
+            (data) => {
+                // Regular query processing
+                this.addLayer(data);
 
-                    this.dialogRef.close();
-                },
-                error => { // Error code - open dialog
-                    this.uploading$.next(false);
-                    this.openErrorDialog(error);
-                });
+                this.dialogRef.close();
+            },
+            (error) => {
+                // Error code - open dialog
+                this.uploading$.next(false);
+                this.openErrorDialog(error);
+            },
+        );
     }
 
-    private addLayer(entry: {name: string, operator: Operator}) {
+    private addLayer(entry: {name: string; operator: Operator}) {
         const color = this.randomColorService.getRandomColorRgba();
         let symbology: AbstractVectorSymbology;
         let clustered: boolean;
@@ -204,7 +209,7 @@ export class CsvDialogComponent implements OnInit {
             width: '400px',
             data: {error},
         });
-        errorDialogRef.afterClosed().subscribe(result => {
+        errorDialogRef.afterClosed().subscribe((result) => {
             if (result) {
                 this.dialogRef.close();
             }
@@ -234,22 +239,20 @@ export class CsvDialogComponent implements OnInit {
 @Component({
     selector: 'wave-csv-dialog-error-dialog',
     template: `
-            <wave-dialog-header>{{data.error.name}}</wave-dialog-header>
-            <div style="margin-top: 20px; margin-bottom: 20px">
-                {{data.error.url}}:<br>
-                {{data.error.status}} - {{data.error.statusText}}
-            </div>
-            <mat-dialog-actions align="end">
-                <button mat-raised-button (click)="dialogRef.close(true)">Abort</button>
-                <button mat-raised-button (click)="dialogRef.close(false)">Continue</button>
-            </mat-dialog-actions>
+        <wave-dialog-header>{{ data.error.name }}</wave-dialog-header>
+        <div style="margin-top: 20px; margin-bottom: 20px">
+            {{ data.error.url }}:<br />
+            {{ data.error.status }} - {{ data.error.statusText }}
+        </div>
+        <mat-dialog-actions align="end">
+            <button mat-raised-button (click)="dialogRef.close(true)">Abort</button>
+            <button mat-raised-button (click)="dialogRef.close(false)">Continue</button>
+        </mat-dialog-actions>
     `,
 })
 export class CsvErrorDialogComponent {
-
     constructor(
         public dialogRef: MatDialogRef<CsvErrorDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: { error: HttpErrorResponse }) {
-    }
-
+        @Inject(MAT_DIALOG_DATA) public data: {error: HttpErrorResponse},
+    ) {}
 }
