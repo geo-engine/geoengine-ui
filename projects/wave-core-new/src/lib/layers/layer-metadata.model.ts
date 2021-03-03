@@ -1,11 +1,21 @@
 import {HasLayerType, LayerType} from './layer.model';
 import {RasterResultDescriptorDict, VectorResultDescriptorDict} from '../backend/backend.model';
-import {RasterDataTypes, VectorColumnDataType, VectorColumnDataTypes, VectorDataType, VectorDataTypes} from '../operators/datatype.model';
+import {
+    RasterDataType,
+    RasterDataTypes,
+    VectorColumnDataType,
+    VectorColumnDataTypes,
+    VectorDataType,
+    VectorDataTypes,
+} from '../operators/datatype.model';
 import * as Immutable from 'immutable';
 import {Measurement} from './measurement';
+import {ResultType, ResultTypes} from '../operators/result-type.model';
 
 export abstract class LayerMetadata implements HasLayerType {
     abstract readonly layerType: LayerType;
+
+    public abstract get resultType(): ResultType;
 }
 
 export class VectorLayerMetadata extends LayerMetadata {
@@ -31,15 +41,19 @@ export class VectorLayerMetadata extends LayerMetadata {
 
         return new VectorLayerMetadata(dataType, columns);
     }
+
+    public get resultType(): ResultType {
+        return this.dataType.resultType;
+    }
 }
 
 export class RasterLayerMetadata extends LayerMetadata {
     readonly layerType = 'raster';
 
-    readonly dataType: VectorDataType;
+    readonly dataType: RasterDataType;
     readonly measurement: Measurement;
 
-    constructor(dataType: VectorDataType, measurement: Measurement) {
+    constructor(dataType: RasterDataType, measurement: Measurement) {
         super();
 
         this.dataType = dataType;
@@ -51,5 +65,9 @@ export class RasterLayerMetadata extends LayerMetadata {
         const measurement = Measurement.fromDict(dict.measurement);
 
         return new RasterLayerMetadata(dataType, measurement);
+    }
+
+    public get resultType(): ResultType {
+        return ResultTypes.RASTER;
     }
 }

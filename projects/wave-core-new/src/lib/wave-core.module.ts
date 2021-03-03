@@ -99,6 +99,7 @@ import {VegaViewerComponent} from './plots/vega-viewer/vega-viewer.component';
 import {LineageGraphComponent} from './provenance/lineage-graph/lineage-graph.component';
 import {MeanRasterPixelValuesOverTimeDialogComponent} from './operators/dialogs/mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
 import {RasterVectorJoinComponent} from './operators/dialogs/raster-vector-join/raster-vector-join.component';
+import {PointInPolygonFilterOperatorComponent} from './operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -180,6 +181,7 @@ const WAVE_COMPONENTS = [
     PlotListComponent,
     PlotListEntryComponent,
     PointIconComponent,
+    PointInPolygonFilterOperatorComponent,
     PolygonIconComponent,
     RasterIconComponent,
     RasterLegendComponent,

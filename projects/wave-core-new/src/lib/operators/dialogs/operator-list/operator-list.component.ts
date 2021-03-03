@@ -38,6 +38,7 @@ import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.compon
 import {createIconDataUrl} from '../../../util/icons';
 import {HistogramOperatorComponent} from '../histogram-operator/histogram-operator.component';
 import {MeanRasterPixelValuesOverTimeDialogComponent} from '../mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
+import {PointInPolygonFilterOperatorComponent} from '../point-in-polygon-filter/point-in-polygon-filter.component';
 import {RasterVectorJoinComponent} from '../raster-vector-join/raster-vector-join.component';
 // import {RgbCompositeComponent} from '../rgb-composite/rgb-composite.component';
 // import {RgbaCompositeType} from '../../types/rgba-composite-type.model';
@@ -173,11 +174,14 @@ export class OperatorListComponent implements OnInit {
         //     type: HeatmapType,
         //     description: 'Create a heatmap for points',
         // },
-        // {
-        //     component: PointInPolygonFilterOperatorComponent,
-        //     type: PointInPolygonFilterType,
-        //     description: 'Filter points that are enclosed by a polygon',
-        // },
+        {
+            component: PointInPolygonFilterOperatorComponent,
+            type: {
+                NAME: 'Point in Polygon',
+                ICON_URL: createIconDataUrl('Point in Polygon'),
+            },
+            description: 'Filter points that are enclosed by a polygon',
+        },
         // {
         //     component: TextualAttributeFilterOperatorComponent,
         //     type: TextualAttributeFilterType,

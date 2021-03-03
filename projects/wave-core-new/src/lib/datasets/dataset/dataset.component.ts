@@ -1,11 +1,18 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
-import {DataSet} from '../dataset.model';
+import {DataSet, VectorResultDescriptor} from '../dataset.model';
 import {RasterLayer, VectorLayer} from '../../layers/layer.model';
-import {MappingRasterSymbology, PointSymbology} from '../../layers/symbology/symbology.model';
+import {
+    AbstractVectorSymbology,
+    LineSymbology,
+    MappingRasterSymbology,
+    PointSymbology,
+    VectorSymbology,
+} from '../../layers/symbology/symbology.model';
 import {Unit} from '../../operators/unit.model';
 import {ProjectService} from '../../project/project.service';
 import {mergeMap} from 'rxjs/operators';
 import {RandomColorService} from '../../util/services/random-color.service';
+import {VectorDataTypes} from '../../operators/datatype.model';
 
 @Component({
     selector: 'wave-dataset',
@@ -48,15 +55,35 @@ export class DataSetComponent implements OnInit {
                             }),
                         );
                     } else {
+                        const result_descriptor = this.dataset.result_descriptor as VectorResultDescriptor;
+
+                        let symbology: VectorSymbology;
+
+                        switch (result_descriptor.data_type) {
+                            case VectorDataTypes.MultiPoint:
+                                symbology = PointSymbology.createSymbology({
+                                    fillRGBA: this.randomColorService.getRandomColorRgba(),
+                                    radius: 10,
+                                    clustered: false,
+                                });
+                                break;
+                            case VectorDataTypes.MultiLineString:
+                                symbology = LineSymbology.createSymbology({
+                                    strokeRGBA: this.randomColorService.getRandomColorRgba(),
+                                });
+                                break;
+                            case VectorDataTypes.MultiPolygon:
+                                symbology = VectorSymbology.createSymbology({
+                                    fillRGBA: this.randomColorService.getRandomColorRgba(),
+                                });
+                                break;
+                        }
+
                         return this.projectService.addLayer(
                             new VectorLayer({
                                 workflowId,
                                 name: this.dataset.name,
-                                symbology: PointSymbology.createSymbology({
-                                    fillRGBA: this.randomColorService.getRandomColorRgba(),
-                                    radius: 10,
-                                    clustered: false,
-                                }),
+                                symbology: symbology,
                                 isLegendVisible: false,
                                 isVisible: true,
                             }),

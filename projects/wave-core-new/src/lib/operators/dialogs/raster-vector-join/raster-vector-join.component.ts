@@ -10,7 +10,7 @@ import {filter, map, mergeMap} from 'rxjs/operators';
 import {OperatorParams} from '../../../backend/backend.model';
 import {NotificationService} from '../../../notification.service';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
-import {VectorLayerMetadata} from '../../../layers/layer-metadata';
+import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
 import {VectorSymbology} from '../../../layers/symbology/symbology.model';
 
 type Aggregation = 'first' | 'mean';

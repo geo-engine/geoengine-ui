@@ -52,6 +52,7 @@ export * from './lib/operators/dialogs/helpers/operator-output-name/operator-out
 export * from './lib/operators/dialogs/histogram-operator/histogram-operator.component';
 export * from './lib/operators/dialogs/mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
 export * from './lib/operators/dialogs/operator-list/operator-list.component';
+export * from './lib/operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 export * from './lib/operators/dialogs/raster-vector-join/raster-vector-join.component';
 export * from './lib/operators/dialogs/statistics-plot/statistics-plot.component';
 export * from './lib/plots/plot-detail-view/plot-detail-view.component';
@@ -87,6 +88,7 @@ export * from './lib/util/pipes/trim.pipe';
 // Models
 export * from './lib/backend/backend.model';
 export * from './lib/layers/layer.model';
+export * from './lib/layers/layer-metadata.model';
 export * from './lib/layers/symbology/symbology.model';
 export * from './lib/operators/result-type.model';
 export * from './lib/operators/spatial-reference.model';

@@ -1,4 +1,5 @@
 import {NoDataDict} from '../backend/backend.model';
+import {ResultType, ResultTypes} from './result-type.model';
 
 /**
  * A class about a raster data type.
@@ -240,6 +241,8 @@ export class RasterDataTypeCollection {
 export const RasterDataTypes = RasterDataTypeCollection.INSTANCE; // tslint:disable-line:variable-name
 
 export abstract class VectorDataType {
+    abstract readonly resultType: ResultType;
+
     /**
      * Create a human readable output of the data type.
      * @returns The name.
@@ -255,26 +258,34 @@ export abstract class VectorDataType {
 }
 
 class Data extends VectorDataType {
+    resultType = ResultTypes.DATA;
+
     getCode(): string {
         return 'Data';
     }
 }
 
 class MultiPoint extends VectorDataType {
+    resultType = ResultTypes.POINTS;
+
     getCode(): string {
         return 'MultiPoint';
     }
 }
 
 class MultiLineString extends VectorDataType {
+    resultType = ResultTypes.LINES;
+
     getCode(): string {
         return 'MultiLineString';
     }
 }
 
 class MultiPolygon extends VectorDataType {
+    resultType = ResultTypes.POLYGONS;
+
     getCode(): string {
-        return 'MultiPoint';
+        return 'MultiPolygon';
     }
 }
 
@@ -296,6 +307,7 @@ export class VectorDataTypeCollection {
             case this.MultiLineString.getCode():
                 return this.MultiLineString;
             case this.MultiPolygon.getCode():
+                return this.MultiPolygon;
             default:
                 throw new Error(`Invalid Data Type: ${code}`);
         }
