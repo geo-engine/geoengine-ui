@@ -4,6 +4,7 @@
     "license": "MIT",
     "scripts": {
         "ng": "ng",
+        "prettier": "prettier",
         "start": "ng serve",
         "build": "npm run build-prod:core && npm run build-prod:wave && npm run build-prod:gfbio && npm run build-prod:nature40",
         "serve:wave": "ng serve wave-app --proxy-config proxy.conf.json",

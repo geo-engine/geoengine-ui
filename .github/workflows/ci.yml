@@ -34,11 +34,4 @@ jobs:
             -   name: Checkout
                 uses: actions/checkout@v2
             -   run: npm install
-            -   run: prettier --check .
-#            -   name: Prettify Check
-#                uses: creyD/prettier_action@v3.1
-#                with:
-#                    dry: true
-#                    prettier_options: --config $GITHUB_WORKSPACE/wave/.prettierrc.json --ignore-path $GITHUB_WORKSPACE/wave/.prettierignore --check $GITHUB_WORKSPACE/wave/.
-#                env:
-#                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            -   run: npm run prettier -- --check .
