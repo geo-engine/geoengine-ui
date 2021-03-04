@@ -1,7 +1,0 @@
-{
-    "extends": "../../tslint.json",
-    "rules": {
-        "directive-selector": [true, "attribute", "waveNature40", "camelCase"],
-        "component-selector": [true, "element", "wave-nature40", "kebab-case"]
-    }
-}
