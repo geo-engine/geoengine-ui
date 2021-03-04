@@ -106,7 +106,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     ) {
         this.registerIcons();
 
-        vcRef.length; // tslint:disable-line:no-unused-expression // just get rid of unused warning
+        vcRef.length; // eslint-disable-line @typescript-eslint/no-unused-expressions
 
         this.storageService.toString(); // just register
 

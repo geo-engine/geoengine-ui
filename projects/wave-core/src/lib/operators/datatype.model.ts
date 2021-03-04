@@ -171,7 +171,7 @@ class Alphanumeric extends DataType {
 export class DataTypeCollection {
     static readonly INSTANCE = new DataTypeCollection();
 
-    // tslint:disable:variable-name
+    /* eslint-disable @typescript-eslint/naming-convention,no-underscore-dangle,id-blacklist,id-match */
     Byte: DataType = new Byte();
     Int16: DataType = new Int16();
     UInt16: DataType = new UInt16();
@@ -180,7 +180,7 @@ export class DataTypeCollection {
     Float32: DataType = new Float32();
     Float64: DataType = new Float64();
     Alphanumeric: DataType = new Alphanumeric();
-    // tslint:enable
+    /* eslint-enable */
 
     ALL_DATATYPES: Array<DataType>;
     ALL_NUMERICS: Array<DataType>;
@@ -214,4 +214,4 @@ export class DataTypeCollection {
     }
 }
 
-export const DataTypes = DataTypeCollection.INSTANCE; // tslint:disable-line:variable-name
+export const DataTypes = DataTypeCollection.INSTANCE; // eslint-disable-line @typescript-eslint/naming-convention, no-underscore-dangle, id-blacklist, id-match

@@ -43,5 +43,5 @@ export class WCSOutputFormatCollection {
 /**
  * Export WCSOutputFormatCollection as singleton.
  */
-// tslint:disable-next-line:variable-name
+// eslint-disable-next-line @typescript-eslint/naming-convention, no-underscore-dangle, id-blacklist, id-match
 export const WCSOutputFormats = WCSOutputFormatCollection.INSTANCE;

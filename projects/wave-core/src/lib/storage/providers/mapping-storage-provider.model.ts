@@ -171,7 +171,7 @@ export class MappingStorageProvider extends StorageProvider {
     loadLayoutSettings(): Observable<LayoutDict> {
         const layoutSettings = localStorage.getItem(KEYS.LAYOUT_SETTINGS);
         if (layoutSettings === null) {
-            // tslint:disable-line:no-null-keyword
+            // eslint-disable-line no-null/no-null
             return observableOf(undefined);
         } else {
             return observableOf(JSON.parse(layoutSettings));

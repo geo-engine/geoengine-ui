@@ -40,7 +40,7 @@ export interface SymbologyDict {
     symbologyType: string;
 }
 
-// tslint:disable-next-line: no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ISymbology {}
 
 export type StrokeDashStyle = Array<number>;

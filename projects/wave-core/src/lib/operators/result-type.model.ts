@@ -105,4 +105,4 @@ export class ResultTypeCollection {
     }
 }
 
-export const ResultTypes = ResultTypeCollection.INSTANCE; // tslint:disable-line:variable-name
+export const ResultTypes = ResultTypeCollection.INSTANCE; // eslint-disable-line @typescript-eslint/naming-convention, no-underscore-dangle, id-blacklist, id-match

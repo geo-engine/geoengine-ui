@@ -19,7 +19,7 @@ import {IBasketResult} from './gfbio-basket.model';
 import {GFBioUserService} from '../../../users/user.service';
 
 @Directive()
-// tslint:disable-next-line:directive-class-suffix
+// eslint-disable-next-line @angular-eslint/directive-class-suffix
 export abstract class BasketResultComponent<T extends IBasketResult> {
     @Input() result: T;
 

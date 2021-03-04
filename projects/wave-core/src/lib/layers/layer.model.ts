@@ -129,13 +129,13 @@ interface VectorLayerConfig<S extends AbstractVectorSymbology> extends LayerConf
 }
 
 interface RasterLayerConfig<S extends AbstractRasterSymbology> extends LayerConfig<S> {
-    // tslint:disable-line:no-empty-interface
+    // eslint-disable-line @typescript-eslint/no-empty-interface
 }
 
 type LayerType = 'raster' | 'vector';
 
 interface LayerTypeOptionsDict {
-    // tslint:disable-line:no-empty-interface
+    // eslint-disable-line @typescript-eslint/no-empty-interface
 }
 
 interface VectorLayerTypeOptionsDict extends LayerTypeOptionsDict {

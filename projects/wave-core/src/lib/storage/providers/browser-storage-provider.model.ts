@@ -33,7 +33,7 @@ export class BrowserStorageProvider extends StorageProvider {
     loadProject(operatorMap: Map<number, Operator>): Observable<Project> {
         const projectJSON = localStorage.getItem(PATH_PREFIX + 'project');
         if (projectJSON === null) {
-            // tslint:disable-line:no-null-keyword
+            // eslint-disable-line no-null/no-null
             return observableOf(undefined);
         } else {
             const project = Project.fromJSON({
@@ -54,7 +54,7 @@ export class BrowserStorageProvider extends StorageProvider {
     loadLayoutSettings(): Observable<LayoutDict> {
         const layoutSettings = localStorage.getItem(PATH_PREFIX + 'layoutSettings');
         if (layoutSettings === null) {
-            // tslint:disable-line:no-null-keyword
+            // eslint-disable-line no-null/no-null
             return observableOf(undefined);
         } else {
             return observableOf(JSON.parse(layoutSettings));
