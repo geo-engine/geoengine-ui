@@ -1,0 +1,9 @@
+<wave-sidenav-header>Select Data</wave-sidenav-header>
+
+<label id="select-data-radio-label">Select a dataset to display</label>
+<mat-radio-group
+    aria-labelledby="select-data-radio-label"
+    (change)="selectData($event)">
+    <mat-radio-button value="biome6k">Biome 6k</mat-radio-button>
+    <mat-radio-button value="biomePi">Biome Pi</mat-radio-button>
+</mat-radio-group>

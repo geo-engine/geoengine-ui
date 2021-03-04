@@ -1,4 +1,4 @@
-import {Observable, BehaviorSubject, Subject, ReplaySubject} from 'rxjs';
+import {Observable, BehaviorSubject} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {
@@ -30,7 +30,7 @@ import {
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from './app-config.service';
-import {MockLayersComponent} from './mock-layers/mock-layers.component';
+import {SelectLayersComponent} from './select-layers/select-layers.component';
 import {ComponentPortal} from '@angular/cdk/portal';
 
 @Component({
@@ -48,7 +48,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     readonly analysisVisible$ = new BehaviorSubject(false);
     readonly windowHeight$ = new BehaviorSubject<number>(window.innerHeight);
 
-    datasetPortal: ComponentPortal<MockLayersComponent>;
+    datasetPortal: ComponentPortal<SelectLayersComponent>;
 
     constructor(
         @Inject(Config) readonly config: AppConfig,
@@ -105,7 +105,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     openDataMenu() {
-        this.datasetPortal = new ComponentPortal(MockLayersComponent);
+        this.datasetPortal = new ComponentPortal(SelectLayersComponent);
         this.sidenav.open();
     }
 
