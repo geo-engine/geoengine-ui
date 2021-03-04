@@ -118,6 +118,7 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
+                        "allowedCommonJsDependencies": ["dagre-d3", "pbf"],
                         "outputPath": "dist/wave-app",
                         "index": "projects/wave-app/src/index.html",
                         "main": "projects/wave-app/src/main.ts",
@@ -249,6 +250,7 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
+                        "allowedCommonJsDependencies": ["dagre-d3", "pbf"],
                         "outputPath": "dist/geoengine-app",
                         "index": "projects/geoengine-app/src/index.html",
                         "main": "projects/geoengine-app/src/main.ts",
@@ -380,6 +382,7 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
+                        "allowedCommonJsDependencies": ["dagre-d3", "pbf"],
                         "outputPath": "dist/data-atlas-app",
                         "index": "projects/data-atlas-app/src/index.html",
                         "main": "projects/data-atlas-app/src/main.ts",
@@ -511,6 +514,7 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
+                        "allowedCommonJsDependencies": ["dagre-d3", "pbf"],
                         "outputPath": "dist/gfbio-app",
                         "index": "projects/gfbio-app/src/index.html",
                         "main": "projects/gfbio-app/src/main.ts",
@@ -642,6 +646,7 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
+                        "allowedCommonJsDependencies": ["dagre-d3", "pbf"],
                         "outputPath": "dist/nature40-app",
                         "index": "projects/nature40-app/src/index.html",
                         "main": "projects/nature40-app/src/main.ts",
