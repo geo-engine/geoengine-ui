@@ -45,6 +45,22 @@
                         "accessibility": "explicit"
                     }
                 ],
+                "@typescript-eslint/member-ordering": [
+                    "error",
+                    {
+                        "default": {
+                            "memberTypes": [
+                                "public-field",
+                                "protected-field",
+                                "private-field",
+                                "constructor",
+                                "public-method",
+                                "protected-method",
+                                "private-method"
+                            ]
+                        }
+                    }
+                ],
                 "arrow-parens": [
                     "off",
                     "always"
