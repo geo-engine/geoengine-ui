@@ -28,10 +28,18 @@ jobs:
     #                env:
     #                    CI: true
 
-    codefmt:
+    codestyle:
+        name: Code Format and Lints
         runs-on: ubuntu-20.04
         steps:
             -   name: Checkout
                 uses: actions/checkout@v2
-            -   run: npm install
-            -   run: npm run prettier -- --check .
+            -   name: Install Dependencies
+                run: npm install
+            -   name: Code Format Check with Prettier
+                run: npm run prettier -- --check .
+            -   name: Check with Linter
+                run: |
+                    npm run ng -- lint wave-core-new
+                    npm run ng -- lint geoengine-app
+                    npm run ng -- lint data-atlas-app
