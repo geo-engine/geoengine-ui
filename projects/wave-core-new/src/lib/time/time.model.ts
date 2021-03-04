@@ -24,8 +24,8 @@ export interface TimeStepDuration {
     durationUnit: TimeStepDurationType;
 }
 
-export function timeStepDurationToTimeStepDict(duration: TimeStepDuration): TimeStepDict {
-    function mapGranularity(durationUnit: TimeStepDurationType): TimeStepGranularityDict {
+export const timeStepDurationToTimeStepDict = (duration: TimeStepDuration): TimeStepDict => {
+    const mapGranularity = (durationUnit: TimeStepDurationType): TimeStepGranularityDict => {
         switch (durationUnit) {
             case 'millisecond':
             case 'milliseconds':
@@ -49,16 +49,16 @@ export function timeStepDurationToTimeStepDict(duration: TimeStepDuration): Time
             case 'years':
                 return 'Years';
         }
-    }
+    };
 
     return {
         step: duration.durationAmount,
         granularity: mapGranularity(duration.durationUnit),
     };
-}
+};
 
-export function timeStepDictTotimeStepDuration(timeStepDict: TimeStepDict): TimeStepDuration {
-    function mapGranularity(granularity: TimeStepGranularityDict, plural: boolean): TimeStepDurationType {
+export const timeStepDictTotimeStepDuration = (timeStepDict: TimeStepDict): TimeStepDuration => {
+    const mapGranularity = (granularity: TimeStepGranularityDict, plural: boolean): TimeStepDurationType => {
         switch (granularity) {
             case 'Millis':
                 return plural ? 'milliseconds' : 'millisecond';
@@ -75,21 +75,17 @@ export function timeStepDictTotimeStepDuration(timeStepDict: TimeStepDict): Time
             case 'Years':
                 return plural ? 'years' : 'year';
         }
-    }
+    };
 
     return {
         durationAmount: timeStepDict.step,
         durationUnit: mapGranularity(timeStepDict.granularity, timeStepDict.step > 1),
     };
-}
+};
 
 export class Time implements ToDict<TimeIntervalDict> {
     readonly start: Moment;
     readonly end: Moment;
-
-    static fromDict(dict: TimeIntervalDict): Time {
-        return new Time(dict.start, dict.end);
-    }
 
     constructor(start: MomentInput, end?: MomentInput) {
         this.start = utc(start);
@@ -98,6 +94,10 @@ export class Time implements ToDict<TimeIntervalDict> {
         } else {
             this.end = this.start.clone();
         }
+    }
+
+    static fromDict(dict: TimeIntervalDict): Time {
+        return new Time(dict.start, dict.end);
     }
 
     toDict(): TimeIntervalDict {

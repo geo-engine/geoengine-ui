@@ -1,9 +1,9 @@
-// export interface OperatorTypeConfig {} // tslint:disable-line:no-empty-interface
+// eslint-disable-line
 
 /**
  * Options allowed when cloning the operator
  */
-export interface OperatorTypeCloneOptions {} // tslint:disable-line:no-empty-interface
+export interface OperatorTypeCloneOptions {} // eslint-disable-line @typescript-eslint/no-empty-interface
 
 /**
  * Dictionary for serializing the operator type.
@@ -73,6 +73,7 @@ export abstract class OperatorType {
 
     /**
      * clone an operator type with modified parameters
+     *
      * @param options a dictionary with modifications
      */
     abstract cloneWithModifications(options?: OperatorTypeCloneOptions): OperatorType;

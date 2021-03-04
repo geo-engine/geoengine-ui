@@ -23,19 +23,19 @@ import {WorkflowDict} from '../../../backend/backend.model';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
-    private static readonly RASTER_VALUE = 'value';
     readonly RASTER_TYPE = [ResultTypes.RASTER];
     readonly UNITLESS_UNIT = Unit.defaultUnit;
     readonly CUSTOM_UNIT_ID = 'CUSTOM';
-
     form: FormGroup;
 
     outputDataTypes$: Observable<Array<[RasterDataType, string]>>;
+
     // TODO: reincorporate unit
     // outputUnits$: Observable<Array<Unit>>;
-    // outputUnitIsCustom$: Observable<boolean>;
-
     unitSubscription: Subscription;
+
+    // outputUnitIsCustom$: Observable<boolean>;
+    private static readonly RASTER_VALUE = 'value';
 
     /**
      * DI of services and setup of observables for the template
@@ -215,7 +215,8 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                             params: {
                                 expression,
                                 output_type: dataType.getCode(),
-                                output_no_data_value: dataType.noData(dataType.getMax()), // TODO: make this configurable once units exist again
+                                // TODO: make this configurable once units exist again
+                                output_no_data_value: dataType.noData(dataType.getMax()),
                             },
                             raster_sources: [a.operator, b.operator],
                             vector_sources: [],
@@ -225,8 +226,8 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                     this.projectService
                         .registerWorkflow(workflow)
                         .pipe(
-                            mergeMap((workflowId) => {
-                                return this.projectService.addLayer(
+                            mergeMap((workflowId) =>
+                                this.projectService.addLayer(
                                     new RasterLayer({
                                         workflowId,
                                         name,
@@ -244,8 +245,8 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                                         isLegendVisible: false,
                                         isVisible: true,
                                     }),
-                                );
-                            }),
+                                ),
+                            ),
                         )
                         .subscribe(() => console.log('added raster'));
                 }),

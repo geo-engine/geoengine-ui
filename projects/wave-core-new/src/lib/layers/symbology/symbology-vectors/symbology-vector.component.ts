@@ -71,8 +71,8 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     constructor() {}
 
     ngOnChanges(changes: SimpleChanges) {
+        // eslint-disable-next-line guard-for-in
         for (const propName in changes) {
-            // tslint:disable-line:forin
             switch (propName) {
                 case 'layer':
                     this.updateSymbologyFromLayer();
@@ -200,49 +200,6 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
         this.setTextAttribute();
     }
 
-    private updateSymbologyFromLayer() {
-        if (!this.layer || !this.layer.symbology || this.layer.symbology.equals(this.symbology)) {
-            return;
-        }
-        const symbology = this.layer.symbology;
-        this.symbology = symbology;
-        this.fillByAttribute = !!symbology.fillColorAttribute;
-        this.strokeByAttribute = !!symbology.strokeColorAttribute;
-        this.gatherAttributes();
-        this.fillColorAttribute = this.attributes.find((x) => x.name === symbology.fillColorAttribute);
-        this.fillByAttribute = !!this.fillColorAttribute;
-        this.strokeColorAttribute = this.attributes.find((x) => x.name === symbology.strokeColorAttribute);
-        this.strokeByAttribute = !!this.strokeColorAttribute;
-        if (symbology instanceof PointSymbology) {
-            this.radiusAttribute = this.attributes.find((x) => x.name === symbology.radiusAttribute);
-            this.radiusByAttribute = !!this.radiusAttribute;
-        }
-        this.textAttribute = this.attributes.find((x) => x.name === symbology.textAttribute);
-        this.textByAttribute = !!this.textAttribute;
-    }
-
-    private gatherAttributes() {
-        const attributes: Array<Attribute> = [];
-        const numericAttributes: Array<Attribute> = [];
-        // TODO: refactor
-        // this.layer.operator.dataTypes.forEach((datatype, attribute) => {
-        //
-        //     if (DataTypes.ALL_NUMERICS.indexOf(datatype) >= 0) {
-        //         numericAttributes.push({
-        //             name: attribute,
-        //             type: 'number',
-        //         });
-        //     } else {
-        //         attributes.push({
-        //             name: attribute,
-        //             type: 'text',
-        //         });
-        //     }
-        // });
-        this.numericAttributes = numericAttributes;
-        this.attributes = [...numericAttributes, ...attributes];
-    }
-
     /**
      * emmit the current working symbology
      */
@@ -349,5 +306,48 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
 
     get isPointSymbology(): boolean {
         return this.symbology.getSymbologyType() === SymbologyType.COMPLEX_POINT;
+    }
+
+    private updateSymbologyFromLayer() {
+        if (!this.layer || !this.layer.symbology || this.layer.symbology.equals(this.symbology)) {
+            return;
+        }
+        const symbology = this.layer.symbology;
+        this.symbology = symbology;
+        this.fillByAttribute = !!symbology.fillColorAttribute;
+        this.strokeByAttribute = !!symbology.strokeColorAttribute;
+        this.gatherAttributes();
+        this.fillColorAttribute = this.attributes.find((x) => x.name === symbology.fillColorAttribute);
+        this.fillByAttribute = !!this.fillColorAttribute;
+        this.strokeColorAttribute = this.attributes.find((x) => x.name === symbology.strokeColorAttribute);
+        this.strokeByAttribute = !!this.strokeColorAttribute;
+        if (symbology instanceof PointSymbology) {
+            this.radiusAttribute = this.attributes.find((x) => x.name === symbology.radiusAttribute);
+            this.radiusByAttribute = !!this.radiusAttribute;
+        }
+        this.textAttribute = this.attributes.find((x) => x.name === symbology.textAttribute);
+        this.textByAttribute = !!this.textAttribute;
+    }
+
+    private gatherAttributes() {
+        const attributes: Array<Attribute> = [];
+        const numericAttributes: Array<Attribute> = [];
+        // TODO: refactor
+        // this.layer.operator.dataTypes.forEach((datatype, attribute) => {
+        //
+        //     if (DataTypes.ALL_NUMERICS.indexOf(datatype) >= 0) {
+        //         numericAttributes.push({
+        //             name: attribute,
+        //             type: 'number',
+        //         });
+        //     } else {
+        //         attributes.push({
+        //             name: attribute,
+        //             type: 'text',
+        //         });
+        //     }
+        // });
+        this.numericAttributes = numericAttributes;
+        this.attributes = [...numericAttributes, ...attributes];
     }
 }

@@ -15,7 +15,7 @@ export const enum Interpolation {
 /**
  * String serialization for interpolation variants
  */
-export function interpolationToName(interpolation: Interpolation): string {
+export const interpolationToName = (interpolation: Interpolation): string => {
     'use strict';
     switch (interpolation) {
         case Interpolation.Unknown:
@@ -27,12 +27,12 @@ export function interpolationToName(interpolation: Interpolation): string {
         default:
             throw new Error('Unknown Unit Interpolation');
     }
-}
+};
 
 /**
  * String deserialization for interpolation variants
  */
-export function nameToInterpolation(name: string): Interpolation {
+export const nameToInterpolation = (name: string): Interpolation => {
     'use strict';
     if (name === interpolationToName(Interpolation.Continuous)) {
         return Interpolation.Continuous;
@@ -41,7 +41,7 @@ export function nameToInterpolation(name: string): Interpolation {
         return Interpolation.Discrete;
     }
     return Interpolation.Unknown;
-}
+};
 
 /**
  * A name of a classification value
@@ -135,7 +135,7 @@ export class Unit {
     static fromDict(dict: UnitDict): Unit {
         const classes = new Map<number, Class>();
         if (dict.classes !== undefined) {
-            // tslint:disable-next-line:forin
+            // eslint-disable-next-line guard-for-in
             for (const className in dict.classes) {
                 classes.set(parseFloat(className), dict.classes[className]);
             }
@@ -161,7 +161,7 @@ export class Unit {
             if (interpolation === Interpolation.Unknown) {
                 interpolation = Interpolation.Discrete;
             }
-            // tslint:disable-next-line:forin
+            // eslint-disable-next-line guard-for-in
             for (const className in dict.classes) {
                 classes.set(parseFloat(className), dict.classes[className]);
             }

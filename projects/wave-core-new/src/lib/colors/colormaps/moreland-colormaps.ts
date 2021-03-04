@@ -18,7 +18,7 @@ export const MORELAND_COLORMAP_NAMES: Array<MorelandColormapName> = ['COOLWARM']
 /**
  * The coolwarm color map.
  */
-export const coolwarm_data: Array<[number, number, number]> = [
+export const COOLWARM_DATA: Array<[number, number, number]> = [
     [0.2298057, 0.298717966, 0.753683153],
     [0.26623388, 0.353094838, 0.801466763],
     [0.30386891, 0.406535296, 0.84495867],

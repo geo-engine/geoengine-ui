@@ -14,12 +14,12 @@ import {OperatorParams, WorkflowDict} from '../../../backend/backend.model';
 /**
  * Checks whether the layer is a vector layer (points, lines, polygons).
  */
-function isVectorLayer(layer: Layer): boolean {
+const isVectorLayer = (layer: Layer): boolean => {
     if (!layer) {
         return false;
     }
     return layer.layerType === 'vector';
-}
+};
 
 interface HistogramParams extends OperatorParams {
     column_name?: string;

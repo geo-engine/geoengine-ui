@@ -34,7 +34,7 @@ type VectorData = any; // TODO: use correct type
  * The `ol-layer` component represents a single layer object of open layers.
  */
 @Directive()
-// tslint:disable-next-line:directive-class-suffix
+// eslint-disable-next-line @angular-eslint/directive-class-suffix
 export abstract class MapLayerComponent<OL extends OlLayer, OS extends OlSource, L extends Layer> {
     @Input() layerId: number;
     @Input() isVisible: boolean;
@@ -126,6 +126,16 @@ export class OlVectorLayerComponent
         return this.source.getExtent();
     }
 
+    ngOnChanges(changes: SimpleChanges) {
+        if (Object.keys(changes).length > 0) {
+            this.updateOlLayer({
+                isVisible: this.extractChange<boolean>(changes.isVisible),
+                symbology: this.extractChange<VectorSymbology>(changes.symbology),
+                workflow: this.extractChange<UUID>(changes.workflow),
+            });
+        }
+    }
+
     private updateOlLayer(changes: {isVisible?: boolean; symbology?: VectorSymbology; workflow?: UUID}) {
         if (changes.isVisible !== undefined) {
             this.mapLayer.setVisible(this.isVisible);
@@ -135,16 +145,6 @@ export class OlVectorLayerComponent
         if (changes.symbology) {
             const style = StyleCreator.fromVectorSymbology(this.symbology);
             this.mapLayer.setStyle(style);
-        }
-    }
-
-    ngOnChanges(changes: SimpleChanges) {
-        if (Object.keys(changes).length > 0) {
-            this.updateOlLayer({
-                isVisible: this.extractChange<boolean>(changes.isVisible),
-                symbology: this.extractChange<VectorSymbology>(changes.symbology),
-                workflow: this.extractChange<UUID>(changes.workflow),
-            });
         }
     }
 }
@@ -213,6 +213,10 @@ export class OlRasterLayerComponent
         if (this.timeSubscription) {
             this.timeSubscription.unsubscribe();
         }
+    }
+
+    getExtent() {
+        return this._mapLayer.getExtent();
     }
 
     private updateOlLayer(changes: {isVisible?: boolean; symbology?: MappingRasterSymbology; workflow?: UUID}) {
@@ -312,9 +316,5 @@ export class OlRasterLayerComponent
             tilesPending--;
             this.projectService.changeRasterLayerDataStatus({id: this.layerId, layerType: 'raster'}, LoadingState.ERROR);
         });
-    }
-
-    getExtent() {
-        return this._mapLayer.getExtent();
     }
 }

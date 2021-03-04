@@ -136,60 +136,11 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
         this.form.controls.bounds.patchValue(patchConfig);
     }
 
-    private checkValidConfig() {
-        const colormapName: ColormapNames = this.form.controls['colormapName'].value;
-        const colormapSteps: number = this.form.controls['colormapSteps'].value;
-        const boundedColormapStepScales: BoundedColormapStepScale = this.form.controls['colormapStepScales'].value;
-        const boundsMin: number = this.form.controls['bounds'].value.min;
-        const boundsMax: number = this.form.controls['bounds'].value.max;
-
-        if (!COLORMAP_NAMES.find((x) => x === colormapName)) {
-            return false;
-        }
-        if (colormapSteps > this.maxColormapSteps) {
-            return false;
-        }
-        if (boundsMin >= boundsMax) {
-            return false;
-        }
-        if (boundedColormapStepScales.requiresValueAbove && boundsMin <= boundedColormapStepScales.requiresValueAbove) {
-            return false;
-        }
-        if (boundedColormapStepScales.requiresValueBelow && boundsMax >= boundedColormapStepScales.requiresValueBelow) {
-            return false;
-        }
-        return true;
-    }
-
     /**
      * Clears the local colorizer data.
      */
     removeColorizerData() {
         this.colorizerData = undefined;
-    }
-
-    private updateColorizerData() {
-        if (!this.checkValidConfig()) {
-            this.colorizerData = undefined;
-            return;
-        }
-        const colormapName: ColormapNames = this.form.controls['colormapName'].value;
-        const colormapSteps: number = this.form.controls['colormapSteps'].value;
-        const boundedColormapStepScales: BoundedColormapStepScale = this.form.controls['colormapStepScales'].value;
-        const boundsMin: number = this.form.controls['bounds'].value.min;
-        const boundsMax: number = this.form.controls['bounds'].value.max;
-        const reverseColormap: boolean = this.form.controls['colormapReverseColors'].value;
-
-        const colorizerData = Colormap.createColorizerDataWithName(
-            colormapName,
-            boundsMin,
-            boundsMax,
-            colormapSteps,
-            boundedColormapStepScales.stepScaleName,
-            reverseColormap,
-        );
-
-        this.colorizerData = colorizerData;
     }
 
     /**
@@ -230,8 +181,8 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        // eslint-disable-next-line guard-for-in
         for (const propName in changes) {
-            // tslint:disable-line:forin
             switch (propName) {
                 case 'minValue':
                 case 'maxValue': {
@@ -244,5 +195,54 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
                 }
             }
         }
+    }
+
+    private checkValidConfig() {
+        const colormapName: ColormapNames = this.form.controls['colormapName'].value;
+        const colormapSteps: number = this.form.controls['colormapSteps'].value;
+        const boundedColormapStepScales: BoundedColormapStepScale = this.form.controls['colormapStepScales'].value;
+        const boundsMin: number = this.form.controls['bounds'].value.min;
+        const boundsMax: number = this.form.controls['bounds'].value.max;
+
+        if (!COLORMAP_NAMES.find((x) => x === colormapName)) {
+            return false;
+        }
+        if (colormapSteps > this.maxColormapSteps) {
+            return false;
+        }
+        if (boundsMin >= boundsMax) {
+            return false;
+        }
+        if (boundedColormapStepScales.requiresValueAbove && boundsMin <= boundedColormapStepScales.requiresValueAbove) {
+            return false;
+        }
+        if (boundedColormapStepScales.requiresValueBelow && boundsMax >= boundedColormapStepScales.requiresValueBelow) {
+            return false;
+        }
+        return true;
+    }
+
+    private updateColorizerData() {
+        if (!this.checkValidConfig()) {
+            this.colorizerData = undefined;
+            return;
+        }
+        const colormapName: ColormapNames = this.form.controls['colormapName'].value;
+        const colormapSteps: number = this.form.controls['colormapSteps'].value;
+        const boundedColormapStepScales: BoundedColormapStepScale = this.form.controls['colormapStepScales'].value;
+        const boundsMin: number = this.form.controls['bounds'].value.min;
+        const boundsMax: number = this.form.controls['bounds'].value.max;
+        const reverseColormap: boolean = this.form.controls['colormapReverseColors'].value;
+
+        const colorizerData = Colormap.createColorizerDataWithName(
+            colormapName,
+            boundsMin,
+            boundsMax,
+            colormapSteps,
+            boundedColormapStepScales.stepScaleName,
+            reverseColormap,
+        );
+
+        this.colorizerData = colorizerData;
     }
 }

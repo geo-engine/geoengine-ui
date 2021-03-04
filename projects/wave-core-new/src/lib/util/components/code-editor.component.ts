@@ -61,7 +61,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
 
     ngOnChanges(changes: {[propKey: string]: SimpleChange}) {
         if (this.editor) {
-            // tslint:disable-next-line:forin
+            // eslint-disable-next-line guard-for-in
             for (const attribute in changes) {
                 switch (attribute) {
                     case 'language':
@@ -148,7 +148,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
     }
 
     /** Implemented as part of ControlValueAccessor. */
-    registerOnChange(fn: () => {}) {
+    registerOnChange(fn: () => any) {
         if (this.changeSubscription) {
             this.changeSubscription.unsubscribe();
         }
@@ -156,7 +156,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
     }
 
     /** Implemented as part of ControlValueAccessor. */
-    registerOnTouched(fn: () => {}) {
+    registerOnTouched(fn: () => any) {
         if (this.onTouched) {
             this.onTouched = fn;
         }

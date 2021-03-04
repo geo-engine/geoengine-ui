@@ -44,18 +44,6 @@ export class StrokeDashSelectComponent implements ControlValueAccessor, OnChange
 
     constructor(public domSanitizer: DomSanitizer, private changeDetectorRef: ChangeDetectorRef) {}
 
-    protected generateViewSvgString(dashArray: Array<number>): string {
-        if (!!dashArray && dashArray.length > 0) {
-            return (
-                StrokeDashSelectComponent.svgPrefix +
-                StrokeDashSelectComponent.svgDashPrefix +
-                dashArray.join(',') +
-                StrokeDashSelectComponent.svgPostfix
-            );
-        }
-        return StrokeDashSelectComponent.svgPrefix + StrokeDashSelectComponent.svgPostfix;
-    }
-
     generateViewImage(dashArray: Array<number>): SafeHtml {
         const svgString = this.generateViewSvgString(dashArray);
         return this.domSanitizer.bypassSecurityTrustHtml(svgString);
@@ -82,8 +70,8 @@ export class StrokeDashSelectComponent implements ControlValueAccessor, OnChange
     }
 
     ngOnChanges(changes: SimpleChanges) {
+        // eslint-disable-next-line guard-for-in
         for (const propName in changes) {
-            // tslint:disable-line:forin
             switch (propName) {
                 case 'lines': {
                     this.changeDetectorRef.markForCheck();
@@ -104,5 +92,17 @@ export class StrokeDashSelectComponent implements ControlValueAccessor, OnChange
 
     writeValue(strokeDashStyle: StrokeDashStyle): void {
         this.strokeDashStyle = strokeDashStyle;
+    }
+
+    protected generateViewSvgString(dashArray: Array<number>): string {
+        if (!!dashArray && dashArray.length > 0) {
+            return (
+                StrokeDashSelectComponent.svgPrefix +
+                StrokeDashSelectComponent.svgDashPrefix +
+                dashArray.join(',') +
+                StrokeDashSelectComponent.svgPostfix
+            );
+        }
+        return StrokeDashSelectComponent.svgPrefix + StrokeDashSelectComponent.svgPostfix;
     }
 }

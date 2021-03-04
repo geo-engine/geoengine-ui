@@ -1,12 +1,10 @@
-import {LayerDict, UUID, ToDict, ColorizerDict, RgbaColor} from '../backend/backend.model';
+import {LayerDict, UUID, ToDict} from '../backend/backend.model';
 import {AbstractSymbology, MappingRasterSymbology, VectorSymbology, PointSymbology} from './symbology/symbology.model';
 import {Unit} from '../operators/unit.model';
 
 export type LayerType = 'raster' | 'vector';
 
 export abstract class Layer implements HasLayerId, HasLayerType, ToDict<LayerDict> {
-    protected static nextLayerId = 0;
-
     abstract readonly layerType: LayerType;
 
     readonly id: number;
@@ -19,20 +17,7 @@ export abstract class Layer implements HasLayerId, HasLayerType, ToDict<LayerDic
 
     readonly symbology: AbstractSymbology;
 
-    /**
-     * Create the suitable layer type
-     */
-    static fromDict(dict: LayerDict): Layer {
-        if (dict.info.Raster) {
-            return RasterLayer.fromDict(dict);
-        }
-
-        if (dict.info.Vector) {
-            return VectorLayer.fromDict(dict);
-        }
-
-        throw new Error(`Unknown layer type »${dict}«`);
-    }
+    protected static nextLayerId = 0;
 
     protected constructor(config: {
         id?: number;
@@ -49,6 +34,21 @@ export abstract class Layer implements HasLayerId, HasLayerType, ToDict<LayerDic
         this.isVisible = config.isVisible;
         this.isLegendVisible = config.isLegendVisible;
         this.symbology = config.symbology;
+    }
+
+    /**
+     * Create the suitable layer type
+     */
+    static fromDict(dict: LayerDict): Layer {
+        if (dict.info.Raster) {
+            return RasterLayer.fromDict(dict);
+        }
+
+        if (dict.info.Vector) {
+            return VectorLayer.fromDict(dict);
+        }
+
+        throw new Error(`Unknown layer type »${dict}«`);
     }
 
     // TODO: remove method, here?
@@ -71,6 +71,17 @@ export class VectorLayer extends Layer {
 
     readonly symbology: VectorSymbology;
 
+    constructor(config: {
+        id?: number;
+        name: string;
+        workflowId: string;
+        isVisible: boolean;
+        isLegendVisible: boolean;
+        symbology: VectorSymbology;
+    }) {
+        super(config);
+    }
+
     static fromDict(dict: LayerDict): Layer {
         return new VectorLayer({
             name: dict.name,
@@ -83,17 +94,6 @@ export class VectorLayer extends Layer {
                 clustered: false,
             }) as any) as VectorSymbology, // TODO: get symbology from meta data
         });
-    }
-
-    constructor(config: {
-        id?: number;
-        name: string;
-        workflowId: string;
-        isVisible: boolean;
-        isLegendVisible: boolean;
-        symbology: VectorSymbology;
-    }) {
-        super(config);
     }
 
     toDict(): LayerDict {
@@ -149,6 +149,17 @@ export class RasterLayer extends Layer {
 
     readonly symbology: MappingRasterSymbology;
 
+    constructor(config: {
+        id?: number;
+        name: string;
+        workflowId: string;
+        isVisible: boolean;
+        isLegendVisible: boolean;
+        symbology: MappingRasterSymbology;
+    }) {
+        super(config);
+    }
+
     static fromDict(dict: LayerDict): Layer {
         const colorizerDict = dict.info.Raster.colorizer;
         let symbology;
@@ -157,12 +168,10 @@ export class RasterLayer extends Layer {
             const linearGradient = colorizerDict.LinearGradient;
             symbology = new MappingRasterSymbology({
                 colorizer: {
-                    breakpoints: linearGradient.breakpoints.map((breakpoint) => {
-                        return {
-                            value: breakpoint.value,
-                            rgba: breakpoint.color,
-                        };
-                    }),
+                    breakpoints: linearGradient.breakpoints.map((breakpoint) => ({
+                        value: breakpoint.value,
+                        rgba: breakpoint.color,
+                    })),
                     type: 'gradient',
                 },
                 noDataColor: {
@@ -201,17 +210,6 @@ export class RasterLayer extends Layer {
             workflowId: dict.workflow,
             symbology,
         });
-    }
-
-    constructor(config: {
-        id?: number;
-        name: string;
-        workflowId: string;
-        isVisible: boolean;
-        isLegendVisible: boolean;
-        symbology: MappingRasterSymbology;
-    }) {
-        super(config);
     }
 
     updateFields(changes: {

@@ -44,10 +44,7 @@
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "lintFilePatterns": [
-                            "projects/wave-core/**/*.ts",
-                            "projects/wave-core/**/*.html"
-                        ]
+                        "lintFilePatterns": ["projects/wave-core/**/*.ts", "projects/wave-core/**/*.html"]
                     }
                 }
             }
@@ -93,10 +90,7 @@
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "lintFilePatterns": [
-                            "projects/wave-core-new/**/*.ts",
-                            "projects/wave-core-new/**/*.html"
-                        ]
+                        "lintFilePatterns": ["projects/wave-core-new/**/*.ts", "projects/wave-core-new/**/*.html"]
                     }
                 }
             }
@@ -122,10 +116,7 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "allowedCommonJsDependencies": [
-                            "dagre-d3",
-                            "pbf"
-                        ],
+                        "allowedCommonJsDependencies": ["dagre-d3", "pbf"],
                         "outputPath": "dist/wave-app",
                         "index": "projects/wave-app/src/index.html",
                         "main": "projects/wave-app/src/main.ts",
@@ -206,23 +197,15 @@
                         "polyfills": "projects/wave-app/src/polyfills.ts",
                         "tsConfig": "projects/wave-app/tsconfig.spec.json",
                         "karmaConfig": "projects/wave-app/karma.conf.js",
-                        "assets": [
-                            "projects/wave-app/src/favicon.ico",
-                            "projects/wave-app/src/assets"
-                        ],
-                        "styles": [
-                            "projects/wave-app/src/styles.scss"
-                        ],
+                        "assets": ["projects/wave-app/src/favicon.ico", "projects/wave-app/src/assets"],
+                        "styles": ["projects/wave-app/src/styles.scss"],
                         "scripts": []
                     }
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "lintFilePatterns": [
-                            "projects/wave-app/**/*.ts",
-                            "projects/wave-app/**/*.html"
-                        ]
+                        "lintFilePatterns": ["projects/wave-app/**/*.ts", "projects/wave-app/**/*.html"]
                     }
                 },
                 "e2e": {
@@ -260,10 +243,7 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "allowedCommonJsDependencies": [
-                            "dagre-d3",
-                            "pbf"
-                        ],
+                        "allowedCommonJsDependencies": ["dagre-d3", "pbf"],
                         "outputPath": "dist/geoengine-app",
                         "index": "projects/geoengine-app/src/index.html",
                         "main": "projects/geoengine-app/src/main.ts",
@@ -344,23 +324,15 @@
                         "polyfills": "projects/geoengine-app/src/polyfills.ts",
                         "tsConfig": "projects/geoengine-app/tsconfig.spec.json",
                         "karmaConfig": "projects/geoengine-app/karma.conf.js",
-                        "assets": [
-                            "projects/geoengine-app/src/favicon.ico",
-                            "projects/geoengine-app/src/assets"
-                        ],
-                        "styles": [
-                            "projects/geoengine-app/src/styles.scss"
-                        ],
+                        "assets": ["projects/geoengine-app/src/favicon.ico", "projects/geoengine-app/src/assets"],
+                        "styles": ["projects/geoengine-app/src/styles.scss"],
                         "scripts": []
                     }
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "lintFilePatterns": [
-                            "projects/geoengine-app/**/*.ts",
-                            "projects/geoengine-app/**/*.html"
-                        ]
+                        "lintFilePatterns": ["projects/geoengine-app/**/*.ts", "projects/geoengine-app/**/*.html"]
                     }
                 },
                 "e2e": {
@@ -398,10 +370,7 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "allowedCommonJsDependencies": [
-                            "dagre-d3",
-                            "pbf"
-                        ],
+                        "allowedCommonJsDependencies": ["dagre-d3", "pbf"],
                         "outputPath": "dist/data-atlas-app",
                         "index": "projects/data-atlas-app/src/index.html",
                         "main": "projects/data-atlas-app/src/main.ts",
@@ -482,23 +451,15 @@
                         "polyfills": "projects/data-atlas-app/src/polyfills.ts",
                         "tsConfig": "projects/data-atlas-app/tsconfig.spec.json",
                         "karmaConfig": "projects/data-atlas-app/karma.conf.js",
-                        "assets": [
-                            "projects/data-atlas-app/src/favicon.ico",
-                            "projects/data-atlas-app/src/assets"
-                        ],
-                        "styles": [
-                            "projects/data-atlas-app/src/styles.scss"
-                        ],
+                        "assets": ["projects/data-atlas-app/src/favicon.ico", "projects/data-atlas-app/src/assets"],
+                        "styles": ["projects/data-atlas-app/src/styles.scss"],
                         "scripts": []
                     }
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "lintFilePatterns": [
-                            "projects/data-atlas-app/**/*.ts",
-                            "projects/data-atlas-app/**/*.html"
-                        ]
+                        "lintFilePatterns": ["projects/data-atlas-app/**/*.ts", "projects/data-atlas-app/**/*.html"]
                     }
                 },
                 "e2e": {
@@ -536,10 +497,7 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "allowedCommonJsDependencies": [
-                            "dagre-d3",
-                            "pbf"
-                        ],
+                        "allowedCommonJsDependencies": ["dagre-d3", "pbf"],
                         "outputPath": "dist/gfbio-app",
                         "index": "projects/gfbio-app/src/index.html",
                         "main": "projects/gfbio-app/src/main.ts",
@@ -620,23 +578,15 @@
                         "polyfills": "projects/gfbio-app/src/polyfills.ts",
                         "tsConfig": "projects/gfbio-app/tsconfig.spec.json",
                         "karmaConfig": "projects/gfbio-app/karma.conf.js",
-                        "assets": [
-                            "projects/gfbio-app/src/favicon.ico",
-                            "projects/gfbio-app/src/assets"
-                        ],
-                        "styles": [
-                            "projects/gfbio-app/src/styles.scss"
-                        ],
+                        "assets": ["projects/gfbio-app/src/favicon.ico", "projects/gfbio-app/src/assets"],
+                        "styles": ["projects/gfbio-app/src/styles.scss"],
                         "scripts": []
                     }
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "lintFilePatterns": [
-                            "projects/gfbio-app/**/*.ts",
-                            "projects/gfbio-app/**/*.html"
-                        ]
+                        "lintFilePatterns": ["projects/gfbio-app/**/*.ts", "projects/gfbio-app/**/*.html"]
                     }
                 },
                 "e2e": {
@@ -674,10 +624,7 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "allowedCommonJsDependencies": [
-                            "dagre-d3",
-                            "pbf"
-                        ],
+                        "allowedCommonJsDependencies": ["dagre-d3", "pbf"],
                         "outputPath": "dist/nature40-app",
                         "index": "projects/nature40-app/src/index.html",
                         "main": "projects/nature40-app/src/main.ts",
@@ -758,23 +705,15 @@
                         "polyfills": "projects/nature40-app/src/polyfills.ts",
                         "tsConfig": "projects/nature40-app/tsconfig.spec.json",
                         "karmaConfig": "projects/nature40-app/karma.conf.js",
-                        "assets": [
-                            "projects/nature40-app/src/favicon.ico",
-                            "projects/nature40-app/src/assets"
-                        ],
-                        "styles": [
-                            "projects/nature40-app/src/styles.scss"
-                        ],
+                        "assets": ["projects/nature40-app/src/favicon.ico", "projects/nature40-app/src/assets"],
+                        "styles": ["projects/nature40-app/src/styles.scss"],
                         "scripts": []
                     }
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "lintFilePatterns": [
-                            "projects/nature40-app/**/*.ts",
-                            "projects/nature40-app/**/*.html"
-                        ]
+                        "lintFilePatterns": ["projects/nature40-app/**/*.ts", "projects/nature40-app/**/*.html"]
                     }
                 },
                 "e2e": {

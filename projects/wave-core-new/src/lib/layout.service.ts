@@ -120,21 +120,6 @@ export class LayoutService {
         return 3 * LayoutService.remInPx + borderSizePx;
     }
 
-    /**
-     * Calculate the height of the data table.
-     */
-    private static calculateLayerDetailViewHeight(layerDetailViewHeightPercentage: number, totalAvailableHeight: number): number {
-        return Math.max(Math.ceil(layerDetailViewHeightPercentage * totalAvailableHeight), LayoutService.getLayerDetailViewBarHeightPx());
-    }
-
-    /**
-     * Calculate the height of the map.
-     */
-    private static calculateMapHeight(layerDetailViewHeightPercentage: number, totalAvailableHeight: number): number {
-        const layerDetailViewHeight = LayoutService.calculateLayerDetailViewHeight(layerDetailViewHeightPercentage, totalAvailableHeight);
-        return totalAvailableHeight - layerDetailViewHeight;
-    }
-
     getSidenavWidthStream(): Observable<number> {
         return this.sidenavContentMaxWidth$;
     }
@@ -265,12 +250,12 @@ export class LayoutService {
      */
     getLayerDetailViewStream(totalAvailableHeight$: Observable<number>): Observable<number> {
         return combineLatest([this.layerDetailViewHeightPercentage$, totalAvailableHeight$, this.layerDetailViewVisible$]).pipe(
-            map(([layerDetailViewHeightPercentage, totalAvailableHeight, layerDetailViewVisible]): number => {
-                return LayoutService.calculateLayerDetailViewHeight(
+            map(([layerDetailViewHeightPercentage, totalAvailableHeight, layerDetailViewVisible]): number =>
+                LayoutService.calculateLayerDetailViewHeight(
                     layerDetailViewVisible ? layerDetailViewHeightPercentage : 0,
                     totalAvailableHeight,
-                );
-            }),
+                ),
+            ),
         );
     }
 
@@ -289,9 +274,9 @@ export class LayoutService {
      */
     getMapHeightStream(totalAvailableHeight$: Observable<number>): Observable<number> {
         return combineLatest([this.layerDetailViewHeightPercentage$, totalAvailableHeight$, this.layerDetailViewVisible$]).pipe(
-            map(([layerDetailViewHeightPercentage, totalAvailableHeight, layerDetailViewVisible]): number => {
-                return LayoutService.calculateMapHeight(layerDetailViewVisible ? layerDetailViewHeightPercentage : 0, totalAvailableHeight);
-            }),
+            map(([layerDetailViewHeightPercentage, totalAvailableHeight, layerDetailViewVisible]): number =>
+                LayoutService.calculateMapHeight(layerDetailViewVisible ? layerDetailViewHeightPercentage : 0, totalAvailableHeight),
+            ),
         );
     }
 
@@ -311,14 +296,12 @@ export class LayoutService {
             this.layerDetailViewTabIndex$,
             this.layerDetailViewHeightPercentage$,
         ]).pipe(
-            map(([layerListVisible, layerDetailViewVisible, layerDetailViewTabIndex, layerDetailViewHeightPercentage]) => {
-                return {
-                    layerListVisible,
-                    layerDetailViewVisible,
-                    layerDetailViewTabIndex,
-                    layerDetailViewHeightPercentage,
-                };
-            }),
+            map(([layerListVisible, layerDetailViewVisible, layerDetailViewTabIndex, layerDetailViewHeightPercentage]) => ({
+                layerListVisible,
+                layerDetailViewVisible,
+                layerDetailViewTabIndex,
+                layerDetailViewHeightPercentage,
+            })),
         );
     }
 
@@ -338,10 +321,25 @@ export class LayoutService {
     }
 
     /**
+     * Calculate the height of the data table.
+     */
+    private static calculateLayerDetailViewHeight(layerDetailViewHeightPercentage: number, totalAvailableHeight: number): number {
+        return Math.max(Math.ceil(layerDetailViewHeightPercentage * totalAvailableHeight), LayoutService.getLayerDetailViewBarHeightPx());
+    }
+
+    /**
+     * Calculate the height of the map.
+     */
+    private static calculateMapHeight(layerDetailViewHeightPercentage: number, totalAvailableHeight: number): number {
+        const layerDetailViewHeight = LayoutService.calculateLayerDetailViewHeight(layerDetailViewHeightPercentage, totalAvailableHeight);
+        return totalAvailableHeight - layerDetailViewHeight;
+    }
+
+    /**
      * Initialize and update the sidenav INNER width stream
      */
     private setupSidenavWidthStream() {
-        function getWidth(): number {
+        const getWidth = (): number => {
             const sidenavComponent = document.getElementsByTagName('mat-sidenav')[0];
             const sidenavStyle = window.getComputedStyle(sidenavComponent);
             const widthString = sidenavStyle.width;
@@ -351,7 +349,7 @@ export class LayoutService {
             } else {
                 throw new Error('sidenav width must be a `px` value');
             }
-        }
+        };
 
         // this timeout prevents calling the `getWidth` function before the DOM is initialized
         setTimeout(() => {

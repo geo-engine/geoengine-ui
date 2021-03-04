@@ -27,6 +27,20 @@ export interface ViewportSize {
 export type Extent = [number, number, number, number] | OlExtent;
 
 /**
+ * Is the extent of `vps1` contained in the extent of `vps2`?
+ */
+const extentContains = (vps1: ViewportSize, vps2: ViewportSize): boolean => {
+    const e1 = vps1.maxExtent ? olExtentGetIntersection(vps1.extent, vps1.maxExtent) : vps1.extent;
+    const e2 = vps2.maxExtent ? olExtentGetIntersection(vps2.extent, vps2.maxExtent) : vps2.extent;
+    return olExtentContainsExtent(e1, e2);
+};
+
+/**
+ * Checks for equality of the resolution component of two `ViewportSize`s
+ */
+const resolutionChanged = (vps1: ViewportSize, vps2: ViewportSize): boolean => vps1.resolution !== vps2.resolution;
+
+/**
  * The map service provides means to work with a registered map component.
  */
 @Injectable()
@@ -134,20 +148,4 @@ export class MapService {
     zoomTo(boundingBox: Extent) {
         this.mapComponent.zoomTo(boundingBox);
     }
-}
-
-/**
- * Is the extent of `vps1` contained in the extent of `vps2`?
- */
-function extentContains(vps1: ViewportSize, vps2: ViewportSize): boolean {
-    const e1 = vps1.maxExtent ? olExtentGetIntersection(vps1.extent, vps1.maxExtent) : vps1.extent;
-    const e2 = vps2.maxExtent ? olExtentGetIntersection(vps2.extent, vps2.maxExtent) : vps2.extent;
-    return olExtentContainsExtent(e1, e2);
-}
-
-/**
- * Checks for equality of the resolution component of two `ViewportSize`s
- */
-function resolutionChanged(vps1: ViewportSize, vps2: ViewportSize): boolean {
-    return vps1.resolution !== vps2.resolution;
 }

@@ -10,7 +10,7 @@ import {DataSetService} from '../dataset.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DatasetListComponent implements OnInit {
-    searchTerm: string = '';
+    searchTerm = '';
     // TODO: paginated data source
     datasets: Observable<Array<DataSet>>;
 

@@ -1,7 +1,7 @@
 /**
  * Create a Data URI image from a string
  */
-export function createIconDataUrl(iconName: string): string {
+export const createIconDataUrl = (iconName: string): string => {
     // TODO: replace with proper icons
     // from `http://stackoverflow.com/questions/3426404/
     // create-a-hexadecimal-colour-based-on-a-string-with-javascript`
@@ -9,12 +9,12 @@ export function createIconDataUrl(iconName: string): string {
         // java String#hashCode
         let hash = 0;
         for (let i = 0; i < str.length; i++) {
-            hash = str.charCodeAt(i) + ((hash << 5) - hash); // tslint:disable-line:no-bitwise
+            hash = str.charCodeAt(i) + ((hash << 5) - hash); // eslint-disable-line no-bitwise
         }
         return hash;
     };
     const intToRGB = (i: number) => {
-        const c = (i & 0x00ffffff).toString(16).toUpperCase(); // tslint:disable-line:no-bitwise
+        const c = (i & 0x00ffffff).toString(16).toUpperCase(); // eslint-disable-line no-bitwise
 
         return '00000'.substring(0, 6 - c.length) + c;
     };
@@ -29,4 +29,4 @@ export function createIconDataUrl(iconName: string): string {
     context.fillStyle = color;
     context.fillRect(0, 0, 64, 64);
     return canvas.toDataURL('image/png');
-}
+};

@@ -7,6 +7,7 @@ import {ResultType, ResultTypes} from './result-type.model';
 export abstract class RasterDataType {
     /**
      * Create a human readable output of the data type.
+     *
      * @returns The name.
      */
     abstract toString(): string;
@@ -200,7 +201,7 @@ class Float64 extends RasterDataType {
 export class RasterDataTypeCollection {
     static readonly INSTANCE = new RasterDataTypeCollection();
 
-    // tslint:disable:variable-name
+    /* eslint-disable @typescript-eslint/naming-convention,no-underscore-dangle,id-blacklist,id-match */
     Byte: RasterDataType = new Byte();
     Int16: RasterDataType = new Int16();
     UInt16: RasterDataType = new UInt16();
@@ -208,7 +209,7 @@ export class RasterDataTypeCollection {
     UInt32: RasterDataType = new UInt32();
     Float32: RasterDataType = new Float32();
     Float64: RasterDataType = new Float64();
-    // tslint:enable
+    /* eslint-enable */
 
     ALL_DATATYPES: Array<RasterDataType>;
 
@@ -238,13 +239,15 @@ export class RasterDataTypeCollection {
     }
 }
 
-export const RasterDataTypes = RasterDataTypeCollection.INSTANCE; // tslint:disable-line:variable-name
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const RasterDataTypes = RasterDataTypeCollection.INSTANCE;
 
 export abstract class VectorDataType {
     abstract readonly resultType: ResultType;
 
     /**
      * Create a human readable output of the data type.
+     *
      * @returns The name.
      */
     toString(): string {
@@ -292,7 +295,7 @@ class MultiPolygon extends VectorDataType {
 export class VectorDataTypeCollection {
     static readonly INSTANCE = new VectorDataTypeCollection();
 
-    // tslint:disable:variable-name
+    /* eslint-disable @typescript-eslint/naming-convention,no-underscore-dangle,id-blacklist,id-match */
     Data: VectorDataType = new Data();
     MultiPoint: VectorDataType = new MultiPoint();
     MultiLineString: VectorDataType = new MultiLineString();
@@ -314,21 +317,22 @@ export class VectorDataTypeCollection {
     }
 }
 
-export const VectorDataTypes = VectorDataTypeCollection.INSTANCE; // tslint:disable-line:variable-name
+export const VectorDataTypes = VectorDataTypeCollection.INSTANCE;
 
 export abstract class VectorColumnDataType {
     /**
+     * @return The name of the data type.
+     */
+    abstract readonly code: string;
+
+    /**
      * Create a human readable output of the data type.
+     *
      * @returns The name.
      */
     toString(): string {
         return this.code;
     }
-
-    /**
-     * @return The name of the data type.
-     */
-    abstract readonly code: string;
 }
 
 class NumberColumn extends VectorColumnDataType {
@@ -350,7 +354,7 @@ class CategoricalColumn extends VectorColumnDataType {
 export class VectorColumnDataTypeCollection {
     static readonly INSTANCE = new VectorColumnDataTypeCollection();
 
-    // tslint:disable:variable-name
+    /* eslint-disable @typescript-eslint/naming-convention,no-underscore-dangle,id-blacklist,id-match */
     readonly Number: VectorColumnDataType = new NumberColumn();
     readonly Decimal: VectorColumnDataType = new DecimalColumn();
     readonly Text: VectorColumnDataType = new TextColumn();
@@ -372,4 +376,4 @@ export class VectorColumnDataTypeCollection {
     }
 }
 
-export const VectorColumnDataTypes = VectorColumnDataTypeCollection.INSTANCE; // tslint:disable-line:variable-name
+export const VectorColumnDataTypes = VectorColumnDataTypeCollection.INSTANCE;

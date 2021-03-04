@@ -110,7 +110,7 @@ export interface ColorizerDict {
         colors: {[index: number]: RgbaColor};
         no_data_color: string;
     };
-    Rgba?: {};
+    Rgba?: {[index: string]: never};
 }
 
 export type RgbaColor = [number, number, number, number];
@@ -119,7 +119,7 @@ export interface LayerInfoDict {
     Raster?: {
         colorizer: ColorizerDict;
     };
-    Vector?: {};
+    Vector?: {[index: string]: never};
 }
 
 export interface BreakpointDict {

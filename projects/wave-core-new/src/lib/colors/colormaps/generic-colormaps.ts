@@ -11,7 +11,7 @@ export const GENERIC_COLORMAP_NAMES: Array<GenericColormapName> = ['RAINBOW'];
 /**
  * The rainbow color map.
  */
-export const colormap_rainbow_data: Array<[number, number, number]> = [
+export const COLORMAP_RAINBOW_DATA: Array<[number, number, number]> = [
     [0.0, 0.0, 0.5],
     [0.0, 0.0, 0.803],
     [0.0, 0.03333, 1.0],

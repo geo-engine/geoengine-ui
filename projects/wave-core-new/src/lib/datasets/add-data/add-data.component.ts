@@ -60,12 +60,12 @@ export class AddDataComponent implements OnInit {
             // java String#hashCode
             let hash = 0;
             for (let i = 0; i < str.length; i++) {
-                hash = str.charCodeAt(i) + ((hash << 5) - hash); // tslint:disable-line:no-bitwise
+                hash = str.charCodeAt(i) + ((hash << 5) - hash); // eslint-disable-line no-bitwise
             }
             return hash;
         };
         const intToRGB = (i: number) => {
-            const c = (i & 0x00ffffff).toString(16).toUpperCase(); // tslint:disable-line:no-bitwise
+            const c = (i & 0x00ffffff).toString(16).toUpperCase(); // eslint-disable-line no-bitwise
 
             return '00000'.substring(0, 6 - c.length) + c;
         };

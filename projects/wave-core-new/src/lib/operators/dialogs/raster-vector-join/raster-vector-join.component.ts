@@ -61,6 +61,57 @@ export class RasterVectorJoinComponent implements OnDestroy {
         this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
+    add() {
+        const vectorLayer: VectorLayer = this.form.controls['vectorLayer'].value;
+        const rasterLayers: Array<RasterLayer> = this.form.controls['rasterLayers'].value;
+        const valueNames: Array<string> = this.form.controls['valueNames'].value;
+        const aggregation: Aggregation = this.form.controls['aggregation'].value;
+
+        const outputLayerName: string = this.form.controls['name'].value;
+
+        const params: RasterVectorJoinParams = {
+            names: valueNames,
+            aggregation,
+        };
+
+        const workflowIds = [vectorLayer.workflowId, ...rasterLayers.map((rasterLayer) => rasterLayer.workflowId)];
+        combineLatest(workflowIds.map((workflowId) => this.projectService.getWorkflow(workflowId)))
+            .pipe(
+                mergeMap(([vectorWorkflow, ...rasterWorkflows]) =>
+                    this.projectService.registerWorkflow({
+                        type: 'Vector',
+                        operator: {
+                            type: 'RasterVectorJoin',
+                            params,
+                            vector_sources: [vectorWorkflow.operator],
+                            raster_sources: rasterWorkflows.map((workflow) => workflow.operator),
+                        },
+                    }),
+                ),
+                mergeMap((workflowId) =>
+                    this.projectService.addLayer(
+                        new VectorLayer({
+                            workflowId,
+                            name: outputLayerName,
+                            symbology: this.symbologyWithNewColor(vectorLayer.symbology),
+                            isLegendVisible: false,
+                            isVisible: true,
+                        }),
+                    ),
+                ),
+            )
+            .subscribe(
+                () => {
+                    // success
+                },
+                (error) => this.notificationService.error(error),
+            );
+    }
+
+    toLetters(number: number): string {
+        return LetterNumberConverter.toLetters(number);
+    }
+
     private reCheckValueNames() {
         setTimeout(() => {
             const valueNames = this.form.controls['valueNames'] as FormArray;
@@ -176,53 +227,6 @@ export class RasterVectorJoinComponent implements OnDestroy {
         };
     }
 
-    add() {
-        const vectorLayer: VectorLayer = this.form.controls['vectorLayer'].value;
-        const rasterLayers: Array<RasterLayer> = this.form.controls['rasterLayers'].value;
-        const valueNames: Array<string> = this.form.controls['valueNames'].value;
-        const aggregation: Aggregation = this.form.controls['aggregation'].value;
-
-        const outputLayerName: string = this.form.controls['name'].value;
-
-        const params: RasterVectorJoinParams = {
-            names: valueNames,
-            aggregation,
-        };
-
-        const workflowIds = [vectorLayer.workflowId, ...rasterLayers.map((rasterLayer) => rasterLayer.workflowId)];
-        combineLatest(workflowIds.map((workflowId) => this.projectService.getWorkflow(workflowId)))
-            .pipe(
-                mergeMap(([vectorWorkflow, ...rasterWorkflows]) =>
-                    this.projectService.registerWorkflow({
-                        type: 'Vector',
-                        operator: {
-                            type: 'RasterVectorJoin',
-                            params,
-                            vector_sources: [vectorWorkflow.operator],
-                            raster_sources: rasterWorkflows.map((workflow) => workflow.operator),
-                        },
-                    }),
-                ),
-                mergeMap((workflowId) =>
-                    this.projectService.addLayer(
-                        new VectorLayer({
-                            workflowId,
-                            name: outputLayerName,
-                            symbology: this.symbologyWithNewColor(vectorLayer.symbology),
-                            isLegendVisible: false,
-                            isVisible: true,
-                        }),
-                    ),
-                ),
-            )
-            .subscribe(
-                () => {
-                    // success
-                },
-                (error) => this.notificationService.error(error),
-            );
-    }
-
     private symbologyWithNewColor(inputSymbology: VectorSymbology): VectorSymbology {
         const symbology = inputSymbology.clone();
 
@@ -230,9 +234,5 @@ export class RasterVectorJoinComponent implements OnDestroy {
         symbology.fillRGBA = this.randomColorService.getRandomColorRgba();
 
         return symbology;
-    }
-
-    toLetters(number: number): string {
-        return LetterNumberConverter.toLetters(number);
     }
 }

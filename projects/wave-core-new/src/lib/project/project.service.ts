@@ -65,47 +65,6 @@ export class ProjectService {
             .subscribe((project) => this.setProject(project));
     }
 
-    protected loadMostRecentProject(session: Session): Observable<Project> {
-        let projectIdLookup: Observable<UUID | undefined>;
-
-        if (session.lastProjectId) {
-            // use the project id from the session
-            projectIdLookup = of(session.lastProjectId);
-        } else {
-            // try to find the least recently used project id
-            projectIdLookup = this.backend
-                .listProjects(
-                    {
-                        permissions: ['Owner'],
-                        filter: 'None',
-                        order: 'DateDesc',
-                        offset: 0,
-                        limit: 1,
-                    },
-                    session.sessionToken,
-                )
-                .pipe(
-                    map((listings) => {
-                        if (listings.length > 0) {
-                            return listings[0].id;
-                        } else {
-                            return undefined;
-                        }
-                    }),
-                );
-        }
-
-        return projectIdLookup.pipe(
-            mergeMap((projectId) => {
-                if (projectId) {
-                    return this.backend.loadProject(projectId, session.sessionToken).pipe(map(Project.fromDict));
-                } else {
-                    return this.createDefaultProject();
-                }
-            }),
-        );
-    }
-
     /**
      * Generate a default Project with values from the config file.
      */
@@ -166,25 +125,6 @@ export class ProjectService {
                     }),
             ),
         );
-    }
-
-    private getDefaultTimeStep(): TimeStepDuration {
-        switch (this.config.DEFAULTS.PROJECT.TIMESTEP) {
-            case '15 minutes':
-                return {durationAmount: 15, durationUnit: 'minutes'};
-            case '1 hour':
-                return {durationAmount: 1, durationUnit: 'hour'};
-            case '1 day':
-                return {durationAmount: 1, durationUnit: 'day'};
-            case '1 month':
-                return {durationAmount: 1, durationUnit: 'month'};
-            case '6 months':
-                return {durationAmount: 6, durationUnit: 'months'};
-            case '1 year':
-                return {durationAmount: 1, durationUnit: 'year'};
-            default:
-                return {durationAmount: 1, durationUnit: 'month'};
-        }
     }
 
     cloneProject(newName: string): Observable<Project> {
@@ -477,58 +417,6 @@ export class ProjectService {
     }
 
     /**
-     * Create a subscription for plot data with loading state checks and error handling
-     */
-    private createPlotSubscription(plot: Plot, data$: Observer<any>, loadingState$: Observer<LoadingState>): Subscription {
-        const observables: Array<Observable<any>> = [
-            this.getTimeStream(),
-            this.mapService.getViewportSizeStream(),
-            this.userService.getSessionTokenForRequest(),
-        ];
-
-        return combineLatest(observables)
-            .pipe(
-                debounceTime(this.config.DELAYS.DEBOUNCE),
-                tap(() => loadingState$.next(LoadingState.LOADING)),
-                switchMap(([time, viewport, sessionToken]) => {
-                    // TODO: add image size for png
-
-                    return this.backend.getPlot(
-                        plot.workflowId,
-                        {
-                            time,
-                            bbox: extentToBboxDict(viewport.extent),
-                            spatial_resolution: [viewport.resolution, viewport.resolution], // TODO: check if resolution needs two numbers
-                        },
-                        sessionToken,
-                    );
-                }),
-                tap(
-                    () => loadingState$.next(LoadingState.OK),
-                    (reason: Response) => {
-                        this.notificationService.error(`${plot.name}: ${reason.status} ${reason.statusText}`);
-                        loadingState$.next(LoadingState.ERROR);
-                    },
-                ),
-            )
-            .subscribe(
-                (data) => data$.next(data),
-                (error) => error, // ignore error
-            );
-    }
-
-    private createPlotDataStreams(plot: Plot) {
-        const loadingState$ = new ReplaySubject<LoadingState>(1);
-        const data$ = new ReplaySubject<any>(1);
-
-        const subscription = this.createPlotSubscription(plot, data$, loadingState$);
-        this.plotDataSubscriptions.set(plot.id, subscription);
-
-        this.plotDataState$.set(plot.id, loadingState$);
-        this.plotData$.set(plot.id, data$);
-    }
-
-    /**
      * Remove a plot from the project.
      */
     removePlot(plot: HasPlotId): Observable<void> {
@@ -710,20 +598,6 @@ export class ProjectService {
         return subject.asObservable();
     }
 
-    protected removeLayerSubscriptions(layer: Layer) {
-        // subjects
-        for (const subjectMap of [this.layers, this.layerData$, this.layerDataState$]) {
-            subjectMap.get(layer.id).complete();
-            subjectMap.delete(layer.id);
-        }
-
-        // subscriptions
-        for (const subscriptionMap of [this.layerDataSubscriptions]) {
-            subscriptionMap.get(layer.id).unsubscribe();
-            subscriptionMap.delete(layer.id);
-        }
-    }
-
     /**
      * Sets the layers
      */
@@ -781,6 +655,93 @@ export class ProjectService {
      */
     toggleLegend(layer: Layer): Observable<void> {
         return this.changeLayer(layer, {isLegendVisible: !layer.isLegendVisible});
+    }
+
+    // private static isNoRasterForGivenTimeException(response: HttpErrorResponse): boolean {
+    //     if (!response.error || !response.error.nested_exception) {
+    //         return false;
+    //     }
+    //     const nested_exception: { message: string, type: string } = response.error.nested_exception;
+    //     return nested_exception.message.indexOf('NoRasterForGivenTimeException') >= 0;
+    // }
+
+    loadAndSetProject(projectId: UUID): Observable<Project> {
+        const result = this.userService.getSessionTokenForRequest().pipe(
+            mergeMap((sessionToken) => this.backend.loadProject(projectId, sessionToken)),
+            map(Project.fromDict),
+            tap((project) => this.setProject(project)),
+        );
+
+        return ProjectService.subscribeAndProvide(result);
+    }
+
+    /**
+     * Subscribes to the observable and consumes it completely.
+     * Returns a new observable to listen to the values.
+     */
+    protected static subscribeAndProvide<T>(observable: Observable<T>): Observable<T> {
+        const subject = new Subject<T>();
+        observable.subscribe(
+            (value) => subject.next(value),
+            (error) => subject.error(error),
+            () => subject.complete(),
+        );
+        return subject.asObservable();
+    }
+
+    protected loadMostRecentProject(session: Session): Observable<Project> {
+        let projectIdLookup: Observable<UUID | undefined>;
+
+        if (session.lastProjectId) {
+            // use the project id from the session
+            projectIdLookup = of(session.lastProjectId);
+        } else {
+            // try to find the least recently used project id
+            projectIdLookup = this.backend
+                .listProjects(
+                    {
+                        permissions: ['Owner'],
+                        filter: 'None',
+                        order: 'DateDesc',
+                        offset: 0,
+                        limit: 1,
+                    },
+                    session.sessionToken,
+                )
+                .pipe(
+                    map((listings) => {
+                        if (listings.length > 0) {
+                            return listings[0].id;
+                        } else {
+                            return undefined;
+                        }
+                    }),
+                );
+        }
+
+        return projectIdLookup.pipe(
+            mergeMap((projectId) => {
+                if (projectId) {
+                    return this.backend.loadProject(projectId, session.sessionToken).pipe(map(Project.fromDict));
+                } else {
+                    return this.createDefaultProject();
+                }
+            }),
+        );
+    }
+
+    protected removeLayerSubscriptions(layer: Layer) {
+        // subjects
+        for (const subjectMap of [this.layers, this.layerData$, this.layerDataState$]) {
+            subjectMap.get(layer.id).complete();
+            subjectMap.delete(layer.id);
+        }
+
+        // subscriptions
+        for (const subscriptionMap of [this.layerDataSubscriptions]) {
+            subscriptionMap.get(layer.id).unsubscribe();
+            subscriptionMap.delete(layer.id);
+        }
     }
 
     protected static optimizeVecUpdates<Content extends ToDict<ContentDict> & {equals(other: Content): boolean}, ContentDict>(
@@ -971,35 +932,74 @@ export class ProjectService {
         this.layers.set(layer.id, new ReplaySubject<Layer>(1));
     }
 
-    // private static isNoRasterForGivenTimeException(response: HttpErrorResponse): boolean {
-    //     if (!response.error || !response.error.nested_exception) {
-    //         return false;
-    //     }
-    //     const nested_exception: { message: string, type: string } = response.error.nested_exception;
-    //     return nested_exception.message.indexOf('NoRasterForGivenTimeException') >= 0;
-    // }
+    private getDefaultTimeStep(): TimeStepDuration {
+        switch (this.config.DEFAULTS.PROJECT.TIMESTEP) {
+            case '15 minutes':
+                return {durationAmount: 15, durationUnit: 'minutes'};
+            case '1 hour':
+                return {durationAmount: 1, durationUnit: 'hour'};
+            case '1 day':
+                return {durationAmount: 1, durationUnit: 'day'};
+            case '1 month':
+                return {durationAmount: 1, durationUnit: 'month'};
+            case '6 months':
+                return {durationAmount: 6, durationUnit: 'months'};
+            case '1 year':
+                return {durationAmount: 1, durationUnit: 'year'};
+            default:
+                return {durationAmount: 1, durationUnit: 'month'};
+        }
+    }
 
-    loadAndSetProject(projectId: UUID): Observable<Project> {
-        const result = this.userService.getSessionTokenForRequest().pipe(
-            mergeMap((sessionToken) => this.backend.loadProject(projectId, sessionToken)),
-            map(Project.fromDict),
-            tap((project) => this.setProject(project)),
-        );
+    private createPlotDataStreams(plot: Plot) {
+        const loadingState$ = new ReplaySubject<LoadingState>(1);
+        const data$ = new ReplaySubject<any>(1);
 
-        return ProjectService.subscribeAndProvide(result);
+        const subscription = this.createPlotSubscription(plot, data$, loadingState$);
+        this.plotDataSubscriptions.set(plot.id, subscription);
+
+        this.plotDataState$.set(plot.id, loadingState$);
+        this.plotData$.set(plot.id, data$);
     }
 
     /**
-     * Subscribes to the observable and consumes it completely.
-     * Returns a new observable to listen to the values.
+     * Create a subscription for plot data with loading state checks and error handling
      */
-    protected static subscribeAndProvide<T>(observable: Observable<T>): Observable<T> {
-        const subject = new Subject<T>();
-        observable.subscribe(
-            (value) => subject.next(value),
-            (error) => subject.error(error),
-            () => subject.complete(),
-        );
-        return subject.asObservable();
+    private createPlotSubscription(plot: Plot, data$: Observer<any>, loadingState$: Observer<LoadingState>): Subscription {
+        const observables: Array<Observable<any>> = [
+            this.getTimeStream(),
+            this.mapService.getViewportSizeStream(),
+            this.userService.getSessionTokenForRequest(),
+        ];
+
+        return combineLatest(observables)
+            .pipe(
+                debounceTime(this.config.DELAYS.DEBOUNCE),
+                tap(() => loadingState$.next(LoadingState.LOADING)),
+                switchMap(([time, viewport, sessionToken]) =>
+                    // TODO: add image size for png
+
+                    this.backend.getPlot(
+                        plot.workflowId,
+                        {
+                            time,
+                            bbox: extentToBboxDict(viewport.extent),
+                            spatial_resolution: [viewport.resolution, viewport.resolution], // TODO: check if resolution needs two numbers
+                        },
+                        sessionToken,
+                    ),
+                ),
+                tap(
+                    () => loadingState$.next(LoadingState.OK),
+                    (reason: Response) => {
+                        this.notificationService.error(`${plot.name}: ${reason.status} ${reason.statusText}`);
+                        loadingState$.next(LoadingState.ERROR);
+                    },
+                ),
+            )
+            .subscribe(
+                (data) => data$.next(data),
+                (error) => error, // ignore error
+            );
     }
 }

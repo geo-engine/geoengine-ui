@@ -140,17 +140,17 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         const edges: Array<[number, number]> = [];
 
         while (operatorQueue.length > 0) {
-            const [operator_id, operator] = operatorQueue.pop();
+            const [operatorId, operator] = operatorQueue.pop();
 
             // add node to graph
-            graph.setNode(`operator_${operator_id}`, {
+            graph.setNode(`operator_${operatorId}`, {
                 operator,
                 type: 'operator',
-                class: `operator operator_${operator_id}`,
+                class: `operator operator_${operatorId}`,
                 labelType: 'html',
                 label: `
                 <div class="header">
-                    <img src='${createIconDataUrl(operator.type)}' class='icon' alt="${operator.type}">
+                    <img src="${createIconDataUrl(operator.type)}" class="icon" alt="${operator.type}">
                     </span>
                     ${operator.type}
                 </div>
@@ -158,7 +158,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
                     <table>
                         <tr>
                         ${this.parametersDisplayList(operator)
-                            .map((kv) => `<td class='key'>${kv.key}</td><td class='value'>${kv.value}</td>`)
+                            .map((kv) => `<td class="key">${kv.key}</td><td class="value">${kv.value}</td>`)
                             .join('</tr><tr>')}
                         </tr>
                     </table>
@@ -174,9 +174,9 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
                 if (sourceType in operator) {
                     const sources: Array<OperatorDict | SourceOperatorDict> = operator[sourceType];
                     for (const source of sources) {
-                        const child_id = nextOperatorId++;
-                        operatorQueue.push([child_id, source]);
-                        edges.push([child_id, operator_id]);
+                        const childId = nextOperatorId++;
+                        operatorQueue.push([childId, source]);
+                        edges.push([childId, operatorId]);
                     }
                 }
             }
@@ -190,20 +190,20 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         // console.log(graph.edges(), graph);
     }
 
-    private static addLayerToGraph(graph: dagre.graphlib.Graph, layer: Layer, workflow_id: number) {
+    private static addLayerToGraph(graph: dagre.graphlib.Graph, layer: Layer, workflowId: number) {
         // add node
         graph.setNode(`layer_${layer.workflowId}`, {
             class: 'layer',
             type: 'layer',
             labelType: 'html',
-            label: `<div class='header'>${layer.name}</div>`,
+            label: `<div class="header">${layer.name}</div>`,
             padding: 0,
             width: GRAPH_STYLE.general.width,
             height: GRAPH_STYLE.general.headerHeight,
         });
 
         // add edge
-        graph.setEdge(`operator_${workflow_id}`, `layer_${layer.workflowId}`, {
+        graph.setEdge(`operator_${workflowId}`, `layer_${layer.workflowId}`, {
             class: 'layer-edge',
         });
     }
@@ -300,15 +300,12 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
     }
 
     private setupWidthObservables(graph: dagre.graphlib.Graph): {width: number; height: number} {
-        const widthBound = (maxWidth: number, graphWidth: number) => {
-            return Math.min(maxWidth - GRAPH_STYLE.surrounding.detailComponentWidth - GRAPH_STYLE.surrounding.margin, graphWidth);
-        };
-        const heightBound = (maxWidth: number, _graphWidth: number) => {
+        const widthBound = (maxWidth: number, graphWidth: number) =>
+            Math.min(maxWidth - GRAPH_STYLE.surrounding.detailComponentWidth - GRAPH_STYLE.surrounding.margin, graphWidth);
+        const heightBound = (maxWidth: number, _graphWidth: number) =>
             // return Math.min(maxWidth, graphWidth + GRAPH_STYLE.surrounding.margin);
             // noinspection JSSuspiciousNameCombination
-            return maxWidth;
-        };
-
+            maxWidth;
         // return the current width bounds
         return {
             width: widthBound(this.maxWidth$.getValue(), graph.graph().width),

@@ -1,6 +1,7 @@
 /**
  * The colormap data in this file are based on:
  * "New matplotlib colormaps by Nathaniel J. Smith, Stefan van der Walt, and (in the case of viridis) Eric Firing."
+ *
  * @see(https://github.com/BIDS/colormap/blob/master/colormaps.py)
  * They are licensed under the CC0 license.
  */
@@ -15,7 +16,7 @@ export type MplColormapName = 'MAGMA' | 'INFERNO' | 'PLASMA' | 'VIRIDIS';
  */
 export const MPL_COLORMAP_NAMES: Array<MplColormapName> = ['MAGMA', 'INFERNO', 'PLASMA', 'VIRIDIS'];
 
-export const colormap_magma_data: Array<[number, number, number]> = [
+export const COLORMAP_MAGMA_DATA: Array<[number, number, number]> = [
     [0.001462, 0.000466, 0.013866],
     [0.002258, 0.001295, 0.018331],
     [0.003279, 0.002305, 0.023708],
@@ -274,7 +275,7 @@ export const colormap_magma_data: Array<[number, number, number]> = [
     [0.987053, 0.991438, 0.749504],
 ];
 
-export const colormap_inferno_data: Array<[number, number, number]> = [
+export const COLORMAP_INFERNO_DATA: Array<[number, number, number]> = [
     [0.001462, 0.000466, 0.013866],
     [0.002267, 0.00127, 0.01857],
     [0.003299, 0.002249, 0.024239],
@@ -533,7 +534,7 @@ export const colormap_inferno_data: Array<[number, number, number]> = [
     [0.988362, 0.998364, 0.644924],
 ];
 
-export const colormap_plasma_data: Array<[number, number, number]> = [
+export const COLORMAP_PLASMA_DATA: Array<[number, number, number]> = [
     [0.050383, 0.029803, 0.527975],
     [0.063536, 0.028426, 0.533124],
     [0.075353, 0.027206, 0.538007],
@@ -792,7 +793,7 @@ export const colormap_plasma_data: Array<[number, number, number]> = [
     [0.940015, 0.975158, 0.131326],
 ];
 
-export const colormap_viridis_data: Array<[number, number, number]> = [
+export const COLORMAP_VIRIDIS_DATA: Array<[number, number, number]> = [
     [0.267004, 0.004874, 0.329415],
     [0.26851, 0.009605, 0.335427],
     [0.269944, 0.014625, 0.341379],

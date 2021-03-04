@@ -27,9 +27,10 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, Afte
     @Input() attributePlaceholder = 'attribute';
     @Input() colorPlaceholder: 'color';
 
-    private _colorBreakpoint: ColorBreakpoint;
     onTouched: () => void;
     onChange: (_: ColorBreakpoint) => void = undefined;
+
+    private _colorBreakpoint: ColorBreakpoint;
 
     constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
@@ -72,8 +73,8 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, Afte
     }
 
     ngOnChanges(changes: SimpleChanges) {
+        // eslint-disable-next-line guard-for-in
         for (const propName in changes) {
-            // tslint:disable-line:forin
             switch (propName) {
                 case 'inputType':
                 case 'attributePlaceholder':

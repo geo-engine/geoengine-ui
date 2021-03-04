@@ -1,13 +1,4 @@
-import {
-    Component,
-    Input,
-    ChangeDetectionStrategy,
-    OnChanges,
-    SimpleChanges,
-    forwardRef,
-    ChangeDetectorRef,
-    AfterViewInit,
-} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChanges, forwardRef, ChangeDetectorRef} from '@angular/core';
 
 import {ColorizerData, ColorizerType} from '../colorizer-data.model';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
@@ -24,21 +15,6 @@ import {ColorBreakpoint} from '../color-breakpoint.model';
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorizerEditorComponent), multi: true}],
 })
 export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges {
-    private _colorizer: ColorizerData = undefined;
-    onTouched: () => void;
-    onChange: (_: ColorizerData) => void = undefined;
-
-    get colorizer(): ColorizerData {
-        return this._colorizer;
-    }
-
-    set colorizer(clr: ColorizerData) {
-        if (clr && !clr.equals(this._colorizer)) {
-            this._colorizer = clr.clone();
-            this.notify();
-        }
-    }
-
     /**
      * Toggles the colorizer type selector. Default = true.
      */
@@ -74,14 +50,18 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
      */
     @Input() colorPlaceholder = 'color';
 
+    onTouched: () => void;
+    onChange: (_: ColorizerData) => void = undefined;
+    private _colorizer: ColorizerData = undefined;
+
     /**
      * The constructor.
      */
     constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
     ngOnChanges(changes: SimpleChanges) {
+        // eslint-disable-next-line guard-for-in
         for (const propName in changes) {
-            // tslint:disable-line:forin
             switch (propName) {
                 case 'inputType':
                 case 'attributePlaceholder':
@@ -94,6 +74,17 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
                     // DO NOTHING
                 }
             }
+        }
+    }
+
+    get colorizer(): ColorizerData {
+        return this._colorizer;
+    }
+
+    set colorizer(clr: ColorizerData) {
+        if (clr && !clr.equals(this._colorizer)) {
+            this._colorizer = clr.clone();
+            this.notify();
         }
     }
 

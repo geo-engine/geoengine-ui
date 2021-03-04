@@ -94,4 +94,5 @@ export class ResultTypeCollection {
     }
 }
 
-export const ResultTypes = ResultTypeCollection.INSTANCE; // tslint:disable-line:variable-name
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const ResultTypes = ResultTypeCollection.INSTANCE;

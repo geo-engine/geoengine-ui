@@ -17,19 +17,6 @@ export class Project implements ToDict<ProjectDict> {
     readonly _time: Time;
     readonly _timeStepDuration: TimeStepDuration;
 
-    static fromDict(dict: ProjectDict): Project {
-        return new Project({
-            id: dict.id,
-            name: dict.name,
-            description: dict.description,
-            spatialReference: SpatialReferences.fromCode(dict.bounds.spatial_reference),
-            time: Time.fromDict(dict.bounds.time_interval),
-            plots: dict.plots.map(Plot.fromDict),
-            layers: dict.layers.map(Layer.fromDict),
-            timeStepDuration: timeStepDictTotimeStepDuration(dict.time_step),
-        });
-    }
-
     constructor(config: {
         id: UUID;
         name: string;
@@ -48,6 +35,19 @@ export class Project implements ToDict<ProjectDict> {
         this._plots = config.plots;
         this._layers = config.layers;
         this._timeStepDuration = config.timeStepDuration;
+    }
+
+    static fromDict(dict: ProjectDict): Project {
+        return new Project({
+            id: dict.id,
+            name: dict.name,
+            description: dict.description,
+            spatialReference: SpatialReferences.fromCode(dict.bounds.spatial_reference),
+            time: Time.fromDict(dict.bounds.time_interval),
+            plots: dict.plots.map(Plot.fromDict),
+            layers: dict.layers.map(Layer.fromDict),
+            timeStepDuration: timeStepDictTotimeStepDuration(dict.time_step),
+        });
     }
 
     updateFields(changes: {

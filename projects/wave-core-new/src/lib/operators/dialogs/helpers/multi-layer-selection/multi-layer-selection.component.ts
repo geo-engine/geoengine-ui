@@ -10,15 +10,15 @@ import {ProjectService} from '../../../../project/project.service';
 /**
  * Singleton for a letter to number converter for ids.
  */
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const LetterNumberConverter = {
-    // tslint:disable-line:variable-name
     /**
      * Convert a numeric id to a alphanumeric one.
      * Starting with `1`.
      */
     toLetters: (num: number) => {
         const mod = num % 26;
-        let pow = (num / 26) | 0; // tslint:disable-line:no-bitwise
+        let pow = (num / 26) | 0; // eslint-disable-line no-bitwise
         // noinspection CommaExpressionJS
         const out = mod ? String.fromCharCode(64 + mod) : (--pow, 'Z');
         return pow ? LetterNumberConverter.toLetters(pow) + out : out;
@@ -85,7 +85,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
 
     private layerSubscription: Subscription;
     private selectionSubscription: Subscription;
-    layerChangesSubscription: Subscription;
+    private layerChangesSubscription: Subscription;
 
     constructor(private projectService: ProjectService) {
         this.layerSubscription = this.filteredLayers.subscribe((filteredLayers) => {
@@ -103,8 +103,8 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
         let minMaxInitialChanged = false;
         let initialChange = false;
 
+        // eslint-disable-next-line guard-for-in
         for (const propName in changes) {
-            // tslint:disable-line:forin
             switch (propName) {
                 case 'initialAmount':
                     initialChange = changes[propName].isFirstChange();
@@ -115,21 +115,21 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
                     break;
                 case 'layers':
                 case 'types':
-                    let layers: Observable<Array<Layer>>;
+                    let layers$: Observable<Array<Layer>>;
                     if (this.layers instanceof Array) {
-                        layers = of(this.layers);
+                        layers$ = of(this.layers);
                     } else {
-                        layers = this.layers;
+                        layers$ = this.layers;
                     }
 
                     if (this.layerChangesSubscription) {
                         this.layerChangesSubscription.unsubscribe();
                     }
 
-                    this.layerChangesSubscription = layers
+                    this.layerChangesSubscription = layers$
                         .pipe(
                             mergeMap((layers) => {
-                                let layersAndMetadata = layers.map((l) => zip(of(l), this.projectService.getLayerMetadata(l)));
+                                const layersAndMetadata = layers.map((l) => zip(of(l), this.projectService.getLayerMetadata(l)));
                                 return forkJoin(layersAndMetadata);
                             }),
                             map((layers: Array<[Layer, LayerMetadata]>) =>
