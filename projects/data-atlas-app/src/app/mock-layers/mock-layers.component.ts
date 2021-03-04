@@ -36,8 +36,8 @@ export class MockLayersComponent implements OnInit {
         this.projectService
             .registerWorkflow(workflow)
             .pipe(
-                mergeMap((workflowId) => {
-                    return this.projectService.addLayer(
+                mergeMap((workflowId) =>
+                    this.projectService.addLayer(
                         new RasterLayer({
                             workflowId,
                             name: 'NDVI Test Raster',
@@ -54,8 +54,8 @@ export class MockLayersComponent implements OnInit {
                             isLegendVisible: false,
                             isVisible: true,
                         }),
-                    );
-                }),
+                    ),
+                ),
             )
             .subscribe(() => console.log('added raster'));
     }
@@ -89,8 +89,8 @@ export class MockLayersComponent implements OnInit {
         this.projectService
             .registerWorkflow(workflow)
             .pipe(
-                mergeMap((workflowId) => {
-                    return this.projectService.addLayer(
+                mergeMap((workflowId) =>
+                    this.projectService.addLayer(
                         new VectorLayer({
                             workflowId,
                             name: 'Two cities and (0, 0)',
@@ -102,8 +102,8 @@ export class MockLayersComponent implements OnInit {
                             isLegendVisible: false,
                             isVisible: true,
                         }),
-                    );
-                }),
+                    ),
+                ),
             )
             .subscribe(() => console.log('added points'));
     }

@@ -71,6 +71,11 @@
                         "leadingUnderscore": "allow"
                     },
                     {
+                        "selector": "parameterProperty",
+                        "format": ["camelCase"],
+                        "leadingUnderscore": "allow"
+                    },
+                    {
                         "selector": "memberLike",
                         "modifiers": ["private"],
                         "format": ["camelCase"],

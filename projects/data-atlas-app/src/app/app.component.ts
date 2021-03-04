@@ -1,4 +1,4 @@
-import {Observable, BehaviorSubject, Subject, ReplaySubject} from 'rxjs';
+import {Observable, BehaviorSubject} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {
@@ -78,27 +78,11 @@ export class AppComponent implements OnInit, AfterViewInit {
         );
     }
 
-    private registerIcons() {
-        this.iconRegistry.addSvgIconInNamespace(
-            'geoengine',
-            'logo',
-            this.sanitizer.bypassSecurityTrustResourceUrl('assets/geoengine-white.svg'),
-        );
-
-        // used for navigation
-        this.iconRegistry.addSvgIcon('cogs', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/cogs.svg'));
-    }
-
     ngOnInit() {
         this.mapService.registerMapComponent(this.mapComponent);
     }
 
     ngAfterViewInit() {}
-
-    @HostListener('window:resize')
-    private windowHeight() {
-        this.windowHeight$.next(window.innerHeight);
-    }
 
     idFromLayer(index: number, layer: Layer): number {
         return layer.id;
@@ -111,5 +95,21 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     showAnalysis() {
         this.analysisVisible$.next(true);
+    }
+
+    private registerIcons() {
+        this.iconRegistry.addSvgIconInNamespace(
+            'geoengine',
+            'logo',
+            this.sanitizer.bypassSecurityTrustResourceUrl('assets/geoengine-white.svg'),
+        );
+
+        // used for navigation
+        this.iconRegistry.addSvgIcon('cogs', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/cogs.svg'));
+    }
+
+    @HostListener('window:resize')
+    private windowHeight() {
+        this.windowHeight$.next(window.innerHeight);
     }
 }

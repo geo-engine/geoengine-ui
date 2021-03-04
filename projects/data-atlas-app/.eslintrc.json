@@ -1,13 +1,9 @@
 {
     "extends": "../../.eslintrc.json",
-    "ignorePatterns": [
-        "!**/*"
-    ],
+    "ignorePatterns": ["!**/*"],
     "overrides": [
         {
-            "files": [
-                "*.ts"
-            ],
+            "files": ["*.ts"],
             "parserOptions": {
                 "project": [
                     "projects/data-atlas-app/tsconfig.app.json",
@@ -19,9 +15,7 @@
             "rules": {}
         },
         {
-            "files": [
-                "*.html"
-            ],
+            "files": ["*.html"],
             "rules": {}
         }
     ]
