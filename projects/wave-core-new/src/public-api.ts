@@ -87,18 +87,19 @@ export * from './lib/util/pipes/trim.pipe';
 
 // Models
 export * from './lib/backend/backend.model';
-export * from './lib/layers/layer.model';
 export * from './lib/layers/layer-metadata.model';
+export * from './lib/layers/layer.model';
 export * from './lib/layers/symbology/symbology.model';
+export * from './lib/operators/datatype.model';
+export * from './lib/operators/operator-type.model';
 export * from './lib/operators/result-type.model';
 export * from './lib/operators/spatial-reference.model';
+export * from './lib/operators/types/expression-type.model';
 export * from './lib/operators/unit.model';
 export * from './lib/plots/plot.model';
 export * from './lib/time/time.model';
-export * from './lib/users/user.model';
 export * from './lib/users/session.model';
-export * from './lib/operators/operator-type.model';
-export * from './lib/operators/types/expression-type.model';
+export * from './lib/users/user.model';
 
 // Misc
 export * from './lib/util/directives/if-guest.directive';
