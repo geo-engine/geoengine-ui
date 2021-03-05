@@ -1,7 +1,9 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {mergeMap} from 'rxjs/operators';
 import {Interpolation, MappingRasterSymbology, ProjectService, RasterLayer, Unit, UUID, WorkflowDict} from 'wave-core';
-import {MatRadioChange} from '@angular/material/radio';
+import {DataSelectionService} from '../data-selection.service';
+import {MatSelectionListChange} from '@angular/material/list';
+import {ColorBreakpointDict} from '../../../../wave-core/src/lib/colors/color-breakpoint.model';
 
 @Component({
     selector: 'wave-app-mock-layers',
@@ -10,13 +12,11 @@ import {MatRadioChange} from '@angular/material/radio';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SelectLayersComponent implements OnInit {
-    constructor(private projectService: ProjectService) {}
+    constructor(private projectService: ProjectService, private dataSelectionService: DataSelectionService) {}
 
     ngOnInit(): void {}
 
     addBiome(name: string, sourceId: UUID) {
-        this.projectService.clearLayers();
-
         const workflow: WorkflowDict = {
             type: 'Raster',
             operator: {
@@ -57,16 +57,102 @@ export class SelectLayersComponent implements OnInit {
             classesMap.set(value, classes[valueAsString]);
         }
 
+        const breakpoints = new Array<ColorBreakpointDict>();
+        breakpoints.push({
+            value: 1,
+            rgba: [0, 0, 0, 255],
+        });
+        breakpoints.push({
+            value: 2,
+            rgba: [241, 129, 43, 255],
+        });
+        breakpoints.push({
+            value: 3,
+            rgba: [231, 174, 44, 255],
+        });
+        breakpoints.push({
+            value: 4,
+            rgba: [170, 170, 170, 255],
+        });
+        breakpoints.push({
+            value: 5,
+            rgba: [0, 0, 0, 255],
+        });
+        breakpoints.push({
+            value: 6,
+            rgba: [0, 200, 200, 255],
+        });
+        breakpoints.push({
+            value: 7,
+            rgba: [30, 60, 255, 255],
+        });
+        breakpoints.push({
+            value: 8,
+            rgba: [231, 220, 50, 255],
+        });
+        breakpoints.push({
+            value: 9,
+            rgba: [161, 230, 51, 255],
+        });
+        breakpoints.push({
+            value: 10,
+            rgba: [0, 210, 139, 255],
+        });
+        breakpoints.push({
+            value: 11,
+            rgba: [0, 0, 0, 255],
+        });
+        breakpoints.push({
+            value: 12,
+            rgba: [0, 0, 0, 255],
+        });
+        breakpoints.push({
+            value: 13,
+            rgba: [127, 1, 220, 255],
+        });
+        breakpoints.push({
+            value: 14,
+            rgba: [0, 0, 0, 255],
+        });
+        breakpoints.push({
+            value: 15,
+            rgba: [0, 0, 0, 255],
+        });
+        breakpoints.push({
+            value: 16,
+            rgba: [164, 0, 204, 255],
+        });
+        breakpoints.push({
+            value: 17,
+            rgba: [1, 221, 1, 255],
+        });
+        breakpoints.push({
+            value: 18,
+            rgba: [0, 0, 0, 255],
+        });
+        breakpoints.push({
+            value: 19,
+            rgba: [0, 0, 0, 255],
+        });
+        breakpoints.push({
+            value: 20,
+            rgba: [0, 160, 254, 255],
+        });
+
         this.projectService
             .registerWorkflow(workflow)
             .pipe(
                 mergeMap((workflowId) => {
-                    return this.projectService.addLayer(
+                    return this.dataSelectionService.setRasterLayer(
                         new RasterLayer({
                             workflowId,
                             name,
                             symbology: new MappingRasterSymbology({
                                 opacity: 1,
+                                colorizer: {
+                                    breakpoints,
+                                    type: 'palette',
+                                },
                                 unit: new Unit({
                                     measurement: 'CARAIB',
                                     unit: '',
@@ -82,24 +168,18 @@ export class SelectLayersComponent implements OnInit {
                     );
                 }),
             )
-            .subscribe(() => console.log('added raster'));
+            .subscribe(() => {
+                // success
+            });
     }
 
-    addBiome6k() {
-        this.addBiome('Biome 6k', '73b13876-bdd2-48b2-a628-ce0a1b0eee9d');
-    }
-
-    addBiomePi() {
-        this.addBiome('Biome Pi', 'bc33b76a-c3ee-4791-9914-17a9282d7ee3');
-    }
-
-    selectData($event: MatRadioChange) {
-        switch ($event.value as string) {
+    selectData($event: MatSelectionListChange) {
+        switch ($event.option.value as string) {
             case 'biome6k':
-                this.addBiome6k();
+                this.addBiome('Biome 6k', '73b13876-bdd2-48b2-a628-ce0a1b0eee9d');
                 break;
             case 'biomePi':
-                this.addBiomePi();
+                this.addBiome('Biome Pi', 'bc33b76a-c3ee-4791-9914-17a9282d7ee3');
                 break;
             default:
             // do nothing

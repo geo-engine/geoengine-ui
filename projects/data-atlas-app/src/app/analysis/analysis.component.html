@@ -1,0 +1,11 @@
+<mat-form-field appearance="fill">
+    <mat-label>Country</mat-label>
+    <mat-select (valueChange)="selectCountry($event)">
+        <mat-option *ngFor="let country of countries" [value]="country">
+            {{ country }}
+        </mat-option>
+    </mat-select>
+</mat-form-field>
+<button mat-stroked-button id="compute-plot" [disabled]="cannotComputePlot$ | async" (click)="computePlot()">Compute Plot</button>
+<wave-vega-viewer *ngIf="(plotData | async) !== undefined" [chartData]="plotData | async"></wave-vega-viewer>
+<mat-spinner *ngIf="plotLoading | async"></mat-spinner>

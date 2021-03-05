@@ -20,9 +20,10 @@ import {AppConfig} from './app-config.service';
 import {SelectLayersComponent} from './select-layers/select-layers.component';
 import {PortalModule} from '@angular/cdk/portal';
 import {LegendComponent} from './legend/legend.component';
+import {AnalysisComponent} from './analysis/analysis.component';
 
 @NgModule({
-    declarations: [AppComponent, SelectLayersComponent, LegendComponent],
+    declarations: [AppComponent, SelectLayersComponent, LegendComponent, AnalysisComponent],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,
