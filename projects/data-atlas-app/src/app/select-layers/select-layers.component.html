@@ -1,0 +1,11 @@
+<h2 class="mat-title">Select a dataset to display</h2>
+<mat-selection-list [multiple]="false" (selectionChange)="selectData($event)">
+    <mat-list-option value="biome6k">
+        <h3 matLine value="biome6k">Biome 6k</h3>
+        <p matLine>Here could be some information about the dataset.</p>
+    </mat-list-option>
+    <mat-list-option value="biomePi">
+        <h3 matLine>Biome Pi</h3>
+        <p matLine>Here could be some information about the other dataset.</p>
+    </mat-list-option>
+</mat-selection-list>

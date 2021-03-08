@@ -17,12 +17,13 @@ import {
     WaveCoreModule,
 } from 'wave-core';
 import {AppConfig} from './app-config.service';
-import {MockLayersComponent} from './mock-layers/mock-layers.component';
+import {SelectLayersComponent} from './select-layers/select-layers.component';
 import {PortalModule} from '@angular/cdk/portal';
 import {LegendComponent} from './legend/legend.component';
+import {AnalysisComponent} from './analysis/analysis.component';
 
 @NgModule({
-    declarations: [AppComponent, MockLayersComponent, LegendComponent],
+    declarations: [AppComponent, SelectLayersComponent, LegendComponent, AnalysisComponent],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,

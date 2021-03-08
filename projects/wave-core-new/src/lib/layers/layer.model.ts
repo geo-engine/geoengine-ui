@@ -1,6 +1,7 @@
-import {LayerDict, UUID, ToDict, ColorizerDict, RgbaColor} from '../backend/backend.model';
+import {LayerDict, UUID, ToDict} from '../backend/backend.model';
 import {AbstractSymbology, MappingRasterSymbology, VectorSymbology, PointSymbology} from './symbology/symbology.model';
 import {Unit} from '../operators/unit.model';
+import {ColorBreakpointDict} from '../colors/color-breakpoint.model';
 
 export type LayerType = 'raster' | 'vector';
 
@@ -183,7 +184,32 @@ export class RasterLayer extends Layer {
         }
 
         if (colorizerDict.Palette) {
-            // TODO: implement
+            const palette = colorizerDict.Palette;
+
+            const breakpoints = new Array<ColorBreakpointDict>();
+            for (const valueAsString of Object.keys(palette.colors)) {
+                breakpoints.push({
+                    value: parseInt(valueAsString, 10),
+                    rgba: palette.colors[valueAsString],
+                });
+            }
+
+            symbology = new MappingRasterSymbology({
+                colorizer: {
+                    breakpoints,
+                    type: 'palette',
+                },
+                noDataColor: {
+                    value: undefined, // TODO: get from metadata
+                    rgba: palette.no_data_color,
+                },
+                opacity: 1, // TODO: get from metadata
+                overflowColor: {
+                    value: undefined, // TODO: get from metadata
+                    rgba: palette.no_data_color,
+                },
+                unit: Unit.defaultUnit, // TODO: get from metadata
+            });
         }
 
         if (colorizerDict.Rgba) {

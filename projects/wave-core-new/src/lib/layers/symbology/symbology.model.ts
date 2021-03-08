@@ -684,8 +684,17 @@ export class MappingRasterSymbology extends AbstractRasterSymbology implements I
                 // TODO: implement
                 return undefined;
             case 'palette':
-                // TODO: implement
-                return undefined;
+                const colors: {[numberValue: string]: RgbaColor} = {};
+                for (const breakpoint of this.colorizer.breakpoints) {
+                    colors[breakpoint.value.toString()] = breakpoint.rgba.rgbaTuple().map(Math.round) as RgbaColor;
+                }
+
+                return {
+                    Palette: {
+                        colors,
+                        no_data_color: this.noDataColor.rgba.rgbaTuple().map(Math.round) as RgbaColor,
+                    },
+                };
             case 'rgba_composite':
                 // TODO: implement
                 return undefined;
