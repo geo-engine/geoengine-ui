@@ -1,6 +1,5 @@
 import {Observable, BehaviorSubject} from 'rxjs';
-import {map} from 'rxjs/operators';
-
+import {first} from 'rxjs/operators';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -25,13 +24,15 @@ import {
     ProjectService,
     MapService,
     MapContainerComponent,
-    RasterLayer,
+    Time,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from './app-config.service';
-import {MockLayersComponent} from './mock-layers/mock-layers.component';
+import {SelectLayersComponent} from './select-layers/select-layers.component';
 import {ComponentPortal} from '@angular/cdk/portal';
+import moment from 'moment';
+import {DataSelectionService} from './data-selection.service';
 
 @Component({
     selector: 'wave-app-root',
@@ -44,16 +45,16 @@ export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MatSidenav, {static: true}) sidenav: MatSidenav;
 
     readonly layersReverse$: Observable<Array<Layer>>;
-    readonly selectedLayer$: Observable<RasterLayer>;
     readonly analysisVisible$ = new BehaviorSubject(false);
     readonly windowHeight$ = new BehaviorSubject<number>(window.innerHeight);
 
-    datasetPortal: ComponentPortal<MockLayersComponent>;
+    datasetPortal: ComponentPortal<SelectLayersComponent>;
 
     constructor(
         @Inject(Config) readonly config: AppConfig,
         readonly layoutService: LayoutService,
         readonly projectService: ProjectService,
+        readonly dataSelectionService: DataSelectionService,
         readonly _vcRef: ViewContainerRef, // reference used by color picker
         private userService: UserService,
         private changeDetectorRef: ChangeDetectorRef,
@@ -67,34 +68,39 @@ export class AppComponent implements OnInit, AfterViewInit {
     ) {
         this.registerIcons();
 
-        this.layersReverse$ = this.projectService.getLayerStream().pipe(map((layers) => layers.slice(0).reverse()));
-        this.selectedLayer$ = this.layersReverse$.pipe(
-            map((layers) => {
-                if (layers.length === 0 || !(layers[0] instanceof RasterLayer)) {
-                    return undefined;
-                }
-                return layers[0] as RasterLayer;
-            }),
-        );
+        this.layersReverse$ = this.dataSelectionService.layers;
     }
 
     ngOnInit() {
         this.mapService.registerMapComponent(this.mapComponent);
     }
 
-    ngAfterViewInit() {}
+    ngAfterViewInit() {
+        this.reset();
+        this.mapComponent.resize();
+    }
 
     idFromLayer(index: number, layer: Layer): number {
         return layer.id;
     }
 
     openDataMenu() {
-        this.datasetPortal = new ComponentPortal(MockLayersComponent);
+        this.datasetPortal = new ComponentPortal(SelectLayersComponent);
         this.sidenav.open();
     }
 
     showAnalysis() {
         this.analysisVisible$.next(true);
+    }
+
+    private reset() {
+        this.projectService
+            .getLayerStream()
+            .pipe(first())
+            .subscribe(() => {
+                this.projectService.clearLayers();
+                this.projectService.setTime(new Time(moment.utc()));
+            });
     }
 
     private registerIcons() {

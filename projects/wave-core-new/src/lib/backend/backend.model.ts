@@ -107,8 +107,8 @@ export interface ColorizerDict {
         default_color: RgbaColor;
     };
     Palette?: {
-        colors: {[index: number]: RgbaColor};
-        no_data_color: string;
+        colors: {[numberValue: string]: RgbaColor};
+        no_data_color: RgbaColor;
     };
     Rgba?: {[index: string]: never};
 }
