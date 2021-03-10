@@ -2,7 +2,7 @@ import {Component, OnInit, ChangeDetectionStrategy, Input, OnChanges, SimpleChan
 import {RasterLayer} from 'wave-core';
 
 @Component({
-    selector: 'wave-legend', // tslint:disable-line:component-selector
+    selector: 'wave-legend', // eslint-disable-line @angular-eslint/component-selector
     templateUrl: './legend.component.html',
     styleUrls: ['./legend.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,0 +1,22 @@
+{
+    "extends": "../../.eslintrc.json",
+    "ignorePatterns": ["!**/*"],
+    "overrides": [
+        {
+            "files": ["*.ts"],
+            "parserOptions": {
+                "project": [
+                    "projects/geoengine-app/tsconfig.app.json",
+                    "projects/geoengine-app/tsconfig.spec.json",
+                    "projects/geoengine-app/e2e/tsconfig.json"
+                ],
+                "createDefaultProgram": true
+            },
+            "rules": {}
+        },
+        {
+            "files": ["*.html"],
+            "rules": {}
+        }
+    ]
+}

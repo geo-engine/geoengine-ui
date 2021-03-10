@@ -17,6 +17,7 @@ export abstract class SpatialReference {
 
     /**
      * Create a human readable output of the projection.
+     *
      * @returns The name and the code.
      */
     toString(): string {
@@ -269,4 +270,5 @@ export class ProjectionCollection {
     }
 }
 
-export const SpatialReferences = ProjectionCollection.INSTANCE; // tslint:disable-line:variable-name
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const SpatialReferences = ProjectionCollection.INSTANCE;

@@ -38,8 +38,8 @@ export class OperatorOutputNameComponent implements ControlValueAccessor, OnChan
     }
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
-        for (let propName in changes) {
-            // tslint:disable-line:forin
+        // eslint-disable-next-line guard-for-in
+        for (const propName in changes) {
             switch (propName) {
                 case 'suggestion':
                     if (!this.userChanged) {
@@ -64,12 +64,12 @@ export class OperatorOutputNameComponent implements ControlValueAccessor, OnChan
     }
 
     /** Implemented as part of ControlValueAccessor. */
-    registerOnChange(fn: () => {}) {
+    registerOnChange(fn: () => any) {
         this.onChange = fn;
     }
 
     /** Implemented as part of ControlValueAccessor. */
-    registerOnTouched(fn: () => {}) {
+    registerOnTouched(fn: () => any) {
         this.onTouched = fn;
     }
 

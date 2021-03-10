@@ -6,7 +6,7 @@ import {AbstractRasterSymbology} from '../../symbology/symbology.model';
     selector: 'wave-legend-raster',
     template: ` <span>This is a generic raster layer</span> `,
     styleUrls: [],
-    // tslint:disable-next-line:no-inputs-metadata-property
+    // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
     inputs: ['symbology'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })

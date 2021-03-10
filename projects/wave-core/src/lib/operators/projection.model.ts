@@ -268,4 +268,4 @@ export class ProjectionCollection {
     }
 }
 
-export const Projections = ProjectionCollection.INSTANCE; // tslint:disable-line:variable-name
+export const Projections = ProjectionCollection.INSTANCE; // eslint-disable-line @typescript-eslint/naming-convention, no-underscore-dangle, id-blacklist, id-match

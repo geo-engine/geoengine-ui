@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import {Injectable} from '@angular/core';
 import {mergeDeep} from 'immutable';
 import {Config, WaveConfigStructure, WAVE_DEFAULT_CONFIG} from 'wave-core';

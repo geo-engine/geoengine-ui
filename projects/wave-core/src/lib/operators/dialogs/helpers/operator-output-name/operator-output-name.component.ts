@@ -39,7 +39,7 @@ export class OperatorOutputNameComponent implements ControlValueAccessor, OnChan
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
         for (let propName in changes) {
-            // tslint:disable-line:forin
+            // eslint-disable-line guard-for-in
             switch (propName) {
                 case 'suggestion':
                     if (!this.userChanged) {

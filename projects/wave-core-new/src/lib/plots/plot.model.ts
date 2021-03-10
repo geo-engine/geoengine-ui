@@ -3,25 +3,24 @@ import {UUID, ToDict, PlotDict} from '../backend/backend.model';
 export type PlotType = 'JSON' | 'PNG';
 
 export class Plot implements HasPlotId, ToDict<PlotDict> {
-    protected static nextPlotId = 0;
-
     readonly id: number;
-
     readonly name: string;
     readonly workflowId: UUID;
 
-    static fromDict(dict: PlotDict): Plot {
-        return new Plot({
-            name: dict.name,
-            workflowId: dict.workflow,
-        });
-    }
+    protected static nextPlotId = 0;
 
     constructor(config: {id?: number; name: string; workflowId: string}) {
         this.id = config.id ?? Plot.nextPlotId++;
 
         this.name = config.name;
         this.workflowId = config.workflowId;
+    }
+
+    static fromDict(dict: PlotDict): Plot {
+        return new Plot({
+            name: dict.name,
+            workflowId: dict.workflow,
+        });
     }
 
     updateFields(changes: {id?: number; name?: string; workflowId?: string}): Plot {

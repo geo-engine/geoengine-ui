@@ -38,29 +38,20 @@ export class VectorLegendComponent<S extends VectorSymbology> implements OnChang
         this.updateStyles();
     }
 
-    private updateStyles() {
-        this.fillColorAttribute = this.symbology && this.symbology.fillColorAttribute ? this.symbology.fillColorAttribute : undefined;
-        this.fillStyles = VectorLegendComponent.fillColorIconValue(this.symbology);
-        this.strokeColorAttribute = this.symbology && this.symbology.strokeColorAttribute ? this.symbology.strokeColorAttribute : undefined;
-        this.strokeStyles = VectorLegendComponent.strokeColorIconValue(this.symbology);
-    }
-
     static fillColorIconValue(vectorSymbology: VectorSymbology): Array<IconValue> {
         if (!vectorSymbology || !vectorSymbology.fillColorizer || !vectorSymbology.fillColorizer.breakpoints) {
             return [];
         }
 
-        return vectorSymbology.fillColorizer.breakpoints.map((b) => {
-            return {
-                icon: {
-                    strokeWidth: vectorSymbology.strokeWidth,
-                    strokeDashStyle: vectorSymbology.strokeDashStyle ? vectorSymbology.strokeDashStyle : [],
-                    strokeRGBA: TRANSPARENT,
-                    fillRGBA: b.rgba,
-                },
-                value: b.value,
-            };
-        });
+        return vectorSymbology.fillColorizer.breakpoints.map((b) => ({
+            icon: {
+                strokeWidth: vectorSymbology.strokeWidth,
+                strokeDashStyle: vectorSymbology.strokeDashStyle ? vectorSymbology.strokeDashStyle : [],
+                strokeRGBA: TRANSPARENT,
+                fillRGBA: b.rgba,
+            },
+            value: b.value,
+        }));
     }
 
     static strokeColorIconValue(vectorSymbology: VectorSymbology): Array<IconValue> {
@@ -68,16 +59,21 @@ export class VectorLegendComponent<S extends VectorSymbology> implements OnChang
             return [];
         }
 
-        return vectorSymbology.strokeColorizer.breakpoints.map((b) => {
-            return {
-                icon: {
-                    strokeWidth: vectorSymbology.strokeWidth,
-                    strokeDashStyle: vectorSymbology.strokeDashStyle ? vectorSymbology.strokeDashStyle : [],
-                    strokeRGBA: b.rgba,
-                    fillRGBA: TRANSPARENT,
-                },
-                value: b.value,
-            };
-        });
+        return vectorSymbology.strokeColorizer.breakpoints.map((b) => ({
+            icon: {
+                strokeWidth: vectorSymbology.strokeWidth,
+                strokeDashStyle: vectorSymbology.strokeDashStyle ? vectorSymbology.strokeDashStyle : [],
+                strokeRGBA: b.rgba,
+                fillRGBA: TRANSPARENT,
+            },
+            value: b.value,
+        }));
+    }
+
+    private updateStyles() {
+        this.fillColorAttribute = this.symbology && this.symbology.fillColorAttribute ? this.symbology.fillColorAttribute : undefined;
+        this.fillStyles = VectorLegendComponent.fillColorIconValue(this.symbology);
+        this.strokeColorAttribute = this.symbology && this.symbology.strokeColorAttribute ? this.symbology.strokeColorAttribute : undefined;
+        this.strokeStyles = VectorLegendComponent.strokeColorIconValue(this.symbology);
     }
 }

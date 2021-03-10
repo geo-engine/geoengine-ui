@@ -80,7 +80,7 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
         for (let propName in changes) {
-            // tslint:disable-line:forin
+            // eslint-disable-line guard-for-in
             switch (propName) {
                 /* falls through */
                 case 'layers':

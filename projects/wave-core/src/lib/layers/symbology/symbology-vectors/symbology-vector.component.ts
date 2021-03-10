@@ -73,7 +73,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
 
     ngOnChanges(changes: SimpleChanges) {
         for (const propName in changes) {
-            // tslint:disable-line:forin
+            // eslint-disable-line guard-for-in
             switch (propName) {
                 case 'layer':
                     this.updateSymbologyFromLayer();

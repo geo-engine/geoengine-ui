@@ -60,7 +60,7 @@
             fxFlex="grow"
             class="no-drag"
             [layer]="asVectorLayer(layer)"
-            (symbologyChanged)="update_symbology(layer, $event)"
+            (symbologyChanged)="updateSymbology(layer, $event)"
         >
         </wave-symbology-vector>
     </ng-template>
@@ -70,7 +70,7 @@
             fxFlex="grow"
             class="no-drag"
             [layer]="asVectorLayer(layer)"
-            (symbologyChanged)="update_symbology(layer, $event)"
+            (symbologyChanged)="updateSymbology(layer, $event)"
         >
         </wave-symbology-vector>
     </ng-template>
@@ -80,7 +80,7 @@
             fxFlex="grow"
             class="no-drag"
             [layer]="asVectorLayer(layer)"
-            (symbologyChanged)="update_symbology(layer, $event)"
+            (symbologyChanged)="updateSymbology(layer, $event)"
         >
         </wave-symbology-vector>
     </ng-template>
@@ -90,13 +90,13 @@
             fxFlex="grow"
             [layer]="asVectorLayer(layer)"
             class="no-drag"
-            (symbologyChanged)="update_symbology(layer, $event)"
+            (symbologyChanged)="updateSymbology(layer, $event)"
         >
         </wave-symbology-vector>
     </ng-template>
 
     <ng-template [ngSwitchCase]="ST.RASTER">
-        <wave-symbology-raster fxFlex="grow" [layer]="asRasterLayer(layer)" (symbologyChanged)="update_symbology(layer, $event)">
+        <wave-symbology-raster fxFlex="grow" [layer]="asRasterLayer(layer)" (symbologyChanged)="updateSymbology(layer, $event)">
         </wave-symbology-raster>
     </ng-template>
 
@@ -104,7 +104,7 @@
         <wave-symbology-raster-mapping-colorizer
             fxFlex="grow"
             [layer]="asRasterLayer(layer)"
-            (symbologyChanged)="update_symbology(layer, $event)"
+            (symbologyChanged)="updateSymbology(layer, $event)"
         >
             >
         </wave-symbology-raster-mapping-colorizer>

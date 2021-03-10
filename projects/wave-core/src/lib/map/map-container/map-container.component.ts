@@ -578,7 +578,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                         source: this.backgroundLayerSource,
                     });
                 }
-            case 'countries': // tslint:disable-line:no-switch-case-fall-through <-- BUG
+            case 'countries': // eslint-disable-line no-fallthrough, ,
                 return new OlLayerVector({
                     source: this.backgroundLayerSource,
                     style: (feature: OlFeature, _resolution: number): OlStyleStyle => {
@@ -624,7 +624,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                         imageExtent: [0, 0, 0, 0],
                     });
                 }
-            case 'countries': // tslint:disable-line:no-switch-case-fall-through <-- BUG
+            case 'countries': // eslint-disable-line no-fallthrough
                 return new OlSourceVector({
                     url: 'assets/countries.geo.json',
                     format: new OlFormatGeoJSON(),

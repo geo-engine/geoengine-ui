@@ -51,8 +51,8 @@ export class BackendService {
         });
     }
 
-    logoutUser(sessionId: UUID): Observable<{}> {
-        return this.http.post<{}>(this.config.API_URL + '/logout', null, {
+    logoutUser(sessionId: UUID): Observable<void> {
+        return this.http.post<void>(this.config.API_URL + '/logout', null, {
             headers: new HttpHeaders().set('Authorization', `Bearer ${sessionId}`),
         });
     }
@@ -92,8 +92,8 @@ export class BackendService {
         });
     }
 
-    deleteProject(projectId: UUID, sessionId: UUID): Observable<{}> {
-        return this.http.get<ProjectDict>(`${this.config.API_URL}/project/${projectId}`, {
+    deleteProject(projectId: UUID, sessionId: UUID): Observable<void> {
+        return this.http.get<void>(`${this.config.API_URL}/project/${projectId}`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
@@ -228,10 +228,6 @@ export class BackendService {
         });
     }
 
-    private static authorizationHeader(sessionId: UUID): HttpHeaders {
-        return new HttpHeaders().set('Authorization', `Bearer ${sessionId}`);
-    }
-
     // TODO: turn into paginated data source
     getDataSets(sessionId: UUID): Observable<Array<DataSetDict>> {
         const params = new NullDiscardingHttpParams();
@@ -243,6 +239,10 @@ export class BackendService {
             params: params.httpParams,
             headers: BackendService.authorizationHeader(sessionId),
         });
+    }
+
+    private static authorizationHeader(sessionId: UUID): HttpHeaders {
+        return new HttpHeaders().set('Authorization', `Bearer ${sessionId}`);
     }
 }
 
@@ -260,7 +260,7 @@ class NullDiscardingHttpParams {
         this.httpParams = this.httpParams.set(param, value);
     }
 
-    setMapped<V>(param: string, value: V, transform: (V) => string) {
+    setMapped<V>(param: string, value: V, transform: (v: V) => string) {
         if (value === undefined || value === null) {
             return;
         }

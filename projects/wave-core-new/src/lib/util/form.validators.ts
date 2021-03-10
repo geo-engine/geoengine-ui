@@ -2,17 +2,19 @@ import {Observable, Observer} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AbstractControl, AsyncValidatorFn} from '@angular/forms';
 
+const isFiniteNumber = (value: any): boolean => value !== null && value !== undefined && !isNaN(value) && isFinite(value);
+
 /**
  * A validator that validates a form group that contains min/max number fields.
  */
-function minAndMax(
+const minAndMax = (
     controlMinName: string,
     controlMaxName: string,
     options?: {
         checkBothExist?: boolean;
         checkOneExists?: boolean;
     },
-) {
+) => {
     if (!options) {
         options = {};
     }
@@ -56,81 +58,74 @@ function minAndMax(
 
         return Object.keys(errors).length > 0 ? errors : null;
     };
-}
+};
 
 /**
  * A validator that invokes the underlying one only if the condition holds.
  */
-function conditionalValidator(validator: (control: AbstractControl) => {[key: string]: boolean}, condition: () => boolean) {
-    return (control: AbstractControl): {[key: string]: boolean} => {
-        if (condition()) {
-            return validator(control);
-        } else {
-            return null;
-        }
-    };
-}
+const conditionalValidator = (validator: (control: AbstractControl) => {[key: string]: boolean}, condition: () => boolean) => (
+    control: AbstractControl,
+): {[key: string]: boolean} => {
+    if (condition()) {
+        return validator(control);
+    } else {
+        return null;
+    }
+};
 
 /**
  * Checks if keyword is a reserved keyword.
  */
-function keywordValidator(keywords: Array<string>) {
-    return (control: AbstractControl) => {
-        return keywords.indexOf(control.value) >= 0 ? {keyword: true} : null;
-    };
-}
+const keywordValidator = (keywords: Array<string>) => (control: AbstractControl) =>
+    keywords.indexOf(control.value) >= 0 ? {keyword: true} : null;
 
 /**
  * Checks if the project name is unique.
  */
-function uniqueProjectNameValidator(storageService: {projectExists(string): Observable<boolean>}): AsyncValidatorFn {
-    return (control: AbstractControl): Observable<{[key: string]: boolean}> => {
-        return new Observable((observer: Observer<{[key: string]: boolean}>) => {
-            storageService
-                .projectExists(control.value as string)
-                .pipe(
-                    map((projectExists) => {
-                        const errors: {
-                            nameInUsage?: boolean;
-                        } = {};
+const uniqueProjectNameValidator = (storageService: {projectExists(string): Observable<boolean>}): AsyncValidatorFn => (
+    control: AbstractControl,
+): Observable<{[key: string]: boolean}> =>
+    new Observable((observer: Observer<{[key: string]: boolean}>) => {
+        storageService
+            .projectExists(control.value as string)
+            .pipe(
+                map((projectExists) => {
+                    const errors: {
+                        nameInUsage?: boolean;
+                    } = {};
 
-                        if (projectExists) {
-                            errors.nameInUsage = true;
-                        }
+                    if (projectExists) {
+                        errors.nameInUsage = true;
+                    }
 
-                        return Object.keys(errors).length > 0 ? errors : null;
-                    }),
-                )
-                .subscribe(
-                    (errors) => {
-                        observer.next(errors);
-                        observer.complete();
-                    },
-                    (error) => {
-                        observer.error(error);
-                    },
-                );
-        });
-    };
-}
+                    return Object.keys(errors).length > 0 ? errors : null;
+                }),
+            )
+            .subscribe(
+                (errors) => {
+                    observer.next(errors);
+                    observer.complete();
+                },
+                (error) => {
+                    observer.error(error);
+                },
+            );
+    });
 
-function notOnlyWhitespace(control: AbstractControl) {
+const notOnlyWhitespace = (control: AbstractControl) => {
     const text = control.value as string;
     if (!text) {
         return null;
     }
     return text.trim().length <= 0 ? {onlyWhitespace: true} : null;
-}
+};
 
-function isNumber(control: AbstractControl) {
+const isNumber = (control: AbstractControl) => {
     const value = control.value;
     return isFiniteNumber(value) ? null : {isNoNumber: true};
-}
+};
 
-function isFiniteNumber(value: any): boolean {
-    return value !== null && value !== undefined && !isNaN(value) && isFinite(value);
-}
-
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const WaveValidators = {
     conditionalValidator,
     isNumber,
@@ -143,17 +138,16 @@ export const WaveValidators = {
 /**
  * checks if a value is undefined or null
  */
-function nullOrUndefined(value: any) {
-    return value === undefined || value === null;
-}
+const nullOrUndefined = (value: any) => value === undefined || value === null;
 
 /**
  * This Validator checks the relation of a value compared to another value.
+ *
  * @param controlValueProvider: function deriving the value of the control
  * @param compareValueProvider: function deriving the min value
  * @param options: {checkEqual: true} enables checking for equal, {checkAbove: true} for above and {checkBelow: true] for below.
  */
-export function valueRelation(
+export const valueRelation = (
     controlValueProvider: (control: AbstractControl) => number,
     compareValueProvider: (control: AbstractControl) => number,
     options?: {
@@ -161,7 +155,7 @@ export function valueRelation(
         checkAbove?: boolean;
         checkBelow?: boolean;
     },
-) {
+) => {
     if (!options) {
         options = {
             checkEqual: true,
@@ -206,4 +200,4 @@ export function valueRelation(
         }
         return Object.keys(errors).length > 0 ? errors : null;
     };
-}
+};

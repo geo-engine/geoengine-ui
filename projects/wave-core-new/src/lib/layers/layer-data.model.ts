@@ -34,21 +34,21 @@ export class VectorData extends LayerData {
     readonly data: Array<OlFeature>;
     readonly extent: [number, number, number, number];
 
-    static olParse(
-        time: Time,
-        projection: SpatialReference,
-        extent: [number, number, number, number],
-        source: Document | Node | any | string,
-        opt_options?: {dataProjection: OlProjectionLike; featureProjection: OlProjectionLike},
-    ): VectorData {
-        return new VectorData(time, projection, new OlFormatGeoJSON().readFeatures(source, opt_options), extent);
-    }
-
     constructor(time: Time, projection: SpatialReference, data: Array<OlFeature>, extent: [number, number, number, number]) {
         super('vector', time, projection);
         this.data = data;
         this.extent = extent;
         this.fakeIds(); // FIXME: use real IDs ...
+    }
+
+    static olParse(
+        time: Time,
+        projection: SpatialReference,
+        extent: [number, number, number, number],
+        source: Document | Node | any | string,
+        optOptions?: {dataProjection: OlProjectionLike; featureProjection: OlProjectionLike},
+    ): VectorData {
+        return new VectorData(time, projection, new OlFormatGeoJSON().readFeatures(source, optOptions), extent);
     }
 
     fakeIds() {

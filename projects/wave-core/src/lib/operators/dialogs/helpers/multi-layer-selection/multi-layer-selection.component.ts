@@ -13,14 +13,14 @@ import {LayerService} from '../../../../layers/layer.service';
  * Singleton for a letter to number converter for ids.
  */
 export const LetterNumberConverter = {
-    // tslint:disable-line:variable-name
+    // eslint-disable-line @typescript-eslint/naming-convention, no-underscore-dangle, id-blacklist, id-match
     /**
      * Convert a numeric id to a alphanumeric one.
      * Starting with `1`.
      */
     toLetters: (num: number) => {
         const mod = num % 26;
-        let pow = (num / 26) | 0; // tslint:disable-line:no-bitwise
+        let pow = (num / 26) | 0; // eslint-disable-line no-bitwise
         // noinspection CommaExpressionJS
         const out = mod ? String.fromCharCode(64 + mod) : (--pow, 'Z');
         return pow ? LetterNumberConverter.toLetters(pow) + out : out;
@@ -105,7 +105,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
         let initialChange = false;
 
         for (const propName in changes) {
-            // tslint:disable-line:forin
+            // eslint-disable-line guard-for-in
             switch (propName) {
                 case 'initialAmount':
                     initialChange = changes[propName].isFirstChange();

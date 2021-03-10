@@ -1,14 +1,14 @@
-// export interface OperatorTypeConfig {} // tslint:disable-line:no-empty-interface
+// eslint-disable-line
 
 /**
  * Options allowed when cloning the operator
  */
-export interface OperatorTypeCloneOptions {} // tslint:disable-line:no-empty-interface
+export interface OperatorTypeCloneOptions {} // eslint-disable-line @typescript-eslint/no-empty-interface
 
 /**
  * Dictionary for querying the server.
  */
-export interface OperatorTypeMappingDict {} // tslint:disable-line:no-empty-interface
+export interface OperatorTypeMappingDict {} // eslint-disable-line @typescript-eslint/no-empty-interface
 
 /**
  * Dictionary for serializing the operator type.
@@ -47,12 +47,12 @@ export abstract class OperatorType {
             // java String#hashCode
             let hash = 0;
             for (let i = 0; i < str.length; i++) {
-                hash = str.charCodeAt(i) + ((hash << 5) - hash); // tslint:disable-line:no-bitwise
+                hash = str.charCodeAt(i) + ((hash << 5) - hash); // eslint-disable-line no-bitwise
             }
             return hash;
         };
         const intToRGB = (i: number) => {
-            const c = (i & 0x00ffffff).toString(16).toUpperCase(); // tslint:disable-line:no-bitwise
+            const c = (i & 0x00ffffff).toString(16).toUpperCase(); // eslint-disable-line no-bitwise
 
             return '00000'.substring(0, 6 - c.length) + c;
         };

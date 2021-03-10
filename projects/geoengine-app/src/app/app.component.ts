@@ -57,7 +57,9 @@ export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MatSidenav, {static: true}) rightSidenav: MatSidenav;
     @ViewChild(SidenavContainerComponent, {static: true}) rightSidenavContainer: SidenavContainerComponent;
 
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     readonly ResultTypes = ResultTypes;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     readonly LayoutService = LayoutService;
 
     readonly layersReverse$: Observable<Array<Layer>>;
@@ -90,23 +92,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     ) {
         this.registerIcons();
 
-        vcRef.length; // tslint:disable-line:no-unused-expression // just get rid of unused warning
+        vcRef.length; // eslint-disable-line @typescript-eslint/no-unused-expressions
 
         this.layersReverse$ = this.projectService.getLayerStream().pipe(map((layers) => layers.slice(0).reverse()));
 
         this.layerListVisible$ = this.layoutService.getLayerListVisibilityStream();
         this.layerDetailViewVisible$ = this.layoutService.getLayerDetailViewVisibilityStream();
-    }
-
-    private registerIcons() {
-        this.iconRegistry.addSvgIconInNamespace(
-            'geoengine',
-            'logo',
-            this.sanitizer.bypassSecurityTrustResourceUrl('assets/geoengine-white.svg'),
-        );
-
-        // used for navigation
-        this.iconRegistry.addSvgIcon('cogs', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/cogs.svg'));
     }
 
     ngOnInit() {
@@ -147,6 +138,21 @@ export class AppComponent implements OnInit, AfterViewInit {
     setTabIndex(index: number) {
         this.layoutService.setLayerDetailViewTabIndex(index);
         this.layoutService.setLayerDetailViewVisibility(true);
+    }
+
+    idFromLayer(index: number, layer: Layer): number {
+        return layer.id;
+    }
+
+    private registerIcons() {
+        this.iconRegistry.addSvgIconInNamespace(
+            'geoengine',
+            'logo',
+            this.sanitizer.bypassSecurityTrustResourceUrl('assets/geoengine-white.svg'),
+        );
+
+        // used for navigation
+        this.iconRegistry.addSvgIcon('cogs', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/cogs.svg'));
     }
 
     private setupNavigation(): Array<NavigationButton> {
@@ -260,8 +266,4 @@ export class AppComponent implements OnInit, AfterViewInit {
     //         }
     //     });
     // }
-
-    idFromLayer(index: number, layer: Layer): number {
-        return layer.id;
-    }
 }

@@ -242,6 +242,13 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         return source;
     }
 
+    /**
+     * Force a redraw for each map layer
+     */
+    public layerForcesRedraw() {
+        this.projection$.pipe(first()).subscribe((projection) => this.redrawLayers(projection));
+    }
+
     private createDrawInteractionLayer(): OlLayerVector {
         return new OlLayerVector({
             source: this.drawInteractionSource,
@@ -286,13 +293,6 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 map.addInteraction(drawInteraction);
             });
         }
-    }
-
-    /**
-     * Force a redraw for each map layer
-     */
-    public layerForcesRedraw() {
-        this.projection$.pipe(first()).subscribe((projection) => this.redrawLayers(projection));
     }
 
     private calculateGrid() {
@@ -579,7 +579,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                         source: this.backgroundLayerSource,
                     });
                 }
-            case 'countries': // tslint:disable-line:no-switch-case-fall-through <-- BUG
+            case 'countries': // eslint-disable-line no-fallthrough, ,
                 return new OlLayerVector({
                     source: this.backgroundLayerSource,
                     style: (feature: OlFeature, _resolution: number): OlStyleStyle => {
@@ -635,7 +635,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     projection: projection.getCode(),
                     crossOrigin: 'anonymous',
                 });
-            case 'countries': // tslint:disable-line:no-switch-case-fall-through <-- BUG
+            case 'countries': // eslint-disable-line no-fallthrough
                 return new OlSourceVector({
                     url: 'assets/countries.geo.json',
                     format: new OlFormatGeoJSON(),

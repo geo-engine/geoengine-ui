@@ -88,6 +88,7 @@ export class Color implements IRgba, RgbaStruct {
 
     /**
      * Creates a Color instance from RgbaLike Types.
+     *
      * @param rgba: the rgba like input
      * @param clone: clone if already an instance of Color. Defaults to TRUE!
      */
@@ -131,6 +132,7 @@ export class Color implements IRgba, RgbaStruct {
 
     /**
      * Interpolates between two colors
+     *
      * @param a: first Color -> 0
      * @param b: second Color -> 1
      * @param fraction: value between 0 and 1
@@ -171,7 +173,7 @@ export const TRANSPARENT = Color.fromRgbaLike([0, 0, 0, 0]);
 /**
  * Should a string also be RgbaLike?
  */
-export function stringToRgbaStruct(rgbaCssString: string): RgbaStruct {
+export const stringToRgbaStruct = (rgbaCssString: string): RgbaStruct => {
     if (rgbaCssString === undefined || rgbaCssString === '') {
         throw new Error('cant parse empty string into a color');
     }
@@ -213,4 +215,4 @@ export function stringToRgbaStruct(rgbaCssString: string): RgbaStruct {
     }
 
     throw new Error('cant parse string into a color' + rgbaCssString);
-}
+};

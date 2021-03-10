@@ -1,8 +1,5 @@
 import {Subscription} from 'rxjs';
-import {first} from 'rxjs/operators';
-
 import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy} from '@angular/core';
-
 import {ProjectService} from '../../project/project.service';
 import {LayoutService} from '../../layout.service';
 import {TimeStepDuration} from '../time.model';
@@ -15,12 +12,12 @@ import {TimeConfigComponent} from '../time-config/time-config.component';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SmallTimeInteractionComponent implements OnInit, OnDestroy {
-    private timeStreamSubscription: Subscription;
-
     timeRepresentation: string;
 
     timeStepDurationStreamSubscription: Subscription;
     timeStepDuration: TimeStepDuration = {durationAmount: 1, durationUnit: 'months'}; // TODO: get from DEFAULTS?
+
+    private timeStreamSubscription: Subscription;
 
     constructor(
         private projectService: ProjectService,

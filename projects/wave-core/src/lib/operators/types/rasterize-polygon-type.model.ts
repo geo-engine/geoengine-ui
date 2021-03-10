@@ -1,10 +1,10 @@
 import {OperatorType, OperatorTypeDict, OperatorTypeMappingDict} from '../operator-type.model';
 
-interface RasterizePolygonTypeMappingDict extends OperatorTypeMappingDict {} // tslint:disable-line:no-empty-interface
+interface RasterizePolygonTypeMappingDict extends OperatorTypeMappingDict {} // eslint-disable-line @typescript-eslint/no-empty-interface
 
-export interface RasterizePolygonTypeDict extends OperatorTypeDict {} // tslint:disable-line:no-empty-interface
+export interface RasterizePolygonTypeDict extends OperatorTypeDict {} // eslint-disable-line @typescript-eslint/no-empty-interface
 
-interface RasterizePolygonTypeConfig {} // tslint:disable-line:no-empty-interface
+interface RasterizePolygonTypeConfig {} // eslint-disable-line @typescript-eslint/no-empty-interface
 
 /**
  * The raster value extraction type.

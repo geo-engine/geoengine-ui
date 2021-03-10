@@ -55,11 +55,11 @@ export class DataSetComponent implements OnInit {
                             }),
                         );
                     } else {
-                        const result_descriptor = this.dataset.result_descriptor as VectorResultDescriptor;
+                        const resultDescriptor = this.dataset.result_descriptor as VectorResultDescriptor;
 
                         let symbology: VectorSymbology;
 
-                        switch (result_descriptor.data_type) {
+                        switch (resultDescriptor.data_type) {
                             case VectorDataTypes.MultiPoint:
                                 symbology = PointSymbology.createSymbology({
                                     fillRGBA: this.randomColorService.getRandomColorRgba(),
@@ -83,7 +83,7 @@ export class DataSetComponent implements OnInit {
                             new VectorLayer({
                                 workflowId,
                                 name: this.dataset.name,
-                                symbology: symbology,
+                                symbology,
                                 isLegendVisible: false,
                                 isVisible: true,
                             }),

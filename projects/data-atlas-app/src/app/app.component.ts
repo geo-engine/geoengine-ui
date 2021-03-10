@@ -71,17 +71,6 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.layersReverse$ = this.dataSelectionService.layers;
     }
 
-    private registerIcons() {
-        this.iconRegistry.addSvgIconInNamespace(
-            'geoengine',
-            'logo',
-            this.sanitizer.bypassSecurityTrustResourceUrl('assets/geoengine-white.svg'),
-        );
-
-        // used for navigation
-        this.iconRegistry.addSvgIcon('cogs', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/cogs.svg'));
-    }
-
     ngOnInit() {
         this.mapService.registerMapComponent(this.mapComponent);
     }
@@ -89,11 +78,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     ngAfterViewInit() {
         this.reset();
         this.mapComponent.resize();
-    }
-
-    @HostListener('window:resize')
-    private windowHeight() {
-        this.windowHeight$.next(window.innerHeight);
     }
 
     idFromLayer(index: number, layer: Layer): number {
@@ -117,5 +101,21 @@ export class AppComponent implements OnInit, AfterViewInit {
                 this.projectService.clearLayers();
                 this.projectService.setTime(new Time(moment.utc()));
             });
+    }
+
+    private registerIcons() {
+        this.iconRegistry.addSvgIconInNamespace(
+            'geoengine',
+            'logo',
+            this.sanitizer.bypassSecurityTrustResourceUrl('assets/geoengine-white.svg'),
+        );
+
+        // used for navigation
+        this.iconRegistry.addSvgIcon('cogs', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/cogs.svg'));
+    }
+
+    @HostListener('window:resize')
+    private windowHeight() {
+        this.windowHeight$.next(window.innerHeight);
     }
 }

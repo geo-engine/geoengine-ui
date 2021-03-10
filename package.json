@@ -7,6 +7,7 @@
         "prettier": "prettier",
         "start": "ng serve",
         "build": "npm run build-prod:core && npm run build-prod:wave && npm run build-prod:gfbio && npm run build-prod:nature40",
+        "check": "prettier --check . && ng lint wave-core-new && ng lint geoengine-app && ng lint data-atlas-app",
         "ci-core": "ng build --prod wave-core-new",
         "serve:wave": "ng serve wave-app --proxy-config proxy.conf.json",
         "serve:geoengine": "ng serve geoengine-app --proxy-config proxy-geoengine.conf.json",
@@ -63,6 +64,11 @@
     "devDependencies": {
         "@angular-devkit/build-angular": "~0.1002.2",
         "@angular-devkit/build-ng-packagr": "~0.1002.2",
+        "@angular-eslint/builder": "1.2.0",
+        "@angular-eslint/eslint-plugin": "1.2.0",
+        "@angular-eslint/eslint-plugin-template": "1.2.0",
+        "@angular-eslint/schematics": "1.2.0",
+        "@angular-eslint/template-parser": "1.2.0",
         "@angular/cli": "~10.2.3",
         "@angular/compiler-cli": "~10.1.5",
         "@angular/language-service": "~10.1.5",
@@ -72,7 +78,15 @@
         "@types/jasminewd2": "~2.0.3",
         "@types/node": "^12.11.1",
         "@types/papaparse": "~4.5.7",
+        "@typescript-eslint/eslint-plugin": "4.3.0",
+        "@typescript-eslint/parser": "4.3.0",
         "codelyzer": "^5.1.2",
+        "eslint": "^7.6.0",
+        "eslint-config-prettier": "^8.1.0",
+        "eslint-plugin-import": "2.22.1",
+        "eslint-plugin-jsdoc": "30.7.6",
+        "eslint-plugin-prefer-arrow": "1.2.2",
+        "eslint-plugin-prettier": "^3.3.1",
         "jasmine-core": "~3.5.0",
         "jasmine-spec-reporter": "~4.2.1",
         "karma": "~4.3.0",
@@ -84,7 +98,6 @@
         "prettier": "2.2.1",
         "protractor": "~5.4.3",
         "ts-node": "~8.3.0",
-        "tslint": "~6.1.3",
         "typescript": "~4.0.3"
     }
 }

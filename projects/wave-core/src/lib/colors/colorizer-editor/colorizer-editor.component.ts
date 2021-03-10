@@ -81,7 +81,7 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
 
     ngOnChanges(changes: SimpleChanges) {
         for (const propName in changes) {
-            // tslint:disable-line:forin
+            // eslint-disable-line guard-for-in
             switch (propName) {
                 case 'inputType':
                 case 'attributePlaceholder':

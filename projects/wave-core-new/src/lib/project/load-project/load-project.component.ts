@@ -8,19 +8,17 @@ import {BackendService} from '../../backend/backend.service';
 import {UserService} from '../../users/user.service';
 import {UUID} from '../../backend/backend.model';
 
-function notCurrentProject(currentProjectId: () => string): ValidatorFn {
-    return (control: AbstractControl): {[key: string]: boolean} => {
-        const errors: {
-            currentProject?: boolean;
-        } = {};
+const notCurrentProject = (currentProjectId: () => string): ValidatorFn => (control: AbstractControl): {[key: string]: boolean} => {
+    const errors: {
+        currentProject?: boolean;
+    } = {};
 
-        if (currentProjectId() === control.value) {
-            errors.currentProject = true;
-        }
+    if (currentProjectId() === control.value) {
+        errors.currentProject = true;
+    }
 
-        return Object.keys(errors).length > 0 ? errors : null;
-    };
-}
+    return Object.keys(errors).length > 0 ? errors : null;
+};
 
 interface ProjectListing {
     id: UUID;
@@ -75,13 +73,11 @@ export class LoadProjectComponent implements OnInit, AfterViewInit {
                     ),
                 ),
                 map((projectListingDicts) =>
-                    projectListingDicts.map((projectListingDict) => {
-                        return {
-                            id: projectListingDict.id,
-                            name: projectListingDict.name,
-                            description: projectListingDict.description,
-                        };
-                    }),
+                    projectListingDicts.map((projectListingDict) => ({
+                        id: projectListingDict.id,
+                        name: projectListingDict.name,
+                        description: projectListingDict.description,
+                    })),
                 ),
             )
             .subscribe((projectListings) => {

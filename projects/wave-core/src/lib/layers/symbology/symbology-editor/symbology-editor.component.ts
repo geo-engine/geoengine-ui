@@ -18,9 +18,9 @@ import {Config} from '../../../config.service';
 })
 export class SymbologyEditorComponent implements OnDestroy {
     // make visible in template
-    // tslint:disable:variable-name
+    /* eslint-disable @typescript-eslint/naming-convention, no-underscore-dangle, id-blacklist, id-match */
     readonly ST = SymbologyType;
-    // tslint:enable
+    /* eslint-enable */
 
     /**
      * input to hide/show a layer selection

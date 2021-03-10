@@ -25,9 +25,6 @@ const startBeforeEndValidator = () => (control: FormGroup) => {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
-    private timeAsPoint: boolean;
-    private time: Time;
-    private subscriptions: Array<Subscription> = [];
     timeForm: FormGroup;
     start: Moment;
     end: Moment;
@@ -42,6 +39,10 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         {durationAmount: 6, durationUnit: 'months'},
         {durationAmount: 1, durationUnit: 'year'},
     ];
+
+    private timeAsPoint: boolean;
+    private time: Time;
+    private subscriptions: Array<Subscription> = [];
 
     constructor(
         private projectService: ProjectService,

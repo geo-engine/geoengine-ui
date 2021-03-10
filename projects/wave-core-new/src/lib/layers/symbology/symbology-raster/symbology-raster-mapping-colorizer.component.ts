@@ -26,10 +26,10 @@ import {MatSliderChange} from '@angular/material/slider';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 
 // TODO: use correct types
-// tslint:disable-next-line:no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface HistogramData {}
 
-// tslint:disable-next-line:no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface Operator {}
 
 /**
@@ -156,19 +156,16 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
 
     /**
      * Update the histogram auto reload setting.
+     *
      * @param event contains a checked: boolean value.
      */
     updateHistogramAutoReload(event: MatSlideToggleChange) {
         this.layerHistogramAutoReloadEnabled = event.checked;
     }
 
-    private update() {
-        this.symbologyChanged.emit(this.symbology.clone());
-    }
-
     ngOnChanges(changes: SimpleChanges): void {
+        // eslint-disable-next-line guard-for-in
         for (const propName in changes) {
-            // tslint:disable-line:forin
             switch (propName) {
                 case 'layer': {
                     if (changes['layer'].firstChange) {
@@ -198,6 +195,10 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
 
     ngOnDestroy() {
         this.layerHistogramDataSubscription.unsubscribe();
+    }
+
+    private update() {
+        this.symbologyChanged.emit(this.symbology.clone());
     }
 
     private reinitializeLayerHistogramDataSubscription() {

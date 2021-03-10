@@ -51,6 +51,25 @@ type Deserializer = (dict: OperatorTypeDict) => OperatorType;
 export class OperatorTypeFactory {
     protected static readonly typeDeserializers: Map<Type, Deserializer> = OperatorTypeFactory.defaultDeserializers();
 
+    /**
+     * Add a new type deserializer (fromDict) to the factory
+     */
+    static addType(type: Type, fromDict: Deserializer) {
+        OperatorTypeFactory.typeDeserializers.set(type, fromDict);
+    }
+
+    /**
+     * Create operator type from serialized data.
+     */
+    static fromDict(dict: OperatorTypeDict): OperatorType {
+        const fromDict = OperatorTypeFactory.typeDeserializers.get(dict.operatorType);
+        if (fromDict) {
+            return fromDict(dict);
+        } else {
+            throw Error(`There is not factory method defined for operator »${dict.operatorType}«.`);
+        }
+    }
+
     protected static defaultDeserializers(): Map<Type, Deserializer> {
         const typeDeserializers = new Map();
 
@@ -185,24 +204,5 @@ export class OperatorTypeFactory {
         // );
 
         return typeDeserializers;
-    }
-
-    /**
-     * Add a new type deserializer (fromDict) to the factory
-     */
-    static addType(type: Type, fromDict: Deserializer) {
-        OperatorTypeFactory.typeDeserializers.set(type, fromDict);
-    }
-
-    /**
-     * Create operator type from serialized data.
-     */
-    static fromDict(dict: OperatorTypeDict): OperatorType {
-        const fromDict = OperatorTypeFactory.typeDeserializers.get(dict.operatorType);
-        if (fromDict) {
-            return fromDict(dict);
-        } else {
-            throw Error(`There is not factory method defined for operator »${dict.operatorType}«.`);
-        }
     }
 }

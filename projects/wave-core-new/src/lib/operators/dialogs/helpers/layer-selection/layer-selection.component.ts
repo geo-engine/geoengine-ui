@@ -81,17 +81,17 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.layers || changes.types) {
-            let layers: Observable<Array<Layer>>;
+            let layers$: Observable<Array<Layer>>;
             if (this.layers instanceof Array) {
-                layers = of(this.layers);
+                layers$ = of(this.layers);
             } else {
-                layers = this.layers;
+                layers$ = this.layers;
             }
 
-            const sub = layers
+            const sub = layers$
                 .pipe(
                     mergeMap((layers) => {
-                        let layersAndMetadata = layers.map((l) => zip(of(l), this.projectService.getLayerMetadata(l)));
+                        const layersAndMetadata = layers.map((l) => zip(of(l), this.projectService.getLayerMetadata(l)));
                         return forkJoin(layersAndMetadata);
                     }),
                     map((layers: Array<[Layer, LayerMetadata]>) =>

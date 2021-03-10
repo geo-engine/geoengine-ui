@@ -1,10 +1,8 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
-
 import {RandomColorService} from '../../../util/services/random-color.service';
-
 import {Layer, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {AbstractVectorSymbology, PointSymbology} from '../../../layers/symbology/symbology.model';
+import {PointSymbology} from '../../../layers/symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
@@ -57,11 +55,11 @@ export class PointInPolygonFilterOperatorComponent {
                     this.projectService
                         .registerWorkflow(workflow)
                         .pipe(
-                            mergeMap((workflowId) => {
-                                return this.projectService.addLayer(
+                            mergeMap((workflowId) =>
+                                this.projectService.addLayer(
                                     new VectorLayer({
                                         workflowId,
-                                        name: name,
+                                        name,
                                         symbology: PointSymbology.createSymbology({
                                             fillRGBA: this.randomColorService.getRandomColorRgba(),
                                             radius: 10,
@@ -70,8 +68,8 @@ export class PointInPolygonFilterOperatorComponent {
                                         isLegendVisible: false,
                                         isVisible: true,
                                     }),
-                                );
-                            }),
+                                ),
+                            ),
                         )
                         .subscribe();
                 }),

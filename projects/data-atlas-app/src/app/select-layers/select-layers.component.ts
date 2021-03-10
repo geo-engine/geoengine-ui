@@ -142,8 +142,8 @@ export class SelectLayersComponent implements OnInit {
         this.projectService
             .registerWorkflow(workflow)
             .pipe(
-                mergeMap((workflowId) => {
-                    return this.dataSelectionService.setRasterLayer(
+                mergeMap((workflowId) =>
+                    this.dataSelectionService.setRasterLayer(
                         new RasterLayer({
                             workflowId,
                             name,
@@ -165,8 +165,8 @@ export class SelectLayersComponent implements OnInit {
                             isLegendVisible: false,
                             isVisible: true,
                         }),
-                    );
-                }),
+                    ),
+                ),
             )
             .subscribe(() => {
                 // success

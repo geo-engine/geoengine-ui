@@ -83,7 +83,7 @@ export class ExpressionType extends OperatorType {
         };
     }
 
-    cloneWithModifications(options?: {}): OperatorType {
+    cloneWithModifications(options?: {[index: string]: never}): OperatorType {
         return ExpressionType.fromDict(this.toDict()); // TODO: add modifications
     }
 }

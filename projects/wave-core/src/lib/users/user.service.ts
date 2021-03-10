@@ -367,10 +367,10 @@ export class UserService {
 
         const sessionData = JSON.parse(localStorage.getItem(PATH_PREFIX + 'session')) as Session;
         if (sessionData === null) {
-            // tslint:disable-line:no-null-keyword
+            // eslint-disable-line no-null/no-null
             const sessionData2 = JSON.parse(sessionStorage.getItem(PATH_PREFIX + 'session')) as Session;
             if (sessionData2 === null) {
-                // tslint:disable-line:no-null-keyword
+                // eslint-disable-line no-null/no-null
                 return {
                     user: this.config.USER.GUEST.NAME,
                     sessionToken: '',

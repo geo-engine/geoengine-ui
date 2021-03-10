@@ -83,7 +83,7 @@ export class StrokeDashSelectComponent implements ControlValueAccessor, OnChange
 
     ngOnChanges(changes: SimpleChanges) {
         for (const propName in changes) {
-            // tslint:disable-line:forin
+            // eslint-disable-line guard-for-in
             switch (propName) {
                 case 'lines': {
                     this.changeDetectorRef.markForCheck();

@@ -231,7 +231,7 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
 
     ngOnChanges(changes: SimpleChanges): void {
         for (const propName in changes) {
-            // tslint:disable-line:forin
+            // eslint-disable-line guard-for-in
             switch (propName) {
                 case 'minValue':
                 case 'maxValue': {

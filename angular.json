@@ -42,10 +42,9 @@
                     }
                 },
                 "lint": {
-                    "builder": "@angular-devkit/build-angular:tslint",
+                    "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "tsConfig": ["projects/wave-core/tsconfig.lib.json", "projects/wave-core/tsconfig.spec.json"],
-                        "exclude": ["**/node_modules/**"]
+                        "lintFilePatterns": ["projects/wave-core/**/*.ts", "projects/wave-core/**/*.html"]
                     }
                 }
             }
@@ -89,10 +88,9 @@
                     }
                 },
                 "lint": {
-                    "builder": "@angular-devkit/build-angular:tslint",
+                    "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "tsConfig": ["projects/wave-core-new/tsconfig.lib.json", "projects/wave-core-new/tsconfig.spec.json"],
-                        "exclude": ["**/node_modules/**"]
+                        "lintFilePatterns": ["projects/wave-core-new/**/*.ts", "projects/wave-core-new/**/*.html"]
                     }
                 }
             }
@@ -205,14 +203,9 @@
                     }
                 },
                 "lint": {
-                    "builder": "@angular-devkit/build-angular:tslint",
+                    "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "tsConfig": [
-                            "projects/wave-app/tsconfig.app.json",
-                            "projects/wave-app/tsconfig.spec.json",
-                            "projects/wave-app/e2e/tsconfig.json"
-                        ],
-                        "exclude": ["**/node_modules/**"]
+                        "lintFilePatterns": ["projects/wave-app/**/*.ts", "projects/wave-app/**/*.html"]
                     }
                 },
                 "e2e": {
@@ -337,14 +330,9 @@
                     }
                 },
                 "lint": {
-                    "builder": "@angular-devkit/build-angular:tslint",
+                    "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "tsConfig": [
-                            "projects/geoengine-app/tsconfig.app.json",
-                            "projects/geoengine-app/tsconfig.spec.json",
-                            "projects/geoengine-app/e2e/tsconfig.json"
-                        ],
-                        "exclude": ["**/node_modules/**"]
+                        "lintFilePatterns": ["projects/geoengine-app/**/*.ts", "projects/geoengine-app/**/*.html"]
                     }
                 },
                 "e2e": {
@@ -469,14 +457,9 @@
                     }
                 },
                 "lint": {
-                    "builder": "@angular-devkit/build-angular:tslint",
+                    "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "tsConfig": [
-                            "projects/data-atlas-app/tsconfig.app.json",
-                            "projects/data-atlas-app/tsconfig.spec.json",
-                            "projects/data-atlas-app/e2e/tsconfig.json"
-                        ],
-                        "exclude": ["**/node_modules/**"]
+                        "lintFilePatterns": ["projects/data-atlas-app/**/*.ts", "projects/data-atlas-app/**/*.html"]
                     }
                 },
                 "e2e": {
@@ -601,14 +584,9 @@
                     }
                 },
                 "lint": {
-                    "builder": "@angular-devkit/build-angular:tslint",
+                    "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "tsConfig": [
-                            "projects/gfbio-app/tsconfig.app.json",
-                            "projects/gfbio-app/tsconfig.spec.json",
-                            "projects/gfbio-app/e2e/tsconfig.json"
-                        ],
-                        "exclude": ["**/node_modules/**"]
+                        "lintFilePatterns": ["projects/gfbio-app/**/*.ts", "projects/gfbio-app/**/*.html"]
                     }
                 },
                 "e2e": {
@@ -733,14 +711,9 @@
                     }
                 },
                 "lint": {
-                    "builder": "@angular-devkit/build-angular:tslint",
+                    "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "tsConfig": [
-                            "projects/nature40-app/tsconfig.app.json",
-                            "projects/nature40-app/tsconfig.spec.json",
-                            "projects/nature40-app/e2e/tsconfig.json"
-                        ],
-                        "exclude": ["**/node_modules/**"]
+                        "lintFilePatterns": ["projects/nature40-app/**/*.ts", "projects/nature40-app/**/*.html"]
                     }
                 },
                 "e2e": {

@@ -1,0 +1,122 @@
+{
+    "root": true,
+    "ignorePatterns": ["projects/**/*"],
+    "overrides": [
+        {
+            "files": ["*.ts"],
+            "parserOptions": {
+                "project": ["tsconfig.json", "e2e/tsconfig.json"],
+                "createDefaultProgram": true
+            },
+            "extends": [
+                "plugin:@angular-eslint/ng-cli-compat",
+                "plugin:@angular-eslint/ng-cli-compat--formatting-add-on",
+                "plugin:@angular-eslint/template/process-inline-templates",
+                "prettier"
+            ],
+            "rules": {
+                "@angular-eslint/component-selector": [
+                    "error",
+                    {
+                        "type": "element",
+                        "prefix": "wave",
+                        "style": "kebab-case"
+                    }
+                ],
+                "@angular-eslint/directive-selector": [
+                    "error",
+                    {
+                        "type": "attribute",
+                        "prefix": "wave",
+                        "style": "camelCase"
+                    }
+                ],
+                "@typescript-eslint/consistent-type-definitions": "error",
+                "@typescript-eslint/dot-notation": "off",
+                "@typescript-eslint/explicit-member-accessibility": [
+                    "off",
+                    {
+                        "accessibility": "explicit"
+                    }
+                ],
+                "@typescript-eslint/member-ordering": [
+                    "error",
+                    {
+                        "default": {
+                            "memberTypes": [
+                                "public-field",
+                                "protected-field",
+                                "private-field",
+                                "constructor",
+                                "public-method",
+                                "protected-method",
+                                "private-method"
+                            ]
+                        }
+                    }
+                ],
+                "camelcase": "off",
+                "@typescript-eslint/naming-convention": [
+                    "error",
+                    {
+                        "selector": "default",
+                        "format": ["camelCase"]
+                    },
+                    {
+                        "selector": "variable",
+                        "format": ["camelCase", "UPPER_CASE"]
+                    },
+                    {
+                        "selector": "parameter",
+                        "format": ["camelCase"],
+                        "leadingUnderscore": "allow"
+                    },
+                    {
+                        "selector": "parameterProperty",
+                        "format": ["camelCase"],
+                        "leadingUnderscore": "allow"
+                    },
+                    {
+                        "selector": "memberLike",
+                        "modifiers": ["private"],
+                        "format": ["camelCase"],
+                        "leadingUnderscore": "allow"
+                    },
+                    {
+                        "selector": "property",
+                        "format": ["camelCase", "UPPER_CASE", "snake_case", "PascalCase"],
+                        "leadingUnderscore": "allow"
+                    },
+                    {
+                        "selector": "enumMember",
+                        "format": ["PascalCase", "UPPER_CASE"],
+                        "leadingUnderscore": "allow"
+                    },
+                    {
+                        "selector": "accessor",
+                        "format": ["camelCase", "UPPER_CASE"]
+                    },
+                    {
+                        "selector": "typeLike",
+                        "format": ["PascalCase"]
+                    }
+                ],
+                "arrow-parens": ["off", "always"],
+                "brace-style": ["error", "1tbs"],
+                "id-blacklist": "off",
+                "id-match": "off",
+                "import/order": "off",
+                "no-redeclare": "error",
+                "no-underscore-dangle": "off",
+                "valid-typeof": "error",
+                "no-shadow": "off",
+                "@typescript-eslint/no-shadow": ["error"]
+            }
+        },
+        {
+            "files": ["*.html"],
+            "extends": ["plugin:@angular-eslint/template/recommended", "prettier"],
+            "rules": {}
+        }
+    ]
+}

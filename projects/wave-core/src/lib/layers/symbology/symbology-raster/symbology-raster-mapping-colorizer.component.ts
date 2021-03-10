@@ -166,7 +166,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
 
     ngOnChanges(changes: SimpleChanges): void {
         for (const propName in changes) {
-            // tslint:disable-line:forin
+            // eslint-disable-line guard-for-in
             switch (propName) {
                 case 'layer': {
                     if (changes['layer'].firstChange) {

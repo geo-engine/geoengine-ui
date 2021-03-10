@@ -22,9 +22,10 @@ import {Moment, unitOfTime} from 'moment';
 export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, OnChanges {
     @Input() disabled: false;
 
-    private _time: Moment;
     onTouched: () => void;
     onChange: (_: Moment) => void = undefined;
+
+    private _time: Moment;
 
     constructor(private changeDetectorRef: ChangeDetectorRef) {}
 

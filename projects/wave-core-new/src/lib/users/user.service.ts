@@ -65,6 +65,7 @@ export class UserService {
 
     /**
      * Login using user credentials. If it was successful, set a new user.
+     *
      * @param credentials.user The user name.
      * @param credentials.password The user's password.
      * @returns `true` if the login was successful, `false` otherwise.
@@ -107,6 +108,7 @@ export class UserService {
 
     /**
      * Login using user credentials. If it was successful, set a new user.
+     *
      * @param session.user The user name.
      * @param session.password The user's password.
      * @returns `true` if the session is valid, `false` otherwise.

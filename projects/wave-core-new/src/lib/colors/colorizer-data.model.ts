@@ -32,6 +32,14 @@ export class ColorizerData implements IColorizerData {
     type: ColorizerType;
 
     /**
+     * The constructor for ColorizerData.
+     */
+    constructor(config: IColorizerData) {
+        this.breakpoints = config.breakpoints ? config.breakpoints.map((br) => new ColorBreakpoint(br)) : [];
+        this.type = config.type ? config.type : 'gradient';
+    }
+
+    /**
      * Generate a new gray scale colorizer for values between min and max.
      */
     static grayScaleColorizer(minMax: {min: number; max: number}): ColorizerData {
@@ -39,7 +47,7 @@ export class ColorizerData implements IColorizerData {
         const saveMax = minMax.max ? minMax.max : 1000;
         const saveCenter = (saveMin + saveMax) / 2.0;
 
-        const min_br: ColorBreakpointDict = {
+        const minBr: ColorBreakpointDict = {
             value: saveMin,
             rgba: Color.fromRgbaLike({
                 r: 0,
@@ -49,7 +57,7 @@ export class ColorizerData implements IColorizerData {
             }),
         };
 
-        const mid_br: ColorBreakpointDict = {
+        const midBr: ColorBreakpointDict = {
             value: saveCenter,
             rgba: Color.fromRgbaLike({
                 r: 128,
@@ -59,7 +67,7 @@ export class ColorizerData implements IColorizerData {
             }),
         };
 
-        const max_br: ColorBreakpointDict = {
+        const maxBr: ColorBreakpointDict = {
             value: saveMax,
             rgba: Color.fromRgbaLike({
                 r: 255,
@@ -70,7 +78,7 @@ export class ColorizerData implements IColorizerData {
         };
 
         return new ColorizerData({
-            breakpoints: [min_br, mid_br, max_br],
+            breakpoints: [minBr, midBr, maxBr],
             type: 'gradient',
         });
     }
@@ -103,16 +111,8 @@ export class ColorizerData implements IColorizerData {
     /**
      * Check if an instance of (I)ColorizerData is valid.
      */
-    static is_valid(colorizerData: IColorizerData) {
+    static isValid(colorizerData: IColorizerData) {
         return colorizerData.breakpoints.length >= 2;
-    }
-
-    /**
-     * The constructor for ColorizerData.
-     */
-    constructor(config: IColorizerData) {
-        this.breakpoints = config.breakpoints ? config.breakpoints.map((br) => new ColorBreakpoint(br)) : [];
-        this.type = config.type ? config.type : 'gradient';
     }
 
     /**
@@ -176,18 +176,18 @@ export class ColorizerData implements IColorizerData {
         const lookUpValue = firstBrkIsNumber && !isNumber ? parseFloat(value as string) : value;
         const isLookupNumber = typeof lookUpValue === 'number';
 
-        let brk_index = -1;
+        let brkIndex = -1;
         for (let index = 0; index < this.breakpoints.length; index++) {
-            const brk_i = this.breakpoints[index];
-            if (isLookupNumber && brk_i.value <= lookUpValue) {
-                brk_index = index;
-            } else if (brk_i.value === lookUpValue) {
-                brk_index = index;
+            const brkI = this.breakpoints[index];
+            if (isLookupNumber && brkI.value <= lookUpValue) {
+                brkIndex = index;
+            } else if (brkI.value === lookUpValue) {
+                brkIndex = index;
             }
         }
-        const brk = this.breakpoints[brk_index];
-        const validBrk = brk_index >= 0 && (this.breakpoints.length > 1 || brk.value === lookUpValue);
-        const isLastBrk = brk_index >= this.breakpoints.length - 1;
+        const brk = this.breakpoints[brkIndex];
+        const validBrk = brkIndex >= 0 && (this.breakpoints.length > 1 || brk.value === lookUpValue);
+        const isLastBrk = brkIndex >= this.breakpoints.length - 1;
 
         if (!validBrk) {
             return undefined;
@@ -198,11 +198,11 @@ export class ColorizerData implements IColorizerData {
         }
 
         // handling gradients for numbers...
-        const brk_next = this.breakpoints[brk_index + 1];
-        if (typeof lookUpValue === 'number' && typeof brk.value === 'number' && typeof brk_next.value === 'number') {
+        const brkNext = this.breakpoints[brkIndex + 1];
+        if (typeof lookUpValue === 'number' && typeof brk.value === 'number' && typeof brkNext.value === 'number') {
             const diff = lookUpValue - brk.value;
-            const frac_diff = diff / (brk_next.value - brk.value);
-            const color = Color.interpolate(brk.rgba, brk_next.rgba, frac_diff);
+            const fracDiff = diff / (brkNext.value - brk.value);
+            const color = Color.interpolate(brk.rgba, brkNext.rgba, fracDiff);
 
             return new ColorBreakpoint({
                 rgba: color,
@@ -282,17 +282,18 @@ export class ColorizerData implements IColorizerData {
             breakpoints:
                 !mcd || !mcd.breakpoints
                     ? []
-                    : mcd.breakpoints.map((br) => {
-                          return new ColorBreakpoint({
-                              rgba: {
-                                  r: br.r,
-                                  g: br.g,
-                                  b: br.b,
-                                  a: br.a ? br.a : 1.0,
-                              },
-                              value: br.value,
-                          });
-                      }),
+                    : mcd.breakpoints.map(
+                          (br) =>
+                              new ColorBreakpoint({
+                                  rgba: {
+                                      r: br.r,
+                                      g: br.g,
+                                      b: br.b,
+                                      a: br.a ? br.a : 1.0,
+                                  },
+                                  value: br.value,
+                              }),
+                      ),
         });
     }
 }

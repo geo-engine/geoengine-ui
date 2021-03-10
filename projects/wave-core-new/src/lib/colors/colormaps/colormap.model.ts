@@ -2,47 +2,47 @@ import {ColorBreakpointDict} from '../color-breakpoint.model';
 import {Color} from '../color';
 import {ColorizerData} from '../colorizer-data.model';
 import {
-    colormap_inferno_data,
-    colormap_magma_data,
-    colormap_plasma_data,
-    colormap_viridis_data,
+    COLORMAP_INFERNO_DATA,
+    COLORMAP_MAGMA_DATA,
+    COLORMAP_PLASMA_DATA,
+    COLORMAP_VIRIDIS_DATA,
     MPL_COLORMAP_NAMES,
     MplColormapName,
 } from './mpl-colormaps';
-import {coolwarm_data, MORELAND_COLORMAP_NAMES, MorelandColormapName} from './moreland-colormaps';
+import {COOLWARM_DATA, MORELAND_COLORMAP_NAMES, MorelandColormapName} from './moreland-colormaps';
 import {
-    colormap_arcon_data,
-    colormap_bamako_data,
-    colormap_batlow_data,
-    colormap_berlin_data,
-    colormap_bilbao_data,
-    colormap_broc_data,
-    colormap_broco_data,
-    colormap_buda_data,
-    colormap_corc_data,
-    colormap_corco_data,
-    colormap_davos_data,
-    colormap_devon_data,
-    colormap_grayc_data,
-    colormap_hawaii_data,
-    colormap_imola_data,
-    colormap_lajolla_data,
-    colormap_lapaz_data,
-    colormap_lisbon_data,
-    colormap_nuuk_data,
-    colormap_oleron_data,
-    colormap_oslo_data,
-    colormap_roma_data,
-    colormap_romao_data,
-    colormap_tofino_data,
-    colormap_tokyo_data,
-    colormap_turku_data,
-    colormap_vik_data,
-    colormap_viko_data,
+    COLORMAP_ARCON_DATA,
+    COLORMAP_BAMAKO_DATA,
+    COLORMAP_BATLOW_DATA,
+    COLORMAP_BERLIN_DATA,
+    COLORMAP_BILBAO_DATA,
+    COLORMAP_BROC_DATA,
+    COLORMAP_BROCO_DATA,
+    COLORMAP_BUDA_DATA,
+    COLORMAP_CORC_DATA,
+    COLORMAP_CORCO_DATA,
+    COLORMAP_DAVOS_DATA,
+    COLORMAP_DEVON_DATA,
+    COLORMAP_GRAYC_DATA,
+    COLORMAP_HAWAII_DATA,
+    COLORMAP_IMOLA_DATA,
+    COLORMAP_LAJOLLA_DATA,
+    COLORMAP_LAPAZ_DATA,
+    COLORMAP_LISBON_DATA,
+    COLORMAP_NUUK_DATA,
+    COLORMAP_OLERON_DATA,
+    COLORMAP_OSLO_DATA,
+    COLORMAP_ROMA_DATA,
+    COLORMAP_ROMAO_DATA,
+    COLORMAP_TOFINO_DATA,
+    COLORMAP_TOKYO_DATA,
+    COLORMAP_TURKU_DATA,
+    COLORMAP_VIK_DATA,
+    COLORMAP_VIKO_DATA,
     SCIENTIFIC_COLORMAP_NAMES,
     ScientificColormapName,
 } from './scientific-colormaps/scientific-colormaps';
-import {colormap_rainbow_data, GENERIC_COLORMAP_NAMES, GenericColormapName} from './generic-colormaps';
+import {COLORMAP_RAINBOW_DATA, GENERIC_COLORMAP_NAMES, GenericColormapName} from './generic-colormaps';
 
 /**
  * Type for ColormapData / a wrapper for RGB values.
@@ -98,96 +98,74 @@ export abstract class Colormap {
     static getColormapForName(colormapName: ColormapNames): ColormapData {
         switch (colormapName) {
             case 'INFERNO':
-                return colormap_inferno_data;
+                return COLORMAP_INFERNO_DATA;
             case 'MAGMA':
-                return colormap_magma_data;
+                return COLORMAP_MAGMA_DATA;
             case 'PLASMA':
-                return colormap_plasma_data;
+                return COLORMAP_PLASMA_DATA;
             case 'VIRIDIS':
-                return colormap_viridis_data;
+                return COLORMAP_VIRIDIS_DATA;
             case 'COOLWARM':
-                return coolwarm_data;
+                return COOLWARM_DATA;
             case 'ARCON':
-                return colormap_arcon_data;
+                return COLORMAP_ARCON_DATA;
             case 'BAMAKO':
-                return colormap_bamako_data;
+                return COLORMAP_BAMAKO_DATA;
             case 'BATLOW':
-                return colormap_batlow_data;
+                return COLORMAP_BATLOW_DATA;
             case 'BERLIN':
-                return colormap_berlin_data;
+                return COLORMAP_BERLIN_DATA;
             case 'BILBAO':
-                return colormap_bilbao_data;
+                return COLORMAP_BILBAO_DATA;
             case 'BROC':
-                return colormap_broc_data;
+                return COLORMAP_BROC_DATA;
             case 'BROCO':
-                return colormap_broco_data;
+                return COLORMAP_BROCO_DATA;
             case 'BUDA':
-                return colormap_buda_data;
+                return COLORMAP_BUDA_DATA;
             case 'CORC':
-                return colormap_corc_data;
+                return COLORMAP_CORC_DATA;
             case 'CORCO':
-                return colormap_corco_data;
+                return COLORMAP_CORCO_DATA;
             case 'DAVOS':
-                return colormap_davos_data;
+                return COLORMAP_DAVOS_DATA;
             case 'DEVON':
-                return colormap_devon_data;
+                return COLORMAP_DEVON_DATA;
             case 'GRAYC':
-                return colormap_grayc_data;
+                return COLORMAP_GRAYC_DATA;
             case 'HAWAII':
-                return colormap_hawaii_data;
+                return COLORMAP_HAWAII_DATA;
             case 'IMOLA':
-                return colormap_imola_data;
+                return COLORMAP_IMOLA_DATA;
             case 'LAJOLLA':
-                return colormap_lajolla_data;
+                return COLORMAP_LAJOLLA_DATA;
             case 'LAPAZ':
-                return colormap_lapaz_data;
+                return COLORMAP_LAPAZ_DATA;
             case 'LISBON':
-                return colormap_lisbon_data;
+                return COLORMAP_LISBON_DATA;
             case 'NUUK':
-                return colormap_nuuk_data;
+                return COLORMAP_NUUK_DATA;
             case 'OLERON':
-                return colormap_oleron_data;
+                return COLORMAP_OLERON_DATA;
             case 'OSLO':
-                return colormap_oslo_data;
+                return COLORMAP_OSLO_DATA;
             case 'ROMA':
-                return colormap_roma_data;
+                return COLORMAP_ROMA_DATA;
             case 'ROMAO':
-                return colormap_romao_data;
+                return COLORMAP_ROMAO_DATA;
             case 'TOFINO':
-                return colormap_tofino_data;
+                return COLORMAP_TOFINO_DATA;
             case 'TOKYO':
-                return colormap_tokyo_data;
+                return COLORMAP_TOKYO_DATA;
             case 'TURKU':
-                return colormap_turku_data;
+                return COLORMAP_TURKU_DATA;
             case 'VIK':
-                return colormap_vik_data;
+                return COLORMAP_VIK_DATA;
             case 'VIKO':
-                return colormap_viko_data;
+                return COLORMAP_VIKO_DATA;
             case 'RAINBOW':
-                return colormap_rainbow_data;
+                return COLORMAP_RAINBOW_DATA;
         }
-    }
-
-    private static calculateStepScales(
-        stepScale: ColormapStepScale,
-        stepFractions: Array<number>,
-        min: number,
-        max: number,
-    ): Array<number> {
-        switch (stepScale) {
-            case 'linear':
-                return Colormap.linearNormInverse(stepFractions, min, max);
-            case 'log':
-                return Colormap.logNormInverse(stepFractions, min, max);
-            case 'square root':
-                return Colormap.powerNormInverse(stepFractions, min, max, 0.5);
-            case 'square':
-                return Colormap.powerNormInverse(stepFractions, min, max, 2);
-        }
-    }
-
-    private static colormapColorToRgb(colormapColor: [number, number, number]): [number, number, number] {
-        return [colormapColor[0] * 255, colormapColor[1] * 255, colormapColor[2] * 255];
     }
 
     static createColorizerDataWithName(
@@ -210,6 +188,28 @@ export abstract class Colormap {
             breakpoints,
             type: stepScale === 'log' ? 'logarithmic' : 'gradient',
         });
+    }
+
+    private static calculateStepScales(
+        stepScale: ColormapStepScale,
+        stepFractions: Array<number>,
+        min: number,
+        max: number,
+    ): Array<number> {
+        switch (stepScale) {
+            case 'linear':
+                return Colormap.linearNormInverse(stepFractions, min, max);
+            case 'log':
+                return Colormap.logNormInverse(stepFractions, min, max);
+            case 'square root':
+                return Colormap.powerNormInverse(stepFractions, min, max, 0.5);
+            case 'square':
+                return Colormap.powerNormInverse(stepFractions, min, max, 2);
+        }
+    }
+
+    private static colormapColorToRgb(colormapColor: [number, number, number]): [number, number, number] {
+        return [colormapColor[0] * 255, colormapColor[1] * 255, colormapColor[2] * 255];
     }
 
     private static logNormInverse(stepFractions: Array<number>, min: number, max: number): Array<number> {

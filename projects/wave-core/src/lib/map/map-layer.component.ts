@@ -19,7 +19,7 @@ import {Projection} from '../operators/projection.model';
  * The `ol-layer` component represents a single layer object of open layers.
  */
 @Directive()
-// tslint:disable-next-line:directive-class-suffix
+// eslint-disable-next-line @angular-eslint/directive-class-suffix
 export abstract class MapLayerComponent<OL extends OlLayer, OS extends OlSource, S extends AbstractSymbology, L extends Layer<S>> {
     /**
      * A raster or vector layer

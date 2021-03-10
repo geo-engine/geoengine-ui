@@ -8,6 +8,7 @@ import {ColorizerDict, RgbaColor} from '../../backend/backend.model';
 /**
  * List of the symbology types used in WAVE
  */
+
 export enum SymbologyType {
     RASTER, // UNUSED
     SIMPLE_POINT, // DEPRECATED
@@ -41,7 +42,7 @@ export interface SymbologyDict {
     symbologyType: string;
 }
 
-// tslint:disable-next-line: no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ISymbology {}
 
 export type StrokeDashStyle = Array<number>;
@@ -135,12 +136,6 @@ interface VectorSymbologyDict extends SymbologyDict {
  * The abstract VectorSymbology class.
  */
 export abstract class AbstractVectorSymbology extends AbstractSymbology {
-    private _fillColorBreakpoint: ColorBreakpoint = new ColorBreakpoint({rgba: DEFAULT_VECTOR_FILL_COLOR, value: 'Default fill color'});
-    private _strokeColorBreakpoint: ColorBreakpoint = new ColorBreakpoint({
-        rgba: DEFAULT_VECTOR_STROKE_COLOR,
-        value: 'Default stroke color',
-    });
-
     // common vector symbology fill
     fillColorizer: ColorizerData;
     fillColorAttribute: string = undefined;
@@ -148,11 +143,50 @@ export abstract class AbstractVectorSymbology extends AbstractSymbology {
     strokeWidth = 1;
     strokeColorizer: ColorizerData;
     strokeColorAttribute: string = undefined;
-    private _strokeDashStyle: StrokeDashStyle = undefined;
     // common vector symbology text attribute
     _textAttribute: string = undefined;
     textColor: Color = undefined;
     textStrokeWidth: number = undefined;
+
+    private _strokeDashStyle: StrokeDashStyle = undefined;
+    private _fillColorBreakpoint: ColorBreakpoint = new ColorBreakpoint({rgba: DEFAULT_VECTOR_FILL_COLOR, value: 'Default fill color'});
+    private _strokeColorBreakpoint: ColorBreakpoint = new ColorBreakpoint({
+        rgba: DEFAULT_VECTOR_STROKE_COLOR,
+        value: 'Default stroke color',
+    });
+
+    protected constructor(config: VectorSymbologyConfig) {
+        super();
+        if (config.fillRGBA) {
+            this.fillRGBA = Color.fromRgbaLike(config.fillRGBA);
+        }
+        if (config.strokeRGBA) {
+            this.strokeRGBA = Color.fromRgbaLike(config.strokeRGBA);
+        }
+        if (config.strokeWidth) {
+            this.strokeWidth = config.strokeWidth;
+        }
+
+        if (config.fillColorAttribute) {
+            this.fillColorAttribute = config.fillColorAttribute;
+        }
+        this.fillColorizer = config.fillColorizer ? ColorizerData.fromDict(config.fillColorizer) : ColorizerData.empty();
+
+        if (config.strokeColorAttribute) {
+            this.strokeColorAttribute = config.strokeColorAttribute;
+        }
+        this.strokeColorizer = config.strokeColorizer ? ColorizerData.fromDict(config.strokeColorizer) : ColorizerData.empty();
+
+        if (config.strokeDashStyle) {
+            this.strokeDashStyle = config.strokeDashStyle;
+        }
+
+        if (config.textAttribute) {
+            this.textAttribute = config.textAttribute;
+        }
+        this.textColor = config.textColor ? Color.fromRgbaLike(config.textColor) : WHITE;
+        this.textStrokeWidth = config.textStrokeWidth ? config.textStrokeWidth : Math.ceil(config.strokeWidth * 0.1);
+    }
 
     /**
      * Returns true if the symbology describes filled objects.
@@ -296,39 +330,6 @@ export abstract class AbstractVectorSymbology extends AbstractSymbology {
             );
         }
         return false;
-    }
-
-    protected constructor(config: VectorSymbologyConfig) {
-        super();
-        if (config.fillRGBA) {
-            this.fillRGBA = Color.fromRgbaLike(config.fillRGBA);
-        }
-        if (config.strokeRGBA) {
-            this.strokeRGBA = Color.fromRgbaLike(config.strokeRGBA);
-        }
-        if (config.strokeWidth) {
-            this.strokeWidth = config.strokeWidth;
-        }
-
-        if (config.fillColorAttribute) {
-            this.fillColorAttribute = config.fillColorAttribute;
-        }
-        this.fillColorizer = config.fillColorizer ? ColorizerData.fromDict(config.fillColorizer) : ColorizerData.empty();
-
-        if (config.strokeColorAttribute) {
-            this.strokeColorAttribute = config.strokeColorAttribute;
-        }
-        this.strokeColorizer = config.strokeColorizer ? ColorizerData.fromDict(config.strokeColorizer) : ColorizerData.empty();
-
-        if (config.strokeDashStyle) {
-            this.strokeDashStyle = config.strokeDashStyle;
-        }
-
-        if (config.textAttribute) {
-            this.textAttribute = config.textAttribute;
-        }
-        this.textColor = config.textColor ? Color.fromRgbaLike(config.textColor) : WHITE;
-        this.textStrokeWidth = config.textStrokeWidth ? config.textStrokeWidth : Math.ceil(config.strokeWidth * 0.1);
     }
 
     toDict(): VectorSymbologyDict {
@@ -633,13 +634,6 @@ export class MappingRasterSymbology extends AbstractRasterSymbology implements I
     noDataColor: ColorBreakpoint;
     overflowColor: ColorBreakpoint;
 
-    /**
-     * Create the default symbology, with options from config.
-     */
-    static createSymbology(config: IColorizerRasterSymbology) {
-        return new MappingRasterSymbology(config);
-    }
-
     constructor(config: IColorizerRasterSymbology) {
         super(config);
         this.colorizer = config.colorizer
@@ -651,6 +645,13 @@ export class MappingRasterSymbology extends AbstractRasterSymbology implements I
         this.overflowColor = config.overflowColor
             ? new ColorBreakpoint(config.overflowColor)
             : new ColorBreakpoint({rgba: TRANSPARENT, value: 'Overflow'});
+    }
+
+    /**
+     * Create the default symbology, with options from config.
+     */
+    static createSymbology(config: IColorizerRasterSymbology) {
+        return new MappingRasterSymbology(config);
     }
 
     getSymbologyType(): SymbologyType {
@@ -670,12 +671,10 @@ export class MappingRasterSymbology extends AbstractRasterSymbology implements I
             case 'gradient':
                 return {
                     LinearGradient: {
-                        breakpoints: this.colorizer.breakpoints.map((breakpoint) => {
-                            return {
-                                value: typeof breakpoint.value === 'string' ? Number.parseFloat(breakpoint.value) : breakpoint.value,
-                                color: breakpoint.rgba.rgbaTuple().map(Math.round) as RgbaColor,
-                            };
-                        }),
+                        breakpoints: this.colorizer.breakpoints.map((breakpoint) => ({
+                            value: typeof breakpoint.value === 'string' ? Number.parseFloat(breakpoint.value) : breakpoint.value,
+                            color: breakpoint.rgba.rgbaTuple().map(Math.round) as RgbaColor,
+                        })),
                         default_color: this.overflowColor.rgba.rgbaTuple().map(Math.round) as RgbaColor,
                         no_data_color: this.noDataColor.rgba.rgbaTuple().map(Math.round) as RgbaColor,
                     },
