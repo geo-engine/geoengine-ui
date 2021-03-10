@@ -7,6 +7,7 @@
         "prettier": "prettier",
         "start": "ng serve",
         "build": "npm run build-prod:core && npm run build-prod:wave && npm run build-prod:gfbio && npm run build-prod:nature40",
+        "check": "prettier --check . && ng lint wave-core-new && ng lint geoengine-app && ng lint data-atlas-app",
         "ci-core": "ng build --prod wave-core-new",
         "serve:wave": "ng serve wave-app --proxy-config proxy.conf.json",
         "serve:geoengine": "ng serve geoengine-app --proxy-config proxy-geoengine.conf.json",

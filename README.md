@@ -108,3 +108,10 @@ MAPPING_URL: '/cgi-bin/mapping_cgi',
 ```
 
 _TODO: specify the options of each parameter in a tabular form._
+
+## Code-Style and CI
+
+We format our code with [prettier](https://prettier.io/) and lint our code with [ESLint](https://eslint.org/).
+This is also checked in our CI process.
+
+You can check your PR beforehand by calling `npm run check`.
