@@ -3,6 +3,6 @@
     padding: 1rem;
 }
 
-mat-radio-button {
-    display: block;
+mat-selection-list ::ng-deep .mat-subheader {
+    height: unset !important;
 }
