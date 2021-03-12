@@ -1,5 +1,4 @@
 import {Observable, BehaviorSubject} from 'rxjs';
-import {first} from 'rxjs/operators';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -94,13 +93,9 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     private reset() {
-        this.projectService
-            .getLayerStream()
-            .pipe(first())
-            .subscribe(() => {
-                this.projectService.clearLayers();
-                this.projectService.setTime(new Time(moment.utc()));
-            });
+        this.projectService.clearLayers();
+        this.projectService.clearPlots();
+        this.projectService.setTime(new Time(moment.utc()));
     }
 
     private registerIcons() {

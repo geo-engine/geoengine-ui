@@ -3,7 +3,6 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserModule} from '@angular/platform-browser';
 import {HttpClientModule} from '@angular/common/http';
 import {RouterModule} from '@angular/router';
-
 import {AppComponent} from './app.component';
 import {
     Config,
@@ -21,9 +20,10 @@ import {SelectLayersComponent} from './select-layers/select-layers.component';
 import {PortalModule} from '@angular/cdk/portal';
 import {LegendComponent} from './legend/legend.component';
 import {AnalysisComponent} from './analysis/analysis.component';
+import {TimeStepSelectorComponent} from './time-step-selector/time-step-selector.component';
 
 @NgModule({
-    declarations: [AppComponent, SelectLayersComponent, LegendComponent, AnalysisComponent],
+    declarations: [AppComponent, SelectLayersComponent, LegendComponent, AnalysisComponent, TimeStepSelectorComponent],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,

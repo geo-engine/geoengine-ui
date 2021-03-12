@@ -7,3 +7,4 @@ node-modules
 scripts
 .idea
 *.geojson
+.vscode
