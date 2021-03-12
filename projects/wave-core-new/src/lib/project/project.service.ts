@@ -39,16 +39,22 @@ import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers
 export class ProjectService {
     private project$ = new ReplaySubject<Project>(1);
 
-    private layerData$ = new Map<number, ReplaySubject<LayerData>>();
-    private layerDataState$ = new Map<number, ReplaySubject<LoadingState>>();
-    private layerDataSubscriptions = new Map<number, Subscription>();
-    private layers = new Map<number, ReplaySubject<Layer>>();
-    private newLayer$ = new Subject<void>();
+    private readonly layers = new Map<number, ReplaySubject<Layer>>();
+    private readonly layerState$ = new Map<number, Observable<LoadingState>>();
 
-    private plotData$ = new Map<number, ReplaySubject<any>>();
-    private plotDataState$ = new Map<number, ReplaySubject<LoadingState>>();
-    private plotDataSubscriptions = new Map<number, Subscription>();
-    private newPlot$ = new Subject<void>();
+    private readonly layerMetadata$ = new Map<number, ReplaySubject<LayerMetadata>>();
+    private readonly layerMetadataState$ = new Map<number, ReplaySubject<LoadingState>>();
+
+    private readonly layerData$ = new Map<number, ReplaySubject<LayerData>>();
+    private readonly layerDataState$ = new Map<number, ReplaySubject<LoadingState>>();
+    private readonly layerDataSubscriptions = new Map<number, Subscription>();
+
+    private readonly newLayer$ = new Subject<void>();
+
+    private readonly plotData$ = new Map<number, ReplaySubject<any>>();
+    private readonly plotDataState$ = new Map<number, ReplaySubject<LoadingState>>();
+    private readonly plotDataSubscriptions = new Map<number, Subscription>();
+    private readonly newPlot$ = new Subject<void>();
 
     constructor(
         protected config: Config,
@@ -204,6 +210,8 @@ export class ProjectService {
         for (const layer of project.layers) {
             this.createLayerDataStreams(layer);
             this.createLayerChangesStream(layer);
+            this.createLayerMetadataStreams(layer);
+            this.createCombinedLoadingState(layer);
         }
 
         // add plot streams
@@ -317,6 +325,7 @@ export class ProjectService {
     addLayer(layer: Layer, notify = true): Observable<void> {
         this.createLayerDataStreams(layer);
         this.createLayerChangesStream(layer);
+        this.createLayerMetadataStreams(layer);
 
         const result = this.getProjectOnce().pipe(
             mergeMap((project) =>
@@ -398,6 +407,7 @@ export class ProjectService {
      */
     reloadLayer(layer: Layer) {
         this.reloadLayerData(layer);
+        this.retrieveLayerMetadata(layer, this.layerMetadata$.get(layer.id), this.layerMetadataState$.get(layer.id));
     }
 
     /**
@@ -484,16 +494,15 @@ export class ProjectService {
     }
 
     getLayerMetadata(layer: Layer): Observable<LayerMetadata> {
-        return this.userService.getSessionTokenForRequest().pipe(
-            mergeMap((sessionToken) => this.backend.getWorkflowMetadata(layer.workflowId, sessionToken)),
-            map((metadata: RasterResultDescriptorDict | VectorResultDescriptorDict) => {
-                if (layer instanceof VectorLayer) {
-                    return VectorLayerMetadata.fromDict(metadata as VectorResultDescriptorDict);
-                } else {
-                    return RasterLayerMetadata.fromDict(metadata as RasterResultDescriptorDict);
-                }
-            }),
-        );
+        return this.layerMetadata$.get(layer.id);
+    }
+
+    getVectorLayerMetadata(layer: VectorLayer): Observable<VectorLayerMetadata> {
+        return this.layerMetadata$.get(layer.id).pipe(map((metadata) => metadata as VectorLayerMetadata));
+    }
+
+    getRasterLayerMetadata(layer: RasterLayer): Observable<RasterLayerMetadata> {
+        return this.layerMetadata$.get(layer.id).pipe(map((metadata) => metadata as RasterLayerMetadata));
     }
 
     /**
@@ -508,6 +517,13 @@ export class ProjectService {
      */
     getPlotDataStream(plot: HasPlotId): Observable<any> {
         return this.plotData$.get(plot.id);
+    }
+
+    /**
+     * Retrieve the layer status as a stream.
+     */
+    getLayerStatusStream(layer: HasLayerId): Observable<LoadingState> {
+        return this.layerState$.get(layer.id);
     }
 
     /**
@@ -559,6 +575,8 @@ export class ProjectService {
             .subscribe(
                 () => {
                     this.removeLayerSubscriptions(layer);
+                    this.removeMetadataObservables(layer);
+                    this.layerState$.delete(layer.id);
                     subject.next();
                 },
                 (error) => subject.error(error),
@@ -588,7 +606,11 @@ export class ProjectService {
             )
             .subscribe(
                 () => {
-                    removedLayers.forEach((layer) => this.removeLayerSubscriptions(layer));
+                    removedLayers.forEach((layer) => {
+                        this.removeLayerSubscriptions(layer);
+                        this.removeMetadataObservables(layer);
+                        this.layerState$.delete(layer.id);
+                    });
                     subject.next();
                 },
                 (error) => subject.error(error),
@@ -730,7 +752,7 @@ export class ProjectService {
         );
     }
 
-    protected removeLayerSubscriptions(layer: Layer) {
+    protected removeLayerSubscriptions(layer: HasLayerId) {
         // subjects
         for (const subjectMap of [this.layers, this.layerData$, this.layerDataState$]) {
             subjectMap.get(layer.id).complete();
@@ -742,6 +764,14 @@ export class ProjectService {
             subscriptionMap.get(layer.id).unsubscribe();
             subscriptionMap.delete(layer.id);
         }
+    }
+
+    protected removeMetadataObservables(layer: HasLayerId) {
+        this.layerMetadata$.get(layer.id).complete();
+        this.layerMetadata$.delete(layer.id);
+
+        this.layerMetadataState$.get(layer.id).complete();
+        this.layerMetadataState$.delete(layer.id);
     }
 
     protected static optimizeVecUpdates<Content extends ToDict<ContentDict> & {equals(other: Content): boolean}, ContentDict>(
@@ -809,6 +839,27 @@ export class ProjectService {
         return subject.asObservable();
     }
 
+    private createCombinedLoadingState(layer: HasLayerId) {
+        const loadingState$ = combineLatest([this.layerMetadataState$.get(layer.id), this.layerDataState$.get(layer.id)]).pipe(
+            map((loadingStates) => {
+                if (loadingStates.includes(LoadingState.LOADING)) {
+                    return LoadingState.LOADING;
+                }
+
+                if (loadingStates.includes(LoadingState.ERROR)) {
+                    return LoadingState.ERROR;
+                }
+
+                if (loadingStates.includes(LoadingState.NODATAFORGIVENTIME)) {
+                    return LoadingState.NODATAFORGIVENTIME;
+                }
+
+                return LoadingState.OK;
+            }),
+        );
+        this.layerState$.set(layer.id, loadingState$);
+    }
+
     private createLayerDataStreams(layer: Layer) {
         // each layer has data. The type depends on the layer type
         const layerDataLoadingState$ = new ReplaySubject<LoadingState>(1);
@@ -825,6 +876,16 @@ export class ProjectService {
         this.layerDataSubscriptions.set(layer.id, layerDataSub);
         this.layerDataState$.set(layer.id, layerDataLoadingState$);
         this.layerData$.set(layer.id, layerData$);
+    }
+
+    private createLayerMetadataStreams(layer: Layer) {
+        const layerMetadataLoadingState$ = new ReplaySubject<LoadingState>(1);
+        const layerMetadata$ = new ReplaySubject<LayerMetadata>(1);
+
+        this.retrieveLayerMetadata(layer, layerMetadata$, layerMetadataLoadingState$);
+
+        this.layerMetadata$.set(layer.id, layerMetadata$);
+        this.layerMetadataState$.set(layer.id, layerMetadataLoadingState$);
     }
 
     /**
@@ -866,6 +927,37 @@ export class ProjectService {
             )
             .subscribe(
                 (data) => data$.next(data),
+                (error) => error, // ignore error
+            );
+    }
+
+    /**
+     * Retrieve metadata for layer data
+     */
+    private retrieveLayerMetadata(layer: Layer, metadata$: Observer<LayerMetadata>, loadingState$: Observer<LoadingState>) {
+        this.userService
+            .getSessionTokenForRequest()
+            .pipe(
+                tap(() => loadingState$.next(LoadingState.LOADING)),
+                mergeMap((sessionToken) => this.backend.getWorkflowMetadata(layer.workflowId, sessionToken)),
+                map((workflowMetadataDict) => {
+                    switch (layer.layerType) {
+                        case 'vector':
+                            return VectorLayerMetadata.fromDict(workflowMetadataDict as VectorResultDescriptorDict);
+                        case 'raster':
+                            return RasterLayerMetadata.fromDict(workflowMetadataDict as RasterResultDescriptorDict);
+                    }
+                }),
+                tap(
+                    () => loadingState$.next(LoadingState.OK),
+                    (reason: Response) => {
+                        this.notificationService.error(`${layer.name}: ${reason}`);
+                        loadingState$.next(LoadingState.ERROR);
+                    },
+                ),
+            )
+            .subscribe(
+                (metadata) => metadata$.next(metadata),
                 (error) => error, // ignore error
             );
     }
