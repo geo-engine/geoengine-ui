@@ -593,8 +593,6 @@ export class ProjectService {
      * Remove all plots from the current project.
      */
     clearPlots(): Observable<void> {
-        const subject = new Subject<void>();
-
         let removedPlots: Array<Layer>;
 
         const result = this.getProjectOnce().pipe(
