@@ -12,6 +12,7 @@
 
     --wave-background-color: #{map-get(map-get($wave-app-theme, background), background)};
     --wave-background-hover-color: #{mat-color(map-get($wave-app-theme, background), hover)};
+    --wave-card-background-color: #{map-get(map-get($wave-app-theme, background), card)};
 
     font-family: Roboto, 'Helvetica Neue', sans-serif;
     font-size: 16px;

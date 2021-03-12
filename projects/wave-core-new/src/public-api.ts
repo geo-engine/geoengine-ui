@@ -23,6 +23,7 @@ export * from './lib/colors/colormap-colorizer/colormap-colorizer.component';
 export * from './lib/datasets/add-data/add-data.component';
 export * from './lib/datasets/dataset-list/dataset-list.component';
 export * from './lib/datasets/dataset/dataset.component';
+export * from './lib/datatable/table/table.component';
 export * from './lib/dialogs/dialog-header/dialog-header.component';
 export * from './lib/dialogs/dialog-help/dialog-help.component';
 export * from './lib/dialogs/dialog-section-heading/dialog-section-heading.component';
