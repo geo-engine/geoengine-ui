@@ -444,16 +444,7 @@ export class ProjectService {
                     return of<void>();
                 }
             }),
-            tap(() => {
-                this.plotDataSubscriptions.get(plot.id).unsubscribe();
-                this.plotDataSubscriptions.delete(plot.id);
-
-                this.plotDataState$.get(plot.id).complete();
-                this.plotDataState$.delete(plot.id);
-
-                this.plotData$.get(plot.id).complete();
-                this.plotData$.delete(plot.id);
-            }),
+            tap(() => this.removePlotSubscriptions(plot)),
         );
 
         return ProjectService.subscribeAndProvide(result);
@@ -621,6 +612,26 @@ export class ProjectService {
     }
 
     /**
+     * Remove all plots from the current project.
+     */
+    clearPlots(): Observable<void> {
+        let removedPlots: Array<Layer>;
+
+        const result = this.getProjectOnce().pipe(
+            mergeMap((project) => {
+                removedPlots = project.plots;
+
+                return this.changeProjectConfig({
+                    plots: [],
+                });
+            }),
+            tap(() => removedPlots.forEach((plot) => this.removePlotSubscriptions(plot))),
+        );
+
+        return ProjectService.subscribeAndProvide(result);
+    }
+
+    /**
      * Sets the layers
      */
     setLayers(layers: Array<Layer>) {
@@ -772,6 +783,20 @@ export class ProjectService {
 
         this.layerMetadataState$.get(layer.id).complete();
         this.layerMetadataState$.delete(layer.id);
+    }
+
+    protected removePlotSubscriptions(plot: HasPlotId) {
+        // subjects
+        for (const subjectMap of [this.layerData$, this.layerDataState$]) {
+            subjectMap.get(plot.id).complete();
+            subjectMap.delete(plot.id);
+        }
+
+        // subscriptions
+        for (const subscriptionMap of [this.plotDataSubscriptions]) {
+            subscriptionMap.get(plot.id).unsubscribe();
+            subscriptionMap.delete(plot.id);
+        }
     }
 
     protected static optimizeVecUpdates<Content extends ToDict<ContentDict> & {equals(other: Content): boolean}, ContentDict>(
@@ -1006,7 +1031,7 @@ export class ProjectService {
                 tap(
                     () => loadingState$.next(LoadingState.OK),
                     (reason: Response) => {
-                        this.notificationService.error(`${layer.name}: ${reason}`);
+                        this.notificationService.error(`${layer.name}: ${reason.statusText}`);
                         loadingState$.next(LoadingState.ERROR);
                     },
                 ),

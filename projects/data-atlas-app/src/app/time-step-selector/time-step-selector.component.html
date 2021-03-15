@@ -1,0 +1,13 @@
+<div class="container mat-typography" fxLayout="row" fxLayoutAlign="space-between center">
+    <mat-slider
+        thumbLabel="true"
+        [min]="min"
+        [max]="max"
+        [(value)]="currentTimeIndex"
+        [step]="step"
+        [tickInterval]="tickInterval"
+        [displayWith]="thumbLabelDisplay()"
+        (change)="setTime($event)"
+    ></mat-slider>
+    <span>{{ currentTimeFormatted | async }}</span>
+</div>
