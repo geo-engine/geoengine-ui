@@ -69,7 +69,7 @@ export class StrokeDashSelectComponent implements ControlValueAccessor, OnChange
         }
     }
 
-    ngOnChanges(changes: SimpleChanges) {
+    ngOnChanges(changes: SimpleChanges): void {
         // eslint-disable-next-line guard-for-in
         for (const propName in changes) {
             switch (propName) {
@@ -84,7 +84,7 @@ export class StrokeDashSelectComponent implements ControlValueAccessor, OnChange
         }
     }
 
-    notify() {
+    notify(): void {
         if (this.onChange) {
             this.onChange(this.strokeDashStyle);
         }

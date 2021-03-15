@@ -22,7 +22,7 @@ export class MockLayersComponent implements OnInit {
 
     ngOnInit(): void {}
 
-    addRaster() {
+    addRaster(): void {
         const workflow: WorkflowDict = {
             type: 'Raster',
             operator: {
@@ -61,7 +61,7 @@ export class MockLayersComponent implements OnInit {
             .subscribe(() => console.log('added raster'));
     }
 
-    addPoints() {
+    addPoints(): void {
         const workflow: WorkflowDict = {
             type: 'Vector',
             operator: {

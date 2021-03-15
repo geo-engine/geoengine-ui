@@ -48,14 +48,14 @@ export class NavigationComponent implements OnInit, OnDestroy {
      */
     constructor(private layoutService: LayoutService, private sidenavRef: SidenavRef, private changeDetectorRef: ChangeDetectorRef) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.sidenavConfigSubscription = this.layoutService.getSidenavContentComponentStream().subscribe((sidenavConfig) => {
             this.sidenavConfig = sidenavConfig;
             this.changeDetectorRef.markForCheck();
         });
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         if (this.sidenavConfigSubscription) {
             this.sidenavConfigSubscription.unsubscribe();
         }
@@ -64,7 +64,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
     /**
      * Load a component into the sidenav
      */
-    setComponent(sidenavConfig: SidenavConfig) {
+    setComponent(sidenavConfig: SidenavConfig): void {
         this.layoutService.setSidenavContentComponent(sidenavConfig);
     }
 

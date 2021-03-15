@@ -70,11 +70,11 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.layersReverse$ = this.dataSelectionService.layers;
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.mapService.registerMapComponent(this.mapComponent);
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         this.reset();
         this.mapComponent.resize();
     }
@@ -83,22 +83,22 @@ export class AppComponent implements OnInit, AfterViewInit {
         return layer.id;
     }
 
-    openDataMenu() {
+    openDataMenu(): void {
         this.datasetPortal = new ComponentPortal(SelectLayersComponent);
         this.sidenav.open();
     }
 
-    showAnalysis() {
+    showAnalysis(): void {
         this.analysisVisible$.next(true);
     }
 
-    private reset() {
+    private reset(): void {
         this.projectService.clearLayers();
         this.projectService.clearPlots();
         this.projectService.setTime(new Time(moment.utc()));
     }
 
-    private registerIcons() {
+    private registerIcons(): void {
         this.iconRegistry.addSvgIconInNamespace(
             'geoengine',
             'logo',
@@ -110,7 +110,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     @HostListener('window:resize')
-    private windowHeight() {
+    private windowHeight(): void {
         this.windowHeight$.next(window.innerHeight);
     }
 }

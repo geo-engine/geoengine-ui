@@ -70,7 +70,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
 
     constructor() {}
 
-    ngOnChanges(changes: SimpleChanges) {
+    ngOnChanges(changes: SimpleChanges): void {
         // eslint-disable-next-line guard-for-in
         for (const propName in changes) {
             switch (propName) {
@@ -83,14 +83,14 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
         }
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.updateSymbologyFromLayer();
     }
 
     /**
      * set the symbology fill colorizer attribute from the local (selected) variables
      */
-    setFillColorizerAttribute() {
+    setFillColorizerAttribute(): void {
         if (this.fillByAttribute && this.fillColorAttribute) {
             this.symbology.setFillColorAndAttribute(this.fillColorAttribute.name);
             this.symbology.fillColorizer.clear();
@@ -106,7 +106,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     /**
      * set the radius attribute to the default for clustered points
      */
-    setRadiusAttributeForClustering() {
+    setRadiusAttributeForClustering(): void {
         const symbology = this.symbology as PointSymbology;
         this.radiusByAttribute = false;
         symbology.radiusFactor = 1.0;
@@ -118,7 +118,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     /**
      * set the text attribute to the default for clustered points
      */
-    setTextAttributeForClustering() {
+    setTextAttributeForClustering(): void {
         this.textByAttribute = false;
         this.symbology.textAttribute = DEFAULT_POINT_CLUSTER_TEXT_ATTRIBUTE;
         this.update();
@@ -127,7 +127,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     /**
      * update the fill colorizer attribute using the slide toggle value
      */
-    updateFillColorizeByAttribute(event: MatSlideToggleChange) {
+    updateFillColorizeByAttribute(event: MatSlideToggleChange): void {
         this.fillByAttribute = event.checked;
         this.setFillColorizerAttribute();
         this.update();
@@ -136,7 +136,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     /**
      * set the stroke color attribute using the local (selected) variables
      */
-    setStrokeColorizerAttribute() {
+    setStrokeColorizerAttribute(): void {
         if (this.strokeByAttribute && this.strokeColorAttribute) {
             this.symbology.setStrokeColorAndAttribute(this.strokeColorAttribute.name);
             this.symbology.strokeColorizer.clear();
@@ -152,7 +152,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     /**
      * update the stroke color attribute using the slide togle value
      */
-    updateStrokeColorizeByAttribute(event: MatSlideToggleChange) {
+    updateStrokeColorizeByAttribute(event: MatSlideToggleChange): void {
         this.strokeByAttribute = event.checked;
         this.setStrokeColorizerAttribute();
         this.update();
@@ -161,7 +161,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     /**
      * set the radius attribute using the local (selected) variables
      */
-    setRadiusAttribute() {
+    setRadiusAttribute(): void {
         if (this.symbology instanceof PointSymbology) {
             if (this.radiusByAttribute && this.radiusAttribute) {
                 this.symbology.setRadiusAttributeAndFactor(this.radiusAttribute.name);
@@ -175,7 +175,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     /**
      * update the stroke color attribute using the slide togle value
      */
-    updateRadiusByAttribute(event: MatSlideToggleChange) {
+    updateRadiusByAttribute(event: MatSlideToggleChange): void {
         this.radiusByAttribute = event.checked;
         this.setRadiusAttribute();
     }
@@ -183,7 +183,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     /**
      * set the text attribute using the (selected) local variables
      */
-    setTextAttribute() {
+    setTextAttribute(): void {
         if (this.textByAttribute && this.textAttribute) {
             this.symbology.textAttribute = this.textAttribute.name;
         } else {
@@ -195,7 +195,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     /**
      * update the text attribute using the slide togle value
      */
-    updateTextByAttribute(event: MatSlideToggleChange) {
+    updateTextByAttribute(event: MatSlideToggleChange): void {
         this.textByAttribute = event.checked;
         this.setTextAttribute();
     }
@@ -203,7 +203,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     /**
      * emmit the current working symbology
      */
-    update() {
+    update(): void {
         // return a clone (immutablility)
         this.symbologyChanged.emit(this.symbology.clone());
     }
@@ -211,7 +211,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     /**
      * update the stroke width unsing the slider value
      */
-    updateStrokeWidth(event: MatSliderChange) {
+    updateStrokeWidth(event: MatSliderChange): void {
         // guard against negative values
         if (this.symbology.strokeWidth < SymbologyVectorComponent.minStrokeWidth) {
             this.symbology.strokeWidth = SymbologyVectorComponent.minStrokeWidth;
@@ -221,7 +221,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
         this.update();
     }
 
-    updateStrokeDash(sds: StrokeDashStyle) {
+    updateStrokeDash(sds: StrokeDashStyle): void {
         if (!!sds && sds !== this.symbology.strokeDashStyle) {
             this.symbology.strokeDashStyle = sds;
             this.update();
@@ -231,7 +231,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     /**
      * update the stroke dash unsing the slider value
      */
-    updateRadius(event: MatSliderChange) {
+    updateRadius(event: MatSliderChange): void {
         if (!(this.symbology instanceof PointSymbology)) {
             throw new Error('SymbologyVectorComponent: cant change radius for non point symbology');
         }
@@ -248,7 +248,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     /**
      * update the fill with a color breakpoint
      */
-    updateFill(fill: ColorBreakpoint) {
+    updateFill(fill: ColorBreakpoint): void {
         if (fill && fill !== this.symbology.fillColorBreakpoint) {
             this.symbology.fillColorBreakpoint = fill;
             this.update();
@@ -258,7 +258,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     /**
      * update the stroke with a color breakpoint
      */
-    updateStroke(stroke: ColorBreakpoint) {
+    updateStroke(stroke: ColorBreakpoint): void {
         if (stroke && stroke !== this.symbology.strokeColorBreakpoint) {
             this.symbology.strokeColorBreakpoint = stroke;
             this.update();
@@ -268,7 +268,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     /**
      * update the fill colorizer with colorizer data
      */
-    updateFillColorizer(event: ColorizerData) {
+    updateFillColorizer(event: ColorizerData): void {
         if (event && this.symbology) {
             this.symbology.setOrUpdateFillColorizer(event);
             this.update();
@@ -278,7 +278,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
     /**
      * update the stroke colorizer with colorizer data
      */
-    updateStrokeColorizer(event: ColorizerData) {
+    updateStrokeColorizer(event: ColorizerData): void {
         if (event && this.symbology) {
             this.symbology.setOrUpdateStrokeColorizer(event);
             this.update();
@@ -308,7 +308,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
         return this.symbology.getSymbologyType() === SymbologyType.COMPLEX_POINT;
     }
 
-    private updateSymbologyFromLayer() {
+    private updateSymbologyFromLayer(): void {
         if (!this.layer || !this.layer.symbology || this.layer.symbology.equals(this.symbology)) {
             return;
         }
@@ -329,7 +329,7 @@ export class SymbologyVectorComponent implements OnChanges, OnInit {
         this.textByAttribute = !!this.textAttribute;
     }
 
-    private gatherAttributes() {
+    private gatherAttributes(): void {
         const attributes: Array<Attribute> = [];
         const numericAttributes: Array<Attribute> = [];
         // TODO: refactor

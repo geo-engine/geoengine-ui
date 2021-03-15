@@ -61,7 +61,7 @@ export class SymbologyEditorComponent implements OnDestroy {
     /**
      * Submit a layer and the desired symbology to update the layer accordingly.
      */
-    updateSymbology(layer: Layer, symbology: AbstractSymbology) {
+    updateSymbology(layer: Layer, symbology: AbstractSymbology): void {
         this.layerChanges.next([layer, symbology]);
     }
 

@@ -103,7 +103,7 @@ export class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector, OlV
         });
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.dataSubscription = this.projectService.getLayerDataStream({id: this.layerId}).subscribe((x: VectorData) => {
             this.source.clear(); // TODO: check if this is needed always...
             if (!(x === null || x === undefined)) {
@@ -113,17 +113,17 @@ export class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector, OlV
         });
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         if (this.dataSubscription) {
             this.dataSubscription.unsubscribe();
         }
     }
 
-    getExtent() {
+    getExtent(): [number, number, number, number] {
         return this.source.getExtent();
     }
 
-    ngOnChanges(changes: SimpleChanges) {
+    ngOnChanges(changes: SimpleChanges): void {
         if (Object.keys(changes).length > 0) {
             this.updateOlLayer({
                 isVisible: this.extractChange<boolean>(changes.isVisible),
@@ -133,7 +133,7 @@ export class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector, OlV
         }
     }
 
-    private updateOlLayer(changes: {isVisible?: boolean; symbology?: VectorSymbology; workflow?: UUID}) {
+    private updateOlLayer(changes: {isVisible?: boolean; symbology?: VectorSymbology; workflow?: UUID}): void {
         if (changes.isVisible !== undefined) {
             this.mapLayer.setVisible(this.isVisible);
             this.mapRedraw.emit();
@@ -169,7 +169,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
         super(projectService);
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.dataSubscription = this.projectService.getLayerDataStream({id: this.layerId}).subscribe((rasterData: RasterData) => {
             if (!rasterData) {
                 return;
@@ -188,7 +188,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
         });
     }
 
-    ngOnChanges(changes: SimpleChanges) {
+    ngOnChanges(changes: SimpleChanges): void {
         if (Object.keys(changes).length > 0) {
             this.updateOlLayer({
                 isVisible: this.extractChange<boolean>(changes.isVisible),
@@ -198,7 +198,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
         }
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         if (this.dataSubscription) {
             this.dataSubscription.unsubscribe();
         }
@@ -210,11 +210,11 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
         }
     }
 
-    getExtent() {
+    getExtent(): [number, number, number, number] {
         return this._mapLayer.getExtent();
     }
 
-    private updateOlLayer(changes: {isVisible?: boolean; symbology?: MappingRasterSymbology; workflow?: UUID}) {
+    private updateOlLayer(changes: {isVisible?: boolean; symbology?: MappingRasterSymbology; workflow?: UUID}): void {
         if (this.source === undefined || this._mapLayer === undefined) {
             return;
         }
@@ -238,19 +238,19 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
         }
     }
 
-    private updateProjection(p: SpatialReference) {
+    private updateProjection(p: SpatialReference): void {
         if (!this.projection || this.source.getProjection().getCode() !== this.projection.getCode()) {
             this.projection = p;
             this.updateOlLayerProjection();
         }
     }
 
-    private updateOlLayerProjection() {
+    private updateOlLayerProjection(): void {
         // there is no way to change the projection of a layer. // TODO: check newer OL versions for this
         this.initializeOrReplaceOlSource();
     }
 
-    private updateOlLayerTime() {
+    private updateOlLayerTime(): void {
         if (this.source) {
             this.source.updateParams({
                 time: this.time.asRequestString(),
@@ -259,14 +259,14 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
         }
     }
 
-    private updateTime(t: Time) {
+    private updateTime(t: Time): void {
         if (this.time === undefined || !t.isSame(this.time)) {
             this.time = t;
             this.updateOlLayerTime();
         }
     }
 
-    private initializeOrReplaceOlSource() {
+    private initializeOrReplaceOlSource(): void {
         this.source = new OlTileWmsSource({
             url: this.backend.wmsUrl,
             params: {
@@ -282,7 +282,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
         this.initializeOrUpdateOlMapLayer();
     }
 
-    private initializeOrUpdateOlMapLayer() {
+    private initializeOrUpdateOlMapLayer(): void {
         if (this._mapLayer) {
             this._mapLayer.setSource(this.source);
         } else {
@@ -293,7 +293,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
         }
     }
 
-    private addStateListenersToOlSource() {
+    private addStateListenersToOlSource(): void {
         // TILE LOADING STATE
         let tilesPending = 0;
 

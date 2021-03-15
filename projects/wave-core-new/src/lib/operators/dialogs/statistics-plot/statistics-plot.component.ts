@@ -33,7 +33,7 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
         private notificationService: NotificationService,
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.form = this.formBuilder.group({
             layers: [undefined, Validators.required],
             name: ['', [Validators.required, WaveValidators.notOnlyWhitespace]],
@@ -42,7 +42,7 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
         this.outputNameSuggestion = StatisticsPlotComponent.createOutputNameSuggestionStream(this.form.controls['layers'].valueChanges);
     }
 
-    add() {
+    add(): void {
         const workflowObservables: Array<Observable<WorkflowDict>> = this.form.controls['layers'].value.map((layer: Layer) =>
             this.projectService.getWorkflow(layer.workflowId),
         );
@@ -75,11 +75,11 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
             );
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         setTimeout(() => {
             this.form.updateValueAndValidity({
                 onlySelf: false,

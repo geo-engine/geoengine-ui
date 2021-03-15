@@ -91,14 +91,14 @@ export class LayerListComponent implements OnDestroy {
         this.mapIsGrid$ = this.mapService.isGrid$;
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.subscriptions.forEach((s) => s.unsubscribe());
     }
 
     /**
      * the drop method is used by the dran and drop feature of the list
      */
-    drop(event: CdkDragDrop<string[]>) {
+    drop(event: CdkDragDrop<string[]>): void {
         const layerList = this.layerList.slice(); // make a copy to not modify the current list
         moveItemInArray(layerList, event.previousIndex, event.currentIndex);
 
@@ -109,7 +109,7 @@ export class LayerListComponent implements OnDestroy {
     /**
      * select a layer
      */
-    toggleLegend(layer: Layer) {
+    toggleLegend(layer: Layer): void {
         this.projectService.toggleLegend(layer);
     }
 

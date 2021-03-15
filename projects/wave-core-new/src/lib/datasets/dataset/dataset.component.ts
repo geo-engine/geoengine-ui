@@ -21,7 +21,7 @@ export class DataSetComponent implements OnInit {
 
     ngOnInit(): void {}
 
-    add() {
+    add(): void {
         const workflow = this.dataset.createSourceWorkflow();
 
         this.projectService

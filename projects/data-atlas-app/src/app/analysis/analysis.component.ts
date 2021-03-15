@@ -63,7 +63,7 @@ export class AnalysisComponent implements OnInit {
 
     ngOnInit(): void {}
 
-    selectCountry(country: string) {
+    selectCountry(country: string): void {
         this.selectedCountryName = country;
         this.selectedCountry = COUNTRY_LIST[country];
 
@@ -99,7 +99,7 @@ export class AnalysisComponent implements OnInit {
             });
     }
 
-    computePlot() {
+    computePlot(): void {
         const countryMetadata = COUNTRY_METADATA.filter(([countryName]) => this.selectedCountryName === countryName);
         if (countryMetadata.length !== 1) {
             throw Error(`there is not metadata for country ${this.selectedCountryName}`);

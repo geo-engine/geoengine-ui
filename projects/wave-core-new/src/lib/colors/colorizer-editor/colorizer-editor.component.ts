@@ -59,7 +59,7 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
      */
     constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
-    ngOnChanges(changes: SimpleChanges) {
+    ngOnChanges(changes: SimpleChanges): void {
         // eslint-disable-next-line guard-for-in
         for (const propName in changes) {
             switch (propName) {
@@ -91,7 +91,7 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
     /**
      * Update the colorizer type of the colorizer data.
      */
-    updateType(type: ColorizerType) {
+    updateType(type: ColorizerType): void {
         if (type && this._colorizer) {
             const diff = this._colorizer.updateType(type);
             if (diff) {
@@ -103,7 +103,7 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
     /**
      * Update the breakpoint in the colorizer data at position i.
      */
-    updateBreakpointAt(i: number, brk: ColorBreakpoint) {
+    updateBreakpointAt(i: number, brk: ColorBreakpoint): void {
         // TODO: check if this is valid
         if (this._colorizer && this._colorizer.breakpoints.length > i) {
             this._colorizer.updateBreakpointAt(i, brk);
@@ -114,7 +114,7 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
     /**
      * Add a new breakpoint at position i. Clones the next breakpoint if possible.
      */
-    addBreakpointAt(i: number) {
+    addBreakpointAt(i: number): void {
         if (this._colorizer && this._colorizer.breakpoints.length > i) {
             this._colorizer.addBreakpointAt(i, this._colorizer.getBreakpointAt(i).clone());
         } else {
@@ -126,7 +126,7 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
     /**
      * Removes the breakpoint at position i.
      */
-    removeBreakpointAt(i: number) {
+    removeBreakpointAt(i: number): void {
         if (this._colorizer && this._colorizer.breakpoints.length > i) {
             this._colorizer.removeBreakpointAt(i);
             this.notify();
@@ -136,7 +136,7 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
     /**
      * Sends the wip colorizer to a registred reciever.
      */
-    notify() {
+    notify(): void {
         if (this.onChange && this._colorizer) {
             this.onChange(this._colorizer.clone());
         }

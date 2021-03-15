@@ -73,13 +73,13 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
         );
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         for (const subscription of this.subscriptions) {
             subscription.unsubscribe();
         }
     }
 
-    ngOnChanges(changes: SimpleChanges) {
+    ngOnChanges(changes: SimpleChanges): void {
         if (changes.layers || changes.types) {
             let layers$: Observable<Array<Layer>>;
             if (this.layers instanceof Array) {
@@ -111,7 +111,7 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
         }
     }
 
-    onBlur() {
+    onBlur(): void {
         if (this.onTouched) {
             this.onTouched();
         }
@@ -133,7 +133,7 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
         this.onTouched = fn;
     }
 
-    setSelectedLayer(layer: Layer) {
+    setSelectedLayer(layer: Layer): void {
         this.selectedLayer.next(layer);
     }
 }

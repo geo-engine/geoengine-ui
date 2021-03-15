@@ -38,18 +38,18 @@ export class RasterIconComponent implements OnInit, OnChanges {
      */
     cellSpace = 24;
 
-    ngOnChanges(_changes: {[propertyName: string]: SimpleChange}) {
+    ngOnChanges(_changes: {[propertyName: string]: SimpleChange}): void {
         this.generateCells(this.xCells, this.yCells);
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.generateCells(this.xCells, this.yCells);
     }
 
     /**
      * generates an array of cell descriptors which are used by the template
      */
-    generateCells(xCells: number, yCells: number) {
+    generateCells(xCells: number, yCells: number): void {
         this.cells = new Array<Cell>(xCells * yCells);
         for (let y = 0; y < this.yCells; y++) {
             for (let x = 0; x < this.xCells; x++) {

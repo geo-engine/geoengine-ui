@@ -70,7 +70,7 @@ export class VectorLegendComponent<S extends VectorSymbology> implements OnChang
         }));
     }
 
-    private updateStyles() {
+    private updateStyles(): void {
         this.fillColorAttribute = this.symbology && this.symbology.fillColorAttribute ? this.symbology.fillColorAttribute : undefined;
         this.fillStyles = VectorLegendComponent.fillColorIconValue(this.symbology);
         this.strokeColorAttribute = this.symbology && this.symbology.strokeColorAttribute ? this.symbology.strokeColorAttribute : undefined;

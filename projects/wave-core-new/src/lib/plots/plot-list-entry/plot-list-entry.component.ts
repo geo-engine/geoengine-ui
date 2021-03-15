@@ -34,9 +34,9 @@ export class PlotListEntryComponent implements OnInit, OnChanges {
 
     constructor(private readonly projectService: ProjectService, private readonly dialog: MatDialog) {}
 
-    ngOnInit() {}
+    ngOnInit(): void {}
 
-    ngOnChanges(changes: SimpleChanges) {
+    ngOnChanges(changes: SimpleChanges): void {
         if (changes.plotData && this.plotData) {
             this.plotIcon = createIconDataUrl(this.plotData.output_format);
         }
@@ -51,7 +51,7 @@ export class PlotListEntryComponent implements OnInit, OnChanges {
     /**
      * Show a plot as a fullscreen modal dialog
      */
-    showFullscreen() {
+    showFullscreen(): void {
         this.dialog.open(PlotDetailViewComponent, {
             data: this.plot,
             maxHeight: '100vh',
@@ -59,11 +59,11 @@ export class PlotListEntryComponent implements OnInit, OnChanges {
         });
     }
 
-    removePlot() {
+    removePlot(): void {
         this.projectService.removePlot(this.plot);
     }
 
-    reloadPlot() {
+    reloadPlot(): void {
         this.projectService.reloadPlot(this.plot);
     }
 }

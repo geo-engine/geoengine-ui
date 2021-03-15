@@ -16,12 +16,12 @@ export class SymbologyRasterComponent {
     @Input() layer: RasterLayer;
     @Output() symbologyChanged: EventEmitter<AbstractRasterSymbology> = new EventEmitter<AbstractRasterSymbology>();
 
-    updateOpacity(event: MatSliderChange) {
+    updateOpacity(event: MatSliderChange): void {
         this.layer.symbology.opacity = event.value === undefined || event.value === 0 ? 0 : event.value / 100;
         this.update();
     }
 
-    update() {
+    update(): void {
         this.symbologyChanged.emit(this.layer.symbology.clone());
     }
 }

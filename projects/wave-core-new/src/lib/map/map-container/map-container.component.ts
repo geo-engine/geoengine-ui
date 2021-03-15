@@ -131,11 +131,11 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         ];
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.subscriptions.forEach((s) => s.unsubscribe());
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         this.projection$.pipe(first()).subscribe((projection) => {
             this.maps.forEach((map) => map.setTarget(undefined)); // initially reset all DOM bindings
 
@@ -156,7 +156,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         });
     }
 
-    ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
+    ngOnChanges(changes: {[propertyName: string]: SimpleChange}): void {
         for (const propName in changes) {
             if (propName === 'grid') {
                 this.projection$.pipe(first()).subscribe((projection) => this.redrawLayers(projection));
@@ -167,14 +167,14 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     /**
      * Notify the map that the container has resized.
      */
-    resize() {
+    resize(): void {
         setTimeout(() => this.projection$.pipe(first()).subscribe((projection) => this.redrawLayers(projection)));
     }
 
     /**
      * Increases the zoom level if it is not larger than the maximum zoom level
      */
-    zoomIn() {
+    zoomIn(): void {
         if (this.view.getZoom() < MAX_ZOOM_LEVEL) {
             this.view.adjustZoom(1);
         }
@@ -183,7 +183,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     /**
      * Decreases the zoom level if it is not smaller than the minimum zoom level
      */
-    zoomOut() {
+    zoomOut(): void {
         if (this.view.getZoom() > MIN_ZOOM_LEVEL) {
             this.view.adjustZoom(-1);
         }
@@ -192,7 +192,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     /**
      * Zoom to and focus a bounding box
      */
-    zoomTo(boundingBox: Extent) {
+    zoomTo(boundingBox: Extent): void {
         this.view.fit(boundingBox, {
             nearest: true,
             maxZoom: MAX_ZOOM_LEVEL,
@@ -202,7 +202,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     /**
      * Enable user input (hand drawn) for the map
      */
-    public startDrawInteraction(drawType: OlGeometryType) {
+    public startDrawInteraction(drawType: OlGeometryType): void {
         if (this.isDrawInteractionAttached()) {
             throw new Error('only one draw interaction can be active!');
         }
@@ -241,7 +241,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     /**
      * Force a redraw for each map layer
      */
-    public layerForcesRedraw() {
+    public layerForcesRedraw(): void {
         this.projection$.pipe(first()).subscribe((projection) => this.redrawLayers(projection));
     }
 
@@ -258,7 +258,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         });
     }
 
-    private reattachDrawInteractions() {
+    private reattachDrawInteractions(): void {
         // remove layers
         this.drawInteractionLayers.forEach((layer, index) => {
             if (index < this.maps.length) {
@@ -291,7 +291,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         }
     }
 
-    private calculateGrid() {
+    private calculateGrid(): void {
         const numberOfLayers = this.desiredNumberOfMaps();
 
         const containerWidth = this.gridListElement.nativeElement.clientWidth;
@@ -319,7 +319,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         this.numberOfColumns = columns;
     }
 
-    private initOpenlayersMap(projection: SpatialReference) {
+    private initOpenlayersMap(projection: SpatialReference): void {
         this.maps = [
             new OlMap({
                 controls: [],
@@ -331,9 +331,9 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         this.createAndSetView(projection);
     }
 
-    private initUserSelect() {
+    private initUserSelect(): void {
         this.userSelect = new OlInteractionSelect({
-            layers: (layerCandidate: OlLayer) => layerCandidate === this.selectedOlLayer,
+            layers: (layerCandidate: OlLayer): boolean => layerCandidate === this.selectedOlLayer,
         });
         this.userSelect.setActive(false);
 
@@ -405,7 +405,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         // );
     }
 
-    private attachUserSelectToMap() {
+    private attachUserSelectToMap(): void {
         if (!this.userSelect) {
             // called too early
             return;
@@ -439,7 +439,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         }
     }
 
-    private redrawLayers(projection: SpatialReference) {
+    private redrawLayers(projection: SpatialReference): void {
         this.mapLayers = this.mapLayersRaw.filter((mapLayer) => mapLayer.isVisible);
 
         this.calculateGrid();
@@ -517,7 +517,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         return this.grid ? Math.max(this.mapLayers.length, 1) : 1;
     }
 
-    private createAndSetView(projection: SpatialReference) {
+    private createAndSetView(projection: SpatialReference): void {
         const zoomLevel = this.view ? this.view.getZoom() : DEFAULT_ZOOM_LEVEL;
 
         let newCenterPoint: OlGeomPoint;
@@ -553,7 +553,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         // });
     }
 
-    private emitViewportSize() {
+    private emitViewportSize(): void {
         this.mapService.setViewportSize({
             extent: this.view.calculateExtent(this.maps[0].getSize()),
             resolution: this.view.getResolution(),
