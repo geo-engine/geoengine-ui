@@ -104,7 +104,7 @@ export class AnalysisComponent implements OnInit {
         if (countryMetadata.length !== 1) {
             throw Error(`there is not metadata for country ${this.selectedCountryName}`);
         }
-        const [, xmax, ymax, xmin, ymin] = countryMetadata[0];
+        const [_name, xmax, ymax, xmin, ymin, _other] = countryMetadata[0];
         const countryBounds: BBoxDict = {
             lower_left_coordinate: {
                 x: xmin,
@@ -146,19 +146,21 @@ export class AnalysisComponent implements OnInit {
                         operator: {
                             type: 'Expression',
                             params: {
-                                expression: 'B != 0 ? A : NAN',
+                                expression: '(B != 0) ? A : NAN',
                                 // TODO: get data type from data
-                                output_type: RasterDataTypes.Byte.getCode(),
+                                output_type: RasterDataTypes.Float64.getCode(),
                                 // TODO: get no data value from data
-                                output_no_data_value: RasterDataTypes.Byte.noData(0),
+                                output_no_data_value: RasterDataTypes.Float64.noData(Number.MIN_VALUE),
                             },
                             raster_sources: [rasterWorkflow.operator, polygonWorkflow.operator],
                             vector_sources: [],
                         },
                     }),
                 ),
-                mergeMap((expressionWorkflowId) => this.projectService.getWorkflow(expressionWorkflowId)),
-                mergeMap((rasterWorkflow) =>
+                mergeMap((expressionWorkflowId) =>
+                    combineLatest([this.projectService.getWorkflow(expressionWorkflowId), this.dataSelectionService.dataRange]),
+                ),
+                mergeMap(([rasterWorkflow, dataRange]) =>
                     this.projectService.registerWorkflow({
                         type: 'Plot',
                         operator: {
@@ -166,23 +168,21 @@ export class AnalysisComponent implements OnInit {
                             params: {
                                 // TODO: get params from selected data
                                 buckets: 20,
-                                bounds: {
-                                    min: 1,
-                                    max: 20,
-                                },
+                                bounds: dataRange,
                             } as HistogramParams,
                             raster_sources: [rasterWorkflow.operator],
                             vector_sources: [],
                         },
                     }),
                 ),
-                mergeMap((workflowId) => combineLatest([of(workflowId), this.userService.getSessionTokenForRequest()])),
-                mergeMap(([workflowId, sessionToken]) =>
+                mergeMap((workflowId) =>
+                    combineLatest([of(workflowId), this.userService.getSessionTokenForRequest(), this.projectService.getTimeOnce()]),
+                ),
+                mergeMap(([workflowId, sessionToken, time]) =>
                     this.backend.getPlot(
                         workflowId,
                         {
-                            // TODO: get from selector
-                            time: {start: 0, end: 0},
+                            time: time.toDict(),
                             bbox: countryBounds,
                             // TODO: set reasonable size
                             spatial_resolution: [0.1, 0.1],

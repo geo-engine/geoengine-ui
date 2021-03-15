@@ -1,7 +1,13 @@
 import {Injectable} from '@angular/core';
-import {Layer, ProjectService, RasterLayer, VectorLayer} from 'wave-core';
+import {Layer, ProjectService, RasterLayer, Time, VectorLayer} from 'wave-core';
 import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
+import moment from 'moment';
+
+export interface DataRange {
+    min: number;
+    max: number;
+}
 
 @Injectable({
     providedIn: 'root',
@@ -12,11 +18,20 @@ export class DataSelectionService {
     readonly rasterLayer = new BehaviorSubject<RasterLayer>(undefined);
     readonly polygonLayer = new BehaviorSubject<VectorLayer>(undefined);
 
+    readonly timeSteps = new BehaviorSubject<Array<Time>>([new Time(moment.utc())]);
+    readonly timeFormat = new BehaviorSubject<string>('YYYY'); // TODO: make configurable
+
+    readonly dataRange = new BehaviorSubject<DataRange>({min: 0, max: 1});
+
     constructor(private readonly projectService: ProjectService) {
         this.layers = combineLatest([this.rasterLayer, this.polygonLayer]).pipe(map((layers) => layers.filter((layer) => !!layer)));
     }
 
-    setRasterLayer(layer: RasterLayer): Observable<void> {
+    setRasterLayer(layer: RasterLayer, timeSteps: Array<Time>, dataRange: DataRange): Observable<void> {
+        if (!timeSteps.length) {
+            throw Error('`timeSteps` are required when setting a raster');
+        }
+
         return this.rasterLayer.pipe(
             first(),
             mergeMap((currentLayer) => {
@@ -28,7 +43,12 @@ export class DataSelectionService {
             }),
             tap(() => this.rasterLayer.next(undefined)),
             mergeMap(() => this.projectService.addLayer(layer)),
-            tap(() => this.rasterLayer.next(layer)),
+            tap(() => {
+                this.rasterLayer.next(layer);
+                this.timeSteps.next(timeSteps);
+                this.projectService.setTime(timeSteps[0]);
+                this.dataRange.next(dataRange);
+            }),
         );
     }
 

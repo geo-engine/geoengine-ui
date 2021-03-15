@@ -160,14 +160,21 @@ class Float32 extends RasterDataType {
     }
 
     getMin(): number {
-        return Number.POSITIVE_INFINITY;
+        return Number.MIN_VALUE;
     }
 
     getMax(): number {
-        return Number.NEGATIVE_INFINITY;
+        return Number.MAX_VALUE;
     }
 
     noData(value: number): NoDataDict {
+        if (isNaN(value)) {
+            // TODO: hack, since we cannot serialize NAN in JSON
+            return {
+                F32: Number.MIN_VALUE,
+            };
+        }
+
         return {
             F32: value,
         };
@@ -184,14 +191,21 @@ class Float64 extends RasterDataType {
     }
 
     getMin(): number {
-        return Number.POSITIVE_INFINITY;
+        return Number.MIN_VALUE;
     }
 
     getMax(): number {
-        return Number.NEGATIVE_INFINITY;
+        return Number.MAX_VALUE;
     }
 
     noData(value: number): NoDataDict {
+        if (isNaN(value)) {
+            // TODO: hack, since we cannot serialize NAN in JSON
+            return {
+                F64: Number.MIN_VALUE,
+            };
+        }
+
         return {
             F64: value,
         };
