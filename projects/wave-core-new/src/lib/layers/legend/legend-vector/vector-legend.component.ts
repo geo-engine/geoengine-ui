@@ -34,7 +34,7 @@ export class VectorLegendComponent<S extends VectorSymbology> implements OnChang
         this.updateStyles();
     }
 
-    ngOnChanges(changes: SimpleChanges): void {
+    ngOnChanges(_changes: SimpleChanges): void {
         this.updateStyles();
     }
 

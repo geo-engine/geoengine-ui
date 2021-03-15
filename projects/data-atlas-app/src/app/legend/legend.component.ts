@@ -12,7 +12,7 @@ export class LegendComponent implements OnInit, OnChanges {
 
     constructor(readonly changeDetectorRef: ChangeDetectorRef) {}
 
-    ngOnChanges(changes: SimpleChanges): void {
+    ngOnChanges(_changes: SimpleChanges): void {
         this.changeDetectorRef.markForCheck();
     }
 

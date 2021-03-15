@@ -44,21 +44,17 @@ import OlStyleStyle from 'ol/style/Style';
 
 import OlInteractionDraw from 'ol/interaction/Draw';
 import OlInteractionSelect from 'ol/interaction/Select';
-// import {SelectEvent as OlInteractionSelectEvent} from 'ol/interaction/Select';
 
 import {MapLayerComponent} from '../map-layer.component';
 
 import {SpatialReference, SpatialReferences} from '../../operators/spatial-reference.model';
-import {Layer} from '../../layers/layer.model';
-// import {LayerService} from '../../layers/layer.service';
 import {ProjectService} from '../../project/project.service';
 import {Extent, MapService} from '../map.service';
 import {Config} from '../../config.service';
-// import {StyleCreator} from '../style-creator';
 import {LayoutService} from '../../layout.service';
 import {MatGridList, MatGridTile} from '@angular/material/grid-list';
 
-type MapLayer = MapLayerComponent<OlLayer, OlSource, Layer>;
+type MapLayer = MapLayerComponent<OlLayer, OlSource>;
 
 const DEFAULT_ZOOM_LEVEL = 2;
 const MIN_ZOOM_LEVEL = 0;

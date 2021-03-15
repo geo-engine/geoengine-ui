@@ -47,7 +47,7 @@ export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, 
         setTimeout(() => this.changeDetectorRef.markForCheck(), 0);
     }
 
-    ngOnChanges(changes: {[propName: string]: SimpleChange}) {
+    ngOnChanges(_changes: {[propName: string]: SimpleChange}) {
         this.changeDetectorRef.markForCheck();
     }
 

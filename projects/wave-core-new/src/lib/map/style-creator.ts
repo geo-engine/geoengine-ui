@@ -112,7 +112,7 @@ export class StyleCreator {
         // we need a style cache to speed things up. This dangles in the void of the GC...
         const styleCache: {[key: string]: OlStyle} = {};
 
-        return (feature: OlFeature, resolution: number) => {
+        return (feature: OlFeature, _resolution: number) => {
             const featureFillColorValue =
                 sym.fillColorAttribute && sym.describesElementFill() ? feature.get(sym.fillColorAttribute) : undefined;
             const featureStrokeColorValue = sym.strokeColorAttribute ? feature.get(sym.strokeColorAttribute) : undefined;
@@ -167,7 +167,7 @@ export class StyleCreator {
         // we need a style cache to speed things up. This dangles in the void of the GC...
         const styleCache: {[key: string]: OlStyle} = {};
 
-        return (feature: OlFeature, resolution: number) => {
+        return (feature: OlFeature, _resolution: number) => {
             const featureFillColorValue =
                 sym.fillColorAttribute && sym.describesElementFill() ? feature.get(sym.fillColorAttribute) : undefined;
             const featureStrokeColorValue = sym.strokeColorAttribute ? feature.get(sym.strokeColorAttribute) : undefined;

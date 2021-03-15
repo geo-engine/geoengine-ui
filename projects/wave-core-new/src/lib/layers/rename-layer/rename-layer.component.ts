@@ -40,7 +40,7 @@ export class RenameLayerComponent implements OnInit {
 
         this.projectService.changeLayer(this.layer, {name: layerName}).subscribe(
             () => this.dialogRef.close(),
-            (error) => {
+            (_error) => {
                 // TODO: handle error
             },
         );

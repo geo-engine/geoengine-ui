@@ -104,7 +104,7 @@ export class AnalysisComponent implements OnInit {
         if (countryMetadata.length !== 1) {
             throw Error(`there is not metadata for country ${this.selectedCountryName}`);
         }
-        const [_name, xmax, ymax, xmin, ymin, _other] = countryMetadata[0];
+        const [, xmax, ymax, xmin, ymin] = countryMetadata[0];
         const countryBounds: BBoxDict = {
             lower_left_coordinate: {
                 x: xmin,

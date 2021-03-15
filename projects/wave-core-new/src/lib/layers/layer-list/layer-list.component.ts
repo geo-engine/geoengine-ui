@@ -131,7 +131,7 @@ export class LayerListComponent implements OnDestroy {
         return layer as Layer;
     }
 
-    showChannelParameterSlider(layer: Layer): boolean {
+    showChannelParameterSlider(_layer: Layer): boolean {
         // return layer.operator.operatorType.toString() === 'GDAL Source'
         //     && !!layer.operator.operatorTypeParameterOptions
         //     && layer.operator.operatorTypeParameterOptions.getParameterOption('channelConfig').hasTicks();

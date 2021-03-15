@@ -106,7 +106,7 @@ export class ColorizerEditorComponent implements ControlValueAccessor, OnChanges
     updateBreakpointAt(i: number, brk: ColorBreakpoint) {
         // TODO: check if this is valid
         if (this._colorizer && this._colorizer.breakpoints.length > i) {
-            const diff = this._colorizer.updateBreakpointAt(i, brk);
+            this._colorizer.updateBreakpointAt(i, brk);
             this.notify();
         }
     }

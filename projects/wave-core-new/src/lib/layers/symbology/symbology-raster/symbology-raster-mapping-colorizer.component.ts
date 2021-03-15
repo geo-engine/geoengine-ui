@@ -17,9 +17,7 @@ import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
 import {RasterLayer} from '../../layer.model';
 import {BehaviorSubject, combineLatest, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
-import {Unit} from '../../../operators/unit.model';
 import {debounceTime, filter, map, startWith} from 'rxjs/operators';
-import {ResultTypes} from '../../../operators/result-type.model';
 import {MapService} from '../../../map/map.service';
 import {Config} from '../../../config.service';
 import {MatSliderChange} from '@angular/material/slider';
@@ -223,7 +221,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
                 // filter(c => c.operator !== undefined), // TODO: refactor
                 map((_) => this.buildHistogramOperator()),
             ),
-        ]).subscribe(([[projectTime, projection, viewport], histogramOperator]) => {
+        ]).subscribe(([[_projectTime, _projection, _viewport], _histogramOperator]) => {
             this.layerHistogramData$.next(undefined);
             this.layerHistogramDataLoading$.next(true);
 

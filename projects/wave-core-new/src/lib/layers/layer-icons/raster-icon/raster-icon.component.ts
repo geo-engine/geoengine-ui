@@ -38,7 +38,7 @@ export class RasterIconComponent implements OnInit, OnChanges {
      */
     cellSpace = 24;
 
-    ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
+    ngOnChanges(_changes: {[propertyName: string]: SimpleChange}) {
         this.generateCells(this.xCells, this.yCells);
     }
 

@@ -17,7 +17,6 @@ import {Layer as OlLayer, Tile as OlLayerTile, Vector as OlLayerVector} from 'ol
 import {Source as OlSource, Tile as OlTileSource, TileWMS as OlTileWmsSource, Vector as OlVectorSource} from 'ol/source';
 
 import {StyleCreator} from './style-creator';
-import {Layer, RasterLayer, VectorLayer} from '../layers/layer.model';
 import {Config} from '../config.service';
 import {ProjectService} from '../project/project.service';
 import {LoadingState} from '../project/loading-state.model';
@@ -35,7 +34,7 @@ type VectorData = any; // TODO: use correct type
  */
 @Directive()
 // eslint-disable-next-line @angular-eslint/directive-class-suffix
-export abstract class MapLayerComponent<OL extends OlLayer, OS extends OlSource, L extends Layer> {
+export abstract class MapLayerComponent<OL extends OlLayer, OS extends OlSource> {
     @Input() layerId: number;
     @Input() isVisible: boolean;
     @Input() workflow: UUID;
@@ -89,9 +88,7 @@ export abstract class MapLayerComponent<OL extends OlLayer, OS extends OlSource,
     providers: [{provide: MapLayerComponent, useExisting: OlVectorLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OlVectorLayerComponent
-    extends MapLayerComponent<OlLayerVector, OlVectorSource, VectorLayer>
-    implements OnInit, OnDestroy, OnChanges {
+export class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector, OlVectorSource> implements OnInit, OnDestroy, OnChanges {
     symbology: VectorSymbology;
 
     protected dataSubscription: Subscription;
@@ -158,9 +155,7 @@ export class OlVectorLayerComponent
     providers: [{provide: MapLayerComponent, useExisting: OlRasterLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OlRasterLayerComponent
-    extends MapLayerComponent<OlLayerTile, OlTileSource, RasterLayer>
-    implements OnInit, OnDestroy, OnChanges {
+export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTileSource> implements OnInit, OnDestroy, OnChanges {
     symbology: MappingRasterSymbology;
 
     protected dataSubscription: Subscription;

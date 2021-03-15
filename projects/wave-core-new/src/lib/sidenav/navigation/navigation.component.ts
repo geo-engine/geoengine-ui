@@ -105,7 +105,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
                 distinctUntilChanged(),
                 mergeScan(
                     // abort inner observable when new source event arises
-                    ([wasGuest, state], [isGuest, sidenavConfig], _index) => {
+                    ([wasGuest, _state], [isGuest, sidenavConfig], _index) => {
                         if (sidenavConfig && sidenavConfig.component === loginSidenavConfig.component) {
                             return observableOf([isGuest, 'primary']);
                         } else if (!wasGuest && isGuest) {
