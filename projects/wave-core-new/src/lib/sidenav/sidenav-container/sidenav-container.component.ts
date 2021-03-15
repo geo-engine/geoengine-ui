@@ -56,11 +56,11 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
         private renderer: Renderer2,
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.subscriptions.push(this.sidenavRef.getCloseStream().subscribe(() => this.close()));
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         this.subscriptions.push(
             combineLatest([this.sidenavRef.getSearchComponentStream(), this.searchElements.changes])
                 .pipe(map(([elements, searchElementsQuery]) => [elements, searchElementsQuery.first]))
@@ -80,7 +80,7 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
         );
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
@@ -89,7 +89,7 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
      * and sets up functionality, for instance, the back button
      * and the search config
      */
-    load(sidenavConfig: SidenavConfig) {
+    load(sidenavConfig: SidenavConfig): void {
         if (this.componentRef) {
             this.target.clear();
             this.componentRef.destroy();
@@ -135,14 +135,14 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
     /**
      * Close the sidenav
      */
-    close() {
+    close(): void {
         this.layoutService.setSidenavContentComponent(undefined);
     }
 
     /**
      * Return (load) to the component specified in `backButtonComponent$` of each component config
      */
-    back() {
+    back(): void {
         this.layoutService.setSidenavContentComponent(this.sidenavRef.getBackButtonComponent());
     }
 }

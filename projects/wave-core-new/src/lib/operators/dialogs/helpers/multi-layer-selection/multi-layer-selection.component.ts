@@ -16,7 +16,7 @@ export const LetterNumberConverter = {
      * Convert a numeric id to a alphanumeric one.
      * Starting with `1`.
      */
-    toLetters: (num: number) => {
+    toLetters: (num: number): string => {
         const mod = num % 26;
         let pow = (num / 26) | 0; // eslint-disable-line no-bitwise
         // noinspection CommaExpressionJS
@@ -28,7 +28,7 @@ export const LetterNumberConverter = {
      * Convert an alphanumeric id to a numeric one.
      * Starting with `A`.
      */
-    fromLetters: (str: string) => {
+    fromLetters: (str: string): number => {
         let out = 0;
         const len = str.length;
         let pos = len;
@@ -99,7 +99,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
         });
     }
 
-    ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
+    ngOnChanges(changes: {[propertyName: string]: SimpleChange}): void {
         let minMaxInitialChanged = false;
         let initialChange = false;
 
@@ -172,7 +172,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
         }
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.layerSubscription.unsubscribe();
         this.selectionSubscription.unsubscribe();
 
@@ -181,7 +181,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
         }
     }
 
-    updateLayer(index: number, layer: Layer) {
+    updateLayer(index: number, layer: Layer): void {
         this.selectedLayers.pipe(first()).subscribe((selectedLayers) => {
             const newSelectedLayers = [...selectedLayers];
             newSelectedLayers[index] = layer;
@@ -189,7 +189,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
         });
     }
 
-    add() {
+    add(): void {
         combineLatest([this.filteredLayers, this.selectedLayers])
             .pipe(first())
             .subscribe(([filteredLayers, selectedLayers]) => {
@@ -199,7 +199,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
             });
     }
 
-    remove() {
+    remove(): void {
         this.selectedLayers.pipe(first()).subscribe((selectedLayers) => {
             this.selectedLayers.next(selectedLayers.slice(0, selectedLayers.length - 1));
 
@@ -207,7 +207,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
         });
     }
 
-    onBlur() {
+    onBlur(): void {
         if (this.onTouched) {
             this.onTouched();
         }

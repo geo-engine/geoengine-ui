@@ -51,7 +51,7 @@ export class VectorData extends LayerData {
         return new VectorData(time, projection, new OlFormatGeoJSON().readFeatures(source, optOptions), extent);
     }
 
-    fakeIds() {
+    fakeIds(): void {
         for (let localRowId = 0; localRowId < this.data.length; localRowId++) {
             const feature = this.data[localRowId];
             if (feature.getId() === undefined) {

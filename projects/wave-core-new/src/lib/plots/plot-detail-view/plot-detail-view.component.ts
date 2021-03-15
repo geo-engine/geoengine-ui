@@ -28,7 +28,7 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit, OnDestroy
 
     constructor(public projectService: ProjectService, @Inject(MAT_DIALOG_DATA) public plot: Plot) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.dataSubscription = this.projectService.getPlotDataStream(this.plot).subscribe((plotData) => {
             this.plotLoading$.next(false);
             this.plotData = plotData;
@@ -66,14 +66,14 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit, OnDestroy
         //     });
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         setTimeout(() => {
             this.maxWidth$.next(window.innerWidth - 2 * LayoutService.remInPx);
             this.maxHeight$.next(window.innerHeight - 2 * LayoutService.remInPx - LayoutService.getToolbarHeightPx());
         });
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.dataSubscription.unsubscribe();
     }
 }

@@ -46,7 +46,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.userService
             .getSessionStream()
             .pipe(first())
@@ -63,18 +63,18 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         this.formStatusSubscription = this.formStatus$.subscribe(() => setTimeout(() => this.changeDetectorRef.markForCheck()));
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         // do this once for observables
         setTimeout(() => this.loginForm.updateValueAndValidity());
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         if (this.formStatusSubscription) {
             this.formStatusSubscription.unsubscribe();
         }
     }
 
-    login() {
+    login(): void {
         this.formStatus$.next(FormStatus.Loading);
 
         this.userService
@@ -97,7 +97,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
             );
     }
 
-    logout() {
+    logout(): void {
         this.formStatus$.next(FormStatus.Loading);
 
         this.userService.guestLogin().subscribe(

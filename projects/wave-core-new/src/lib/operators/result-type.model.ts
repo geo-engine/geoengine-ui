@@ -69,7 +69,7 @@ export class ResultTypeCollection {
         this.PLOT_TYPES = [this.PLOT, this.TEXT];
     }
 
-    fromCode(type: string) {
+    fromCode(type: string): ResultType {
         switch (type.toLowerCase()) {
             case this.RASTER.code:
                 return this.RASTER;

@@ -9,5 +9,5 @@ import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 export class DialogHelpComponent implements OnInit {
     constructor() {}
 
-    ngOnInit() {}
+    ngOnInit(): void {}
 }

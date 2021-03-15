@@ -43,16 +43,16 @@ export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, 
         }
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         setTimeout(() => this.changeDetectorRef.markForCheck(), 0);
     }
 
-    ngOnChanges(changes: {[propName: string]: SimpleChange}) {
+    ngOnChanges(_changes: {[propName: string]: SimpleChange}): void {
         this.changeDetectorRef.markForCheck();
     }
 
     // Set touched on blur
-    onBlur() {
+    onBlur(): void {
         this.onTouched();
     }
 
@@ -70,21 +70,21 @@ export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, 
         this.onTouched = fn;
     }
 
-    update(timeUnit: unitOfTime.Base, value: number) {
+    update(timeUnit: unitOfTime.Base, value: number): void {
         if (value) {
             this.time.set(timeUnit, value);
             this.propagateChange();
         }
     }
 
-    updateDate(value: number) {
+    updateDate(value: number): void {
         if (value) {
             this.time.date(value);
             this.propagateChange();
         }
     }
 
-    private propagateChange() {
+    private propagateChange(): void {
         if (this.onChange) {
             this.onChange(this.time);
         }

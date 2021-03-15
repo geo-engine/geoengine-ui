@@ -26,7 +26,7 @@ export class SelectLayersComponent implements OnInit {
 
     ngOnInit(): void {}
 
-    addBiome() {
+    addBiome(): void {
         const workflow: WorkflowDict = {
             type: 'Raster',
             operator: {
@@ -188,7 +188,7 @@ export class SelectLayersComponent implements OnInit {
             });
     }
 
-    addKK09(name: string, sourceId: UUID) {
+    addKK09(name: string, sourceId: UUID): void {
         const workflow: WorkflowDict = {
             type: 'Raster',
             operator: {
@@ -244,7 +244,7 @@ export class SelectLayersComponent implements OnInit {
             });
     }
 
-    selectData($event: MatSelectionListChange) {
+    selectData($event: MatSelectionListChange): void {
         if ($event.options.length !== 1) {
             throw Error('It is only possible to select one dataset');
         }

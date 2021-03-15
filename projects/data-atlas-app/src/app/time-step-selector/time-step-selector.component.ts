@@ -54,16 +54,16 @@ export class TimeStepSelectorComponent implements OnInit, OnDestroy {
         );
     }
 
-    ngOnInit() {}
+    ngOnInit(): void {}
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.avaiableTimeStepsSubscription.unsubscribe();
     }
 
     /**
      * On a slider event, calculate the timestamp and set the new time for the app layers
      */
-    setTime(event: MatSliderChange) {
+    setTime(event: MatSliderChange): void {
         if (!this.avalableTimeSteps) {
             return;
         }
@@ -76,7 +76,7 @@ export class TimeStepSelectorComponent implements OnInit, OnDestroy {
      * Provides a thumb label display string that shows the timestamp to select (upon hovering)
      */
     thumbLabelDisplay(): (value: number) => string {
-        return (value: number) => {
+        return (value: number): string => {
             if (!this.avalableTimeSteps) {
                 return '';
             }

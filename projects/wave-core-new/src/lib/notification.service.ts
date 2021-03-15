@@ -22,7 +22,7 @@ export class NotificationService {
         return this.notification$;
     }
 
-    info(message: string) {
+    info(message: string): void {
         this.notification$.next({
             type: NotificationType.Info,
             message,
@@ -32,7 +32,7 @@ export class NotificationService {
         });
     }
 
-    error(message: string) {
+    error(message: string): void {
         this.notification$.next({
             type: NotificationType.Error,
             message,

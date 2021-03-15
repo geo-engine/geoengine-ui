@@ -23,7 +23,7 @@ export class SaveProjectAsComponent implements OnInit, AfterViewInit {
         private notificationService: NotificationService,
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.form = this.formBuilder.group({
             name: [
                 '',
@@ -37,7 +37,7 @@ export class SaveProjectAsComponent implements OnInit, AfterViewInit {
         });
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         setTimeout(() => this.form.updateValueAndValidity());
     }
 
@@ -45,7 +45,7 @@ export class SaveProjectAsComponent implements OnInit, AfterViewInit {
      * Save project under new name.
      *
      */
-    save() {
+    save(): void {
         const projectName: string = this.form.controls['name'].value;
 
         this.projectService.cloneProject(projectName).subscribe((project) => {

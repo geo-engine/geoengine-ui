@@ -32,7 +32,7 @@ import {MockLayersComponent} from './mock-layers/mock-layers.component';
         {provide: Config, useClass: AppConfig},
         {
             provide: APP_INITIALIZER,
-            useFactory: (config: AppConfig) => () => config.load(),
+            useFactory: (config: AppConfig) => (): Promise<void> => config.load(),
             deps: [Config],
             multi: true,
         },

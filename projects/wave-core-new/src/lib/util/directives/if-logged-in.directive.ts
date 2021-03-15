@@ -17,7 +17,7 @@ export class IfLoggedInDirective implements OnDestroy {
         });
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.subscription.unsubscribe();
     }
 }
