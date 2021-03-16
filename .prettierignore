@@ -1,10 +1,18 @@
-# Ignore artifacts:
-custom_typings
+# Artifacts
 dist
 docker-files
 node-modules
-.github
-scripts
-.idea
-*.geojson
+
+# IDEs
 .vscode
+.idea
+
+# Misc
+custom_typings
+scripts
+
+# CI
+.github
+
+# Data
+*.geojson
