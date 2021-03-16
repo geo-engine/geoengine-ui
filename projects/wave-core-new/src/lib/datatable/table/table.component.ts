@@ -39,7 +39,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, Aft
 
     constructor(protected readonly projectService: ProjectService, protected readonly hostElement: ElementRef<HTMLElement>) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         // TODO: allow specifying a layer as `@Input()`
         this.layerSelectionSubscription = this.projectService.getLayerStream().subscribe((layers) => {
             if (layers.length) {
@@ -50,15 +50,15 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, Aft
         });
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         this.dataSource.paginator = this.paginator;
     }
 
-    ngAfterViewChecked() {
+    ngAfterViewChecked(): void {
         this.setTableHeight();
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         if (this.layerDataSubscription) {
             this.layerDataSubscription.unsubscribe();
         }
@@ -67,7 +67,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, Aft
         }
     }
 
-    selectLayer(layer: Layer) {
+    selectLayer(layer: Layer): void {
         if (this.layerDataSubscription) {
             this.layerDataSubscription.unsubscribe();
         }
@@ -89,12 +89,12 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, Aft
         );
     }
 
-    processVectorLayer(_layer: VectorLayer, metadata: VectorLayerMetadata, data: VectorData) {
+    processVectorLayer(_layer: VectorLayer, metadata: VectorLayerMetadata, data: VectorData): void {
         this.displayedColumns = metadata.columns.keySeq().toArray();
         this.dataSource.data = data.data;
     }
 
-    processRasterLayer(_layer: RasterLayer, _metadata: RasterLayerMetadata, _data: any) {
+    processRasterLayer(_layer: RasterLayer, _metadata: RasterLayerMetadata, _data: any): void {
         // TODO: implement
 
         this.emptyTable();
@@ -103,7 +103,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, Aft
     /**
      * Show an empty table when there is no data to display
      */
-    emptyTable() {
+    emptyTable(): void {
         this.displayedColumns = [];
         this.dataSource.data = [];
 
@@ -111,14 +111,14 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, Aft
     }
 
     @HostListener('window:resize')
-    protected onResize() {
+    protected onResize(): void {
         this.setTableHeight();
     }
 
     /**
      * Dynamically adjust table height to be as high as the host style.height-property (in px)
      */
-    protected setTableHeight() {
+    protected setTableHeight(): void {
         const availableHeight = parseInt(this.hostElement.nativeElement.style.height, 10);
 
         const paginatorHeight = 56;
@@ -196,7 +196,7 @@ class FeatureDataSource extends DataSource<OlFeature> {
     /**
      * display a portion of the data
      */
-    protected processPage() {
+    protected processPage(): void {
         const start = this.paginator.pageIndex * this.paginator.pageSize;
         const end = start + this.paginator.pageSize;
 
