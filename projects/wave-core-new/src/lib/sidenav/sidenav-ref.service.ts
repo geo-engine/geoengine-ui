@@ -22,7 +22,7 @@ export class SidenavRef {
     /**
      * Set the toolbar title
      */
-    setTitle(title: string) {
+    setTitle(title: string): void {
         this.title$.next(title);
     }
 
@@ -36,7 +36,7 @@ export class SidenavRef {
     /**
      * Set the component that should be loaded upon clicking "back"
      */
-    setBackButtonComponent(component: SidenavConfig) {
+    setBackButtonComponent(component: SidenavConfig): void {
         this.backButtonComponent$.next(component);
     }
 
@@ -60,7 +60,7 @@ export class SidenavRef {
      * @param contentChildren provides a reference to a `QueryList`
      * @param searchString$ this emits search inputs to upon changes to the query list
      */
-    setSearch(contentChildren: QueryList<ElementRef>, searchString$: EventEmitter<string>) {
+    setSearch(contentChildren: QueryList<ElementRef>, searchString$: EventEmitter<string>): void {
         this.removeSearch();
 
         this.searchElements$.next(contentChildren.toArray());
@@ -71,7 +71,7 @@ export class SidenavRef {
     /**
      * Unset the search setup
      */
-    removeSearch() {
+    removeSearch(): void {
         if (this.searchElementsSubscription) {
             this.searchElementsSubscription.unsubscribe();
         }
@@ -99,7 +99,7 @@ export class SidenavRef {
     /**
      * Function that safely emits the search term via `searchString$` if it is specified
      */
-    searchTerm(term: string) {
+    searchTerm(term: string): void {
         if (this.searchString$) {
             this.searchString$.next(term);
         }
@@ -108,14 +108,14 @@ export class SidenavRef {
     /**
      * Close the sidenav
      */
-    close() {
+    close(): void {
         this.close$.next();
     }
 
     /**
      * Get a stream to react on sidenav close actions.
      */
-    getCloseStream() {
+    getCloseStream(): Observable<void> {
         return this.close$;
     }
 }

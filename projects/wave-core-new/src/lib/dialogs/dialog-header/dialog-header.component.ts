@@ -8,5 +8,5 @@ import {Component, OnInit} from '@angular/core';
 export class DialogHeaderComponent implements OnInit {
     constructor() {}
 
-    ngOnInit() {}
+    ngOnInit(): void {}
 }

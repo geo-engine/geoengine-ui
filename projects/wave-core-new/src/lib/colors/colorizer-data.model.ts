@@ -111,35 +111,35 @@ export class ColorizerData implements IColorizerData {
     /**
      * Check if an instance of (I)ColorizerData is valid.
      */
-    static isValid(colorizerData: IColorizerData) {
+    static isValid(colorizerData: IColorizerData): boolean {
         return colorizerData.breakpoints.length >= 2;
     }
 
     /**
      * Removes all breakpoints.
      */
-    clear() {
+    clear(): void {
         this.breakpoints = [];
     }
 
     /**
      * Adds a breakpoint to the end of the list.
      */
-    addBreakpoint(brk: ColorBreakpointDict) {
+    addBreakpoint(brk: ColorBreakpointDict): void {
         this.breakpoints.push(new ColorBreakpoint(brk));
     }
 
     /**
      * Adds a breakpoint at position i in the list.
      */
-    addBreakpointAt(i: number, brk: ColorBreakpoint) {
+    addBreakpointAt(i: number, brk: ColorBreakpoint): void {
         this.breakpoints.splice(i, 0, brk);
     }
 
     /**
      * Removes the breakpoint at position i in the list.
      */
-    removeBreakpointAt(i: number) {
+    removeBreakpointAt(i: number): void {
         this.breakpoints.splice(i, 1);
     }
 

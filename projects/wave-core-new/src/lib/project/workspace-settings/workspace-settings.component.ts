@@ -14,21 +14,21 @@ import {SaveProjectAsComponent} from '../save-project-as/save-project-as.compone
 export class WorkspaceSettingsComponent implements OnInit {
     constructor(protected layoutService: LayoutService) {}
 
-    ngOnInit() {}
+    ngOnInit(): void {}
 
-    loadSpatialReferenceDialog() {
+    loadSpatialReferenceDialog(): void {
         this.layoutService.setSidenavContentComponent({component: ChangeSpatialReferenceComponent, keepParent: true});
     }
 
-    loadNewProjectDialog() {
+    loadNewProjectDialog(): void {
         this.layoutService.setSidenavContentComponent({component: NewProjectComponent, keepParent: true});
     }
 
-    loadChangeProjectDialog() {
+    loadChangeProjectDialog(): void {
         this.layoutService.setSidenavContentComponent({component: LoadProjectComponent, keepParent: true});
     }
 
-    loadSaveAsDialog() {
+    loadSaveAsDialog(): void {
         this.layoutService.setSidenavContentComponent({component: SaveProjectAsComponent, keepParent: true});
     }
 }

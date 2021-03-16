@@ -54,7 +54,7 @@ export class OperatorTypeFactory {
     /**
      * Add a new type deserializer (fromDict) to the factory
      */
-    static addType(type: Type, fromDict: Deserializer) {
+    static addType(type: Type, fromDict: Deserializer): void {
         OperatorTypeFactory.typeDeserializers.set(type, fromDict);
     }
 

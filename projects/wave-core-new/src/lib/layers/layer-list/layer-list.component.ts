@@ -91,14 +91,14 @@ export class LayerListComponent implements OnDestroy {
         this.mapIsGrid$ = this.mapService.isGrid$;
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.subscriptions.forEach((s) => s.unsubscribe());
     }
 
     /**
      * the drop method is used by the dran and drop feature of the list
      */
-    drop(event: CdkDragDrop<string[]>) {
+    drop(event: CdkDragDrop<string[]>): void {
         const layerList = this.layerList.slice(); // make a copy to not modify the current list
         moveItemInArray(layerList, event.previousIndex, event.currentIndex);
 
@@ -109,7 +109,7 @@ export class LayerListComponent implements OnDestroy {
     /**
      * select a layer
      */
-    toggleLegend(layer: Layer) {
+    toggleLegend(layer: Layer): void {
         this.projectService.toggleLegend(layer);
     }
 
@@ -131,7 +131,7 @@ export class LayerListComponent implements OnDestroy {
         return layer as Layer;
     }
 
-    showChannelParameterSlider(layer: Layer): boolean {
+    showChannelParameterSlider(_layer: Layer): boolean {
         // return layer.operator.operatorType.toString() === 'GDAL Source'
         //     && !!layer.operator.operatorTypeParameterOptions
         //     && layer.operator.operatorTypeParameterOptions.getParameterOption('channelConfig').hasTicks();

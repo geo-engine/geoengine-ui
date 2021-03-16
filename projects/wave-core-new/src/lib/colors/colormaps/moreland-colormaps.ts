@@ -1,5 +1,3 @@
-import {ColormapNames} from './colormap.model';
-
 /**
  * This color maps are from CoolWarmFloat33.csv of "Diverging Color Maps for Scientific Visualization" by Kenneth Moreland
  * on <http://www.kennethmoreland.com/color-maps/>

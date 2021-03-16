@@ -120,7 +120,7 @@ export class UserService {
         );
     }
 
-    protected saveSessionInBrowser(session: Session) {
+    protected saveSessionInBrowser(session: Session): void {
         localStorage.setItem(PATH_PREFIX + 'session', session.sessionToken);
     }
 

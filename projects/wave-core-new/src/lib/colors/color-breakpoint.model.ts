@@ -60,14 +60,14 @@ export class ColorBreakpoint implements ColorBreakpointDict {
     /**
      * Sets the color to the provided value.
      */
-    setColor(color: RgbaLike) {
+    setColor(color: RgbaLike): void {
         this.rgba = Color.fromRgbaLike(color);
     }
 
     /**
      * Sets the value of the ColorBreakpoint to the provided value.
      */
-    setValue(value: BreakPointValue) {
+    setValue(value: BreakPointValue): void {
         this.value = value;
     }
 
