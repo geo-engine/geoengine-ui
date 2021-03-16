@@ -120,7 +120,7 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
     /**
      * Replace the min and max values.
      */
-    patchMinMaxValues(min: number, max: number) {
+    patchMinMaxValues(min: number, max: number): void {
         const patchConfig: {min?: number; max?: number} = {};
         const boundsMin: number = this.form.controls['bounds'].value.min;
         const boundsMax: number = this.form.controls['bounds'].value.max;
@@ -139,14 +139,14 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
     /**
      * Clears the local colorizer data.
      */
-    removeColorizerData() {
+    removeColorizerData(): void {
         this.colorizerData = undefined;
     }
 
     /**
      * Apply a new color table to the colorizer data.
      */
-    applyNewColorTable(_: any) {
+    applyNewColorTable(_: any): void {
         if (this.colorizerData) {
             this.colormapColorizerData.emit(this.colorizerData);
         }
@@ -197,7 +197,7 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
         }
     }
 
-    private checkValidConfig() {
+    private checkValidConfig(): boolean {
         const colormapName: ColormapNames = this.form.controls['colormapName'].value;
         const colormapSteps: number = this.form.controls['colormapSteps'].value;
         const boundedColormapStepScales: BoundedColormapStepScale = this.form.controls['colormapStepScales'].value;
@@ -222,7 +222,7 @@ export class ColormapColorizerComponent implements OnInit, OnDestroy, OnChanges 
         return true;
     }
 
-    private updateColorizerData() {
+    private updateColorizerData(): void {
         if (!this.checkValidConfig()) {
             this.colorizerData = undefined;
             return;

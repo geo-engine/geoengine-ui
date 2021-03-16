@@ -1,5 +1,3 @@
-// eslint-disable-line
-
 /**
  * Options allowed when cloning the operator
  */
@@ -47,7 +45,7 @@ export abstract class OperatorType {
     /**
      * Get the value of a parameter
      */
-    public getParameterValue(parameterName: string): ParameterValue | undefined {
+    public getParameterValue(_parameterName: string): ParameterValue | undefined {
         return undefined;
     }
 

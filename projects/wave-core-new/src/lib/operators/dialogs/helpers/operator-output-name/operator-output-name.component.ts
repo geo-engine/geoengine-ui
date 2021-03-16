@@ -32,12 +32,12 @@ export class OperatorOutputNameComponent implements ControlValueAccessor, OnChan
         return this._name;
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         // once for rendering the input properly
         setTimeout(() => this.changeDetectorRef.markForCheck());
     }
 
-    ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
+    ngOnChanges(changes: {[propertyName: string]: SimpleChange}): void {
         // eslint-disable-next-line guard-for-in
         for (const propName in changes) {
             switch (propName) {
@@ -64,16 +64,16 @@ export class OperatorOutputNameComponent implements ControlValueAccessor, OnChan
     }
 
     /** Implemented as part of ControlValueAccessor. */
-    registerOnChange(fn: () => any) {
+    registerOnChange(fn: () => any): void {
         this.onChange = fn;
     }
 
     /** Implemented as part of ControlValueAccessor. */
-    registerOnTouched(fn: () => any) {
+    registerOnTouched(fn: () => any): void {
         this.onTouched = fn;
     }
 
-    onBlur() {
+    onBlur(): void {
         if (this.onTouched) {
             this.onTouched();
         }

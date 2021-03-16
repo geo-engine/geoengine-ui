@@ -66,18 +66,18 @@ export class MapService {
      * Define if the map is in grid mode (one layer per tile) or if it displays
      * all layers on one tile.
      */
-    public setGrid(isGrid: boolean) {
+    public setGrid(isGrid: boolean): void {
         this.isGridStream.next(isGrid);
     }
 
     /**
      * This service only works if a map component is registered here upfront.
      */
-    public registerMapComponent(mapComponent: MapContainerComponent) {
+    public registerMapComponent(mapComponent: MapContainerComponent): void {
         this.mapComponent = mapComponent;
     }
 
-    public startDrawInteraction(drawType: OlGeometryType) {
+    public startDrawInteraction(drawType: OlGeometryType): void {
         if (!this.mapComponent) {
             throw new Error('no MapComponent registered');
         }
@@ -105,7 +105,7 @@ export class MapService {
     /**
      * Changes the viewport of the map
      */
-    setViewportSize(newViewportSize: ViewportSize) {
+    setViewportSize(newViewportSize: ViewportSize): void {
         if (newViewportSize.extent.length !== 4 || newViewportSize.resolution <= 0) {
             throw Error('Corrupt Viewport Size');
         }
@@ -145,7 +145,7 @@ export class MapService {
     /**
      * Trigger a zoom event at the map to an extent
      */
-    zoomTo(boundingBox: Extent) {
+    zoomTo(boundingBox: Extent): void {
         this.mapComponent.zoomTo(boundingBox);
     }
 }

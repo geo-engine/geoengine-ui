@@ -16,7 +16,7 @@ export class ChangeSpatialReferenceComponent implements OnInit {
 
     constructor(public projectService: ProjectService) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.spatialReference$ = this.projectService.getSpatialReferenceStream();
     }
 }

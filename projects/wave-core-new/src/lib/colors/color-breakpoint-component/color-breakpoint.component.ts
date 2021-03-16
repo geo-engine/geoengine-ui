@@ -45,7 +45,7 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, Afte
         }
     }
 
-    updateValue(value: number | string) {
+    updateValue(value: number | string): void {
         // TODO: should this really clone?
         if (value && value !== this.colorBreakpoint.value) {
             if (this.inputType === 'number' && typeof value === 'string') {
@@ -57,7 +57,7 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, Afte
         }
     }
 
-    updateColor(color: string) {
+    updateColor(color: string): void {
         // TODO: should this really clone?
         if (color) {
             const clr = Color.fromRgbaLike(stringToRgbaStruct(color));
@@ -68,11 +68,11 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, Afte
         }
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         // setTimeout(() => this.changeDetectorRef.markForCheck(), 0);
     }
 
-    ngOnChanges(changes: SimpleChanges) {
+    ngOnChanges(changes: SimpleChanges): void {
         // eslint-disable-next-line guard-for-in
         for (const propName in changes) {
             switch (propName) {
@@ -90,7 +90,7 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, Afte
     }
 
     // Set touched on blur
-    onBlur() {
+    onBlur(): void {
         this.onTouched();
     }
 
@@ -107,7 +107,7 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, Afte
         this.onTouched = fn;
     }
 
-    private propagateChange() {
+    private propagateChange(): void {
         if (this.onChange && this.colorBreakpoint) {
             this.onChange(this.colorBreakpoint.clone());
         }

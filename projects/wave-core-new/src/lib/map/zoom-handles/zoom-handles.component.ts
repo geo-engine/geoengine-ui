@@ -13,5 +13,5 @@ export class ZoomHandlesComponent implements OnInit {
 
     constructor() {}
 
-    ngOnInit() {}
+    ngOnInit(): void {}
 }

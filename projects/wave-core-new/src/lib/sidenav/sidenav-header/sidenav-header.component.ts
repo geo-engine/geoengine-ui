@@ -10,11 +10,11 @@ import {SidenavRef} from '../sidenav-ref.service';
 export class SidenavHeaderComponent implements AfterViewInit, AfterViewChecked {
     constructor(private elementRef: ElementRef, private sidenavRef: SidenavRef) {}
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         this.sidenavRef.setTitle(this.elementRef.nativeElement.textContent);
     }
 
-    ngAfterViewChecked() {
+    ngAfterViewChecked(): void {
         this.sidenavRef.setTitle(this.elementRef.nativeElement.textContent);
     }
 }

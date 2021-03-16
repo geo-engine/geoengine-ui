@@ -14,7 +14,7 @@ const minAndMax = (
         checkBothExist?: boolean;
         checkOneExists?: boolean;
     },
-) => {
+): ((AbstractControl) => {[index: string]: boolean}) => {
     if (!options) {
         options = {};
     }
@@ -76,7 +76,7 @@ const conditionalValidator = (validator: (control: AbstractControl) => {[key: st
 /**
  * Checks if keyword is a reserved keyword.
  */
-const keywordValidator = (keywords: Array<string>) => (control: AbstractControl) =>
+const keywordValidator = (keywords: Array<string>) => (control: AbstractControl): {keyword: true} | null =>
     keywords.indexOf(control.value) >= 0 ? {keyword: true} : null;
 
 /**
@@ -112,7 +112,7 @@ const uniqueProjectNameValidator = (storageService: {projectExists(string): Obse
             );
     });
 
-const notOnlyWhitespace = (control: AbstractControl) => {
+const notOnlyWhitespace = (control: AbstractControl): {onlyWhitespace: true} | null => {
     const text = control.value as string;
     if (!text) {
         return null;
@@ -120,7 +120,7 @@ const notOnlyWhitespace = (control: AbstractControl) => {
     return text.trim().length <= 0 ? {onlyWhitespace: true} : null;
 };
 
-const isNumber = (control: AbstractControl) => {
+const isNumber = (control: AbstractControl): {isNoNumber: true} | null => {
     const value = control.value;
     return isFiniteNumber(value) ? null : {isNoNumber: true};
 };
@@ -138,7 +138,7 @@ export const WaveValidators = {
 /**
  * checks if a value is undefined or null
  */
-const nullOrUndefined = (value: any) => value === undefined || value === null;
+const nullOrUndefined = (value: any): boolean => value === undefined || value === null;
 
 /**
  * This Validator checks the relation of a value compared to another value.
@@ -155,7 +155,7 @@ export const valueRelation = (
         checkAbove?: boolean;
         checkBelow?: boolean;
     },
-) => {
+): ((AbstractControl) => {[key: string]: boolean}) => {
     if (!options) {
         options = {
             checkEqual: true,

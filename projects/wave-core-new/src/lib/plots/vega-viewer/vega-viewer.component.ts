@@ -34,9 +34,9 @@ export class VegaViewerComponent implements OnInit, OnChanges {
 
     constructor() {}
 
-    ngOnInit() {}
+    ngOnInit(): void {}
 
-    ngOnChanges(changes: SimpleChanges) {
+    ngOnChanges(changes: SimpleChanges): void {
         if (changes.chartData || changes.width || changes.height) {
             this.clearContents();
             if (this.chartData) {
@@ -45,7 +45,7 @@ export class VegaViewerComponent implements OnInit, OnChanges {
         }
     }
 
-    private displayPlot() {
+    private displayPlot(): void {
         const div = this.chartContainer.nativeElement;
 
         const width = this.width ?? div.clientWidth;
@@ -74,7 +74,7 @@ export class VegaViewerComponent implements OnInit, OnChanges {
             });
     }
 
-    private clearContents() {
+    private clearContents(): void {
         const div = this.chartContainer.nativeElement;
 
         if (this.vegaHandle) {

@@ -57,11 +57,11 @@ export class RasterVectorJoinComponent implements OnDestroy {
         this.setupNameValidation();
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
-    add() {
+    add(): void {
         const vectorLayer: VectorLayer = this.form.controls['vectorLayer'].value;
         const rasterLayers: Array<RasterLayer> = this.form.controls['rasterLayers'].value;
         const valueNames: Array<string> = this.form.controls['valueNames'].value;
@@ -112,7 +112,7 @@ export class RasterVectorJoinComponent implements OnDestroy {
         return LetterNumberConverter.toLetters(number);
     }
 
-    private reCheckValueNames() {
+    private reCheckValueNames(): void {
         setTimeout(() => {
             const valueNames = this.form.controls['valueNames'] as FormArray;
             valueNames.controls.forEach((control) => {
@@ -125,7 +125,7 @@ export class RasterVectorJoinComponent implements OnDestroy {
         });
     }
 
-    private setupNameValidation() {
+    private setupNameValidation(): void {
         const vectorLayerSubscription = this.form.controls['vectorLayer'].valueChanges
             .pipe(
                 filter((vectorLayer: VectorLayer) => !!vectorLayer),

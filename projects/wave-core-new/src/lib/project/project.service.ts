@@ -193,7 +193,7 @@ export class ProjectService {
      * Set a new Project. The ProjectService will clear all layer, plots, and provenance.
      * Does *not* store the project.
      */
-    setProject(project: Project) {
+    setProject(project: Project): void {
         // clear all subjects
         for (const subjectMap of [this.layers, this.layerData$, this.layerDataState$]) {
             subjectMap.forEach((subject) => subject.complete());
@@ -253,7 +253,7 @@ export class ProjectService {
     /**
      * Set a time duration for the current project.
      */
-    setTimeStepDuration(timeStepDuration: TimeStepDuration) {
+    setTimeStepDuration(timeStepDuration: TimeStepDuration): void {
         this.changeProjectConfig({timeStepDuration});
     }
 
@@ -267,7 +267,7 @@ export class ProjectService {
     /**
      * Set the projection used by the current project.
      */
-    setSpatialReference(spatialReference: SpatialReference) {
+    setSpatialReference(spatialReference: SpatialReference): Observable<void> {
         return this.changeProjectConfig({spatialReference});
     }
 
@@ -368,7 +368,7 @@ export class ProjectService {
     /**
      * Reload the data of a layer.
      */
-    reloadLayerData(layer: Layer) {
+    reloadLayerData(layer: Layer): void {
         this.layerData$.get(layer.id).next(undefined); // send empty data
 
         if (this.layerDataSubscriptions.has(layer.id)) {
@@ -405,7 +405,7 @@ export class ProjectService {
     /**
      * Reload everything for the layer manually (e.g. on error).
      */
-    reloadLayer(layer: Layer) {
+    reloadLayer(layer: Layer): void {
         this.reloadLayerData(layer);
         this.retrieveLayerMetadata(layer, this.layerMetadata$.get(layer.id), this.layerMetadataState$.get(layer.id));
     }
@@ -413,7 +413,7 @@ export class ProjectService {
     /**
      * Reload the data for the plot manually (e.g. on error).
      */
-    reloadPlot(plot: Plot) {
+    reloadPlot(plot: Plot): void {
         this.plotData$.get(plot.id).next(undefined); // send empty data
 
         this.plotDataSubscriptions.get(plot.id).unsubscribe();
@@ -534,7 +534,7 @@ export class ProjectService {
     /**
      * Change the loading state of a raster layer
      */
-    changeRasterLayerDataStatus(layer: HasLayerId & HasLayerType, state: LoadingState) {
+    changeRasterLayerDataStatus(layer: HasLayerId & HasLayerType, state: LoadingState): void {
         if (layer.layerType === 'raster') {
             this.layerDataState$.get(layer.id).next(state);
         } else {
@@ -634,7 +634,7 @@ export class ProjectService {
     /**
      * Sets the layers
      */
-    setLayers(layers: Array<Layer>) {
+    setLayers(layers: Array<Layer>): void {
         this.project$.pipe(first()).subscribe((project) => {
             if (project.layers !== layers) {
                 this.changeProjectConfig({layers});
@@ -763,7 +763,7 @@ export class ProjectService {
         );
     }
 
-    protected removeLayerSubscriptions(layer: HasLayerId) {
+    protected removeLayerSubscriptions(layer: HasLayerId): void {
         // subjects
         for (const subjectMap of [this.layers, this.layerData$, this.layerDataState$]) {
             subjectMap.get(layer.id).complete();
@@ -777,7 +777,7 @@ export class ProjectService {
         }
     }
 
-    protected removeMetadataObservables(layer: HasLayerId) {
+    protected removeMetadataObservables(layer: HasLayerId): void {
         this.layerMetadata$.get(layer.id).complete();
         this.layerMetadata$.delete(layer.id);
 
@@ -785,7 +785,7 @@ export class ProjectService {
         this.layerMetadataState$.delete(layer.id);
     }
 
-    protected removePlotSubscriptions(plot: HasPlotId) {
+    protected removePlotSubscriptions(plot: HasPlotId): void {
         // subjects
         for (const subjectMap of [this.layerData$, this.layerDataState$]) {
             subjectMap.get(plot.id).complete();
@@ -864,7 +864,7 @@ export class ProjectService {
         return subject.asObservable();
     }
 
-    private createCombinedLoadingState(layer: HasLayerId) {
+    private createCombinedLoadingState(layer: HasLayerId): void {
         const loadingState$ = combineLatest([this.layerMetadataState$.get(layer.id), this.layerDataState$.get(layer.id)]).pipe(
             map((loadingStates) => {
                 if (loadingStates.includes(LoadingState.LOADING)) {
@@ -885,7 +885,7 @@ export class ProjectService {
         this.layerState$.set(layer.id, loadingState$);
     }
 
-    private createLayerDataStreams(layer: Layer) {
+    private createLayerDataStreams(layer: Layer): void {
         // each layer has data. The type depends on the layer type
         const layerDataLoadingState$ = new ReplaySubject<LoadingState>(1);
         const layerData$ = new ReplaySubject<LayerData>(1);
@@ -903,7 +903,7 @@ export class ProjectService {
         this.layerData$.set(layer.id, layerData$);
     }
 
-    private createLayerMetadataStreams(layer: Layer) {
+    private createLayerMetadataStreams(layer: Layer): void {
         const layerMetadataLoadingState$ = new ReplaySubject<LoadingState>(1);
         const layerMetadata$ = new ReplaySubject<LayerMetadata>(1);
 
@@ -959,7 +959,7 @@ export class ProjectService {
     /**
      * Retrieve metadata for layer data
      */
-    private retrieveLayerMetadata(layer: Layer, metadata$: Observer<LayerMetadata>, loadingState$: Observer<LoadingState>) {
+    private retrieveLayerMetadata(layer: Layer, metadata$: Observer<LayerMetadata>, loadingState$: Observer<LoadingState>): void {
         this.userService
             .getSessionTokenForRequest()
             .pipe(
@@ -1042,7 +1042,7 @@ export class ProjectService {
             );
     }
 
-    private createLayerChangesStream(layer: Layer) {
+    private createLayerChangesStream(layer: Layer): void {
         if (this.layers.get(layer.id)) {
             throw new Error('Layer changes stream already registered');
         }
@@ -1068,7 +1068,7 @@ export class ProjectService {
         }
     }
 
-    private createPlotDataStreams(plot: Plot) {
+    private createPlotDataStreams(plot: Plot): void {
         const loadingState$ = new ReplaySubject<LoadingState>(1);
         const data$ = new ReplaySubject<any>(1);
 

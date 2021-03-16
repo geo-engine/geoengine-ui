@@ -209,7 +209,7 @@ export class OperatorListComponent implements OnInit {
      */
     constructor(private layoutService: LayoutService) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.operatorGroups$ = combineLatest([of(this.operators), this.searchString$.pipe(map((s) => s.toLowerCase()))]).pipe(
             map(([operatorGroups, searchString]) => {
                 const nameComparator = (a: string, b: string): number => {
@@ -222,8 +222,8 @@ export class OperatorListComponent implements OnInit {
                 for (const group of operatorGroups) {
                     const operators = [];
                     for (const operator of group.list) {
-                        const searchMatchesTypeName = () => operator.type.NAME.toLowerCase().includes(searchString);
-                        const searchMatchesDescription = () => operator.description.toLowerCase().includes(searchString);
+                        const searchMatchesTypeName = (): boolean => operator.type.NAME.toLowerCase().includes(searchString);
+                        const searchMatchesDescription = (): boolean => operator.description.toLowerCase().includes(searchString);
 
                         if (searchMatchesTypeName() || searchMatchesDescription()) {
                             operators.push(operator);
@@ -246,7 +246,7 @@ export class OperatorListComponent implements OnInit {
     /**
      * Load a selected dialog into the sidenav
      */
-    load(component: Type<any>) {
+    load(component: Type<any>): void {
         this.layoutService.setSidenavContentComponent({component, keepParent: true});
     }
 }

@@ -231,7 +231,7 @@ export class RasterDataTypeCollection {
         this.ALL_DATATYPES = [this.Byte, this.Int16, this.UInt16, this.Int32, this.UInt32, this.Float32, this.Float64];
     }
 
-    fromCode(code: string) {
+    fromCode(code: string): RasterDataType {
         switch (code) {
             case this.Byte.getCode():
                 return this.Byte;
@@ -315,7 +315,7 @@ export class VectorDataTypeCollection {
     MultiLineString: VectorDataType = new MultiLineString();
     MultiPolygon: VectorDataType = new MultiPolygon();
 
-    fromCode(code: string) {
+    fromCode(code: string): VectorDataType {
         switch (code) {
             case this.Data.getCode():
                 return this.Data;
@@ -374,7 +374,7 @@ export class VectorColumnDataTypeCollection {
     readonly Text: VectorColumnDataType = new TextColumn();
     readonly Categorical: VectorColumnDataType = new CategoricalColumn();
 
-    fromCode(code: string) {
+    fromCode(code: string): VectorColumnDataType {
         switch (code) {
             case this.Number.code:
                 return this.Number;

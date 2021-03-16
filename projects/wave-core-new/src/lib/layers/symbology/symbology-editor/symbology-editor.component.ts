@@ -44,7 +44,7 @@ export class SymbologyEditorComponent implements OnDestroy {
             .subscribe((projectLayers) => (this.validLayers = projectLayers));
         this.subscriptions.push(layerStreamSubscription);
         // This subscription sends layer / symbology changes to the project service.
-        const layerChangesSubscription = this.layerChanges.pipe(debounceTime(config.DELAYS.DEBOUNCE)).subscribe(([layer, symbology]) => {
+        const layerChangesSubscription = this.layerChanges.pipe(debounceTime(config.DELAYS.DEBOUNCE)).subscribe(([_layer, _symbology]) => {
             // TODO: call change layer
             // this.projectService.changeLayer(layer, {symbology})
         });
@@ -61,7 +61,7 @@ export class SymbologyEditorComponent implements OnDestroy {
     /**
      * Submit a layer and the desired symbology to update the layer accordingly.
      */
-    updateSymbology(layer: Layer, symbology: AbstractSymbology) {
+    updateSymbology(layer: Layer, symbology: AbstractSymbology): void {
         this.layerChanges.next([layer, symbology]);
     }
 

@@ -60,7 +60,7 @@ export class LayoutService {
         this.setupSidenavWidthStream();
     }
 
-    static scrollbarWidthPx() {
+    static scrollbarWidthPx(): number {
         if (!this._scrollbarWidthPx) {
             const outer = document.createElement('div');
             outer.style.visibility = 'hidden';
@@ -134,7 +134,7 @@ export class LayoutService {
     /**
      * Set the new Component to show in the sidenav
      */
-    setSidenavContentComponent(sidenavConfig: SidenavConfig) {
+    setSidenavContentComponent(sidenavConfig: SidenavConfig): void {
         this.sidenavContentComponent$.next(sidenavConfig);
     }
 
@@ -155,14 +155,14 @@ export class LayoutService {
     /**
      * Sets the visibility of the layer list.
      */
-    setLayerListVisibility(visible: boolean) {
+    setLayerListVisibility(visible: boolean): void {
         this.layerListVisible$.next(visible);
     }
 
     /**
      * Toggles the visibility of the layer list.
      */
-    toggleLayerListVisibility() {
+    toggleLayerListVisibility(): void {
         this.setLayerListVisibility(!this.layerListVisible$.value);
     }
 
@@ -183,14 +183,14 @@ export class LayoutService {
     /**
      * Sets the visibility of the layer detail view.
      */
-    setLayerDetailViewVisibility(visible: boolean) {
+    setLayerDetailViewVisibility(visible: boolean): void {
         this.layerDetailViewVisible$.next(visible);
     }
 
     /**
      * Toggles the visibility of the layer detail view.
      */
-    toggleLayerDetailViewVisibility() {
+    toggleLayerDetailViewVisibility(): void {
         this.setLayerDetailViewVisibility(!this.layerDetailViewVisible$.value);
     }
 
@@ -211,7 +211,7 @@ export class LayoutService {
     /**
      * Set the current tab index.
      */
-    setLayerDetailViewTabIndex(index: number) {
+    setLayerDetailViewTabIndex(index: number): void {
         // ignore call if it is the same index.
         if (this.layerDetailViewTabIndex$.value === index) {
             return;
@@ -227,7 +227,7 @@ export class LayoutService {
     /**
      * Sets the percentage of the vertical viewport that the data table covers.
      */
-    setLayerDetailViewHeightPercentage(percentage: number) {
+    setLayerDetailViewHeightPercentage(percentage: number): void {
         if (percentage < 0 || percentage > 1) {
             throw Error('The data table percentage value must be between 0 and 1.');
         }
@@ -305,7 +305,7 @@ export class LayoutService {
         );
     }
 
-    setLayoutDict(dict: LayoutDict) {
+    setLayoutDict(dict: LayoutDict): void {
         if (typeof dict.layerListVisible === 'boolean') {
             this.setLayerListVisibility(dict.layerListVisible);
         }
@@ -338,7 +338,7 @@ export class LayoutService {
     /**
      * Initialize and update the sidenav INNER width stream
      */
-    private setupSidenavWidthStream() {
+    private setupSidenavWidthStream(): void {
         const getWidth = (): number => {
             const sidenavComponent = document.getElementsByTagName('mat-sidenav')[0];
             const sidenavStyle = window.getComputedStyle(sidenavComponent);

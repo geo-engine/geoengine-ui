@@ -251,7 +251,7 @@ export abstract class AbstractVectorSymbology extends AbstractSymbology {
         return this._strokeDashStyle;
     }
 
-    setFillColorAndAttribute(name: string, clr: ColorizerData = ColorizerData.empty()) {
+    setFillColorAndAttribute(name: string, clr: ColorizerData = ColorizerData.empty()): void {
         this.fillColorizer = clr;
         this.fillColorAttribute = name;
     }
@@ -264,7 +264,7 @@ export abstract class AbstractVectorSymbology extends AbstractSymbology {
         return false;
     }
 
-    setStrokeColorAndAttribute(name: string, clr: ColorizerData = ColorizerData.empty()) {
+    setStrokeColorAndAttribute(name: string, clr: ColorizerData = ColorizerData.empty()): void {
         this.strokeColorizer = clr;
         this.strokeColorAttribute = name;
     }
@@ -277,28 +277,28 @@ export abstract class AbstractVectorSymbology extends AbstractSymbology {
         return false;
     }
 
-    clearFillColorAndAttribute() {
+    clearFillColorAndAttribute(): void {
         this.fillColorAttribute = undefined;
         this.fillColorizer = ColorizerData.empty();
     }
 
-    clearStrokeColorAndAttribute() {
+    clearStrokeColorAndAttribute(): void {
         this.strokeColorAttribute = undefined;
         this.strokeColorizer = ColorizerData.empty();
     }
 
-    clearStrokeDashStyle() {
+    clearStrokeDashStyle(): void {
         this.strokeDashStyle = undefined;
     }
 
-    clearTextAttribute() {
+    clearTextAttribute(): void {
         this.textAttribute = undefined;
     }
 
     /**
      * compare with another AbstractVectorSymbology
      */
-    equals(other: AbstractVectorSymbology) {
+    equals(other: AbstractVectorSymbology): boolean {
         if (other instanceof AbstractVectorSymbology) {
             return (
                 this.fillColorBreakpoint.equals(other.fillColorBreakpoint) &&
@@ -493,7 +493,7 @@ export class PointSymbology extends AbstractVectorSymbology implements PointSymb
         return new PointSymbology(this);
     }
 
-    equals(other: AbstractVectorSymbology) {
+    equals(other: AbstractVectorSymbology): boolean {
         if (other instanceof PointSymbology) {
             return (
                 super.equals(other as AbstractVectorSymbology) &&
@@ -521,12 +521,12 @@ export class PointSymbology extends AbstractVectorSymbology implements PointSymb
         return true;
     }
 
-    setRadiusAttributeAndFactor(name: string, factor = 1.0) {
+    setRadiusAttributeAndFactor(name: string, factor = 1.0): void {
         this.radiusAttribute = name;
         this.radiusFactor = factor;
     }
 
-    clearRadiusAttribute() {
+    clearRadiusAttribute(): void {
         this.radiusAttribute = undefined;
         this.radiusFactor = 1.0;
     }
@@ -601,15 +601,15 @@ export abstract class AbstractRasterSymbology extends AbstractSymbology implemen
         }
     }
 
-    isContinuous() {
+    isContinuous(): boolean {
         return this.unit.interpolation === Interpolation.Continuous;
     }
 
-    isDiscrete() {
+    isDiscrete(): boolean {
         return this.unit.interpolation === Interpolation.Discrete;
     }
 
-    isUnitUnknown() {
+    isUnitUnknown(): boolean {
         return !this.unit || !this.unit.interpolation || this.unit.interpolation === 0;
     }
 
@@ -619,7 +619,7 @@ export abstract class AbstractRasterSymbology extends AbstractSymbology implemen
 
     abstract clone(): AbstractRasterSymbology;
 
-    equals(other: AbstractRasterSymbology) {
+    equals(other: AbstractRasterSymbology): boolean {
         return this.opacity === other.opacity && this.unit === other.unit;
     }
 
@@ -650,7 +650,7 @@ export class MappingRasterSymbology extends AbstractRasterSymbology implements I
     /**
      * Create the default symbology, with options from config.
      */
-    static createSymbology(config: IColorizerRasterSymbology) {
+    static createSymbology(config: IColorizerRasterSymbology): MappingRasterSymbology {
         return new MappingRasterSymbology(config);
     }
 
@@ -704,7 +704,7 @@ export class MappingRasterSymbology extends AbstractRasterSymbology implements I
         return new MappingRasterSymbology(this);
     }
 
-    equals(other: AbstractRasterSymbology) {
+    equals(other: AbstractRasterSymbology): boolean {
         if (other instanceof MappingRasterSymbology) {
             return (
                 super.equals(other as AbstractRasterSymbology) &&
