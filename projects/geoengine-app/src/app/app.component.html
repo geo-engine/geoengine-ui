@@ -45,35 +45,40 @@
             </ng-template>
         </wave-map-container>
     </div>
-    <!--    <div class="bottom-container mat-elevation-z4"-->
-    <!--         [ngClass]="{small: !(layerDetailViewVisible$ | async)}"-->
-    <!--         [style.height.px]="bottomContainerHeight$ | async">-->
-    <!--        <button mat-button-->
-    <!--                class="toggle"-->
-    <!--                (click)="layoutService.toggleLayerDetailViewVisibility()"-->
-    <!--                [ngSwitch]="layerDetailViewVisible$ | async"-->
-    <!--                matTooltip="{{(layerDetailViewVisible$ | async) ? 'Hide' : 'Show'}}" matTooltipPosition="above"-->
-    <!--                [matTooltipShowDelay]="config.DELAYS.TOOLTIP">-->
-    <!--            <mat-icon *ngSwitchCase="true">expand_more</mat-icon>-->
-    <!--            <mat-icon *ngSwitchCase="false">expand_less</mat-icon>-->
-    <!--        </button>-->
-    <!--        <mat-tab-group>-->
-    <!--            <mat-tab>-->
-    <!--                <ng-template mat-tab-label>-->
-    <!--                    <div (click)="setTabIndex(0)">Data Table</div>-->
-    <!--                </ng-template>-->
-    <!--                <wave-datatable *ngIf="layerDetailViewVisible$ | async"-->
-    <!--                                [height]="(bottomContainerHeight$ | async) - LayoutService.getLayerDetailViewBarHeightPx()">-->
-    <!--                </wave-datatable>-->
-    <!--            </mat-tab>-->
-    <!--            <mat-tab>-->
-    <!--                <ng-template mat-tab-label>-->
-    <!--                    <div (click)="setTabIndex(1)">Citations</div>-->
-    <!--                </ng-template>-->
-    <!--                <wave-provenance-list *ngIf="layerDetailViewVisible$ | async"-->
-    <!--                                      [height]="(bottomContainerHeight$ | async) - LayoutService.getLayerDetailViewBarHeightPx()">-->
-    <!--                </wave-provenance-list>-->
-    <!--            </mat-tab>-->
-    <!--        </mat-tab-group>-->
-    <!--    </div>-->
+    <div
+        class="bottom-container mat-elevation-z4"
+        [ngClass]="{small: (layerDetailViewVisible$ | async) === false}"
+        [style.height.px]="bottomContainerHeight$ | async"
+    >
+        <button
+            mat-button
+            class="toggle"
+            (click)="layoutService.toggleLayerDetailViewVisibility()"
+            [ngSwitch]="layerDetailViewVisible$ | async"
+            matTooltip="{{ (layerDetailViewVisible$ | async) ? 'Hide' : 'Show' }}"
+            matTooltipPosition="above"
+            [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
+        >
+            <mat-icon *ngSwitchCase="true">expand_more</mat-icon>
+            <mat-icon *ngSwitchCase="false">expand_less</mat-icon>
+        </button>
+        <mat-tab-group>
+            <mat-tab>
+                <ng-template mat-tab-label> <div (click)="setTabIndex(0)">Data Table</div> </ng-template>
+                <wave-datatable
+                    *ngIf="layerDetailViewVisible$ | async"
+                    [style.height.px]="(bottomContainerHeight$ | async) - LayoutService.getLayerDetailViewBarHeightPx()"
+                >
+                </wave-datatable>
+            </mat-tab>
+            <!-- <mat-tab>
+                <ng-template mat-tab-label> <div (click)="setTabIndex(1)">Citations</div> </ng-template>
+                <wave-provenance-list
+                    *ngIf="layerDetailViewVisible$ | async"
+                    [height]="(bottomContainerHeight$ | async) - LayoutService.getLayerDetailViewBarHeightPx()"
+                >
+                </wave-provenance-list>
+            </mat-tab> -->
+        </mat-tab-group>
+    </div>
 </mat-sidenav-container>
