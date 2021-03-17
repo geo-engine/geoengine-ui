@@ -13,6 +13,7 @@ export * from './lib/map/map.service';
 export * from './lib/notification.service';
 export * from './lib/project/project.service';
 export * from './lib/sidenav/sidenav-ref.service';
+export * from './lib/tab-panel/tab-panel.service';
 export * from './lib/users/user.service';
 export * from './lib/util/services/random-color.service';
 
@@ -70,6 +71,7 @@ export * from './lib/sidenav/navigation/navigation.component';
 export * from './lib/sidenav/sidenav-container/sidenav-container.component';
 export * from './lib/sidenav/sidenav-header/sidenav-header.component';
 export * from './lib/sidenav/sidenav-search/sidenav-search.component';
+export * from './lib/tab-panel/tab-panel.component';
 export * from './lib/time/small-time-interaction/small-time-interaction.component';
 export * from './lib/time/time-config/time-config.component';
 export * from './lib/time/time-input/time-input.component';

@@ -102,6 +102,7 @@ import {MeanRasterPixelValuesOverTimeDialogComponent} from './operators/dialogs/
 import {RasterVectorJoinComponent} from './operators/dialogs/raster-vector-join/raster-vector-join.component';
 import {PointInPolygonFilterOperatorComponent} from './operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 import {DataTableComponent} from './datatable/table/table.component';
+import {TabPanelComponent} from './tab-panel/tab-panel.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -154,6 +155,7 @@ const WAVE_COMPONENTS = [
     ColorizerEditorComponent,
     ColormapColorizerComponent,
     DataSetComponent,
+    DataTableComponent,
     DatasetListComponent,
     DialogHeaderComponent,
     DialogHelpComponent,
@@ -165,8 +167,8 @@ const WAVE_COMPONENTS = [
     LayerListComponent,
     LayerSelectionComponent,
     LegendComponent,
-    LineageGraphComponent,
     LineIconComponent,
+    LineageGraphComponent,
     LoadProjectComponent,
     LoginComponent,
     MapContainerComponent,
@@ -201,7 +203,7 @@ const WAVE_COMPONENTS = [
     SymbologyRasterComponent,
     SymbologyRasterMappingColorizerComponent,
     SymbologyVectorComponent,
-    DataTableComponent,
+    TabPanelComponent,
     TimeConfigComponent,
     TimeInputComponent,
     VatLogoComponent,

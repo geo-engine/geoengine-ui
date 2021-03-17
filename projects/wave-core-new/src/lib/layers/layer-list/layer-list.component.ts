@@ -14,6 +14,9 @@ import {SymbologyEditorComponent} from '../symbology/symbology-editor/symbology-
 import {filter, map, startWith} from 'rxjs/operators';
 import {AddDataComponent} from '../../datasets/add-data/add-data.component';
 import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-graph.component';
+import {TabPanelService} from '../../tab-panel/tab-panel.service';
+import {ComponentPortal} from '@angular/cdk/portal';
+import {DataTableComponent} from '../../datatable/table/table.component';
 
 /**
  * The layer list component displays active layers, legends and other controlls.
@@ -72,10 +75,10 @@ export class LayerListComponent implements OnDestroy {
         public dialog: MatDialog,
         public layoutService: LayoutService,
         public projectService: ProjectService,
-        // public layerService: LayerService,
         public mapService: MapService,
         public config: Config,
         public changeDetectorRef: ChangeDetectorRef,
+        protected readonly tabPanelService: TabPanelService,
     ) {
         this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
 
@@ -138,5 +141,11 @@ export class LayerListComponent implements OnDestroy {
 
         // TODO: re-implement
         return false;
+    }
+
+    showDatatable(layer: Layer): void {
+        const datatable = new ComponentPortal(DataTableComponent);
+        console.log('showDatatable', datatable.component); // TODO: remove
+        this.tabPanelService.addComponent(layer.name, datatable);
     }
 }

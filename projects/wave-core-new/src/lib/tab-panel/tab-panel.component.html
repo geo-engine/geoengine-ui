@@ -1,0 +1,26 @@
+<button
+    mat-button
+    class="toggle"
+    (click)="toggleVisibility()"
+    [ngSwitch]="collapsed | async"
+    [matTooltip]="toggleTooltip | async"
+    matTooltipPosition="above"
+    [matTooltipShowDelay]="toggleTooltipDelay"
+>
+    <mat-icon *ngSwitchCase="true">expand_less</mat-icon>
+    <mat-icon *ngSwitchCase="false">expand_more</mat-icon>
+</button>
+<mat-tab-group>
+    <mat-tab>
+        <ng-template mat-tab-label>
+            <div>Test</div>
+        </ng-template>
+        <div [style.height.px]="contentHeight">Test</div>
+    </mat-tab>
+    <mat-tab *ngFor="let tabContent of tabs; index as i">
+        <ng-template mat-tab-label>
+            <div (click)="setTabIndex(i)">{{ tabContent.name }}</div>
+        </ng-template>
+        <ng-template [cdkPortalOutlet]="tabContent.component" [style.height.px]="contentHeight"></ng-template>
+    </mat-tab>
+</mat-tab-group>
