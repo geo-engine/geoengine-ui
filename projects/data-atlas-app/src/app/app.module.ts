@@ -21,9 +21,10 @@ import {PortalModule} from '@angular/cdk/portal';
 import {LegendComponent} from './legend/legend.component';
 import {AnalysisComponent} from './analysis/analysis.component';
 import {TimeStepSelectorComponent} from './time-step-selector/time-step-selector.component';
+import {AboutComponent} from './about/about.component';
 
 @NgModule({
-    declarations: [AppComponent, SelectLayersComponent, LegendComponent, AnalysisComponent, TimeStepSelectorComponent],
+    declarations: [AppComponent, SelectLayersComponent, LegendComponent, AnalysisComponent, TimeStepSelectorComponent, AboutComponent],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,
