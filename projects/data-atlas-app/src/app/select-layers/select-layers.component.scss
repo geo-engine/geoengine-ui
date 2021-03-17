@@ -3,6 +3,16 @@
     padding: 1rem;
 }
 
-mat-selection-list ::ng-deep .mat-subheader {
-    height: unset !important;
+mat-selection-list ::ng-deep {
+    .mat-line {
+        white-space: normal !important;
+    }
+}
+
+mat-divider {
+    margin: 1rem 0;
+}
+
+h2 {
+    color: var(--wave-foreground-secondary-text-color);
 }
