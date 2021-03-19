@@ -1,18 +1,13 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
 import {DataSet, VectorResultDescriptor} from '../dataset.model';
 import {RasterLayer, VectorLayer} from '../../layers/layer.model';
-import {
-    AbstractVectorSymbology,
-    LineSymbology,
-    MappingRasterSymbology,
-    PointSymbology,
-    VectorSymbology,
-} from '../../layers/symbology/symbology.model';
+import {LineSymbology, PointSymbology, PolygonSymbology, RasterSymbology, Symbology} from '../../layers/symbology/symbology.model';
 import {Unit} from '../../operators/unit.model';
 import {ProjectService} from '../../project/project.service';
 import {mergeMap} from 'rxjs/operators';
 import {RandomColorService} from '../../util/services/random-color.service';
 import {VectorDataTypes} from '../../operators/datatype.model';
+import {colorToDict} from '../../colors/color';
 
 @Component({
     selector: 'wave-dataset',
@@ -39,16 +34,18 @@ export class DataSetComponent implements OnInit {
                             new RasterLayer({
                                 workflowId,
                                 name: this.dataset.name,
-                                symbology: new MappingRasterSymbology({
-                                    opacity: 1,
-                                    // TODO: insert proper unit
-                                    unit: new Unit({
-                                        measurement: Unit.defaultUnit.measurement,
-                                        unit: Unit.defaultUnit.unit,
-                                        min: 1,
-                                        max: 255,
-                                        interpolation: Unit.defaultUnit.interpolation,
-                                    }),
+                                symbology: RasterSymbology.fromRasterSymbologyDict({
+                                    opacity: 1.0,
+                                    colorizer: {
+                                        LinearGradient: {
+                                            breakpoints: [
+                                                {value: 1, color: [0, 0, 0, 255]},
+                                                {value: 255, color: [255, 255, 255, 255]},
+                                            ],
+                                            default_color: [0, 0, 0, 0],
+                                            no_data_color: [0, 0, 0, 0],
+                                        },
+                                    },
                                 }),
                                 isLegendVisible: false,
                                 isVisible: true,
@@ -57,24 +54,32 @@ export class DataSetComponent implements OnInit {
                     } else {
                         const resultDescriptor = this.dataset.result_descriptor as VectorResultDescriptor;
 
-                        let symbology: VectorSymbology;
+                        let symbology: Symbology;
 
                         switch (resultDescriptor.data_type) {
                             case VectorDataTypes.MultiPoint:
-                                symbology = PointSymbology.createSymbology({
-                                    fillRGBA: this.randomColorService.getRandomColorRgba(),
-                                    radius: 10,
+                                symbology = PointSymbology.fromPointSymbologyDict({
                                     clustered: false,
+                                    radius: {Static: 10},
+                                    stroke: {
+                                        width: {Static: 1},
+                                        color: {Static: [0, 0, 0, 255]},
+                                    },
+                                    fill_color: {Static: colorToDict(this.randomColorService.getRandomColorRgba())},
                                 });
                                 break;
                             case VectorDataTypes.MultiLineString:
-                                symbology = LineSymbology.createSymbology({
-                                    strokeRGBA: this.randomColorService.getRandomColorRgba(),
+                                symbology = LineSymbology.fromLineSymbologyDict({
+                                    stroke: {
+                                        width: {Static: 1},
+                                        color: {Static: colorToDict(this.randomColorService.getRandomColorRgba())},
+                                    },
                                 });
                                 break;
                             case VectorDataTypes.MultiPolygon:
-                                symbology = VectorSymbology.createSymbology({
-                                    fillRGBA: this.randomColorService.getRandomColorRgba(),
+                                symbology = PolygonSymbology.fromPolygonSymbologyDict({
+                                    stroke: {width: {Static: 1}, color: {Static: [0, 0, 0, 255]}},
+                                    fill_color: {Static: colorToDict(this.randomColorService.getRandomColorRgba())},
                                 });
                                 break;
                         }

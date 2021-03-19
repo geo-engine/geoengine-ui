@@ -15,8 +15,6 @@ import {Subscription} from 'rxjs';
 
 import {Layer as OlLayer, Tile as OlLayerTile, Vector as OlLayerVector} from 'ol/layer';
 import {Source as OlSource, Tile as OlTileSource, TileWMS as OlTileWmsSource, Vector as OlVectorSource} from 'ol/source';
-
-import {StyleCreator} from './style-creator';
 import {Layer, RasterLayer, VectorLayer} from '../layers/layer.model';
 import {Config} from '../config.service';
 import {ProjectService} from '../project/project.service';
@@ -25,8 +23,8 @@ import {Time} from '../time/time.model';
 import {SpatialReference} from '../operators/spatial-reference.model';
 import {RasterData} from '../layers/layer-data.model';
 import {BackendService} from '../backend/backend.service';
-import {AbstractSymbology, MappingRasterSymbology, VectorSymbology} from '../layers/symbology/symbology.model';
 import {UUID} from '../backend/backend.model';
+import {RasterSymbology, Symbology, VectorSymbology} from '../layers/symbology/symbology.model';
 
 type VectorData = any; // TODO: use correct type
 
@@ -39,7 +37,7 @@ export abstract class MapLayerComponent<OL extends OlLayer, OS extends OlSource,
     @Input() layerId: number;
     @Input() isVisible: boolean;
     @Input() workflow: UUID;
-    @Input() symbology: AbstractSymbology;
+    @Input() symbology: Symbology;
 
     /**
      * Event emitter that forces a redraw of the map.
@@ -143,8 +141,7 @@ export class OlVectorLayerComponent
         }
 
         if (changes.symbology) {
-            const style = StyleCreator.fromVectorSymbology(this.symbology);
-            this.mapLayer.setStyle(style);
+            this.mapLayer.setStyle(this.symbology.createStyleFunction());
         }
     }
 }
@@ -161,7 +158,7 @@ export class OlVectorLayerComponent
 export class OlRasterLayerComponent
     extends MapLayerComponent<OlLayerTile, OlTileSource, RasterLayer>
     implements OnInit, OnDestroy, OnChanges {
-    symbology: MappingRasterSymbology;
+    symbology: RasterSymbology;
 
     protected dataSubscription: Subscription;
     protected layerChangesSubscription: Subscription;
@@ -197,7 +194,7 @@ export class OlRasterLayerComponent
         if (Object.keys(changes).length > 0) {
             this.updateOlLayer({
                 isVisible: this.extractChange<boolean>(changes.isVisible),
-                symbology: this.extractChange<MappingRasterSymbology>(changes.symbology),
+                symbology: this.extractChange<RasterSymbology>(changes.symbology),
                 workflow: this.extractChange<UUID>(changes.workflow),
             });
         }
@@ -219,7 +216,7 @@ export class OlRasterLayerComponent
         return this._mapLayer.getExtent();
     }
 
-    private updateOlLayer(changes: {isVisible?: boolean; symbology?: MappingRasterSymbology; workflow?: UUID}) {
+    private updateOlLayer(changes: {isVisible?: boolean; symbology?: RasterSymbology; workflow?: UUID}) {
         if (this.source === undefined || this._mapLayer === undefined) {
             return;
         }
@@ -231,7 +228,7 @@ export class OlRasterLayerComponent
         if (changes.symbology !== undefined) {
             this._mapLayer.setOpacity(this.symbology.opacity);
             this.source.updateParams({
-                colors: this.symbology.mappingColorizerRequestString(),
+                colors: this.symbology.colorizer.toDict(),
             });
         }
         if (changes.workflow !== undefined) {
@@ -259,7 +256,7 @@ export class OlRasterLayerComponent
         if (this.source) {
             this.source.updateParams({
                 time: this.time.asRequestString(),
-                colors: this.symbology.mappingColorizerRequestString(),
+                colors: this.symbology.colorizer.toDict(),
             });
         }
     }
@@ -277,7 +274,7 @@ export class OlRasterLayerComponent
             params: {
                 layers: this.workflow,
                 time: this.time.asRequestString(),
-                STYLES: 'custom:' + JSON.stringify(this.symbology.toColorizerDict()),
+                STYLES: 'custom:' + JSON.stringify(this.symbology.colorizer.toDict()),
             },
             projection: this.projection.getCode(),
             wrapX: false,

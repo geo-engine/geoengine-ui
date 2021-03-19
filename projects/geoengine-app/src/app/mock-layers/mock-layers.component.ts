@@ -1,15 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {mergeMap} from 'rxjs/operators';
-import {
-    MappingRasterSymbology,
-    ProjectService,
-    RasterLayer,
-    Unit,
-    VectorLayer,
-    PointSymbology,
-    RandomColorService,
-    WorkflowDict,
-} from 'wave-core';
+import {ProjectService, RasterLayer, VectorLayer, PointSymbology, RandomColorService, WorkflowDict, RasterSymbology} from 'wave-core';
 
 @Component({
     selector: 'wave-app-mock-layers',
@@ -42,15 +33,18 @@ export class MockLayersComponent implements OnInit {
                         new RasterLayer({
                             workflowId,
                             name: 'NDVI Test Raster',
-                            symbology: new MappingRasterSymbology({
-                                opacity: 1,
-                                unit: new Unit({
-                                    measurement: Unit.defaultUnit.measurement,
-                                    unit: Unit.defaultUnit.unit,
-                                    min: 1,
-                                    max: 255,
-                                    interpolation: Unit.defaultUnit.interpolation,
-                                }),
+                            symbology: RasterSymbology.fromRasterSymbologyDict({
+                                opacity: 1.0,
+                                colorizer: {
+                                    LinearGradient: {
+                                        breakpoints: [
+                                            {value: 0, color: [0, 0, 0, 255]},
+                                            {value: 255, color: [255, 255, 255, 255]},
+                                        ],
+                                        default_color: [0, 0, 0, 255],
+                                        no_data_color: [0, 0, 0, 255],
+                                    },
+                                },
                             }),
                             isLegendVisible: false,
                             isVisible: true,
@@ -95,10 +89,11 @@ export class MockLayersComponent implements OnInit {
                         new VectorLayer({
                             workflowId,
                             name: 'Two cities and (0, 0)',
-                            symbology: PointSymbology.createSymbology({
-                                fillRGBA: this.randomColorService.getRandomColorRgba(),
-                                radius: 10,
+                            symbology: PointSymbology.fromPointSymbologyDict({
                                 clustered: false,
+                                radius: {Static: 10},
+                                stroke: {width: {Static: 10}, color: {Static: [0, 0, 0, 0]}},
+                                fill_color: {Static: [0, 0, 0, 0]},
                             }),
                             isLegendVisible: false,
                             isVisible: true,

@@ -1,9 +1,8 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {mergeMap} from 'rxjs/operators';
-import {Interpolation, MappingRasterSymbology, ProjectService, RasterLayer, Unit, UUID, WorkflowDict} from 'wave-core';
+import {Interpolation, ProjectService, RasterLayer, RasterSymbology, RgbaColorDict, Unit, UUID, WorkflowDict} from 'wave-core';
 import {DataSelectionService} from '../data-selection.service';
 import {MatSelectionListChange} from '@angular/material/list';
-import {ColorBreakpointDict} from '../../../../wave-core/src/lib/colors/color-breakpoint.model';
 
 @Component({
     selector: 'wave-app-mock-layers',
@@ -57,87 +56,28 @@ export class SelectLayersComponent implements OnInit {
             classesMap.set(value, classes[valueAsString]);
         }
 
-        const breakpoints = new Array<ColorBreakpointDict>();
-        breakpoints.push({
-            value: 1,
-            rgba: [0, 0, 0, 255],
-        });
-        breakpoints.push({
-            value: 2,
-            rgba: [241, 129, 43, 255],
-        });
-        breakpoints.push({
-            value: 3,
-            rgba: [231, 174, 44, 255],
-        });
-        breakpoints.push({
-            value: 4,
-            rgba: [170, 170, 170, 255],
-        });
-        breakpoints.push({
-            value: 5,
-            rgba: [0, 0, 0, 255],
-        });
-        breakpoints.push({
-            value: 6,
-            rgba: [0, 200, 200, 255],
-        });
-        breakpoints.push({
-            value: 7,
-            rgba: [30, 60, 255, 255],
-        });
-        breakpoints.push({
-            value: 8,
-            rgba: [231, 220, 50, 255],
-        });
-        breakpoints.push({
-            value: 9,
-            rgba: [161, 230, 51, 255],
-        });
-        breakpoints.push({
-            value: 10,
-            rgba: [0, 210, 139, 255],
-        });
-        breakpoints.push({
-            value: 11,
-            rgba: [0, 0, 0, 255],
-        });
-        breakpoints.push({
-            value: 12,
-            rgba: [0, 0, 0, 255],
-        });
-        breakpoints.push({
-            value: 13,
-            rgba: [127, 1, 220, 255],
-        });
-        breakpoints.push({
-            value: 14,
-            rgba: [0, 0, 0, 255],
-        });
-        breakpoints.push({
-            value: 15,
-            rgba: [0, 0, 0, 255],
-        });
-        breakpoints.push({
-            value: 16,
-            rgba: [164, 0, 204, 255],
-        });
-        breakpoints.push({
-            value: 17,
-            rgba: [1, 221, 1, 255],
-        });
-        breakpoints.push({
-            value: 18,
-            rgba: [0, 0, 0, 255],
-        });
-        breakpoints.push({
-            value: 19,
-            rgba: [0, 0, 0, 255],
-        });
-        breakpoints.push({
-            value: 20,
-            rgba: [0, 160, 254, 255],
-        });
+        const colors: {[numberString: string]: RgbaColorDict} = {
+            '1': [0, 0, 0, 255],
+            '2': [241, 129, 43, 255],
+            '3': [231, 174, 44, 255],
+            '4': [170, 170, 170, 255],
+            '5': [0, 0, 0, 255],
+            '6': [0, 200, 200, 255],
+            '7': [30, 60, 255, 255],
+            '8': [231, 220, 50, 255],
+            '9': [161, 230, 51, 255],
+            '10': [0, 210, 139, 255],
+            '11': [0, 0, 0, 255],
+            '12': [0, 0, 0, 255],
+            '13': [127, 1, 220, 255],
+            '14': [0, 0, 0, 255],
+            '15': [0, 0, 0, 255],
+            '16': [164, 0, 204, 255],
+            '17': [1, 221, 1, 255],
+            '18': [0, 0, 0, 255],
+            '19': [0, 0, 0, 255],
+            '20': [0, 160, 254, 255],
+        };
 
         this.projectService
             .registerWorkflow(workflow)
@@ -147,20 +87,15 @@ export class SelectLayersComponent implements OnInit {
                         new RasterLayer({
                             workflowId,
                             name,
-                            symbology: new MappingRasterSymbology({
+                            symbology: RasterSymbology.fromRasterSymbologyDict({
                                 opacity: 1,
                                 colorizer: {
-                                    breakpoints,
-                                    type: 'palette',
+                                    Palette: {
+                                        colors,
+                                        default_color: [0, 0, 0, 0],
+                                        no_data_color: [0, 0, 0, 0],
+                                    },
                                 },
-                                unit: new Unit({
-                                    measurement: 'CARAIB',
-                                    unit: '',
-                                    classes: classesMap,
-                                    min: 1,
-                                    max: 20,
-                                    interpolation: Interpolation.Discrete,
-                                }),
                             }),
                             isLegendVisible: false,
                             isVisible: true,

@@ -1,32 +1,29 @@
-import {Color, RgbaLike, RgbaStruct} from './color';
+import {BreakpointDict} from '../backend/backend.model';
+import {Color, colorToDict, rgbaColorFromDict, RgbaLike, RgbaStruct} from './color';
 
-export type BreakPointValue = string | number;
-
-export interface ColorBreakpointDict {
-    value: BreakPointValue;
-    rgba: RgbaLike;
-}
+export type BreakPointValue = number;
 
 /**
  * A ColorBreakpoint is a tuple consisting of value and RGBA.
  */
-export class ColorBreakpoint implements ColorBreakpointDict {
+export class ColorBreakpoint {
     value: BreakPointValue;
-    rgba: Color;
+    color: Color;
 
-    constructor(config: ColorBreakpointDict) {
-        this.rgba = Color.fromRgbaLike(config.rgba);
-        this.value = config.value;
+    constructor(value: BreakPointValue, color: Color) {
+        this.color = color;
+        this.value = value;
+    }
+
+    static fromDict(dict: BreakpointDict) {
+        return new ColorBreakpoint(dict.value, Color.fromRgbaLike(rgbaColorFromDict(dict.color)));
     }
 
     /**
      * Clones the ColorBreakpoint
      */
     clone(): ColorBreakpoint {
-        return new ColorBreakpoint({
-            value: this.value,
-            rgba: this.rgba.clone(),
-        });
+        return new ColorBreakpoint(this.value, this.color);
     }
 
     /**
@@ -48,12 +45,12 @@ export class ColorBreakpoint implements ColorBreakpointDict {
     }
 
     /**
-     * Transforms the ColorBreakpoint int a ColorBreakpointDict.
+     * Transforms the ColorBreakpoint int a BreakpointDict.
      */
-    toDict(): ColorBreakpointDict {
+    toDict(): BreakpointDict {
         return {
             value: this.value,
-            rgba: this.rgba.rgbaTuple(),
+            color: colorToDict(this.color),
         };
     }
 
@@ -61,7 +58,7 @@ export class ColorBreakpoint implements ColorBreakpointDict {
      * Sets the color to the provided value.
      */
     setColor(color: RgbaLike) {
-        this.rgba = Color.fromRgbaLike(color);
+        this.color = Color.fromRgbaLike(color);
     }
 
     /**
@@ -82,27 +79,6 @@ export class ColorBreakpoint implements ColorBreakpointDict {
      * Tests a ColorBreakpoint for equality with another one.
      */
     equals(other: ColorBreakpoint): boolean {
-        return other && this.rgba.equals(other.rgba) && this.value === other.value;
+        return other && this.color.equals(other.color) && this.value === other.value;
     }
-
-    /**
-     * Transforms the ColorBreakpoint into a representation understood by Mapping's colorizer.
-     */
-    asMappingRasterColorizerBreakpoint(): IMappingRasterColorizerBreakpoint {
-        return {
-            value: this.value as number, // TODO: handle cases where this might be a string?
-            r: this.rgba.r,
-            g: this.rgba.g,
-            b: this.rgba.b,
-            a: this.rgba.a * 255, // TODO: mapping uses alpha values from 0-255 change this?
-        };
-    }
-}
-
-/**
- * The json representation expected by mapping.
- */
-export interface IMappingRasterColorizerBreakpoint extends RgbaStruct {
-    value: number;
-    name?: string;
 }

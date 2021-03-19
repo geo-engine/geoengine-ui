@@ -2,39 +2,11 @@
     <div fxLayout="row" fxLayoutAlign="start center" class="segment" *ngIf="showDefaultStyle">
         <mat-icon>
             <ng-container [ngSwitch]="symbology.symbologyType">
-                <wave-point-icon *ngSwitchCase="ST.COMPLEX_POINT" [iconStyle]="symbology"></wave-point-icon>
-                <wave-line-icon *ngSwitchCase="ST.COMPLEX_LINE" [iconStyle]="symbology"></wave-line-icon>
-                <wave-polygon-icon *ngSwitchCase="ST.COMPLEX_VECTOR" [iconStyle]="symbology"></wave-polygon-icon>
+                <wave-point-icon *ngSwitchCase="ST.POINT" [iconStyle]="symbology.iconStyle"></wave-point-icon>
+                <wave-line-icon *ngSwitchCase="ST.LINE" [iconStyle]="symbology.iconStyle"></wave-line-icon>
+                <wave-polygon-icon *ngSwitchCase="ST.POLYGON" [iconStyle]="symbology.iconStyle"></wave-polygon-icon>
             </ng-container>
         </mat-icon>
-        <span fxFlex>Default color</span>
-    </div>
-    <div fxLayoutAlign="start center" class="segment segment_head">
-        <!--<span>Fill color for </span>-->
-        {{fillColorAttribute}}
-    </div>
-    <div *ngFor="let iv of fillStyles" fxLayoutAlign="start center" class="segment">
-        <mat-icon mat-list-icon>
-            <ng-container [ngSwitch]="symbology.symbologyType">
-                <wave-point-icon *ngSwitchCase="ST.COMPLEX_POINT" [iconStyle]="iv.icon"></wave-point-icon>
-                <wave-line-icon *ngSwitchCase="ST.COMPLEX_LINE" [iconStyle]="iv.icon"></wave-line-icon>
-                <wave-polygon-icon *ngSwitchCase="ST.COMPLEX_VECTOR" [iconStyle]="iv.icon"></wave-polygon-icon>
-            </ng-container>
-        </mat-icon>
-        <span fxFlex>{{iv.value}}</span>
-    </div>
-    <div fxLayoutAlign="start center" class="segment segment_head">
-        <!--<span>Stroke color for </span>-->
-        {{strokeColorAttribute}}
-    </div>
-    <div *ngFor="let iv of strokeStyles" fxLayoutAlign="start center" class="segment">
-        <mat-icon mat-list-icon>
-            <ng-container [ngSwitch]="symbology.symbologyType">
-                <wave-point-icon *ngSwitchCase="ST.COMPLEX_POINT" [iconStyle]="iv.icon"></wave-point-icon>
-                <wave-line-icon *ngSwitchCase="ST.COMPLEX_LINE" [iconStyle]="iv.icon"></wave-line-icon>
-                <wave-polygon-icon *ngSwitchCase="ST.COMPLEX_VECTOR" [iconStyle]="iv.icon"></wave-polygon-icon>
-            </ng-container>
-        </mat-icon>
-        <span fxFlex>{{iv.value}}</span>
+        <span fxFlex>Default style</span>
     </div>
 </div>

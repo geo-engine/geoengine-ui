@@ -77,11 +77,11 @@ export interface ProjectDict {
 export interface LayerDict {
     workflow: UUID;
     name: string;
-    info: LayerInfoDict;
     visibility: {
         data: boolean;
         legend: boolean;
     };
+    symbology: SymbologyDict;
 }
 
 export interface PlotDict {
@@ -95,36 +95,106 @@ export interface ProjectVersion {
     author: UUID;
 }
 
+export interface LinearGradientDict {
+    breakpoints: Array<BreakpointDict>;
+    no_data_color: RgbaColorDict;
+    default_color: RgbaColorDict;
+}
+
+export interface LogarithmitGradientDict {
+    breakpoints: Array<BreakpointDict>;
+    no_data_color: RgbaColorDict;
+    default_color: RgbaColorDict;
+}
+
+export interface PaletteDict {
+    colors: {
+        [numberValue: string]: RgbaColorDict;
+    };
+    no_data_color: RgbaColorDict;
+    default_color: RgbaColorDict;
+}
+
 export interface ColorizerDict {
-    LinearGradient?: {
-        breakpoints: Array<BreakpointDict>;
-        no_data_color: RgbaColor;
-        default_color: RgbaColor;
-    };
-    LogarithmicGradient?: {
-        breakpoints: Array<BreakpointDict>;
-        no_data_color: RgbaColor;
-        default_color: RgbaColor;
-    };
-    Palette?: {
-        colors: {[numberValue: string]: RgbaColor};
-        no_data_color: RgbaColor;
-    };
+    LinearGradient?: LinearGradientDict;
+    LogarithmicGradient?: LogarithmitGradientDict;
+    Palette?: PaletteDict;
     Rgba?: {[index: string]: never};
 }
 
-export type RgbaColor = [number, number, number, number];
+export type RgbaColorDict = [number, number, number, number];
 
-export interface LayerInfoDict {
-    Raster?: {
-        colorizer: ColorizerDict;
-    };
-    Vector?: {[index: string]: never};
+export interface SymbologyDict {
+    Raster?: RasterSymbologyDict;
+    Vector?: VectorSymbologyDict;
+}
+
+export interface RasterSymbologyDict {
+    opacity: number;
+    colorizer: ColorizerDict;
+}
+
+export interface VectorSymbologyDict {
+    Point?: PointSymbologyDict;
+    Line?: LineSymbologyDict;
+    Polygon?: PolygonSymbologyDict;
+}
+
+export interface TextSymbologyDict {
+    attribute: string;
+    fill_color: ColorParamDict;
+    stroke: StrokeParamDict;
+}
+
+export interface PointSymbologyDict {
+    radius: NumberParamDict;
+    clustered: boolean;
+    fill_color: ColorParamDict;
+    stroke: StrokeParamDict;
+    text?: TextSymbologyDict;
+}
+
+export interface LineSymbologyDict {
+    stroke: StrokeParamDict;
+    text?: TextSymbologyDict;
+}
+
+export interface PolygonSymbologyDict {
+    fill_color: ColorParamDict;
+    stroke: StrokeParamDict;
+    text?: TextSymbologyDict;
+}
+
+export interface NumberParamDict {
+    Static?: number;
+    Derived?: DerivedNumberDict;
+}
+
+export interface ColorParamDict {
+    Static?: RgbaColorDict;
+    Derived?: DerivedColorDict;
+}
+
+export interface DerivedNumberDict {
+    attribute: string;
+    factor: number;
+    default_value: number;
+}
+
+export interface DerivedColorDict {
+    attribute: string;
+    colorizer: ColorizerDict;
+}
+
+export interface StrokeParamDict {
+    width: NumberParamDict;
+    color: ColorParamDict;
+    // TODO: dash
 }
 
 export interface BreakpointDict {
     value: number;
-    color: RgbaColor;
+    color: RgbaColorDict;
 }
 
 export interface ErrorDict {

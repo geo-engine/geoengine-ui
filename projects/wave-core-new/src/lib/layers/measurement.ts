@@ -2,6 +2,8 @@ import {MeasurementDict, ToDict} from '../backend/backend.model';
 import * as Immutable from 'immutable';
 
 export abstract class Measurement implements ToDict<'unitless' | MeasurementDict> {
+    abstract readonly measurement: string;
+
     static fromDict(dict: 'unitless' | MeasurementDict): Measurement {
         if (dict === 'unitless') {
             return new UnitlessMeasurement();
@@ -22,6 +24,8 @@ export abstract class Measurement implements ToDict<'unitless' | MeasurementDict
 }
 
 export class UnitlessMeasurement extends Measurement {
+    readonly measurement = '';
+
     constructor() {
         super();
     }

@@ -1,7 +1,5 @@
 import {Component, Input} from '@angular/core';
 
-import {AbstractSymbology} from '../symbology/symbology.model';
-
 /**
  * A simple legend component.
  */
@@ -9,6 +7,4 @@ import {AbstractSymbology} from '../symbology/symbology.model';
     selector: 'wave-legendary',
     templateUrl: 'legend.component.html',
 })
-export class LegendComponent<S extends AbstractSymbology> {
-    @Input() symbology: S;
-}
+export class LegendComponent {}

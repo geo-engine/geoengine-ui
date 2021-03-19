@@ -61,17 +61,8 @@ import {PointIconComponent} from './layers/layer-icons/point-icon/point-icon.com
 import {LineIconComponent} from './layers/layer-icons/line-icon/line-icon.component';
 import {RasterIconComponent} from './layers/layer-icons/raster-icon/raster-icon.component';
 import {PolygonIconComponent} from './layers/layer-icons/polygon-icon/polygon-icon.component';
-import {SymbologyEditorComponent} from './layers/symbology/symbology-editor/symbology-editor.component';
-import {MappingRasterLegendComponent} from './layers/legend/legend-raster/mapping-raster-legend.component';
-import {SymbologyVectorComponent} from './layers/symbology/symbology-vectors/symbology-vector.component';
-import {SymbologyRasterComponent} from './layers/symbology/symbology-raster/symbology-raster.component';
-import {ColorBreakpointInputComponent} from './colors/color-breakpoint-component/color-breakpoint.component';
-import {ColorizerEditorComponent} from './colors/colorizer-editor/colorizer-editor.component';
-import {StrokeDashSelectComponent} from './layers/symbology/stroke-dash-select/stroke-dash-select.component';
-import {SymbologyRasterMappingColorizerComponent} from './layers/symbology/symbology-raster/symbology-raster-mapping-colorizer.component';
-import {ColormapColorizerComponent} from './colors/colormap-colorizer/colormap-colorizer.component';
+import {CastMeasurementToContinuousPipe, MappingRasterLegendComponent} from './layers/legend/legend-raster/mapping-raster-legend.component';
 import {SafeStylePipe} from './util/pipes/safe-style.pipe';
-import {ColormapNameToColorizerDataPipe} from './colors/colormap-colorizer/colormap-name-to-colorizer-data.pipe';
 import {SmallTimeInteractionComponent} from './time/small-time-interaction/small-time-interaction.component';
 import {TimeConfigComponent} from './time/time-config/time-config.component';
 import {TimeInputComponent} from './time/time-input/time-input.component';
@@ -136,7 +127,6 @@ const MATERIAL_MODULES = [
 
 const WAVE_PIPES = [
     BreakpointToCssStringPipe,
-    ColormapNameToColorizerDataPipe,
     CssStringToRgbaPipe,
     HighlightPipe,
     MappingColorizerToGradientPipe,
@@ -144,14 +134,12 @@ const WAVE_PIPES = [
     SafeHtmlPipe,
     SafeStylePipe,
     TrimPipe,
+    CastMeasurementToContinuousPipe,
 ];
 
 const WAVE_COMPONENTS = [
     AddDataComponent,
     ChangeSpatialReferenceComponent,
-    ColorBreakpointInputComponent,
-    ColorizerEditorComponent,
-    ColormapColorizerComponent,
     DataSetComponent,
     DatasetListComponent,
     DialogHeaderComponent,
@@ -195,11 +183,6 @@ const WAVE_COMPONENTS = [
     SidenavSearchRightDirective,
     SmallTimeInteractionComponent,
     StatisticsPlotComponent,
-    StrokeDashSelectComponent,
-    SymbologyEditorComponent,
-    SymbologyRasterComponent,
-    SymbologyRasterMappingColorizerComponent,
-    SymbologyVectorComponent,
     TimeConfigComponent,
     TimeInputComponent,
     VatLogoComponent,

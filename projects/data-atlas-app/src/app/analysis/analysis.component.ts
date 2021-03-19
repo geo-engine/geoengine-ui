@@ -10,6 +10,7 @@ import {
     VectorSymbology,
     WorkflowDict,
     RasterDataTypes,
+    PolygonSymbology,
 } from 'wave-core';
 import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {DataSelectionService} from '../data-selection.service';
@@ -85,8 +86,9 @@ export class AnalysisComponent implements OnInit {
                         new VectorLayer({
                             workflowId,
                             name: country,
-                            symbology: VectorSymbology.createSymbology({
-                                fillRGBA: this.randomColorService.getRandomColorRgba(),
+                            symbology: PolygonSymbology.fromPolygonSymbologyDict({
+                                stroke: {width: {Static: 1}, color: {Static: [0, 0, 0, 255]}},
+                                fill_color: {Static: [0, 0, 128, 255]},
                             }),
                             isLegendVisible: false,
                             isVisible: true,

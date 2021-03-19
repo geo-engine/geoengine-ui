@@ -26,10 +26,10 @@ import {UserService} from '../users/user.service';
 import {LayerData, RasterData, VectorData} from '../layers/layer-data.model';
 import {extentToBboxDict} from '../util/conversions';
 import {MapService} from '../map/map.service';
-import {AbstractSymbology} from '../layers/symbology/symbology.model';
 import {Session} from '../users/session.model';
 import {HasPlotId, Plot} from '../plots/plot.model';
 import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata.model';
+import {Symbology} from '../layers/symbology/symbology.model';
 
 /***
  * The ProjectService is the main housekeeping component of WAVE.
@@ -614,7 +614,7 @@ export class ProjectService {
         changes: {
             name?: string;
             workflowId?: UUID;
-            symbology?: AbstractSymbology;
+            symbology?: Symbology;
             isVisible?: boolean;
             isLegendVisible?: boolean;
         },

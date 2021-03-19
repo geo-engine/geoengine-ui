@@ -11,7 +11,7 @@ import {OperatorParams} from '../../../backend/backend.model';
 import {NotificationService} from '../../../notification.service';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
-import {VectorSymbology} from '../../../layers/symbology/symbology.model';
+import {PointSymbology, StaticColor} from '../../../layers/symbology/symbology.model';
 
 type Aggregation = 'first' | 'mean';
 
@@ -93,7 +93,7 @@ export class RasterVectorJoinComponent implements OnDestroy {
                         new VectorLayer({
                             workflowId,
                             name: outputLayerName,
-                            symbology: this.symbologyWithNewColor(vectorLayer.symbology),
+                            symbology: this.symbologyWithNewColor(vectorLayer.symbology as PointSymbology),
                             isLegendVisible: false,
                             isVisible: true,
                         }),
@@ -227,11 +227,11 @@ export class RasterVectorJoinComponent implements OnDestroy {
         };
     }
 
-    private symbologyWithNewColor(inputSymbology: VectorSymbology): VectorSymbology {
+    private symbologyWithNewColor(inputSymbology: PointSymbology): PointSymbology {
         const symbology = inputSymbology.clone();
 
         // TODO: more sophisticated update method that makes sense for non-points
-        symbology.fillRGBA = this.randomColorService.getRandomColorRgba();
+        symbology.fillColor = new StaticColor(this.randomColorService.getRandomColorRgba());
 
         return symbology;
     }

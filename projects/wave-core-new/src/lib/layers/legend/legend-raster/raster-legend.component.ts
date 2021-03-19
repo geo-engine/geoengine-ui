@@ -1,6 +1,7 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {Measurement} from '../../measurement';
+import {RasterSymbology} from '../../symbology/symbology.model';
 import {LegendComponent} from '../legend.component';
-import {AbstractRasterSymbology} from '../../symbology/symbology.model';
 
 @Component({
     selector: 'wave-legend-raster',
@@ -10,4 +11,4 @@ import {AbstractRasterSymbology} from '../../symbology/symbology.model';
     inputs: ['symbology'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RasterLegendComponent<S extends AbstractRasterSymbology> extends LegendComponent<S> {}
+export class RasterLegendComponent extends LegendComponent {}

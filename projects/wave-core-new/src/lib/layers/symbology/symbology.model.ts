@@ -1,25 +1,39 @@
-import {Interpolation, Unit, UnitDict} from '../../operators/unit.model';
-import {Color, RgbaLike, RgbaTuple, TRANSPARENT, WHITE} from '../../colors/color';
-import {ColorizerData, IColorizerData, MappingRasterColorizerDict} from '../../colors/colorizer-data.model';
-import {ColorBreakpoint, ColorBreakpointDict} from '../../colors/color-breakpoint.model';
-import {Colormap} from '../../colors/colormaps/colormap.model';
-import {ColorizerDict, RgbaColor} from '../../backend/backend.model';
+import {Color, colorToDict, RgbaColor, rgbaColorFromDict} from '../../colors/color';
+import {Feature as OlFeature} from 'ol';
+import {
+    ColorParamDict,
+    DerivedColorDict,
+    DerivedNumberDict,
+    LineSymbologyDict,
+    NumberParamDict,
+    PointSymbologyDict,
+    PolygonSymbologyDict,
+    RasterSymbologyDict,
+    StrokeParamDict,
+    SymbologyDict,
+    TextSymbologyDict,
+} from '../../backend/backend.model';
+import {
+    Circle as OlStyleCircle,
+    Fill as OlStyleFill,
+    Stroke as OlStyleStroke,
+    Style as OlStyle,
+    StyleFunction as OlStyleFunction,
+    Text as OlStyleText,
+} from 'ol/style';
+import {Colorizer} from '../../colors/colorizer.model';
+import {PointIconStyle} from '../layer-icons/point-icon/point-icon.component';
+import {LineIconStyle} from '../layer-icons/line-icon/line-icon.component';
+import {PolygonIconStyle} from '../layer-icons/polygon-icon/polygon-icon.component';
 
 /**
  * List of the symbology types used in WAVE
  */
-
 export enum SymbologyType {
-    RASTER, // UNUSED
-    SIMPLE_POINT, // DEPRECATED
-    CLUSTERED_POINT, // DEPRECATED
-    SIMPLE_LINE, // DEPRECATED
-    SIMPLE_VECTOR, // DEPRECATED
-    MAPPING_COLORIZER_RASTER,
-    ICON_POINT, // RESERVED
-    COMPLEX_POINT,
-    COMPLEX_VECTOR,
-    COMPLEX_LINE,
+    RASTER,
+    POINT,
+    LINE,
+    POLYGON,
 }
 
 // List of constants used by layer symbology.
@@ -35,711 +49,733 @@ export const MIN_ALLOWED_POINT_RADIUS = 1;
 export const MAX_ALLOWED_POINT_RADIUS = 100;
 export const MAX_ALLOWED_TEXT_LENGTH = 25;
 
-/**
- * Serialization interface
- */
-export interface SymbologyDict {
-    symbologyType: string;
-}
+// export type StrokeDashStyle = Array<number>;
+
+const styleCache: {[key: string]: OlStyle} = {};
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ISymbology {}
+export interface IconStyle {}
 
-export type StrokeDashStyle = Array<number>;
-
-/**
- * The abstract symbology class with common methods.
- */
-export abstract class AbstractSymbology implements ISymbology {
-    /**
-     * Deserialization logic to generate any Symbology from SymbologyDict.
-     */
-    static fromDict(dict: SymbologyDict): AbstractSymbology {
-        switch (dict.symbologyType) {
-            case SymbologyType[SymbologyType.SIMPLE_POINT]:
-            case SymbologyType[SymbologyType.COMPLEX_POINT]:
-                return PointSymbology.createSymbology(dict as PointSymbologyDict);
-
-            case SymbologyType[SymbologyType.CLUSTERED_POINT]:
-                return PointSymbology.createClusterSymbology(dict as VectorSymbologyDict);
-
-            case SymbologyType[SymbologyType.SIMPLE_LINE]:
-            case SymbologyType[SymbologyType.COMPLEX_LINE]:
-                return LineSymbology.createSymbology(dict as VectorSymbologyDict);
-
-            case SymbologyType[SymbologyType.SIMPLE_VECTOR]:
-            case SymbologyType[SymbologyType.COMPLEX_VECTOR]:
-                return VectorSymbology.createSymbology(dict as VectorSymbologyDict);
-
-            case SymbologyType[SymbologyType.RASTER]:
-            case SymbologyType[SymbologyType.MAPPING_COLORIZER_RASTER]:
-                return MappingRasterSymbology.createSymbology(dict as RasterSymbologyDict);
-            default:
-                throw new Error('Unsupported AbstractSymbology');
+export abstract class Symbology {
+    static fromDict(dict: SymbologyDict): Symbology {
+        if (dict.Raster) {
+            return RasterSymbology.fromRasterSymbologyDict(dict.Raster);
+        } else if (dict.Vector) {
+            const vectorDict = dict.Vector;
+            if (vectorDict.Point) {
+                return PointSymbology.fromPointSymbologyDict(vectorDict.Point);
+            } else if (vectorDict.Line) {
+                return LineSymbology.fromLineSymbologyDict(vectorDict.Line);
+            } else if (vectorDict.Polygon) {
+                return PolygonSymbology.fromPolygonSymbologyDict(vectorDict.Polygon);
+            }
         }
+        throw new Error('Invalid Symbology type.');
     }
 
+    abstract toDict(): SymbologyDict;
+
+    abstract clone(): Symbology;
+
+    abstract equals(other: Symbology): boolean;
+
     abstract getSymbologyType(): SymbologyType;
+
+    abstract getIconStyle(): IconStyle;
+
+    get iconStyle(): IconStyle {
+        return this.getIconStyle();
+    }
 
     get symbologyType(): SymbologyType {
         return this.getSymbologyType();
     }
-
-    get symbologyTypeId(): string {
-        return SymbologyType[this.getSymbologyType()];
-    }
-
-    abstract clone(): AbstractSymbology;
-
-    abstract toConfig(): ISymbology;
-
-    abstract equals(other: AbstractSymbology): boolean;
-
-    abstract toDict(): SymbologyDict;
 }
 
-/**
- * Configuration interface with optional fields for VectorSymbology.
- */
-export interface VectorSymbologyConfig extends ISymbology {
-    fillRGBA?: RgbaLike;
-    strokeRGBA?: RgbaLike;
-    strokeWidth?: number;
-    fillColorizer?: IColorizerData;
-    fillColorAttribute?: string;
-    strokeColorizer?: IColorizerData;
-    strokeColorAttribute?: string;
-    strokeDashStyle?: StrokeDashStyle;
-    textAttribute?: string;
-    textColor?: RgbaLike;
-    textStrokeWidth?: number;
-}
+export abstract class VectorSymbology extends Symbology {
+    createStyleFunction(): OlStyleFunction {
+        return (feature: OlFeature, _resolution: number) => {
+            const styler = this.createStyler(feature);
 
-/**
- * Serialzation interface for VectorSymbology.
- */
-interface VectorSymbologyDict extends SymbologyDict {
-    fillRGBA: RgbaTuple;
-    strokeRGBA: RgbaTuple;
-    strokeWidth: number;
-    fillColorizer: IColorizerData;
-    fillColorAttribute: string;
-    strokeColorizer: IColorizerData;
-    strokeColorAttribute: string;
-    strokeDashStyle: StrokeDashStyle;
-    textAttribute: string;
-    textColor: RgbaLike;
-    textStrokeWidth: number;
-}
-
-/**
- * The abstract VectorSymbology class.
- */
-export abstract class AbstractVectorSymbology extends AbstractSymbology {
-    // common vector symbology fill
-    fillColorizer: ColorizerData;
-    fillColorAttribute: string = undefined;
-    // common vector symbology stroke
-    strokeWidth = 1;
-    strokeColorizer: ColorizerData;
-    strokeColorAttribute: string = undefined;
-    // common vector symbology text attribute
-    _textAttribute: string = undefined;
-    textColor: Color = undefined;
-    textStrokeWidth: number = undefined;
-
-    private _strokeDashStyle: StrokeDashStyle = undefined;
-    private _fillColorBreakpoint: ColorBreakpoint = new ColorBreakpoint({rgba: DEFAULT_VECTOR_FILL_COLOR, value: 'Default fill color'});
-    private _strokeColorBreakpoint: ColorBreakpoint = new ColorBreakpoint({
-        rgba: DEFAULT_VECTOR_STROKE_COLOR,
-        value: 'Default stroke color',
-    });
-
-    protected constructor(config: VectorSymbologyConfig) {
-        super();
-        if (config.fillRGBA) {
-            this.fillRGBA = Color.fromRgbaLike(config.fillRGBA);
-        }
-        if (config.strokeRGBA) {
-            this.strokeRGBA = Color.fromRgbaLike(config.strokeRGBA);
-        }
-        if (config.strokeWidth) {
-            this.strokeWidth = config.strokeWidth;
-        }
-
-        if (config.fillColorAttribute) {
-            this.fillColorAttribute = config.fillColorAttribute;
-        }
-        this.fillColorizer = config.fillColorizer ? ColorizerData.fromDict(config.fillColorizer) : ColorizerData.empty();
-
-        if (config.strokeColorAttribute) {
-            this.strokeColorAttribute = config.strokeColorAttribute;
-        }
-        this.strokeColorizer = config.strokeColorizer ? ColorizerData.fromDict(config.strokeColorizer) : ColorizerData.empty();
-
-        if (config.strokeDashStyle) {
-            this.strokeDashStyle = config.strokeDashStyle;
-        }
-
-        if (config.textAttribute) {
-            this.textAttribute = config.textAttribute;
-        }
-        this.textColor = config.textColor ? Color.fromRgbaLike(config.textColor) : WHITE;
-        this.textStrokeWidth = config.textStrokeWidth ? config.textStrokeWidth : Math.ceil(config.strokeWidth * 0.1);
-    }
-
-    /**
-     * Returns true if the symbology describes filled objects.
-     */
-    abstract describesElementFill(): boolean;
-
-    /**
-     * Returns true if the symbology describes elements with stroke.
-     */
-    abstract describesElementStroke(): boolean;
-
-    /**
-     * Returns true if the symbology describes points with radius.
-     */
-    abstract describesPointsWithRadius(): boolean;
-
-    set fillColorBreakpoint(colorBreakpoint: ColorBreakpoint) {
-        this._fillColorBreakpoint = colorBreakpoint;
-    }
-
-    get fillColorBreakpoint(): ColorBreakpoint {
-        return this._fillColorBreakpoint;
-    }
-
-    set strokeColorBreakpoint(colorBreakpoint: ColorBreakpoint) {
-        this._strokeColorBreakpoint = colorBreakpoint;
-    }
-
-    get strokeColorBreakpoint(): ColorBreakpoint {
-        return this._strokeColorBreakpoint;
-    }
-
-    set fillRGBA(color: Color) {
-        this._fillColorBreakpoint.setColor(color);
-    }
-
-    get fillRGBA(): Color {
-        return this._fillColorBreakpoint.rgba;
-    }
-
-    set strokeRGBA(color: Color) {
-        this._strokeColorBreakpoint.setColor(color);
-    }
-
-    get strokeRGBA(): Color {
-        return this._strokeColorBreakpoint.rgba;
-    }
-
-    set textAttribute(textAttribute: string) {
-        this._textAttribute = textAttribute;
-    }
-
-    get textAttribute(): string {
-        return this._textAttribute;
-    }
-
-    set strokeDashStyle(strokeDashStyle: StrokeDashStyle) {
-        this._strokeDashStyle = strokeDashStyle;
-    }
-
-    get strokeDashStyle(): StrokeDashStyle {
-        return this._strokeDashStyle;
-    }
-
-    setFillColorAndAttribute(name: string, clr: ColorizerData = ColorizerData.empty()) {
-        this.fillColorizer = clr;
-        this.fillColorAttribute = name;
-    }
-
-    setOrUpdateFillColorizer(clr: ColorizerData): boolean {
-        if (clr && (!this.fillColorizer || !clr.equals(this.fillColorizer))) {
-            this.fillColorizer = clr;
-            return true;
-        }
-        return false;
-    }
-
-    setStrokeColorAndAttribute(name: string, clr: ColorizerData = ColorizerData.empty()) {
-        this.strokeColorizer = clr;
-        this.strokeColorAttribute = name;
-    }
-
-    setOrUpdateStrokeColorizer(clr: ColorizerData): boolean {
-        if (clr && (!this.strokeColorizer || !clr.equals(this.strokeColorizer))) {
-            this.strokeColorizer = clr;
-            return true;
-        }
-        return false;
-    }
-
-    clearFillColorAndAttribute() {
-        this.fillColorAttribute = undefined;
-        this.fillColorizer = ColorizerData.empty();
-    }
-
-    clearStrokeColorAndAttribute() {
-        this.strokeColorAttribute = undefined;
-        this.strokeColorizer = ColorizerData.empty();
-    }
-
-    clearStrokeDashStyle() {
-        this.strokeDashStyle = undefined;
-    }
-
-    clearTextAttribute() {
-        this.textAttribute = undefined;
-    }
-
-    /**
-     * compare with another AbstractVectorSymbology
-     */
-    equals(other: AbstractVectorSymbology) {
-        if (other instanceof AbstractVectorSymbology) {
-            return (
-                this.fillColorBreakpoint.equals(other.fillColorBreakpoint) &&
-                this.strokeColorBreakpoint.equals(other.strokeColorBreakpoint) &&
-                this.strokeWidth === other.strokeWidth &&
-                this.describesElementFill() === other.describesElementFill() &&
-                this.describesPointsWithRadius() === other.describesPointsWithRadius() &&
-                this.fillColorizer &&
-                this.fillColorizer.equals(other.fillColorizer) &&
-                this.fillColorAttribute &&
-                other.fillColorAttribute &&
-                this.fillColorAttribute === other.fillColorAttribute &&
-                this.strokeColorizer &&
-                this.strokeColorizer.equals(other.strokeColorizer) &&
-                this.strokeColorAttribute &&
-                other.strokeColorAttribute &&
-                this.strokeColorAttribute === other.strokeColorAttribute &&
-                this.strokeDashStyle &&
-                other.strokeDashStyle &&
-                this.strokeDashStyle === other.strokeDashStyle &&
-                this.textColor &&
-                this.textColor.equals(other.textColor) &&
-                this.textStrokeWidth &&
-                other.textStrokeWidth &&
-                this.textStrokeWidth === other.textStrokeWidth &&
-                this.textAttribute &&
-                other.textAttribute &&
-                this.textAttribute === other.textAttribute
-            );
-        }
-        return false;
-    }
-
-    toDict(): VectorSymbologyDict {
-        return {
-            symbologyType: SymbologyType[this.getSymbologyType()],
-            fillRGBA: this.fillRGBA.rgbaTuple(),
-            strokeRGBA: this.strokeRGBA.rgbaTuple(),
-            strokeWidth: this.strokeWidth,
-            fillColorAttribute: this.fillColorAttribute,
-            fillColorizer: this.fillColorizer ? this.fillColorizer.toDict() : undefined,
-            strokeColorAttribute: this.strokeColorAttribute,
-            strokeColorizer: this.strokeColorizer,
-            strokeDashStyle: this.strokeDashStyle,
-            textAttribute: this.textAttribute,
-            textColor: this.textColor.rgbaTuple(),
-            textStrokeWidth: this.textStrokeWidth,
+            const key = styler.cacheKey();
+            if (!(key in styleCache)) {
+                const style = styler.createStyle();
+                styleCache[key] = style;
+                return style;
+            } else {
+                return styleCache[key];
+            }
         };
     }
+
+    protected abstract createStyler(feature: OlFeature): Styler;
 }
 
-/**
- * Configuration interface with optional fields for PointSymbology.
- */
-export interface PointSymbologyConfig extends VectorSymbologyConfig {
-    radius?: number;
-    radiusAttribute?: string;
-    radiusFactor?: number;
-    clustered?: boolean;
+export abstract class Styler {
+    abstract createStyle(): OlStyle;
+    abstract cacheKey(): string;
+
+    static colorToKey(color: RgbaColor): string {
+        return `${color[0]}${color[1]}${color[2]}${color[3]}`;
+    }
 }
 
-/**
- * Serialization interface for PointSymbology.
- */
-interface PointSymbologyDict extends VectorSymbologyDict {
-    radius: number;
-    radiusAttribute: string;
-    radiusFactor: number;
+export class PointStyler extends Styler {
     clustered: boolean;
-}
+    radius: number;
+    fillColor: RgbaColor;
+    stroke: StrokeStyler;
+    text?: TextStyler;
 
-/**
- * A class that contains properties for drawing lines
- */
-export class LineSymbology extends AbstractVectorSymbology implements VectorSymbologyConfig {
-    protected constructor(config: VectorSymbologyConfig) {
-        super(config);
+    constructor(clustered: boolean, radius: number, fillColor: RgbaColor, stroke: StrokeStyler, text: TextStyler) {
+        super();
+        this.clustered = clustered;
+        this.radius = radius;
+        this.fillColor = fillColor;
+        this.stroke = stroke;
+        this.text = text;
     }
 
-    static createSymbology(config: VectorSymbologyConfig): LineSymbology {
-        return new LineSymbology(config);
+    createStyle(): OlStyle {
+        const imageStyle = new OlStyleCircle({
+            radius: this.radius,
+            fill: new OlStyleFill({color: this.fillColor}),
+            stroke: this.stroke.createStyle(),
+        });
+
+        return new OlStyle({
+            image: imageStyle,
+            text: this.text ? this.text.createStyle() : undefined,
+        });
     }
 
-    describesElementStroke(): boolean {
-        return true;
-    }
-
-    describesElementFill(): boolean {
-        return false;
-    }
-
-    describesPointsWithRadius(): boolean {
-        return false;
-    }
-
-    getSymbologyType(): SymbologyType {
-        return SymbologyType.COMPLEX_LINE;
-    }
-
-    clone(): LineSymbology {
-        return new LineSymbology(this);
-    }
-
-    toConfig(): LineSymbology {
-        return this.clone();
+    cacheKey(): string {
+        return `${this.clustered}${this.radius}${Styler.colorToKey(this.fillColor)}${this.stroke.cacheKey()}${
+            this.text ? this.text.cacheKey() : undefined
+        }`;
     }
 }
 
-/**
- * A class that contains properties for drawing vectors such as polygons
- */
-export class VectorSymbology extends AbstractVectorSymbology implements VectorSymbologyConfig {
-    protected constructor(config: VectorSymbologyConfig) {
-        super(config);
+export class LineStyler extends Styler {
+    stroke: StrokeStyler;
+    text?: TextStyler;
+
+    constructor(stroke: StrokeStyler, text: TextStyler) {
+        super();
+        this.stroke = stroke;
+        this.text = text;
     }
 
-    static createSymbology(config: VectorSymbologyConfig): VectorSymbology {
-        return new VectorSymbology(config);
+    createStyle(): OlStyle {
+        return OlStyle({
+            stroke: this.stroke.createStyle(),
+            text: this.text ? this.text.createStyle() : undefined,
+        });
     }
 
-    describesElementStroke(): boolean {
-        return true;
-    }
-
-    describesElementFill(): boolean {
-        return true;
-    }
-
-    describesPointsWithRadius(): boolean {
-        return false;
-    }
-
-    getSymbologyType(): SymbologyType {
-        return SymbologyType.COMPLEX_VECTOR;
-    }
-
-    clone(): VectorSymbology {
-        return new VectorSymbology(this);
-    }
-
-    toConfig(): VectorSymbologyConfig {
-        return this.clone();
+    cacheKey(): string {
+        return `${this.stroke.cacheKey()}${this.text ? this.text.cacheKey() : undefined}`;
     }
 }
 
-/**
- * A class that contains properties for drawing points
- */
-export class PointSymbology extends AbstractVectorSymbology implements PointSymbologyConfig {
-    radiusAttribute: string = undefined;
-    radiusFactor = 1.0;
-    radius: number = DEFAULT_POINT_RADIUS;
-    clustered = false;
+export class PolygonStyler extends Styler {
+    fillColor: RgbaColor;
+    stroke: StrokeStyler;
+    text?: TextStyler;
 
-    protected constructor(config: PointSymbologyConfig) {
-        super(config);
-
-        if (config.radius) {
-            this.radius = config.radius;
-        }
-
-        if (config.radiusAttribute) {
-            this.radiusAttribute = config.radiusAttribute;
-        }
-        this.clustered = config.clustered ? config.clustered : false;
-        this.radiusFactor = config.radiusFactor ? config.radiusFactor : 1.0;
+    constructor(fillColor: RgbaColor, stroke: StrokeStyler, text: TextStyler) {
+        super();
+        this.fillColor = fillColor;
+        this.stroke = stroke;
+        this.text = text;
     }
 
-    /**
-     * Creates a PointSymbology where radiusAttribute and textAttribute are set to the strings returned by Mappings cluster operator
-     */
-    static createClusterSymbology(config: PointSymbologyConfig): PointSymbology {
-        config.radiusAttribute = DEFAULT_POINT_CLUSTER_RADIUS_ATTRIBUTE;
-        config.textAttribute = DEFAULT_POINT_CLUSTER_TEXT_ATTRIBUTE;
-        config.clustered = true;
-
-        return PointSymbology.createSymbology(config);
+    createStyle(): OlStyle {
+        return new OlStyle({
+            fill: new OlStyleFill({color: this.fillColor}),
+            stroke: this.stroke.createStyle(),
+            text: this.text ? this.text.createStyle() : undefined,
+        });
     }
 
-    /**
-     * Creates a default PointSymbology
-     */
-    static createSymbology(config: PointSymbologyConfig): PointSymbology {
-        return new PointSymbology(config);
+    cacheKey(): string {
+        return `${Styler.colorToKey(this.fillColor)}${this.stroke.cacheKey()}${this.text ? this.text.cacheKey() : undefined}`;
+    }
+}
+
+export class StrokeStyler extends Styler {
+    width: number;
+    color: RgbaColor;
+
+    constructor(width: number, color: RgbaColor) {
+        super();
+        this.width = width;
+        this.color = color;
     }
 
-    getSymbologyType(): SymbologyType {
-        return SymbologyType.COMPLEX_POINT;
+    createStyle(): OlStyle {
+        return new OlStyleStroke({
+            color: this.color,
+            width: this.width,
+        });
+    }
+
+    cacheKey(): string {
+        return `${this.width}${Styler.colorToKey(this.color)}`;
+    }
+}
+
+export class TextStyler extends Styler {
+    text: string;
+    fillColor: RgbaColor;
+    stroke: StrokeStyler;
+
+    constructor(text: string, fillColor: RgbaColor, stroke: StrokeStyler) {
+        super();
+        this.text = text;
+        this.fillColor = fillColor;
+        this.stroke = stroke;
+    }
+
+    createStyle(): OlStyle {
+        return OlStyleText({
+            text: this.text.slice(0, MAX_ALLOWED_TEXT_LENGTH),
+            fill: new OlStyleFill({
+                color: this.fillColor,
+            }),
+            stroke: this.stroke.createStyle(),
+        });
+    }
+
+    cacheKey(): string {
+        return `${this.text}${Styler.colorToKey(this.fillColor)}${this.stroke.cacheKey()}`;
+    }
+}
+
+export class PointSymbology extends VectorSymbology {
+    // TODO: visiblity
+    clustered: boolean;
+    radius: NumberParam;
+    fillColor: ColorParam;
+    stroke: Stroke;
+
+    text?: TextSymbology;
+
+    constructor(clustered: boolean, radius: NumberParam, fillColor: ColorParam, stroke: Stroke, text: TextSymbology) {
+        super();
+        this.clustered = clustered;
+        this.radius = radius;
+        this.fillColor = fillColor;
+        this.stroke = stroke;
+        this.text = text;
+    }
+
+    static fromPointSymbologyDict(dict: PointSymbologyDict): PointSymbology {
+        return new PointSymbology(
+            dict.clustered,
+            NumberParam.fromDict(dict.radius),
+            ColorParam.fromDict(dict.fill_color),
+            Stroke.fromDict(dict.stroke),
+            TextSymbology.fromDict(dict.text),
+        );
+    }
+
+    createStyler(feature: OlFeature): PointStyler {
+        return new PointStyler(
+            this.clustered,
+            this.radius.getNumber(feature),
+            this.fillColor.getColor(feature).rgbaTuple(),
+            this.stroke.createStyler(feature),
+            this.text ? this.text.createStyler(feature) : undefined,
+        );
+    }
+
+    equals(other: PointSymbology): boolean {
+        return (
+            other instanceof PointSymbology &&
+            this.radius.equals(other.radius) &&
+            this.fillColor.equals(other.fillColor) &&
+            this.stroke.equals(other.stroke) &&
+            textSymbologyEquality(this.text, other.text)
+        );
     }
 
     clone(): PointSymbology {
-        return new PointSymbology(this);
+        return new PointSymbology(
+            this.clustered,
+            this.radius.clone(),
+            this.fillColor.clone(),
+            this.stroke.clone(),
+            this.text ? this.text.clone() : undefined,
+        );
     }
 
-    equals(other: AbstractVectorSymbology) {
-        if (other instanceof PointSymbology) {
-            return (
-                super.equals(other as AbstractVectorSymbology) &&
-                this.radiusAttribute &&
-                other.radiusAttribute &&
-                this.radiusAttribute === other.radiusAttribute
-            );
-        }
-        return false;
-    }
-
-    toConfig(): PointSymbologyConfig {
-        return this.clone();
-    }
-
-    describesElementStroke(): boolean {
-        return true;
-    }
-
-    describesElementFill(): boolean {
-        return true;
-    }
-
-    describesPointsWithRadius(): boolean {
-        return true;
-    }
-
-    setRadiusAttributeAndFactor(name: string, factor = 1.0) {
-        this.radiusAttribute = name;
-        this.radiusFactor = factor;
-    }
-
-    clearRadiusAttribute() {
-        this.radiusAttribute = undefined;
-        this.radiusFactor = 1.0;
-    }
-
-    toDict(): PointSymbologyDict {
+    toDict(): SymbologyDict {
         return {
-            symbologyType: SymbologyType[SymbologyType.COMPLEX_POINT],
-            fillRGBA: this.fillRGBA.rgbaTuple(),
-            strokeRGBA: this.strokeRGBA.rgbaTuple(),
-            strokeWidth: this.strokeWidth,
-            fillColorAttribute: this.fillColorAttribute,
-            fillColorizer: this.fillColorizer ? this.fillColorizer.toDict() : undefined,
-            strokeColorAttribute: this.strokeColorAttribute,
-            strokeColorizer: this.strokeColorizer,
-            strokeDashStyle: this.strokeDashStyle,
-            radiusAttribute: this.radiusAttribute,
-            radiusFactor: this.radiusFactor,
-            radius: this.radius,
-            textAttribute: this.textAttribute,
-            textColor: this.textColor.rgbaTuple(),
-            textStrokeWidth: this.textStrokeWidth,
-            clustered: this.clustered,
+            Vector: {
+                Point: {
+                    clustered: this.clustered,
+                    radius: this.radius.toDict(),
+                    fill_color: this.fillColor.toDict(),
+                    stroke: this.stroke.toDict(),
+                    text: this.text ? this.text.toDict() : undefined,
+                },
+            },
         };
-    }
-}
-
-/**
- * Configuration interface with optional fields for RasterSymbology.
- */
-export interface IRasterSymbology extends ISymbology {
-    opacity?: number;
-    unit: Unit | UnitDict;
-}
-
-/**
- * Serialization interface for RasterSymbology.
- */
-export interface RasterSymbologyDict extends SymbologyDict {
-    opacity: number;
-    unit: UnitDict;
-    colorizer?: IColorizerData;
-    noDataColor?: ColorBreakpointDict;
-    overflowColor?: ColorBreakpointDict;
-}
-
-/**
- * Configuration interface with optional fields for MappingRasterSymbology.
- */
-export interface IColorizerRasterSymbology extends IRasterSymbology {
-    colorizer?: IColorizerData;
-    noDataColor?: ColorBreakpointDict;
-    overflowColor?: ColorBreakpointDict;
-}
-
-/**
- * The abstract raster symbology class.
- */
-export abstract class AbstractRasterSymbology extends AbstractSymbology implements IRasterSymbology {
-    opacity = 1;
-    unit: Unit;
-
-    protected constructor(config: IRasterSymbology) {
-        super();
-        if (config.unit instanceof Unit) {
-            this.unit = config.unit;
-        } else {
-            this.unit = Unit.fromDict(config.unit as UnitDict);
-        }
-
-        if (config.opacity) {
-            this.opacity = config.opacity;
-        }
-    }
-
-    isContinuous() {
-        return this.unit.interpolation === Interpolation.Continuous;
-    }
-
-    isDiscrete() {
-        return this.unit.interpolation === Interpolation.Discrete;
-    }
-
-    isUnitUnknown() {
-        return !this.unit || !this.unit.interpolation || this.unit.interpolation === 0;
-    }
-
-    abstract getSymbologyType(): SymbologyType;
-
-    abstract toConfig(): IRasterSymbology;
-
-    abstract clone(): AbstractRasterSymbology;
-
-    equals(other: AbstractRasterSymbology) {
-        return this.opacity === other.opacity && this.unit === other.unit;
-    }
-
-    abstract toDict(): RasterSymbologyDict;
-}
-
-/**
- * The raster symbology class with colorizer information, rendered by the mapping backend.
- */
-export class MappingRasterSymbology extends AbstractRasterSymbology implements IColorizerRasterSymbology {
-    colorizer: ColorizerData;
-    noDataColor: ColorBreakpoint;
-    overflowColor: ColorBreakpoint;
-
-    constructor(config: IColorizerRasterSymbology) {
-        super(config);
-        this.colorizer = config.colorizer
-            ? new ColorizerData(config.colorizer)
-            : Colormap.createColorizerDataWithName('VIRIDIS', config.unit.min, config.unit.max);
-        this.noDataColor = config.noDataColor
-            ? new ColorBreakpoint(config.noDataColor)
-            : new ColorBreakpoint({rgba: TRANSPARENT, value: 'NoData'});
-        this.overflowColor = config.overflowColor
-            ? new ColorBreakpoint(config.overflowColor)
-            : new ColorBreakpoint({rgba: TRANSPARENT, value: 'Overflow'});
-    }
-
-    /**
-     * Create the default symbology, with options from config.
-     */
-    static createSymbology(config: IColorizerRasterSymbology) {
-        return new MappingRasterSymbology(config);
     }
 
     getSymbologyType(): SymbologyType {
-        return SymbologyType.MAPPING_COLORIZER_RASTER;
+        return SymbologyType.POINT;
     }
 
-    isUnitUnknown(): boolean {
-        return super.isUnitUnknown();
+    getIconStyle(): PointIconStyle {
+        return {
+            strokeWidth: this.stroke.width.getDefault(),
+            // strokeDashStyle: StrokeDashStyle;
+            strokeRGBA: this.stroke.color.getDefault(),
+            fillRGBA: this.fillColor.getDefault(),
+        };
+    }
+}
+
+export class LineSymbology extends VectorSymbology {
+    stroke: Stroke;
+    text?: TextSymbology;
+
+    constructor(stroke: Stroke, text: TextSymbology) {
+        super();
+        this.stroke = stroke;
+        this.text = text;
     }
 
-    toConfig(): IColorizerRasterSymbology {
-        return this.clone() as IColorizerRasterSymbology;
+    static fromLineSymbologyDict(dict: LineSymbologyDict): LineSymbology {
+        return new LineSymbology(Stroke.fromDict(dict.stroke), TextSymbology.fromDict(dict.text));
     }
 
-    toColorizerDict(): ColorizerDict {
-        switch (this.colorizer.type) {
-            case 'gradient':
-                return {
-                    LinearGradient: {
-                        breakpoints: this.colorizer.breakpoints.map((breakpoint) => ({
-                            value: typeof breakpoint.value === 'string' ? Number.parseFloat(breakpoint.value) : breakpoint.value,
-                            color: breakpoint.rgba.rgbaTuple().map(Math.round) as RgbaColor,
-                        })),
-                        default_color: this.overflowColor.rgba.rgbaTuple().map(Math.round) as RgbaColor,
-                        no_data_color: this.noDataColor.rgba.rgbaTuple().map(Math.round) as RgbaColor,
-                    },
-                };
-            case 'logarithmic':
-                // TODO: implement
-                return undefined;
-            case 'palette':
-                const colors: {[numberValue: string]: RgbaColor} = {};
-                for (const breakpoint of this.colorizer.breakpoints) {
-                    colors[breakpoint.value.toString()] = breakpoint.rgba.rgbaTuple().map(Math.round) as RgbaColor;
-                }
+    createStyler(feature: OlFeature): Styler {
+        return new LineStyler(this.stroke.createStyler(feature), this.text ? this.text.createStyler(feature) : undefined);
+    }
 
-                return {
-                    Palette: {
-                        colors,
-                        no_data_color: this.noDataColor.rgba.rgbaTuple().map(Math.round) as RgbaColor,
-                    },
-                };
-            case 'rgba_composite':
-                // TODO: implement
-                return undefined;
+    equals(other: LineSymbology): boolean {
+        return other instanceof LineSymbology && this.stroke.equals(other.stroke) && textSymbologyEquality(this.text, other.text);
+    }
+
+    clone(): LineSymbology {
+        return new LineSymbology(this.stroke.clone(), this.text ? this.text.clone() : undefined);
+    }
+
+    toDict(): SymbologyDict {
+        return {
+            Vector: {
+                Line: {
+                    stroke: this.stroke.toDict(),
+                    text: this.text ? this.text.toDict() : undefined,
+                },
+            },
+        };
+    }
+
+    getSymbologyType(): SymbologyType {
+        return SymbologyType.LINE;
+    }
+
+    getIconStyle(): LineIconStyle {
+        return {
+            strokeWidth: this.stroke.width.getDefault(),
+            // strokeDashStyle: StrokeDashStyle;
+            strokeRGBA: this.stroke.color.getDefault(),
+        };
+    }
+}
+
+export class PolygonSymbology extends VectorSymbology {
+    fillColor: ColorParam;
+    stroke: Stroke;
+
+    text?: TextSymbology;
+
+    constructor(fillColor: ColorParam, stroke: Stroke, text: TextSymbology) {
+        super();
+        this.fillColor = fillColor;
+        this.stroke = stroke;
+        this.text = text;
+    }
+
+    static fromPolygonSymbologyDict(dict: PolygonSymbologyDict): PolygonSymbology {
+        return new PolygonSymbology(ColorParam.fromDict(dict.fill_color), Stroke.fromDict(dict.stroke), TextSymbology.fromDict(dict.text));
+    }
+
+    createStyler(feature: OlFeature): Styler {
+        return new PolygonStyler(
+            this.fillColor.getColor(feature).rgbaTuple(),
+            this.stroke.createStyler(feature),
+            this.text ? this.text.createStyler(feature) : undefined,
+        );
+    }
+
+    equals(other: PolygonSymbology): boolean {
+        return (
+            other instanceof PolygonSymbology &&
+            this.fillColor.equals(other.fillColor) &&
+            this.stroke.equals(other.stroke) &&
+            textSymbologyEquality(this.text, other.text)
+        );
+    }
+
+    clone(): PolygonSymbology {
+        return new PolygonSymbology(this.fillColor.clone(), this.stroke.clone(), this.text ? this.text.clone() : undefined);
+    }
+
+    toDict(): SymbologyDict {
+        return {
+            Vector: {
+                Polygon: {
+                    fill_color: this.fillColor.toDict(),
+                    stroke: this.stroke.toDict(),
+                    text: this.text ? this.text.toDict() : undefined,
+                },
+            },
+        };
+    }
+
+    getSymbologyType(): SymbologyType {
+        return SymbologyType.POLYGON;
+    }
+
+    getIconStyle(): PolygonIconStyle {
+        return {
+            strokeWidth: this.stroke.width.getDefault(),
+            // strokeDashStyle: StrokeDashStyle;
+            strokeRGBA: this.stroke.color.getDefault(),
+            fillRGBA: this.fillColor.getDefault(),
+        };
+    }
+}
+
+export class RasterSymbology extends Symbology {
+    opacity: number;
+    colorizer: Colorizer;
+
+    constructor(opacity: number, colorizer: Colorizer) {
+        super();
+        this.opacity = opacity;
+        this.colorizer = colorizer;
+    }
+
+    static fromRasterSymbologyDict(dict: RasterSymbologyDict) {
+        return new RasterSymbology(dict.opacity, Colorizer.fromDict(dict.colorizer));
+    }
+
+    equals(other: RasterSymbology): boolean {
+        return (
+            other instanceof RasterSymbology && this.opacity === other.opacity && this.colorizer.equals(other.colorizer) //&&
+        );
+    }
+
+    clone(): RasterSymbology {
+        return new RasterSymbology(this.opacity, this.colorizer.clone());
+    }
+
+    toDict(): SymbologyDict {
+        return {
+            Raster: {
+                opacity: this.opacity,
+                colorizer: this.colorizer.toDict(),
+            },
+        };
+    }
+
+    getSymbologyType(): SymbologyType {
+        return SymbologyType.RASTER;
+    }
+
+    getIconStyle(): IconStyle {
+        throw new Error('Raster has custom icon renderer.');
+    }
+}
+
+export abstract class ColorParam {
+    static fromDict(dict: ColorParamDict): ColorParam {
+        if (dict.Static) {
+            return new StaticColor(Color.fromRgbaLike(rgbaColorFromDict(dict.Static)));
+        } else {
+            return DerivedColor.fromDerivedColorDict(dict.Derived);
         }
     }
 
-    clone(): MappingRasterSymbology {
-        return new MappingRasterSymbology(this);
+    abstract equals(other: ColorParam): boolean;
+
+    abstract clone(): ColorParam;
+
+    abstract toDict(): ColorParamDict;
+
+    abstract getColor(feature: OlFeature): Color;
+
+    abstract getDefault(): Color;
+}
+
+export abstract class NumberParam {
+    static fromDict(dict: NumberParamDict): NumberParam {
+        if (dict.Static) {
+            return new StaticNumber(dict.Static);
+        } else {
+            return DerivedNumber.fromDerivedNumberDict(dict.Derived);
+        }
     }
 
-    equals(other: AbstractRasterSymbology) {
-        if (other instanceof MappingRasterSymbology) {
-            return (
-                super.equals(other as AbstractRasterSymbology) &&
-                this.colorizer &&
-                this.colorizer.equals(other.colorizer) &&
-                this.noDataColor &&
-                this.noDataColor.equals(other.noDataColor) &&
-                this.overflowColor &&
-                this.overflowColor.equals(other.overflowColor)
-            );
+    abstract equals(other: NumberParam): boolean;
+
+    abstract clone(): NumberParam;
+
+    abstract toDict(): NumberParamDict;
+
+    abstract getNumber(feature: OlFeature): number;
+
+    abstract getDefault(): number;
+}
+
+export class StaticColor extends ColorParam {
+    color: Color;
+
+    constructor(color: Color) {
+        super();
+        this.color = color;
+    }
+
+    getColor(_feature: OlFeature): Color {
+        return this.color;
+    }
+
+    equals(other: ColorParam): boolean {
+        if (other instanceof StaticColor) {
+            return this.color.equals(other.color);
         }
         return false;
     }
 
-    toDict(): RasterSymbologyDict {
+    clone(): ColorParam {
+        return new StaticColor(this.color.clone());
+    }
+
+    toDict(): ColorParamDict {
         return {
-            symbologyType: SymbologyType[SymbologyType.MAPPING_COLORIZER_RASTER],
-            opacity: this.opacity,
-            unit: this.unit.toDict(),
-            colorizer: this.colorizer.toDict(),
-            noDataColor: this.noDataColor.toDict(),
-            overflowColor: this.overflowColor.toDict(),
+            Static: colorToDict(this.color),
         };
     }
 
-    /**
-     * generate a colorizer representation for the mapping backend.
-     */
-    mappingColorizerRequestString(): string {
-        const mcbs: MappingRasterColorizerDict = {
-            type: this.colorizer.type,
-            nodata: this.noDataColor.asMappingRasterColorizerBreakpoint(),
-            default: this.overflowColor.asMappingRasterColorizerBreakpoint(),
-            breakpoints: this.colorizer.breakpoints.map((br) => br.asMappingRasterColorizerBreakpoint()),
-        };
-        return JSON.stringify(mcbs);
+    getDefault(): Color {
+        return this.color;
     }
+}
+
+export class StaticNumber extends NumberParam {
+    num: number;
+
+    constructor(num: number) {
+        super();
+        this.num = num;
+    }
+
+    getNumber(_feature: OlFeature): number {
+        return this.num;
+    }
+
+    equals(other: NumberParam): boolean {
+        if (other instanceof StaticNumber) {
+            return this.num === other.num;
+        }
+        return false;
+    }
+
+    clone(): NumberParam {
+        return new StaticNumber(this.num);
+    }
+
+    toDict(): NumberParamDict {
+        return {
+            Static: this.num,
+        };
+    }
+
+    getDefault(): number {
+        return this.num;
+    }
+}
+
+export class DerivedColor implements ColorParam {
+    attribute: string;
+    colorizer: Colorizer;
+
+    constructor(attribute: string, colorizer: Colorizer) {
+        this.attribute = attribute;
+        this.colorizer = colorizer;
+    }
+
+    static fromDerivedColorDict(dict: DerivedColorDict): DerivedColor {
+        return new DerivedColor(dict.attribute, Colorizer.fromDict(dict.colorizer));
+    }
+
+    getColor(feature: OlFeature): Color {
+        return this.colorizer.getColor(feature.get(this.attribute));
+    }
+
+    equals(other: ColorParam): boolean {
+        if (other instanceof DerivedColor) {
+            return this.attribute === other.attribute && this.colorizer.equals(other.colorizer);
+        }
+        return false;
+    }
+
+    clone(): ColorParam {
+        return new DerivedColor(this.attribute, this.colorizer.clone()) as ColorParam;
+    }
+
+    toDict(): ColorParamDict {
+        return {
+            Derived: {
+                attribute: this.attribute,
+                colorizer: this.colorizer.toDict(),
+            },
+        };
+    }
+
+    getDefault(): Color {
+        return this.colorizer.defaultColor;
+    }
+}
+
+export class DerivedNumber extends NumberParam {
+    attribute: string;
+    factor: number;
+    defaultValue: number;
+
+    constructor(attribute: string, factor: number, defaultValue: number) {
+        super();
+        this.attribute = attribute;
+        this.factor = factor;
+        this.defaultValue = defaultValue;
+    }
+
+    static fromDerivedNumberDict(dict: DerivedNumberDict): NumberParam {
+        return new DerivedNumber(dict.attribute, dict.factor, dict.default_value);
+    }
+
+    getNumber(feature: OlFeature): number {
+        return feature.get(this.attribute) * this.factor;
+    }
+
+    equals(other: NumberParam): boolean {
+        if (other instanceof DerivedNumber) {
+            return this.attribute === other.attribute && this.factor === other.factor;
+        }
+        return false;
+    }
+
+    clone(): NumberParam {
+        return new DerivedNumber(this.attribute, this.factor, this.defaultValue);
+    }
+
+    toDict(): NumberParamDict {
+        return {
+            Derived: {
+                attribute: this.attribute,
+                factor: this.factor,
+                default_value: this.defaultValue,
+            },
+        };
+    }
+
+    getDefault(): number {
+        return this.defaultValue;
+    }
+}
+
+export class Stroke {
+    width: NumberParam;
+    color: ColorParam;
+    // TODO: dash
+
+    constructor(width: NumberParam, color: ColorParam) {
+        this.width = width;
+        this.color = color;
+    }
+
+    static fromDict(dict: StrokeParamDict) {
+        return new Stroke(NumberParam.fromDict(dict.width), ColorParam.fromDict(dict.color));
+    }
+
+    createStyle(feature: OlFeature): OlStyleStroke {
+        return new OlStyleStroke({
+            color: this.color.getColor(feature).rgbTuple(),
+            width: this.width.getNumber(feature),
+        });
+    }
+
+    equals(other: Stroke): boolean {
+        return this.width.equals(other.width) && this.color.equals(other.color);
+    }
+
+    clone(): Stroke {
+        return new Stroke(this.width.clone(), this.color.clone());
+    }
+
+    toDict(): StrokeParamDict {
+        return {
+            width: this.width.toDict(),
+            color: this.color.toDict(),
+        };
+    }
+
+    createStyler(feature: OlFeature): StrokeStyler {
+        return new StrokeStyler(this.width.getNumber(feature), this.color.getColor(feature).rgbaTuple());
+    }
+}
+
+export class TextSymbology {
+    attribute: string;
+    fillColor: ColorParam;
+    stroke: Stroke;
+
+    constructor(attribute: string, fillColor: ColorParam, stroke: Stroke) {
+        this.attribute = attribute;
+        this.fillColor = fillColor;
+        this.stroke = stroke;
+    }
+
+    static fromDict(dict: TextSymbologyDict) {
+        if (dict == null || dict === undefined) {
+            return undefined;
+        }
+
+        return new TextSymbology(dict.attribute, ColorParam.fromDict(dict.fill_color), Stroke.fromDict(dict.stroke));
+    }
+
+    createStyler(feature: OlFeature): OlStyleText {
+        return new TextStyler(feature.get(this.attribute), this.fillColor.getColor(feature).rgbaTuple(), this.stroke.createStyler(feature));
+    }
+
+    equals(other: TextSymbology): boolean {
+        return this.attribute === other.attribute && this.fillColor.equals(other.fillColor) && this.stroke.equals(other.stroke);
+    }
+
+    clone(): TextSymbology {
+        return new TextSymbology(this.attribute, this.fillColor.clone(), this.stroke.clone());
+    }
+
+    toDict(): TextSymbologyDict {
+        return {
+            attribute: this.attribute,
+            fill_color: this.fillColor.toDict(),
+            stroke: this.stroke.toDict(),
+        };
+    }
+}
+
+// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
+function textSymbologyEquality(a: TextSymbology, b: TextSymbology): boolean {
+    if ((a == null || a === undefined) && a === b) {
+        return true;
+    }
+
+    return a.equals(b);
 }
