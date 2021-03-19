@@ -73,10 +73,16 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
             this.layerDataSubscription.unsubscribe();
         }
 
-        this.layerDataSubscription = combineLatest([
-            this.projectService.getLayerDataStream(layer),
-            this.projectService.getLayerMetadata(layer),
-        ]).subscribe(
+        const dataStream = this.projectService.getLayerDataStream(layer);
+        const metadataStream = this.projectService.getLayerMetadata(layer);
+
+        if (!dataStream || !metadataStream) {
+            // layer was removed
+            this.emptyTable();
+            return;
+        }
+
+        this.layerDataSubscription = combineLatest([dataStream, metadataStream]).subscribe(
             ([data, metadata]) => {
                 if (layer instanceof VectorLayer) {
                     this.processVectorLayer(layer, metadata as VectorLayerMetadata, data);
