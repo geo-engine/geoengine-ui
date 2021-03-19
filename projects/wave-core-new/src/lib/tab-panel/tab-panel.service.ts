@@ -1,4 +1,4 @@
-import {ComponentPortal} from '@angular/cdk/portal';
+import {ComponentType} from '@angular/cdk/portal';
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 
@@ -7,7 +7,12 @@ import {BehaviorSubject, Observable} from 'rxjs';
  */
 export interface TabContent {
     name: string;
-    component: ComponentPortal<any>;
+    component: ComponentType<any>;
+    inputs: TabInputs;
+}
+
+export interface TabInputs {
+    [property: string]: any;
 }
 
 @Injectable({
@@ -25,12 +30,10 @@ export class TabPanelService {
     /**
      * Add a new component to the tab panel
      */
-    addComponent<T>(name: string, component: ComponentPortal<T>): void {
-        const tab = {name, component};
+    addComponent<T>(name: string, component: ComponentType<T>, inputs: TabInputs = {}): void {
+        const tab = {name, component, inputs};
         const tabs = [...this._tabs.getValue(), tab];
         this._tabs.next(tabs);
-
-        // TODO: select it?
     }
 
     /**

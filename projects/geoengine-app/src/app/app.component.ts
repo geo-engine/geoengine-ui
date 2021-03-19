@@ -29,7 +29,6 @@ import {
     ProjectService,
     NavigationButton,
     NavigationComponent,
-    ResultTypes,
     MapService,
     MapContainerComponent,
     WorkspaceSettingsComponent,
@@ -38,7 +37,6 @@ import {
     TimeConfigComponent,
     PlotListComponent,
     SidenavConfig,
-    TabPanelService,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';

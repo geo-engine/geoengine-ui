@@ -10,14 +10,12 @@
     <mat-icon *ngSwitchCase="false">expand_less</mat-icon>
     <mat-icon *ngSwitchCase="true">expand_more</mat-icon>
 </button>
-<mat-tab-group #tabGroup animationDuration="0ms" (selectedIndexChange)="setTabIndex($event)">
-    <mat-tab *ngFor="let tabContent of tabs | async; index as i">
-        <ng-template mat-tab-label>
-            <div (click)="setTabIndex($event)">{{ tabContent.name }}</div>
-            <mat-icon class="close-button" (click)="closeTab(i)">close</mat-icon>
-        </ng-template>
-        <ng-template matTabContent>
-            <ng-template [cdkPortalOutlet]="tabContent.component"></ng-template>
-        </ng-template>
-    </mat-tab>
-</mat-tab-group>
+<nav mat-tab-nav-bar>
+    <a mat-tab-link *ngFor="let tabContent of tabs" (click)="setTab(tabContent)" [active]="activeTab == tabContent">
+        <span>{{ tabContent.name }}</span>
+        <mat-icon class="close-button" (click)="closeTab(tabContent)">close</mat-icon>
+    </a>
+</nav>
+<div [style.height.px]="contentHeight">
+    <ng-template cdkPortalOutlet></ng-template>
+</div>

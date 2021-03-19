@@ -15,7 +15,6 @@ import {filter, map, startWith} from 'rxjs/operators';
 import {AddDataComponent} from '../../datasets/add-data/add-data.component';
 import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-graph.component';
 import {TabPanelService} from '../../tab-panel/tab-panel.service';
-import {ComponentPortal} from '@angular/cdk/portal';
 import {DataTableComponent} from '../../datatable/table/table.component';
 
 /**
@@ -144,8 +143,6 @@ export class LayerListComponent implements OnDestroy {
     }
 
     showDatatable(layer: Layer): void {
-        const datatable = new ComponentPortal(DataTableComponent);
-        console.log('showDatatable', datatable.component, datatable); // TODO: remove
-        this.tabPanelService.addComponent(layer.name, datatable);
+        this.tabPanelService.addComponent(layer.name, DataTableComponent, {layer});
     }
 }
