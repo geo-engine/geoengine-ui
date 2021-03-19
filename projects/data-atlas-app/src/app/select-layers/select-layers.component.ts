@@ -114,7 +114,8 @@ export class SelectLayersComponent implements OnInit {
         });
         breakpoints.push({
             value: 12,
-            rgba: [0, 0, 0, 255],
+            // not from original color list
+            rgba: [107, 1, 220, 255],
         });
         breakpoints.push({
             value: 13,
@@ -220,7 +221,7 @@ export class SelectLayersComponent implements OnInit {
                     this.dataSelectionService.setRasterLayer(
                         new RasterLayer({
                             workflowId,
-                            name: 'Biome',
+                            name: 'KK09',
                             symbology: new MappingRasterSymbology({
                                 opacity: 1,
                                 unit: new Unit({
