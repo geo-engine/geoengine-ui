@@ -28,9 +28,9 @@ export class SidenavSearchComponent implements OnInit, AfterViewInit {
 
     constructor(private sidenavRef: SidenavRef) {}
 
-    ngOnInit() {}
+    ngOnInit(): void {}
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         this.sidenavRef.setSearch(this.contentChildren, this.searchString);
     }
 }

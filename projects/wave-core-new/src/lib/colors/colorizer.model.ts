@@ -49,7 +49,7 @@ export class LinearGradient extends Colorizer {
         this.breakpoints = breakpoints;
     }
 
-    static fromLinearGradientDict(dict: LinearGradientDict) {
+    static fromLinearGradientDict(dict: LinearGradientDict): LinearGradient {
         return new LinearGradient(
             dict.breakpoints.map((b) => ColorBreakpoint.fromDict(b)),
             Color.fromRgbaLike(rgbaColorFromDict(dict.no_data_color)),
@@ -149,7 +149,7 @@ export class PaletteColorizer extends Colorizer {
         this.defaultColor = defaultColor;
     }
 
-    static fromPaletteDict(dict: PaletteDict) {
+    static fromPaletteDict(dict: PaletteDict): PaletteColorizer {
         console.log(dict);
         const colors = new Map();
         for (const i of Object.keys(dict.colors)) {

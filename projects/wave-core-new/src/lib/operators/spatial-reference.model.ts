@@ -166,7 +166,7 @@ export class GEOS extends SpatialReference {
         return 'GEOS - GEOstationary Satellite';
     }
 
-    getOpenlayersProjection() {
+    getOpenlayersProjection(): void {
         const projection = olGetProjection(this.getCode());
         projection.setExtent(this.getExtent()); // TODO: DT ol.proj.Projection => setExtent
         return projection;
@@ -180,7 +180,7 @@ export class GEOS extends SpatialReference {
         return 'http://spatialreference.org/ref/sr-org/81/gml/';
     }
 
-    private registerProjection() {
+    private registerProjection(): void {
         if (!GEOS.isProjectionRegistered) {
             olAddProjection(
                 new OlProjection({
@@ -237,7 +237,7 @@ export class ProjectionCollection {
         this.registerProj4Projections();
     }
 
-    fromCode(json: string) {
+    fromCode(json: string): SpatialReference {
         switch (json) {
             case this.WEB_MERCATOR.getCode():
                 return this.WEB_MERCATOR;
@@ -258,7 +258,7 @@ export class ProjectionCollection {
         }
     }
 
-    private registerProj4Projections() {
+    private registerProj4Projections(): void {
         const proj4DefStrings: Array<[string, string]> = this.ALL_PROJECTIONS.filter((p) => !!p.getProj4String()).map((p) => [
             p.getCode(),
             p.getProj4String(),

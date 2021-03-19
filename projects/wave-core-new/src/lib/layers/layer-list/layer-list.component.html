@@ -125,13 +125,11 @@
 
                     <div class="list-element-inner-container layer-list-element" fxLayout="column" fxLayoutAlign="space-between none">
                         <div fxLayout="row" fxLayoutAlign="space-between center">
-                            <!-- TODO: getLayerCombinedStatusStream -->
-
                             <button
                                 mat-icon-button
                                 class="mat-warn error-button"
                                 aria-label="Reload"
-                                *ngIf="(projectService.getLayerDataStatusStream(layer) | async) === LoadingState.ERROR"
+                                *ngIf="(projectService.getLayerStatusStream(layer) | async) === LoadingState.ERROR"
                                 (click)="projectService.reloadLayer(layer)"
                             >
                                 <mat-icon>replay</mat-icon>
@@ -139,7 +137,7 @@
 
                             <button
                                 mat-icon-button
-                                *ngIf="(projectService.getLayerDataStatusStream(layer) | async) !== LoadingState.ERROR"
+                                *ngIf="(projectService.getLayerStatusStream(layer) | async) !== LoadingState.ERROR"
                                 (click)="toggleLegend(layer)"
                                 matTooltip="{{ layer.isLegendVisible ? 'Hide' : 'Show' }} Legend"
                                 matTooltipPosition="after"
@@ -250,11 +248,8 @@
                         <!--                        </wave-layer-list-workflow-parameter-slider>-->
                         <!--                    </div>-->
 
-                        <!-- TODO: use combined state -->
                         <mat-progress-bar
-                            [mode]="
-                                (projectService.getLayerDataStatusStream(layer) | async) === LoadingState.LOADING ? 'query' : 'determinate'
-                            "
+                            [mode]="(projectService.getLayerStatusStream(layer) | async) === LoadingState.LOADING ? 'query' : 'determinate'"
                             [value]="100"
                         ></mat-progress-bar>
                         <!--                    <mat-progress-bar-->

@@ -1,8 +1,9 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {mergeMap} from 'rxjs/operators';
-import {Interpolation, ProjectService, RasterLayer, RasterSymbology, RgbaColorDict, Unit, UUID, WorkflowDict} from 'wave-core';
+import {ProjectService, RasterLayer, RasterSymbology, RgbaColorDict, Time, UUID, WorkflowDict} from 'wave-core';
 import {DataSelectionService} from '../data-selection.service';
 import {MatSelectionListChange} from '@angular/material/list';
+import moment from 'moment';
 
 @Component({
     selector: 'wave-app-mock-layers',
@@ -15,14 +16,14 @@ export class SelectLayersComponent implements OnInit {
 
     ngOnInit(): void {}
 
-    addBiome(name: string, sourceId: UUID) {
+    addBiome(): void {
         const workflow: WorkflowDict = {
             type: 'Raster',
             operator: {
                 type: 'GdalSource',
                 params: {
                     data_set: {
-                        Internal: sourceId,
+                        Internal: '73b13876-bdd2-48b2-a628-ce0a1b0eee9d',
                     },
                 },
             },
@@ -86,7 +87,7 @@ export class SelectLayersComponent implements OnInit {
                     this.dataSelectionService.setRasterLayer(
                         new RasterLayer({
                             workflowId,
-                            name,
+                            name: 'Biome',
                             symbology: RasterSymbology.fromRasterSymbologyDict({
                                 opacity: 1,
                                 colorizer: {
@@ -100,6 +101,11 @@ export class SelectLayersComponent implements OnInit {
                             isLegendVisible: false,
                             isVisible: true,
                         }),
+                        [new Time(moment.utc('-006000-01-01T00:00:00.000Z')), new Time(moment.utc('1850-01-01T00:00:00.000Z'))],
+                        {
+                            min: 1,
+                            max: 20,
+                        },
                     ),
                 ),
             )
@@ -108,13 +114,98 @@ export class SelectLayersComponent implements OnInit {
             });
     }
 
-    selectData($event: MatSelectionListChange) {
-        switch ($event.option.value as string) {
-            case 'biome6k':
-                this.addBiome('Biome 6k', '73b13876-bdd2-48b2-a628-ce0a1b0eee9d');
+    addKK09(name: string, sourceId: UUID): void {
+        const workflow: WorkflowDict = {
+            type: 'Raster',
+            operator: {
+                type: 'GdalSource',
+                params: {
+                    data_set: {
+                        Internal: sourceId,
+                    },
+                },
+            },
+        };
+
+        const timeSteps = [];
+        // bc
+        for (let year = 1000; year > 0; year -= 10) {
+            const paddedYear = year.toString().padStart(6, '0');
+            timeSteps.push(new Time(moment.utc(`-${paddedYear}-01-01T00:00:00.000Z`)));
+        }
+        // ad
+        for (let year = 10; year <= 1850; year += 10) {
+            const paddedYear = year.toString().padStart(4, '0');
+            timeSteps.push(new Time(moment.utc(`${paddedYear}-01-01T00:00:00.000Z`)));
+        }
+
+        const breakpoints: Array<{value: number; color: [number, number, number, number]}> = [
+            {value: 0, color: [68, 1, 84, 255]},
+            {value: 0.06666666666666667, color: [72, 26, 108, 255]},
+            {value: 0.13333333333333333, color: [71, 47, 125, 255]},
+            {value: 0.2, color: [65, 68, 135, 255]},
+            {value: 0.26666666666666666, color: [57, 86, 140, 255]},
+            {value: 0.3333333333333333, color: [49, 104, 142, 255]},
+            {value: 0.4, color: [42, 120, 142, 255]},
+            {value: 0.4666666666666667, color: [35, 136, 142, 255]},
+            {value: 0.5333333333333333, color: [31, 152, 139, 255]},
+            {value: 0.6, color: [34, 168, 132, 255]},
+            {value: 0.6666666666666666, color: [53, 183, 121, 255]},
+            {value: 0.7333333333333333, color: [84, 197, 104, 255]},
+            {value: 0.8, color: [122, 209, 81, 255]},
+            {value: 0.8666666666666667, color: [165, 219, 54, 255]},
+            {value: 0.9333333333333333, color: [210, 226, 27, 255]},
+            {value: 1, color: [253, 231, 37, 255]},
+        ];
+
+        this.projectService
+            .registerWorkflow(workflow)
+            .pipe(
+                mergeMap((workflowId) =>
+                    this.dataSelectionService.setRasterLayer(
+                        new RasterLayer({
+                            workflowId,
+                            name: 'KK09',
+                            symbology: RasterSymbology.fromRasterSymbologyDict({
+                                opacity: 1.0,
+                                colorizer: {
+                                    LinearGradient: {
+                                        breakpoints,
+                                        default_color: [0, 0, 0, 0],
+                                        no_data_color: [0, 0, 0, 0],
+                                    },
+                                },
+                            }),
+                            isLegendVisible: false,
+                            isVisible: true,
+                        }),
+                        timeSteps,
+                        {min: 0, max: 1},
+                    ),
+                ),
+            )
+            .subscribe(() => {
+                // success
+            });
+    }
+
+    selectData($event: MatSelectionListChange): void {
+        if ($event.options.length !== 1) {
+            throw Error('It is only possible to select one dataset');
+        }
+
+        switch ($event.options[0].value as string) {
+            case 'biome':
+                this.addBiome();
                 break;
-            case 'biomePi':
-                this.addBiome('Biome Pi', 'bc33b76a-c3ee-4791-9914-17a9282d7ee3');
+            case 'kk09_land_use_high':
+                this.addKK09('Land Use High', '92f0a62e-9510-4210-beeb-43146086ca63');
+                break;
+            case 'kk09_land_use_low':
+                this.addKK09('Land Use Low', '0d415a11-836e-4a23-94db-b17536c95828');
+                break;
+            case 'kk09_land_use_tech':
+                this.addKK09('Land Use Tech', '62fc10c9-bce9-4638-b4e3-d270ccfc9c5b');
                 break;
             default:
             // do nothing

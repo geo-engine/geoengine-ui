@@ -104,7 +104,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
 
         // TODO: use layer data types for data type selection
         this.outputDataTypes$ = this.form.controls.rasterLayers.valueChanges.pipe(
-            map((rasterLayers: Array<RasterLayer>) => {
+            map((_rasterLayers: Array<RasterLayer>) => {
                 const outputDataTypes = RasterDataTypes.ALL_DATATYPES.map((dataType: RasterDataType) => [dataType, '']) as Array<
                     [RasterDataType, string]
                 >;
@@ -152,7 +152,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         );
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         setTimeout(() =>
             this.form.controls['rasterLayers'].updateValueAndValidity({
                 onlySelf: false,
@@ -161,7 +161,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         );
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         // TODO: incorporate unit again
         // this.unitSubscription.unsubscribe();
     }
@@ -170,7 +170,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
      * Uses the user input and creates a new expression operator.
      * The resulting layer is added to the map.
      */
-    add() {
+    add(): void {
         const name: string = this.form.controls['name'].value;
         const dataType: RasterDataType = this.form.controls['dataType'].value;
         const expression: string = this.form.controls['expression'].value;
@@ -202,7 +202,6 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         // }
 
         // console.log(rasterLayers);
-        const unit = Unit.defaultUnit;
 
         // TODO: add projection operator
         zip(this.projectService.getWorkflow(rasterLayers[0].workflowId), this.projectService.getWorkflow(rasterLayers[1].workflowId))

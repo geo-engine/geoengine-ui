@@ -1,5 +1,5 @@
 import {BreakpointDict} from '../backend/backend.model';
-import {Color, colorToDict, rgbaColorFromDict, RgbaLike, RgbaStruct} from './color';
+import {Color, colorToDict, rgbaColorFromDict, RgbaLike} from './color';
 
 export type BreakPointValue = number;
 
@@ -15,7 +15,7 @@ export class ColorBreakpoint {
         this.value = value;
     }
 
-    static fromDict(dict: BreakpointDict) {
+    static fromDict(dict: BreakpointDict): ColorBreakpoint {
         return new ColorBreakpoint(dict.value, Color.fromRgbaLike(rgbaColorFromDict(dict.color)));
     }
 
@@ -57,14 +57,14 @@ export class ColorBreakpoint {
     /**
      * Sets the color to the provided value.
      */
-    setColor(color: RgbaLike) {
+    setColor(color: RgbaLike): void {
         this.color = Color.fromRgbaLike(color);
     }
 
     /**
      * Sets the value of the ColorBreakpoint to the provided value.
      */
-    setValue(value: BreakPointValue) {
+    setValue(value: BreakPointValue): void {
         this.value = value;
     }
 

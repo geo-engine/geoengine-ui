@@ -94,7 +94,7 @@ export abstract class Symbology {
 
 export abstract class VectorSymbology extends Symbology {
     createStyleFunction(): OlStyleFunction {
-        return (feature: OlFeature, _resolution: number) => {
+        return (feature: OlFeature, _resolution: number): OlStyle => {
             const styler = this.createStyler(feature);
 
             const key = styler.cacheKey();
@@ -462,7 +462,7 @@ export class RasterSymbology extends Symbology {
         this.colorizer = colorizer;
     }
 
-    static fromRasterSymbologyDict(dict: RasterSymbologyDict) {
+    static fromRasterSymbologyDict(dict: RasterSymbologyDict): RasterSymbology {
         return new RasterSymbology(dict.opacity, Colorizer.fromDict(dict.colorizer));
     }
 
@@ -700,7 +700,7 @@ export class Stroke {
         this.color = color;
     }
 
-    static fromDict(dict: StrokeParamDict) {
+    static fromDict(dict: StrokeParamDict): Stroke {
         return new Stroke(NumberParam.fromDict(dict.width), ColorParam.fromDict(dict.color));
     }
 
@@ -742,7 +742,7 @@ export class TextSymbology {
         this.stroke = stroke;
     }
 
-    static fromDict(dict: TextSymbologyDict) {
+    static fromDict(dict: TextSymbologyDict): TextSymbology {
         if (dict == null || dict === undefined) {
             return undefined;
         }

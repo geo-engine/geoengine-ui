@@ -10,10 +10,9 @@ import {MapService} from '../../map/map.service';
 import {Layer} from '../layer.model';
 import {ProjectService} from '../../project/project.service';
 import {Config} from '../../config.service';
-import {filter, map, startWith, tap} from 'rxjs/operators';
+import {map, startWith} from 'rxjs/operators';
 import {AddDataComponent} from '../../datasets/add-data/add-data.component';
 import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-graph.component';
-import {PolygonIconStyle} from '../layer-icons/polygon-icon/polygon-icon.component';
 import {RasterLayerMetadata} from '../layer-metadata.model';
 import {Measurement} from '../measurement';
 
@@ -93,14 +92,14 @@ export class LayerListComponent implements OnDestroy {
         this.mapIsGrid$ = this.mapService.isGrid$;
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.subscriptions.forEach((s) => s.unsubscribe());
     }
 
     /**
      * the drop method is used by the dran and drop feature of the list
      */
-    drop(event: CdkDragDrop<string[]>) {
+    drop(event: CdkDragDrop<string[]>): void {
         const layerList = this.layerList.slice(); // make a copy to not modify the current list
         moveItemInArray(layerList, event.previousIndex, event.currentIndex);
 
@@ -111,7 +110,7 @@ export class LayerListComponent implements OnDestroy {
     /**
      * select a layer
      */
-    toggleLegend(layer: Layer) {
+    toggleLegend(layer: Layer): void {
         this.projectService.toggleLegend(layer);
     }
 
@@ -136,7 +135,7 @@ export class LayerListComponent implements OnDestroy {
         return layer as Layer;
     }
 
-    showChannelParameterSlider(layer: Layer): boolean {
+    showChannelParameterSlider(_layer: Layer): boolean {
         // return layer.operator.operatorType.toString() === 'GDAL Source'
         //     && !!layer.operator.operatorTypeParameterOptions
         //     && layer.operator.operatorTypeParameterOptions.getParameterOption('channelConfig').hasTicks();

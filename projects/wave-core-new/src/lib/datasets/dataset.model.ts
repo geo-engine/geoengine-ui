@@ -17,7 +17,7 @@ export class DataSet {
         this.source_operator = config.source_operator;
     }
 
-    static fromDict(dict: DataSetDict) {
+    static fromDict(dict: DataSetDict): DataSet {
         return new DataSet(dict);
     }
 
@@ -41,7 +41,7 @@ export class InternalDataSetId {
         this.Internal = config.Internal;
     }
 
-    static fromDict(config: InternalDataSetIdDict) {
+    static fromDict(config: InternalDataSetIdDict): InternalDataSetId {
         return new InternalDataSetId(config);
     }
 
@@ -59,7 +59,7 @@ export abstract class ResultDescriptor {
         this.spatial_reference = spatialReference;
     }
 
-    static fromDict(dict: DatasetResultDescriptorDict) {
+    static fromDict(dict: DatasetResultDescriptorDict): ResultDescriptor {
         if ('Vector' in dict) {
             return VectorResultDescriptor.fromDict(dict);
         } else {

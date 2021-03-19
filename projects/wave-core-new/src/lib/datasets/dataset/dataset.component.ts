@@ -2,7 +2,6 @@ import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
 import {DataSet, VectorResultDescriptor} from '../dataset.model';
 import {RasterLayer, VectorLayer} from '../../layers/layer.model';
 import {LineSymbology, PointSymbology, PolygonSymbology, RasterSymbology, Symbology} from '../../layers/symbology/symbology.model';
-import {Unit} from '../../operators/unit.model';
 import {ProjectService} from '../../project/project.service';
 import {mergeMap} from 'rxjs/operators';
 import {RandomColorService} from '../../util/services/random-color.service';
@@ -22,7 +21,7 @@ export class DataSetComponent implements OnInit {
 
     ngOnInit(): void {}
 
-    add() {
+    add(): void {
         const workflow = this.dataset.createSourceWorkflow();
 
         this.projectService

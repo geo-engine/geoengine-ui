@@ -1,5 +1,5 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
-import {Symbology, SymbologyType, VectorSymbology} from '../../symbology/symbology.model';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {Symbology, SymbologyType} from '../../symbology/symbology.model';
 
 import {PolygonIconStyle} from '../../layer-icons/polygon-icon/polygon-icon.component';
 import {PointIconStyle} from '../../layer-icons/point-icon/point-icon.component';

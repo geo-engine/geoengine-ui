@@ -1,5 +1,4 @@
-import {LayerDict, UUID, ToDict, ColorizerDict, RgbaColorDict} from '../backend/backend.model';
-import {Unit} from '../operators/unit.model';
+import {LayerDict, UUID, ToDict} from '../backend/backend.model';
 import {RasterSymbology, Symbology} from './symbology/symbology.model';
 
 export type LayerType = 'raster' | 'vector';

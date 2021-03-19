@@ -32,7 +32,7 @@ export class PointInPolygonFilterOperatorComponent {
         });
     }
 
-    add() {
+    add(): void {
         const points = this.form.controls['pointLayer'].value as Layer;
         const polygons = this.form.controls['polygonLayer'].value as Layer;
 

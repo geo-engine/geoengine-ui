@@ -1,6 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {Measurement} from '../../measurement';
-import {RasterSymbology} from '../../symbology/symbology.model';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {LegendComponent} from '../legend.component';
 
 @Component({

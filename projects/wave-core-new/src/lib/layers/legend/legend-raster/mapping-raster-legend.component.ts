@@ -2,20 +2,19 @@ import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, Pipe, Pipe
 import {RasterLegendComponent} from './raster-legend.component';
 import {Interpolation, interpolationToName, Unit} from '../../../operators/unit.model';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
-import {RasterSymbology} from '../../symbology/symbology.model';
-import {ClassificationMeasurement, ContinuousMeasurement, Measurement, UnitlessMeasurement} from '../../measurement';
+import {ContinuousMeasurement, Measurement} from '../../measurement';
 import {ProjectService} from '../../../project/project.service';
 import {map} from 'rxjs/operators';
 import {RasterLayerMetadata} from '../../layer-metadata.model';
-import {Observable, Subject} from 'rxjs';
-import {Layer, RasterLayer} from '../../layer.model';
+import {Observable} from 'rxjs';
+import {RasterLayer} from '../../layer.model';
 
 @Pipe({
     name: 'continuousMeasurement',
     pure: true,
 })
 export class CastMeasurementToContinuousPipe implements PipeTransform {
-    transform(value: any, args?: any): ContinuousMeasurement {
+    transform(value: any, _args?: any): ContinuousMeasurement {
         return value;
     }
 }
@@ -36,6 +35,7 @@ export class MappingRasterLegendComponent extends RasterLegendComponent implemen
     /**
      * Parameters to use with the number pipe in the template.
      */
+    @Input()
     numberPipeParameters = '1.0-0';
 
     constructor(public projectService: ProjectService) {

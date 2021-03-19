@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, Input, SimpleChanges, OnChanges} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
 import {BLACK, Color, WHITE} from '../../../colors/color';
 import {IconStyle} from '../../symbology/symbology.model';
 

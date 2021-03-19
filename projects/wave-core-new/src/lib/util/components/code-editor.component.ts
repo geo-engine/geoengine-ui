@@ -59,7 +59,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
     private onTouched: () => void;
     private changeSubscription: Subscription;
 
-    ngOnChanges(changes: {[propKey: string]: SimpleChange}) {
+    ngOnChanges(changes: {[propKey: string]: SimpleChange}): void {
         if (this.editor) {
             // eslint-disable-next-line guard-for-in
             for (const attribute in changes) {
@@ -74,7 +74,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
         }
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         if (LANGUAGES.indexOf(this.language)) {
             throw new Error(`Language ${this.language} is not (yet) supported.`);
         }
@@ -115,7 +115,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
         }
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         if (this.changeSubscription) {
             this.changeSubscription.unsubscribe();
         }
@@ -133,7 +133,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
     /**
      * Refresh the viewport.
      */
-    refresh() {
+    refresh(): void {
         this.editor.refresh();
     }
 
@@ -148,7 +148,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
     }
 
     /** Implemented as part of ControlValueAccessor. */
-    registerOnChange(fn: () => any) {
+    registerOnChange(fn: () => any): void {
         if (this.changeSubscription) {
             this.changeSubscription.unsubscribe();
         }
@@ -156,7 +156,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
     }
 
     /** Implemented as part of ControlValueAccessor. */
-    registerOnTouched(fn: () => any) {
+    registerOnTouched(fn: () => any): void {
         if (this.onTouched) {
             this.onTouched = fn;
         }

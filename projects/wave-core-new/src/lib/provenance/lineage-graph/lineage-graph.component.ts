@@ -65,7 +65,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         @Inject(MAT_DIALOG_DATA) private config: {layer: Layer},
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.svgWidth$ = this.maxWidth$.pipe(map((width) => Math.ceil(this.svgRatio * width)));
         this.svgHeight$ = this.maxHeight$;
 
@@ -76,7 +76,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         this.title = `Lineage for ${this.layer.name}`;
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         setTimeout(() => {
             this.calculateDialogBounds();
 
@@ -86,7 +86,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         });
     }
 
-    private calculateDialogBounds() {
+    private calculateDialogBounds(): void {
         let dialogContainer;
         let parent = this.elementRef.nativeElement.parentElement;
         while (!dialogContainer) {
@@ -101,7 +101,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         this.maxHeight$.next(maxHeight);
     }
 
-    private drawGraph() {
+    private drawGraph(): void {
         this.projectService.getWorkflow(this.layer.workflowId).subscribe((workflow) => {
             const graph = new dagreD3.graphlib.Graph().setGraph({}).setDefaultEdgeLabel(() => ({label: ''} as any));
 
@@ -133,7 +133,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         });
     }
 
-    private static addOperatorsToGraph(graph: dagre.graphlib.Graph, initialOperator: OperatorDict | SourceOperatorDict) {
+    private static addOperatorsToGraph(graph: dagre.graphlib.Graph, initialOperator: OperatorDict | SourceOperatorDict): void {
         let nextOperatorId = 0;
 
         const operatorQueue: Array<[number, OperatorDict | SourceOperatorDict]> = [[nextOperatorId++, initialOperator]];
@@ -190,7 +190,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         // console.log(graph.edges(), graph);
     }
 
-    private static addLayerToGraph(graph: dagre.graphlib.Graph, layer: Layer, workflowId: number) {
+    private static addLayerToGraph(graph: dagre.graphlib.Graph, layer: Layer, workflowId: number): void {
         // add node
         graph.setNode(`layer_${layer.workflowId}`, {
             class: 'layer',
@@ -214,7 +214,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         graph: dagre.graphlib.Graph,
         svgWidth: number,
         svgHeight: number,
-    ) {
+    ): void {
         // calculate available space after subtracting the margin
         const paddedWidth = svgWidth - GRAPH_STYLE.surrounding.margin;
         const paddedHeight = svgHeight - GRAPH_STYLE.surrounding.margin;
@@ -244,7 +244,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         svg.call(zoom);
     }
 
-    private addClickHandler(svg: d3.Selection<SVGElement, any, any, any>, graph: dagre.graphlib.Graph) {
+    private addClickHandler(svg: d3.Selection<SVGElement, any, any, any>, graph: dagre.graphlib.Graph): void {
         svg.selectAll('.node').on('click', (_event, theNodeId) => {
             const nodeId = (theNodeId as any) as string; // conversion since the signature is of the wrong type
 
@@ -284,7 +284,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         return list;
     }
 
-    private static fixLabelPosition(svg: d3.Selection<SVGElement, any, any, any>) {
+    private static fixLabelPosition(svg: d3.Selection<SVGElement, any, any, any>): void {
         // HACK: move html label from center to top left
         svg.selectAll('.operator > .label > g > foreignObject')
             .attr('x', -GRAPH_STYLE.general.width / 2)
@@ -300,9 +300,9 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
     }
 
     private setupWidthObservables(graph: dagre.graphlib.Graph): {width: number; height: number} {
-        const widthBound = (maxWidth: number, graphWidth: number) =>
+        const widthBound = (maxWidth: number, graphWidth: number): number =>
             Math.min(maxWidth - GRAPH_STYLE.surrounding.detailComponentWidth - GRAPH_STYLE.surrounding.margin, graphWidth);
-        const heightBound = (maxWidth: number, _graphWidth: number) =>
+        const heightBound = (maxWidth: number, _graphWidth: number): number =>
             // return Math.min(maxWidth, graphWidth + GRAPH_STYLE.surrounding.margin);
             // noinspection JSSuspiciousNameCombination
             maxWidth;
