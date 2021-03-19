@@ -44,8 +44,8 @@ export class SelectLayersComponent implements OnInit {
             2: 'Desert',
             3: 'Semi-desert',
             4: 'Tundra',
-            5: 'Tropical grassland',
-            6: 'Shrubland',
+            5: 'Shrubland',
+            6: 'Tropical grassland',
             7: 'Temperate grassland',
             8: 'Tropical savanna',
             9: 'Warm temperate open woodland',
@@ -86,11 +86,11 @@ export class SelectLayersComponent implements OnInit {
         });
         breakpoints.push({
             value: 5,
-            rgba: [0, 0, 0, 255],
+            rgba: [0, 200, 200, 255],
         });
         breakpoints.push({
             value: 6,
-            rgba: [0, 200, 200, 255],
+            rgba: [0, 0, 0, 255],
         });
         breakpoints.push({
             value: 7,
@@ -114,7 +114,8 @@ export class SelectLayersComponent implements OnInit {
         });
         breakpoints.push({
             value: 12,
-            rgba: [0, 0, 0, 255],
+            // not from original color list
+            rgba: [107, 1, 220, 255],
         });
         breakpoints.push({
             value: 13,
@@ -220,7 +221,7 @@ export class SelectLayersComponent implements OnInit {
                     this.dataSelectionService.setRasterLayer(
                         new RasterLayer({
                             workflowId,
-                            name: 'Biome',
+                            name: 'KK09',
                             symbology: new MappingRasterSymbology({
                                 opacity: 1,
                                 unit: new Unit({
