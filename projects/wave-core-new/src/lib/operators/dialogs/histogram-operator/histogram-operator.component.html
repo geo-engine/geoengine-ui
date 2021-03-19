@@ -45,6 +45,12 @@
         <div fxLayout="row" *ngIf="(form.controls.autoBuckets.valueChanges | async) === false">
             <mat-form-field fxFlex>
                 <input matInput type="number" placeholder="Number of Buckets" formControlName="numberOfBuckets" />
+                <mat-hint class="error" *ngIf="form.controls.numberOfBuckets.errors?.min || form.controls.numberOfBuckets.errors?.max">
+                    The number of buckets must be between 0 and 100.
+                </mat-hint>
+                <mat-hint class="error" *ngIf="form.controls.numberOfBuckets.errors?.required">
+                    The number of buckets is required.
+                </mat-hint>
             </mat-form-field>
         </div>
         <wave-operator-output-name formControlName="name" [suggestion]="'Histogram of ' + (form.controls.layer.valueChanges | async)?.name">
