@@ -38,6 +38,7 @@ import {
     TimeConfigComponent,
     PlotListComponent,
     SidenavConfig,
+    TabPanelService,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
@@ -56,11 +57,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     @ViewChild(MatSidenav, {static: true}) rightSidenav: MatSidenav;
     @ViewChild(SidenavContainerComponent, {static: true}) rightSidenavContainer: SidenavContainerComponent;
-
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    readonly ResultTypes = ResultTypes;
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    readonly LayoutService = LayoutService;
 
     readonly layersReverse$: Observable<Array<Layer>>;
     readonly layerListVisible$: Observable<boolean>;

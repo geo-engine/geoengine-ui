@@ -45,5 +45,5 @@
             </ng-template>
         </wave-map-container>
     </div>
-    <wave-tab-panel></wave-tab-panel>
+    <wave-tab-panel [visible]="layerDetailViewVisible$ | async" [maxHeight]="bottomContainerHeight$ | async"></wave-tab-panel>
 </mat-sidenav-container>

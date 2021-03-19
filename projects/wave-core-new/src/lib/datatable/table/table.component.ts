@@ -37,9 +37,15 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, Aft
     protected layerDataSubscription: Subscription = undefined;
     protected layerSelectionSubscription: Subscription = undefined;
 
-    constructor(protected readonly projectService: ProjectService, protected readonly hostElement: ElementRef<HTMLElement>) {}
+    constructor(protected readonly projectService: ProjectService, protected readonly hostElement: ElementRef<HTMLElement>) {
+        // TODO: remove
+        console.log('DataTableComponent', 'constructor');
+    }
 
     ngOnInit(): void {
+        // TODO: remove
+        console.log('DataTableComponent', 'ngOnInit');
+
         // TODO: allow specifying a layer as `@Input()`
         this.layerSelectionSubscription = this.projectService.getLayerStream().subscribe((layers) => {
             if (layers.length) {

@@ -2,25 +2,22 @@
     mat-button
     class="toggle"
     (click)="toggleVisibility()"
-    [ngSwitch]="collapsed | async"
-    [matTooltip]="toggleTooltip | async"
+    [ngSwitch]="visible"
     matTooltipPosition="above"
+    [matTooltip]="toggleTooltip"
     [matTooltipShowDelay]="toggleTooltipDelay"
 >
-    <mat-icon *ngSwitchCase="true">expand_less</mat-icon>
-    <mat-icon *ngSwitchCase="false">expand_more</mat-icon>
+    <mat-icon *ngSwitchCase="false">expand_less</mat-icon>
+    <mat-icon *ngSwitchCase="true">expand_more</mat-icon>
 </button>
-<mat-tab-group>
-    <mat-tab>
+<mat-tab-group #tabGroup animationDuration="0ms" (selectedIndexChange)="setTabIndex($event)">
+    <mat-tab *ngFor="let tabContent of tabs | async; index as i">
         <ng-template mat-tab-label>
-            <div>Test</div>
+            <div (click)="setTabIndex($event)">{{ tabContent.name }}</div>
+            <mat-icon class="close-button" (click)="closeTab(i)">close</mat-icon>
         </ng-template>
-        <div [style.height.px]="contentHeight">Test</div>
-    </mat-tab>
-    <mat-tab *ngFor="let tabContent of tabs; index as i">
-        <ng-template mat-tab-label>
-            <div (click)="setTabIndex(i)">{{ tabContent.name }}</div>
+        <ng-template matTabContent>
+            <ng-template [cdkPortalOutlet]="tabContent.component"></ng-template>
         </ng-template>
-        <ng-template [cdkPortalOutlet]="tabContent.component" [style.height.px]="contentHeight"></ng-template>
     </mat-tab>
 </mat-tab-group>

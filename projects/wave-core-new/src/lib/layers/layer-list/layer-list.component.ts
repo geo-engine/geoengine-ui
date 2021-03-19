@@ -145,7 +145,7 @@ export class LayerListComponent implements OnDestroy {
 
     showDatatable(layer: Layer): void {
         const datatable = new ComponentPortal(DataTableComponent);
-        console.log('showDatatable', datatable.component); // TODO: remove
+        console.log('showDatatable', datatable.component, datatable); // TODO: remove
         this.tabPanelService.addComponent(layer.name, datatable);
     }
 }

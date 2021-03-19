@@ -103,6 +103,7 @@ import {RasterVectorJoinComponent} from './operators/dialogs/raster-vector-join/
 import {PointInPolygonFilterOperatorComponent} from './operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 import {DataTableComponent} from './datatable/table/table.component';
 import {TabPanelComponent} from './tab-panel/tab-panel.component';
+import {PortalModule} from '@angular/cdk/portal';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -223,6 +224,7 @@ const WAVE_COMPONENTS = [
         FlexLayoutModule,
         FormsModule,
         HttpClientModule,
+        PortalModule,
         ReactiveFormsModule,
     ],
     exports: [
@@ -230,6 +232,7 @@ const WAVE_COMPONENTS = [
         ...MATERIAL_MODULES,
         FlexLayoutModule,
         ReactiveFormsModule,
+        PortalModule,
         /* library exports */
         ...WAVE_PIPES,
         ...WAVE_COMPONENTS,

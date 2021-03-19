@@ -1,21 +1,8 @@
-import {
-    Component,
-    OnInit,
-    ChangeDetectionStrategy,
-    HostBinding,
-    Input,
-    Output,
-    EventEmitter,
-    OnChanges,
-    SimpleChanges,
-    OnDestroy,
-} from '@angular/core';
-import {Observable, Subscription} from 'rxjs';
-import {first, map} from 'rxjs/operators';
+import {Component, OnInit, ChangeDetectionStrategy, HostBinding, Input, OnChanges, SimpleChanges, OnDestroy} from '@angular/core';
+import {Observable} from 'rxjs';
 import {Config} from '../config.service';
+import {LayoutService} from '../layout.service';
 import {TabContent, TabPanelService} from './tab-panel.service';
-
-const TAB_BAR_HEIGHT_PX = 48 + 1;
 
 @Component({
     selector: 'wave-tab-panel',
@@ -27,58 +14,57 @@ export class TabPanelComponent implements OnInit, OnChanges, OnDestroy {
     @HostBinding('class.mat-elevation-z4') elevationStyle = true;
 
     @Input() maxHeight: number;
-    @Output() heightChanges = new EventEmitter<number>();
+    @Input() visible: boolean;
 
-    readonly collapsed: Observable<boolean>;
-    readonly toggleTooltip: Observable<'Show' | 'Hide'>;
+    toggleTooltip: 'Show' | 'Hide';
     readonly toggleTooltipDelay: number;
 
     readonly tabs: Observable<Array<TabContent>>;
 
     contentHeight = 0;
 
-    protected collapsedSubscription: Subscription;
-
-    constructor(protected readonly tabPanelService: TabPanelService, protected readonly config: Config) {
-        this.collapsed = this.tabPanelService.collapsed;
-
-        this.toggleTooltip = this.collapsed.pipe(map((isCollapsed) => (isCollapsed ? 'Show' : 'Hide')));
+    constructor(
+        protected readonly tabPanelService: TabPanelService,
+        protected readonly layoutService: LayoutService,
+        protected readonly config: Config,
+    ) {
         this.toggleTooltipDelay = this.config.DELAYS.TOOLTIP;
 
         this.tabs = this.tabPanelService.tabs;
     }
 
-    ngOnInit(): void {
-        this.collapsedSubscription = this.collapsed.subscribe((collapsed) => this.setContentHeight(this.maxHeight, collapsed));
-    }
+    ngOnInit(): void {}
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.maxHeight) {
-            const maxHeight = changes.maxHeight.currentValue;
-            this.collapsed.pipe(first()).subscribe((collapsed) => this.setContentHeight(maxHeight, collapsed));
+        if (changes.maxHeight || changes.visible) {
+            this.setContentHeight(this.maxHeight, this.visible);
+        }
+
+        if (changes.visible) {
+            this.toggleTooltip = this.visible ? 'Hide' : 'Show';
         }
     }
 
-    ngOnDestroy(): void {
-        this.collapsedSubscription.unsubscribe();
+    ngOnDestroy(): void {}
+
+    toggleVisibility(): void {
+        this.layoutService.toggleLayerDetailViewVisibility();
     }
 
-    toggleVisibility(): void {}
+    setTabIndex(_index: number): void {
+        this.layoutService.setLayerDetailViewVisibility(true);
+    }
 
-    setTabIndex(index: number): void {}
+    closeTab(index: number): void {
+        this.tabPanelService.removeComponent(index);
+    }
 
-    protected setContentHeight(maxHeight: number, collapsed: boolean): void {
+    protected setContentHeight(maxHeight: number, visible: boolean): void {
         let contentHeight = 0;
-        if (!collapsed) {
-            contentHeight = maxHeight - TAB_BAR_HEIGHT_PX;
+        if (visible) {
+            contentHeight = maxHeight - LayoutService.getLayerDetailViewBarHeightPx();
         }
-
-        const heightChanged = this.contentHeight !== contentHeight;
 
         this.contentHeight = contentHeight;
-
-        if (heightChanged) {
-            this.heightChanges.emit(contentHeight + TAB_BAR_HEIGHT_PX);
-        }
     }
 }

@@ -1,6 +1,6 @@
 import {ComponentPortal} from '@angular/cdk/portal';
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, of} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 
 /**
  * A component to display inside a tab
@@ -15,7 +15,6 @@ export interface TabContent {
 })
 export class TabPanelService {
     protected readonly _tabs = new BehaviorSubject<Array<TabContent>>([]);
-    protected readonly _collapsed = new BehaviorSubject<boolean>(true);
 
     constructor() {}
 
@@ -23,20 +22,12 @@ export class TabPanelService {
         return this._tabs;
     }
 
-    get collapsed(): Observable<boolean> {
-        return this._collapsed;
-    }
-
-    get height(): Observable<number> {
-        return of(100); // TODO: get from layout service
-    }
-
     /**
      * Add a new component to the tab panel
      */
     addComponent<T>(name: string, component: ComponentPortal<T>): void {
-        const tabs = this._tabs.getValue();
-        tabs.push({name, component});
+        const tab = {name, component};
+        const tabs = [...this._tabs.getValue(), tab];
         this._tabs.next(tabs);
 
         // TODO: select it?
@@ -46,17 +37,8 @@ export class TabPanelService {
      * Remove the component at index `index` from the tab panel
      */
     removeComponent(index: number): void {
-        const tabs = this._tabs.getValue();
-        delete tabs[index];
+        const oldTabs = this._tabs.getValue();
+        const tabs = [...oldTabs.slice(0, index), ...oldTabs.slice(index + 1, oldTabs.length)];
         this._tabs.next(tabs);
-    }
-
-    /**
-     * Expand the tab panel if it is `collapsed`
-     */
-    expand(): void {
-        if (this._collapsed.getValue()) {
-            this._collapsed.next(false);
-        }
     }
 }
