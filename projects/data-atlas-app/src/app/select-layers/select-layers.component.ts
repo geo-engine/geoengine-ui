@@ -45,7 +45,7 @@ export class SelectLayersComponent implements OnInit {
             3: 'Semi-desert',
             4: 'Tundra',
             5: 'Shrubland',
-            6: 'Tropical grassland',            
+            6: 'Tropical grassland',
             7: 'Temperate grassland',
             8: 'Tropical savanna',
             9: 'Warm temperate open woodland',
@@ -90,7 +90,7 @@ export class SelectLayersComponent implements OnInit {
         });
         breakpoints.push({
             value: 6,
-            rgba: [0, 0,0, 255],
+            rgba: [0, 0, 0, 255],
         });
         breakpoints.push({
             value: 7,
