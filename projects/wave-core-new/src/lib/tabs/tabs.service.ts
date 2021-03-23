@@ -18,7 +18,7 @@ export interface TabInputs {
 @Injectable({
     providedIn: 'root',
 })
-export class TabPanelService {
+export class TabsService {
     protected readonly _tabs = new BehaviorSubject<Array<TabContent>>([]);
 
     constructor() {}

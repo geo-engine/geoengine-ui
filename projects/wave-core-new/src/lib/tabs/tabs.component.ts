@@ -17,15 +17,15 @@ import {
 import {Subscription} from 'rxjs';
 import {Config} from '../config.service';
 import {LayoutService} from '../layout.service';
-import {TabContent, TabPanelService} from './tab-panel.service';
+import {TabContent, TabsService} from './tabs.service';
 
 @Component({
     selector: 'wave-tab-panel',
-    templateUrl: './tab-panel.component.html',
-    styleUrls: ['./tab-panel.component.scss'],
+    templateUrl: './tabs.component.html',
+    styleUrls: ['./tabs.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TabPanelComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
+export class TabsComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
     @HostBinding('class.mat-elevation-z4') elevationStyle = true;
     @ViewChild(CdkPortalOutlet) portalOutlet: CdkPortalOutlet;
 
@@ -44,7 +44,7 @@ export class TabPanelComponent implements OnInit, OnChanges, OnDestroy, AfterVie
     protected tabSubscription: Subscription;
 
     constructor(
-        protected readonly tabPanelService: TabPanelService,
+        protected readonly tabPanelService: TabsService,
         protected readonly layoutService: LayoutService,
         protected readonly config: Config,
         protected readonly componentFactoryResolver: ComponentFactoryResolver,

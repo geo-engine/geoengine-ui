@@ -14,7 +14,7 @@ import {SymbologyEditorComponent} from '../symbology/symbology-editor/symbology-
 import {filter, map, startWith} from 'rxjs/operators';
 import {AddDataComponent} from '../../datasets/add-data/add-data.component';
 import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-graph.component';
-import {TabPanelService} from '../../tab-panel/tab-panel.service';
+import {TabsService} from '../../tabs/tabs.service';
 import {DataTableComponent} from '../../datatable/table/table.component';
 
 /**
@@ -77,7 +77,7 @@ export class LayerListComponent implements OnDestroy {
         public mapService: MapService,
         public config: Config,
         public changeDetectorRef: ChangeDetectorRef,
-        protected readonly tabPanelService: TabPanelService,
+        protected readonly tabsService: TabsService,
     ) {
         this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
 
@@ -143,6 +143,6 @@ export class LayerListComponent implements OnDestroy {
     }
 
     showDatatable(layer: Layer): void {
-        this.tabPanelService.addComponent(layer.name, DataTableComponent, {layer});
+        this.tabsService.addComponent(layer.name, DataTableComponent, {layer});
     }
 }

@@ -102,7 +102,7 @@ import {MeanRasterPixelValuesOverTimeDialogComponent} from './operators/dialogs/
 import {RasterVectorJoinComponent} from './operators/dialogs/raster-vector-join/raster-vector-join.component';
 import {PointInPolygonFilterOperatorComponent} from './operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 import {DataTableComponent} from './datatable/table/table.component';
-import {TabPanelComponent} from './tab-panel/tab-panel.component';
+import {TabsComponent} from './tabs/tabs.component';
 import {PortalModule} from '@angular/cdk/portal';
 
 const MATERIAL_MODULES = [
@@ -204,7 +204,7 @@ const WAVE_COMPONENTS = [
     SymbologyRasterComponent,
     SymbologyRasterMappingColorizerComponent,
     SymbologyVectorComponent,
-    TabPanelComponent,
+    TabsComponent,
     TimeConfigComponent,
     TimeInputComponent,
     VatLogoComponent,

@@ -13,7 +13,7 @@ import {
     ProjectService,
     RandomColorService,
     SidenavRef,
-    TabPanelService,
+    TabsService,
     UserService,
     WaveCoreModule,
 } from 'wave-core';
@@ -44,7 +44,7 @@ import {MockLayersComponent} from './mock-layers/mock-layers.component';
         RandomColorService,
         SidenavRef,
         UserService,
-        TabPanelService,
+        TabsService,
     ],
     bootstrap: [AppComponent],
 })
