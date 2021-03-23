@@ -12,7 +12,7 @@
 </button>
 <nav mat-tab-nav-bar>
     <a mat-tab-link *ngFor="let tabContent of tabs" (click)="setTab(tabContent)" [active]="activeTab == tabContent">
-        <span>{{ tabContent.name }}</span>
+        <span fxFlex>{{ tabContent.name }}</span>
         <mat-icon class="close-button" (click)="closeTab(tabContent)">close</mat-icon>
     </a>
 </nav>
