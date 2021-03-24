@@ -24,7 +24,7 @@ export class DataSetService {
         return this.userService.getSessionStream().pipe(mergeMap((session) => this.backend.upload(session.sessionToken, form)));
     }
 
-    createDataSet(create: CreateDataSetDict) {
+    createDataSet(create: CreateDataSetDict): Observable<DataSetIdDict> {
         return this.userService.getSessionStream().pipe(mergeMap((session) => this.backend.createDataSet(session.sessionToken, create)));
     }
 }

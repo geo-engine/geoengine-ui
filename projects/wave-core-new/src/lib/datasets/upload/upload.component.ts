@@ -1,7 +1,7 @@
 import {HttpEventType} from '@angular/common/http';
 import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
-import {BehaviorSubject, Subject} from 'rxjs';
-import {DataSetIdDict, UploadResponseDict, UUID} from '../../backend/backend.model';
+import {Subject} from 'rxjs';
+import {DataSetIdDict, UUID} from '../../backend/backend.model';
 import {NotificationService} from '../../notification.service';
 import {DataSetService} from '../dataset.service';
 
@@ -165,11 +165,11 @@ export class UploadComponent implements OnInit {
         );
     }
 
-    selectLoadingInfo(info: ExampleLoadingInfo) {
+    selectLoadingInfo(info: ExampleLoadingInfo): void {
         this.loadingInfo = info.json;
     }
 
-    submitLoadingInfo(uploadId: UUID) {
+    submitLoadingInfo(uploadId: UUID): void {
         this.submittedCreate = true;
         const create = {
             upload: uploadId,
