@@ -38,8 +38,8 @@ export abstract class Colorizer {
 }
 
 export class LinearGradient extends Colorizer {
-    breakpoints: Array<ColorBreakpoint>;
-    noDataColor: Color;
+    readonly breakpoints: Array<ColorBreakpoint>;
+    readonly noDataColor: Color;
     readonly defaultColor: Color;
 
     constructor(breakpoints: Array<ColorBreakpoint>, noDataColor: Color, defaultColor: Color) {
@@ -138,8 +138,8 @@ export class LinearGradient extends Colorizer {
 }
 
 export class PaletteColorizer extends Colorizer {
-    colors: Map<number, Color>;
-    noDataColor: Color;
+    readonly colors: Map<number, Color>;
+    readonly noDataColor: Color;
     readonly defaultColor: Color;
 
     constructor(colors: Map<number, Color>, noDataColor: Color, defaultColor: Color) {
@@ -150,7 +150,6 @@ export class PaletteColorizer extends Colorizer {
     }
 
     static fromPaletteDict(dict: PaletteDict): PaletteColorizer {
-        console.log(dict);
         const colors = new Map();
         for (const i of Object.keys(dict.colors)) {
             colors[i] = Color.fromRgbaLike(rgbaColorFromDict(dict.colors[i]));

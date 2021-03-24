@@ -128,6 +128,7 @@ const MATERIAL_MODULES = [
 
 const WAVE_PIPES = [
     BreakpointToCssStringPipe,
+    CastMeasurementToContinuousPipe,
     CssStringToRgbaPipe,
     HighlightPipe,
     MappingColorizerToGradientPipe,
@@ -135,7 +136,6 @@ const WAVE_PIPES = [
     SafeHtmlPipe,
     SafeStylePipe,
     TrimPipe,
-    CastMeasurementToContinuousPipe,
 ];
 
 const WAVE_COMPONENTS = [

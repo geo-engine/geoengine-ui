@@ -51,7 +51,7 @@ export const MAX_ALLOWED_TEXT_LENGTH = 25;
 
 // export type StrokeDashStyle = Array<number>;
 
-const styleCache: {[key: string]: OlStyle} = {};
+const STYLE_CACHE: {[key: string]: OlStyle} = {};
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IconStyle {}
@@ -98,12 +98,12 @@ export abstract class VectorSymbology extends Symbology {
             const styler = this.createStyler(feature);
 
             const key = styler.cacheKey();
-            if (!(key in styleCache)) {
-                const style = styler.createStyle();
-                styleCache[key] = style;
-                return style;
+            if (key in STYLE_CACHE) {
+                return STYLE_CACHE[key];
             } else {
-                return styleCache[key];
+                const style = styler.createStyle();
+                STYLE_CACHE[key] = style;
+                return style;
             }
         };
     }
@@ -151,7 +151,7 @@ export class PointStyler extends Styler {
 
     cacheKey(): string {
         return `${this.clustered}${this.radius}${Styler.colorToKey(this.fillColor)}${this.stroke.cacheKey()}${
-            this.text ? this.text.cacheKey() : undefined
+            this.text ? this.text.cacheKey() : ''
         }`;
     }
 }
@@ -174,7 +174,7 @@ export class LineStyler extends Styler {
     }
 
     cacheKey(): string {
-        return `${this.stroke.cacheKey()}${this.text ? this.text.cacheKey() : undefined}`;
+        return `${this.stroke.cacheKey()}${this.text ? this.text.cacheKey() : ''}`;
     }
 }
 
@@ -199,7 +199,7 @@ export class PolygonStyler extends Styler {
     }
 
     cacheKey(): string {
-        return `${Styler.colorToKey(this.fillColor)}${this.stroke.cacheKey()}${this.text ? this.text.cacheKey() : undefined}`;
+        return `${Styler.colorToKey(this.fillColor)}${this.stroke.cacheKey()}${this.text ? this.text.cacheKey() : ''}`;
     }
 }
 
