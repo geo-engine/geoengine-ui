@@ -11,7 +11,12 @@
     <mat-icon *ngSwitchCase="true">expand_more</mat-icon>
 </button>
 <nav mat-tab-nav-bar>
-    <a mat-tab-link *ngFor="let tabContent of tabs" (click)="setTab(tabContent)" [active]="activeTab == tabContent">
+    <a
+        mat-tab-link
+        *ngFor="let tabContent of this.tabPanelService.tabs | async"
+        (click)="setTab(tabContent)"
+        [active]="tabContent === tabPanelService.activeTab"
+    >
         <span fxFlex>{{ tabContent.name | async }}</span>
         <mat-icon class="close-button" (click)="closeTab(tabContent)">close</mat-icon>
     </a>

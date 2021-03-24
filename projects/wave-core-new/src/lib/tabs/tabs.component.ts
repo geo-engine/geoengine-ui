@@ -32,19 +32,15 @@ export class TabsComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
     @Input() maxHeight: number;
     @Input() visible: boolean;
 
-    activeTab: TabContent;
-
     toggleTooltip: 'Show' | 'Hide';
     readonly toggleTooltipDelay: number;
 
-    tabs: Array<TabContent> = [];
-
     contentHeight = 0;
 
-    protected tabSubscription: Subscription;
+    protected activeTabSubscription: Subscription;
 
     constructor(
-        protected readonly tabPanelService: TabsService,
+        public readonly tabPanelService: TabsService,
         protected readonly layoutService: LayoutService,
         protected readonly config: Config,
         protected readonly componentFactoryResolver: ComponentFactoryResolver,
@@ -53,21 +49,12 @@ export class TabsComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
     ) {
         this.toggleTooltipDelay = this.config.DELAYS.TOOLTIP;
 
-        this.tabSubscription = this.tabPanelService.tabs.subscribe((tabs) => {
-            const wasRemoval = this.tabs.length > tabs.length;
-            const wasAddition = this.tabs.length < tabs.length;
-
-            this.tabs = tabs;
-
-            if (wasRemoval) {
-                this.checkForDeselection();
+        this.activeTabSubscription = this.tabPanelService.getActiveTabChanges().subscribe((tabContent) => {
+            if (tabContent) {
+                this.renderTabContent(tabContent);
+            } else {
+                this.removeRenderedTabContent();
             }
-
-            if (wasAddition) {
-                this.setTab(this.tabs[this.tabs.length - 1]);
-            }
-
-            this.changeDetectorRef.markForCheck();
         });
     }
 
@@ -83,8 +70,8 @@ export class TabsComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
         if (changes.visible) {
             this.toggleTooltip = this.visible ? 'Hide' : 'Show';
 
-            if (this.visible && this.activeTab) {
-                this.renderTabContent(this.activeTab);
+            if (this.visible && this.tabPanelService.activeTab) {
+                this.renderTabContent(this.tabPanelService.activeTab);
             } else if (!this.visible) {
                 this.removeRenderedTabContent();
             }
@@ -92,7 +79,7 @@ export class TabsComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
     }
 
     ngOnDestroy(): void {
-        this.tabSubscription.unsubscribe();
+        this.activeTabSubscription.unsubscribe();
     }
 
     toggleVisibility(): void {
@@ -100,23 +87,16 @@ export class TabsComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
     }
 
     setTab(tabContent: TabContent): void {
-        if (tabContent === this.activeTab) {
-            return; // already selected
-        }
-
-        this.activeTab = tabContent;
-        this.layoutService.setLayerDetailViewVisibility(true);
-
-        this.renderTabContent(tabContent);
-
-        this.changeDetectorRef.markForCheck();
+        this.tabPanelService.activeTab = tabContent;
     }
 
     closeTab(tabContent: TabContent): void {
-        this.tabPanelService.removeComponent(this.tabs.indexOf(tabContent));
+        this.tabPanelService.removeComponent(tabContent);
     }
 
     protected renderTabContent(tabContent: TabContent): void {
+        this.layoutService.setLayerDetailViewVisibility(true);
+
         this.removeRenderedTabContent();
 
         const portal = new ComponentPortal(tabContent.component);
@@ -128,18 +108,13 @@ export class TabsComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
         for (const property of Object.keys(tabContent.inputs)) {
             component[property] = tabContent.inputs[property];
         }
+
+        this.changeDetectorRef.markForCheck();
     }
 
     protected removeRenderedTabContent(): void {
         if (this.portalOutlet && this.portalOutlet.hasAttached()) {
             this.portalOutlet.detach();
-        }
-    }
-
-    protected checkForDeselection(): void {
-        if (this.tabs.indexOf(this.activeTab) === -1) {
-            this.removeRenderedTabContent();
-            this.activeTab = undefined;
         }
     }
 
