@@ -74,7 +74,11 @@ export class TabsService {
         this._tabs.next(tabs);
 
         if (this.activeTab === tabContent) {
-            this.activeTab = undefined;
+            // select the tab right next to it, or otherwise the last tab
+            const indexToSelect = Math.min(index, tabs.length - 1);
+
+            // if index is -1, it defaults to undefined
+            this.activeTab = tabs[indexToSelect];
         }
     }
 
