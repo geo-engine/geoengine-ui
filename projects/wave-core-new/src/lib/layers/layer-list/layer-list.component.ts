@@ -143,6 +143,7 @@ export class LayerListComponent implements OnDestroy {
     }
 
     showDatatable(layer: Layer): void {
-        this.tabsService.addComponent(layer.name, DataTableComponent, {layer});
+        const name = this.projectService.getLayerChangesStream(layer).pipe(map((l) => l.name));
+        this.tabsService.addComponent(name, DataTableComponent, {layer});
     }
 }

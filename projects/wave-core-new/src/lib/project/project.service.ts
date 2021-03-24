@@ -666,6 +666,10 @@ export class ProjectService {
             .pipe(
                 map((project) => project.layers.map((l) => (l.id === layer.id ? layer : l))),
                 mergeMap((layers) => this.changeProjectConfig({layers})),
+                tap(() => {
+                    // propagate layer changes
+                    this.layers.get(layer.id).next(layer);
+                }),
             )
             .subscribe(
                 () => subject.next(),
@@ -1046,7 +1050,11 @@ export class ProjectService {
         if (this.layers.get(layer.id)) {
             throw new Error('Layer changes stream already registered');
         }
+
         this.layers.set(layer.id, new ReplaySubject<Layer>(1));
+
+        // emit first change
+        this.layers.get(layer.id).next(layer);
     }
 
     private getDefaultTimeStep(): TimeStepDuration {
