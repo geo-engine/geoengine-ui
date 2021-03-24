@@ -17,7 +17,7 @@ export class IfGuestDirective implements OnDestroy {
         });
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.subscription.unsubscribe();
     }
 }

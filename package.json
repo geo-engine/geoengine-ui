@@ -16,6 +16,7 @@
         "serve:nature40": "ng serve nature40-app --proxy-config proxy.conf.json",
         "build:core": "ng build wave-core",
         "build-watch:core": "ng build wave-core --watch",
+        "build:core-new": "ng build wave-core-new",
         "build-watch:core-new": "ng build wave-core-new --watch",
         "build-prod:core": "ng build --prod wave-core",
         "build-prod:wave": "ng build --prod wave-app",

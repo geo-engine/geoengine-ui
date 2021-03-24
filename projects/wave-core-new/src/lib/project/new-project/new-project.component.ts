@@ -25,7 +25,7 @@ export class NewProjectComponent implements OnInit, AfterViewInit {
         protected notificationService: NotificationService,
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.form = this.formBuilder.group({
             name: [
                 '',
@@ -43,14 +43,14 @@ export class NewProjectComponent implements OnInit, AfterViewInit {
             });
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         setTimeout(() => this.form.updateValueAndValidity());
     }
 
     /**
      * Create a new project and switch to it.
      */
-    create() {
+    create(): void {
         this.projectService
             .getTimeStream()
             .pipe(

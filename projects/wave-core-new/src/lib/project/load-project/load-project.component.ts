@@ -48,7 +48,7 @@ export class LoadProjectComponent implements OnInit, AfterViewInit {
         protected formBuilder: FormBuilder,
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.projectService.getProjectOnce().subscribe((project) => {
             this.currentProjectId = project.id;
         });
@@ -86,11 +86,11 @@ export class LoadProjectComponent implements OnInit, AfterViewInit {
             });
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         setTimeout(() => this.form.updateValueAndValidity());
     }
 
-    load() {
+    load(): void {
         const newProjectId: string = this.form.controls['projectId'].value;
         this.projectService.loadAndSetProject(newProjectId).subscribe((project) => {
             this.currentProjectId = newProjectId;

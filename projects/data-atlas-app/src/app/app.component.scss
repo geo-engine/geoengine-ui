@@ -1,52 +1,45 @@
-$nav-width: 6rem;
-$sidenav-width: 18rem;
+$sidenav-width: 24rem;
 
-mat-nav-list {
+.sidenav {
     position: absolute;
     left: 0;
-    width: $nav-width;
-    height: 100%;
     top: 0;
+    bottom: 0;
+    width: $sidenav-width;
 
-    padding-top: 0;
+    z-index: 5;
 
     background-color: var(--wave-background-color);
 
-    mat-toolbar {
-        padding: 1rem;
-        white-space: break-spaces;
-        text-align: center;
+    overflow: auto;
 
-        height: 5rem;
+    mat-toolbar img {
+        width: 60%;
+        margin: 0 auto;
     }
 
-    a {
-        height: 5rem;
-    }
+    mat-expansion-panel-header {
+        mat-panel-title {
+            flex: 1;
+        }
 
-    a ::ng-deep .mat-list-item-content {
-        text-align: center;
-        flex-direction: column;
-        justify-content: center;
+        mat-panel-description {
+            flex: 0;
+        }
     }
-}
-
-mat-sidenav-container {
-    left: $nav-width;
-    width: calc(100% - #{$nav-width});
 }
 
 #bottom-float-buttons {
     position: fixed;
     z-index: 3;
-    left: $nav-width;
+    left: $sidenav-width;
     right: 0;
     top: 1rem;
     text-align: center;
 }
 
 wave-zoom-handles,
-wave-small-time-interaction {
+wave-app-time-step-selector {
     display: inline-block;
     background-color: rgba(255, 255, 255, 0.87);
     border-radius: 2px;
@@ -61,15 +54,11 @@ button#analysisButton {
     z-index: 3;
     position: fixed;
     bottom: 1rem;
-    left: $nav-width + 1rem;
+    left: $sidenav-width + 1rem;
 
     mat-icon {
         margin-right: 1rem;
         height: 2.5rem;
-    }
-
-    ::ng-deep &.sidenav-opened {
-        left: $nav-width + $sidenav-width + 1rem;
     }
 }
 
@@ -77,11 +66,7 @@ mat-card#analysisCard {
     z-index: 3;
     position: fixed;
     bottom: 1rem;
-    left: $nav-width + 1rem;
-
-    ::ng-deep &.sidenav-opened {
-        left: $nav-width + $sidenav-width + 1rem;
-    }
+    left: $sidenav-width + 1rem;
 }
 
 wave-legend {
@@ -95,6 +80,8 @@ wave-legend {
 .mid-container {
     z-index: 0;
     position: relative;
+    left: $sidenav-width;
+    width: calc(100% - 24rem);
 }
 
 mat-sidenav {

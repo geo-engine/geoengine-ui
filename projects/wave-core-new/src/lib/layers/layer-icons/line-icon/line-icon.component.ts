@@ -42,7 +42,7 @@ export class LineIconComponent implements OnInit, OnChanges {
         }
     }
 
-    private updateStyle() {
+    private updateStyle(): void {
         this.strokeWidth = this.iconStyle.strokeWidth;
         this.strokeDashArray = this.iconStyle.strokeDashStyle ? this.iconStyle.strokeDashStyle : [];
         this.strokeColor = this.iconStyle.strokeRGBA.rgbaCssString();

@@ -160,14 +160,21 @@ class Float32 extends RasterDataType {
     }
 
     getMin(): number {
-        return Number.POSITIVE_INFINITY;
+        return Number.MIN_VALUE;
     }
 
     getMax(): number {
-        return Number.NEGATIVE_INFINITY;
+        return Number.MAX_VALUE;
     }
 
     noData(value: number): NoDataDict {
+        if (isNaN(value)) {
+            // TODO: hack, since we cannot serialize NAN in JSON
+            return {
+                F32: Number.MIN_VALUE,
+            };
+        }
+
         return {
             F32: value,
         };
@@ -184,14 +191,21 @@ class Float64 extends RasterDataType {
     }
 
     getMin(): number {
-        return Number.POSITIVE_INFINITY;
+        return Number.MIN_VALUE;
     }
 
     getMax(): number {
-        return Number.NEGATIVE_INFINITY;
+        return Number.MAX_VALUE;
     }
 
     noData(value: number): NoDataDict {
+        if (isNaN(value)) {
+            // TODO: hack, since we cannot serialize NAN in JSON
+            return {
+                F64: Number.MIN_VALUE,
+            };
+        }
+
         return {
             F64: value,
         };
@@ -217,7 +231,7 @@ export class RasterDataTypeCollection {
         this.ALL_DATATYPES = [this.Byte, this.Int16, this.UInt16, this.Int32, this.UInt32, this.Float32, this.Float64];
     }
 
-    fromCode(code: string) {
+    fromCode(code: string): RasterDataType {
         switch (code) {
             case this.Byte.getCode():
                 return this.Byte;
@@ -301,7 +315,7 @@ export class VectorDataTypeCollection {
     MultiLineString: VectorDataType = new MultiLineString();
     MultiPolygon: VectorDataType = new MultiPolygon();
 
-    fromCode(code: string) {
+    fromCode(code: string): VectorDataType {
         switch (code) {
             case this.Data.getCode():
                 return this.Data;
@@ -360,7 +374,7 @@ export class VectorColumnDataTypeCollection {
     readonly Text: VectorColumnDataType = new TextColumn();
     readonly Categorical: VectorColumnDataType = new CategoricalColumn();
 
-    fromCode(code: string) {
+    fromCode(code: string): VectorColumnDataType {
         switch (code) {
             case this.Number.code:
                 return this.Number;

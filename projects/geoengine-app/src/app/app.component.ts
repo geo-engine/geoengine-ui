@@ -99,7 +99,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.layerDetailViewVisible$ = this.layoutService.getLayerDetailViewVisibilityStream();
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.mapService.registerMapComponent(this.mapComponent);
         this.mapIsGrid$ = this.mapService.isGrid$;
 
@@ -110,7 +110,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(this.windowHeight$);
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         this.layoutService.getSidenavContentComponentStream().subscribe((sidenavConfig) => {
             this.rightSidenavContainer.load(sidenavConfig);
             if (sidenavConfig) {
@@ -134,7 +134,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         // this.handleQueryParameters();
     }
 
-    setTabIndex(index: number) {
+    setTabIndex(index: number): void {
         this.layoutService.setLayerDetailViewTabIndex(index);
         this.layoutService.setLayerDetailViewVisibility(true);
     }
@@ -143,7 +143,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         return layer.id;
     }
 
-    private registerIcons() {
+    private registerIcons(): void {
         this.iconRegistry.addSvgIconInNamespace(
             'geoengine',
             'logo',
@@ -222,7 +222,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     @HostListener('window:resize')
-    private windowHeight() {
+    private windowHeight(): void {
         this.windowHeight$.next(window.innerHeight);
     }
 

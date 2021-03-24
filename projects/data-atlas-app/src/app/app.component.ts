@@ -1,19 +1,6 @@
 import {Observable, BehaviorSubject} from 'rxjs';
-import {first} from 'rxjs/operators';
-import {
-    AfterViewInit,
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    HostListener,
-    Inject,
-    OnInit,
-    ViewChild,
-    ViewContainerRef,
-} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
+import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
-import {MatSidenav} from '@angular/material/sidenav';
 import {
     Layer,
     LayoutService,
@@ -27,7 +14,6 @@ import {
     Time,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
-import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from './app-config.service';
 import {SelectLayersComponent} from './select-layers/select-layers.component';
 import {ComponentPortal} from '@angular/cdk/portal';
@@ -42,13 +28,12 @@ import {DataSelectionService} from './data-selection.service';
 })
 export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MapContainerComponent, {static: true}) mapComponent: MapContainerComponent;
-    @ViewChild(MatSidenav, {static: true}) sidenav: MatSidenav;
 
     readonly layersReverse$: Observable<Array<Layer>>;
     readonly analysisVisible$ = new BehaviorSubject(false);
     readonly windowHeight$ = new BehaviorSubject<number>(window.innerHeight);
 
-    datasetPortal: ComponentPortal<SelectLayersComponent>;
+    datasetPortal = new ComponentPortal(SelectLayersComponent);
 
     constructor(
         @Inject(Config) readonly config: AppConfig,
@@ -56,13 +41,10 @@ export class AppComponent implements OnInit, AfterViewInit {
         readonly projectService: ProjectService,
         readonly dataSelectionService: DataSelectionService,
         readonly _vcRef: ViewContainerRef, // reference used by color picker
-        private userService: UserService,
-        private changeDetectorRef: ChangeDetectorRef,
-        private dialog: MatDialog,
+        private _userService: UserService,
         private iconRegistry: MatIconRegistry,
-        private randomColorService: RandomColorService,
-        private activatedRoute: ActivatedRoute,
-        private notificationService: NotificationService,
+        private _randomColorService: RandomColorService,
+        private _notificationService: NotificationService,
         private mapService: MapService,
         private sanitizer: DomSanitizer,
     ) {
@@ -71,11 +53,11 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.layersReverse$ = this.dataSelectionService.layers;
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.mapService.registerMapComponent(this.mapComponent);
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         this.reset();
         this.mapComponent.resize();
     }
@@ -84,26 +66,17 @@ export class AppComponent implements OnInit, AfterViewInit {
         return layer.id;
     }
 
-    openDataMenu() {
-        this.datasetPortal = new ComponentPortal(SelectLayersComponent);
-        this.sidenav.open();
-    }
-
-    showAnalysis() {
+    showAnalysis(): void {
         this.analysisVisible$.next(true);
     }
 
-    private reset() {
-        this.projectService
-            .getLayerStream()
-            .pipe(first())
-            .subscribe(() => {
-                this.projectService.clearLayers();
-                this.projectService.setTime(new Time(moment.utc()));
-            });
+    private reset(): void {
+        this.projectService.clearLayers();
+        this.projectService.clearPlots();
+        this.projectService.setTime(new Time(moment.utc()));
     }
 
-    private registerIcons() {
+    private registerIcons(): void {
         this.iconRegistry.addSvgIconInNamespace(
             'geoengine',
             'logo',
@@ -115,7 +88,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     @HostListener('window:resize')
-    private windowHeight() {
+    private windowHeight(): void {
         this.windowHeight$.next(window.innerHeight);
     }
 }

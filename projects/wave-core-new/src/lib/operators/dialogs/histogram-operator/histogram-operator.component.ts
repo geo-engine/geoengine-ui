@@ -62,7 +62,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
         private readonly formBuilder: FormBuilder,
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         const layerControl = this.formBuilder.control(undefined, Validators.required);
         const rangeTypeControl = this.formBuilder.control('data', Validators.required);
         this.form = this.formBuilder.group({
@@ -115,14 +115,14 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
         this.isVectorLayer$ = this.form.controls['layer'].valueChanges.pipe(map((layer) => isVectorLayer(layer)));
     }
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         setTimeout(() => {
             this.form.updateValueAndValidity();
             this.form.controls['layer'].updateValueAndValidity();
         });
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
@@ -130,7 +130,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
      * Uses the user input to create a histogram plot.
      * The plot is added to the plot view.
      */
-    add() {
+    add(): void {
         const inputLayer = this.form.controls['layer'].value as Layer;
 
         const attributeName = this.form.controls['attribute'].value as string;

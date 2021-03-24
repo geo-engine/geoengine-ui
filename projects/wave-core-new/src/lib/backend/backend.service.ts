@@ -269,7 +269,7 @@ export class BackendService {
 class NullDiscardingHttpParams {
     httpParams: HttpParams = new HttpParams();
 
-    set(param: string, value: string) {
+    set(param: string, value: string): void {
         if (value === undefined || value === null) {
             return;
         }
@@ -277,7 +277,7 @@ class NullDiscardingHttpParams {
         this.httpParams = this.httpParams.set(param, value);
     }
 
-    setMapped<V>(param: string, value: V, transform: (v: V) => string) {
+    setMapped<V>(param: string, value: V, transform: (v: V) => string): void {
         if (value === undefined || value === null) {
             return;
         }

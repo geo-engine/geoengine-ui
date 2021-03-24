@@ -17,9 +17,7 @@ import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
 import {RasterLayer} from '../../layer.model';
 import {BehaviorSubject, combineLatest, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
-import {Unit} from '../../../operators/unit.model';
 import {debounceTime, filter, map, startWith} from 'rxjs/operators';
-import {ResultTypes} from '../../../operators/result-type.model';
 import {MapService} from '../../../map/map.service';
 import {Config} from '../../../config.service';
 import {MatSliderChange} from '@angular/material/slider';
@@ -69,7 +67,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
     /**
      * Set the max value to use for color table generation
      */
-    updateLayerMinValue(min: number) {
+    updateLayerMinValue(min: number): void {
         if (this.layerMinValue !== min) {
             this.layerMinValue = min;
         }
@@ -78,7 +76,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
     /**
      * Set the max value to use for color table generation
      */
-    updateLayerMaxValue(max: number) {
+    updateLayerMaxValue(max: number): void {
         if (this.layerMaxValue !== max) {
             this.layerMaxValue = max;
         }
@@ -87,7 +85,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
     /**
      * Set the opacity value from a slider change event
      */
-    updateOpacity(event: MatSliderChange) {
+    updateOpacity(event: MatSliderChange): void {
         this.symbology.opacity = event.value === undefined || event.value === 0 ? 0 : event.value / 100;
         this.update();
     }
@@ -95,7 +93,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
     /**
      * Set the overflow color
      */
-    updateOverflowColor(colorBreakpoint: ColorBreakpoint) {
+    updateOverflowColor(colorBreakpoint: ColorBreakpoint): void {
         if (colorBreakpoint) {
             this.symbology.overflowColor = colorBreakpoint;
             this.update();
@@ -105,7 +103,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
     /**
      * Set the no data color
      */
-    updateNoDataColor(colorBreakpoint: ColorBreakpoint) {
+    updateNoDataColor(colorBreakpoint: ColorBreakpoint): void {
         if (colorBreakpoint) {
             this.symbology.noDataColor = colorBreakpoint;
             this.update();
@@ -115,7 +113,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
     /**
      * Set the symbology colorizer
      */
-    updateColorizer(colorizerData: ColorizerData) {
+    updateColorizer(colorizerData: ColorizerData): void {
         if (colorizerData) {
             this.symbology.colorizer = colorizerData;
             this.update();
@@ -139,7 +137,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
     /**
      * Sets the current (working) symbology to the one of the current layer.
      */
-    updateSymbologyFromLayer() {
+    updateSymbologyFromLayer(): void {
         if (!this.layer || !this.layer.symbology || this.layer.symbology.equals(this.symbology)) {
             return;
         }
@@ -149,7 +147,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
     /**
      * Sets the layer min/max values from the colorizer.
      */
-    updateLayerMinMaxFromColorizer() {
+    updateLayerMinMaxFromColorizer(): void {
         this.updateLayerMaxValue(this.colorizerMinValue);
         this.updateLayerMaxValue(this.colorizerMaxValue);
     }
@@ -159,7 +157,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
      *
      * @param event contains a checked: boolean value.
      */
-    updateHistogramAutoReload(event: MatSlideToggleChange) {
+    updateHistogramAutoReload(event: MatSlideToggleChange): void {
         this.layerHistogramAutoReloadEnabled = event.checked;
     }
 
@@ -193,15 +191,15 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
         this.reinitializeLayerHistogramDataSubscription();
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.layerHistogramDataSubscription.unsubscribe();
     }
 
-    private update() {
+    private update(): void {
         this.symbologyChanged.emit(this.symbology.clone());
     }
 
-    private reinitializeLayerHistogramDataSubscription() {
+    private reinitializeLayerHistogramDataSubscription(): void {
         if (this.layerHistogramDataSubscription) {
             this.layerHistogramDataSubscription.unsubscribe();
         }
@@ -223,7 +221,7 @@ export class SymbologyRasterMappingColorizerComponent implements OnChanges, OnDe
                 // filter(c => c.operator !== undefined), // TODO: refactor
                 map((_) => this.buildHistogramOperator()),
             ),
-        ]).subscribe(([[projectTime, projection, viewport], histogramOperator]) => {
+        ]).subscribe(([[_projectTime, _projection, _viewport], _histogramOperator]) => {
             this.layerHistogramData$.next(undefined);
             this.layerHistogramDataLoading$.next(true);
 

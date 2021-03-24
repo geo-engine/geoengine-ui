@@ -25,7 +25,7 @@ export class SmallTimeInteractionComponent implements OnInit, OnDestroy {
         private changeDetectorRef: ChangeDetectorRef,
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.timeStreamSubscription = this.projectService.getTimeStream().subscribe((t) => {
             this.timeRepresentation = t.toString();
             this.changeDetectorRef.markForCheck();
@@ -41,21 +41,21 @@ export class SmallTimeInteractionComponent implements OnInit, OnDestroy {
         this.timeStepDurationStreamSubscription.unsubscribe();
     }
 
-    timeForward() {
+    timeForward(): void {
         this.projectService.getTimeOnce().subscribe((time) => {
             const updatedTime = time.add(this.timeStepDuration.durationAmount, this.timeStepDuration.durationUnit);
             this.projectService.setTime(updatedTime);
         });
     }
 
-    timeBackwards() {
+    timeBackwards(): void {
         this.projectService.getTimeOnce().subscribe((time) => {
             const updatedTime = time.subtract(this.timeStepDuration.durationAmount, this.timeStepDuration.durationUnit);
             this.projectService.setTime(updatedTime);
         });
     }
 
-    openTimeConfig() {
+    openTimeConfig(): void {
         this.layoutService.setSidenavContentComponent({component: TimeConfigComponent});
     }
 }

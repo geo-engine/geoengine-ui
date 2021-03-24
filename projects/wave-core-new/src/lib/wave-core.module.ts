@@ -102,6 +102,7 @@ import {MeanRasterPixelValuesOverTimeDialogComponent} from './operators/dialogs/
 import {RasterVectorJoinComponent} from './operators/dialogs/raster-vector-join/raster-vector-join.component';
 import {PointInPolygonFilterOperatorComponent} from './operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 import {UploadComponent} from './datasets/upload/upload.component';
+import {DataTableComponent} from './datatable/table/table.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -201,6 +202,7 @@ const WAVE_COMPONENTS = [
     SymbologyRasterComponent,
     SymbologyRasterMappingColorizerComponent,
     SymbologyVectorComponent,
+    DataTableComponent,
     TimeConfigComponent,
     TimeInputComponent,
     UploadComponent,

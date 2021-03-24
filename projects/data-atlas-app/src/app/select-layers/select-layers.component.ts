@@ -1,9 +1,19 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {mergeMap} from 'rxjs/operators';
-import {Interpolation, MappingRasterSymbology, ProjectService, RasterLayer, Unit, UUID, WorkflowDict} from 'wave-core';
+import {
+    Interpolation,
+    MappingRasterSymbology,
+    ProjectService,
+    RasterLayer,
+    Unit,
+    WorkflowDict,
+    ColorBreakpointDict,
+    Time,
+    UUID,
+} from 'wave-core';
 import {DataSelectionService} from '../data-selection.service';
 import {MatSelectionListChange} from '@angular/material/list';
-import {ColorBreakpointDict} from '../../../../wave-core/src/lib/colors/color-breakpoint.model';
+import moment from 'moment';
 
 @Component({
     selector: 'wave-app-mock-layers',
@@ -16,14 +26,14 @@ export class SelectLayersComponent implements OnInit {
 
     ngOnInit(): void {}
 
-    addBiome(name: string, sourceId: UUID) {
+    addBiome(): void {
         const workflow: WorkflowDict = {
             type: 'Raster',
             operator: {
                 type: 'GdalSource',
                 params: {
                     data_set: {
-                        Internal: sourceId,
+                        Internal: '73b13876-bdd2-48b2-a628-ce0a1b0eee9d',
                     },
                 },
             },
@@ -34,8 +44,8 @@ export class SelectLayersComponent implements OnInit {
             2: 'Desert',
             3: 'Semi-desert',
             4: 'Tundra',
-            5: 'Tropical grassland',
-            6: 'Shrubland',
+            5: 'Shrubland',
+            6: 'Tropical grassland',
             7: 'Temperate grassland',
             8: 'Tropical savanna',
             9: 'Warm temperate open woodland',
@@ -76,11 +86,11 @@ export class SelectLayersComponent implements OnInit {
         });
         breakpoints.push({
             value: 5,
-            rgba: [0, 0, 0, 255],
+            rgba: [0, 200, 200, 255],
         });
         breakpoints.push({
             value: 6,
-            rgba: [0, 200, 200, 255],
+            rgba: [0, 0, 0, 255],
         });
         breakpoints.push({
             value: 7,
@@ -104,7 +114,8 @@ export class SelectLayersComponent implements OnInit {
         });
         breakpoints.push({
             value: 12,
-            rgba: [0, 0, 0, 255],
+            // not from original color list
+            rgba: [107, 1, 220, 255],
         });
         breakpoints.push({
             value: 13,
@@ -146,7 +157,7 @@ export class SelectLayersComponent implements OnInit {
                     this.dataSelectionService.setRasterLayer(
                         new RasterLayer({
                             workflowId,
-                            name,
+                            name: 'Biome',
                             symbology: new MappingRasterSymbology({
                                 opacity: 1,
                                 colorizer: {
@@ -165,6 +176,11 @@ export class SelectLayersComponent implements OnInit {
                             isLegendVisible: false,
                             isVisible: true,
                         }),
+                        [new Time(moment.utc('-006000-01-01T00:00:00.000Z')), new Time(moment.utc('1850-01-01T00:00:00.000Z'))],
+                        {
+                            min: 1,
+                            max: 20,
+                        },
                     ),
                 ),
             )
@@ -173,13 +189,79 @@ export class SelectLayersComponent implements OnInit {
             });
     }
 
-    selectData($event: MatSelectionListChange) {
-        switch ($event.option.value as string) {
-            case 'biome6k':
-                this.addBiome('Biome 6k', '73b13876-bdd2-48b2-a628-ce0a1b0eee9d');
+    addKK09(name: string, sourceId: UUID): void {
+        const workflow: WorkflowDict = {
+            type: 'Raster',
+            operator: {
+                type: 'GdalSource',
+                params: {
+                    data_set: {
+                        Internal: sourceId,
+                    },
+                },
+            },
+        };
+
+        const timeSteps = [];
+        // bc
+        for (let year = 1000; year > 0; year -= 10) {
+            const paddedYear = year.toString().padStart(6, '0');
+            timeSteps.push(new Time(moment.utc(`-${paddedYear}-01-01T00:00:00.000Z`)));
+        }
+        // ad
+        for (let year = 10; year <= 1850; year += 10) {
+            const paddedYear = year.toString().padStart(4, '0');
+            timeSteps.push(new Time(moment.utc(`${paddedYear}-01-01T00:00:00.000Z`)));
+        }
+
+        this.projectService
+            .registerWorkflow(workflow)
+            .pipe(
+                mergeMap((workflowId) =>
+                    this.dataSelectionService.setRasterLayer(
+                        new RasterLayer({
+                            workflowId,
+                            name: 'KK09',
+                            symbology: new MappingRasterSymbology({
+                                opacity: 1,
+                                unit: new Unit({
+                                    measurement: Unit.defaultUnit.measurement,
+                                    unit: Unit.defaultUnit.unit,
+                                    min: 0,
+                                    max: 1,
+                                    interpolation: Interpolation.Continuous,
+                                }),
+                            }),
+                            isLegendVisible: false,
+                            isVisible: true,
+                        }),
+                        timeSteps,
+                        {min: 0, max: 1},
+                    ),
+                ),
+            )
+            .subscribe(() => {
+                // success
+            });
+    }
+
+    selectData($event: MatSelectionListChange): void {
+        if ($event.options.length !== 1) {
+            throw Error('It is only possible to select one dataset');
+        }
+
+        switch ($event.options[0].value as string) {
+            case 'biome':
+                this.addBiome();
                 break;
-            case 'biomePi':
-                this.addBiome('Biome Pi', 'bc33b76a-c3ee-4791-9914-17a9282d7ee3');
+            case 'kk09_land_use_high':
+                this.addKK09('Land Use High', '92f0a62e-9510-4210-beeb-43146086ca63');
+                break;
+            case 'kk09_land_use_low':
+                this.addKK09('Land Use Low', '0d415a11-836e-4a23-94db-b17536c95828');
+                break;
+            case 'kk09_land_use_tech':
+                this.addKK09('Land Use Tech', '62fc10c9-bce9-4638-b4e3-d270ccfc9c5b');
                 break;
             default:
             // do nothing

@@ -36,9 +36,9 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
         private readonly elementRef: ElementRef,
     ) {}
 
-    ngOnInit() {}
+    ngOnInit(): void {}
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         this.subscriptions.push(
             this.projectService
                 .getPlotStream()
@@ -56,14 +56,14 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
         );
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
     /**
      * Loads the component in `operatorsListConfig` into the sidenav
      */
-    goToOperatorsTab() {
+    goToOperatorsTab(): void {
         this.layoutService.setSidenavContentComponent(this.operatorsListConfig);
     }
 

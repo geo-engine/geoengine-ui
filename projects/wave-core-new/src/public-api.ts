@@ -24,6 +24,7 @@ export * from './lib/datasets/add-data/add-data.component';
 export * from './lib/datasets/dataset-list/dataset-list.component';
 export * from './lib/datasets/dataset/dataset.component';
 export * from './lib/datasets/upload/upload.component';
+export * from './lib/datatable/table/table.component';
 export * from './lib/dialogs/dialog-header/dialog-header.component';
 export * from './lib/dialogs/dialog-help/dialog-help.component';
 export * from './lib/dialogs/dialog-section-heading/dialog-section-heading.component';
@@ -88,6 +89,7 @@ export * from './lib/util/pipes/trim.pipe';
 
 // Models
 export * from './lib/backend/backend.model';
+export * from './lib/colors/color-breakpoint.model';
 export * from './lib/layers/layer-metadata.model';
 export * from './lib/layers/layer.model';
 export * from './lib/layers/symbology/symbology.model';
