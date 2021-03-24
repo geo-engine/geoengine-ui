@@ -13,11 +13,12 @@
 <nav mat-tab-nav-bar>
     <a
         mat-tab-link
+        class="tab-link"
         *ngFor="let tabContent of this.tabPanelService.tabs | async"
         (click)="setTab(tabContent)"
         [active]="tabContent === tabPanelService.activeTab"
     >
-        <span fxFlex>{{ tabContent.name | async }}</span>
+        <span fxFlex [matTooltip]="tabContent.name | async">{{ tabContent.name | async }}</span>
         <mat-icon class="close-button" (click)="closeTab(tabContent)">close</mat-icon>
     </a>
 </nav>
