@@ -180,6 +180,10 @@ export interface DataSetDict {
     source_operator: string;
 }
 
+export interface DataSetIdDict {
+    Internal?: InternalDataSetIdDict;
+}
+
 export interface InternalDataSetIdDict {
     Internal: UUID;
 }
@@ -228,4 +232,12 @@ export interface MeasurementDict {
             [key: number]: string;
         };
     };
+}
+
+export interface UploadResponseDict {
+    id: UUID;
+}
+
+export interface CreateDataSetDict {
+    upload: UUID;
 }

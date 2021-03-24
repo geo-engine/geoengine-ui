@@ -18,7 +18,7 @@ import {MatSidenav} from '@angular/material/sidenav';
 import {MatTabGroup} from '@angular/material/tabs';
 import {
     AddDataComponent,
-    AddDataListButton,
+    AddDataButton,
     Layer,
     SidenavContainerComponent,
     LayoutService,
@@ -42,7 +42,6 @@ import {
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from './app-config.service';
-import {MockLayersComponent} from './mock-layers/mock-layers.component';
 
 @Component({
     selector: 'wave-app-root',
@@ -196,15 +195,11 @@ export class AppComponent implements OnInit, AfterViewInit {
         return {component: AddDataComponent, config: {buttons: AppComponent.createAddDataListButtons()}};
     }
 
-    private static createAddDataListButtons(): Array<AddDataListButton> {
+    private static createAddDataListButtons(): Array<AddDataButton> {
         return [
             AddDataComponent.createDataSetListButton(),
-            {
-                name: 'Mock data',
-                description: 'Mock data sets',
-                iconSrc: AddDataComponent.createIconDataUrl('mock'),
-                sidenavConfig: {component: MockLayersComponent, keepParent: true},
-            },
+            AddDataComponent.createUploadButton(),
+
             // SourceOperatorListComponent.createDrawFeaturesButton(),
             // ...SourceOperatorListComponent.createCustomFeaturesButtons(),
             // {

@@ -1,8 +1,9 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
 import {LayoutService, SidenavConfig} from '../../layout.service';
 import {DatasetListComponent} from '../dataset-list/dataset-list.component';
+import {UploadComponent} from '../upload/upload.component';
 
-export interface AddDataListButton {
+export interface AddDataButton {
     name: string;
     description: string;
     icon?: string;
@@ -21,7 +22,7 @@ export class AddDataComponent implements OnInit {
     /**
      * A list of data source dialogs to display
      */
-    @Input() buttons!: Array<AddDataListButton>;
+    @Input() buttons!: Array<AddDataButton>;
 
     constructor(private layoutService: LayoutService) {}
 
@@ -38,12 +39,21 @@ export class AddDataComponent implements OnInit {
         this.layoutService.setSidenavContentComponent(sidenavConfig);
     }
 
-    static createDataSetListButton(): AddDataListButton {
+    static createDataSetListButton(): AddDataButton {
         return {
             name: 'Data Sets',
             description: 'Available Data Sets',
             iconSrc: this.createIconDataUrl('DataSets'),
             sidenavConfig: {component: DatasetListComponent, keepParent: true},
+        };
+    }
+
+    static createUploadButton(): AddDataButton {
+        return {
+            name: 'Upload',
+            description: 'Upload data from you local computer',
+            iconSrc: this.createIconDataUrl('Upload'),
+            sidenavConfig: {component: UploadComponent, keepParent: true},
         };
     }
 

@@ -101,6 +101,7 @@ import {LineageGraphComponent} from './provenance/lineage-graph/lineage-graph.co
 import {MeanRasterPixelValuesOverTimeDialogComponent} from './operators/dialogs/mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
 import {RasterVectorJoinComponent} from './operators/dialogs/raster-vector-join/raster-vector-join.component';
 import {PointInPolygonFilterOperatorComponent} from './operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
+import {UploadComponent} from './datasets/upload/upload.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -202,6 +203,7 @@ const WAVE_COMPONENTS = [
     SymbologyVectorComponent,
     TimeConfigComponent,
     TimeInputComponent,
+    UploadComponent,
     VatLogoComponent,
     VectorLegendComponent,
     VegaViewerComponent,
