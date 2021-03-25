@@ -90,7 +90,6 @@ export class MockLayersComponent implements OnInit {
                             workflowId,
                             name: 'Two cities and (0, 0)',
                             symbology: PointSymbology.fromPointSymbologyDict({
-                                clustered: false,
                                 radius: {Static: 10},
                                 stroke: {width: {Static: 10}, color: {Static: [0, 0, 0, 0]}},
                                 fill_color: {Static: [0, 0, 0, 0]},

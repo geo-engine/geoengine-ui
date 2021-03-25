@@ -121,15 +121,13 @@ export abstract class Styler {
 }
 
 export class PointStyler extends Styler {
-    clustered: boolean;
     radius: number;
     fillColor: RgbaColor;
     stroke: StrokeStyler;
     text?: TextStyler;
 
-    constructor(clustered: boolean, radius: number, fillColor: RgbaColor, stroke: StrokeStyler, text: TextStyler) {
+    constructor(radius: number, fillColor: RgbaColor, stroke: StrokeStyler, text: TextStyler) {
         super();
-        this.clustered = clustered;
         this.radius = radius;
         this.fillColor = fillColor;
         this.stroke = stroke;
@@ -150,9 +148,7 @@ export class PointStyler extends Styler {
     }
 
     cacheKey(): string {
-        return `${this.clustered}${this.radius}${Styler.colorToKey(this.fillColor)}${this.stroke.cacheKey()}${
-            this.text ? this.text.cacheKey() : ''
-        }`;
+        return `${this.radius}${Styler.colorToKey(this.fillColor)}${this.stroke.cacheKey()}${this.text ? this.text.cacheKey() : ''}`;
     }
 }
 
@@ -254,16 +250,14 @@ export class TextStyler extends Styler {
 
 export class PointSymbology extends VectorSymbology {
     // TODO: visiblity
-    clustered: boolean;
     radius: NumberParam;
     fillColor: ColorParam;
     stroke: Stroke;
 
     text?: TextSymbology;
 
-    constructor(clustered: boolean, radius: NumberParam, fillColor: ColorParam, stroke: Stroke, text: TextSymbology) {
+    constructor(radius: NumberParam, fillColor: ColorParam, stroke: Stroke, text: TextSymbology) {
         super();
-        this.clustered = clustered;
         this.radius = radius;
         this.fillColor = fillColor;
         this.stroke = stroke;
@@ -272,7 +266,6 @@ export class PointSymbology extends VectorSymbology {
 
     static fromPointSymbologyDict(dict: PointSymbologyDict): PointSymbology {
         return new PointSymbology(
-            dict.clustered,
             NumberParam.fromDict(dict.radius),
             ColorParam.fromDict(dict.fill_color),
             Stroke.fromDict(dict.stroke),
@@ -282,7 +275,6 @@ export class PointSymbology extends VectorSymbology {
 
     createStyler(feature: OlFeature): PointStyler {
         return new PointStyler(
-            this.clustered,
             this.radius.getNumber(feature),
             this.fillColor.getColor(feature).rgbaTuple(),
             this.stroke.createStyler(feature),
@@ -302,7 +294,6 @@ export class PointSymbology extends VectorSymbology {
 
     clone(): PointSymbology {
         return new PointSymbology(
-            this.clustered,
             this.radius.clone(),
             this.fillColor.clone(),
             this.stroke.clone(),
@@ -314,7 +305,6 @@ export class PointSymbology extends VectorSymbology {
         return {
             Vector: {
                 Point: {
-                    clustered: this.clustered,
                     radius: this.radius.toDict(),
                     fill_color: this.fillColor.toDict(),
                     stroke: this.stroke.toDict(),

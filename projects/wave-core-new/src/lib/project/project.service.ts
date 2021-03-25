@@ -1007,14 +1007,6 @@ export class ProjectService {
                 switchMap(([time, [projection, viewportSize], sessionToken]) => {
                     const requestExtent: [number, number, number, number] = [0, 0, 0, 0];
 
-                    // let clusteredOption;
-                    // TODO: is clustering a property of a layer or the symbology?
-                    // if (layer.clustered && layer.symbology instanceof PointSymbology) {
-                    //     clusteredOption = {
-                    //         minRadius: layer.symbology.radius,
-                    //     };
-                    // }
-
                     // TODO: add resolution
                     return this.backend
                         .wfsGetFeature(

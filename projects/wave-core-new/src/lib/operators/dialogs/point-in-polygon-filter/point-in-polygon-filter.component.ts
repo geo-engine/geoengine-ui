@@ -61,7 +61,6 @@ export class PointInPolygonFilterOperatorComponent {
                                         workflowId,
                                         name,
                                         symbology: PointSymbology.fromPointSymbologyDict({
-                                            clustered: false,
                                             radius: {Static: 10},
                                             stroke: {width: {Static: 10}, color: {Static: [0, 0, 0, 0]}},
                                             fill_color: {Static: [0, 0, 0, 0]},

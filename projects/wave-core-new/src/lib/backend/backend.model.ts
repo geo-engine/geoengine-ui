@@ -148,7 +148,6 @@ export interface TextSymbologyDict {
 
 export interface PointSymbologyDict {
     radius: NumberParamDict;
-    clustered: boolean;
     fill_color: ColorParamDict;
     stroke: StrokeParamDict;
     text?: TextSymbologyDict;

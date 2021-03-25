@@ -58,7 +58,6 @@ export class DataSetComponent implements OnInit {
                         switch (resultDescriptor.data_type) {
                             case VectorDataTypes.MultiPoint:
                                 symbology = PointSymbology.fromPointSymbologyDict({
-                                    clustered: false,
                                     radius: {Static: 10},
                                     stroke: {
                                         width: {Static: 1},
