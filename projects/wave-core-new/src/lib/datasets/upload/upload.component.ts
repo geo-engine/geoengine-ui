@@ -18,7 +18,7 @@ interface ExampleLoadingInfo {
 })
 export class UploadComponent implements OnInit {
     selectedFiles: FileList;
-    progress$ = new Subject();
+    progress$ = new Subject<number>();
     submittedUpload = false;
     submittedCreate = false;
 
@@ -132,13 +132,12 @@ export class UploadComponent implements OnInit {
 
     loadingInfo = '';
 
-    constructor(private dataSetService: DataSetService, private notificationService: NotificationService) {}
+    constructor(protected dataSetService: DataSetService, protected notificationService: NotificationService) {}
 
     ngOnInit(): void {}
 
     selectFiles(event): void {
         this.selectedFiles = event.target.files;
-        console.log(this.selectedFiles);
     }
 
     upload(): void {
@@ -157,7 +156,6 @@ export class UploadComponent implements OnInit {
                 } else if (event.type === HttpEventType.Response) {
                     this.uploadId$.next(event.body.id);
                 }
-                console.log(event);
             },
             (err) => {
                 this.notificationService.error('File upload failed: ' + err);
