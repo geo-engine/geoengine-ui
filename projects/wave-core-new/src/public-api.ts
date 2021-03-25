@@ -31,7 +31,6 @@ export * from './lib/layers/layer-icons/raster-icon/raster-icon.component';
 export * from './lib/layers/layer-list/layer-list.component';
 export * from './lib/layers/legend/legend-raster/raster-legend.component';
 export * from './lib/layers/legend/legend-vector/vector-legend.component';
-export * from './lib/layers/legend/legend.component';
 export * from './lib/layers/rename-layer/rename-layer.component';
 export * from './lib/logo.component';
 export * from './lib/map/map-container/map-container.component';

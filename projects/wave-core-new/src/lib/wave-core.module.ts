@@ -53,7 +53,6 @@ import {ZoomHandlesComponent} from './map/zoom-handles/zoom-handles.component';
 import {MapContainerComponent} from './map/map-container/map-container.component';
 import {OlRasterLayerComponent, OlVectorLayerComponent} from './map/map-layer.component';
 import {RenameLayerComponent} from './layers/rename-layer/rename-layer.component';
-import {LegendComponent} from './layers/legend/legend.component';
 import {VectorLegendComponent} from './layers/legend/legend-vector/vector-legend.component';
 import {LayerListComponent} from './layers/layer-list/layer-list.component';
 import {PointIconComponent} from './layers/layer-icons/point-icon/point-icon.component';
@@ -151,7 +150,6 @@ const WAVE_COMPONENTS = [
     IfLoggedInDirective,
     LayerListComponent,
     LayerSelectionComponent,
-    LegendComponent,
     LineageGraphComponent,
     LineIconComponent,
     LoadProjectComponent,
