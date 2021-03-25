@@ -5,7 +5,7 @@ import {DataSet} from './dataset.model';
 import {UserService} from '../users/user.service';
 import {map, mergeMap} from 'rxjs/operators';
 import {HttpEvent} from '@angular/common/http';
-import {CreateDataSetDict, UploadResponseDict} from '../backend/backend.model';
+import {CreateDataSetDict, DataSetIdDict, UploadResponseDict} from '../backend/backend.model';
 
 @Injectable({
     providedIn: 'root',
