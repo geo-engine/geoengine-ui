@@ -53,25 +53,14 @@ import {ZoomHandlesComponent} from './map/zoom-handles/zoom-handles.component';
 import {MapContainerComponent} from './map/map-container/map-container.component';
 import {OlRasterLayerComponent, OlVectorLayerComponent} from './map/map-layer.component';
 import {RenameLayerComponent} from './layers/rename-layer/rename-layer.component';
-import {LegendComponent} from './layers/legend/legend.component';
 import {VectorLegendComponent} from './layers/legend/legend-vector/vector-legend.component';
-import {RasterLegendComponent} from './layers/legend/legend-raster/raster-legend.component';
 import {LayerListComponent} from './layers/layer-list/layer-list.component';
 import {PointIconComponent} from './layers/layer-icons/point-icon/point-icon.component';
 import {LineIconComponent} from './layers/layer-icons/line-icon/line-icon.component';
 import {RasterIconComponent} from './layers/layer-icons/raster-icon/raster-icon.component';
 import {PolygonIconComponent} from './layers/layer-icons/polygon-icon/polygon-icon.component';
-import {SymbologyEditorComponent} from './layers/symbology/symbology-editor/symbology-editor.component';
-import {MappingRasterLegendComponent} from './layers/legend/legend-raster/mapping-raster-legend.component';
-import {SymbologyVectorComponent} from './layers/symbology/symbology-vectors/symbology-vector.component';
-import {SymbologyRasterComponent} from './layers/symbology/symbology-raster/symbology-raster.component';
-import {ColorBreakpointInputComponent} from './colors/color-breakpoint-component/color-breakpoint.component';
-import {ColorizerEditorComponent} from './colors/colorizer-editor/colorizer-editor.component';
-import {StrokeDashSelectComponent} from './layers/symbology/stroke-dash-select/stroke-dash-select.component';
-import {SymbologyRasterMappingColorizerComponent} from './layers/symbology/symbology-raster/symbology-raster-mapping-colorizer.component';
-import {ColormapColorizerComponent} from './colors/colormap-colorizer/colormap-colorizer.component';
+import {CastMeasurementToClassificationPipe, RasterLegendComponent} from './layers/legend/legend-raster/raster-legend.component';
 import {SafeStylePipe} from './util/pipes/safe-style.pipe';
-import {ColormapNameToColorizerDataPipe} from './colors/colormap-colorizer/colormap-name-to-colorizer-data.pipe';
 import {SmallTimeInteractionComponent} from './time/small-time-interaction/small-time-interaction.component';
 import {TimeConfigComponent} from './time/time-config/time-config.component';
 import {TimeInputComponent} from './time/time-input/time-input.component';
@@ -137,7 +126,7 @@ const MATERIAL_MODULES = [
 
 const WAVE_PIPES = [
     BreakpointToCssStringPipe,
-    ColormapNameToColorizerDataPipe,
+    CastMeasurementToClassificationPipe,
     CssStringToRgbaPipe,
     HighlightPipe,
     MappingColorizerToGradientPipe,
@@ -150,9 +139,6 @@ const WAVE_PIPES = [
 const WAVE_COMPONENTS = [
     AddDataComponent,
     ChangeSpatialReferenceComponent,
-    ColorBreakpointInputComponent,
-    ColorizerEditorComponent,
-    ColormapColorizerComponent,
     DataSetComponent,
     DatasetListComponent,
     DialogHeaderComponent,
@@ -164,13 +150,12 @@ const WAVE_COMPONENTS = [
     IfLoggedInDirective,
     LayerListComponent,
     LayerSelectionComponent,
-    LegendComponent,
     LineageGraphComponent,
     LineIconComponent,
     LoadProjectComponent,
     LoginComponent,
     MapContainerComponent,
-    MappingRasterLegendComponent,
+    RasterLegendComponent,
     MeanRasterPixelValuesOverTimeDialogComponent,
     MultiLayerSelectionComponent,
     NavigationComponent,
@@ -196,11 +181,6 @@ const WAVE_COMPONENTS = [
     SidenavSearchRightDirective,
     SmallTimeInteractionComponent,
     StatisticsPlotComponent,
-    StrokeDashSelectComponent,
-    SymbologyEditorComponent,
-    SymbologyRasterComponent,
-    SymbologyRasterMappingColorizerComponent,
-    SymbologyVectorComponent,
     DataTableComponent,
     TimeConfigComponent,
     TimeInputComponent,
