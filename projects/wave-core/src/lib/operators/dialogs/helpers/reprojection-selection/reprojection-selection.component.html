@@ -1,6 +1,0 @@
-<mat-form-field *ngIf="projections.length > 0">
-    <mat-select [ngModel]="selectedProjection" (ngModelChange)="selectProjection($event)" (blur)="onBlur()" placeholder="Output Projection">
-        <mat-option *ngFor="let projection of projections" [value]="projection">{{ projection }}</mat-option>
-    </mat-select>
-</mat-form-field>
-<p *ngIf="projections.length <= 0">No Projection Available</p>
