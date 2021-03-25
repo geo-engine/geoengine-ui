@@ -14,10 +14,15 @@ import {
     AfterViewInit,
     ChangeDetectorRef,
 } from '@angular/core';
-import {Subscription} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {Config} from '../config.service';
 import {LayoutService} from '../layout.service';
+import {clamp} from '../util/math';
 import {TabContent, TabsService} from './tabs.service';
+
+const TAB_WIDTH_PCT_MIN = 10;
+const TAB_WIDTH_PCT_MAX = 20;
 
 @Component({
     selector: 'wave-tab-panel',
@@ -35,12 +40,14 @@ export class TabsComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
     toggleTooltip: 'Show' | 'Hide';
     readonly toggleTooltipDelay: number;
 
+    readonly tabWidthPct: Observable<number>;
+
     contentHeight = 0;
 
     protected activeTabSubscription: Subscription;
 
     constructor(
-        public readonly tabPanelService: TabsService,
+        public readonly tabsService: TabsService,
         protected readonly layoutService: LayoutService,
         protected readonly config: Config,
         protected readonly componentFactoryResolver: ComponentFactoryResolver,
@@ -49,13 +56,15 @@ export class TabsComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
     ) {
         this.toggleTooltipDelay = this.config.DELAYS.TOOLTIP;
 
-        this.activeTabSubscription = this.tabPanelService.getActiveTabChanges().subscribe((tabContent) => {
+        this.activeTabSubscription = this.tabsService.getActiveTabChanges().subscribe((tabContent) => {
             if (tabContent) {
                 this.renderTabContent(tabContent);
             } else {
                 this.removeRenderedTabContent();
             }
         });
+
+        this.tabWidthPct = this.tabsService.tabs.pipe(map((tabs) => clamp(100 / tabs.length, TAB_WIDTH_PCT_MIN, TAB_WIDTH_PCT_MAX)));
     }
 
     ngOnInit(): void {}
@@ -70,8 +79,8 @@ export class TabsComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
         if (changes.visible) {
             this.toggleTooltip = this.visible ? 'Hide' : 'Show';
 
-            if (this.visible && this.tabPanelService.activeTab) {
-                this.renderTabContent(this.tabPanelService.activeTab);
+            if (this.visible && this.tabsService.activeTab) {
+                this.renderTabContent(this.tabsService.activeTab);
             } else if (!this.visible) {
                 this.removeRenderedTabContent();
             }
@@ -87,11 +96,11 @@ export class TabsComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
     }
 
     setTab(tabContent: TabContent): void {
-        this.tabPanelService.activeTab = tabContent;
+        this.tabsService.activeTab = tabContent;
     }
 
     closeTab(tabContent: TabContent): void {
-        this.tabPanelService.removeComponent(tabContent);
+        this.tabsService.removeComponent(tabContent);
     }
 
     protected renderTabContent(tabContent: TabContent): void {

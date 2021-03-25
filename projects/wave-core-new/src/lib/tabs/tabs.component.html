@@ -14,9 +14,10 @@
     <a
         mat-tab-link
         class="tab-link"
-        *ngFor="let tabContent of this.tabPanelService.tabs | async"
+        [style.width.%]="tabWidthPct | async"
+        *ngFor="let tabContent of this.tabsService.tabs | async"
         (click)="setTab(tabContent)"
-        [active]="tabContent === tabPanelService.activeTab"
+        [active]="tabContent === tabsService.activeTab"
     >
         <span fxFlex [matTooltip]="tabContent.name | async">{{ tabContent.name | async }}</span>
         <mat-icon class="close-button" (click)="closeTab(tabContent)">close</mat-icon>
