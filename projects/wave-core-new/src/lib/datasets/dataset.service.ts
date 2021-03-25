@@ -21,10 +21,10 @@ export class DataSetService {
     }
 
     upload(form: FormData): Observable<HttpEvent<UploadResponseDict>> {
-        return this.userService.getSessionStream().pipe(mergeMap((session) => this.backend.upload(session.sessionToken, form)));
+        return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.upload(token, form)));
     }
 
     createDataSet(create: CreateDataSetDict): Observable<DataSetIdDict> {
-        return this.userService.getSessionStream().pipe(mergeMap((session) => this.backend.createDataSet(session.sessionToken, create)));
+        return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.createDataSet(token, create)));
     }
 }
