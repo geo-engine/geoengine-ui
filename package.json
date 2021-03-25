@@ -6,7 +6,7 @@
         "ng": "ng",
         "prettier": "prettier",
         "start": "ng serve",
-        "build": "npm run build-prod:core && npm run build-prod:wave && npm run build-prod:gfbio && npm run build-prod:nature40",
+        "build": "npm run build-prod:core && npm run build-prod:wave && npm run build-prod:gfbio && npm run build-prod:nature40 && npm run build-prod:core-new",
         "check": "prettier --check . && ng lint wave-core-new && ng lint geoengine-app && ng lint data-atlas-app",
         "ci-core": "ng build --prod wave-core-new",
         "serve:wave": "ng serve wave-app --proxy-config proxy.conf.json",
