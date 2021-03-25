@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, Pipe, PipeTransform, SimpleChanges} from '@angular/core';
 import {Interpolation, interpolationToName, Unit} from '../../../operators/unit.model';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
-import {ContinuousMeasurement, Measurement} from '../../measurement';
+import {ClassificationMeasurement, Measurement} from '../../measurement';
 import {ProjectService} from '../../../project/project.service';
 import {map} from 'rxjs/operators';
 import {RasterLayerMetadata} from '../../layer-metadata.model';
@@ -9,12 +9,16 @@ import {Observable} from 'rxjs';
 import {RasterLayer} from '../../layer.model';
 
 @Pipe({
-    name: 'continuousMeasurement',
+    name: 'classificationMeasurement',
     pure: true,
 })
-export class CastMeasurementToContinuousPipe implements PipeTransform {
-    transform(value: any, _args?: any): ContinuousMeasurement {
-        return value;
+export class CastMeasurementToClassificationPipe implements PipeTransform {
+    transform(value: any, _args?: any): ClassificationMeasurement {
+        if (value instanceof ClassificationMeasurement) {
+            return value;
+        } else {
+            return undefined;
+        }
     }
 }
 

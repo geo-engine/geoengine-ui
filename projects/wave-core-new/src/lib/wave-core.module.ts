@@ -60,7 +60,7 @@ import {PointIconComponent} from './layers/layer-icons/point-icon/point-icon.com
 import {LineIconComponent} from './layers/layer-icons/line-icon/line-icon.component';
 import {RasterIconComponent} from './layers/layer-icons/raster-icon/raster-icon.component';
 import {PolygonIconComponent} from './layers/layer-icons/polygon-icon/polygon-icon.component';
-import {CastMeasurementToContinuousPipe, RasterLegendComponent} from './layers/legend/legend-raster/raster-legend.component';
+import {CastMeasurementToClassificationPipe, RasterLegendComponent} from './layers/legend/legend-raster/raster-legend.component';
 import {SafeStylePipe} from './util/pipes/safe-style.pipe';
 import {SmallTimeInteractionComponent} from './time/small-time-interaction/small-time-interaction.component';
 import {TimeConfigComponent} from './time/time-config/time-config.component';
@@ -127,7 +127,7 @@ const MATERIAL_MODULES = [
 
 const WAVE_PIPES = [
     BreakpointToCssStringPipe,
-    CastMeasurementToContinuousPipe,
+    CastMeasurementToClassificationPipe,
     CssStringToRgbaPipe,
     HighlightPipe,
     MappingColorizerToGradientPipe,
