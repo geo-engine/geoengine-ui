@@ -29,7 +29,6 @@ export * from './lib/layers/layer-icons/point-icon/point-icon.component';
 export * from './lib/layers/layer-icons/polygon-icon/polygon-icon.component';
 export * from './lib/layers/layer-icons/raster-icon/raster-icon.component';
 export * from './lib/layers/layer-list/layer-list.component';
-export * from './lib/layers/legend/legend-raster/mapping-raster-legend.component';
 export * from './lib/layers/legend/legend-raster/raster-legend.component';
 export * from './lib/layers/legend/legend-vector/vector-legend.component';
 export * from './lib/layers/legend/legend.component';
