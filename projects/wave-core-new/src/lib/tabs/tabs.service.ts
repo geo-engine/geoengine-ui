@@ -1,6 +1,6 @@
 import {ComponentType} from '@angular/cdk/portal';
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, of} from 'rxjs';
+import {BehaviorSubject, NEVER, Observable, of, Subscription} from 'rxjs';
 
 /**
  * A component to display inside a tab
@@ -14,6 +14,8 @@ export interface TabContent {
      * Before that, it checks that the components are equal.
      */
     equals: (a: TabInputs, b: TabInputs) => boolean;
+    removeTrigger: Observable<void>;
+    removeTriggerSubscription: Subscription;
 }
 
 export interface TabInputs {
@@ -37,12 +39,19 @@ export class TabsService {
     /**
      * Add a new component to the tab panel
      */
-    addComponent<T>(
-        name: string | Observable<string>,
-        component: ComponentType<T>,
-        inputs: TabInputs = {},
-        equals: (a: TabInputs, b: TabInputs) => boolean = (a, b): boolean => a === b,
-    ): void {
+    addComponent<T>(config: {
+        readonly name: string | Observable<string>;
+        readonly component: ComponentType<T>;
+        readonly inputs?: TabInputs;
+        readonly equals?: (a: TabInputs, b: TabInputs) => boolean;
+        readonly removeTrigger?: Observable<void>;
+    }): void {
+        const name = this.observableName(config.name);
+        const component = config.component;
+        const inputs = config.inputs ?? {};
+        const equals = config.equals ?? ((a, b): boolean => a === b);
+        const removeTrigger = config.removeTrigger ?? NEVER;
+
         const duplicateIndex = this._tabs.getValue().findIndex((other) => other.component === component && equals(other.inputs, inputs));
 
         if (duplicateIndex >= 0) {
@@ -51,8 +60,9 @@ export class TabsService {
             return;
         }
 
-        name = this.observableName(name);
-        const tab = {name, component, inputs, equals};
+        const tab: TabContent = {name, component, inputs, equals, removeTrigger, removeTriggerSubscription: Subscription.EMPTY};
+        tab.removeTriggerSubscription = removeTrigger.subscribe(() => this.removeComponent(tab));
+
         const tabs = [...this._tabs.getValue(), tab];
         this._tabs.next(tabs);
 
@@ -80,6 +90,8 @@ export class TabsService {
             // if index is -1, it defaults to undefined
             this.activeTab = tabs[indexToSelect];
         }
+
+        tabContent.removeTriggerSubscription.unsubscribe();
     }
 
     get activeTab(): TabContent {

@@ -11,7 +11,7 @@ import {Layer} from '../layer.model';
 import {ProjectService} from '../../project/project.service';
 import {Config} from '../../config.service';
 import {SymbologyEditorComponent} from '../symbology/symbology-editor/symbology-editor.component';
-import {filter, map, startWith} from 'rxjs/operators';
+import {filter, last, map, startWith} from 'rxjs/operators';
 import {AddDataComponent} from '../../datasets/add-data/add-data.component';
 import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-graph.component';
 import {TabsService} from '../../tabs/tabs.service';
@@ -144,6 +144,16 @@ export class LayerListComponent implements OnDestroy {
 
     showDatatable(layer: Layer): void {
         const name = this.projectService.getLayerChangesStream(layer).pipe(map((l) => l.name));
-        this.tabsService.addComponent(name, DataTableComponent, {layer}, (a, b): boolean => a.layer.id === b.layer.id);
+        const removeTrigger = this.projectService.getLayerChangesStream(layer).pipe(
+            last(),
+            map(() => {}),
+        );
+        this.tabsService.addComponent({
+            name,
+            component: DataTableComponent,
+            inputs: {layer},
+            equals: (a, b): boolean => a.layer.id === b.layer.id,
+            removeTrigger,
+        });
     }
 }
