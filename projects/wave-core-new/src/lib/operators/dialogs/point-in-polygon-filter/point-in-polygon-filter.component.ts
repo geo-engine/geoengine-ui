@@ -60,10 +60,10 @@ export class PointInPolygonFilterOperatorComponent {
                                     new VectorLayer({
                                         workflowId,
                                         name,
-                                        symbology: PointSymbology.createSymbology({
-                                            fillRGBA: this.randomColorService.getRandomColorRgba(),
-                                            radius: 10,
-                                            clustered: false,
+                                        symbology: PointSymbology.fromPointSymbologyDict({
+                                            radius: {Static: 10},
+                                            stroke: {width: {Static: 10}, color: {Static: [0, 0, 0, 0]}},
+                                            fill_color: {Static: [0, 0, 0, 0]},
                                         }),
                                         isLegendVisible: false,
                                         isVisible: true,
