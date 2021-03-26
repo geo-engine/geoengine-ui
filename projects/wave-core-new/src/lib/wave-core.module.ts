@@ -91,6 +91,8 @@ import {MeanRasterPixelValuesOverTimeDialogComponent} from './operators/dialogs/
 import {RasterVectorJoinComponent} from './operators/dialogs/raster-vector-join/raster-vector-join.component';
 import {PointInPolygonFilterOperatorComponent} from './operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 import {DataTableComponent} from './datatable/table/table.component';
+import {TabsComponent} from './tabs/tabs.component';
+import {PortalModule} from '@angular/cdk/portal';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -114,8 +116,8 @@ const MATERIAL_MODULES = [
     MatRadioModule,
     MatSelectModule,
     MatSidenavModule,
-    MatSliderModule,
     MatSlideToggleModule,
+    MatSliderModule,
     MatSnackBarModule,
     MatStepperModule,
     MatTableModule,
@@ -140,6 +142,8 @@ const WAVE_COMPONENTS = [
     AddDataComponent,
     ChangeSpatialReferenceComponent,
     DataSetComponent,
+    DataTableComponent,
+    DataTableComponent,
     DatasetListComponent,
     DialogHeaderComponent,
     DialogHelpComponent,
@@ -150,12 +154,12 @@ const WAVE_COMPONENTS = [
     IfLoggedInDirective,
     LayerListComponent,
     LayerSelectionComponent,
-    LineageGraphComponent,
     LineIconComponent,
+    LineageGraphComponent,
+    LineageGraphComponent,
     LoadProjectComponent,
     LoginComponent,
     MapContainerComponent,
-    RasterLegendComponent,
     MeanRasterPixelValuesOverTimeDialogComponent,
     MultiLayerSelectionComponent,
     NavigationComponent,
@@ -172,6 +176,7 @@ const WAVE_COMPONENTS = [
     PolygonIconComponent,
     RasterIconComponent,
     RasterLegendComponent,
+    RasterLegendComponent,
     RasterVectorJoinComponent,
     RenameLayerComponent,
     SaveProjectAsComponent,
@@ -181,7 +186,7 @@ const WAVE_COMPONENTS = [
     SidenavSearchRightDirective,
     SmallTimeInteractionComponent,
     StatisticsPlotComponent,
-    DataTableComponent,
+    TabsComponent,
     TimeConfigComponent,
     TimeInputComponent,
     VatLogoComponent,
@@ -201,12 +206,14 @@ const WAVE_COMPONENTS = [
         FlexLayoutModule,
         FormsModule,
         HttpClientModule,
+        PortalModule,
         ReactiveFormsModule,
     ],
     exports: [
         /* re-exports */
         ...MATERIAL_MODULES,
         FlexLayoutModule,
+        PortalModule,
         ReactiveFormsModule,
         /* library exports */
         ...WAVE_PIPES,

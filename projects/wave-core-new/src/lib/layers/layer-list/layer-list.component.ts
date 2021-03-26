@@ -10,11 +10,13 @@ import {MapService} from '../../map/map.service';
 import {Layer} from '../layer.model';
 import {ProjectService} from '../../project/project.service';
 import {Config} from '../../config.service';
-import {map, startWith} from 'rxjs/operators';
+import {last, map, startWith} from 'rxjs/operators';
 import {AddDataComponent} from '../../datasets/add-data/add-data.component';
 import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-graph.component';
-import {RasterLayerMetadata} from '../layer-metadata.model';
+import {TabsService} from '../../tabs/tabs.service';
+import {DataTableComponent} from '../../datatable/table/table.component';
 import {Measurement} from '../measurement';
+import {RasterLayerMetadata} from '../layer-metadata.model';
 
 /**
  * The layer list component displays active layers, legends and other controlls.
@@ -73,10 +75,10 @@ export class LayerListComponent implements OnDestroy {
         public dialog: MatDialog,
         public layoutService: LayoutService,
         public projectService: ProjectService,
-        // public layerService: LayerService,
         public mapService: MapService,
         public config: Config,
         public changeDetectorRef: ChangeDetectorRef,
+        protected readonly tabsService: TabsService,
     ) {
         this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
 
@@ -142,6 +144,21 @@ export class LayerListComponent implements OnDestroy {
 
         // TODO: re-implement
         return false;
+    }
+
+    showDatatable(layer: Layer): void {
+        const name = this.projectService.getLayerChangesStream(layer).pipe(map((l) => l.name));
+        const removeTrigger = this.projectService.getLayerChangesStream(layer).pipe(
+            last(),
+            map(() => {}),
+        );
+        this.tabsService.addComponent({
+            name,
+            component: DataTableComponent,
+            inputs: {layer},
+            equals: (a, b): boolean => a.layer.id === b.layer.id,
+            removeTrigger,
+        });
     }
 
     getMeasurement(layer: Layer): Observable<Measurement> {

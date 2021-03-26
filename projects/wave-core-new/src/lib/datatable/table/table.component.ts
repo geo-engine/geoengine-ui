@@ -5,9 +5,10 @@ import {
     ViewChild,
     AfterViewInit,
     OnDestroy,
-    AfterViewChecked,
     ElementRef,
-    HostListener,
+    Input,
+    OnChanges,
+    SimpleChanges,
 } from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
 import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
@@ -25,45 +26,45 @@ import {DataSource} from '@angular/cdk/collections';
     styleUrls: ['./table.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, AfterViewChecked {
+export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
     @ViewChild(MatPaginator) paginator: MatPaginator;
 
+    @Input() layer: Layer;
+
     readonly layerTypes = ResultTypes.VECTOR_TYPES;
-    tableHeight: number;
 
     dataSource = new FeatureDataSource();
     displayedColumns: Array<string> = [];
 
     protected layerDataSubscription: Subscription = undefined;
-    protected layerSelectionSubscription: Subscription = undefined;
 
     constructor(protected readonly projectService: ProjectService, protected readonly hostElement: ElementRef<HTMLElement>) {}
 
     ngOnInit(): void {
-        // TODO: allow specifying a layer as `@Input()`
-        this.layerSelectionSubscription = this.projectService.getLayerStream().subscribe((layers) => {
-            if (layers.length) {
-                this.selectLayer(layers[0]);
+        if (this.layer) {
+            this.selectLayer(this.layer);
+        } else {
+            this.emptyTable();
+        }
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.layer) {
+            if (this.layer) {
+                this.selectLayer(this.layer);
             } else {
                 this.emptyTable();
             }
-        });
+        }
     }
 
     ngAfterViewInit(): void {
         this.dataSource.paginator = this.paginator;
     }
 
-    ngAfterViewChecked(): void {
-        this.setTableHeight();
-    }
-
     ngOnDestroy(): void {
         if (this.layerDataSubscription) {
             this.layerDataSubscription.unsubscribe();
-        }
-        if (this.layerSelectionSubscription) {
-            this.layerSelectionSubscription.unsubscribe();
         }
     }
 
@@ -72,10 +73,16 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, Aft
             this.layerDataSubscription.unsubscribe();
         }
 
-        this.layerDataSubscription = combineLatest([
-            this.projectService.getLayerDataStream(layer),
-            this.projectService.getLayerMetadata(layer),
-        ]).subscribe(
+        const dataStream = this.projectService.getLayerDataStream(layer);
+        const metadataStream = this.projectService.getLayerMetadata(layer);
+
+        if (!dataStream || !metadataStream) {
+            // layer was removed
+            this.emptyTable();
+            return;
+        }
+
+        this.layerDataSubscription = combineLatest([dataStream, metadataStream]).subscribe(
             ([data, metadata]) => {
                 if (layer instanceof VectorLayer) {
                     this.processVectorLayer(layer, metadata as VectorLayerMetadata, data);
@@ -108,25 +115,6 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, Aft
         this.dataSource.data = [];
 
         // TODO: implement some default message
-    }
-
-    @HostListener('window:resize')
-    protected onResize(): void {
-        this.setTableHeight();
-    }
-
-    /**
-     * Dynamically adjust table height to be as high as the host style.height-property (in px)
-     */
-    protected setTableHeight(): void {
-        const availableHeight = parseInt(this.hostElement.nativeElement.style.height, 10);
-
-        const paginatorHeight = 56;
-        const tableHeight = availableHeight - paginatorHeight;
-
-        if (tableHeight !== this.tableHeight) {
-            this.tableHeight = tableHeight;
-        }
     }
 }
 

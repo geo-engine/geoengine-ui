@@ -1,0 +1,28 @@
+<button
+    mat-button
+    class="toggle"
+    (click)="toggleVisibility()"
+    [ngSwitch]="visible"
+    matTooltipPosition="above"
+    [matTooltip]="toggleTooltip"
+    [matTooltipShowDelay]="toggleTooltipDelay"
+>
+    <mat-icon *ngSwitchCase="false">expand_less</mat-icon>
+    <mat-icon *ngSwitchCase="true">expand_more</mat-icon>
+</button>
+<nav mat-tab-nav-bar>
+    <a
+        mat-tab-link
+        class="tab-link"
+        [style.width.%]="tabWidthPct | async"
+        *ngFor="let tabContent of this.tabsService.tabs | async"
+        (click)="setTab(tabContent)"
+        [active]="tabContent === tabsService.activeTab"
+    >
+        <span fxFlex [matTooltip]="tabContent.name | async">{{ tabContent.name | async }}</span>
+        <mat-icon class="close-button" (click)="closeTab(tabContent)">close</mat-icon>
+    </a>
+</nav>
+<div [style.height.px]="contentHeight">
+    <ng-template cdkPortalOutlet></ng-template>
+</div>
