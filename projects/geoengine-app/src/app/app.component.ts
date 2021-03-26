@@ -29,7 +29,6 @@ import {
     ProjectService,
     NavigationButton,
     NavigationComponent,
-    ResultTypes,
     MapService,
     MapContainerComponent,
     WorkspaceSettingsComponent,
@@ -56,11 +55,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     @ViewChild(MatSidenav, {static: true}) rightSidenav: MatSidenav;
     @ViewChild(SidenavContainerComponent, {static: true}) rightSidenavContainer: SidenavContainerComponent;
-
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    readonly ResultTypes = ResultTypes;
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    readonly LayoutService = LayoutService;
 
     readonly layersReverse$: Observable<Array<Layer>>;
     readonly layerListVisible$: Observable<boolean>;
