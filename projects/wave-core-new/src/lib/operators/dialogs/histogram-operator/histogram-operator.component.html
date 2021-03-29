@@ -46,7 +46,7 @@
             <mat-form-field fxFlex>
                 <input matInput type="number" placeholder="Number of Buckets" formControlName="numberOfBuckets" />
                 <mat-hint class="error" *ngIf="form.controls.numberOfBuckets.errors?.min || form.controls.numberOfBuckets.errors?.max">
-                    The number of buckets must be between {{minNumberOfBuckets}} and {{maxNumberOfBuckets}}.
+                    The number of buckets must be between {{ minNumberOfBuckets }} and {{ maxNumberOfBuckets }}.
                 </mat-hint>
                 <mat-hint class="error" *ngIf="form.controls.numberOfBuckets.errors?.required">
                     The number of buckets is required.
