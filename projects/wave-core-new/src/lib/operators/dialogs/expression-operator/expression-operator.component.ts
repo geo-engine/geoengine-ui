@@ -8,10 +8,10 @@ import {RasterDataType, RasterDataTypes} from '../../datatype.model';
 import {Unit} from '../../unit.model';
 // import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {RasterLayer} from '../../../layers/layer.model';
-import {MappingRasterSymbology} from '../../../layers/symbology/symbology.model';
 import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
 import {WorkflowDict} from '../../../backend/backend.model';
+import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 
 /**
  * This dialog allows calculations on (one or more) raster layers.
@@ -230,16 +230,18 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                                     new RasterLayer({
                                         workflowId,
                                         name,
-                                        symbology: new MappingRasterSymbology({
-                                            opacity: 1,
-                                            // TODO: insert proper unit
-                                            unit: new Unit({
-                                                measurement: Unit.defaultUnit.measurement,
-                                                unit: Unit.defaultUnit.unit,
-                                                min: 1,
-                                                max: 255,
-                                                interpolation: Unit.defaultUnit.interpolation,
-                                            }),
+                                        symbology: RasterSymbology.fromRasterSymbologyDict({
+                                            opacity: 1.0,
+                                            colorizer: {
+                                                LinearGradient: {
+                                                    breakpoints: [
+                                                        {value: 0, color: [0, 0, 0, 255]},
+                                                        {value: 255, color: [255, 255, 255, 255]},
+                                                    ],
+                                                    default_color: [0, 0, 0, 255],
+                                                    no_data_color: [0, 0, 0, 255],
+                                                },
+                                            },
                                         }),
                                         isLegendVisible: false,
                                         isVisible: true,

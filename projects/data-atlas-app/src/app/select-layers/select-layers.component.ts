@@ -1,16 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {mergeMap} from 'rxjs/operators';
-import {
-    Interpolation,
-    MappingRasterSymbology,
-    ProjectService,
-    RasterLayer,
-    Unit,
-    WorkflowDict,
-    ColorBreakpointDict,
-    Time,
-    UUID,
-} from 'wave-core';
+import {ProjectService, RasterLayer, RasterSymbology, RgbaColorDict, Time, UUID, WorkflowDict} from 'wave-core';
 import {DataSelectionService} from '../data-selection.service';
 import {MatSelectionListChange} from '@angular/material/list';
 import moment from 'moment';
@@ -44,8 +34,8 @@ export class SelectLayersComponent implements OnInit {
             2: 'Desert',
             3: 'Semi-desert',
             4: 'Tundra',
-            5: 'Tropical grassland',
-            6: 'Shrubland',
+            5: 'Shrubland',
+            6: 'Tropical grassland',
             7: 'Temperate grassland',
             8: 'Tropical savanna',
             9: 'Warm temperate open woodland',
@@ -67,87 +57,28 @@ export class SelectLayersComponent implements OnInit {
             classesMap.set(value, classes[valueAsString]);
         }
 
-        const breakpoints = new Array<ColorBreakpointDict>();
-        breakpoints.push({
-            value: 1,
-            rgba: [0, 0, 0, 255],
-        });
-        breakpoints.push({
-            value: 2,
-            rgba: [241, 129, 43, 255],
-        });
-        breakpoints.push({
-            value: 3,
-            rgba: [231, 174, 44, 255],
-        });
-        breakpoints.push({
-            value: 4,
-            rgba: [170, 170, 170, 255],
-        });
-        breakpoints.push({
-            value: 5,
-            rgba: [0, 0, 0, 255],
-        });
-        breakpoints.push({
-            value: 6,
-            rgba: [0, 200, 200, 255],
-        });
-        breakpoints.push({
-            value: 7,
-            rgba: [30, 60, 255, 255],
-        });
-        breakpoints.push({
-            value: 8,
-            rgba: [231, 220, 50, 255],
-        });
-        breakpoints.push({
-            value: 9,
-            rgba: [161, 230, 51, 255],
-        });
-        breakpoints.push({
-            value: 10,
-            rgba: [0, 210, 139, 255],
-        });
-        breakpoints.push({
-            value: 11,
-            rgba: [0, 0, 0, 255],
-        });
-        breakpoints.push({
-            value: 12,
-            rgba: [0, 0, 0, 255],
-        });
-        breakpoints.push({
-            value: 13,
-            rgba: [127, 1, 220, 255],
-        });
-        breakpoints.push({
-            value: 14,
-            rgba: [0, 0, 0, 255],
-        });
-        breakpoints.push({
-            value: 15,
-            rgba: [0, 0, 0, 255],
-        });
-        breakpoints.push({
-            value: 16,
-            rgba: [164, 0, 204, 255],
-        });
-        breakpoints.push({
-            value: 17,
-            rgba: [1, 221, 1, 255],
-        });
-        breakpoints.push({
-            value: 18,
-            rgba: [0, 0, 0, 255],
-        });
-        breakpoints.push({
-            value: 19,
-            rgba: [0, 0, 0, 255],
-        });
-        breakpoints.push({
-            value: 20,
-            rgba: [0, 160, 254, 255],
-        });
+        const colors: {[numberString: string]: RgbaColorDict} = {
+            '1': [0, 0, 0, 255],
+            '2': [241, 129, 43, 255],
+            '3': [231, 174, 44, 255],
+            '4': [170, 170, 170, 255],
+            '5': [200, 200, 0, 255],
+            '6': [0, 0, 0, 255],
+            '7': [30, 60, 255, 255],
+            '8': [231, 220, 50, 255],
+            '9': [161, 230, 51, 255],
+            '10': [0, 210, 139, 255],
+            '11': [0, 0, 0, 255],
+            '12': [107, 1, 220, 255], // not from original color list
+            '13': [127, 1, 220, 255],
+            '14': [0, 0, 0, 255],
+            '15': [0, 0, 0, 255],
+            '16': [164, 0, 204, 255],
+            '17': [1, 221, 1, 255],
+            '18': [0, 0, 0, 255],
+            '19': [0, 0, 0, 255],
+            '20': [0, 160, 254, 255],
+        };
 
         this.projectService
             .registerWorkflow(workflow)
@@ -157,20 +88,15 @@ export class SelectLayersComponent implements OnInit {
                         new RasterLayer({
                             workflowId,
                             name: 'Biome',
-                            symbology: new MappingRasterSymbology({
+                            symbology: RasterSymbology.fromRasterSymbologyDict({
                                 opacity: 1,
                                 colorizer: {
-                                    breakpoints,
-                                    type: 'palette',
+                                    Palette: {
+                                        colors,
+                                        default_color: [0, 0, 0, 0],
+                                        no_data_color: [0, 0, 0, 0],
+                                    },
                                 },
-                                unit: new Unit({
-                                    measurement: 'CARAIB',
-                                    unit: '',
-                                    classes: classesMap,
-                                    min: 1,
-                                    max: 20,
-                                    interpolation: Interpolation.Discrete,
-                                }),
                             }),
                             isLegendVisible: false,
                             isVisible: true,
@@ -213,6 +139,25 @@ export class SelectLayersComponent implements OnInit {
             timeSteps.push(new Time(moment.utc(`${paddedYear}-01-01T00:00:00.000Z`)));
         }
 
+        const breakpoints: Array<{value: number; color: [number, number, number, number]}> = [
+            {value: 0, color: [68, 1, 84, 255]},
+            {value: 0.06666666666666667, color: [72, 26, 108, 255]},
+            {value: 0.13333333333333333, color: [71, 47, 125, 255]},
+            {value: 0.2, color: [65, 68, 135, 255]},
+            {value: 0.26666666666666666, color: [57, 86, 140, 255]},
+            {value: 0.3333333333333333, color: [49, 104, 142, 255]},
+            {value: 0.4, color: [42, 120, 142, 255]},
+            {value: 0.4666666666666667, color: [35, 136, 142, 255]},
+            {value: 0.5333333333333333, color: [31, 152, 139, 255]},
+            {value: 0.6, color: [34, 168, 132, 255]},
+            {value: 0.6666666666666666, color: [53, 183, 121, 255]},
+            {value: 0.7333333333333333, color: [84, 197, 104, 255]},
+            {value: 0.8, color: [122, 209, 81, 255]},
+            {value: 0.8666666666666667, color: [165, 219, 54, 255]},
+            {value: 0.9333333333333333, color: [210, 226, 27, 255]},
+            {value: 1, color: [253, 231, 37, 255]},
+        ];
+
         this.projectService
             .registerWorkflow(workflow)
             .pipe(
@@ -220,16 +165,16 @@ export class SelectLayersComponent implements OnInit {
                     this.dataSelectionService.setRasterLayer(
                         new RasterLayer({
                             workflowId,
-                            name: 'Biome',
-                            symbology: new MappingRasterSymbology({
-                                opacity: 1,
-                                unit: new Unit({
-                                    measurement: Unit.defaultUnit.measurement,
-                                    unit: Unit.defaultUnit.unit,
-                                    min: 0,
-                                    max: 1,
-                                    interpolation: Interpolation.Continuous,
-                                }),
+                            name: 'KK09',
+                            symbology: RasterSymbology.fromRasterSymbologyDict({
+                                opacity: 1.0,
+                                colorizer: {
+                                    LinearGradient: {
+                                        breakpoints,
+                                        default_color: [0, 0, 0, 0],
+                                        no_data_color: [0, 0, 0, 0],
+                                    },
+                                },
                             }),
                             isLegendVisible: false,
                             isVisible: true,

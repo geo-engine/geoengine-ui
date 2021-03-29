@@ -1,3 +1,5 @@
+import {RgbaColorDict} from '../backend/backend.model';
+
 export interface RgbaStruct {
     r: number;
     g: number;
@@ -14,6 +16,19 @@ interface RgbStruct {
 export type RgbaTuple = [number, number, number, number];
 export type RgbTuple = [number, number, number];
 export type RgbaLike = RgbaTuple | RgbTuple | RgbaStruct | RgbStruct | Color | IRgba | string;
+
+export type RgbaColor = [number, number, number, number];
+
+// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
+export function rgbaColorFromDict(dict: RgbaColorDict): RgbaColor {
+    return [dict[0], dict[1], dict[2], dict[3] / 255.0];
+}
+
+// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
+export function colorToDict(color: Color): RgbaColorDict {
+    const rgbaColor = color.rgbaTuple();
+    return [rgbaColor[0], rgbaColor[1], rgbaColor[2], Math.round(rgbaColor[3] * 255.0)];
+}
 
 /**
  *  An interface for types representing a Rgba color
@@ -82,7 +97,8 @@ export class Color implements IRgba, RgbaStruct {
             throw new Error('Invalid RGB(A) tuple size!');
         }
 
-        const alpha = rgbaTuple.length < 4 ? 255.0 : rgbaTuple[3];
+        const alpha = rgbaTuple.length < 4 ? 1.0 : rgbaTuple[3];
+
         return {r: rgbaTuple[0], g: rgbaTuple[1], b: rgbaTuple[2], a: alpha};
     }
 
@@ -123,7 +139,7 @@ export class Color implements IRgba, RgbaStruct {
                 r: rgb.r,
                 g: rgb.g,
                 b: rgb.b,
-                a: 255.0,
+                a: 1,
             });
         }
 

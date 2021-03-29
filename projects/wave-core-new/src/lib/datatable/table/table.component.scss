@@ -1,6 +1,8 @@
 #table-container {
     overflow: auto;
     background-color: var(--wave-card-background-color);
+
+    height: calc(100% - 56px);
 }
 
 table {
@@ -13,4 +15,10 @@ table {
     ::ng-deep tbody tr {
         height: 2rem !important;
     }
+}
+
+.no-data-row {
+    text-align: center;
+    font-style: italic;
+    color: var(--wave-foreground-secondary-text-color);
 }

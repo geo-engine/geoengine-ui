@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChange} from '@angular/core';
-import {IColorizerData} from '../../../colors/colorizer-data.model';
 import {Color} from '../../../colors/color';
+import {Colorizer} from '../../../colors/colorizer.model';
 
 /**
  * a simple interface to model a cell in the raster icon
@@ -27,7 +27,7 @@ export class RasterIconComponent implements OnInit, OnChanges {
     @Input() xCells: number;
     @Input() yCells: number;
     // the raster style used to color the icon
-    @Input() colorizer: IColorizerData;
+    @Input() colorizer: Colorizer;
 
     /**
      * the array of generated (colored and positioned) cells.
@@ -66,17 +66,14 @@ export class RasterIconComponent implements OnInit, OnChanges {
     }
 
     private cellColor(x: number, y: number): Color {
-        const validSymbology = this.colorizer && this.colorizer.breakpoints && this.colorizer.breakpoints.length > 0;
+        const validSymbology = this.colorizer && this.colorizer.getNumberOfColors() > 0;
         if (!validSymbology) {
             return Color.fromRgbaLike('ff000000');
         }
-
         const numberOfCells = this.xCells * this.yCells;
-        const numberOfColors = this.colorizer.breakpoints.length;
-        const isGradient = this.colorizer.type === 'gradient' || this.colorizer.type === 'logarithmic';
-
+        const numberOfColors = this.colorizer.getNumberOfColors();
+        const isGradient = this.colorizer.isGradient();
         const scale = isGradient ? numberOfColors / (this.xCells + this.yCells - 1) : numberOfColors / numberOfCells;
-
         const idx = y * this.xCells + x;
         let colorIdx = 0;
         if (numberOfColors === 2) {
@@ -85,6 +82,6 @@ export class RasterIconComponent implements OnInit, OnChanges {
             const uidx = isGradient ? this.xCells - 1 - x + y : idx;
             colorIdx = Math.trunc(uidx * scale) % numberOfColors;
         }
-        return Color.fromRgbaLike(this.colorizer.breakpoints[colorIdx].rgba);
+        return this.colorizer.getColorAtIndex(colorIdx);
     }
 }

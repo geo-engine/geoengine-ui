@@ -1,13 +1,13 @@
-import {Component, OnInit, ChangeDetectionStrategy, Input, SimpleChanges, OnChanges} from '@angular/core';
-import {StrokeDashStyle} from '../../symbology/symbology.model';
+import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
 import {BLACK, Color} from '../../../colors/color';
+import {IconStyle} from '../../symbology/symbology.model';
 
 /**
  * A simple interface to specify the style of a line icon.
  */
-export interface LineIconStyle {
+export interface LineIconStyle extends IconStyle {
     strokeWidth: number;
-    strokeDashStyle: StrokeDashStyle;
+    // strokeDashStyle: StrokeDashStyle;
     strokeRGBA: Color;
 }
 
@@ -20,31 +20,16 @@ export interface LineIconStyle {
     styleUrls: ['./line-icon.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LineIconComponent implements OnInit, OnChanges {
+export class LineIconComponent implements OnInit {
     // the style to use for the icon
     @Input()
-    iconStyle: LineIconStyle;
-    strokeWidth = 2;
-    strokeDashArray: Array<number> = [];
-    strokeColor = BLACK.rgbaCssString();
+    iconStyle: LineIconStyle = {
+        strokeWidth: 2,
+        // strokeDashArray: Array<number> = [];
+        strokeRGBA: BLACK,
+    };
 
     constructor() {}
 
-    ngOnInit(): void {
-        if (this.iconStyle) {
-            this.updateStyle();
-        }
-    }
-
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes) {
-            this.updateStyle();
-        }
-    }
-
-    private updateStyle(): void {
-        this.strokeWidth = this.iconStyle.strokeWidth;
-        this.strokeDashArray = this.iconStyle.strokeDashStyle ? this.iconStyle.strokeDashStyle : [];
-        this.strokeColor = this.iconStyle.strokeRGBA.rgbaCssString();
-    }
+    ngOnInit(): void {}
 }

@@ -3,17 +3,20 @@ import {Component, OnDestroy, Input, ChangeDetectionStrategy, ChangeDetectorRef}
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import {MatDialog} from '@angular/material/dialog';
 import {LayoutService, SidenavConfig} from '../../layout.service';
-import {SymbologyType, AbstractSymbology} from '../symbology/symbology.model';
+import {IconStyle, Symbology, SymbologyType} from '../symbology/symbology.model';
 import {RenameLayerComponent} from '../rename-layer/rename-layer.component';
 import {LoadingState} from '../../project/loading-state.model';
 import {MapService} from '../../map/map.service';
 import {Layer} from '../layer.model';
 import {ProjectService} from '../../project/project.service';
 import {Config} from '../../config.service';
-import {SymbologyEditorComponent} from '../symbology/symbology-editor/symbology-editor.component';
-import {filter, map, startWith} from 'rxjs/operators';
+import {last, map, startWith} from 'rxjs/operators';
 import {AddDataComponent} from '../../datasets/add-data/add-data.component';
 import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-graph.component';
+import {TabsService} from '../../tabs/tabs.service';
+import {DataTableComponent} from '../../datatable/table/table.component';
+import {Measurement} from '../measurement';
+import {RasterLayerMetadata} from '../layer-metadata.model';
 
 /**
  * The layer list component displays active layers, legends and other controlls.
@@ -60,7 +63,7 @@ export class LayerListComponent implements OnDestroy {
     // readonly LayerExportComponent = LayerExportComponent;
     // readonly LayerShareComponent = LayerShareComponent;
     // readonly SourceOperatorListComponent = SourceOperatorListComponent;
-    readonly SymbologyEditorComponent = SymbologyEditorComponent;
+    // readonly SymbologyEditorComponent = SymbologyEditorComponent;
 
     // inventory of used subscriptions
     private subscriptions: Array<Subscription> = [];
@@ -72,10 +75,10 @@ export class LayerListComponent implements OnDestroy {
         public dialog: MatDialog,
         public layoutService: LayoutService,
         public projectService: ProjectService,
-        // public layerService: LayerService,
         public mapService: MapService,
         public config: Config,
         public changeDetectorRef: ChangeDetectorRef,
+        protected readonly tabsService: TabsService,
     ) {
         this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
 
@@ -116,11 +119,14 @@ export class LayerListComponent implements OnDestroy {
     /**
      * method to get the symbology stream of a layer. This is used by the icons and legend components.
      */
-    getLayerSymbologyStream(layer: Layer): Observable<AbstractSymbology> {
+    getLayerSymbologyStream(layer: Layer): Observable<Symbology> {
+        return this.projectService.getLayerChangesStream(layer).pipe(map(() => layer.symbology));
+    }
+
+    getIconStyleStream(layer: Layer): Observable<IconStyle> {
         return this.projectService.getLayerChangesStream(layer).pipe(
             startWith(layer),
-            filter((lc) => !!lc.symbology),
-            map(() => layer.symbology),
+            map((l) => l.symbology.getIconStyle()),
         );
     }
 
@@ -138,5 +144,27 @@ export class LayerListComponent implements OnDestroy {
 
         // TODO: re-implement
         return false;
+    }
+
+    showDatatable(layer: Layer): void {
+        const name = this.projectService.getLayerChangesStream(layer).pipe(map((l) => l.name));
+        const removeTrigger = this.projectService.getLayerChangesStream(layer).pipe(
+            last(),
+            map(() => {}),
+        );
+        this.tabsService.addComponent({
+            name,
+            component: DataTableComponent,
+            inputs: {layer},
+            equals: (a, b): boolean => a.layer.id === b.layer.id,
+            removeTrigger,
+        });
+    }
+
+    getMeasurement(layer: Layer): Observable<Measurement> {
+        return this.projectService.getLayerMetadata(layer).pipe(
+            map((metaData) => metaData as RasterLayerMetadata),
+            map((metaData) => metaData.measurement),
+        );
     }
 }
