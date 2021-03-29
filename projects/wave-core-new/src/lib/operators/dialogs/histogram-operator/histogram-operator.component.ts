@@ -45,7 +45,7 @@ interface HistogramParams extends OperatorParams {
 export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
     minNumberOfBuckets = 1;
     maxNumberOfBuckets = 100;
-    
+
     inputTypes = ResultTypes.INPUT_TYPES;
 
     form: FormGroup;
