@@ -83,7 +83,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
                 },
             ),
             autoBuckets: [true, Validators.required],
-            numberOfBuckets: [100, [Validators.required, Validators.min(0), Validators.max(100)]],
+            numberOfBuckets: [20, [Validators.required, Validators.min(1), Validators.max(100)]],
         });
 
         this.subscriptions.push(
