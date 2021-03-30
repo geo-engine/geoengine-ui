@@ -37,9 +37,15 @@
             </mat-form-field>
         </div>
         <div>
-            <textarea name="loadingInfo" mdInput placeholder="Loading Info" rows="25" [disabled]="submittedCreate">{{
-                loadingInfo
-            }}</textarea>
+            <textarea
+                name="loadingInfo"
+                mdInput
+                placeholder="Loading Info"
+                rows="25"
+                [disabled]="submittedCreate"
+                [(ngModel)]="loadingInfo"
+            >
+            </textarea>
         </div>
         <div class="actions">
             <button type="button" mat-raised-button color="primary" (click)="submitLoadingInfo(uploadId)" [disabled]="submittedCreate">
