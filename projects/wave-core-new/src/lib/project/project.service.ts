@@ -26,10 +26,10 @@ import {UserService} from '../users/user.service';
 import {LayerData, RasterData, VectorData} from '../layers/layer-data.model';
 import {extentToBboxDict} from '../util/conversions';
 import {MapService} from '../map/map.service';
-import {AbstractSymbology} from '../layers/symbology/symbology.model';
 import {Session} from '../users/session.model';
 import {HasPlotId, Plot} from '../plots/plot.model';
 import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata.model';
+import {Symbology} from '../layers/symbology/symbology.model';
 
 /***
  * The ProjectService is the main housekeeping component of WAVE.
@@ -647,7 +647,7 @@ export class ProjectService {
         changes: {
             name?: string;
             workflowId?: UUID;
-            symbology?: AbstractSymbology;
+            symbology?: Symbology;
             isVisible?: boolean;
             isLegendVisible?: boolean;
         },
@@ -666,6 +666,10 @@ export class ProjectService {
             .pipe(
                 map((project) => project.layers.map((l) => (l.id === layer.id ? layer : l))),
                 mergeMap((layers) => this.changeProjectConfig({layers})),
+                tap(() => {
+                    // propagate layer changes
+                    this.layers.get(layer.id).next(layer);
+                }),
             )
             .subscribe(
                 () => subject.next(),
@@ -787,7 +791,7 @@ export class ProjectService {
 
     protected removePlotSubscriptions(plot: HasPlotId): void {
         // subjects
-        for (const subjectMap of [this.layerData$, this.layerDataState$]) {
+        for (const subjectMap of [this.plotData$, this.plotDataState$]) {
             subjectMap.get(plot.id).complete();
             subjectMap.delete(plot.id);
         }
@@ -1007,14 +1011,6 @@ export class ProjectService {
                 switchMap(([time, [projection, viewportSize], sessionToken]) => {
                     const requestExtent: [number, number, number, number] = [0, 0, 0, 0];
 
-                    // let clusteredOption;
-                    // TODO: is clustering a property of a layer or the symbology?
-                    // if (layer.clustered && layer.symbology instanceof PointSymbology) {
-                    //     clusteredOption = {
-                    //         minRadius: layer.symbology.radius,
-                    //     };
-                    // }
-
                     // TODO: add resolution
                     return this.backend
                         .wfsGetFeature(
@@ -1046,7 +1042,11 @@ export class ProjectService {
         if (this.layers.get(layer.id)) {
             throw new Error('Layer changes stream already registered');
         }
+
         this.layers.set(layer.id, new ReplaySubject<Layer>(1));
+
+        // emit first change
+        this.layers.get(layer.id).next(layer);
     }
 
     private getDefaultTimeStep(): TimeStepDuration {

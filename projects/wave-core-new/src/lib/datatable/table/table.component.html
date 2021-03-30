@@ -1,4 +1,4 @@
-<div id="table-container" [style.height.px]="tableHeight">
+<div id="table-container">
     <table mat-table [dataSource]="dataSource">
         <!-- Data Columns -->
         <ng-container *ngFor="let columnName of displayedColumns" [matColumnDef]="columnName">
@@ -8,6 +8,11 @@
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+        <!-- Row shown when there is no matching data that will be provided to the wrapper table. -->
+        <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell no-data-row">No data to show</td>
+        </tr>
     </table>
 </div>
 

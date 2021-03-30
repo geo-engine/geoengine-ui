@@ -9,6 +9,7 @@ import {ProjectService} from '../../../project/project.service';
 import {zip} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 import {WorkflowDict} from '../../../backend/backend.model';
+import {colorToDict} from '../../../colors/color';
 
 /**
  * This component allows creating the point in polygon filter operator.
@@ -60,10 +61,10 @@ export class PointInPolygonFilterOperatorComponent {
                                     new VectorLayer({
                                         workflowId,
                                         name,
-                                        symbology: PointSymbology.createSymbology({
-                                            fillRGBA: this.randomColorService.getRandomColorRgba(),
-                                            radius: 10,
-                                            clustered: false,
+                                        symbology: PointSymbology.fromPointSymbologyDict({
+                                            radius: {Static: 10},
+                                            stroke: {width: {Static: 1}, color: {Static: [0, 0, 0, 255]}},
+                                            fill_color: {Static: colorToDict(this.randomColorService.getRandomColorRgba())},
                                         }),
                                         isLegendVisible: false,
                                         isVisible: true,

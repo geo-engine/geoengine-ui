@@ -43,6 +43,9 @@ interface HistogramParams extends OperatorParams {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
+    minNumberOfBuckets = 1;
+    maxNumberOfBuckets = 100;
+
     inputTypes = ResultTypes.INPUT_TYPES;
 
     form: FormGroup;
@@ -83,7 +86,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
                 },
             ),
             autoBuckets: [true, Validators.required],
-            numberOfBuckets: [20, Validators.required],
+            numberOfBuckets: [20, [Validators.required, Validators.min(this.minNumberOfBuckets), Validators.max(this.maxNumberOfBuckets)]],
         });
 
         this.subscriptions.push(
