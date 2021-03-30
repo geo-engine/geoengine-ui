@@ -1,6 +1,6 @@
 {
     "/api/*": {
-        "target": "http://localhost:3030/",
+        "target": "http://pc12736.mathematik.uni-marburg.de:7777/api",
         "changeOrigin": true,
         "pathRewrite": {
             "^/api": ""
