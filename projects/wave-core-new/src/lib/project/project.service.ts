@@ -791,7 +791,7 @@ export class ProjectService {
 
     protected removePlotSubscriptions(plot: HasPlotId): void {
         // subjects
-        for (const subjectMap of [this.layerData$, this.layerDataState$]) {
+        for (const subjectMap of [this.plotData$, this.plotDataState$]) {
             subjectMap.get(plot.id).complete();
             subjectMap.delete(plot.id);
         }
