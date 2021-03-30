@@ -37,7 +37,7 @@
             </mat-form-field>
         </div>
         <div>
-            <textarea name="loadingInfo" mdInput placeholder="Loading Info" rows="25" cols="100" [disabled]="submittedCreate">{{
+            <textarea name="loadingInfo" mdInput placeholder="Loading Info" rows="25" [disabled]="submittedCreate">{{
                 loadingInfo
             }}</textarea>
         </div>
@@ -56,3 +56,5 @@
 
     <mat-card-content> Dataset ID: {{ dataSetId.id.Internal }} </mat-card-content>
 </mat-card>
+
+<mat-spinner *ngIf="indicateLoading$ | async"></mat-spinner>

@@ -19,6 +19,7 @@ interface ExampleLoadingInfo {
 export class UploadComponent implements OnInit {
     selectedFiles: FileList;
     progress$ = new Subject<number>();
+    indicateLoading$ = new Subject<boolean>();
     submittedUpload = false;
     submittedCreate = false;
 
@@ -148,6 +149,7 @@ export class UploadComponent implements OnInit {
         }
 
         this.submittedUpload = true;
+        this.indicateLoading$.next(true);
 
         this.dataSetService.upload(form).subscribe(
             (event) => {
@@ -155,10 +157,12 @@ export class UploadComponent implements OnInit {
                     this.progress$.next(Math.round((100 * event.loaded) / event.total));
                 } else if (event.type === HttpEventType.Response) {
                     this.uploadId$.next(event.body.id);
+                    this.indicateLoading$.next(false);
                 }
             },
             (err) => {
                 this.notificationService.error('File upload failed: ' + err);
+                this.indicateLoading$.next(false);
             },
         );
     }
@@ -169,6 +173,8 @@ export class UploadComponent implements OnInit {
 
     submitLoadingInfo(uploadId: UUID): void {
         this.submittedCreate = true;
+        this.indicateLoading$.next(true);
+
         const create = {
             upload: uploadId,
             definition: JSON.parse(this.loadingInfo),
@@ -177,9 +183,11 @@ export class UploadComponent implements OnInit {
         this.dataSetService.createDataSet(create).subscribe(
             (id) => {
                 this.dataSetId$.next(id);
+                this.indicateLoading$.next(false);
             },
             (err) => {
                 this.notificationService.error('Create dataset failed: ' + err);
+                this.indicateLoading$.next(false);
             },
         );
     }
