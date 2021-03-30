@@ -1,0 +1,66 @@
+<wave-sidenav-header>Add Data</wave-sidenav-header>
+
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>Select files for upload</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+        <input type="file" id="file" multiple (change)="selectFiles($event)" [disabled]="submittedUpload" />
+        <div class="actions">
+            <button type="button" mat-raised-button color="primary" (click)="upload()" [disabled]="!selectedFiles || submittedUpload">
+                Upload
+            </button>
+        </div>
+        <mat-progress-bar *ngIf="progress$ | async as progress" mode="determinate" [value]="progress"></mat-progress-bar>
+    </mat-card-content>
+</mat-card>
+
+<mat-card *ngIf="uploadId$ | async as uploadId">
+    <mat-card-header>
+        <mat-card-title>Specify loading information</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+        <p>Upload ID: {{ uploadId }}</p>
+
+        <div>Specify the loading info as Json</div>
+
+        <div>
+            <mat-form-field appearance="fill">
+                <mat-label>Choose an example</mat-label>
+                <mat-select [disabled]="submittedCreate">
+                    <mat-option *ngFor="let option of exampleLoadingInfos" [value]="option" (click)="selectLoadingInfo(option)">
+                        {{ option.name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div>
+            <textarea
+                name="loadingInfo"
+                mdInput
+                placeholder="Loading Info"
+                rows="25"
+                [disabled]="submittedCreate"
+                [(ngModel)]="loadingInfo"
+            >
+            </textarea>
+        </div>
+        <div class="actions">
+            <button type="button" mat-raised-button color="primary" (click)="submitLoadingInfo(uploadId)" [disabled]="submittedCreate">
+                Create dataset
+            </button>
+        </div>
+    </mat-card-content>
+</mat-card>
+
+<mat-card *ngIf="dataSetId$ | async as dataSetId">
+    <mat-card-header>
+        <mat-card-title>Upload succesful!</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content> Dataset ID: {{ dataSetId.id.Internal }} </mat-card-content>
+</mat-card>
+
+<mat-spinner *ngIf="indicateLoading$ | async"></mat-spinner>

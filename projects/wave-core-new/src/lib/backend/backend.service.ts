@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {HttpClient, HttpEvent, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable, Subject} from 'rxjs';
 import {Config} from '../config.service';
 import {bboxDictToExtent, unixTimestampToIsoString} from '../util/conversions';
@@ -27,6 +27,9 @@ import {
     RasterResultDescriptorDict,
     PlotResultDescriptorDict,
     VectorResultDescriptorDict,
+    UploadResponseDict,
+    DataSetIdDict,
+    CreateDataSetDict,
 } from './backend.model';
 
 @Injectable({
@@ -237,6 +240,20 @@ export class BackendService {
 
         return this.http.get<Array<DataSetDict>>(this.config.API_URL + '/datasets', {
             params: params.httpParams,
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    upload(sessionId: UUID, form: FormData): Observable<HttpEvent<UploadResponseDict>> {
+        return this.http.post<UploadResponseDict>(this.config.API_URL + '/upload', form, {
+            headers: BackendService.authorizationHeader(sessionId),
+            reportProgress: true,
+            observe: 'events',
+        });
+    }
+
+    createDataSet(sessionId: UUID, createDataSet: CreateDataSetDict): Observable<DataSetIdDict> {
+        return this.http.post<DataSetIdDict>(this.config.API_URL + '/dataset', createDataSet, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
