@@ -1,66 +1,130 @@
 <wave-sidenav-header>Add Data</wave-sidenav-header>
 
-<mat-card>
-    <mat-card-header>
-        <mat-card-title>Select files for upload</mat-card-title>
-    </mat-card-header>
+<ng-container *ngIf="state$ | async as state">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>Select files for upload</mat-card-title>
+        </mat-card-header>
 
-    <mat-card-content>
-        <input type="file" id="file" multiple (change)="selectFiles($event)" [disabled]="submittedUpload" />
-        <div class="actions">
-            <button type="button" mat-raised-button color="primary" (click)="upload()" [disabled]="!selectedFiles || submittedUpload">
-                Upload
-            </button>
-        </div>
-        <mat-progress-bar *ngIf="progress$ | async as progress" mode="determinate" [value]="progress"></mat-progress-bar>
-    </mat-card-content>
-</mat-card>
+        <mat-card-content>
+            <input type="file" id="file" multiple (change)="selectFiles($event)" [disabled]="state != State.Start" />
+            <div class="actions">
+                <button
+                    type="button"
+                    mat-raised-button
+                    color="primary"
+                    (click)="upload()"
+                    [disabled]="!selectedFiles || state != State.Start"
+                >
+                    Upload
+                </button>
+            </div>
+            <mat-progress-bar *ngIf="progress$ | async as progress" mode="determinate" [value]="progress"></mat-progress-bar>
+        </mat-card-content>
+    </mat-card>
 
-<mat-card *ngIf="uploadId$ | async as uploadId">
-    <mat-card-header>
-        <mat-card-title>Specify loading information</mat-card-title>
-    </mat-card-header>
+    <mat-card *ngIf="uploadId$ | async as uploadId">
+        <mat-card-header>
+            <mat-card-title>Specify loading information</mat-card-title>
+        </mat-card-header>
 
-    <mat-card-content>
-        <p>Upload ID: {{ uploadId }}</p>
+        <mat-card-content>
+            <p>Upload ID: {{ uploadId }}</p>
+            <mat-tab-group animationDuration="0">
+                <mat-tab label="Simple Mode">
+                    <form [formGroup]="simpleCreateForm" (ngSubmit)="submitAutoCreate(uploadId)">
+                        <fieldset [disabled]="state != State.Uploaded">
+                            <p>
+                                <mat-form-field>
+                                    <input matInput type="text" placeholder="Dataset Name" formControlName="name" required />
+                                </mat-form-field>
+                            </p>
+                            <p>
+                                <mat-form-field>
+                                    <textarea matInput placeholder="Dataset Description" formControlName="description"></textarea>
+                                </mat-form-field>
+                            </p>
+                            <p>
+                                <mat-form-field appearance="fill">
+                                    <mat-label>Choose the main file</mat-label>
+                                    <mat-select
+                                        id="mainFile"
+                                        [disabled]="state != State.Uploaded"
+                                        [(value)]="selectedMainFile"
+                                        formControlName="mainFile"
+                                        required
+                                    >
+                                        <mat-option *ngFor="let file of selectedFiles" [value]="file.name">
+                                            {{ file.name }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </p>
+                        </fieldset>
 
-        <div>Specify the loading info as Json</div>
+                        <div class="actions">
+                            <button
+                                type="submit"
+                                mat-raised-button
+                                color="primary"
+                                [disabled]="state != State.Uploaded || (simpleCreateForm.statusChanges | async) !== 'VALID'"
+                            >
+                                Create
+                            </button>
+                        </div>
+                    </form>
+                </mat-tab>
+                <mat-tab label="Expert Mode">
+                    <div>Specify the loading info as Json</div>
 
-        <div>
-            <mat-form-field appearance="fill">
-                <mat-label>Choose an example</mat-label>
-                <mat-select [disabled]="submittedCreate">
-                    <mat-option *ngFor="let option of exampleLoadingInfos" [value]="option" (click)="selectLoadingInfo(option)">
-                        {{ option.name }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-        </div>
-        <div>
-            <textarea
-                name="loadingInfo"
-                mdInput
-                placeholder="Loading Info"
-                rows="25"
-                [disabled]="submittedCreate"
-                [(ngModel)]="loadingInfo"
-            >
-            </textarea>
-        </div>
-        <div class="actions">
-            <button type="button" mat-raised-button color="primary" (click)="submitLoadingInfo(uploadId)" [disabled]="submittedCreate">
-                Create dataset
-            </button>
-        </div>
-    </mat-card-content>
-</mat-card>
+                    <div>
+                        <mat-form-field appearance="fill">
+                            <mat-label>Choose an example</mat-label>
+                            <mat-select [disabled]="state != State.Uploaded">
+                                <mat-option *ngFor="let option of exampleLoadingInfos" [value]="option" (click)="selectLoadingInfo(option)">
+                                    {{ option.name }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div>
+                        <textarea
+                            name="loadingInfo"
+                            mdInput
+                            placeholder="Loading Info"
+                            rows="25"
+                            [disabled]="state != State.Uploaded"
+                            [(ngModel)]="loadingInfo"
+                        >
+                        </textarea>
+                    </div>
+                    <div class="actions">
+                        <button
+                            type="button"
+                            mat-raised-button
+                            color="primary"
+                            (click)="submitLoadingInfo(uploadId)"
+                            [disabled]="state != State.Uploaded"
+                        >
+                            Create dataset
+                        </button>
+                    </div>
+                </mat-tab>
+            </mat-tab-group>
+        </mat-card-content>
+    </mat-card>
 
-<mat-card *ngIf="dataSetId$ | async as dataSetId">
-    <mat-card-header>
-        <mat-card-title>Upload succesful!</mat-card-title>
-    </mat-card-header>
+    <mat-card *ngIf="dataSetId$ | async as datasetId">
+        <mat-card-header>
+            <mat-card-title>Upload succesful!</mat-card-title>
+        </mat-card-header>
 
-    <mat-card-content> Dataset ID: {{ dataSetId.id.Internal }} </mat-card-content>
-</mat-card>
+        <mat-card-content>
+            <div class="actions">
+                <button type="button" mat-raised-button color="primary" (click)="addToMap(datasetId)">Add dataset to map</button>
+            </div>
+        </mat-card-content>
+    </mat-card>
 
-<mat-spinner *ngIf="indicateLoading$ | async"></mat-spinner>
+    <mat-spinner *ngIf="state == State.Uploading || state == State.Creating"></mat-spinner>
+</ng-container>

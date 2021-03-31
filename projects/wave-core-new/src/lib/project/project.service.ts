@@ -29,7 +29,11 @@ import {MapService} from '../map/map.service';
 import {Session} from '../users/session.model';
 import {HasPlotId, Plot} from '../plots/plot.model';
 import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata.model';
-import {Symbology} from '../layers/symbology/symbology.model';
+import {LineSymbology, PointSymbology, PolygonSymbology, RasterSymbology, Symbology} from '../layers/symbology/symbology.model';
+import {DataSet, VectorResultDescriptor} from '../datasets/dataset.model';
+import {VectorDataTypes} from '../operators/datatype.model';
+import {RandomColorService} from '../util/services/random-color.service';
+import {colorToDict} from '../colors/color';
 
 /***
  * The ProjectService is the main housekeeping component of WAVE.
@@ -63,6 +67,7 @@ export class ProjectService {
         protected backend: BackendService,
         protected userService: UserService,
         protected layoutService: LayoutService,
+        protected randomColorService: RandomColorService,
     ) {
         // set the starting project upon login
         this.userService
@@ -710,6 +715,79 @@ export class ProjectService {
         );
 
         return ProjectService.subscribeAndProvide(result);
+    }
+
+    addDataSetToMap(dataset: DataSet): Observable<void> {
+        const workflow = dataset.createSourceWorkflow();
+
+        return this.registerWorkflow(workflow).pipe(
+            mergeMap((workflowId) => {
+                if (dataset.result_descriptor.getTypeString() === 'Raster') {
+                    return this.addLayer(
+                        new RasterLayer({
+                            workflowId,
+                            name: dataset.name,
+                            symbology: RasterSymbology.fromRasterSymbologyDict({
+                                opacity: 1.0,
+                                colorizer: {
+                                    LinearGradient: {
+                                        breakpoints: [
+                                            {value: 1, color: [0, 0, 0, 255]},
+                                            {value: 255, color: [255, 255, 255, 255]},
+                                        ],
+                                        default_color: [0, 0, 0, 0],
+                                        no_data_color: [0, 0, 0, 0],
+                                    },
+                                },
+                            }),
+                            isLegendVisible: false,
+                            isVisible: true,
+                        }),
+                    );
+                } else {
+                    const resultDescriptor = dataset.result_descriptor as VectorResultDescriptor;
+
+                    let symbology: Symbology;
+
+                    switch (resultDescriptor.data_type) {
+                        case VectorDataTypes.MultiPoint:
+                            symbology = PointSymbology.fromPointSymbologyDict({
+                                radius: {Static: 10},
+                                stroke: {
+                                    width: {Static: 1},
+                                    color: {Static: [0, 0, 0, 255]},
+                                },
+                                fill_color: {Static: colorToDict(this.randomColorService.getRandomColorRgba())},
+                            });
+                            break;
+                        case VectorDataTypes.MultiLineString:
+                            symbology = LineSymbology.fromLineSymbologyDict({
+                                stroke: {
+                                    width: {Static: 1},
+                                    color: {Static: colorToDict(this.randomColorService.getRandomColorRgba())},
+                                },
+                            });
+                            break;
+                        case VectorDataTypes.MultiPolygon:
+                            symbology = PolygonSymbology.fromPolygonSymbologyDict({
+                                stroke: {width: {Static: 1}, color: {Static: [0, 0, 0, 255]}},
+                                fill_color: {Static: colorToDict(this.randomColorService.getRandomColorRgba())},
+                            });
+                            break;
+                    }
+
+                    return this.addLayer(
+                        new VectorLayer({
+                            workflowId,
+                            name: dataset.name,
+                            symbology,
+                            isLegendVisible: false,
+                            isVisible: true,
+                        }),
+                    );
+                }
+            }),
+        );
     }
 
     /**

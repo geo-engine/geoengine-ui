@@ -1,13 +1,24 @@
 import {HttpEventType} from '@angular/common/http';
 import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
-import {Subject} from 'rxjs';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {BehaviorSubject, Subject} from 'rxjs';
+import {mergeMap} from 'rxjs/operators';
 import {DataSetIdDict, UUID} from '../../backend/backend.model';
 import {NotificationService} from '../../notification.service';
+import {ProjectService} from '../../project/project.service';
 import {DataSetService} from '../dataset.service';
 
 interface ExampleLoadingInfo {
     name: string;
     json: string;
+}
+
+enum State {
+    Start = 1,
+    Uploading = 2,
+    Uploaded = 3,
+    Creating = 4,
+    Created = 5,
 }
 
 @Component({
@@ -17,15 +28,17 @@ interface ExampleLoadingInfo {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UploadComponent implements OnInit {
-    selectedFiles: FileList;
+    readonly State = State;
+
+    state$ = new BehaviorSubject<State>(State.Start);
+    uploadId$ = new Subject<UUID>();
+    dataSetId$ = new Subject<DataSetIdDict>();
     progress$ = new Subject<number>();
-    indicateLoading$ = new Subject<boolean>();
-    submittedUpload = false;
-    submittedCreate = false;
 
-    uploadId$: Subject<UUID> = new Subject();
-
-    dataSetId$: Subject<DataSetIdDict> = new Subject();
+    simpleCreateForm: FormGroup;
+    selectedFiles: FileList;
+    selectedMainFile: string;
+    loadingInfo = '';
 
     exampleLoadingInfos: Array<ExampleLoadingInfo> = [
         {
@@ -131,9 +144,17 @@ export class UploadComponent implements OnInit {
         },
     ];
 
-    loadingInfo = '';
-
-    constructor(protected dataSetService: DataSetService, protected notificationService: NotificationService) {}
+    constructor(
+        protected dataSetService: DataSetService,
+        protected notificationService: NotificationService,
+        protected projectService: ProjectService,
+    ) {
+        this.simpleCreateForm = new FormGroup({
+            name: new FormControl('', Validators.required),
+            description: new FormControl(''),
+            mainFile: new FormControl('', Validators.required),
+        });
+    }
 
     ngOnInit(): void {}
 
@@ -148,8 +169,7 @@ export class UploadComponent implements OnInit {
             form.append('files[]', file, file.name);
         }
 
-        this.submittedUpload = true;
-        this.indicateLoading$.next(true);
+        this.state$.next(State.Uploading);
 
         this.dataSetService.upload(form).subscribe(
             (event) => {
@@ -157,12 +177,12 @@ export class UploadComponent implements OnInit {
                     this.progress$.next(Math.round((100 * event.loaded) / event.total));
                 } else if (event.type === HttpEventType.Response) {
                     this.uploadId$.next(event.body.id);
-                    this.indicateLoading$.next(false);
+                    this.state$.next(State.Uploaded);
                 }
             },
             (err) => {
-                this.notificationService.error('File upload failed: ' + err);
-                this.indicateLoading$.next(false);
+                this.notificationService.error('File upload failed: ' + err.message);
+                this.state$.next(State.Start);
             },
         );
     }
@@ -172,8 +192,7 @@ export class UploadComponent implements OnInit {
     }
 
     submitLoadingInfo(uploadId: UUID): void {
-        this.submittedCreate = true;
-        this.indicateLoading$.next(true);
+        this.state$.next(State.Creating);
 
         const create = {
             upload: uploadId,
@@ -181,14 +200,43 @@ export class UploadComponent implements OnInit {
         };
 
         this.dataSetService.createDataSet(create).subscribe(
-            (id) => {
-                this.dataSetId$.next(id);
-                this.indicateLoading$.next(false);
+            (response) => {
+                this.dataSetId$.next(response.id);
+                this.state$.next(State.Created);
             },
             (err) => {
-                this.notificationService.error('Create dataset failed: ' + err);
-                this.indicateLoading$.next(false);
+                this.notificationService.error('Create dataset failed: ' + err.message);
+                this.state$.next(State.Uploaded);
             },
         );
+    }
+
+    submitAutoCreate(uploadId: UUID): void {
+        this.state$.next(State.Creating);
+
+        const create = {
+            upload: uploadId,
+            dataset_name: this.simpleCreateForm.controls['name'].value,
+            dataset_description: this.simpleCreateForm.controls['description'].value,
+            main_file: this.selectedMainFile,
+        };
+
+        this.dataSetService.autoCreateDataSet(create).subscribe(
+            (response) => {
+                this.dataSetId$.next(response.id);
+                this.state$.next(State.Created);
+            },
+            (err) => {
+                this.notificationService.error('Create dataset failed: ' + err.message);
+                this.state$.next(State.Uploaded);
+            },
+        );
+    }
+
+    addToMap(datasetId: DataSetIdDict): void {
+        this.dataSetService
+            .getDataset(datasetId)
+            .pipe(mergeMap((dataset) => this.projectService.addDataSetToMap(dataset)))
+            .subscribe();
     }
 }
