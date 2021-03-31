@@ -249,10 +249,14 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                                 ),
                             ),
                         )
-                        .subscribe(() => console.log('added raster'));
+                        .subscribe(() => {
+                            // it worked, do nothing
+                        });
                 }),
             )
-            .subscribe(console.log);
+            .subscribe(() => {
+                // nothing to do
+            });
     }
 }
 

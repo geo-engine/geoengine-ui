@@ -19,12 +19,8 @@ export type RgbaLike = RgbaTuple | RgbTuple | RgbaStruct | RgbStruct | Color | I
 
 export type RgbaColor = [number, number, number, number];
 
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
-export function rgbaColorFromDict(dict: RgbaColorDict): RgbaColor {
-    return [dict[0], dict[1], dict[2], dict[3] / 255.0];
-}
+export const rgbaColorFromDict = (dict: RgbaColorDict): RgbaColor => [dict[0], dict[1], dict[2], dict[3] / 255.0];
 
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
 export function colorToDict(color: Color): RgbaColorDict {
     const rgbaColor = color.rgbaTuple();
     return [rgbaColor[0], rgbaColor[1], rgbaColor[2], Math.round(rgbaColor[3] * 255.0)];

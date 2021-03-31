@@ -761,7 +761,6 @@ export class TextSymbology {
     }
 }
 
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
 function textSymbologyEquality(a: TextSymbology, b: TextSymbology): boolean {
     if ((a == null || a === undefined) && a === b) {
         return true;
