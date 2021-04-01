@@ -1,4 +1,4 @@
-import {Color, colorToDict, RgbaColor, rgbaColorFromDict} from '../../colors/color';
+import {Color, colorToDict, RgbaTuple, rgbaColorFromDict} from '../../colors/color';
 import {Feature as OlFeature} from 'ol';
 import {
     ColorParamDict,
@@ -115,18 +115,18 @@ export abstract class Styler {
     abstract createStyle(): OlStyle;
     abstract cacheKey(): string;
 
-    static colorToKey(color: RgbaColor): string {
+    static colorToKey(color: RgbaTuple): string {
         return `${color[0]}${color[1]}${color[2]}${color[3]}`;
     }
 }
 
 export class PointStyler extends Styler {
     radius: number;
-    fillColor: RgbaColor;
+    fillColor: RgbaTuple;
     stroke: StrokeStyler;
     text?: TextStyler;
 
-    constructor(radius: number, fillColor: RgbaColor, stroke: StrokeStyler, text: TextStyler) {
+    constructor(radius: number, fillColor: RgbaTuple, stroke: StrokeStyler, text: TextStyler) {
         super();
         this.radius = radius;
         this.fillColor = fillColor;
@@ -175,11 +175,11 @@ export class LineStyler extends Styler {
 }
 
 export class PolygonStyler extends Styler {
-    fillColor: RgbaColor;
+    fillColor: RgbaTuple;
     stroke: StrokeStyler;
     text?: TextStyler;
 
-    constructor(fillColor: RgbaColor, stroke: StrokeStyler, text: TextStyler) {
+    constructor(fillColor: RgbaTuple, stroke: StrokeStyler, text: TextStyler) {
         super();
         this.fillColor = fillColor;
         this.stroke = stroke;
@@ -201,9 +201,9 @@ export class PolygonStyler extends Styler {
 
 export class StrokeStyler extends Styler {
     width: number;
-    color: RgbaColor;
+    color: RgbaTuple;
 
-    constructor(width: number, color: RgbaColor) {
+    constructor(width: number, color: RgbaTuple) {
         super();
         this.width = width;
         this.color = color;
@@ -223,10 +223,10 @@ export class StrokeStyler extends Styler {
 
 export class TextStyler extends Styler {
     text: string;
-    fillColor: RgbaColor;
+    fillColor: RgbaTuple;
     stroke: StrokeStyler;
 
-    constructor(text: string, fillColor: RgbaColor, stroke: StrokeStyler) {
+    constructor(text: string, fillColor: RgbaTuple, stroke: StrokeStyler) {
         super();
         this.text = text;
         this.fillColor = fillColor;

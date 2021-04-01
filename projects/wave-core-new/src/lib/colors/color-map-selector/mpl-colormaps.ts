@@ -6,7 +6,7 @@
  * They are licensed under the CC0 license.
  */
 
-import {RgbaColor} from '../color';
+import {RgbaTuple} from '../color';
 
 /**
  * The color map names.
@@ -1054,7 +1054,7 @@ export const COLORMAP_VIRIDIS_DATA: Array<[number, number, number]> = [
     [0.993248, 0.906157, 0.143936],
 ];
 
-const convertToRgbas = (colors: Array<[number, number, number]>): Array<RgbaColor> =>
+const convertToRgbas = (colors: Array<[number, number, number]>): Array<RgbaTuple> =>
     colors.map(([r, g, b]) => {
         r = Math.round(r * 255);
         g = Math.round(g * 255);
@@ -1062,7 +1062,7 @@ const convertToRgbas = (colors: Array<[number, number, number]>): Array<RgbaColo
         return [r, g, b, 1];
     });
 
-export const MPL_COLORMAPS = {
+export const MPL_COLORMAPS: {[name: string]: Array<RgbaTuple>} = {
     MAGMA: convertToRgbas(COLORMAP_MAGMA_DATA),
     INFERNO: convertToRgbas(COLORMAP_INFERNO_DATA),
     PLASMA: convertToRgbas(COLORMAP_PLASMA_DATA),

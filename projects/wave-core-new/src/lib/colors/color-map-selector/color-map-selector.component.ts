@@ -14,7 +14,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {WaveValidators} from '../../util/form.validators';
 import {Subscription} from 'rxjs';
 import {MPL_COLORMAPS} from './mpl-colormaps';
-import {Color, RgbaColor} from '../color';
+import {Color, RgbaTuple} from '../color';
 import {ColorBreakpoint} from '../color-breakpoint.model';
 
 /**
@@ -180,7 +180,7 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     protected checkValidConfig(): boolean {
-        const colorMap: Array<RgbaColor> = this.form.controls['colorMap'].value;
+        const colorMap: Array<RgbaTuple> = this.form.controls['colorMap'].value;
         const colorMapSteps: number = this.form.controls['colorMapSteps'].value;
         const boundsMin: number = this.form.controls['bounds'].value.min;
         const boundsMax: number = this.form.controls['bounds'].value.max;
@@ -199,7 +199,7 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     protected createBreakpoints(): Array<ColorBreakpoint> {
-        const colorMap: Array<RgbaColor> = this.form.controls['colorMap'].value;
+        const colorMap: Array<RgbaTuple> = this.form.controls['colorMap'].value;
         const colorMapSteps: number = this.form.controls['colorMapSteps'].value;
         const colorMapReverseColors: boolean = this.form.controls['colorMapReverseColors'].value;
         const bounds: {min: number; max: number} = this.form.controls['bounds'].value;
