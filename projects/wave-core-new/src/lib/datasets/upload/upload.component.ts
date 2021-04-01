@@ -236,7 +236,7 @@ export class UploadComponent implements OnInit {
     addToMap(datasetId: DataSetIdDict): void {
         this.dataSetService
             .getDataset(datasetId)
-            .pipe(mergeMap((dataset) => this.projectService.addDataSetToMap(dataset)))
+            .pipe(mergeMap((dataset) => this.dataSetService.addDataSetToMap(dataset)))
             .subscribe();
     }
 }

@@ -1,6 +1,6 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
 import {DataSet} from '../dataset.model';
-import {ProjectService} from '../../project/project.service';
+import {DataSetService} from '../dataset.service';
 
 @Component({
     selector: 'wave-dataset',
@@ -11,11 +11,11 @@ import {ProjectService} from '../../project/project.service';
 export class DataSetComponent implements OnInit {
     @Input() dataset: DataSet;
 
-    constructor(private projectService: ProjectService) {}
+    constructor(private datasetService: DataSetService) {}
 
     ngOnInit(): void {}
 
     add(): void {
-        this.projectService.addDataSetToMap(this.dataset).subscribe();
+        this.datasetService.addDataSetToMap(this.dataset).subscribe();
     }
 }
