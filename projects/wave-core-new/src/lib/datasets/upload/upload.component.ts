@@ -213,6 +213,7 @@ export class UploadComponent implements OnInit {
 
     submitAutoCreate(uploadId: UUID): void {
         this.state$.next(State.Creating);
+        this.simpleCreateForm.disable();
 
         const create = {
             upload: uploadId,

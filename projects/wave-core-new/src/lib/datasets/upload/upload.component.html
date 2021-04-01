@@ -31,36 +31,30 @@
         <mat-card-content>
             <p>Upload ID: {{ uploadId }}</p>
             <mat-tab-group animationDuration="0">
-                <mat-tab label="Simple Mode">
+                <mat-tab label="Simple Mode" [disabled]="state >= State.Creating">
                     <form [formGroup]="simpleCreateForm" (ngSubmit)="submitAutoCreate(uploadId)">
-                        <fieldset [disabled]="state != State.Uploaded">
-                            <p>
-                                <mat-form-field>
-                                    <input matInput type="text" placeholder="Dataset Name" formControlName="name" required />
-                                </mat-form-field>
-                            </p>
-                            <p>
-                                <mat-form-field>
-                                    <textarea matInput placeholder="Dataset Description" formControlName="description"></textarea>
-                                </mat-form-field>
-                            </p>
-                            <p>
-                                <mat-form-field appearance="fill">
-                                    <mat-label>Choose the main file</mat-label>
-                                    <mat-select
-                                        id="mainFile"
-                                        [disabled]="state != State.Uploaded"
-                                        [(value)]="selectedMainFile"
-                                        formControlName="mainFile"
-                                        required
-                                    >
-                                        <mat-option *ngFor="let file of selectedFiles" [value]="file.name">
-                                            {{ file.name }}
-                                        </mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </p>
-                        </fieldset>
+                        <p>
+                            <mat-form-field appearance="fill">
+                                <mat-label>Dataset Name</mat-label>
+                                <input matInput type="text" placeholder="New Dataset" formControlName="name" />
+                            </mat-form-field>
+                        </p>
+                        <p>
+                            <mat-form-field appearance="fill">
+                                <mat-label>Dataset Description</mat-label>
+                                <textarea matInput formControlName="description"></textarea>
+                            </mat-form-field>
+                        </p>
+                        <p>
+                            <mat-form-field appearance="fill">
+                                <mat-label>Choose the main file</mat-label>
+                                <mat-select id="mainFile" [(value)]="selectedMainFile" formControlName="mainFile">
+                                    <mat-option *ngFor="let file of selectedFiles" [value]="file.name">
+                                        {{ file.name }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </p>
 
                         <div class="actions">
                             <button
@@ -74,7 +68,7 @@
                         </div>
                     </form>
                 </mat-tab>
-                <mat-tab label="Expert Mode">
+                <mat-tab label="Expert Mode" [disabled]="state >= State.Creating">
                     <div>Specify the loading info as Json</div>
 
                     <div>

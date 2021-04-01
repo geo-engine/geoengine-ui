@@ -30,7 +30,6 @@ import {Session} from '../users/session.model';
 import {HasPlotId, Plot} from '../plots/plot.model';
 import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata.model';
 import {Symbology} from '../layers/symbology/symbology.model';
-import {RandomColorService} from '../util/services/random-color.service';
 
 /***
  * The ProjectService is the main housekeeping component of WAVE.
@@ -64,7 +63,6 @@ export class ProjectService {
         protected backend: BackendService,
         protected userService: UserService,
         protected layoutService: LayoutService,
-        protected randomColorService: RandomColorService,
     ) {
         // set the starting project upon login
         this.userService
