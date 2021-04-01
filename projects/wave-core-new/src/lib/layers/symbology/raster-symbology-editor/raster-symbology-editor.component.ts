@@ -1,6 +1,6 @@
 import {Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChanges, OnDestroy, AfterViewInit, OnInit} from '@angular/core';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
+import {map, mergeMap, tap} from 'rxjs/operators';
 import {RasterSymbology} from '../symbology.model';
 import {RasterLayer} from '../../layer.model';
 import {MapService} from '../../../map/map.service';
@@ -11,8 +11,11 @@ import {MatSliderChange} from '@angular/material/slider';
 import {HistogramParams} from '../../../backend/operator.model';
 import {LinearGradient, PaletteColorizer} from '../../../colors/colorizer.model';
 import {ColorAttributeInput} from '../../../colors/color-attribute-input/color-attribute-input.component';
-import {WorkflowDict} from '../../../backend/backend.model';
+import {UUID, WorkflowDict} from '../../../backend/backend.model';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
+import {UserService} from '../../../users/user.service';
+import {extentToBboxDict} from '../../../util/conversions';
+import {VegaChartData} from '../../../plots/vega-viewer/vega-viewer.component';
 
 /**
  * An editor for generating raster symbologies.
@@ -32,17 +35,16 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     layerMinValue: number | undefined = undefined;
     // The max value used for color table generation
     layerMaxValue: number | undefined = undefined;
-    // A subject with the histogram data of the current layer view
-    // layerHistogramData$: ReplaySubject<HistogramData> = new ReplaySubject(1);
-    // Subject indicating if the histogram is still processing
-    // layerHistogramDataLoading$ = new BehaviorSubject(false);
-    // Histogram auto reload enabled / disabled
-    // layerHistogramAutoReloadEnabled = true;
-    // private layerHistogramDataSubscription: Subscription = undefined;
+
+    histogramData = new ReplaySubject<VegaChartData>(1);
+    histogramLoading = new BehaviorSubject(false);
+    protected histogramWorkflowId = new ReplaySubject<UUID>(1);
+    protected histogramSubscription: Subscription;
 
     constructor(
         protected readonly projectService: ProjectService,
         protected readonly backend: BackendService,
+        protected readonly userService: UserService,
         protected readonly mapService: MapService,
         protected readonly config: Config,
     ) {}
@@ -54,14 +56,31 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
 
         this.updateSymbologyFromLayer();
         this.updateLayerMinMaxFromColorizer();
+
+        this.createHistogramWorkflowId().subscribe((histogramWorkflowId) => this.histogramWorkflowId.next(histogramWorkflowId));
     }
 
     ngAfterViewInit(): void {
-        // this.reinitializeLayerHistogramDataSubscription();
+        this.initializeHistogramDataSubscription();
     }
 
     ngOnDestroy(): void {
-        // this.layerHistogramDataSubscription.unsubscribe();
+        if (this.histogramSubscription) {
+            this.histogramSubscription.unsubscribe();
+        }
+    }
+
+    get histogramAutoReload(): boolean {
+        return !!this.histogramSubscription;
+    }
+
+    set histogramAutoReload(autoReload: boolean) {
+        if (autoReload) {
+            this.initializeHistogramDataSubscription();
+        } else {
+            this.histogramSubscription.unsubscribe();
+            this.histogramSubscription = undefined;
+        }
     }
 
     /**
@@ -80,6 +99,17 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         if (this.layerMaxValue !== max) {
             this.layerMaxValue = max;
         }
+    }
+
+    updateBounds(histogramSignal: {bin_start: [number, number]}): void {
+        if (!histogramSignal || !histogramSignal.bin_start || histogramSignal.bin_start.length !== 2) {
+            return;
+        }
+
+        const [min, max] = histogramSignal.bin_start;
+
+        this.updateLayerMinValue(min);
+        this.updateLayerMaxValue(max);
     }
 
     /**
@@ -196,20 +226,6 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     }
 
     /**
-     * Access the current colorizer min value. May be undefined.
-     */
-    // get colorizerMinValue(): number | undefined {
-    //     return this.symbology.colorizer.firstBreakpoint.value as number;
-    // }
-
-    /**
-     * Access the current colorizer max value. May be undefined.
-     */
-    // get colorizerMaxValue(): number | undefined {
-    //     return this.symbology.colorizer.lastBreakpoint.value as number;
-    // }
-
-    /**
      * Sets the current (working) symbology to the one of the current layer.
      */
     updateSymbologyFromLayer(): void {
@@ -228,73 +244,64 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         this.updateLayerMaxValue(breakpoints[breakpoints.length - 1].value);
     }
 
-    /**
-     * Update the histogram auto reload setting.
-     * @param event contains a checked: boolean value.
-     */
-    // updateHistogramAutoReload(event: MatSlideToggleChange): void {
-    //     this.layerHistogramAutoReloadEnabled = event.checked;
-    // }
-
     private update(): void {
         this.projectService.changeLayer(this.layer, {symbology: this.symbology});
     }
 
-    // private reinitializeLayerHistogramDataSubscription(): void {
-    //     if (this.layerHistogramDataSubscription) {
-    //         this.layerHistogramDataSubscription.unsubscribe();
-    //     }
+    private initializeHistogramDataSubscription(): void {
+        if (this.histogramSubscription) {
+            this.histogramSubscription.unsubscribe();
+        }
 
-    //     this.layerHistogramData$.next(undefined);
-    //     this.layerHistogramDataLoading$.next(true);
+        this.histogramSubscription = this.createHistogramStream().subscribe((histogramData) => this.histogramData.next(histogramData));
+    }
 
-    //     const sub = observableCombineLatest(
-    //         observableCombineLatest(
-    //             this.projectService.getTimeStream(),
-    //             this.projectService.getProjectionStream(),
-    //             this.mapService.getViewportSizeStream(),
-    //         ).pipe(
-    //             filter((_) => this.layerHistogramAutoReloadEnabled),
-    //             debounceTime(this.config.DELAYS.DEBOUNCE),
-    //         ),
-    //         this.projectService.getLayerChangesStream(this.layer).pipe(
-    //             startWith({operator: true}),
-    //             filter((c) => c.operator !== undefined),
-    //             map((_) => this.buildHistogramOperator()),
-    //         ),
-    //     ).subscribe(([[projectTime, projection, viewport], histogramOperator]) => {
-    //         this.layerHistogramData$.next(undefined);
-    //         this.layerHistogramDataLoading$.next(true);
+    private createHistogramStream(): Observable<VegaChartData> {
+        return combineLatest([
+            this.histogramWorkflowId,
+            this.projectService.getTimeStream(),
+            this.mapService.getViewportSizeStream(),
+            this.userService.getSessionTokenForRequest(),
+        ]).pipe(
+            tap(() => this.histogramLoading.next(true)),
+            mergeMap(([workflowId, time, viewport, sessionToken]) =>
+                this.backend.getPlot(
+                    workflowId,
+                    {
+                        bbox: extentToBboxDict(viewport.extent),
+                        spatial_resolution: [viewport.resolution, viewport.resolution],
+                        time: time.toDict(),
+                    },
+                    sessionToken,
+                ),
+            ),
+            map((plotData) => plotData.data),
+            tap(() => this.histogramLoading.next(false)),
+        );
+    }
 
-    //         this.mappingQueryService
-    //             .getPlotData({
-    //                 operator: histogramOperator,
-    //                 time: projectTime,
-    //                 extent: viewport.extent,
-    //                 projection,
-    //             })
-    //             .subscribe((data) => {
-    //                 this.layerHistogramData$.next(data as HistogramData);
-    //                 this.layerHistogramDataLoading$.next(false);
-    //             });
-    //     });
-    //     this.layerHistogramDataSubscription = sub;
-    // }
-
-    private createHistogramWorkflow(): Observable<WorkflowDict> {
+    private createHistogramWorkflowId(): Observable<UUID> {
         return this.projectService.getWorkflow(this.layer.workflowId).pipe(
-            map((workflow) => ({
-                type: 'Plot',
-                operator: {
-                    type: 'Histogram',
-                    params: {
-                        buckets: 20,
-                        bounds: 'data',
-                        interactive: true,
-                    } as HistogramParams,
-                    raster_sources: [workflow.operator],
-                },
-            })),
+            mergeMap((workflow) =>
+                combineLatest([
+                    of({
+                        type: 'Plot',
+                        operator: {
+                            type: 'Histogram',
+                            params: {
+                                buckets: 20,
+                                bounds: 'data',
+                                interactive: true,
+                            } as HistogramParams,
+                            raster_sources: [workflow.operator],
+                            vector_sources: [],
+                        },
+                    } as WorkflowDict),
+                    this.userService.getSessionTokenForRequest(),
+                ]),
+            ),
+            mergeMap(([workflow, sessionToken]) => this.backend.registerWorkflow(workflow, sessionToken)),
+            map((workflowRegistration) => workflowRegistration.id),
         );
     }
 }

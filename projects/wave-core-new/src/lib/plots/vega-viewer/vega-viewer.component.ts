@@ -1,8 +1,26 @@
-import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ElementRef, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {
+    Component,
+    OnInit,
+    ChangeDetectionStrategy,
+    ViewChild,
+    ElementRef,
+    Input,
+    OnChanges,
+    SimpleChanges,
+    Output,
+    EventEmitter,
+} from '@angular/core';
 import vegaEmbed from 'vega-embed';
 import {View} from 'vega';
 import {TopLevelSpec as VlSpec} from 'vega-lite';
 import {Spec as VgSpec} from 'vega';
+
+export interface VegaChartData {
+    readonly vega_string: string;
+    readonly metadata?: {
+        readonly selection_name?: string;
+    };
+}
 
 @Component({
     selector: 'wave-vega-viewer',
@@ -12,16 +30,16 @@ import {Spec as VgSpec} from 'vega';
 })
 export class VegaViewerComponent implements OnInit, OnChanges {
     @Input()
-    chartData: {
-        vega_string: string;
-        selection_name?: string;
-    };
+    chartData: VegaChartData;
 
     @Input()
     width: number;
 
     @Input()
     height: number;
+
+    @Output()
+    interactionChange = new EventEmitter<{[signal: string]: any}>();
 
     @ViewChild('chart', {static: true}) protected chartContainer: ElementRef;
 
@@ -32,7 +50,7 @@ export class VegaViewerComponent implements OnInit, OnChanges {
         finalize: () => void;
     } = undefined;
 
-    constructor() {}
+    constructor(protected element: ElementRef) {}
 
     ngOnInit(): void {}
 
@@ -48,7 +66,7 @@ export class VegaViewerComponent implements OnInit, OnChanges {
     private displayPlot(): void {
         const div = this.chartContainer.nativeElement;
 
-        const width = this.width ?? div.clientWidth;
+        const width = this.width ?? (div.clientWidth || this.element.nativeElement.offsetWidth);
         const height = this.height ?? width / 2;
 
         const spec = JSON.parse(this.chartData.vega_string);
@@ -68,6 +86,12 @@ export class VegaViewerComponent implements OnInit, OnChanges {
         })
             .then((result) => {
                 this.vegaHandle = result;
+
+                if (this.chartData.metadata && this.chartData.metadata.selection_name) {
+                    this.vegaHandle.view.addSignalListener(this.chartData.metadata.selection_name, (_name, value) => {
+                        this.interactionChange.next(value);
+                    });
+                }
             })
             .catch((_error) => {
                 // TODO: react on error

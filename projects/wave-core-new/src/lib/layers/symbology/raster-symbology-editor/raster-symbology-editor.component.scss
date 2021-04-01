@@ -19,8 +19,8 @@ mat-slider {
 
 .histogram {
     width: 100%;
-}
 
-.histogram .mat-progress-spinner {
-    margin: 0 auto;
+    .mat-progress-spinner {
+        margin: 0 auto;
+    }
 }

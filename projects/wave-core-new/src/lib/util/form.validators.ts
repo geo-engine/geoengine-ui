@@ -46,7 +46,7 @@ const minAndMax = (
             errors.minOverMax = true;
         }
 
-        if (options.mustNotEqual && min == max) {
+        if (options.mustNotEqual && min === max) {
             errors.minEqualsMax = true;
         }
 

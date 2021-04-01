@@ -89,24 +89,11 @@
 
         <ng-template matExpansionPanelContent>
             <div class="histogram">
-                <!-- <mat-progress-spinner mode="indeterminate" *ngIf="layerHistogramDataLoading$ | async"></mat-progress-spinner> -->
-                <!-- <wave-histogram
-                    *ngIf="layerHistogramData$ | async"
-                    [data]="layerHistogramData$ | async"
-                    [selectable]="true"
-                    [interactable]="false"
-                    [minRange]="layerMinValue"
-                    [maxRange]="layerMaxValue"
-                    (minRangeChange)="updateLayerMinValue($event)"
-                    (maxRangeChange)="updateLayerMaxValue($event)"
-                    [emmitInitialDataMinMax]="false"
-                    [autoResize]="true"
-                ></wave-histogram> -->
+                <wave-vega-viewer [chartData]="histogramData | async" (interactionChange)="updateBounds($event)"></wave-vega-viewer>
+                <mat-progress-bar mode="indeterminate" *ngIf="histogramLoading | async"></mat-progress-bar>
             </div>
             <div>
-                <!-- <mat-slide-toggle [checked]="layerHistogramAutoReloadEnabled" (change)="updateHistogramAutoReload($event)">
-                    Sync map and histogram
-                </mat-slide-toggle> -->
+                <mat-slide-toggle [(checked)]="histogramAutoReload"> Sync map and histogram </mat-slide-toggle>
             </div>
             <mat-divider></mat-divider>
 
@@ -115,7 +102,8 @@
         </ng-template>
     </mat-expansion-panel>
 
-    <mat-expansion-panel expanded="false">
+    <!-- TODO: implement palette editor -->
+    <mat-expansion-panel expanded="false" *ngIf="symbology.colorizer.isDiscrete()">
         <mat-expansion-panel-header>
             <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
                 <mat-icon>color_lens</mat-icon>
