@@ -52,6 +52,7 @@ export class MockLayersComponent implements OnInit {
                     ),
                 ),
             )
+            // eslint-disable-next-line no-console
             .subscribe(() => console.log('added raster'));
     }
 
@@ -100,6 +101,7 @@ export class MockLayersComponent implements OnInit {
                     ),
                 ),
             )
+            // eslint-disable-next-line no-console
             .subscribe(() => console.log('added points'));
     }
 }
