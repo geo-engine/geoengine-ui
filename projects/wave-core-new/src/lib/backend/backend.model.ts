@@ -250,7 +250,7 @@ export interface DataSetDict {
 }
 
 export interface DataSetIdDict {
-    Internal?: InternalDataSetIdDict;
+    Internal?: UUID;
 }
 
 export interface InternalDataSetIdDict {
@@ -307,6 +307,18 @@ export interface UploadResponseDict {
     id: UUID;
 }
 
+export interface DatasetIdResponseDict {
+    id: DataSetIdDict;
+}
+
 export interface CreateDataSetDict {
     upload: UUID;
+    // TODO: data set definition
+}
+
+export interface AutoCreateDataSetDict {
+    upload: UUID;
+    dataset_name: string;
+    dataset_description: string;
+    main_file: string;
 }
