@@ -443,8 +443,8 @@ export class PolygonSymbology extends VectorSymbology {
 }
 
 export class RasterSymbology extends Symbology {
-    opacity: number;
-    colorizer: Colorizer;
+    readonly opacity: number;
+    readonly colorizer: Colorizer;
 
     constructor(opacity: number, colorizer: Colorizer) {
         super();
@@ -464,6 +464,10 @@ export class RasterSymbology extends Symbology {
 
     clone(): RasterSymbology {
         return new RasterSymbology(this.opacity, this.colorizer.clone());
+    }
+
+    cloneWith(updates: {readonly opacity?: number; readonly colorizer?: Colorizer}): RasterSymbology {
+        return new RasterSymbology(updates.opacity ?? this.opacity, updates.colorizer ?? this.colorizer.clone());
     }
 
     toDict(): SymbologyDict {

@@ -108,11 +108,10 @@
                             <mat-icon>mode_edit</mat-icon>
                             <span>Rename</span>
                         </button>
-                        <!--                                    <button mat-menu-item-->
-                        <!--                                            (click)="layoutService.setSidenavContentComponent({component: SymbologyEditorComponent, config: {layer: layer}})">-->
-                        <!--                                        <mat-icon>color_lens</mat-icon>-->
-                        <!--                                        <span>Edit Symbology</span>-->
-                        <!--                                    </button>-->
+                        <button mat-menu-item (click)="showSymbologyEditor(layer)">
+                            <mat-icon>color_lens</mat-icon>
+                            <span>Edit Symbology</span>
+                        </button>
                         <button mat-menu-item (click)="showDatatable(layer)">
                             <mat-icon>table</mat-icon>
                             <span>Show datatable</span>

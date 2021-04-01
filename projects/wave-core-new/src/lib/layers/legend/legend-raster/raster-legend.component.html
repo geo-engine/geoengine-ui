@@ -5,7 +5,7 @@
                 class="gradient"
                 *ngIf="isFirst"
                 [rowSpan]="layer.symbology.colorizer.getBreakpoints().length"
-                [style.background]="layer.symbology.colorizer | waveWappingColorizerToGradient | waveSafeStyle"
+                [style.background]="layer.symbology.colorizer | waveColorizerCssGradient"
             ></td>
             <td>{{ breakpoint.value | number: numberPipeParameters }}</td>
             <td *ngIf="isFirst">{{ (measurement$ | async)?.measurement }}</td>

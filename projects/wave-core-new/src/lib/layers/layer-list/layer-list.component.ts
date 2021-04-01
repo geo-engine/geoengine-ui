@@ -7,7 +7,7 @@ import {IconStyle, Symbology, SymbologyType} from '../symbology/symbology.model'
 import {RenameLayerComponent} from '../rename-layer/rename-layer.component';
 import {LoadingState} from '../../project/loading-state.model';
 import {MapService} from '../../map/map.service';
-import {Layer} from '../layer.model';
+import {Layer, RasterLayer, VectorLayer} from '../layer.model';
 import {ProjectService} from '../../project/project.service';
 import {Config} from '../../config.service';
 import {last, map, startWith} from 'rxjs/operators';
@@ -17,6 +17,7 @@ import {TabsService} from '../../tabs/tabs.service';
 import {DataTableComponent} from '../../datatable/table/table.component';
 import {Measurement} from '../measurement';
 import {RasterLayerMetadata} from '../layer-metadata.model';
+import {RasterSymbologyEditorComponent} from '../symbology/raster-symbology-editor/raster-symbology-editor.component';
 
 /**
  * The layer list component displays active layers, legends and other controlls.
@@ -159,6 +160,16 @@ export class LayerListComponent implements OnDestroy {
             equals: (a, b): boolean => a.layer.id === b.layer.id,
             removeTrigger,
         });
+    }
+
+    showSymbologyEditor(layer: Layer): void {
+        if (layer instanceof RasterLayer) {
+            this.layoutService.setSidenavContentComponent({component: RasterSymbologyEditorComponent, config: {layer}});
+        } else if (layer instanceof VectorLayer) {
+            // TODO: call vector symbology editor
+        } else {
+            throw Error(`unknown layer type: ${layer.layerType}`);
+        }
     }
 
     getMeasurement(layer: Layer): Observable<Measurement> {

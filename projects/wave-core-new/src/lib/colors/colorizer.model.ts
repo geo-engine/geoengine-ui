@@ -106,6 +106,18 @@ export class LinearGradient extends Colorizer {
         );
     }
 
+    cloneWith(updates: {
+        readonly breakpoints?: Array<ColorBreakpoint>;
+        readonly noDataColor?: Color;
+        readonly defaultColor?: Color;
+    }): LinearGradient {
+        return new LinearGradient(
+            updates.breakpoints ?? this.breakpoints.map((b) => b.clone()),
+            updates.noDataColor ?? this.noDataColor.clone(),
+            updates.defaultColor ?? this.defaultColor.clone(),
+        );
+    }
+
     toDict(): ColorizerDict {
         return {
             LinearGradient: {
@@ -201,6 +213,28 @@ export class PaletteColorizer extends Colorizer {
         }
 
         return new PaletteColorizer(colors, this.noDataColor.clone(), this.defaultColor.clone());
+    }
+
+    cloneWith(updates: {
+        readonly colors?: Map<number, Color>;
+        readonly noDataColor?: Color;
+        readonly defaultColor?: Color;
+    }): PaletteColorizer {
+        let colors;
+        if (updates.colors) {
+            colors = updates.colors;
+        } else {
+            colors = new Map();
+            for (const i of Object.keys(this.colors)) {
+                colors[i] = this.colors[i];
+            }
+        }
+
+        return new PaletteColorizer(
+            colors,
+            updates.noDataColor ?? this.noDataColor.clone(),
+            updates.defaultColor ?? this.defaultColor.clone(),
+        );
     }
 
     toDict(): ColorizerDict {

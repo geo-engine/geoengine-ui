@@ -13,6 +13,7 @@ const minAndMax = (
     options?: {
         checkBothExist?: boolean;
         checkOneExists?: boolean;
+        mustNotEqual?: boolean;
     },
 ): ((AbstractControl) => {[index: string]: boolean}) => {
     if (!options) {
@@ -33,6 +34,7 @@ const minAndMax = (
 
         const errors: {
             minOverMax?: boolean;
+            minEqualsMax?: boolean;
             noFilter?: boolean;
             noFiniteNumber?: boolean;
         } = {};
@@ -42,6 +44,10 @@ const minAndMax = (
 
         if (validMin && validMax && max < min) {
             errors.minOverMax = true;
+        }
+
+        if (options.mustNotEqual && min == max) {
+            errors.minEqualsMax = true;
         }
 
         if (options.checkOneExists && !validMin && !validMax) {

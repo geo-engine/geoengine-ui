@@ -1,0 +1,29 @@
+<div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="5px">
+    <mat-form-field fxFlex>
+        <input
+            matInput
+            type="text"
+            [readonly]="readonlyAttribute"
+            [placeholder]="attributePlaceholder"
+            [ngModel]="input?.key"
+            (ngModelChange)="updateKey($event)"
+        />
+    </mat-form-field>
+
+    <mat-form-field fxFlex>
+        <input
+            matInput
+            class="color_cell"
+            [readonly]="readonlyColor"
+            [ngModel]="input?.value.rgbaCssString()"
+            (ngModelChange)="updateColor($event)"
+            [placeholder]="colorPlaceholder"
+            [colorPicker]="input?.value.rgbaCssString()"
+            (colorPickerChange)="updateColor($event)"
+            [cpUseRootViewContainer]="true"
+            [style.background]="input?.value.rgbaCssString()"
+            cpOutputFormat="rgba"
+            cpPosition="bottom-left"
+        />
+    </mat-form-field>
+</div>

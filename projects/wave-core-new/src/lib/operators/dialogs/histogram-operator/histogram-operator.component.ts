@@ -9,7 +9,8 @@ import {map, mergeMap, tap} from 'rxjs/operators';
 import {Plot} from '../../../plots/plot.model';
 import {NotificationService} from '../../../notification.service';
 import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
-import {OperatorParams, WorkflowDict} from '../../../backend/backend.model';
+import {WorkflowDict} from '../../../backend/backend.model';
+import {HistogramParams} from '../../../backend/operator.model';
 
 /**
  * Checks whether the layer is a vector layer (points, lines, polygons).
@@ -20,18 +21,6 @@ const isVectorLayer = (layer: Layer): boolean => {
     }
     return layer.layerType === 'vector';
 };
-
-interface HistogramParams extends OperatorParams {
-    column_name?: string;
-    bounds:
-        | {
-              min: number;
-              max: number;
-          }
-        | 'data';
-    buckets?: number;
-    interactive?: boolean;
-}
 
 /**
  * This dialog allows creating a histogram plot of a layer's values.
