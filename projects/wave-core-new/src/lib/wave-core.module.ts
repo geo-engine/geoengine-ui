@@ -94,6 +94,7 @@ import {UploadComponent} from './datasets/upload/upload.component';
 import {DataTableComponent} from './datatable/table/table.component';
 import {TabsComponent} from './tabs/tabs.component';
 import {PortalModule} from '@angular/cdk/portal';
+import {DrawFeaturesComponent} from './datasets/draw-features/draw-features.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -149,6 +150,7 @@ const WAVE_COMPONENTS = [
     DialogHeaderComponent,
     DialogHelpComponent,
     DialogSectionHeadingComponent,
+    DrawFeaturesComponent,
     ExpressionOperatorComponent,
     HistogramOperatorComponent,
     IfGuestDirective,
