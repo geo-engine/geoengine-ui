@@ -143,7 +143,7 @@ export class DrawFeaturesComponent implements OnDestroy, OnInit {
                     return this.datasetService.autoCreateDataSet(create);
                 }),
                 mergeMap((res) => this.datasetService.getDataset(res.id)),
-                mergeMap((dataset) => this.projectService.addDataSetToMap(dataset)),
+                mergeMap((dataset) => this.datasetService.addDataSetToMap(dataset)),
             )
             .subscribe(
                 (_) => {

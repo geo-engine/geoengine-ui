@@ -213,6 +213,7 @@ export class UploadComponent implements OnInit {
 
     submitAutoCreate(uploadId: UUID): void {
         this.state$.next(State.Creating);
+        this.simpleCreateForm.disable();
 
         const create = {
             upload: uploadId,
@@ -236,7 +237,7 @@ export class UploadComponent implements OnInit {
     addToMap(datasetId: DataSetIdDict): void {
         this.dataSetService
             .getDataset(datasetId)
-            .pipe(mergeMap((dataset) => this.projectService.addDataSetToMap(dataset)))
+            .pipe(mergeMap((dataset) => this.dataSetService.addDataSetToMap(dataset)))
             .subscribe();
     }
 }
