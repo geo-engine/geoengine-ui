@@ -23,48 +23,44 @@ import {Color, stringToRgbaStruct} from '../color';
 export class ColorBreakpointInputComponent implements ControlValueAccessor, AfterViewInit, OnChanges {
     @Input() editAttribute: false;
     @Input() editColor: false;
-    @Input() inputType: 'number' | 'string' = 'number';
     @Input() attributePlaceholder = 'attribute';
     @Input() colorPlaceholder: 'color';
 
     onTouched: () => void;
     onChange: (_: ColorBreakpoint) => void = undefined;
 
-    private _colorBreakpoint: ColorBreakpoint;
+    private input: ColorBreakpoint;
 
     constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
     get colorBreakpoint(): ColorBreakpoint {
-        return this._colorBreakpoint;
+        return this.input;
     }
 
     // set accessor including call the onchange callback
     set colorBreakpoint(breakpoint: ColorBreakpoint) {
-        if (breakpoint && !breakpoint.equals(this._colorBreakpoint)) {
-            this._colorBreakpoint = breakpoint;
+        if (breakpoint && !breakpoint.equals(this.input)) {
+            this.input = breakpoint;
         }
     }
 
-    updateValue(value: number | string): void {
+    updateValue(value: number): void {
         if (value && value !== this.colorBreakpoint.value) {
-            if (this.inputType === 'number' && typeof value === 'string') {
-                this.colorBreakpoint.setValue(parseFloat(value as string));
-            } else {
-                this.colorBreakpoint.setValue(value);
-            }
+            this.colorBreakpoint.setValue(value);
             this.propagateChange();
         }
     }
 
-    updateColor(color: string): void {
-        // TODO: should this really clone?
-        if (color) {
-            const clr = Color.fromRgbaLike(stringToRgbaStruct(color));
-            if (!clr.equals(this._colorBreakpoint.rgba)) {
-                this.colorBreakpoint.setColor(clr);
-            }
-            this.propagateChange();
+    updateColor(value: string): void {
+        if (!value) {
+            return;
         }
+
+        const color = Color.fromRgbaLike(stringToRgbaStruct(value));
+
+        this.input.setColor(color);
+
+        this.propagateChange();
     }
 
     ngAfterViewInit(): void {
