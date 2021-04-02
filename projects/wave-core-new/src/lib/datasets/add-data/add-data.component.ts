@@ -2,6 +2,7 @@ import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
 import {LayoutService, SidenavConfig} from '../../layout.service';
 import {createIconDataUrl} from '../../util/icons';
 import {DatasetListComponent} from '../dataset-list/dataset-list.component';
+import {DrawFeaturesComponent} from '../draw-features/draw-features.component';
 import {UploadComponent} from '../upload/upload.component';
 
 export interface AddDataButton {
@@ -55,6 +56,18 @@ export class AddDataComponent implements OnInit {
             description: 'Upload data from you local computer',
             iconSrc: createIconDataUrl('Upload'),
             sidenavConfig: {component: UploadComponent, keepParent: true},
+        };
+    }
+
+    /**
+     * Default for a draw features entry.
+     */
+    static createDrawFeaturesButton(): AddDataButton {
+        return {
+            name: 'Draw Features',
+            description: 'Draw features on the map',
+            icon: 'create',
+            sidenavConfig: {component: DrawFeaturesComponent, keepParent: true},
         };
     }
 }
