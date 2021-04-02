@@ -193,6 +193,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         return [
             AddDataComponent.createDataSetListButton(),
             AddDataComponent.createUploadButton(),
+            AddDataComponent.createDrawFeaturesButton(),
 
             // SourceOperatorListComponent.createDrawFeaturesButton(),
             // ...SourceOperatorListComponent.createCustomFeaturesButtons(),

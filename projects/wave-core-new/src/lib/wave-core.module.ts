@@ -97,6 +97,7 @@ import {PortalModule} from '@angular/cdk/portal';
 import {RasterSymbologyEditorComponent} from './layers/symbology/raster-symbology-editor/raster-symbology-editor.component';
 import {ColorAttributeInputComponent} from './colors/color-attribute-input/color-attribute-input.component';
 import {ColorMapSelectorComponent} from './colors/color-map-selector/color-map-selector.component';
+import {DrawFeaturesComponent} from './datasets/draw-features/draw-features.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -156,6 +157,7 @@ const WAVE_COMPONENTS = [
     DialogHeaderComponent,
     DialogHelpComponent,
     DialogSectionHeadingComponent,
+    DrawFeaturesComponent,
     ExpressionOperatorComponent,
     HistogramOperatorComponent,
     IfGuestDirective,

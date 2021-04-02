@@ -30,6 +30,8 @@ import {
     UploadResponseDict,
     DataSetIdDict,
     CreateDataSetDict,
+    AutoCreateDataSetDict,
+    DatasetIdResponseDict,
 } from './backend.model';
 
 @Injectable({
@@ -244,6 +246,13 @@ export class BackendService {
         });
     }
 
+    getDataset(sessionId: UUID, datasetId: DataSetIdDict): Observable<DataSetDict> {
+        // TODO: external datasets
+        return this.http.get<DataSetDict>(this.config.API_URL + `/dataset/internal/${datasetId.Internal}`, {
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
     upload(sessionId: UUID, form: FormData): Observable<HttpEvent<UploadResponseDict>> {
         return this.http.post<UploadResponseDict>(this.config.API_URL + '/upload', form, {
             headers: BackendService.authorizationHeader(sessionId),
@@ -252,8 +261,14 @@ export class BackendService {
         });
     }
 
-    createDataSet(sessionId: UUID, createDataSet: CreateDataSetDict): Observable<DataSetIdDict> {
-        return this.http.post<DataSetIdDict>(this.config.API_URL + '/dataset', createDataSet, {
+    createDataSet(sessionId: UUID, createDataSet: CreateDataSetDict): Observable<DatasetIdResponseDict> {
+        return this.http.post<DatasetIdResponseDict>(this.config.API_URL + '/dataset', createDataSet, {
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    autoCreateDataSet(sessionId: UUID, createDataSet: AutoCreateDataSetDict): Observable<DatasetIdResponseDict> {
+        return this.http.post<DatasetIdResponseDict>(this.config.API_URL + '/dataset/auto', createDataSet, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }

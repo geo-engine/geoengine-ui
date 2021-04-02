@@ -3,6 +3,14 @@
     padding: 1rem;
 }
 
+mat-form-field {
+    width: 100%;
+}
+
+mat-checkbox {
+    margin: 1rem;
+}
+
 .actions {
     padding: 1rem;
 }
@@ -15,12 +23,4 @@ mat-spinner {
     width: 25%;
     height: auto;
     margin: 1rem auto;
-}
-
-textarea {
-    width: 99%;
-}
-
-mat-form-field {
-    width: 100% !important;
 }
