@@ -24,6 +24,7 @@ import {RasterData} from '../layers/layer-data.model';
 import {BackendService} from '../backend/backend.service';
 import {UUID} from '../backend/backend.model';
 import {RasterSymbology, Symbology, VectorSymbology} from '../layers/symbology/symbology.model';
+import {Colorizer} from '../colors/colorizer.model';
 
 type VectorData = any; // TODO: use correct type
 
@@ -223,7 +224,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
         if (changes.symbology !== undefined) {
             this._mapLayer.setOpacity(this.symbology.opacity);
             this.source.updateParams({
-                colors: this.symbology.colorizer.toDict(),
+                STYLES: this.stylesFromColorizer(this.symbology.colorizer),
             });
         }
         if (changes.workflow !== undefined) {
@@ -251,7 +252,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
         if (this.source) {
             this.source.updateParams({
                 time: this.time.asRequestString(),
-                colors: this.symbology.colorizer.toDict(),
+                STYLES: this.stylesFromColorizer(this.symbology.colorizer),
             });
         }
     }
@@ -269,7 +270,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
             params: {
                 layers: this.workflow,
                 time: this.time.asRequestString(),
-                STYLES: 'custom:' + JSON.stringify(this.symbology.colorizer.toDict()),
+                STYLES: this.stylesFromColorizer(this.symbology.colorizer),
             },
             projection: this.projection.getCode(),
             wrapX: false,
@@ -277,6 +278,10 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
 
         this.addStateListenersToOlSource();
         this.initializeOrUpdateOlMapLayer();
+    }
+
+    private stylesFromColorizer(colorizer: Colorizer): string {
+        return 'custom:' + JSON.stringify(colorizer.toDict());
     }
 
     private initializeOrUpdateOlMapLayer(): void {

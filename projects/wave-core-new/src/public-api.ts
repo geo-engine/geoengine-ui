@@ -18,6 +18,8 @@ export * from './lib/users/user.service';
 export * from './lib/util/services/random-color.service';
 
 // Components
+export * from './lib/colors/color-attribute-input/color-attribute-input.component';
+export * from './lib/colors/color-map-selector/color-map-selector.component';
 export * from './lib/datasets/add-data/add-data.component';
 export * from './lib/datasets/dataset-list/dataset-list.component';
 export * from './lib/datasets/dataset/dataset.component';
@@ -35,6 +37,7 @@ export * from './lib/layers/layer-list/layer-list.component';
 export * from './lib/layers/legend/legend-raster/raster-legend.component';
 export * from './lib/layers/legend/legend-vector/vector-legend.component';
 export * from './lib/layers/rename-layer/rename-layer.component';
+export * from './lib/layers/symbology/raster-symbology-editor/raster-symbology-editor.component';
 export * from './lib/logo.component';
 export * from './lib/map/map-container/map-container.component';
 export * from './lib/map/map-layer.component';
@@ -73,7 +76,7 @@ export * from './lib/users/login/login.component';
 export * from './lib/util/pipes/breakpoint-to-css-string.pipe';
 export * from './lib/util/pipes/css-string-to-rgba.pipe';
 export * from './lib/util/pipes/highlight.pipe';
-export * from './lib/util/pipes/mapping-colorizer-to-gradient.pipe';
+export * from './lib/util/pipes/color-gradients.pipe';
 export * from './lib/util/pipes/rgba-to-css-string.pipe';
 export * from './lib/util/pipes/safe-html.pipe';
 export * from './lib/util/pipes/safe-style.pipe';

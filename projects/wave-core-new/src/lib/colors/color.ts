@@ -17,9 +17,7 @@ export type RgbaTuple = [number, number, number, number];
 export type RgbTuple = [number, number, number];
 export type RgbaLike = RgbaTuple | RgbTuple | RgbaStruct | RgbStruct | Color | IRgba | string;
 
-export type RgbaColor = [number, number, number, number];
-
-export const rgbaColorFromDict = (dict: RgbaColorDict): RgbaColor => [dict[0], dict[1], dict[2], dict[3] / 255.0];
+export const rgbaColorFromDict = (dict: RgbaColorDict): RgbaTuple => [dict[0], dict[1], dict[2], dict[3] / 255.0];
 
 export function colorToDict(color: Color): RgbaColorDict {
     const rgbaColor = color.rgbaTuple();

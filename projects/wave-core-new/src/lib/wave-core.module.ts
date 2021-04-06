@@ -41,7 +41,7 @@ import {SafeHtmlPipe} from './util/pipes/safe-html.pipe';
 import {TrimPipe} from './util/pipes/trim.pipe';
 import {CssStringToRgbaPipe} from './util/pipes/css-string-to-rgba.pipe';
 import {HighlightPipe} from './util/pipes/highlight.pipe';
-import {MappingColorizerToGradientPipe} from './util/pipes/mapping-colorizer-to-gradient.pipe';
+import {RgbaArrayCssGradientPipe, ColorBreakpointsCssGradientPipe, ColorizerCssGradientPipe} from './util/pipes/color-gradients.pipe';
 import {RgbaToCssStringPipe} from './util/pipes/rgba-to-css-string.pipe';
 import {CommonModule} from '@angular/common';
 import {DialogHelpComponent} from './dialogs/dialog-help/dialog-help.component';
@@ -94,6 +94,9 @@ import {UploadComponent} from './datasets/upload/upload.component';
 import {DataTableComponent} from './datatable/table/table.component';
 import {TabsComponent} from './tabs/tabs.component';
 import {PortalModule} from '@angular/cdk/portal';
+import {RasterSymbologyEditorComponent} from './layers/symbology/raster-symbology-editor/raster-symbology-editor.component';
+import {ColorAttributeInputComponent} from './colors/color-attribute-input/color-attribute-input.component';
+import {ColorMapSelectorComponent} from './colors/color-map-selector/color-map-selector.component';
 import {DrawFeaturesComponent} from './datasets/draw-features/draw-features.component';
 
 const MATERIAL_MODULES = [
@@ -131,9 +134,11 @@ const MATERIAL_MODULES = [
 const WAVE_PIPES = [
     BreakpointToCssStringPipe,
     CastMeasurementToClassificationPipe,
+    ColorBreakpointsCssGradientPipe,
+    ColorizerCssGradientPipe,
     CssStringToRgbaPipe,
     HighlightPipe,
-    MappingColorizerToGradientPipe,
+    RgbaArrayCssGradientPipe,
     RgbaToCssStringPipe,
     SafeHtmlPipe,
     SafeStylePipe,
@@ -143,6 +148,8 @@ const WAVE_PIPES = [
 const WAVE_COMPONENTS = [
     AddDataComponent,
     ChangeSpatialReferenceComponent,
+    ColorAttributeInputComponent,
+    ColorMapSelectorComponent,
     DataSetComponent,
     DataTableComponent,
     DataTableComponent,
@@ -180,6 +187,7 @@ const WAVE_COMPONENTS = [
     RasterIconComponent,
     RasterLegendComponent,
     RasterLegendComponent,
+    RasterSymbologyEditorComponent,
     RasterVectorJoinComponent,
     RenameLayerComponent,
     SaveProjectAsComponent,
