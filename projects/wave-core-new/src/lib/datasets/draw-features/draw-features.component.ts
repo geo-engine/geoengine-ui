@@ -7,9 +7,9 @@ import {ProjectService} from '../../project/project.service';
 import {NotificationService} from '../../notification.service';
 import {SpatialReference, SpatialReferences} from '../../operators/spatial-reference.model';
 import {MapService} from '../../map/map.service';
-import {DataSetService} from '../dataset.service';
+import {DatasetService} from '../dataset.service';
 import {HttpEventType, HttpResponse} from '@angular/common/http';
-import {DataSetIdDict, UploadResponseDict, UUID} from '../../backend/backend.model';
+import {DatasetIdDict, UploadResponseDict, UUID} from '../../backend/backend.model';
 import {filter, mergeMap} from 'rxjs/operators';
 
 enum State {
@@ -31,7 +31,7 @@ export class DrawFeaturesComponent implements OnDestroy, OnInit {
 
     indicateLoading$ = new Subject<boolean>();
     uploadId$ = new Subject<UUID>();
-    dataSetId$ = new Subject<DataSetIdDict>();
+    datasetId$ = new Subject<DatasetIdDict>();
 
     state$ = new BehaviorSubject(State.Start);
 
@@ -56,7 +56,7 @@ export class DrawFeaturesComponent implements OnDestroy, OnInit {
     constructor(
         private projectService: ProjectService,
         private mapService: MapService,
-        private datasetService: DataSetService,
+        private datasetService: DatasetService,
         private notificationService: NotificationService,
     ) {
         this.mapProjectionSubscription = projectService.getSpatialReferenceStream().subscribe((p) => (this.mapSpatialRef = p));
@@ -140,10 +140,10 @@ export class DrawFeaturesComponent implements OnDestroy, OnInit {
                         dataset_description: this.datasetDescription,
                         main_file: 'draw.json',
                     };
-                    return this.datasetService.autoCreateDataSet(create);
+                    return this.datasetService.autoCreateDataset(create);
                 }),
                 mergeMap((res) => this.datasetService.getDataset(res.id)),
-                mergeMap((dataset) => this.datasetService.addDataSetToMap(dataset)),
+                mergeMap((dataset) => this.datasetService.addDatasetToMap(dataset)),
             )
             .subscribe(
                 (_) => {

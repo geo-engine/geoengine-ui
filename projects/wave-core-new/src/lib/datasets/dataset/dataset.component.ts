@@ -1,6 +1,6 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
-import {DataSet} from '../dataset.model';
-import {DataSetService} from '../dataset.service';
+import {Dataset} from '../dataset.model';
+import {DatasetService} from '../dataset.service';
 
 @Component({
     selector: 'wave-dataset',
@@ -8,14 +8,14 @@ import {DataSetService} from '../dataset.service';
     styleUrls: ['./dataset.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DataSetComponent implements OnInit {
-    @Input() dataset: DataSet;
+export class DatasetComponent implements OnInit {
+    @Input() dataset: Dataset;
 
-    constructor(private datasetService: DataSetService) {}
+    constructor(private datasetService: DatasetService) {}
 
     ngOnInit(): void {}
 
     add(): void {
-        this.datasetService.addDataSetToMap(this.dataset).subscribe();
+        this.datasetService.addDatasetToMap(this.dataset).subscribe();
     }
 }

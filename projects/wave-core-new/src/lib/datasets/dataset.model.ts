@@ -1,24 +1,24 @@
-import {DataSetDict, InternalDataSetIdDict, DatasetResultDescriptorDict, UUID, WorkflowDict} from '../backend/backend.model';
+import {DatasetDict, InternalDatasetIdDict, DatasetResultDescriptorDict, UUID, WorkflowDict} from '../backend/backend.model';
 import {SpatialReference, SpatialReferences} from '../operators/spatial-reference.model';
 import {RasterDataType, RasterDataTypes, VectorDataType, VectorDataTypes} from '../operators/datatype.model';
 
-export class DataSet {
-    readonly id: InternalDataSetId; // TODO: support all Id types
+export class Dataset {
+    readonly id: InternalDatasetId; // TODO: support all Id types
     readonly name: string;
     readonly description: string;
     readonly result_descriptor: ResultDescriptor;
     readonly source_operator: string;
 
-    constructor(config: DataSetDict) {
-        this.id = InternalDataSetId.fromDict(config.id);
+    constructor(config: DatasetDict) {
+        this.id = InternalDatasetId.fromDict(config.id);
         this.name = config.name;
         this.description = config.description;
         this.result_descriptor = ResultDescriptor.fromDict(config.result_descriptor);
         this.source_operator = config.source_operator;
     }
 
-    static fromDict(dict: DataSetDict): DataSet {
-        return new DataSet(dict);
+    static fromDict(dict: DatasetDict): Dataset {
+        return new Dataset(dict);
     }
 
     createSourceWorkflow(): WorkflowDict {
@@ -27,25 +27,25 @@ export class DataSet {
             operator: {
                 type: this.source_operator,
                 params: {
-                    data_set: this.id.toDict(),
+                    dataset: this.id.toDict(),
                 },
             },
         };
     }
 }
 
-export class InternalDataSetId {
+export class InternalDatasetId {
     Internal: UUID;
 
-    constructor(config: InternalDataSetIdDict) {
+    constructor(config: InternalDatasetIdDict) {
         this.Internal = config.Internal;
     }
 
-    static fromDict(config: InternalDataSetIdDict): InternalDataSetId {
-        return new InternalDataSetId(config);
+    static fromDict(config: InternalDatasetIdDict): InternalDatasetId {
+        return new InternalDatasetId(config);
     }
 
-    toDict(): InternalDataSetIdDict {
+    toDict(): InternalDatasetIdDict {
         return {
             Internal: this.Internal,
         };

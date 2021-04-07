@@ -191,7 +191,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     private static createAddDataListButtons(): Array<AddDataButton> {
         return [
-            AddDataComponent.createDataSetListButton(),
+            AddDataComponent.createDatasetListButton(),
             AddDataComponent.createUploadButton(),
             AddDataComponent.createDrawFeaturesButton(),
 

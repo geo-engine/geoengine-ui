@@ -6,7 +6,7 @@ import {bboxDictToExtent, unixTimestampToIsoString} from '../util/conversions';
 import {
     BBoxDict,
     CreateProjectResponseDict,
-    DataSetDict,
+    DatasetDict,
     PlotDict,
     LayerDict,
     ProjectDict,
@@ -28,9 +28,9 @@ import {
     PlotResultDescriptorDict,
     VectorResultDescriptorDict,
     UploadResponseDict,
-    DataSetIdDict,
-    CreateDataSetDict,
-    AutoCreateDataSetDict,
+    DatasetIdDict,
+    CreateDatasetDict,
+    AutoCreateDatasetDict,
     DatasetIdResponseDict,
 } from './backend.model';
 
@@ -234,21 +234,21 @@ export class BackendService {
     }
 
     // TODO: turn into paginated data source
-    getDataSets(sessionId: UUID): Observable<Array<DataSetDict>> {
+    getDatasets(sessionId: UUID): Observable<Array<DatasetDict>> {
         const params = new NullDiscardingHttpParams();
         params.set('order', 'NameAsc');
         params.set('offset', '0');
         params.set('limit', '20');
 
-        return this.http.get<Array<DataSetDict>>(this.config.API_URL + '/datasets', {
+        return this.http.get<Array<DatasetDict>>(this.config.API_URL + '/datasets', {
             params: params.httpParams,
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
 
-    getDataset(sessionId: UUID, datasetId: DataSetIdDict): Observable<DataSetDict> {
+    getDataset(sessionId: UUID, datasetId: DatasetIdDict): Observable<DatasetDict> {
         // TODO: external datasets
-        return this.http.get<DataSetDict>(this.config.API_URL + `/dataset/internal/${datasetId.Internal}`, {
+        return this.http.get<DatasetDict>(this.config.API_URL + `/dataset/internal/${datasetId.Internal}`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
@@ -261,14 +261,14 @@ export class BackendService {
         });
     }
 
-    createDataSet(sessionId: UUID, createDataSet: CreateDataSetDict): Observable<DatasetIdResponseDict> {
-        return this.http.post<DatasetIdResponseDict>(this.config.API_URL + '/dataset', createDataSet, {
+    createDataset(sessionId: UUID, createDataset: CreateDatasetDict): Observable<DatasetIdResponseDict> {
+        return this.http.post<DatasetIdResponseDict>(this.config.API_URL + '/dataset', createDataset, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
 
-    autoCreateDataSet(sessionId: UUID, createDataSet: AutoCreateDataSetDict): Observable<DatasetIdResponseDict> {
-        return this.http.post<DatasetIdResponseDict>(this.config.API_URL + '/dataset/auto', createDataSet, {
+    autoCreateDataset(sessionId: UUID, createDataset: AutoCreateDatasetDict): Observable<DatasetIdResponseDict> {
+        return this.http.post<DatasetIdResponseDict>(this.config.API_URL + '/dataset/auto', createDataset, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }

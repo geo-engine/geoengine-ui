@@ -72,7 +72,7 @@ export class AnalysisComponent implements OnInit {
             operator: {
                 type: 'OgrSource',
                 params: {
-                    data_set: this.selectedCountry.polygon,
+                    dataset: this.selectedCountry.polygon,
                 },
             },
         };
@@ -124,7 +124,7 @@ export class AnalysisComponent implements OnInit {
                 operator: {
                     type: 'GdalSource',
                     params: {
-                        data_set: this.selectedCountry.raster,
+                        dataset: this.selectedCountry.raster,
                     },
                 },
             }),

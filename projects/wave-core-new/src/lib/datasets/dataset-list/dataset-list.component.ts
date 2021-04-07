@@ -1,7 +1,7 @@
 import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {Observable} from 'rxjs';
-import {DataSet} from '../dataset.model';
-import {DataSetService} from '../dataset.service';
+import {Dataset} from '../dataset.model';
+import {DatasetService} from '../dataset.service';
 
 @Component({
     selector: 'wave-dataset-list',
@@ -12,10 +12,10 @@ import {DataSetService} from '../dataset.service';
 export class DatasetListComponent implements OnInit {
     searchTerm = '';
     // TODO: paginated data source
-    datasets: Observable<Array<DataSet>>;
+    datasets: Observable<Array<Dataset>>;
 
-    constructor(public dataSetService: DataSetService) {
-        this.datasets = this.dataSetService.getDataSets();
+    constructor(public datasetService: DatasetService) {
+        this.datasets = this.datasetService.getDatasets();
     }
 
     ngOnInit(): void {}
