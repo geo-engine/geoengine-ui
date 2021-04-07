@@ -271,14 +271,16 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         const list = [];
 
         const params = operator.params;
-        for (const key of Object.keys(params)) {
-            let value = JSON.stringify(params[key], null, 2);
+        if (params) {
+            for (const key of Object.keys(params)) {
+                let value = JSON.stringify(params[key], null, 2);
 
-            if (value.startsWith('"') && value.endsWith('"')) {
-                value = value.substr(1, value.length - 2);
+                if (value.startsWith('"') && value.endsWith('"')) {
+                    value = value.substr(1, value.length - 2);
+                }
+
+                list.push({key, value});
             }
-
-            list.push({key, value});
         }
 
         return list;
