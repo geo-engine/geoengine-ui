@@ -40,7 +40,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     featureColumns: Array<string> = [];
 
     protected layerDataSubscription: Subscription = undefined;
-    protected selectedLayerSubscription: Subscription = undefined;
+    protected selectedFeatureSubscription: Subscription = undefined;
 
     constructor(protected readonly projectService: ProjectService, protected readonly hostElement: ElementRef<HTMLElement>) {}
 
@@ -51,7 +51,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
             this.emptyTable();
         }
 
-        this.selectedLayerSubscription = this.projectService.getSelectedFeatureStream().subscribe((selection) => {
+        this.selectedFeatureSubscription = this.projectService.getSelectedFeatureStream().subscribe((selection) => {
             this.selectedFeature$.next(selection);
 
             if (!!this.paginator) {
@@ -90,8 +90,8 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
             this.layerDataSubscription.unsubscribe();
         }
 
-        if (this.selectedLayerSubscription) {
-            this.selectedLayerSubscription.unsubscribe();
+        if (this.selectedFeatureSubscription) {
+            this.selectedFeatureSubscription.unsubscribe();
         }
     }
 
