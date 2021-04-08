@@ -11,7 +11,7 @@ import {
     SimpleChange,
     SimpleChanges,
 } from '@angular/core';
-import {Subscription} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 
 import {Layer as OlLayer, Tile as OlLayerTile, Vector as OlLayerVector} from 'ol/layer';
 import {Source as OlSource, Tile as OlTileSource, TileWMS as OlTileWmsSource, Vector as OlVectorSource} from 'ol/source';
@@ -44,6 +44,8 @@ export abstract class MapLayerComponent<OL extends OlLayer, OS extends OlSource>
      * Must be connected to the map component.
      */
     @Output() mapRedraw = new EventEmitter();
+
+    loadedData$ = new Subject<void>();
 
     protected source: OS;
     protected _mapLayer: OL;
@@ -109,6 +111,7 @@ export class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector, OlV
                 this.source.addFeatures(x.data);
             }
             this.updateOlLayer({symbology: this.symbology}); // FIXME: HACK until data is a part of a layer
+            this.loadedData$.next();
         });
     }
 

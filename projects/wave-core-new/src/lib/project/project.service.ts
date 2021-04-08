@@ -729,7 +729,11 @@ export class ProjectService {
     }
 
     setSelectedFeature(feature: OlFeature): void {
-        this.selectedFeature$.next({feature: !!feature ? feature.ol_uid : undefined});
+        this.selectedFeature$.next({feature: !!feature ? feature.getId() : undefined});
+    }
+
+    getSelectedFeature(): FeatureSelection {
+        return this.selectedFeature$.value;
     }
 
     /**

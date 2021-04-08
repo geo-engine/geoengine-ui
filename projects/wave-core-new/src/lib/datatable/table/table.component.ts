@@ -53,21 +53,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
 
         this.selectedFeatureSubscription = this.projectService.getSelectedFeatureStream().subscribe((selection) => {
             this.selectedFeature$.next(selection);
-
-            if (!!this.paginator) {
-                for (let i = 0; i < this.dataSource.data.length; i++) {
-                    const feature = this.dataSource.data[i];
-                    if (feature.ol_uid === selection.feature) {
-                        const page = Math.floor(i / this.paginator.pageSize);
-                        this.paginator.pageIndex = page;
-                        this.paginator.page.next({
-                            pageIndex: page,
-                            pageSize: this.paginator.pageSize,
-                            length: this.paginator.length,
-                        });
-                    }
-                }
-            }
+            this.navigatePage(selection);
         });
     }
 
@@ -127,6 +113,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         this.featureColumns = metadata.columns.keySeq().toArray();
         this.displayedColumns = ['_____select'].concat(this.featureColumns);
         this.dataSource.data = data.data;
+        this.navigatePage(this.selectedFeature$.value);
     }
 
     processRasterLayer(_layer: RasterLayer, _metadata: RasterLayerMetadata, _data: any): void {
@@ -146,7 +133,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     }
 
     isSelected(feature: OlFeature): boolean {
-        return feature.ol_uid === this.selectedFeature$.value.feature;
+        return feature.getId() === this.selectedFeature$.value.feature;
     }
 
     select(feature: OlFeature, select: boolean): void {
@@ -154,6 +141,23 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
             this.projectService.setSelectedFeature(feature);
         } else {
             this.projectService.setSelectedFeature(undefined);
+        }
+    }
+
+    protected navigatePage(selection: FeatureSelection): void {
+        if (!!this.paginator) {
+            for (let i = 0; i < this.dataSource.data.length; i++) {
+                const feature = this.dataSource.data[i];
+                if (feature.getId() === selection.feature) {
+                    const page = Math.floor(i / this.paginator.pageSize);
+                    this.paginator.pageIndex = page;
+                    this.paginator.page.next({
+                        pageIndex: page,
+                        pageSize: this.paginator.pageSize,
+                        length: this.paginator.length,
+                    });
+                }
+            }
         }
     }
 }

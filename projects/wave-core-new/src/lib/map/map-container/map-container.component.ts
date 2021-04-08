@@ -1,5 +1,5 @@
 import {combineLatest, Observable, Subscription} from 'rxjs';
-import {first, map as rxMap} from 'rxjs/operators';
+import {first, map as rxMap, mergeMap} from 'rxjs/operators';
 
 import {
     AfterViewInit,
@@ -158,6 +158,15 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     }),
             );
         });
+
+        this.subscriptions.push(
+            this.mapLayersRaw.changes
+                .pipe(mergeMap((layers: Array<MapLayer>) => combineLatest(layers.map((l) => l.loadedData$))))
+                .subscribe(() => {
+                    this.resetSelection();
+                    this.performSelection(this.projectService.getSelectedFeature());
+                }),
+        );
     }
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}): void {
@@ -360,7 +369,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 const source = layer.mapLayer.getSource();
                 if (source instanceof OlSourceVector) {
                     for (const feature of source.getFeatures()) {
-                        if (feature.ol_uid === selection.feature) {
+                        if (feature.getId() === selection.feature) {
                             this.selectedFeature = feature;
                             const style = (layer.symbology as VectorSymbology).createHighlightStyle(feature);
                             feature.setStyle(style);
@@ -373,17 +382,19 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     private resetSelection(): void {
-        // TODO: avoid going through all layers
         if (!!this.selectedFeature) {
-            for (const layer of this.mapLayersRaw) {
-                const source = layer.mapLayer.getSource();
-                if (source instanceof OlSourceVector) {
-                    for (const feature of source.getFeatures()) {
-                        if (feature.ol_uid === this.selectedFeature.ol_uid) {
-                            this.selectedFeature = undefined;
-                            const style = (layer.symbology as VectorSymbology).createStyle(feature);
-                            feature.setStyle(style);
-                            return;
+            // TODO: avoid going through all layers
+            if (!!this.selectedFeature) {
+                for (const layer of this.mapLayersRaw) {
+                    const source = layer.mapLayer.getSource();
+                    if (source instanceof OlSourceVector) {
+                        for (const feature of source.getFeatures()) {
+                            if (feature.getId() === this.selectedFeature.getId()) {
+                                this.selectedFeature = undefined;
+                                const style = (layer.symbology as VectorSymbology).createStyle(feature);
+                                feature.setStyle(style);
+                                return;
+                            }
                         }
                     }
                 }

@@ -5,6 +5,7 @@ import {GeoJSON as OlFormatGeoJSON} from 'ol/format';
 import {Feature as OlFeature} from 'ol/Feature';
 import {ProjectionLike as OlProjectionLike} from 'ol/proj';
 import {UUID} from '../backend/backend.model';
+import {featureToHash} from '../util/conversions';
 
 export abstract class LayerData {
     readonly type: LayerType;
@@ -52,10 +53,9 @@ export class VectorData extends LayerData {
     }
 
     fakeIds(): void {
-        for (let localRowId = 0; localRowId < this.data.length; localRowId++) {
-            const feature = this.data[localRowId];
+        for (const feature of this.data) {
             if (feature.getId() === undefined) {
-                feature.setId(localRowId);
+                feature.setId(featureToHash(feature));
             }
         }
     }
