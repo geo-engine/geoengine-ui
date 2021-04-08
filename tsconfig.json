@@ -7,7 +7,7 @@
         "declaration": false,
         "downlevelIteration": true,
         "experimentalDecorators": true,
-        "module": "esnext",
+        "module": "es2020",
         "moduleResolution": "node",
         "importHelpers": true,
         "target": "es2015",
@@ -18,10 +18,16 @@
         // TODO: remove once vega-lite fixes (https://github.com/visjs/vis-network/issues/67)
         "allowSyntheticDefaultImports": true,
         // TODO: remove once vega-lite fixes (https://github.com/vega/vega-lite/issues/3897)
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true
     },
     "angularCompilerOptions": {
-        "fullTemplateTypeCheck": true,
-        "strictInjectionParameters": true
+        "enableI18nLegacyMessageIdFormat": false,
+        "strictInjectionParameters": true,
+        "strictInputAccessModifiers": true,
+        "strictTemplates": true
     }
 }
