@@ -38,10 +38,10 @@ export class NavigationComponent implements OnInit, OnDestroy {
     /**
      * The navigation shows this array of buttons.
      */
-    @Input() buttons: Array<NavigationButton>;
+    @Input() buttons!: Array<NavigationButton>;
 
-    private sidenavConfig: SidenavConfig;
-    private sidenavConfigSubscription: Subscription;
+    private sidenavConfig?: SidenavConfig;
+    private sidenavConfigSubscription?: Subscription;
 
     /**
      * DI for services
@@ -103,10 +103,10 @@ export class NavigationComponent implements OnInit, OnDestroy {
             tooltipObservable: userService.isGuestUserStream().pipe(map((isGuest) => (isGuest ? 'Login' : 'User Account'))),
             colorObservable: combineLatest([userService.isGuestUserStream(), layoutService.getSidenavContentComponentStream()]).pipe(
                 distinctUntilChanged(),
-                mergeScan(
+                mergeScan<[boolean, SidenavConfig], [boolean, string | undefined]>(
                     // abort inner observable when new source event arises
                     ([wasGuest, _state], [isGuest, sidenavConfig], _index) => {
-                        if (sidenavConfig && sidenavConfig.component === loginSidenavConfig.component) {
+                        if (sidenavConfig && loginSidenavConfig && sidenavConfig.component === loginSidenavConfig.component) {
                             return observableOf([isGuest, 'primary']);
                         } else if (!wasGuest && isGuest) {
                             // show 'accent' color for some time

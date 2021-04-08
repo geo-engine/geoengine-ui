@@ -7,6 +7,7 @@ import {OperatorListComponent} from '../../operators/dialogs/operator-list/opera
 import {ProjectService} from '../../project/project.service';
 import {LayoutService} from '../../layout.service';
 import {Plot} from '../plot.model';
+import {LoadingState} from '../../project/loading-state.model';
 
 /**
  * This component lists all current plots.
@@ -23,7 +24,9 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     @Input() operatorsListConfig = {component: OperatorListComponent};
 
-    readonly cardWidth$: BehaviorSubject<number> = new BehaviorSubject(undefined);
+    readonly cardWidth$ = new BehaviorSubject<number | undefined>(undefined);
+
+    readonly defaultLoadingState = LoadingState.LOADING;
 
     private subscriptions: Array<Subscription> = [];
 

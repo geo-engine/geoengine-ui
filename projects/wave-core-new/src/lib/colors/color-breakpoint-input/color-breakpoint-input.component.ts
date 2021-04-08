@@ -11,25 +11,25 @@ import {
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {ColorBreakpoint} from '../color-breakpoint.model';
-import {Color, stringToRgbaStruct} from '../color';
+import {Color, stringToRgbaStruct, TRANSPARENT} from '../color';
 
 @Component({
     selector: 'wave-color-breakpoint',
-    templateUrl: './color-breakpoint.component.html',
-    styleUrls: ['./color-breakpoint.component.scss'],
+    templateUrl: './color-breakpoint-input.component.html',
+    styleUrls: ['./color-breakpoint-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorBreakpointInputComponent), multi: true}],
 })
 export class ColorBreakpointInputComponent implements ControlValueAccessor, AfterViewInit, OnChanges {
-    @Input() editAttribute: false;
-    @Input() editColor: false;
+    @Input() readonlyAttribute = false;
+    @Input() readonlyColor = false;
     @Input() attributePlaceholder = 'attribute';
-    @Input() colorPlaceholder: 'color';
+    @Input() colorPlaceholder = 'color';
 
-    onTouched: () => void;
-    onChange: (_: ColorBreakpoint) => void = undefined;
+    onTouched?: () => void;
+    onChange?: (_: ColorBreakpoint) => void = undefined;
 
-    private input: ColorBreakpoint;
+    private input: ColorBreakpoint = new ColorBreakpoint(0, TRANSPARENT);
 
     constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
@@ -39,16 +39,20 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, Afte
 
     // set accessor including call the onchange callback
     set colorBreakpoint(breakpoint: ColorBreakpoint) {
-        if (breakpoint && !breakpoint.equals(this.input)) {
-            this.input = breakpoint;
+        if (this.input && breakpoint.equals(this.input)) {
+            return;
         }
+
+        this.input = breakpoint;
     }
 
     updateValue(value: number): void {
-        if (value && value !== this.colorBreakpoint.value) {
-            this.colorBreakpoint.setValue(value);
-            this.propagateChange();
+        if (!value || value === this.colorBreakpoint.value) {
+            return;
         }
+
+        this.colorBreakpoint.setValue(value);
+        this.propagateChange();
     }
 
     updateColor(value: string): void {
@@ -75,7 +79,9 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, Afte
 
     // Set touched on blur
     onBlur(): void {
-        this.onTouched();
+        if (this.onTouched) {
+            this.onTouched();
+        }
     }
 
     writeValue(brk: ColorBreakpoint): void {

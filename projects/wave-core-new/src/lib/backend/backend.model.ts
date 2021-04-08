@@ -221,7 +221,7 @@ export interface OperatorDict {
     raster_sources?: Array<OperatorDict | SourceOperatorDict>;
 }
 
-type ParamTypes = string | number | boolean | Array<ParamTypes> | {[key: string]: ParamTypes};
+type ParamTypes = string | number | boolean | Array<ParamTypes> | {[key: string]: ParamTypes} | undefined;
 
 export interface OperatorParams {
     [key: string]: ParamTypes;

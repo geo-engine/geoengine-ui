@@ -19,6 +19,7 @@ export * from './lib/util/services/random-color.service';
 
 // Components
 export * from './lib/colors/color-attribute-input/color-attribute-input.component';
+export * from './lib/colors/color-breakpoint-input/color-breakpoint-input.component';
 export * from './lib/colors/color-map-selector/color-map-selector.component';
 export * from './lib/datasets/add-data/add-data.component';
 export * from './lib/datasets/dataset-list/dataset-list.component';
@@ -73,6 +74,7 @@ export * from './lib/time/time-input/time-input.component';
 export * from './lib/users/login/login.component';
 
 // Pipes
+export * from './lib/util/pipes/async-converters.pipe';
 export * from './lib/util/pipes/breakpoint-to-css-string.pipe';
 export * from './lib/util/pipes/css-string-to-rgba.pipe';
 export * from './lib/util/pipes/highlight.pipe';

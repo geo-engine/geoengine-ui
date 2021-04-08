@@ -25,20 +25,21 @@ export interface ColorAttributeInput {
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorAttributeInputComponent), multi: true}],
 })
 export class ColorAttributeInputComponent implements ControlValueAccessor, AfterViewInit, OnChanges {
-    @Input() readonlyAttribute: false;
-    @Input() readonlyColor: false;
+    @Input() readonlyAttribute = false;
+    @Input() readonlyColor = false;
     @Input() attributePlaceholder = 'attribute';
-    @Input() colorPlaceholder: 'color';
+    @Input() colorPlaceholder = 'color';
 
-    onTouched: () => void;
-    onChange: (_: ColorAttributeInput) => void = undefined;
+    onTouched?: () => void;
+    onChange?: (_: ColorAttributeInput) => void = undefined;
 
-    input: ColorAttributeInput;
+    input?: ColorAttributeInput;
+    cssString = '';
 
     constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
     updateKey(key: string): void {
-        if (!key || key === this.input.key) {
+        if (!key || !this.input || key === this.input.key) {
             return;
         }
 
@@ -51,7 +52,7 @@ export class ColorAttributeInputComponent implements ControlValueAccessor, After
     }
 
     updateColor(value: string): void {
-        if (!value) {
+        if (!value || !this.input) {
             return;
         }
 
@@ -61,6 +62,7 @@ export class ColorAttributeInputComponent implements ControlValueAccessor, After
             key: this.input.key,
             value: color,
         };
+        this.cssString = color.rgbaCssString();
 
         this.propagateChange();
     }
@@ -77,11 +79,14 @@ export class ColorAttributeInputComponent implements ControlValueAccessor, After
 
     // Set touched on blur
     onBlur(): void {
-        this.onTouched();
+        if (this.onTouched) {
+            this.onTouched();
+        }
     }
 
     writeValue(input: ColorAttributeInput): void {
         this.input = input;
+        this.cssString = input.value.rgbaCssString();
     }
 
     registerOnChange(fn: (_: ColorAttributeInput) => void): void {

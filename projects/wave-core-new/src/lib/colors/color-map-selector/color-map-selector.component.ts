@@ -72,7 +72,7 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
     /**
      * The local (work-in-progress) Colorizer.
      */
-    breakpoints: Array<ColorBreakpoint>;
+    breakpoints?: Array<ColorBreakpoint>;
 
     protected subscriptions: Array<Subscription> = [];
 

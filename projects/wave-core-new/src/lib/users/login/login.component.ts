@@ -29,10 +29,10 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
     loginForm: FormGroup;
 
-    user: User;
+    user?: User;
     invalidCredentials$ = new BehaviorSubject<boolean>(false);
 
-    private formStatusSubscription: Subscription;
+    private formStatusSubscription?: Subscription;
 
     constructor(
         private readonly changeDetectorRef: ChangeDetectorRef,

@@ -32,12 +32,12 @@ const TAB_WIDTH_PCT_MAX = 20;
 })
 export class TabsComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
     @HostBinding('class.mat-elevation-z4') elevationStyle = true;
-    @ViewChild(CdkPortalOutlet) portalOutlet: CdkPortalOutlet;
+    @ViewChild(CdkPortalOutlet) portalOutlet!: CdkPortalOutlet;
 
-    @Input() maxHeight: number;
-    @Input() visible: boolean;
+    @Input() maxHeight = 0;
+    @Input() visible = true;
 
-    toggleTooltip: 'Show' | 'Hide';
+    toggleTooltip: 'Show' | 'Hide' = this.visible ? 'Hide' : 'Show';
     readonly toggleTooltipDelay: number;
 
     readonly tabWidthPct: Observable<number>;

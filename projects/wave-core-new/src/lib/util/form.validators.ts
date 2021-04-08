@@ -1,6 +1,6 @@
 import {Observable, Observer} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {AbstractControl, AsyncValidatorFn} from '@angular/forms';
+import {AbstractControl, AsyncValidatorFn, ValidationErrors} from '@angular/forms';
 
 const isFiniteNumber = (value: any): boolean => value !== null && value !== undefined && !isNaN(value) && isFinite(value);
 
@@ -10,15 +10,12 @@ const isFiniteNumber = (value: any): boolean => value !== null && value !== unde
 const minAndMax = (
     controlMinName: string,
     controlMaxName: string,
-    options?: {
+    options: {
         checkBothExist?: boolean;
         checkOneExists?: boolean;
         mustNotEqual?: boolean;
-    },
-): ((AbstractControl) => {[index: string]: boolean}) => {
-    if (!options) {
-        options = {};
-    }
+    } = {},
+): ((_: AbstractControl) => {[index: string]: boolean} | null) => {
     if (typeof options.checkBothExist !== 'boolean') {
         // default
         options.checkBothExist = false;
@@ -28,9 +25,9 @@ const minAndMax = (
         options.checkOneExists = true;
     }
 
-    return (control: AbstractControl): {[key: string]: boolean} => {
-        const min = control.get(controlMinName).value;
-        const max = control.get(controlMaxName).value;
+    return (control: AbstractControl): {[key: string]: boolean} | null => {
+        const min = control.get(controlMinName)?.value;
+        const max = control.get(controlMaxName)?.value;
 
         const errors: {
             minOverMax?: boolean;
@@ -71,7 +68,7 @@ const minAndMax = (
  */
 const conditionalValidator = (validator: (control: AbstractControl) => {[key: string]: boolean}, condition: () => boolean) => (
     control: AbstractControl,
-): {[key: string]: boolean} => {
+): {[key: string]: boolean} | null => {
     if (condition()) {
         return validator(control);
     } else {
@@ -88,10 +85,10 @@ const keywordValidator = (keywords: Array<string>) => (control: AbstractControl)
 /**
  * Checks if the project name is unique.
  */
-const uniqueProjectNameValidator = (storageService: {projectExists(string): Observable<boolean>}): AsyncValidatorFn => (
+const uniqueProjectNameValidator = (storageService: {projectExists(_: string): Observable<boolean>}): AsyncValidatorFn => (
     control: AbstractControl,
-): Observable<{[key: string]: boolean}> =>
-    new Observable((observer: Observer<{[key: string]: boolean}>) => {
+): Observable<ValidationErrors | null> =>
+    new Observable((observer: Observer<ValidationErrors | null>) => {
         storageService
             .projectExists(control.value as string)
             .pipe(
@@ -153,24 +150,21 @@ const nullOrUndefined = (value: any): boolean => value === undefined || value ==
  * @param compareValueProvider: function deriving the min value
  * @param options: {checkEqual: true} enables checking for equal, {checkAbove: true} for above and {checkBelow: true] for below.
  */
-export const valueRelation = (
+// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
+export function valueRelation(
     controlValueProvider: (control: AbstractControl) => number,
     compareValueProvider: (control: AbstractControl) => number,
-    options?: {
+    options: {
         checkEqual?: boolean;
         checkAbove?: boolean;
         checkBelow?: boolean;
+    } = {
+        checkEqual: true,
+        checkAbove: true,
+        checkBelow: true,
     },
-): ((AbstractControl) => {[key: string]: boolean}) => {
-    if (!options) {
-        options = {
-            checkEqual: true,
-            checkAbove: true,
-            checkBelow: true,
-        };
-    }
-
-    return (control: AbstractControl): {[key: string]: boolean} => {
+): (_: AbstractControl) => ValidationErrors | null {
+    return (control: AbstractControl): ValidationErrors | null => {
         const value = controlValueProvider(control);
         const compareValue = compareValueProvider(control);
 
@@ -206,4 +200,4 @@ export const valueRelation = (
         }
         return Object.keys(errors).length > 0 ? errors : null;
     };
-};
+}

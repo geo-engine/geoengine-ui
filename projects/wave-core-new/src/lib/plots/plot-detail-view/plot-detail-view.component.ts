@@ -22,9 +22,9 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit, OnDestroy
     // imagePlotData$ = new BehaviorSubject('data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
 
     plotLoading$ = new BehaviorSubject(true);
-    plotData: PlotDataDict;
+    plotData?: PlotDataDict;
 
-    private dataSubscription: Subscription;
+    private dataSubscription?: Subscription;
 
     constructor(public projectService: ProjectService, @Inject(MAT_DIALOG_DATA) public plot: Plot) {}
 
@@ -74,6 +74,6 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     ngOnDestroy(): void {
-        this.dataSubscription.unsubscribe();
+        this.dataSubscription?.unsubscribe();
     }
 }
