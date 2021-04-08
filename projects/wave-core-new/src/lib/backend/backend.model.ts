@@ -230,7 +230,7 @@ export interface OperatorParams {
 export interface SourceOperatorDict {
     type: string;
     params: {
-        data_set: InternalDataSetIdDict; // TODO: support all Id types
+        dataset: InternalDatasetIdDict; // TODO: support all Id types
     };
 }
 
@@ -241,19 +241,19 @@ export interface TimeStepDict {
 
 export type TimeStepGranularityDict = 'Millis' | 'Seconds' | 'Minutes' | 'Hours' | 'Days' | 'Months' | 'Years';
 
-export interface DataSetDict {
-    id: InternalDataSetIdDict; // TODO: support all Id types
+export interface DatasetDict {
+    id: InternalDatasetIdDict; // TODO: support all Id types
     name: string;
     description: string;
     result_descriptor: DatasetResultDescriptorDict;
     source_operator: string;
 }
 
-export interface DataSetIdDict {
+export interface DatasetIdDict {
     Internal?: UUID;
 }
 
-export interface InternalDataSetIdDict {
+export interface InternalDatasetIdDict {
     Internal: UUID;
 }
 
@@ -308,15 +308,15 @@ export interface UploadResponseDict {
 }
 
 export interface DatasetIdResponseDict {
-    id: DataSetIdDict;
+    id: DatasetIdDict;
 }
 
-export interface CreateDataSetDict {
+export interface CreateDatasetDict {
     upload: UUID;
-    // TODO: data set definition
+    // TODO: dataset definition
 }
 
-export interface AutoCreateDataSetDict {
+export interface AutoCreateDatasetDict {
     upload: UUID;
     dataset_name: string;
     dataset_description: string;

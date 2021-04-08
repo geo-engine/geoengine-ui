@@ -41,11 +41,11 @@ export class AddDataComponent implements OnInit {
         this.layoutService.setSidenavContentComponent(sidenavConfig);
     }
 
-    static createDataSetListButton(): AddDataButton {
+    static createDatasetListButton(): AddDataButton {
         return {
-            name: 'Data Sets',
-            description: 'Available Data Sets',
-            iconSrc: createIconDataUrl('DataSets'),
+            name: 'Datasets',
+            description: 'Available Datasets',
+            iconSrc: createIconDataUrl('Datasets'),
             sidenavConfig: {component: DatasetListComponent, keepParent: true},
         };
     }

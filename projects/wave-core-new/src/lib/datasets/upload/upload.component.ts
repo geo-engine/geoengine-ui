@@ -3,10 +3,10 @@ import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {mergeMap} from 'rxjs/operators';
-import {DataSetIdDict, UUID} from '../../backend/backend.model';
+import {DatasetIdDict, UUID} from '../../backend/backend.model';
 import {NotificationService} from '../../notification.service';
 import {ProjectService} from '../../project/project.service';
-import {DataSetService} from '../dataset.service';
+import {DatasetService} from '../dataset.service';
 
 interface ExampleLoadingInfo {
     name: string;
@@ -32,7 +32,7 @@ export class UploadComponent implements OnInit {
 
     state$ = new BehaviorSubject<State>(State.Start);
     uploadId$ = new Subject<UUID>();
-    dataSetId$ = new Subject<DataSetIdDict>();
+    datasetId$ = new Subject<DatasetIdDict>();
     progress$ = new Subject<number>();
 
     simpleCreateForm: FormGroup;
@@ -145,7 +145,7 @@ export class UploadComponent implements OnInit {
     ];
 
     constructor(
-        protected dataSetService: DataSetService,
+        protected datasetService: DatasetService,
         protected notificationService: NotificationService,
         protected projectService: ProjectService,
     ) {
@@ -171,7 +171,7 @@ export class UploadComponent implements OnInit {
 
         this.state$.next(State.Uploading);
 
-        this.dataSetService.upload(form).subscribe(
+        this.datasetService.upload(form).subscribe(
             (event) => {
                 if (event.type === HttpEventType.UploadProgress) {
                     this.progress$.next(Math.round((100 * event.loaded) / event.total));
@@ -199,9 +199,9 @@ export class UploadComponent implements OnInit {
             definition: JSON.parse(this.loadingInfo),
         };
 
-        this.dataSetService.createDataSet(create).subscribe(
+        this.datasetService.createDataset(create).subscribe(
             (response) => {
-                this.dataSetId$.next(response.id);
+                this.datasetId$.next(response.id);
                 this.state$.next(State.Created);
             },
             (err) => {
@@ -222,9 +222,9 @@ export class UploadComponent implements OnInit {
             main_file: this.selectedMainFile,
         };
 
-        this.dataSetService.autoCreateDataSet(create).subscribe(
+        this.datasetService.autoCreateDataset(create).subscribe(
             (response) => {
-                this.dataSetId$.next(response.id);
+                this.datasetId$.next(response.id);
                 this.state$.next(State.Created);
             },
             (err) => {
@@ -234,10 +234,10 @@ export class UploadComponent implements OnInit {
         );
     }
 
-    addToMap(datasetId: DataSetIdDict): void {
-        this.dataSetService
+    addToMap(datasetId: DatasetIdDict): void {
+        this.datasetService
             .getDataset(datasetId)
-            .pipe(mergeMap((dataset) => this.dataSetService.addDataSetToMap(dataset)))
+            .pipe(mergeMap((dataset) => this.datasetService.addDatasetToMap(dataset)))
             .subscribe();
     }
 }

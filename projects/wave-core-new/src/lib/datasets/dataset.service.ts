@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
 import {BackendService} from '../backend/backend.service';
 import {Observable} from 'rxjs';
-import {DataSet, VectorResultDescriptor} from './dataset.model';
+import {Dataset, VectorResultDescriptor} from './dataset.model';
 import {UserService} from '../users/user.service';
 import {map, mergeMap} from 'rxjs/operators';
 import {HttpEvent} from '@angular/common/http';
-import {AutoCreateDataSetDict, CreateDataSetDict, DataSetIdDict, DatasetIdResponseDict, UploadResponseDict} from '../backend/backend.model';
+import {AutoCreateDatasetDict, CreateDatasetDict, DatasetIdDict, DatasetIdResponseDict, UploadResponseDict} from '../backend/backend.model';
 import {RandomColorService} from '../util/services/random-color.service';
 import {RasterLayer, VectorLayer} from '../layers/layer.model';
 import {LineSymbology, PointSymbology, PolygonSymbology, RasterSymbology, Symbology} from '../layers/symbology/symbology.model';
@@ -16,7 +16,7 @@ import {ProjectService} from '../project/project.service';
 @Injectable({
     providedIn: 'root',
 })
-export class DataSetService {
+export class DatasetService {
     constructor(
         protected backend: BackendService,
         protected userService: UserService,
@@ -24,17 +24,17 @@ export class DataSetService {
         protected randomColorService: RandomColorService,
     ) {}
 
-    getDataSets(): Observable<Array<DataSet>> {
+    getDatasets(): Observable<Array<Dataset>> {
         return this.userService.getSessionStream().pipe(
-            mergeMap((session) => this.backend.getDataSets(session.sessionToken)),
-            map((dataSetDicts) => dataSetDicts.map((dict) => DataSet.fromDict(dict))),
+            mergeMap((session) => this.backend.getDatasets(session.sessionToken)),
+            map((datasetDicts) => datasetDicts.map((dict) => Dataset.fromDict(dict))),
         );
     }
 
-    getDataset(id: DataSetIdDict): Observable<DataSet> {
+    getDataset(id: DatasetIdDict): Observable<Dataset> {
         return this.userService.getSessionTokenForRequest().pipe(
             mergeMap((token) => this.backend.getDataset(token, id)),
-            map((dict) => DataSet.fromDict(dict)),
+            map((dict) => Dataset.fromDict(dict)),
         );
     }
 
@@ -42,15 +42,15 @@ export class DataSetService {
         return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.upload(token, form)));
     }
 
-    createDataSet(create: CreateDataSetDict): Observable<DatasetIdResponseDict> {
-        return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.createDataSet(token, create)));
+    createDataset(create: CreateDatasetDict): Observable<DatasetIdResponseDict> {
+        return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.createDataset(token, create)));
     }
 
-    autoCreateDataSet(create: AutoCreateDataSetDict): Observable<DatasetIdResponseDict> {
-        return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.autoCreateDataSet(token, create)));
+    autoCreateDataset(create: AutoCreateDatasetDict): Observable<DatasetIdResponseDict> {
+        return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.autoCreateDataset(token, create)));
     }
 
-    addDataSetToMap(dataset: DataSet): Observable<void> {
+    addDatasetToMap(dataset: Dataset): Observable<void> {
         const workflow = dataset.createSourceWorkflow();
 
         return this.projectService.registerWorkflow(workflow).pipe(
