@@ -28,23 +28,17 @@ export const bboxDictToExtent = (extent: BBoxDict): [number, number, number, num
  */
 export const unixTimestampToIsoString = (unixTimestamp: number): string => utc(unixTimestamp).toISOString();
 
-// TODO: use a faster hash function
-export const featureToHash = (feature: OlFeature): number => {
-    const hashFn = function (str: string): number {
-        let hash = 0;
-        let i;
-        let chr;
-        if (str.length === 0) return hash;
-        for (i = 0; i < str.length; i++) {
-            chr = str.charCodeAt(i);
-            // eslint-disable-next-line no-bitwise
-            hash = (hash << 5) - hash + chr;
-            // eslint-disable-next-line no-bitwise
-            hash |= 0; // Convert to 32bit integer
-        }
-        return hash;
-    };
+export function hashCode(str: string): number {
+    // java String#hashCode
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash); // eslint-disable-line no-bitwise
+    }
+    return hash;
+}
 
+// TODO: use a faster hash function
+export function featureToHash(feature: OlFeature): number {
     const sortObjKeys = (obj: {[_: string]: any}): any => {
         Object.keys(obj)
             .sort()
@@ -59,5 +53,6 @@ export const featureToHash = (feature: OlFeature): number => {
         jsonObj['properties'] = sortObjKeys(jsonObj['properties']);
     }
     const json = JSON.stringify(jsonObj);
-    return hashFn(json);
-};
+
+    return hashCode(json);
+}
