@@ -3,10 +3,14 @@ import {ProjectService} from '../../project/project.service';
 import {Observable, Subscription} from 'rxjs';
 import {Time, TimeStepDuration} from '../time.model';
 import {Moment} from 'moment';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {Config} from '../../config.service';
 
-const startBeforeEndValidator = () => (control: FormGroup): {[index: string]: boolean} => {
+const startBeforeEndValidator = (control: AbstractControl): ValidationErrors | null => {
+    if (!(control instanceof FormGroup)) {
+        return null;
+    }
+
     const start = control.controls.start.value as Moment;
     const end = control.controls.end.value as Moment;
     const timeAsPoint = control.controls.timeAsPoint.value as boolean;
@@ -26,8 +30,8 @@ const startBeforeEndValidator = () => (control: FormGroup): {[index: string]: bo
 })
 export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     timeForm: FormGroup;
-    start: Moment;
-    end: Moment;
+    start?: Moment;
+    end?: Moment;
 
     timeStepDuration$: Observable<TimeStepDuration>;
     timeStepDurations: Array<TimeStepDuration> = [
@@ -40,8 +44,8 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         {durationAmount: 1, durationUnit: 'year'},
     ];
 
-    private timeAsPoint: boolean;
-    private time: Time;
+    private timeAsPoint = true;
+    private time?: Time;
     private subscriptions: Array<Subscription> = [];
 
     constructor(
@@ -60,7 +64,7 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
             end: [{value: this.end, disabled: this.timeAsPoint}, Validators.required],
         });
 
-        this.timeForm.setValidators(startBeforeEndValidator());
+        this.timeForm.setValidators(startBeforeEndValidator);
 
         this.timeStepDuration$ = this.projectService.getTimeStepDurationStream();
     }
@@ -101,10 +105,10 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     reset(): void {
-        this.timeForm.controls['timeAsPoint'].setValue(this.time.type === 'TimePoint');
-        this.start = this.time.start.clone();
+        this.timeForm.controls['timeAsPoint'].setValue(this.time?.type === 'TimePoint');
+        this.start = this.time?.start.clone();
         this.timeForm.controls['start'].setValue(this.start);
-        this.end = this.time.end.clone();
+        this.end = this.time?.end.clone();
         this.timeForm.controls['end'].setValue(this.end);
     }
 

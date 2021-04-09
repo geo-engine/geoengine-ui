@@ -22,7 +22,7 @@ export class SidenavSearchRightDirective {}
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidenavSearchComponent implements OnInit, AfterViewInit {
-    @ContentChildren(SidenavSearchRightDirective, {read: ElementRef}) contentChildren: QueryList<ElementRef>;
+    @ContentChildren(SidenavSearchRightDirective, {read: ElementRef}) contentChildren!: QueryList<ElementRef>;
 
     @Output() searchString = new EventEmitter<string>();
 

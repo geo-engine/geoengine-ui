@@ -1,4 +1,4 @@
-import {ColorizerDict, LinearGradientDict, PaletteDict} from '../backend/backend.model';
+import {ColorizerDict, LinearGradientDict, PaletteDict, RgbaColorDict} from '../backend/backend.model';
 import {Color, colorToDict, rgbaColorFromDict} from './color';
 import {ColorBreakpoint} from './color-breakpoint.model';
 
@@ -162,9 +162,9 @@ export class PaletteColorizer extends Colorizer {
     }
 
     static fromPaletteDict(dict: PaletteDict): PaletteColorizer {
-        const colors = new Map();
+        const colors = new Map<number, Color>();
         for (const i of Object.keys(dict.colors)) {
-            colors[i] = Color.fromRgbaLike(rgbaColorFromDict(dict.colors[i]));
+            colors.set(parseInt(i, 10), Color.fromRgbaLike(rgbaColorFromDict(dict.colors[i])));
         }
         return new PaletteColorizer(
             colors,
@@ -195,8 +195,8 @@ export class PaletteColorizer extends Colorizer {
                 return false;
             }
 
-            for (const i in Object.keys(this.colors)) {
-                if (this.colors[i] !== other.colors[i]) {
+            for (const [i, color] of this.colors.entries()) {
+                if (color !== other.colors.get(i)) {
                     return false;
                 }
             }
@@ -208,8 +208,8 @@ export class PaletteColorizer extends Colorizer {
 
     clone(): Colorizer {
         const colors = new Map();
-        for (const i of Object.keys(this.colors)) {
-            colors[i] = this.colors[i];
+        for (const i of this.colors.keys()) {
+            colors.set(i, this.colors.get(i));
         }
 
         return new PaletteColorizer(colors, this.noDataColor.clone(), this.defaultColor.clone());
@@ -225,8 +225,8 @@ export class PaletteColorizer extends Colorizer {
             colors = updates.colors;
         } else {
             colors = new Map();
-            for (const i of Object.keys(this.colors)) {
-                colors[i] = this.colors[i];
+            for (const [i, color] of this.colors.entries()) {
+                colors.set(i, color);
             }
         }
 
@@ -238,9 +238,12 @@ export class PaletteColorizer extends Colorizer {
     }
 
     toDict(): ColorizerDict {
-        const colors = {};
-        for (const i of Object.keys(this.colors)) {
-            colors[i] = colorToDict(this.colors[i]);
+        const colors: {
+            [numberValue: string]: RgbaColorDict;
+        } = {};
+
+        for (const [i, color] of this.colors.entries()) {
+            colors[i] = colorToDict(color);
         }
 
         return {
@@ -262,7 +265,13 @@ export class PaletteColorizer extends Colorizer {
 
     getColorAtIndex(index: number): Color {
         const key = Array.from(this.colors.keys())[index];
-        return this.colors[key];
+        const color = this.colors.get(key);
+
+        if (!color) {
+            throw Error(`index ${index} does not exist on Map`);
+        }
+
+        return color;
     }
 
     getNumberOfColors(): number {

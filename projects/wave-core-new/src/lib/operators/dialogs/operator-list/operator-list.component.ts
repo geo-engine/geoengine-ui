@@ -28,7 +28,6 @@ import {LayoutService} from '../../../layout.service';
 // import {BoxPlotType} from '../../types/boxplot-type.model';
 // import {RasterPolygonClipOperatorComponent} from '../raster-polygon-clip/raster-polygon-clip.component';
 // import {OperatorType} from '../../operator-type.model';
-import {ExpressionType} from '../../types/expression-type.model';
 // import {HeatmapOperatorComponent} from '../heatmap/heatmap.component';
 // import {HeatmapType} from '../../types/heatmap-type.model';
 // import {TimePlotType} from '../../types/timeplot-type.model';
@@ -146,7 +145,10 @@ export class OperatorListComponent implements OnInit {
     static readonly DEFAULT_RASTER_OPERATOR_DIALOGS: Array<OperatorListType> = [
         {
             component: ExpressionOperatorComponent,
-            type: ExpressionType,
+            type: {
+                NAME: 'Expression',
+                ICON_URL: 'assets/operator-type-icons/expression.png',
+            },
             description: 'Calculate an expression on a raster',
         },
         // {
@@ -207,9 +209,7 @@ export class OperatorListComponent implements OnInit {
     /**
      * DI of services
      */
-    constructor(private layoutService: LayoutService) {}
-
-    ngOnInit(): void {
+    constructor(private layoutService: LayoutService) {
         this.operatorGroups$ = combineLatest([of(this.operators), this.searchString$.pipe(map((s) => s.toLowerCase()))]).pipe(
             map(([operatorGroups, searchString]) => {
                 const nameComparator = (a: string, b: string): number => {
@@ -242,6 +242,8 @@ export class OperatorListComponent implements OnInit {
             }),
         );
     }
+
+    ngOnInit(): void {}
 
     /**
      * Load a selected dialog into the sidenav

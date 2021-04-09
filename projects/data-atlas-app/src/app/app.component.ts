@@ -27,7 +27,7 @@ import {DataSelectionService} from './data-selection.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit, AfterViewInit {
-    @ViewChild(MapContainerComponent, {static: true}) mapComponent: MapContainerComponent;
+    @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
 
     readonly layersReverse$: Observable<Array<Layer>>;
     readonly analysisVisible$ = new BehaviorSubject(false);

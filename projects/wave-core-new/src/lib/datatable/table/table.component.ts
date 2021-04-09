@@ -15,8 +15,8 @@ import {BehaviorSubject, combineLatest, Observable, Subject, Subscription} from 
 import {RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metadata.model';
 import {Layer, RasterLayer, VectorLayer} from '../../layers/layer.model';
 import {ResultTypes} from '../../operators/result-type.model';
+import {Feature as OlFeature} from 'ol';
 import {FeatureSelection, ProjectService} from '../../project/project.service';
-import {Feature as OlFeature} from 'ol/Feature';
 import {VectorData} from '../../layers/layer-data.model';
 import {DataSource} from '@angular/cdk/collections';
 
@@ -27,9 +27,9 @@ import {DataSource} from '@angular/cdk/collections';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
-    @ViewChild(MatPaginator) paginator: MatPaginator;
+    @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-    @Input() layer: Layer;
+    @Input() layer?: Layer;
 
     readonly layerTypes = ResultTypes.VECTOR_TYPES;
 
@@ -39,8 +39,8 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     displayedColumns: Array<string> = [];
     featureColumns: Array<string> = [];
 
-    protected layerDataSubscription: Subscription = undefined;
-    protected selectedFeatureSubscription: Subscription = undefined;
+    protected layerDataSubscription?: Subscription = undefined;
+    protected selectedFeatureSubscription?: Subscription = undefined;
 
     constructor(protected readonly projectService: ProjectService, protected readonly hostElement: ElementRef<HTMLElement>) {}
 
@@ -57,7 +57,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
             if (!!this.paginator) {
                 for (let i = 0; i < this.dataSource.data.length; i++) {
                     const feature = this.dataSource.data[i];
-                    if (feature.ol_uid === selection.feature) {
+                    if (((feature as any).ol_uid as number) === selection.feature) {
                         const page = Math.floor(i / this.paginator.pageSize);
                         this.paginator.pageIndex = page;
                         this.paginator.page.next({
@@ -146,7 +146,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     }
 
     isSelected(feature: OlFeature): boolean {
-        return feature.ol_uid === this.selectedFeature$.value.feature;
+        return ((feature as any).ol_uid as number) === this.selectedFeature$.value.feature;
     }
 
     select(feature: OlFeature, select: boolean): void {
@@ -167,8 +167,8 @@ class FeatureDataSource extends DataSource<OlFeature> {
     protected _data: Array<OlFeature> = [];
     protected data$ = new Subject<Array<OlFeature>>();
 
-    protected _paginator: MatPaginator;
-    protected paginatorSubscription: Subscription;
+    protected _paginator?: MatPaginator;
+    protected paginatorSubscription?: Subscription;
 
     constructor() {
         super();
@@ -187,12 +187,16 @@ class FeatureDataSource extends DataSource<OlFeature> {
         return this._data;
     }
 
-    set paginator(paginator: MatPaginator) {
+    set paginator(paginator: MatPaginator | undefined) {
         if (this.paginatorSubscription) {
             this.paginatorSubscription.unsubscribe();
         }
 
         this._paginator = paginator;
+
+        if (!this.paginator) {
+            return;
+        }
 
         // update length wrt. data
         this.paginator.length = this.data.length;
@@ -204,7 +208,7 @@ class FeatureDataSource extends DataSource<OlFeature> {
         this.processPage();
     }
 
-    get paginator(): MatPaginator {
+    get paginator(): MatPaginator | undefined {
         return this._paginator;
     }
 
@@ -225,6 +229,10 @@ class FeatureDataSource extends DataSource<OlFeature> {
      * display a portion of the data
      */
     protected processPage(): void {
+        if (!this.paginator) {
+            return;
+        }
+
         const start = this.paginator.pageIndex * this.paginator.pageSize;
         const end = start + this.paginator.pageSize;
 

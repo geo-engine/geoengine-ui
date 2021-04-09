@@ -28,7 +28,7 @@ export interface TabInputs {
 export class TabsService {
     protected readonly _tabs = new BehaviorSubject<Array<TabContent>>([]);
 
-    protected readonly _activeTab = new BehaviorSubject(undefined);
+    protected readonly _activeTab = new BehaviorSubject<TabContent | undefined>(undefined);
 
     constructor() {}
 
@@ -94,11 +94,11 @@ export class TabsService {
         tabContent.removeTriggerSubscription.unsubscribe();
     }
 
-    get activeTab(): TabContent {
+    get activeTab(): TabContent | undefined {
         return this._activeTab.getValue();
     }
 
-    set activeTab(tabContent: TabContent) {
+    set activeTab(tabContent: TabContent | undefined) {
         if (this.activeTab === tabContent) {
             return;
         }
@@ -106,7 +106,7 @@ export class TabsService {
         this._activeTab.next(tabContent);
     }
 
-    getActiveTabChanges(): Observable<TabContent> {
+    getActiveTabChanges(): Observable<TabContent | undefined> {
         return this._activeTab;
     }
 

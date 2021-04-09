@@ -13,26 +13,32 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 export class RenameLayerComponent implements OnInit {
     form: FormGroup;
 
-    private layer: Layer;
+    private layer?: Layer;
 
     constructor(
         private projectService: ProjectService,
         private formBuilder: FormBuilder,
         private dialogRef: MatDialogRef<RenameLayerComponent>,
         @Inject(MAT_DIALOG_DATA) private config: {layer?: Layer},
-    ) {}
+    ) {
+        this.form = this.formBuilder.group({
+            layerName: [undefined, Validators.required],
+        });
+    }
 
     ngOnInit(): void {
         this.layer = this.config.layer;
-        this.form = this.formBuilder.group({
-            layerName: [this.layer.name, Validators.required],
-        });
+        this.form.controls['layerName'].setValue(this.layer?.name);
     }
 
     /**
      * Save the layer name and close the dialog.
      */
     save(): void {
+        if (!this.layer || !this.form) {
+            return;
+        }
+
         const layerName = this.form.controls['layerName'].value;
         if (layerName === this.layer.name) {
             return;

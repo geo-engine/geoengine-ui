@@ -25,8 +25,12 @@ export const createIconDataUrl = (iconName: string): string => {
     const canvas = document.createElement('canvas');
     canvas.width = size;
     canvas.height = size;
+
     const context = canvas.getContext('2d');
-    context.fillStyle = color;
-    context.fillRect(0, 0, 64, 64);
+    if (context) {
+        context.fillStyle = color;
+        context.fillRect(0, 0, 64, 64);
+    }
+
     return canvas.toDataURL('image/png');
 };

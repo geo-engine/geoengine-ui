@@ -1,38 +1,29 @@
 <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="5px">
     <mat-form-field fxFlex>
         <input
-            class="color_cell"
-            [disabled]="disabledColor"
             matInput
-            [ngModel]="colorBreakpoint?.rgba.rgbaCssString()"
-            (ngModelChange)="updateColor($event)"
-            [placeholder]="colorPlaceholder"
-            [colorPicker]="colorBreakpoint?.rgba.rgbaCssString()"
-            (colorPickerChange)="updateColor($event)"
-            [cpUseRootViewContainer]="true"
-            [style.background]="colorBreakpoint?.rgba.rgbaCssString()"
-            [cpOutputFormat]="'rgba'"
+            type="number"
+            [readonly]="readonlyAttribute"
+            [placeholder]="attributePlaceholder"
+            [ngModel]="colorBreakpoint.value"
+            (ngModelChange)="updateValue($event)"
         />
     </mat-form-field>
 
-    <ng-container *ngIf="disabledAttribute; then textAttribute; else inputAttribute"> </ng-container>
-
-    <ng-template #textAttribute>
-        <div fxFlex>
-            {{ colorBreakpoint?.value }}
-        </div>
-    </ng-template>
-
-    <ng-template #inputAttribute>
-        <mat-form-field fxFlex>
-            <input
-                matInput
-                [type]="inputType"
-                [disabled]="disabledAttribute"
-                [placeholder]="attributePlaceholder"
-                [ngModel]="colorBreakpoint?.value"
-                (ngModelChange)="updateValue($event)"
-            />
-        </mat-form-field>
-    </ng-template>
+    <mat-form-field fxFlex>
+        <input
+            matInput
+            class="color_cell"
+            [readonly]="readonlyColor"
+            [ngModel]="colorBreakpoint.color.rgbaCssString()"
+            (ngModelChange)="updateColor($event)"
+            [placeholder]="colorPlaceholder"
+            [colorPicker]="colorBreakpoint.color.rgbaCssString()"
+            (colorPickerChange)="updateColor($event)"
+            [cpUseRootViewContainer]="true"
+            [style.background]="colorBreakpoint.color.rgbaCssString()"
+            cpOutputFormat="rgba"
+            cpPosition="bottom-left"
+        />
+    </mat-form-field>
 </div>

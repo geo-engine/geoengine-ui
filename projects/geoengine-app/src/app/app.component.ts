@@ -49,11 +49,11 @@ import {AppConfig} from './app-config.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit, AfterViewInit {
-    @ViewChild(MapContainerComponent, {static: true}) mapComponent: MapContainerComponent;
-    @ViewChild(MatTabGroup, {static: true}) bottomTabs: MatTabGroup;
+    @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
+    @ViewChild(MatTabGroup, {static: true}) bottomTabs!: MatTabGroup;
 
-    @ViewChild(MatSidenav, {static: true}) rightSidenav: MatSidenav;
-    @ViewChild(SidenavContainerComponent, {static: true}) rightSidenavContainer: SidenavContainerComponent;
+    @ViewChild(MatSidenav, {static: true}) rightSidenav!: MatSidenav;
+    @ViewChild(SidenavContainerComponent, {static: true}) rightSidenavContainer!: SidenavContainerComponent;
 
     readonly layersReverse$: Observable<Array<Layer>>;
     readonly layerListVisible$: Observable<boolean>;
@@ -91,17 +91,18 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         this.layerListVisible$ = this.layoutService.getLayerListVisibilityStream();
         this.layerDetailViewVisible$ = this.layoutService.getLayerDetailViewVisibilityStream();
+
+        this.mapIsGrid$ = this.mapService.isGrid$;
+
+        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(this.windowHeight$).pipe(tap(() => this.mapComponent.resize()));
+        this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(this.windowHeight$);
     }
 
     ngOnInit(): void {
         this.mapService.registerMapComponent(this.mapComponent);
-        this.mapIsGrid$ = this.mapService.isGrid$;
 
         // TODO: remove if table is back
         this.layoutService.setLayerDetailViewVisibility(false);
-
-        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(this.windowHeight$).pipe(tap(() => this.mapComponent.resize()));
-        this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(this.windowHeight$);
     }
 
     ngAfterViewInit(): void {

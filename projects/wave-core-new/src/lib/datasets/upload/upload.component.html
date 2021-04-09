@@ -7,7 +7,7 @@
         </mat-card-header>
 
         <mat-card-content>
-            <input type="file" id="file" multiple (change)="selectFiles($event)" [disabled]="state != State.Start" />
+            <input type="file" id="file" multiple (change)="selectFiles($any($event.target))" [disabled]="state != State.Start" />
             <div class="actions">
                 <button
                     type="button"

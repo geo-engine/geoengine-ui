@@ -4,7 +4,7 @@ import {Component, ChangeDetectionStrategy, forwardRef, SimpleChange, Input, OnC
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {Layer} from '../../../../layers/layer.model';
 import {LayerMetadata} from '../../../../layers/layer-metadata.model';
-import {ResultType} from '../../../result-type.model';
+import {ResultType, ResultTypes} from '../../../result-type.model';
 import {ProjectService} from '../../../../project/project.service';
 
 /**
@@ -70,22 +70,26 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
     /**
      * The type is used as a filter for the layers to choose from.
      */
-    @Input() types: Array<ResultType>;
+    @Input() types: Array<ResultType> = ResultTypes.ALL_TYPES;
 
     /**
      * The title of the component (optional).
      */
-    @Input() title: string = undefined;
+    @Input() title?: string = undefined;
 
-    onTouched: () => void;
-    onChange: (_: Array<Layer>) => void = undefined;
+    onTouched?: () => void;
+    onChange?: (_: Array<Layer>) => void = undefined;
 
     filteredLayers: Subject<Array<Layer>> = new ReplaySubject(1);
     selectedLayers = new BehaviorSubject<Array<Layer>>([]);
 
+    hasLayers: Observable<boolean>;
+    layersAtMin: Observable<boolean>;
+    layersAtMax: Observable<boolean>;
+
     private layerSubscription: Subscription;
     private selectionSubscription: Subscription;
-    private layerChangesSubscription: Subscription;
+    private layerChangesSubscription?: Subscription;
 
     constructor(private projectService: ProjectService) {
         this.layerSubscription = this.filteredLayers.subscribe((filteredLayers) => {
@@ -97,6 +101,14 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
                 this.onChange(selectedLayers);
             }
         });
+
+        this.hasLayers = this.filteredLayers.pipe(map((layers) => layers.length > 0));
+        this.layersAtMin = combineLatest([this.selectedLayers, this.hasLayers]).pipe(
+            map(([selectedLayers, hasLayers]) => !hasLayers || selectedLayers.length <= this.min),
+        );
+        this.layersAtMax = combineLatest([this.selectedLayers, this.hasLayers]).pipe(
+            map(([selectedLayers, hasLayers]) => !hasLayers || selectedLayers.length >= this.max),
+        );
     }
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}): void {
@@ -108,7 +120,8 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
             switch (propName) {
                 case 'initialAmount':
                     initialChange = changes[propName].isFirstChange();
-                /* falls through */
+                    minMaxInitialChanged = true;
+                    break;
                 case 'min':
                 case 'max':
                     minMaxInitialChanged = true;

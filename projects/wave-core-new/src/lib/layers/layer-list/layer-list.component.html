@@ -51,7 +51,7 @@
     <div
         cdkDropList
         class="layer-list"
-        [style.max-height.px]="height - LayoutService.getToolbarHeightPx()"
+        [style.max-height.px]="maxHeight"
         *ngIf="layerListVisibility$ | async"
         (cdkDropListDropped)="drop($event)"
     >
@@ -231,7 +231,7 @@
                             </ng-template>
 
                             <ng-template [ngSwitchCase]="ST.RASTER">
-                                <wave-raster-legend fxFlex="grow" [layer]="layer"></wave-raster-legend>
+                                <wave-raster-legend fxFlex="grow" [layer]="$any(layer)"></wave-raster-legend>
                             </ng-template>
 
                             <button mat-icon-button (click)="toggleLegend(layer)">

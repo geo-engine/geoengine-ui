@@ -48,16 +48,16 @@ const LANGUAGES = ['r'];
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy {
-    @ViewChild('editor', {static: true}) editorRef: ElementRef;
+    @ViewChild('editor', {static: true}) editorRef!: ElementRef;
 
-    @Input() language: string;
+    @Input() language = 'r';
 
     private code$ = new BehaviorSubject('');
 
-    private editor: CodeMirror.Editor;
+    private editor?: CodeMirror.Editor;
 
-    private onTouched: () => void;
-    private changeSubscription: Subscription;
+    private onTouched?: () => void;
+    private changeSubscription?: Subscription;
 
     ngOnChanges(changes: {[propKey: string]: SimpleChange}): void {
         if (this.editor) {
@@ -111,7 +111,11 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
 
         // TODO: find a better way to fix the viewport issue.
         for (const timeOffset of [0, 100, 500, 1000]) {
-            setTimeout(() => this.editor.refresh(), timeOffset);
+            setTimeout(() => {
+                if (this.editor) {
+                    this.editor.refresh();
+                }
+            }, timeOffset);
         }
     }
 
@@ -126,6 +130,10 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
      * @return the current editor content
      */
     getCode(): string {
+        if (!this.editor) {
+            return '';
+        }
+
         const code = this.editor.getValue();
         return code.replace('\r\n', '\n');
     }
@@ -134,7 +142,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
      * Refresh the viewport.
      */
     refresh(): void {
-        this.editor.refresh();
+        this.editor?.refresh();
     }
 
     /** Implemented as part of ControlValueAccessor. */

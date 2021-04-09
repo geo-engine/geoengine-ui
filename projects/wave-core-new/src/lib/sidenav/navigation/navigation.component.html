@@ -4,9 +4,11 @@
         *ngFor="let button of buttons"
         [color]="button.colorObservable ? (button.colorObservable | async) : buttonColor(button.sidenavConfig)"
         (click)="setComponent(button.sidenavConfig)"
-        [matTooltip]="button.tooltipObservable ? (button.tooltipObservable | async) : button.tooltip"
+        [matTooltip]="(button.tooltipObservable ? (button.tooltipObservable | async) : button.tooltip) | stringSanitizer"
         matTooltipPosition="before"
     >
-        <mat-icon [svgIcon]="button.svgIcon">{{ button.iconObservable ? (button.iconObservable | async) : button.icon }}</mat-icon>
+        <mat-icon [svgIcon]="button.svgIcon | stringSanitizer">{{
+            button.iconObservable ? (button.iconObservable | async) : button.icon
+        }}</mat-icon>
     </button>
 </div>

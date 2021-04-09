@@ -91,7 +91,7 @@ export class Color implements IRgba, RgbaStruct {
             throw new Error('Invalid RGB(A) tuple size!');
         }
 
-        const alpha = rgbaTuple.length < 4 ? 1.0 : rgbaTuple[3];
+        const alpha: number = rgbaTuple.length === 4 ? rgbaTuple[3] : 1.0;
 
         return {r: rgbaTuple[0], g: rgbaTuple[1], b: rgbaTuple[2], a: alpha};
     }
@@ -119,7 +119,7 @@ export class Color implements IRgba, RgbaStruct {
             return new Color(Color.rgbaTupleToStruct(rgba));
         }
 
-        if ((rgba as IRgba).rgbaStruct) {
+        if ('rgbaStruct' in (rgba as IRgba)) {
             return new Color((rgba as IRgba).rgbaStruct());
         }
 
@@ -202,8 +202,10 @@ export const stringToRgbaStruct = (rgbaCssString: string): RgbaStruct => {
         };
     }
 
-    const threeDigit = rgbaCssString.match(/^#([0-9a-f]{3})$/i)[1];
-    if (threeDigit) {
+    const threeDigitMatch = rgbaCssString.match(/^#([0-9a-f]{3})$/i);
+    if (threeDigitMatch) {
+        const threeDigit = threeDigitMatch[1];
+
         // in three-character format, each value is multiplied by 0x11 to give an
         // even scale fromRgbaLike 0x00 to 0xff
         return {
@@ -214,8 +216,9 @@ export const stringToRgbaStruct = (rgbaCssString: string): RgbaStruct => {
         };
     }
 
-    const sixDigit = rgbaCssString.match(/^#([0-9a-f]{6})$/i)[1];
-    if (sixDigit) {
+    const sixDigitMatch = rgbaCssString.match(/^#([0-9a-f]{6})$/i);
+    if (sixDigitMatch) {
+        const sixDigit = sixDigitMatch[1];
         return {
             r: parseInt(sixDigit.substr(0, 2), 16),
             g: parseInt(sixDigit.substr(2, 2), 16),

@@ -89,11 +89,15 @@
 
         <ng-template matExpansionPanelContent>
             <div class="histogram">
-                <wave-vega-viewer [chartData]="histogramData | async" (interactionChange)="updateBounds($event)"></wave-vega-viewer>
+                <ng-container *ngIf="histogramData | async as histogramData">
+                    <wave-vega-viewer [chartData]="histogramData" (interactionChange)="updateBounds($any($event))"></wave-vega-viewer>
+                </ng-container>
                 <mat-progress-bar mode="indeterminate" *ngIf="histogramLoading | async"></mat-progress-bar>
             </div>
             <div>
-                <mat-slide-toggle [(checked)]="histogramAutoReload"> Sync map and histogram </mat-slide-toggle>
+                <mat-slide-toggle [checked]="histogramAutoReload" (change)="histogramAutoReload = $event.checked">
+                    Sync map and histogram
+                </mat-slide-toggle>
             </div>
             <mat-divider></mat-divider>
 

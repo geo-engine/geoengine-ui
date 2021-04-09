@@ -7,8 +7,6 @@ export class User {
     realName?: string;
     email?: string;
 
-    session: string;
-
     isGuest: boolean;
 
     constructor(config: {id: string; realName?: string; email?: string}) {

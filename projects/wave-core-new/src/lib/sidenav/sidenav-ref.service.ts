@@ -8,12 +8,12 @@ import {SidenavConfig} from '../layout.service';
  */
 @Injectable()
 export class SidenavRef {
-    private title$ = new BehaviorSubject<string>(undefined);
-    private backButtonComponent$ = new BehaviorSubject<SidenavConfig>(undefined);
+    private title$ = new BehaviorSubject<string | undefined>(undefined);
+    private backButtonComponent$ = new BehaviorSubject<SidenavConfig | undefined>(undefined);
 
-    private searchElements$ = new BehaviorSubject<Array<ElementRef>>(undefined);
-    private searchElementsSubscription: Subscription;
-    private searchString$: EventEmitter<string>;
+    private searchElements$ = new BehaviorSubject<Array<ElementRef> | undefined>(undefined);
+    private searchElementsSubscription?: Subscription;
+    private searchString$?: EventEmitter<string>;
 
     private close$ = new Subject<void>();
 
@@ -22,7 +22,7 @@ export class SidenavRef {
     /**
      * Set the toolbar title
      */
-    setTitle(title: string): void {
+    setTitle(title: string | undefined): void {
         this.title$.next(title);
     }
 
@@ -30,27 +30,27 @@ export class SidenavRef {
      * Get events of title changes
      */
     getTitleStream(): Observable<string> {
-        return this.title$;
+        return this.title$.pipe(map((title) => title ?? ''));
     }
 
     /**
      * Set the component that should be loaded upon clicking "back"
      */
-    setBackButtonComponent(component: SidenavConfig): void {
+    setBackButtonComponent(component: SidenavConfig | undefined): void {
         this.backButtonComponent$.next(component);
     }
 
     /**
      * Get events upon back button component changes
      */
-    getBackButtonComponentStream(): Observable<SidenavConfig> {
+    getBackButtonComponentStream(): Observable<SidenavConfig | undefined> {
         return this.backButtonComponent$;
     }
 
     /**
      * Retrieve the current back button component
      */
-    getBackButtonComponent(): SidenavConfig {
+    getBackButtonComponent(): SidenavConfig | undefined {
         return this.backButtonComponent$.getValue();
     }
 
@@ -85,7 +85,7 @@ export class SidenavRef {
     /**
      * Retrieve the current `SidenavSearchComponent` as a stream
      */
-    getSearchComponentStream(): Observable<Array<ElementRef>> {
+    getSearchComponentStream(): Observable<Array<ElementRef> | undefined> {
         return this.searchElements$;
     }
 

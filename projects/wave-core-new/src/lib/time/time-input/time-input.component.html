@@ -16,7 +16,7 @@
             placeholder="Month"
             type="number"
             maxLength="2"
-            [ngModel]="time?.month() + 1"
+            [ngModel]="time.month() + 1"
             (ngModelChange)="update('month', $event - 1)"
             [disabled]="disabled"
         />

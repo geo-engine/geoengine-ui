@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {Moment, unitOfTime} from 'moment';
+import moment, {Moment, unitOfTime} from 'moment';
 
 @Component({
     selector: 'wave-time-input',
@@ -20,12 +20,12 @@ import {Moment, unitOfTime} from 'moment';
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => TimeInputComponent), multi: true}],
 })
 export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, OnChanges {
-    @Input() disabled: false;
+    @Input() disabled = false;
 
-    onTouched: () => void;
-    onChange: (_: Moment) => void = undefined;
+    onTouched?: () => void;
+    onChange?: (_: Moment) => void = undefined;
 
-    private _time: Moment;
+    private _time: Moment = moment.utc();
 
     constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
@@ -53,7 +53,9 @@ export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, 
 
     // Set touched on blur
     onBlur(): void {
-        this.onTouched();
+        if (this.onTouched) {
+            this.onTouched();
+        }
     }
 
     writeValue(time: Moment): void {
