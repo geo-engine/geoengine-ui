@@ -19,11 +19,11 @@ export class TimeStepSelectorComponent implements OnInit, OnDestroy {
     readonly currentTimestamp: Observable<Time>;
     readonly currentTimeFormatted: Observable<string>;
 
-    public currentTimeIndex = 0;
+    public currentTimeIndex: number | null = 0;
     public max = 0;
 
     private avaiableTimeStepsSubscription: Subscription;
-    private avalableTimeSteps: Array<Time>;
+    private avalableTimeSteps?: Array<Time>;
     private timeFormat = '';
 
     /**
@@ -42,6 +42,10 @@ export class TimeStepSelectorComponent implements OnInit, OnDestroy {
             setTimeout(() => this.changeDetectorRef.detectChanges());
 
             this.projectService.getTimeOnce().subscribe((time) => {
+                if (!this.avalableTimeSteps) {
+                    return;
+                }
+
                 this.currentTimeIndex = this.avalableTimeSteps.indexOf(time);
             });
         });
@@ -64,7 +68,7 @@ export class TimeStepSelectorComponent implements OnInit, OnDestroy {
      * On a slider event, calculate the timestamp and set the new time for the app layers
      */
     setTime(event: MatSliderChange): void {
-        if (!this.avalableTimeSteps) {
+        if (!this.avalableTimeSteps || event.value === null) {
             return;
         }
         const tick: number = event.value;

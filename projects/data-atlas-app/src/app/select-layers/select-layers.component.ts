@@ -54,7 +54,7 @@ export class SelectLayersComponent implements OnInit {
         const classesMap = new Map<number, string>();
         for (const valueAsString of Object.keys(classes)) {
             const value = parseInt(valueAsString, 10);
-            classesMap.set(value, classes[valueAsString]);
+            classesMap.set(value, classes[value]);
         }
 
         const colors: {[numberString: string]: RgbaColorDict} = {
@@ -127,7 +127,7 @@ export class SelectLayersComponent implements OnInit {
             },
         };
 
-        const timeSteps = [];
+        const timeSteps: Array<Time> = [];
         // bc
         for (let year = 1000; year > 0; year -= 10) {
             const paddedYear = year.toString().padStart(6, '0');

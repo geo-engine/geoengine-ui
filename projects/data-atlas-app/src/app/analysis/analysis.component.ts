@@ -10,8 +10,9 @@ import {
     WorkflowDict,
     RasterDataTypes,
     PolygonSymbology,
+    RasterLayer,
 } from 'wave-core';
-import {first, map, mergeMap, tap} from 'rxjs/operators';
+import {filter, first, map, mergeMap, tap} from 'rxjs/operators';
 import {DataSelectionService} from '../data-selection.service';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {Country, COUNTRY_LIST, COUNTRY_METADATA} from './country-data.model';
@@ -41,8 +42,8 @@ export class AnalysisComponent implements OnInit {
     plotData = new BehaviorSubject<any>(undefined);
     plotLoading = new BehaviorSubject(false);
 
-    private selectedCountryName: string = undefined;
-    private selectedCountry: Country = undefined;
+    private selectedCountryName?: string = undefined;
+    private selectedCountry?: Country = undefined;
 
     constructor(
         private readonly projectService: ProjectService,
@@ -101,6 +102,10 @@ export class AnalysisComponent implements OnInit {
     }
 
     computePlot(): void {
+        if (!this.selectedCountry) {
+            return;
+        }
+
         const countryMetadata = COUNTRY_METADATA.filter(([countryName]) => this.selectedCountryName === countryName);
         if (countryMetadata.length !== 1) {
             throw Error(`there is not metadata for country ${this.selectedCountryName}`);
@@ -118,7 +123,9 @@ export class AnalysisComponent implements OnInit {
         };
 
         combineLatest([
-            this.dataSelectionService.rasterLayer,
+            this.dataSelectionService.rasterLayer.pipe(
+                mergeMap<RasterLayer | undefined, Observable<RasterLayer>>((layer) => (layer ? of(layer) : of())),
+            ),
             this.projectService.registerWorkflow({
                 type: 'Raster',
                 operator: {

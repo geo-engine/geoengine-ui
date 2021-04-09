@@ -22,7 +22,7 @@ const APP_CONFIG_DEFAULTS = mergeDeep(WAVE_DEFAULT_CONFIG, {
 
 @Injectable()
 export class AppConfig extends Config {
-    protected config: AppConfigStructure;
+    protected config!: AppConfigStructure;
 
     get COMPONENTS(): Components {
         return this.config.COMPONENTS;
