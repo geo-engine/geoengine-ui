@@ -15,8 +15,8 @@ export interface DataRange {
 export class DataSelectionService {
     readonly layers: Observable<Array<Layer>>;
 
-    readonly rasterLayer = new BehaviorSubject<RasterLayer>(undefined);
-    readonly polygonLayer = new BehaviorSubject<VectorLayer>(undefined);
+    readonly rasterLayer = new BehaviorSubject<RasterLayer | undefined>(undefined);
+    readonly polygonLayer = new BehaviorSubject<VectorLayer | undefined>(undefined);
 
     readonly timeSteps = new BehaviorSubject<Array<Time>>([new Time(moment.utc())]);
     readonly timeFormat = new BehaviorSubject<string>('YYYY'); // TODO: make configurable
@@ -24,7 +24,18 @@ export class DataSelectionService {
     readonly dataRange = new BehaviorSubject<DataRange>({min: 0, max: 1});
 
     constructor(private readonly projectService: ProjectService) {
-        this.layers = combineLatest([this.rasterLayer, this.polygonLayer]).pipe(map((layers) => layers.filter((layer) => !!layer)));
+        this.layers = combineLatest([this.rasterLayer, this.polygonLayer]).pipe(
+            map(([rasterLayer, polygonLayer]) => {
+                const layers = [];
+                if (rasterLayer) {
+                    layers.push(rasterLayer);
+                }
+                if (polygonLayer) {
+                    layers.push(polygonLayer);
+                }
+                return layers;
+            }),
+        );
     }
 
     setRasterLayer(layer: RasterLayer, timeSteps: Array<Time>, dataRange: DataRange): Observable<void> {

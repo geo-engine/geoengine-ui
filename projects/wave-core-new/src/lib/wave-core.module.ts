@@ -98,6 +98,8 @@ import {RasterSymbologyEditorComponent} from './layers/symbology/raster-symbolog
 import {ColorAttributeInputComponent} from './colors/color-attribute-input/color-attribute-input.component';
 import {ColorMapSelectorComponent} from './colors/color-map-selector/color-map-selector.component';
 import {DrawFeaturesComponent} from './datasets/draw-features/draw-features.component';
+import {ColorBreakpointInputComponent} from './colors/color-breakpoint-input/color-breakpoint-input.component';
+import {AsyncNumberSanitizer, AsyncStringSanitizer, AsyncValueDefault} from './util/pipes/async-converters.pipe';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -132,6 +134,9 @@ const MATERIAL_MODULES = [
 ];
 
 const WAVE_PIPES = [
+    AsyncNumberSanitizer,
+    AsyncStringSanitizer,
+    AsyncValueDefault,
     BreakpointToCssStringPipe,
     CastMeasurementToClassificationPipe,
     ColorBreakpointsCssGradientPipe,
@@ -149,6 +154,7 @@ const WAVE_COMPONENTS = [
     AddDataComponent,
     ChangeSpatialReferenceComponent,
     ColorAttributeInputComponent,
+    ColorBreakpointInputComponent,
     ColorMapSelectorComponent,
     DatasetComponent,
     DataTableComponent,

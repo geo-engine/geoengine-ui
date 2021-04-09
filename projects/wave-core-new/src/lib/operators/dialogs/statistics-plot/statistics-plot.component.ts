@@ -9,7 +9,6 @@ import {combineLatest, Observable, Subscription} from 'rxjs';
 import {WorkflowDict} from '../../../backend/backend.model';
 import {map, mergeMap} from 'rxjs/operators';
 import {Plot} from '../../../plots/plot.model';
-import {LayoutService} from '../../../layout.service';
 import {NotificationService} from '../../../notification.service';
 
 @Component({
@@ -29,11 +28,8 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
     constructor(
         private formBuilder: FormBuilder,
         private projectService: ProjectService,
-        private layoutService: LayoutService,
         private notificationService: NotificationService,
-    ) {}
-
-    ngOnInit(): void {
+    ) {
         this.form = this.formBuilder.group({
             layers: [undefined, Validators.required],
             name: ['', [Validators.required, WaveValidators.notOnlyWhitespace]],
@@ -41,6 +37,8 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
 
         this.outputNameSuggestion = StatisticsPlotComponent.createOutputNameSuggestionStream(this.form.controls['layers'].valueChanges);
     }
+
+    ngOnInit(): void {}
 
     add(): void {
         const workflowObservables: Array<Observable<WorkflowDict>> = this.form.controls['layers'].value.map((layer: Layer) =>

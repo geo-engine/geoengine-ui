@@ -2,9 +2,9 @@
     <div fxLayout="row" fxLayoutAlign="start center" class="segment" *ngIf="showDefaultStyle">
         <mat-icon>
             <ng-container [ngSwitch]="symbology.symbologyType">
-                <wave-point-icon *ngSwitchCase="ST.POINT" [iconStyle]="symbology.iconStyle"></wave-point-icon>
-                <wave-line-icon *ngSwitchCase="ST.LINE" [iconStyle]="symbology.iconStyle"></wave-line-icon>
-                <wave-polygon-icon *ngSwitchCase="ST.POLYGON" [iconStyle]="symbology.iconStyle"></wave-polygon-icon>
+                <wave-point-icon *ngSwitchCase="ST.POINT" [iconStyle]="$any(symbology.iconStyle)"></wave-point-icon>
+                <wave-line-icon *ngSwitchCase="ST.LINE" [iconStyle]="$any(symbology.iconStyle)"></wave-line-icon>
+                <wave-polygon-icon *ngSwitchCase="ST.POLYGON" [iconStyle]="$any(symbology.iconStyle)"></wave-polygon-icon>
             </ng-container>
         </mat-icon>
         <!-- TODO: visualize the symbology -->

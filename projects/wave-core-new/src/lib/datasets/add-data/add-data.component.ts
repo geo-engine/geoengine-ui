@@ -33,7 +33,7 @@ export class AddDataComponent implements OnInit {
     /**
      * Load a selected component into the sidenav
      */
-    setComponent(sidenavConfig: SidenavConfig): void {
+    setComponent(sidenavConfig: SidenavConfig | undefined): void {
         if (!sidenavConfig) {
             return;
         }

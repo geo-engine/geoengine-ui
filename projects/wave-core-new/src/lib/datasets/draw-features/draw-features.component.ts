@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import OlFormatGeoJson from 'ol/format/GeoJSON';
 import OlGeometryType from 'ol/geom/GeometryType';
-import {BehaviorSubject, Subject, Subscription} from 'rxjs';
+import {BehaviorSubject, of, Subject, Subscription} from 'rxjs';
 import {ResultType, ResultTypes} from '../../operators/result-type.model';
 import {ProjectService} from '../../project/project.service';
 import {NotificationService} from '../../notification.service';
@@ -9,8 +9,8 @@ import {SpatialReference, SpatialReferences} from '../../operators/spatial-refer
 import {MapService} from '../../map/map.service';
 import {DatasetService} from '../dataset.service';
 import {HttpEventType, HttpResponse} from '@angular/common/http';
-import {DatasetIdDict, UploadResponseDict, UUID} from '../../backend/backend.model';
-import {filter, mergeMap} from 'rxjs/operators';
+import {AutoCreateDatasetDict, DatasetIdDict, UploadResponseDict, UUID} from '../../backend/backend.model';
+import {mergeMap} from 'rxjs/operators';
 
 enum State {
     Start = 1,
@@ -49,7 +49,7 @@ export class DrawFeaturesComponent implements OnDestroy, OnInit {
     datasetDescription = '';
 
     // the projection of the map
-    mapSpatialRef: SpatialReference;
+    mapSpatialRef?: SpatialReference;
     // a subscription providing the map projection and updates if it changes
     mapProjectionSubscription: Subscription;
 
@@ -59,7 +59,7 @@ export class DrawFeaturesComponent implements OnDestroy, OnInit {
         private datasetService: DatasetService,
         private notificationService: NotificationService,
     ) {
-        this.mapProjectionSubscription = projectService.getSpatialReferenceStream().subscribe((p) => (this.mapSpatialRef = p));
+        this.mapProjectionSubscription = this.projectService.getSpatialReferenceStream().subscribe((p) => (this.mapSpatialRef = p));
     }
     ngOnInit(): void {
         this.startDrawing();
@@ -105,8 +105,12 @@ export class DrawFeaturesComponent implements OnDestroy, OnInit {
     submitCreate(): void {
         const olSource = this.mapService.endDrawInteraction();
 
+        if (!olSource) {
+            return;
+        }
+
         const geoJson = this.olFeatureWriter.writeFeaturesObject(olSource.getFeatures(), {
-            featureProjection: this.mapSpatialRef.getCode(),
+            featureProjection: this.mapSpatialRef?.getCode(),
             dataProjection: SpatialReferences.WGS_84.getCode(),
         });
 
@@ -131,10 +135,22 @@ export class DrawFeaturesComponent implements OnDestroy, OnInit {
         this.datasetService
             .upload(form)
             .pipe(
-                filter((event) => event.type === HttpEventType.Response),
-                mergeMap((response: HttpResponse<UploadResponseDict>) => {
-                    const uploadId = response.body.id;
-                    const create = {
+                mergeMap((event) => {
+                    if (event.type !== HttpEventType.Response) {
+                        return of<UploadResponseDict>(); // filter out
+                    }
+
+                    const httpResponse: HttpResponse<UploadResponseDict> = (event as unknown) as HttpResponse<UploadResponseDict>;
+
+                    if (!httpResponse.body) {
+                        return of<UploadResponseDict>(); // filter out
+                    }
+
+                    return of(httpResponse.body);
+                }),
+                mergeMap((response: UploadResponseDict) => {
+                    const uploadId = response.id;
+                    const create: AutoCreateDatasetDict = {
                         upload: uploadId,
                         dataset_name: this.datasetName,
                         dataset_description: this.datasetDescription,

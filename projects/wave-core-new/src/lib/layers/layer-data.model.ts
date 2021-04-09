@@ -2,7 +2,7 @@ import {Time} from '../time/time.model';
 import {LayerType} from './layer.model';
 import {SpatialReference} from '../operators/spatial-reference.model';
 import {GeoJSON as OlFormatGeoJSON} from 'ol/format';
-import {Feature as OlFeature} from 'ol/Feature';
+import OlFeature from 'ol/Feature';
 import {ProjectionLike as OlProjectionLike} from 'ol/proj';
 import {UUID} from '../backend/backend.model';
 import {featureToHash} from '../util/conversions';

@@ -1,10 +1,9 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {BreakpointDict} from '../../backend/backend.model';
-import {Color} from '../../colors/color';
+import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
 
 @Pipe({name: 'breakpointToCssStringPipe'})
 export class BreakpointToCssStringPipe implements PipeTransform {
-    transform(br: BreakpointDict): string {
-        return Color.rgbaToCssString(br.color);
+    transform(br: ColorBreakpoint): string {
+        return br.color.rgbaCssString();
     }
 }

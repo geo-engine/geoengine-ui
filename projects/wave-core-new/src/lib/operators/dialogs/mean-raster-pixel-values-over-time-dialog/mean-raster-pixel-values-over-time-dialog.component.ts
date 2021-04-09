@@ -59,9 +59,7 @@ export class MeanRasterPixelValuesOverTimeDialogComponent implements OnInit, Aft
         private readonly projectService: ProjectService,
         private readonly notificationService: NotificationService,
         private readonly formBuilder: FormBuilder,
-    ) {}
-
-    ngOnInit(): void {
+    ) {
         this.form = this.formBuilder.group({
             name: ['', [Validators.required, WaveValidators.notOnlyWhitespace]],
             layer: [undefined, Validators.required],
@@ -70,6 +68,8 @@ export class MeanRasterPixelValuesOverTimeDialogComponent implements OnInit, Aft
         });
         this.disallowSubmit = this.form.statusChanges.pipe(map((status) => status !== 'VALID'));
     }
+
+    ngOnInit(): void {}
 
     ngAfterViewInit(): void {
         setTimeout(() => {

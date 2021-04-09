@@ -2,13 +2,13 @@ import {BehaviorSubject, ReplaySubject} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
 import {ProjectService} from '../project.service';
-import {FormBuilder, FormGroup, Validators, AbstractControl, ValidatorFn} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators, AbstractControl, ValidatorFn, ValidationErrors} from '@angular/forms';
 import {NotificationService} from '../../notification.service';
 import {BackendService} from '../../backend/backend.service';
 import {UserService} from '../../users/user.service';
 import {UUID} from '../../backend/backend.model';
 
-const notCurrentProject = (currentProjectId: () => string): ValidatorFn => (control: AbstractControl): {[key: string]: boolean} => {
+const notCurrentProject = (currentProjectId: () => string): ValidatorFn => (control: AbstractControl): ValidationErrors | null => {
     const errors: {
         currentProject?: boolean;
     } = {};
@@ -46,9 +46,7 @@ export class LoadProjectComponent implements OnInit, AfterViewInit {
         protected userService: UserService,
         protected notificationService: NotificationService,
         protected formBuilder: FormBuilder,
-    ) {}
-
-    ngOnInit(): void {
+    ) {
         this.projectService.getProjectOnce().subscribe((project) => {
             this.currentProjectId = project.id;
         });
@@ -85,6 +83,8 @@ export class LoadProjectComponent implements OnInit, AfterViewInit {
                 this.loading$.next(false);
             });
     }
+
+    ngOnInit(): void {}
 
     ngAfterViewInit(): void {
         setTimeout(() => this.form.updateValueAndValidity());

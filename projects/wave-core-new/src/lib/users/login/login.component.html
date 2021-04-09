@@ -24,7 +24,7 @@
                 <p>E-Mail</p>
                 <p>Real Name</p>
             </div>
-            <div>
+            <div *ngIf="user">
                 <p>{{ user.email }}</p>
                 <p>{{ user.realName }}</p>
             </div>

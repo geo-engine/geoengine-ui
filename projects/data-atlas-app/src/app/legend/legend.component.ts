@@ -8,7 +8,7 @@ import {RasterLayer} from 'wave-core';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LegendComponent implements OnInit, OnChanges {
-    @Input() layer: RasterLayer = undefined;
+    @Input() layer?: RasterLayer = undefined;
 
     constructor(readonly changeDetectorRef: ChangeDetectorRef) {}
 

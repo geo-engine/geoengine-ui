@@ -65,7 +65,7 @@ export type ProjectOrderByDict = 'DateAsc' | 'DateDesc' | 'NameAsc' | 'NameDesc'
 
 export interface ProjectDict {
     id: UUID;
-    version: ProjectVersion;
+    version?: ProjectVersion;
     name: string;
     description: string;
     layers: Array<LayerDict>;
@@ -216,12 +216,12 @@ export interface WorkflowDict {
 
 export interface OperatorDict {
     type: string;
-    params: OperatorParams;
+    params: OperatorParams | null;
     vector_sources?: Array<OperatorDict | SourceOperatorDict>;
     raster_sources?: Array<OperatorDict | SourceOperatorDict>;
 }
 
-type ParamTypes = string | number | boolean | Array<ParamTypes> | {[key: string]: ParamTypes};
+type ParamTypes = string | number | boolean | Array<ParamTypes> | {[key: string]: ParamTypes} | undefined;
 
 export interface OperatorParams {
     [key: string]: ParamTypes;

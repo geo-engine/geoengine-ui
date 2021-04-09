@@ -107,6 +107,8 @@ export class DatasetService {
                                 fill_color: {Static: colorToDict(this.randomColorService.getRandomColorRgba())},
                             });
                             break;
+                        default:
+                            throw Error('unknown symbology type');
                     }
 
                     return this.projectService.addLayer(

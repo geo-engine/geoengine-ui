@@ -18,6 +18,8 @@ export abstract class Measurement implements ToDict<'unitless' | MeasurementDict
             const classification = dict.classification;
             return new ClassificationMeasurement(classification.measurement, classification.classes);
         }
+
+        throw new Error('unable to deserialize `Measurement`');
     }
 
     abstract toDict(): 'unitless' | MeasurementDict;
@@ -67,7 +69,8 @@ export class ClassificationMeasurement extends Measurement {
 
         let classMap = Immutable.Map<number, string>();
         for (const classesKey of Object.keys(classes)) {
-            classMap = classMap.set(parseInt(classesKey, 10), classes[classesKey]);
+            const classesKeyNumber = parseInt(classesKey, 10);
+            classMap = classMap.set(classesKeyNumber, classes[classesKeyNumber]);
         }
 
         this.classes = Immutable.Map(classMap);

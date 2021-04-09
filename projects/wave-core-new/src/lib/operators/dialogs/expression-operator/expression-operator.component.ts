@@ -1,11 +1,9 @@
 import {map, mergeMap, tap} from 'rxjs/operators';
-import {combineLatest, Observable, Subscription, zip} from 'rxjs';
-
+import {combineLatest, Observable, zip} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
 import {RasterDataType, RasterDataTypes} from '../../datatype.model';
-import {Unit} from '../../unit.model';
 import {RasterLayer} from '../../../layers/layer.model';
 import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
@@ -25,18 +23,9 @@ import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-laye
 })
 export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
     readonly RASTER_TYPE = [ResultTypes.RASTER];
-    readonly UNITLESS_UNIT = Unit.defaultUnit;
-    readonly CUSTOM_UNIT_ID = 'CUSTOM';
     form: FormGroup;
 
     outputDataTypes$: Observable<Array<[RasterDataType, string]>>;
-
-    // TODO: reincorporate unit
-    // outputUnits$: Observable<Array<Unit>>;
-    unitSubscription: Subscription;
-
-    // outputUnitIsCustom$: Observable<boolean>;
-    private static readonly RASTER_VALUE = 'value';
 
     /**
      * DI of services and setup of observables for the template
@@ -109,9 +98,10 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                 return combineLatest(metaData);
             }),
             map((rasterLayers: Array<RasterLayerMetadata>) => {
-                const outputDataTypes = RasterDataTypes.ALL_DATATYPES.map((dataType: RasterDataType) => [dataType, '']) as Array<
-                    [RasterDataType, string]
-                >;
+                const outputDataTypes: Array<[RasterDataType, string]> = RasterDataTypes.ALL_DATATYPES.map((dataType: RasterDataType) => [
+                    dataType,
+                    '',
+                ]);
 
                 for (const output of outputDataTypes) {
                     const outputDataType = output[0];
@@ -125,7 +115,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                         output[1] = `(like ${indices.length > 1 ? 'layers' : 'layer'} ${indices.join(', ')})`;
                     }
                 }
-                return [rasterLayers, outputDataTypes];
+                return [rasterLayers, outputDataTypes] as [Array<RasterLayerMetadata>, Array<[RasterDataType, string]>];
             }),
             tap(([rasterLayers, outputDataTypes]: [Array<RasterLayerMetadata>, Array<[RasterDataType, string]>]) => {
                 const dataTypeControl = this.form.controls.dataType;

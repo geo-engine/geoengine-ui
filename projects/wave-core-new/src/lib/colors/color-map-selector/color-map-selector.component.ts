@@ -45,12 +45,12 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
     /**
      * Sets the min value used for ColorizerData generation.
      */
-    @Input() minValue = 0;
+    @Input() minValue? = 0;
 
     /**
      * Sets the max value used for ColorizerData generation.
      */
-    @Input() maxValue = 1;
+    @Input() maxValue? = 1;
 
     /**
      * Sends the min value selected in the ui.
@@ -72,7 +72,7 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
     /**
      * The local (work-in-progress) Colorizer.
      */
-    breakpoints: Array<ColorBreakpoint>;
+    breakpoints?: Array<ColorBreakpoint>;
 
     protected subscriptions: Array<Subscription> = [];
 
@@ -134,7 +134,7 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
     /**
      * Replace the min and max values.
      */
-    patchMinMaxValues(min: number, max: number): void {
+    patchMinMaxValues(min?: number, max?: number): void {
         if (typeof min !== 'number' || typeof max !== 'number') {
             return;
         }

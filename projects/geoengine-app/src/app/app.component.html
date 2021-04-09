@@ -13,7 +13,7 @@
     <wave-navigation [buttons]="navigationButtons"></wave-navigation>
     <wave-layer-list
         class="mat-elevation-z4"
-        [height]="middleContainerHeight$ | async"
+        [height]="middleContainerHeight$ | async | numberSanitizer"
         [addAFirstLayerSidenavConfig]="addAFirstLayerConfig"
     >
         <div class="logo">
@@ -22,13 +22,13 @@
     </wave-layer-list>
 
     <div class="mid-container" [style.height.px]="middleContainerHeight$ | async">
-        <wave-map-container #map [grid]="mapIsGrid$ | async">
+        <wave-map-container #map [grid]="mapIsGrid$ | async | valueDefault: false">
             <ng-template ngFor let-layer [ngForOf]="layersReverse$ | async" [ngForTrackBy]="idFromLayer">
                 <ng-template [ngIf]="layer.layerType === 'vector'">
                     <wave-ol-vector-layer
                         [layerId]="layer.id"
                         [workflow]="layer.workflowId"
-                        [symbology]="layer.symbology"
+                        [symbology]="$any(layer.symbology)"
                         [isVisible]="layer.isVisible"
                         (mapRedraw)="map.layerForcesRedraw()"
                     ></wave-ol-vector-layer>
@@ -37,7 +37,7 @@
                     <wave-ol-raster-layer
                         [layerId]="layer.id"
                         [workflow]="layer.workflowId"
-                        [symbology]="layer.symbology"
+                        [symbology]="$any(layer.symbology)"
                         [isVisible]="layer.isVisible"
                         (mapRedraw)="map.layerForcesRedraw()"
                     ></wave-ol-raster-layer>
@@ -45,5 +45,8 @@
             </ng-template>
         </wave-map-container>
     </div>
-    <wave-tab-panel [visible]="layerDetailViewVisible$ | async" [maxHeight]="bottomContainerHeight$ | async"></wave-tab-panel>
+    <wave-tab-panel
+        [visible]="layerDetailViewVisible$ | async | valueDefault: false"
+        [maxHeight]="bottomContainerHeight$ | async | numberSanitizer"
+    ></wave-tab-panel>
 </mat-sidenav-container>

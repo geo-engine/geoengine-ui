@@ -2,8 +2,8 @@
     <circle
         [style.stroke-width]="iconStyle?.strokeWidth"
         [style.stroke-dasharray]="[]"
-        [style.stroke]="iconStyle?.strokeRGBA.rgbaCssString()"
-        [style.fill]="iconStyle?.fillRGBA.rgbaCssString()"
+        [style.stroke]="iconStyle.strokeRGBA.rgbaCssString()"
+        [style.fill]="iconStyle.fillRGBA.rgbaCssString()"
         cx="12"
         cy="12"
         r="8"

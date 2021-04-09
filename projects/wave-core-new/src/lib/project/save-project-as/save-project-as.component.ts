@@ -21,9 +21,7 @@ export class SaveProjectAsComponent implements OnInit, AfterViewInit {
         private formBuilder: FormBuilder,
         private projectService: ProjectService,
         private notificationService: NotificationService,
-    ) {}
-
-    ngOnInit(): void {
+    ) {
         this.form = this.formBuilder.group({
             name: [
                 '',
@@ -36,6 +34,8 @@ export class SaveProjectAsComponent implements OnInit, AfterViewInit {
             this.form.controls['name'].setValue(project.name);
         });
     }
+
+    ngOnInit(): void {}
 
     ngAfterViewInit(): void {
         setTimeout(() => this.form.updateValueAndValidity());

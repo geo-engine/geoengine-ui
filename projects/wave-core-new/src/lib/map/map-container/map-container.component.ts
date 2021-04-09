@@ -19,7 +19,7 @@ import {
 
 import OlMap from 'ol/Map';
 import OlView from 'ol/View';
-// import OlCollection from 'ol/Collection';
+import {FeatureLike as OlFeatureLike} from 'ol/Feature';
 import OlFeature from 'ol/Feature';
 
 import OlLayerImage from 'ol/layer/Image';
@@ -98,16 +98,16 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
 
     private maps: Array<OlMap>;
     private view: OlView;
-    private backgroundLayerSource: OlSource;
+    private backgroundLayerSource?: OlSource;
     private backgroundLayers: Array<OlLayer> = [];
 
-    private selectedOlLayer: OlLayer = undefined;
-    private userSelect: OlInteractionSelect;
+    private selectedOlLayer?: OlLayer = undefined;
+    private userSelect?: OlInteractionSelect;
 
-    private selectedFeature: OlFeature = undefined;
+    private selectedFeature?: OlFeature = undefined;
 
-    private drawInteractionSource: OlSourceVector;
-    private drawType: OlGeometryType;
+    private drawInteractionSource?: OlSourceVector;
+    private drawType: OlGeometryType = OlGeometryType.POINT;
     private drawInteractions: Array<OlInteractionDraw> = [];
     private drawInteractionLayers: Array<OlLayerVector> = [];
 
@@ -188,7 +188,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
      * Increases the zoom level if it is not larger than the maximum zoom level
      */
     zoomIn(): void {
-        if (this.view.getZoom() < MAX_ZOOM_LEVEL) {
+        const zoomLevel = this.view.getZoom();
+        if (zoomLevel && zoomLevel < MAX_ZOOM_LEVEL) {
             this.view.adjustZoom(1);
         }
     }
@@ -197,7 +198,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
      * Decreases the zoom level if it is not smaller than the minimum zoom level
      */
     zoomOut(): void {
-        if (this.view.getZoom() > MIN_ZOOM_LEVEL) {
+        const zoomLevel = this.view.getZoom();
+        if (zoomLevel && zoomLevel > MIN_ZOOM_LEVEL) {
             this.view.adjustZoom(-1);
         }
     }
@@ -236,7 +238,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     /**
      * Disable user input (hand drawn) for the map and return the result
      */
-    public endDrawInteraction(): OlSourceVector {
+    public endDrawInteraction(): OlSourceVector | undefined {
         if (!this.isDrawInteractionAttached()) {
             console.error('no interaction or layer active!');
             return undefined;
@@ -277,7 +279,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             if (index < this.maps.length) {
                 this.maps[index].removeLayer(layer);
             }
-            layer.setMap(undefined);
+            layer.setMap(undefined as any);
         });
         this.drawInteractionLayers.length = 0;
 
@@ -286,7 +288,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             if (index < this.maps.length) {
                 this.maps[index].removeInteraction(interaction);
             }
-            interaction.setMap(undefined);
+            interaction.setMap(undefined as any);
         });
         this.drawInteractions.length = 0;
 
@@ -336,21 +338,18 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         this.maps = [
             new OlMap({
                 controls: [],
-                logo: false,
-                loadTilesWhileAnimating: true, // TODO: check if moved to layer
-                loadTilesWhileInteracting: true, // TODO: check if moved to layer
             }),
         ];
         this.createAndSetView(projection);
     }
 
     private initUserSelect(): void {
-        this.userSelect = new OlInteractionSelect({style: null});
+        this.userSelect = new OlInteractionSelect({style: null as any});
         this.attachUserSelectToMap();
 
         this.userSelect.on('select', (selectEvent: OlInteractionSelectEvent) => {
-            if (selectEvent.selected.length > 0) {
-                this.projectService.setSelectedFeature(selectEvent.selected[0]);
+            if ((selectEvent as any).selected.length > 0) {
+                this.projectService.setSelectedFeature((selectEvent as any).selected[0]);
             } else {
                 this.projectService.setSelectedFeature(undefined);
             }
@@ -363,18 +362,20 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     private performSelection(selection: FeatureSelection): void {
-        if (!!selection.feature) {
-            // TODO: avoid going through all layers
-            for (const layer of this.mapLayersRaw) {
-                const source = layer.mapLayer.getSource();
-                if (source instanceof OlSourceVector) {
-                    for (const feature of source.getFeatures()) {
-                        if (feature.getId() === selection.feature) {
-                            this.selectedFeature = feature;
-                            const style = (layer.symbology as VectorSymbology).createHighlightStyle(feature);
-                            feature.setStyle(style);
-                            return;
-                        }
+        if (!selection.feature) {
+            return;
+        }
+        // TODO: avoid going through all layers
+        for (const layer of this.mapLayersRaw) {
+            const source = layer.mapLayer.getSource();
+            if (source instanceof OlSourceVector) {
+                for (const feature of source.getFeatures()) {
+                    if (feature.getId() === selection.feature) {
+                        this.selectedFeature = feature;
+                        const style = (layer.symbology as VectorSymbology).createHighlightStyle(feature);
+                        feature.setStyle(style);
+                        this.userSelect?.getFeatures().push(feature);
+                        return;
                     }
                 }
             }
@@ -382,20 +383,21 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     private resetSelection(): void {
-        if (!!this.selectedFeature) {
-            // TODO: avoid going through all layers
-            if (!!this.selectedFeature) {
-                for (const layer of this.mapLayersRaw) {
-                    const source = layer.mapLayer.getSource();
-                    if (source instanceof OlSourceVector) {
-                        for (const feature of source.getFeatures()) {
-                            if (feature.getId() === this.selectedFeature.getId()) {
-                                this.selectedFeature = undefined;
-                                const style = (layer.symbology as VectorSymbology).createStyle(feature);
-                                feature.setStyle(style);
-                                return;
-                            }
-                        }
+        this.userSelect?.getFeatures().clear();
+        if (!this.selectedFeature) {
+            return;
+        }
+
+        // TODO: avoid going through all layers
+        for (const layer of this.mapLayersRaw) {
+            const source = layer.mapLayer.getSource();
+            if (source instanceof OlSourceVector) {
+                for (const feature of source.getFeatures()) {
+                    if (feature.getId() === this.selectedFeature.getId()) {
+                        this.selectedFeature = undefined;
+                        const style = (layer.symbology as VectorSymbology).createStyle(feature);
+                        feature.setStyle(style);
+                        return;
                     }
                 }
             }
@@ -425,17 +427,14 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
 
         while (this.maps.length > this.desiredNumberOfMaps()) {
             const removedMap = this.maps.pop();
-            removedMap.setTarget(undefined); // remove DOM reference to map
+            removedMap?.setTarget(undefined); // remove DOM reference to map
         }
         while (this.maps.length < this.desiredNumberOfMaps()) {
             // enlarge maps if necessary
             this.maps.push(
                 new OlMap({
                     controls: [],
-                    logo: false,
                     view: this.view,
-                    loadTilesWhileAnimating: true, // TODO: check if moved to layer
-                    loadTilesWhileInteracting: true, // TODO: check if moved to layer
                 }),
             );
         }
@@ -496,7 +495,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
 
         let newCenterPoint: OlGeomPoint;
         if (this.view && this.view.getCenter()) {
-            const oldCenterPoint = new OlGeomPoint(this.view.getCenter());
+            const oldCenterPoint = new OlGeomPoint(this.view.getCenter() as any);
             newCenterPoint = oldCenterPoint.transform(this.view.getProjection(), projection.getOpenlayersProjection()) as OlGeomPoint;
         } else {
             newCenterPoint = new OlGeomPoint([0, 0]);
@@ -528,31 +527,36 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     private emitViewportSize(): void {
+        const resolution = this.view.getResolution();
+        if (!resolution) {
+            return;
+        }
+
         this.mapService.setViewportSize({
             extent: this.view.calculateExtent(this.maps[0].getSize()),
-            resolution: this.view.getResolution(),
+            resolution,
             maxExtent: this.view.getProjection().getExtent(),
         });
     }
 
-    private createBackgroundLayer(projection: SpatialReference): OlLayerImage {
+    private createBackgroundLayer(projection: SpatialReference): OlLayer {
         switch (this.config.MAP.BACKGROUND_LAYER) {
             case 'OSM':
                 if (projection === SpatialReferences.WEB_MERCATOR) {
                     return new OlLayerTile({
-                        source: this.backgroundLayerSource,
-                        wrapX: false,
+                        source: this.backgroundLayerSource as any,
+                        // wrapX: false,
                     });
                 } else {
                     return new OlLayerImage({
                         // placeholder image
-                        source: this.backgroundLayerSource,
+                        source: this.backgroundLayerSource as any,
                     });
                 }
             case 'countries': // eslint-disable-line no-fallthrough, ,
                 return new OlLayerVector({
-                    source: this.backgroundLayerSource,
-                    style: (feature: OlFeature, _resolution: number): OlStyleStyle => {
+                    source: this.backgroundLayerSource as any,
+                    style: (feature: OlFeatureLike, _resolution: number): OlStyleStyle => {
                         if (feature.getId() === 'BACKGROUND') {
                             return new OlStyleStyle({
                                 fill: new OlStyleFill({
@@ -576,7 +580,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             case 'eumetview':
             case 'XYZ':
                 return new OlLayerTile({
-                    source: this.backgroundLayerSource,
+                    source: this.backgroundLayerSource as OlTileWmsSource,
                 });
             default:
                 throw Error('Unknown Background Layer Name');
@@ -591,6 +595,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 } else {
                     return new OlImageStatic({
                         imageExtent: [0, 0, 0, 0],
+                        url: '',
                     });
                 }
             case 'eumetview':

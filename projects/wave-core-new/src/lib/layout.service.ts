@@ -32,12 +32,12 @@ export class LayoutService {
     /**
      * Is the layer list visible?
      */
-    private layerListVisible$: BehaviorSubject<boolean> = new BehaviorSubject(true);
+    private layerListVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
     /**
      * Is the data table visible?
      */
-    private layerDetailViewVisible$: BehaviorSubject<boolean> = new BehaviorSubject(true);
+    private layerDetailViewVisible$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
     /**
      * What is the currently visible tab?
@@ -82,7 +82,9 @@ export class LayoutService {
             const widthWithScroll = inner.offsetWidth;
 
             // remove divs
-            outer.parentNode.removeChild(outer);
+            if (outer.parentNode) {
+                outer.parentNode.removeChild(outer);
+            }
 
             this._scrollbarWidthPx = widthNoScroll - widthWithScroll;
         }
@@ -134,7 +136,7 @@ export class LayoutService {
     /**
      * Set the new Component to show in the sidenav
      */
-    setSidenavContentComponent(sidenavConfig: SidenavConfig): void {
+    setSidenavContentComponent(sidenavConfig: SidenavConfig | undefined): void {
         this.sidenavContentComponent$.next(sidenavConfig);
     }
 

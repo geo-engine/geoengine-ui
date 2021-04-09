@@ -125,7 +125,7 @@ export class UserService {
     }
 
     protected restoreSessionFromBrowser(): Observable<Session> {
-        const sessionToken = localStorage.getItem(PATH_PREFIX + 'session');
+        const sessionToken = localStorage.getItem(PATH_PREFIX + 'session') ?? '';
 
         return this.backend.getSession(sessionToken).pipe(mergeMap((response) => this.createSession(response)));
     }

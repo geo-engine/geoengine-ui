@@ -15,13 +15,13 @@
             matInput
             class="color_cell"
             [readonly]="readonlyColor"
-            [ngModel]="input?.value.rgbaCssString()"
+            [ngModel]="cssString"
             (ngModelChange)="updateColor($event)"
             [placeholder]="colorPlaceholder"
-            [colorPicker]="input?.value.rgbaCssString()"
+            [colorPicker]="cssString"
             (colorPickerChange)="updateColor($event)"
             [cpUseRootViewContainer]="true"
-            [style.background]="input?.value.rgbaCssString()"
+            [style.background]="cssString"
             cpOutputFormat="rgba"
             cpPosition="bottom-left"
         />

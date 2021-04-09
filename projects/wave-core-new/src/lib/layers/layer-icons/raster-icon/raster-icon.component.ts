@@ -24,15 +24,15 @@ interface Cell {
 })
 export class RasterIconComponent implements OnInit, OnChanges {
     // number of cells in x and y direction
-    @Input() xCells: number;
-    @Input() yCells: number;
+    @Input() xCells!: number;
+    @Input() yCells!: number;
     // the raster style used to color the icon
-    @Input() colorizer: Colorizer;
+    @Input() colorizer!: Colorizer;
 
     /**
      * the array of generated (colored and positioned) cells.
      */
-    cells: Array<Cell>;
+    cells: Array<Cell> = [];
     /**
      * This is the number of pixels used for the icon
      */

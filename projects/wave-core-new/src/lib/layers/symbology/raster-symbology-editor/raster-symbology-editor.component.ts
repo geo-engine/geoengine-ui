@@ -29,7 +29,7 @@ import {VegaChartData} from '../../../plots/vega-viewer/vega-viewer.component';
 export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, AfterViewInit, OnInit {
     @Input() layer!: RasterLayer;
 
-    symbology: RasterSymbology;
+    symbology!: RasterSymbology;
 
     // The min value used for color table generation
     layerMinValue: number | undefined = undefined;
@@ -39,7 +39,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     histogramData = new ReplaySubject<VegaChartData>(1);
     histogramLoading = new BehaviorSubject(false);
     protected histogramWorkflowId = new ReplaySubject<UUID>(1);
-    protected histogramSubscription: Subscription;
+    protected histogramSubscription?: Subscription;
 
     constructor(
         protected readonly projectService: ProjectService,
@@ -78,7 +78,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         if (autoReload) {
             this.initializeHistogramDataSubscription();
         } else {
-            this.histogramSubscription.unsubscribe();
+            this.histogramSubscription?.unsubscribe();
             this.histogramSubscription = undefined;
         }
     }
@@ -201,6 +201,8 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         if (this.symbology.colorizer instanceof PaletteColorizer) {
             return 'palette';
         }
+
+        throw Error('unknown colorizer type');
     }
 
     updateColorizerType(_colorizerType: 'linearGradient' | 'logarithmicGradient' | 'palette'): void {

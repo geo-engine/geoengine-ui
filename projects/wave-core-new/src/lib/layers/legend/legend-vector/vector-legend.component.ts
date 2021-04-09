@@ -22,7 +22,7 @@ export class VectorLegendComponent {
     showDefaultStyle = true;
 
     @Input()
-    symbology: Symbology;
+    symbology!: Symbology;
     fillColorAttribute: string | undefined;
     fillStyles: Array<IconValue> = [];
     strokeColorAttribute: string | undefined;

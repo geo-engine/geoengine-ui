@@ -14,7 +14,7 @@ import {
 import {Subject, Subscription} from 'rxjs';
 
 import {Layer as OlLayer, Tile as OlLayerTile, Vector as OlLayerVector} from 'ol/layer';
-import {Source as OlSource, Tile as OlTileSource, TileWMS as OlTileWmsSource, Vector as OlVectorSource} from 'ol/source';
+import {Source as OlSource, TileWMS as OlTileWmsSource, Vector as OlVectorSource} from 'ol/source';
 import {Config} from '../config.service';
 import {ProjectService} from '../project/project.service';
 import {LoadingState} from '../project/loading-state.model';
@@ -34,10 +34,10 @@ type VectorData = any; // TODO: use correct type
 @Directive()
 // eslint-disable-next-line @angular-eslint/directive-class-suffix
 export abstract class MapLayerComponent<OL extends OlLayer, OS extends OlSource> {
-    @Input() layerId: number;
-    @Input() isVisible: boolean;
-    @Input() workflow: UUID;
-    @Input() symbology: Symbology;
+    @Input() layerId!: number;
+    @Input() isVisible = true;
+    @Input() workflow?: UUID;
+    @Input() symbology?: Symbology;
 
     /**
      * Event emitter that forces a redraw of the map.
@@ -53,7 +53,10 @@ export abstract class MapLayerComponent<OL extends OlLayer, OS extends OlSource>
     /**
      * Setup of DI
      */
-    protected constructor(protected projectService: ProjectService) {}
+    protected constructor(protected projectService: ProjectService, source: OS, layer: (_: OS) => OL) {
+        this.source = source;
+        this._mapLayer = layer(source);
+    }
 
     /**
      * Return the open layers layer element that displays our layer type
@@ -90,18 +93,20 @@ export abstract class MapLayerComponent<OL extends OlLayer, OS extends OlSource>
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector, OlVectorSource> implements OnInit, OnDestroy, OnChanges {
-    symbology: VectorSymbology;
+    symbology?: VectorSymbology;
 
-    protected dataSubscription: Subscription;
+    protected dataSubscription?: Subscription;
 
     constructor(protected projectService: ProjectService) {
-        super(projectService);
-
-        this.source = new OlVectorSource({wrapX: false});
-        this._mapLayer = new OlLayerVector({
-            source: this.source,
-            updateWhileAnimating: true,
-        });
+        super(
+            projectService,
+            new OlVectorSource({wrapX: false}),
+            (source) =>
+                new OlLayerVector({
+                    source,
+                    updateWhileAnimating: true,
+                }),
+        );
     }
 
     ngOnInit(): void {
@@ -141,7 +146,7 @@ export class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector, OlV
             this.mapRedraw.emit();
         }
 
-        if (changes.symbology) {
+        if (changes.symbology && this.symbology) {
             this.mapLayer.setStyle(this.symbology.createStyleFunction());
         }
     }
@@ -156,18 +161,29 @@ export class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector, OlV
     providers: [{provide: MapLayerComponent, useExisting: OlRasterLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTileSource> implements OnInit, OnDestroy, OnChanges {
-    symbology: RasterSymbology;
+export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTileWmsSource> implements OnInit, OnDestroy, OnChanges {
+    symbology?: RasterSymbology;
 
-    protected dataSubscription: Subscription;
-    protected layerChangesSubscription: Subscription;
-    protected timeSubscription: Subscription;
+    protected dataSubscription?: Subscription;
+    protected layerChangesSubscription?: Subscription;
+    protected timeSubscription?: Subscription;
 
-    protected projection: SpatialReference;
-    protected time: Time;
+    protected spatialReference?: SpatialReference;
+    protected time?: Time;
 
     constructor(protected projectService: ProjectService, protected backend: BackendService, protected config: Config) {
-        super(projectService);
+        super(
+            projectService,
+            new OlTileWmsSource({
+                // empty for start
+                params: {},
+            }),
+            (source) =>
+                new OlLayerTile({
+                    source,
+                    opacity: 1,
+                }),
+        );
     }
 
     ngOnInit(): void {
@@ -212,7 +228,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
     }
 
     getExtent(): [number, number, number, number] {
-        return this._mapLayer.getExtent();
+        return this._mapLayer.getExtent() ?? [0, 0, 0, 0];
     }
 
     private updateOlLayer(changes: {isVisible?: boolean; symbology?: RasterSymbology; workflow?: UUID}): void {
@@ -224,7 +240,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
             this._mapLayer.setVisible(this.isVisible);
             this.mapRedraw.emit();
         }
-        if (changes.symbology !== undefined) {
+        if (changes.symbology && this.symbology) {
             this._mapLayer.setOpacity(this.symbology.opacity);
             this.source.updateParams({
                 STYLES: this.stylesFromColorizer(this.symbology.colorizer),
@@ -240,8 +256,8 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
     }
 
     private updateProjection(p: SpatialReference): void {
-        if (!this.projection || this.source.getProjection().getCode() !== this.projection.getCode()) {
-            this.projection = p;
+        if (!this.spatialReference || this.source.getProjection().getCode() !== this.spatialReference.getCode()) {
+            this.spatialReference = p;
             this.updateOlLayerProjection();
         }
     }
@@ -252,7 +268,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
     }
 
     private updateOlLayerTime(): void {
-        if (this.source) {
+        if (this.source && this.time && this.symbology) {
             this.source.updateParams({
                 time: this.time.asRequestString(),
                 STYLES: this.stylesFromColorizer(this.symbology.colorizer),
@@ -268,6 +284,10 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
     }
 
     private initializeOrReplaceOlSource(): void {
+        if (!this.time || !this.symbology || !this.spatialReference) {
+            return;
+        }
+
         this.source = new OlTileWmsSource({
             url: this.backend.wmsUrl,
             params: {
@@ -275,7 +295,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
                 time: this.time.asRequestString(),
                 STYLES: this.stylesFromColorizer(this.symbology.colorizer),
             },
-            projection: this.projection.getCode(),
+            projection: this.spatialReference.getCode(),
             wrapX: false,
         });
 
@@ -290,7 +310,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
     private initializeOrUpdateOlMapLayer(): void {
         if (this._mapLayer) {
             this._mapLayer.setSource(this.source);
-        } else {
+        } else if (this.symbology) {
             this._mapLayer = new OlLayerTile({
                 source: this.source,
                 opacity: this.symbology.opacity,

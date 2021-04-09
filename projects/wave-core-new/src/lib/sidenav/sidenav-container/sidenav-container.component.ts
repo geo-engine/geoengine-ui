@@ -1,4 +1,4 @@
-import {Subscription, combineLatest} from 'rxjs';
+import {Subscription, combineLatest, Observable} from 'rxjs';
 import {
     Component,
     OnInit,
@@ -33,16 +33,16 @@ import {map} from 'rxjs/operators';
 })
 export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('target', {read: ViewContainerRef, static: true})
-    target: ViewContainerRef;
+    target!: ViewContainerRef;
 
     @ViewChildren('searchElements', {read: ViewContainerRef})
-    searchElements: QueryList<ViewContainerRef>;
+    searchElements!: QueryList<ViewContainerRef>;
 
-    searchTerm: string;
+    searchTerm = '';
 
-    componentRef: ComponentRef<any>;
+    componentRef?: ComponentRef<any>;
 
-    private currentSidenavConfig: SidenavConfig;
+    private currentSidenavConfig?: SidenavConfig;
 
     private subscriptions: Array<Subscription> = [];
 
@@ -62,9 +62,17 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
 
     ngAfterViewInit(): void {
         this.subscriptions.push(
-            combineLatest([this.sidenavRef.getSearchComponentStream(), this.searchElements.changes])
-                .pipe(map(([elements, searchElementsQuery]) => [elements, searchElementsQuery.first]))
-                .subscribe(([elements, searchElements]: [Array<ElementRef>, ViewContainerRef]) => {
+            combineLatest([
+                this.sidenavRef.getSearchComponentStream(),
+                this.searchElements.changes as Observable<QueryList<ViewContainerRef>>,
+            ])
+                .pipe(
+                    map(([elements, searchElementsQuery]): [Array<ElementRef> | undefined, ViewContainerRef] => [
+                        elements,
+                        searchElementsQuery.first,
+                    ]),
+                )
+                .subscribe(([elements, searchElements]: [Array<ElementRef> | undefined, ViewContainerRef]) => {
                     if (searchElements) {
                         searchElements.clear();
                     }
@@ -126,7 +134,7 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
                 }
             }
 
-            setTimeout(() => this.componentRef.changeDetectorRef.markForCheck());
+            setTimeout(() => this.componentRef?.changeDetectorRef.markForCheck());
         }
 
         this.currentSidenavConfig = sidenavConfig;

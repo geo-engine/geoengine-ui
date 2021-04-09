@@ -30,20 +30,20 @@ export interface VegaChartData {
 })
 export class VegaViewerComponent implements OnInit, OnChanges {
     @Input()
-    chartData: VegaChartData;
+    chartData?: VegaChartData;
 
     @Input()
-    width: number;
+    width?: number;
 
     @Input()
-    height: number;
+    height?: number;
 
     @Output()
     interactionChange = new EventEmitter<{[signal: string]: any}>();
 
-    @ViewChild('chart', {static: true}) protected chartContainer: ElementRef;
+    @ViewChild('chart', {static: true}) protected chartContainer!: ElementRef;
 
-    private vegaHandle: {
+    private vegaHandle?: {
         view: View;
         spec: VlSpec | VgSpec;
         vgSpec: VgSpec;
@@ -57,13 +57,15 @@ export class VegaViewerComponent implements OnInit, OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.chartData || changes.width || changes.height) {
             this.clearContents();
-            if (this.chartData) {
-                this.displayPlot();
-            }
+            this.displayPlot();
         }
     }
 
     private displayPlot(): void {
+        if (!this.chartData) {
+            return;
+        }
+
         const div = this.chartContainer.nativeElement;
 
         const width = this.width ?? (div.clientWidth || this.element.nativeElement.offsetWidth);
@@ -87,7 +89,7 @@ export class VegaViewerComponent implements OnInit, OnChanges {
             .then((result) => {
                 this.vegaHandle = result;
 
-                if (this.chartData.metadata && this.chartData.metadata.selection_name) {
+                if (this.chartData?.metadata && this.chartData.metadata.selection_name) {
                     this.vegaHandle.view.addSignalListener(this.chartData.metadata.selection_name, (_name, value) => {
                         this.interactionChange.next(value);
                     });

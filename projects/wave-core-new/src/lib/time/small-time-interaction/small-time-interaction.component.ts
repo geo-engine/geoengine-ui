@@ -12,12 +12,12 @@ import {TimeConfigComponent} from '../time-config/time-config.component';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SmallTimeInteractionComponent implements OnInit, OnDestroy {
-    timeRepresentation: string;
+    timeRepresentation?: string;
 
-    timeStepDurationStreamSubscription: Subscription;
+    timeStepDurationStreamSubscription?: Subscription;
     timeStepDuration: TimeStepDuration = {durationAmount: 1, durationUnit: 'months'}; // TODO: get from DEFAULTS?
 
-    private timeStreamSubscription: Subscription;
+    private timeStreamSubscription?: Subscription;
 
     constructor(
         private projectService: ProjectService,
@@ -37,8 +37,8 @@ export class SmallTimeInteractionComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.timeStreamSubscription.unsubscribe();
-        this.timeStepDurationStreamSubscription.unsubscribe();
+        this.timeStreamSubscription?.unsubscribe();
+        this.timeStepDurationStreamSubscription?.unsubscribe();
     }
 
     timeForward(): void {

@@ -1,5 +1,5 @@
 import {of} from 'rxjs';
-import {catchError, tap} from 'rxjs/operators';
+import {catchError, map, tap} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {mergeDeep} from 'immutable';
 import {HttpClient} from '@angular/common/http';
@@ -128,7 +128,7 @@ export const WAVE_DEFAULT_CONFIG: WaveConfigStructure = {
 export class Config {
     static readonly CONFIG_FILE = 'assets/config.json';
 
-    protected config: WaveConfigStructure;
+    protected config!: WaveConfigStructure;
 
     get API_URL(): string {
         return this.config.API_URL;
@@ -172,10 +172,7 @@ export class Config {
     /**
      * Initialize the config on app start.
      */
-    load(defaults?: WaveConfigStructure): Promise<void> {
-        if (!defaults) {
-            defaults = WAVE_DEFAULT_CONFIG;
-        }
+    load(defaults: WaveConfigStructure = WAVE_DEFAULT_CONFIG): Promise<void> {
         return this.http
             .get<WaveConfigStructure>(Config.CONFIG_FILE)
             .pipe(
@@ -189,6 +186,7 @@ export class Config {
                     },
                 ),
                 catchError(() => of(undefined)),
+                map(() => {}),
             )
             .toPromise();
     }

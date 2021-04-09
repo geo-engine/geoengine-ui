@@ -2,9 +2,9 @@ import {distinctUntilChanged} from 'rxjs/operators';
 import {BehaviorSubject, Observable} from 'rxjs';
 
 import {Injectable} from '@angular/core';
-import {Extent as OlExtent} from 'ol';
+import {Extent as OlExtent} from 'ol/extent';
 import {containsExtent as olExtentContainsExtent, getIntersection as olExtentGetIntersection} from 'ol/extent';
-import {GeometryType as OlGeometryType} from 'ol/geom';
+import OlGeometryType from 'ol/geom/GeometryType';
 import {Vector as OlSourceVector} from 'ol/source';
 
 import {MapContainerComponent} from './map-container/map-container.component';
@@ -50,7 +50,7 @@ export class MapService {
         resolution: 1,
     });
 
-    private mapComponent: MapContainerComponent;
+    private mapComponent?: MapContainerComponent;
     private isGridStream = new BehaviorSubject(false);
 
     constructor() {}
@@ -89,13 +89,17 @@ export class MapService {
      */
     // TODO: decide to use or loose it
     public isDrawInteractionAttached(): boolean {
+        if (!this.mapComponent) {
+            return false;
+        }
+
         return this.mapComponent.isDrawInteractionAttached();
     }
 
     /**
      * Stops a draw interaction on the map and returns the output vector as result
      */
-    public endDrawInteraction(): OlSourceVector {
+    public endDrawInteraction(): OlSourceVector | undefined {
         if (!this.mapComponent) {
             throw new Error('no MapComponent registered');
         }
@@ -146,6 +150,10 @@ export class MapService {
      * Trigger a zoom event at the map to an extent
      */
     zoomTo(boundingBox: Extent): void {
+        if (!this.mapComponent) {
+            return;
+        }
+
         this.mapComponent.zoomTo(boundingBox);
     }
 }

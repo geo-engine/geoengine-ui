@@ -12,11 +12,11 @@ import {SpatialReference, SpatialReferences} from '../../operators/spatial-refer
 export class ChangeSpatialReferenceComponent implements OnInit {
     readonly SpatialReferences = SpatialReferences;
 
-    spatialReference$: Observable<SpatialReference>;
+    readonly spatialReference$: Observable<SpatialReference>;
 
-    constructor(public projectService: ProjectService) {}
-
-    ngOnInit(): void {
+    constructor(public projectService: ProjectService) {
         this.spatialReference$ = this.projectService.getSpatialReferenceStream();
     }
+
+    ngOnInit(): void {}
 }

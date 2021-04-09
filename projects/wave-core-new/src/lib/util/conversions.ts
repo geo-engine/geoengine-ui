@@ -45,17 +45,17 @@ export const featureToHash = (feature: OlFeature): number => {
         return hash;
     };
 
-    const sortObjKeys = (obj: any): any => {
+    const sortObjKeys = (obj: {[_: string]: any}): any => {
         Object.keys(obj)
             .sort()
             .reduce((x, key) => {
                 x[key] = obj[key];
                 return x;
-            }, {});
+            }, {} as {[_: string]: any});
     };
 
-    const jsonObj = new OlFormatGeoJson().writeFeatureObject(feature);
-    if ('properties' in jsonObj) {
+    const jsonObj: {[_: string]: any} = new OlFormatGeoJson().writeFeatureObject(feature);
+    if (jsonObj['properties']) {
         jsonObj['properties'] = sortObjKeys(jsonObj['properties']);
     }
     const json = JSON.stringify(jsonObj);

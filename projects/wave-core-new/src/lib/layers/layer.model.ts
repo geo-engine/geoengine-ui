@@ -79,6 +79,7 @@ export class VectorLayer extends Layer {
         symbology: Symbology;
     }) {
         super(config);
+        this.symbology = config.symbology;
     }
 
     static fromDict(dict: LayerDict): Layer {
@@ -148,12 +149,17 @@ export class RasterLayer extends Layer {
         workflowId: string;
         isVisible: boolean;
         isLegendVisible: boolean;
-        symbology: Symbology;
+        symbology: RasterSymbology;
     }) {
         super(config);
+        this.symbology = config.symbology;
     }
 
     static fromDict(dict: LayerDict): Layer {
+        if (!dict.symbology.Raster) {
+            throw new Error('missing `Raster` to deserialize');
+        }
+
         return new RasterLayer({
             name: dict.name,
             isLegendVisible: dict.visibility.legend,
