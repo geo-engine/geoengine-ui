@@ -1,12 +1,10 @@
 import {map, mergeMap} from 'rxjs/operators';
-import {Observable, Subscription, zip} from 'rxjs';
+import {Observable, zip} from 'rxjs';
 
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
 import {RasterDataType, RasterDataTypes} from '../../datatype.model';
-import {Unit} from '../../unit.model';
-// import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {RasterLayer} from '../../../layers/layer.model';
 import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
@@ -24,18 +22,9 @@ import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 })
 export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
     readonly RASTER_TYPE = [ResultTypes.RASTER];
-    readonly UNITLESS_UNIT = Unit.defaultUnit;
-    readonly CUSTOM_UNIT_ID = 'CUSTOM';
     form: FormGroup;
 
     outputDataTypes$: Observable<Array<[RasterDataType, string]>>;
-
-    // TODO: reincorporate unit
-    // outputUnits$: Observable<Array<Unit>>;
-    unitSubscription: Subscription;
-
-    // outputUnitIsCustom$: Observable<boolean>;
-    private static readonly RASTER_VALUE = 'value';
 
     /**
      * DI of services and setup of observables for the template

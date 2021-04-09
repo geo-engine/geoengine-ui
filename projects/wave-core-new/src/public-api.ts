@@ -94,8 +94,6 @@ export * from './lib/operators/datatype.model';
 export * from './lib/operators/operator-type.model';
 export * from './lib/operators/result-type.model';
 export * from './lib/operators/spatial-reference.model';
-export * from './lib/operators/types/expression-type.model';
-export * from './lib/operators/unit.model';
 export * from './lib/plots/plot.model';
 export * from './lib/time/time.model';
 export * from './lib/users/session.model';

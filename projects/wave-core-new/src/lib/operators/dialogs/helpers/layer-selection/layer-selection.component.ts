@@ -31,13 +31,14 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
     /**
      * The title of the component (optional).
      */
-    @Input() title: string = undefined;
+    @Input() title?: string = undefined;
 
-    onTouched: () => void;
-    onChange: (_: Layer) => void = undefined;
+    onTouched?: () => void;
+    onChange?: (_: Layer | undefined) => void = undefined;
 
     filteredLayers: Subject<Array<Layer>> = new ReplaySubject(1);
-    selectedLayer = new BehaviorSubject<Layer>(undefined);
+    hasLayers: Observable<boolean>;
+    selectedLayer = new BehaviorSubject<Layer | undefined>(undefined);
 
     private subscriptions: Array<Subscription> = [];
 
@@ -71,6 +72,8 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
                 }
             }),
         );
+
+        this.hasLayers = this.filteredLayers.pipe(map((layers) => layers.length > 0));
     }
 
     ngOnDestroy(): void {
@@ -123,7 +126,7 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
         }
     }
 
-    registerOnChange(fn: (_: Layer) => void): void {
+    registerOnChange(fn: (_: Layer | undefined) => void): void {
         this.onChange = fn;
 
         this.onChange(this.selectedLayer.getValue());

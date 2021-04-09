@@ -3,7 +3,7 @@
     <div fxFlex class="container">
         <wave-multi-layer-selection [types]="allowedLayerTypes" [min]="1" [max]="4" formControlName="layers"></wave-multi-layer-selection>
 
-        <wave-operator-output-name formControlName="name" [suggestion]="outputNameSuggestion | async">
+        <wave-operator-output-name formControlName="name" [suggestion]="outputNameSuggestion | async | stringSanitizer">
             <mat-hint
                 align="end"
                 class="error"

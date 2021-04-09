@@ -1,5 +1,6 @@
-import {get as olGetProjection, addProjection as olAddProjection, Projection as OlProjection} from 'ol/proj';
+import {get as olGetProjection, addProjection as olAddProjection} from 'ol/proj';
 import {register as olProj4Register} from 'ol/proj/proj4';
+import OlProjection from 'ol/proj/Projection';
 import proj4 from 'proj4';
 
 // TODO: rework handling of `SpatialReference`s by retrieving details from the backend.
@@ -166,7 +167,7 @@ export class GEOS extends SpatialReference {
         return 'GEOS - GEOstationary Satellite';
     }
 
-    getOpenlayersProjection(): void {
+    getOpenlayersProjection(): OlProjection {
         const projection = olGetProjection(this.getCode());
         projection.setExtent(this.getExtent()); // TODO: DT ol.proj.Projection => setExtent
         return projection;
@@ -237,7 +238,7 @@ export class ProjectionCollection {
         this.registerProj4Projections();
     }
 
-    fromCode(json: string): SpatialReference {
+    fromCode(json?: string): SpatialReference {
         switch (json) {
             case this.WEB_MERCATOR.getCode():
                 return this.WEB_MERCATOR;
@@ -261,7 +262,7 @@ export class ProjectionCollection {
     private registerProj4Projections(): void {
         const proj4DefStrings: Array<[string, string]> = this.ALL_PROJECTIONS.filter((p) => !!p.getProj4String()).map((p) => [
             p.getCode(),
-            p.getProj4String(),
+            p.getProj4String() ?? '',
         ]);
         if (!!proj4DefStrings && proj4DefStrings.length > 0) {
             proj4.defs(proj4DefStrings);

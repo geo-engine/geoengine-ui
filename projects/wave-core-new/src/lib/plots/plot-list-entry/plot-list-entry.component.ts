@@ -15,18 +15,18 @@ import {MatDialog} from '@angular/material/dialog';
 })
 export class PlotListEntryComponent implements OnInit, OnChanges {
     @Input()
-    plot: Plot;
+    plot!: Plot;
 
     @Input()
-    plotStatus: LoadingState;
+    plotStatus?: LoadingState;
 
     @Input()
-    plotData: PlotDataDict;
+    plotData?: PlotDataDict;
 
     @Input()
-    width: number;
+    width?: number;
 
-    plotIcon: string;
+    plotIcon?: string;
 
     isLoading = true;
     isOk = false;

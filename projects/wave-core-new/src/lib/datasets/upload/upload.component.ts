@@ -3,7 +3,7 @@ import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {mergeMap} from 'rxjs/operators';
-import {DatasetIdDict, UUID} from '../../backend/backend.model';
+import {AutoCreateDatasetDict, DatasetIdDict, UUID} from '../../backend/backend.model';
 import {NotificationService} from '../../notification.service';
 import {ProjectService} from '../../project/project.service';
 import {DatasetService} from '../dataset.service';
@@ -36,8 +36,8 @@ export class UploadComponent implements OnInit {
     progress$ = new Subject<number>();
 
     simpleCreateForm: FormGroup;
-    selectedFiles: FileList;
-    selectedMainFile: string;
+    selectedFiles?: Array<File>;
+    selectedMainFile?: string;
     loadingInfo = '';
 
     exampleLoadingInfos: Array<ExampleLoadingInfo> = [
@@ -158,14 +158,24 @@ export class UploadComponent implements OnInit {
 
     ngOnInit(): void {}
 
-    selectFiles(event): void {
-        this.selectedFiles = event.target.files;
+    selectFiles(target: HTMLInputElement | null): void {
+        const fileList = target?.files;
+
+        if (!fileList) {
+            return;
+        }
+
+        this.selectedFiles = Array.from(fileList);
     }
 
     upload(): void {
+        if (!this.selectedFiles) {
+            return;
+        }
+
         const form = new FormData();
 
-        for (const file of Array.from(this.selectedFiles)) {
+        for (const file of this.selectedFiles) {
             form.append('files[]', file, file.name);
         }
 
@@ -174,9 +184,10 @@ export class UploadComponent implements OnInit {
         this.datasetService.upload(form).subscribe(
             (event) => {
                 if (event.type === HttpEventType.UploadProgress) {
-                    this.progress$.next(Math.round((100 * event.loaded) / event.total));
+                    const fraction = event.total ? event.loaded / event.total : 1;
+                    this.progress$.next(Math.round(100 * fraction));
                 } else if (event.type === HttpEventType.Response) {
-                    this.uploadId$.next(event.body.id);
+                    this.uploadId$.next(event.body?.id);
                     this.state$.next(State.Uploaded);
                 }
             },
@@ -212,10 +223,14 @@ export class UploadComponent implements OnInit {
     }
 
     submitAutoCreate(uploadId: UUID): void {
+        if (!this.selectedMainFile) {
+            return;
+        }
+
         this.state$.next(State.Creating);
         this.simpleCreateForm.disable();
 
-        const create = {
+        const create: AutoCreateDatasetDict = {
             upload: uploadId,
             dataset_name: this.simpleCreateForm.controls['name'].value,
             dataset_description: this.simpleCreateForm.controls['description'].value,

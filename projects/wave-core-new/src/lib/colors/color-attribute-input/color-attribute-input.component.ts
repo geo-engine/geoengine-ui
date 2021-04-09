@@ -84,8 +84,13 @@ export class ColorAttributeInputComponent implements ControlValueAccessor, After
         }
     }
 
-    writeValue(input: ColorAttributeInput): void {
+    writeValue(input?: ColorAttributeInput): void {
         this.input = input;
+
+        if (!input) {
+            return;
+        }
+
         this.cssString = input.value.rgbaCssString();
     }
 

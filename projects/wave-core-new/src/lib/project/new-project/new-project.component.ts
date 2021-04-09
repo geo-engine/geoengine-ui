@@ -23,9 +23,7 @@ export class NewProjectComponent implements OnInit, AfterViewInit {
         protected formBuilder: FormBuilder,
         protected projectService: ProjectService,
         protected notificationService: NotificationService,
-    ) {}
-
-    ngOnInit(): void {
+    ) {
         this.form = this.formBuilder.group({
             name: [
                 '',
@@ -42,6 +40,8 @@ export class NewProjectComponent implements OnInit, AfterViewInit {
                 this.form.controls['spatialReference'].setValue(spatialReference);
             });
     }
+
+    ngOnInit(): void {}
 
     ngAfterViewInit(): void {
         setTimeout(() => this.form.updateValueAndValidity());

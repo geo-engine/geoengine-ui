@@ -13,18 +13,13 @@ import {
     SymbologyDict,
     TextSymbologyDict,
 } from '../../backend/backend.model';
-import {
-    Circle as OlStyleCircle,
-    Fill as OlStyleFill,
-    Stroke as OlStyleStroke,
-    Style as OlStyle,
-    StyleFunction as OlStyleFunction,
-    Text as OlStyleText,
-} from 'ol/style';
+import {Circle as OlStyleCircle, Fill as OlStyleFill, Stroke as OlStyleStroke, Style as OlStyle, Text as OlStyleText} from 'ol/style';
+import {StyleFunction as OlStyleFunction} from 'ol/style/Style';
 import {Colorizer} from '../../colors/colorizer.model';
 import {PointIconStyle} from '../layer-icons/point-icon/point-icon.component';
 import {LineIconStyle} from '../layer-icons/line-icon/line-icon.component';
 import {PolygonIconStyle} from '../layer-icons/polygon-icon/polygon-icon.component';
+import {FeatureLike} from 'ol/Feature';
 
 /**
  * List of the symbology types used in WAVE
@@ -94,8 +89,8 @@ export abstract class Symbology {
 
 export abstract class VectorSymbology extends Symbology {
     createStyleFunction(): OlStyleFunction {
-        return (feature: OlFeature, _resolution: number): OlStyle => {
-            const styler = this.createStyler(feature);
+        return (feature: FeatureLike, _resolution: number): OlStyle => {
+            const styler = this.createStyler((feature as unknown) as OlFeature);
 
             const key = styler.cacheKey();
             if (key in STYLE_CACHE) {
@@ -126,7 +121,7 @@ export class PointStyler extends Styler {
     stroke: StrokeStyler;
     text?: TextStyler;
 
-    constructor(radius: number, fillColor: RgbaTuple, stroke: StrokeStyler, text: TextStyler) {
+    constructor(radius: number, fillColor: RgbaTuple, stroke: StrokeStyler, text?: TextStyler) {
         super();
         this.radius = radius;
         this.fillColor = fillColor;
@@ -138,12 +133,12 @@ export class PointStyler extends Styler {
         const imageStyle = new OlStyleCircle({
             radius: this.radius,
             fill: new OlStyleFill({color: this.fillColor}),
-            stroke: this.stroke.createStyle(),
+            stroke: (this.stroke.createStyle() as unknown) as OlStyleStroke,
         });
 
         return new OlStyle({
             image: imageStyle,
-            text: this.text ? this.text.createStyle() : undefined,
+            text: this.text ? ((this.text.createStyle() as unknown) as OlStyleText) : undefined,
         });
     }
 
@@ -156,16 +151,16 @@ export class LineStyler extends Styler {
     stroke: StrokeStyler;
     text?: TextStyler;
 
-    constructor(stroke: StrokeStyler, text: TextStyler) {
+    constructor(stroke: StrokeStyler, text?: TextStyler) {
         super();
         this.stroke = stroke;
         this.text = text;
     }
 
     createStyle(): OlStyle {
-        return OlStyle({
-            stroke: this.stroke.createStyle(),
-            text: this.text ? this.text.createStyle() : undefined,
+        return new OlStyle({
+            stroke: (this.stroke.createStyle() as unknown) as OlStyleStroke,
+            text: this.text ? ((this.text.createStyle() as unknown) as OlStyleText) : undefined,
         });
     }
 
@@ -179,7 +174,7 @@ export class PolygonStyler extends Styler {
     stroke: StrokeStyler;
     text?: TextStyler;
 
-    constructor(fillColor: RgbaTuple, stroke: StrokeStyler, text: TextStyler) {
+    constructor(fillColor: RgbaTuple, stroke: StrokeStyler, text?: TextStyler) {
         super();
         this.fillColor = fillColor;
         this.stroke = stroke;
@@ -189,8 +184,8 @@ export class PolygonStyler extends Styler {
     createStyle(): OlStyle {
         return new OlStyle({
             fill: new OlStyleFill({color: this.fillColor}),
-            stroke: this.stroke.createStyle(),
-            text: this.text ? this.text.createStyle() : undefined,
+            stroke: (this.stroke.createStyle() as unknown) as OlStyleStroke,
+            text: this.text ? ((this.text.createStyle() as unknown) as OlStyleText) : undefined,
         });
     }
 
@@ -210,10 +205,10 @@ export class StrokeStyler extends Styler {
     }
 
     createStyle(): OlStyle {
-        return new OlStyleStroke({
+        return (new OlStyleStroke({
             color: this.color,
             width: this.width,
-        });
+        }) as unknown) as OlStyle;
     }
 
     cacheKey(): string {
@@ -234,13 +229,13 @@ export class TextStyler extends Styler {
     }
 
     createStyle(): OlStyle {
-        return OlStyleText({
+        return (new OlStyleText({
             text: this.text.slice(0, MAX_ALLOWED_TEXT_LENGTH),
             fill: new OlStyleFill({
                 color: this.fillColor,
             }),
-            stroke: this.stroke.createStyle(),
-        });
+            stroke: (this.stroke.createStyle() as unknown) as OlStyleStroke,
+        }) as unknown) as OlStyle;
     }
 
     cacheKey(): string {
@@ -256,7 +251,7 @@ export class PointSymbology extends VectorSymbology {
 
     text?: TextSymbology;
 
-    constructor(radius: NumberParam, fillColor: ColorParam, stroke: Stroke, text: TextSymbology) {
+    constructor(radius: NumberParam, fillColor: ColorParam, stroke: Stroke, text?: TextSymbology) {
         super();
         this.radius = radius;
         this.fillColor = fillColor;
@@ -269,7 +264,7 @@ export class PointSymbology extends VectorSymbology {
             NumberParam.fromDict(dict.radius),
             ColorParam.fromDict(dict.fill_color),
             Stroke.fromDict(dict.stroke),
-            TextSymbology.fromDict(dict.text),
+            dict.text ? TextSymbology.fromDict(dict.text) : undefined,
         );
     }
 
@@ -278,7 +273,7 @@ export class PointSymbology extends VectorSymbology {
             this.radius.getNumber(feature),
             this.fillColor.getColor(feature).rgbaTuple(),
             this.stroke.createStyler(feature),
-            this.text ? this.text.createStyler(feature) : undefined,
+            this.text ? ((this.text.createStyler(feature) as unknown) as TextStyler) : undefined,
         );
     }
 
@@ -332,18 +327,21 @@ export class LineSymbology extends VectorSymbology {
     stroke: Stroke;
     text?: TextSymbology;
 
-    constructor(stroke: Stroke, text: TextSymbology) {
+    constructor(stroke: Stroke, text?: TextSymbology) {
         super();
         this.stroke = stroke;
         this.text = text;
     }
 
     static fromLineSymbologyDict(dict: LineSymbologyDict): LineSymbology {
-        return new LineSymbology(Stroke.fromDict(dict.stroke), TextSymbology.fromDict(dict.text));
+        return new LineSymbology(Stroke.fromDict(dict.stroke), dict.text ? TextSymbology.fromDict(dict.text) : undefined);
     }
 
     createStyler(feature: OlFeature): Styler {
-        return new LineStyler(this.stroke.createStyler(feature), this.text ? this.text.createStyler(feature) : undefined);
+        return new LineStyler(
+            this.stroke.createStyler(feature),
+            this.text ? ((this.text.createStyler(feature) as unknown) as TextStyler) : undefined,
+        );
     }
 
     equals(other: LineSymbology): boolean {
@@ -384,7 +382,7 @@ export class PolygonSymbology extends VectorSymbology {
 
     text?: TextSymbology;
 
-    constructor(fillColor: ColorParam, stroke: Stroke, text: TextSymbology) {
+    constructor(fillColor: ColorParam, stroke: Stroke, text?: TextSymbology) {
         super();
         this.fillColor = fillColor;
         this.stroke = stroke;
@@ -392,14 +390,18 @@ export class PolygonSymbology extends VectorSymbology {
     }
 
     static fromPolygonSymbologyDict(dict: PolygonSymbologyDict): PolygonSymbology {
-        return new PolygonSymbology(ColorParam.fromDict(dict.fill_color), Stroke.fromDict(dict.stroke), TextSymbology.fromDict(dict.text));
+        return new PolygonSymbology(
+            ColorParam.fromDict(dict.fill_color),
+            Stroke.fromDict(dict.stroke),
+            dict.text ? TextSymbology.fromDict(dict.text) : undefined,
+        );
     }
 
     createStyler(feature: OlFeature): Styler {
         return new PolygonStyler(
             this.fillColor.getColor(feature).rgbaTuple(),
             this.stroke.createStyler(feature),
-            this.text ? this.text.createStyler(feature) : undefined,
+            this.text ? ((this.text.createStyler(feature) as unknown) as TextStyler) : undefined,
         );
     }
 
@@ -492,8 +494,10 @@ export abstract class ColorParam {
     static fromDict(dict: ColorParamDict): ColorParam {
         if (dict.Static) {
             return new StaticColor(Color.fromRgbaLike(rgbaColorFromDict(dict.Static)));
-        } else {
+        } else if (dict.Derived) {
             return DerivedColor.fromDerivedColorDict(dict.Derived);
+        } else {
+            throw new Error('unable to deserialize `NumberParam`');
         }
     }
 
@@ -512,8 +516,10 @@ export abstract class NumberParam {
     static fromDict(dict: NumberParamDict): NumberParam {
         if (dict.Static) {
             return new StaticNumber(dict.Static);
-        } else {
+        } else if (dict.Derived) {
             return DerivedNumber.fromDerivedNumberDict(dict.Derived);
+        } else {
+            throw new Error('unable to deserialize `NumberParam`');
         }
     }
 
@@ -738,14 +744,19 @@ export class TextSymbology {
 
     static fromDict(dict: TextSymbologyDict): TextSymbology {
         if (dict == null || dict === undefined) {
-            return undefined;
+            throw Error('unable to deserialize `TextSymbology`');
         }
 
         return new TextSymbology(dict.attribute, ColorParam.fromDict(dict.fill_color), Stroke.fromDict(dict.stroke));
     }
 
     createStyler(feature: OlFeature): OlStyleText {
-        return new TextStyler(feature.get(this.attribute), this.fillColor.getColor(feature).rgbaTuple(), this.stroke.createStyler(feature));
+        const textStyler = new TextStyler(
+            feature.get(this.attribute),
+            this.fillColor.getColor(feature).rgbaTuple(),
+            this.stroke.createStyler(feature),
+        );
+        return (textStyler as unknown) as OlStyleText;
     }
 
     equals(other: TextSymbology): boolean {
@@ -765,9 +776,9 @@ export class TextSymbology {
     }
 }
 
-function textSymbologyEquality(a: TextSymbology, b: TextSymbology): boolean {
-    if ((a == null || a === undefined) && a === b) {
-        return true;
+function textSymbologyEquality(a?: TextSymbology, b?: TextSymbology): boolean {
+    if (!a || !b) {
+        return false;
     }
 
     return a.equals(b);

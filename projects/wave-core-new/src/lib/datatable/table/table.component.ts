@@ -16,7 +16,7 @@ import {RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metad
 import {Layer, RasterLayer, VectorLayer} from '../../layers/layer.model';
 import {ResultTypes} from '../../operators/result-type.model';
 import {ProjectService} from '../../project/project.service';
-import {Feature as OlFeature} from 'ol/Feature';
+import {Feature as OlFeature} from 'ol';
 import {VectorData} from '../../layers/layer-data.model';
 import {DataSource} from '@angular/cdk/collections';
 
@@ -27,16 +27,16 @@ import {DataSource} from '@angular/cdk/collections';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
-    @ViewChild(MatPaginator) paginator: MatPaginator;
+    @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-    @Input() layer: Layer;
+    @Input() layer?: Layer;
 
     readonly layerTypes = ResultTypes.VECTOR_TYPES;
 
     dataSource = new FeatureDataSource();
     displayedColumns: Array<string> = [];
 
-    protected layerDataSubscription: Subscription = undefined;
+    protected layerDataSubscription?: Subscription = undefined;
 
     constructor(protected readonly projectService: ProjectService, protected readonly hostElement: ElementRef<HTMLElement>) {}
 
@@ -127,8 +127,8 @@ class FeatureDataSource extends DataSource<OlFeature> {
     protected _data: Array<OlFeature> = [];
     protected data$ = new Subject<Array<OlFeature>>();
 
-    protected _paginator: MatPaginator;
-    protected paginatorSubscription: Subscription;
+    protected _paginator?: MatPaginator;
+    protected paginatorSubscription?: Subscription;
 
     constructor() {
         super();
@@ -147,12 +147,16 @@ class FeatureDataSource extends DataSource<OlFeature> {
         return this._data;
     }
 
-    set paginator(paginator: MatPaginator) {
+    set paginator(paginator: MatPaginator | undefined) {
         if (this.paginatorSubscription) {
             this.paginatorSubscription.unsubscribe();
         }
 
         this._paginator = paginator;
+
+        if (!this.paginator) {
+            return;
+        }
 
         // update length wrt. data
         this.paginator.length = this.data.length;
@@ -164,7 +168,7 @@ class FeatureDataSource extends DataSource<OlFeature> {
         this.processPage();
     }
 
-    get paginator(): MatPaginator {
+    get paginator(): MatPaginator | undefined {
         return this._paginator;
     }
 
@@ -185,6 +189,10 @@ class FeatureDataSource extends DataSource<OlFeature> {
      * display a portion of the data
      */
     protected processPage(): void {
+        if (!this.paginator) {
+            return;
+        }
+
         const start = this.paginator.pageIndex * this.paginator.pageSize;
         const end = start + this.paginator.pageSize;
 

@@ -74,6 +74,10 @@ export class RasterResultDescriptor extends ResultDescriptor {
     readonly data_type: RasterDataType;
 
     constructor(config: DatasetResultDescriptorDict) {
+        if (!config.Raster) {
+            throw new Error('missing `VectorResultDescriptorDict`');
+        }
+
         super(SpatialReferences.fromCode(config.Raster.spatial_reference));
         this.data_type = RasterDataTypes.fromCode(config.Raster.data_type);
     }
@@ -92,6 +96,10 @@ export class VectorResultDescriptor extends ResultDescriptor {
     readonly columns: Map<string, FeatureDataType>;
 
     constructor(config: DatasetResultDescriptorDict) {
+        if (!config.Vector) {
+            throw new Error('missing `VectorResultDescriptorDict`');
+        }
+
         super(SpatialReferences.fromCode(config.Vector.spatial_reference));
         this.data_type = VectorDataTypes.fromCode(config.Vector.data_type);
         this.columns = new Map(Object.entries(config.Vector.columns).map(([key, value]) => [key, FeatureDataType[value]]));

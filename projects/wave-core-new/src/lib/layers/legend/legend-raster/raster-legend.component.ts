@@ -1,5 +1,4 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, Pipe, PipeTransform, SimpleChanges} from '@angular/core';
-import {Interpolation, interpolationToName, Unit} from '../../../operators/unit.model';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
 import {ClassificationMeasurement, Measurement} from '../../measurement';
 import {ProjectService} from '../../../project/project.service';
@@ -13,11 +12,11 @@ import {RasterLayer} from '../../layer.model';
     pure: true,
 })
 export class CastMeasurementToClassificationPipe implements PipeTransform {
-    transform(value: any, _args?: any): ClassificationMeasurement {
+    transform(value: any, _args?: any): ClassificationMeasurement | null {
         if (value instanceof ClassificationMeasurement) {
             return value;
         } else {
-            return undefined;
+            return null;
         }
     }
 }
@@ -32,8 +31,8 @@ export class CastMeasurementToClassificationPipe implements PipeTransform {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RasterLegendComponent implements OnInit, OnChanges {
-    @Input() layer: RasterLayer;
-    measurement$: Observable<Measurement>;
+    @Input() layer!: RasterLayer;
+    measurement$?: Observable<Measurement>;
 
     /**
      * Parameters to use with the number pipe in the template.
@@ -42,24 +41,6 @@ export class RasterLegendComponent implements OnInit, OnChanges {
     numberPipeParameters = '1.0-0';
 
     constructor(public projectService: ProjectService) {}
-
-    /**
-     * Get a string representation of a Unit.
-     */
-    unitToString(unit: Unit): string {
-        if (unit instanceof Unit && unit.unit !== Unit.defaultUnit.unit) {
-            return unit.unit;
-        } else {
-            return '';
-        }
-    }
-
-    /**
-     * Get the name of an interpolation.
-     */
-    interpolationToName(interpolation: Interpolation): string {
-        return interpolationToName(interpolation);
-    }
 
     ngOnInit(): void {
         this.measurement$ = this.projectService.getLayerMetadata(this.layer).pipe(map((m) => (m as RasterLayerMetadata).measurement));

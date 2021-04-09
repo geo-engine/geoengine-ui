@@ -61,6 +61,16 @@ export class RasterVectorJoinComponent implements OnDestroy {
         this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
+    getValueNameControls(): Array<FormControl> {
+        const valueNames = this.form.get('valueNames');
+
+        if (!valueNames || !(valueNames instanceof FormArray)) {
+            return [];
+        }
+
+        return valueNames.controls as Array<FormControl>;
+    }
+
     add(): void {
         const vectorLayer: VectorLayer = this.form.controls['vectorLayer'].value;
         const rasterLayers: Array<RasterLayer> = this.form.controls['rasterLayers'].value;
@@ -194,7 +204,7 @@ export class RasterVectorJoinComponent implements OnDestroy {
      * Uses `startsWith` semantics.
      */
     private valueNameCollision(valueNames: FormArray) {
-        return (control: FormControl): {[key: string]: boolean} => {
+        return (control: FormControl): {[key: string]: boolean | undefined} | null => {
             const errors: {
                 duplicateName?: boolean;
             } = {};

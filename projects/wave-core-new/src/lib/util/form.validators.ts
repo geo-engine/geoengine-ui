@@ -15,7 +15,7 @@ const minAndMax = (
         checkOneExists?: boolean;
         mustNotEqual?: boolean;
     } = {},
-): ((_: AbstractControl) => {[index: string]: boolean} | null) => {
+): ((_: AbstractControl) => ValidationErrors | null) => {
     if (typeof options.checkBothExist !== 'boolean') {
         // default
         options.checkBothExist = false;
@@ -25,7 +25,7 @@ const minAndMax = (
         options.checkOneExists = true;
     }
 
-    return (control: AbstractControl): {[key: string]: boolean} | null => {
+    return (control: AbstractControl): ValidationErrors | null => {
         const min = control.get(controlMinName)?.value;
         const max = control.get(controlMaxName)?.value;
 
@@ -66,7 +66,7 @@ const minAndMax = (
 /**
  * A validator that invokes the underlying one only if the condition holds.
  */
-const conditionalValidator = (validator: (control: AbstractControl) => {[key: string]: boolean}, condition: () => boolean) => (
+const conditionalValidator = (validator: (control: AbstractControl) => ValidationErrors | null, condition: () => boolean) => (
     control: AbstractControl,
 ): {[key: string]: boolean} | null => {
     if (condition()) {

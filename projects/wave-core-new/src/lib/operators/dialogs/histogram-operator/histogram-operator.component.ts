@@ -52,9 +52,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
         private readonly projectService: ProjectService,
         private readonly notificationService: NotificationService,
         private readonly formBuilder: FormBuilder,
-    ) {}
-
-    ngOnInit(): void {
+    ) {
         const layerControl = this.formBuilder.control(undefined, Validators.required);
         const rangeTypeControl = this.formBuilder.control('data', Validators.required);
         this.form = this.formBuilder.group({
@@ -84,12 +82,12 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
                     tap(() => this.form.controls['attribute'].setValue(undefined)),
                     mergeMap((layer: Layer) => {
                         if (layer instanceof VectorLayer) {
-                            return this.projectService.getLayerMetadata(layer).pipe(
+                            return this.projectService.getVectorLayerMetadata(layer).pipe(
                                 map((metadata: VectorLayerMetadata) =>
                                     metadata.columns
                                         .filter((columnType) => columnType.code === 'Number' || columnType.code === 'Decimal')
                                         .keySeq()
-                                        .toList(),
+                                        .toArray(),
                                 ),
                             );
                         } else {
@@ -97,7 +95,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
                         }
                     }),
                 )
-                .subscribe(this.attributes$),
+                .subscribe((attributes) => this.attributes$.next(attributes)),
         );
 
         this.subscriptions.push(
@@ -106,6 +104,8 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
 
         this.isVectorLayer$ = this.form.controls['layer'].valueChanges.pipe(map((layer) => isVectorLayer(layer)));
     }
+
+    ngOnInit(): void {}
 
     ngAfterViewInit(): void {
         setTimeout(() => {

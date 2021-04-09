@@ -12,11 +12,11 @@ export class OperatorOutputNameComponent implements ControlValueAccessor, OnChan
     @Input() type: 'Layer' | 'Plot' = 'Layer';
     @Input() suggestion = '';
 
-    private _name: string;
+    private _name = '';
     private userChanged = false;
 
-    private onTouched: () => void;
-    private onChange: (_: string) => void = undefined;
+    private onTouched?: () => void;
+    private onChange?: (_: string) => void = undefined;
 
     constructor(private changeDetectorRef: ChangeDetectorRef) {}
 

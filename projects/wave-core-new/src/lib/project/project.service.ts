@@ -195,7 +195,7 @@ export class ProjectService {
      */
     setProject(project: Project): void {
         // clear all subjects
-        for (const subjectMap of [this.layers, this.layerData$, this.layerDataState$]) {
+        for (const subjectMap of [this.layers, this.layerData$, this.layerDataState$] as Array<Map<number, ReplaySubject<any>>>) {
             subjectMap.forEach((subject) => subject.complete());
             subjectMap.clear();
         }
@@ -326,6 +326,7 @@ export class ProjectService {
         this.createLayerDataStreams(layer);
         this.createLayerChangesStream(layer);
         this.createLayerMetadataStreams(layer);
+        this.createCombinedLoadingState(layer);
 
         const result = this.getProjectOnce().pipe(
             mergeMap((project) =>
@@ -369,10 +370,17 @@ export class ProjectService {
      * Reload the data of a layer.
      */
     reloadLayerData(layer: Layer): void {
-        this.layerData$.get(layer.id).next(undefined); // send empty data
+        const layerData$ = this.layerData$.get(layer.id);
+        const layerDataState$ = this.layerDataState$.get(layer.id);
+
+        if (!layerData$ || !layerDataState$) {
+            return;
+        }
+
+        layerData$.next(undefined); // send empty data
 
         if (this.layerDataSubscriptions.has(layer.id)) {
-            this.layerDataSubscriptions.get(layer.id).unsubscribe();
+            this.layerDataSubscriptions.get(layer.id)?.unsubscribe();
             this.layerDataSubscriptions.delete(layer.id);
         }
 
@@ -380,22 +388,14 @@ export class ProjectService {
             case 'raster': {
                 this.layerDataSubscriptions.set(
                     layer.id,
-                    this.createRasterLayerDataSubscription(
-                        layer as RasterLayer,
-                        this.layerData$.get(layer.id) as Observer<RasterData>,
-                        this.layerDataState$.get(layer.id),
-                    ),
+                    this.createRasterLayerDataSubscription(layer as RasterLayer, layerData$ as Observer<RasterData>, layerDataState$),
                 );
                 break;
             }
             case 'vector': {
                 this.layerDataSubscriptions.set(
                     layer.id,
-                    this.createVectorLayerDataSubscription(
-                        layer as VectorLayer,
-                        this.layerData$.get(layer.id) as Observer<VectorData>,
-                        this.layerDataState$.get(layer.id),
-                    ),
+                    this.createVectorLayerDataSubscription(layer as VectorLayer, layerData$ as Observer<VectorData>, layerDataState$),
                 );
                 break;
             }
@@ -406,22 +406,34 @@ export class ProjectService {
      * Reload everything for the layer manually (e.g. on error).
      */
     reloadLayer(layer: Layer): void {
+        const layerMetadata$ = this.layerMetadata$.get(layer.id);
+        const layerMetadataState$ = this.layerMetadataState$.get(layer.id);
+
+        if (!layerMetadata$ || !layerMetadataState$) {
+            return;
+        }
+
         this.reloadLayerData(layer);
-        this.retrieveLayerMetadata(layer, this.layerMetadata$.get(layer.id), this.layerMetadataState$.get(layer.id));
+        this.retrieveLayerMetadata(layer, layerMetadata$, layerMetadataState$);
     }
 
     /**
      * Reload the data for the plot manually (e.g. on error).
      */
     reloadPlot(plot: Plot): void {
-        this.plotData$.get(plot.id).next(undefined); // send empty data
-
-        this.plotDataSubscriptions.get(plot.id).unsubscribe();
-        this.plotDataSubscriptions.delete(plot.id);
-
+        const plotData$ = this.plotData$.get(plot.id);
         const loadingState$ = this.plotDataState$.get(plot.id);
 
-        const subscription = this.createPlotSubscription(plot, this.plotData$.get(plot.id), loadingState$);
+        if (!plotData$ || !loadingState$) {
+            return;
+        }
+
+        plotData$.next(undefined); // send empty data
+
+        this.plotDataSubscriptions.get(plot.id)?.unsubscribe();
+        this.plotDataSubscriptions.delete(plot.id);
+
+        const subscription = this.createPlotSubscription(plot, plotData$, loadingState$);
 
         this.plotDataSubscriptions.set(plot.id, subscription);
     }
@@ -485,50 +497,86 @@ export class ProjectService {
     }
 
     getLayerMetadata(layer: Layer): Observable<LayerMetadata> {
-        return this.layerMetadata$.get(layer.id);
+        const metaData = this.layerMetadata$.get(layer.id);
+
+        if (!metaData) {
+            throw Error(`layer metadata for layer with id ${layer.id} is undefined`);
+        }
+
+        return metaData;
     }
 
     getVectorLayerMetadata(layer: VectorLayer): Observable<VectorLayerMetadata> {
-        return this.layerMetadata$.get(layer.id).pipe(map((metadata) => metadata as VectorLayerMetadata));
+        return this.getLayerMetadata(layer).pipe(map((metadata) => metadata as VectorLayerMetadata));
     }
 
     getRasterLayerMetadata(layer: RasterLayer): Observable<RasterLayerMetadata> {
-        return this.layerMetadata$.get(layer.id).pipe(map((metadata) => metadata as RasterLayerMetadata));
+        return this.getLayerMetadata(layer).pipe(map((metadata) => metadata as RasterLayerMetadata));
     }
 
     /**
      * Retrieve the data of the layer as a stream.
      */
     getLayerDataStream(layer: HasLayerId): Observable<any> {
-        return this.layerData$.get(layer.id);
+        const data = this.layerData$.get(layer.id);
+
+        if (!data) {
+            throw Error(`layer data for layer with id ${layer.id} is undefined`);
+        }
+
+        return data;
     }
 
     /**
      * Retrieve the data of the plot as a stream.
      */
     getPlotDataStream(plot: HasPlotId): Observable<any> {
-        return this.plotData$.get(plot.id);
+        const data = this.plotData$.get(plot.id);
+
+        if (!data) {
+            throw Error(`plot data for plot with id ${plot.id} is undefined`);
+        }
+
+        return data;
     }
 
     /**
      * Retrieve the layer status as a stream.
      */
     getLayerStatusStream(layer: HasLayerId): Observable<LoadingState> {
-        return this.layerState$.get(layer.id);
+        const status = this.layerState$.get(layer.id);
+
+        if (!status) {
+            throw Error(`status for id ${layer.id} is undefined`);
+        }
+
+        return status;
     }
 
     /**
      * Retrieve the layer data status as a stream.
      */
     getLayerDataStatusStream(layer: HasLayerId): Observable<LoadingState> {
-        return this.layerDataState$.get(layer.id);
+        const status = this.layerDataState$.get(layer.id);
+
+        if (!status) {
+            throw Error(`status for id ${layer.id} is undefined`);
+        }
+
+        return status;
     }
 
     /**
      * Retrieve the plot data status as a stream.
      */
     getPlotDataStatusStream(plot: HasPlotId): Observable<LoadingState> {
-        return this.plotDataState$.get(plot.id);
+        const status = this.plotDataState$.get(plot.id);
+
+        if (!status) {
+            throw Error(`status for id ${plot.id} is undefined`);
+        }
+
+        return status;
     }
 
     /**
@@ -536,7 +584,7 @@ export class ProjectService {
      */
     changeRasterLayerDataStatus(layer: HasLayerId & HasLayerType, state: LoadingState): void {
         if (layer.layerType === 'raster') {
-            this.layerDataState$.get(layer.id).next(state);
+            this.layerDataState$.get(layer.id)?.next(state);
         } else {
             throw Error('It is only allowed to change the state of a raster layer');
         }
@@ -668,7 +716,7 @@ export class ProjectService {
                 mergeMap((layers) => this.changeProjectConfig({layers})),
                 tap(() => {
                     // propagate layer changes
-                    this.layers.get(layer.id).next(layer);
+                    this.layers.get(layer.id)?.next(layer);
                 }),
             )
             .subscribe(
@@ -684,7 +732,13 @@ export class ProjectService {
      * Get a stream of LayerChanges for a specified layer.
      */
     getLayerChangesStream(layer: Layer): Observable<Layer> {
-        return this.layers.get(layer.id);
+        const changes = this.layers.get(layer.id);
+
+        if (!changes) {
+            throw new Error(`changes for id ${layer.id} are is undefined`);
+        }
+
+        return changes;
     }
 
     /**
@@ -770,35 +824,35 @@ export class ProjectService {
     protected removeLayerSubscriptions(layer: HasLayerId): void {
         // subjects
         for (const subjectMap of [this.layers, this.layerData$, this.layerDataState$]) {
-            subjectMap.get(layer.id).complete();
+            subjectMap.get(layer.id)?.complete();
             subjectMap.delete(layer.id);
         }
 
         // subscriptions
         for (const subscriptionMap of [this.layerDataSubscriptions]) {
-            subscriptionMap.get(layer.id).unsubscribe();
+            subscriptionMap.get(layer.id)?.unsubscribe();
             subscriptionMap.delete(layer.id);
         }
     }
 
     protected removeMetadataObservables(layer: HasLayerId): void {
-        this.layerMetadata$.get(layer.id).complete();
+        this.layerMetadata$.get(layer.id)?.complete();
         this.layerMetadata$.delete(layer.id);
 
-        this.layerMetadataState$.get(layer.id).complete();
+        this.layerMetadataState$.get(layer.id)?.complete();
         this.layerMetadataState$.delete(layer.id);
     }
 
     protected removePlotSubscriptions(plot: HasPlotId): void {
         // subjects
         for (const subjectMap of [this.plotData$, this.plotDataState$]) {
-            subjectMap.get(plot.id).complete();
+            subjectMap.get(plot.id)?.complete();
             subjectMap.delete(plot.id);
         }
 
         // subscriptions
         for (const subscriptionMap of [this.plotDataSubscriptions]) {
-            subscriptionMap.get(plot.id).unsubscribe();
+            subscriptionMap.get(plot.id)?.unsubscribe();
             subscriptionMap.delete(plot.id);
         }
     }
@@ -869,7 +923,14 @@ export class ProjectService {
     }
 
     private createCombinedLoadingState(layer: HasLayerId): void {
-        const loadingState$ = combineLatest([this.layerMetadataState$.get(layer.id), this.layerDataState$.get(layer.id)]).pipe(
+        const layerMetadataState$ = this.layerMetadataState$.get(layer.id);
+        const layerDataState$ = this.layerDataState$.get(layer.id);
+
+        if (!layerMetadataState$ || !layerDataState$) {
+            throw Error(`undefined states for layer ${layer.id}`);
+        }
+
+        const loadingState$ = combineLatest([layerMetadataState$, layerDataState$]).pipe(
             map((loadingStates) => {
                 if (loadingStates.includes(LoadingState.LOADING)) {
                     return LoadingState.LOADING;
@@ -1046,7 +1107,7 @@ export class ProjectService {
         this.layers.set(layer.id, new ReplaySubject<Layer>(1));
 
         // emit first change
-        this.layers.get(layer.id).next(layer);
+        this.layers.get(layer.id)?.next(layer);
     }
 
     private getDefaultTimeStep(): TimeStepDuration {

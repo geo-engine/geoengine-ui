@@ -9,7 +9,7 @@ import {DatasetService} from '../dataset.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DatasetComponent implements OnInit {
-    @Input() dataset: Dataset;
+    @Input() dataset!: Dataset;
 
     constructor(private datasetService: DatasetService) {}
 

@@ -22,7 +22,8 @@
         "forceConsistentCasingInFileNames": true,
         "strict": true,
         "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true
+        "noFallthroughCasesInSwitch": true,
+        "skipLibCheck": true
     },
     "angularCompilerOptions": {
         "enableI18nLegacyMessageIdFormat": false,

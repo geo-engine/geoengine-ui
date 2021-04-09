@@ -24,6 +24,7 @@
             "ol/layer/Image": "OlLayerImage",
             "ol/layer/Tile": "OlLayerTile",
             "ol/layer/Vector": "OlLayerVector",
+            "ol/proj/Projection": "OlProjection",
             "ol/proj": "proj",
             "ol/proj/proj4": "olproj4",
             "ol/source": "source",

@@ -2,7 +2,7 @@
     <path
         [style.stroke-width]="iconStyle?.strokeWidth"
         [style.stroke-dasharray]="[]"
-        [style.stroke]="iconStyle?.strokeRGBA.rgbaCssString()"
+        [style.stroke]="iconStyle.strokeRGBA.rgbaCssString()"
         fill="none"
         id="line"
         d="m2,2l20,14l-16,6"

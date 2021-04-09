@@ -1,5 +1,5 @@
 import {Observable, Subscription} from 'rxjs';
-import {Component, OnDestroy, Input, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
+import {Component, OnDestroy, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnChanges} from '@angular/core';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import {MatDialog} from '@angular/material/dialog';
 import {LayoutService, SidenavConfig} from '../../layout.service';
@@ -18,6 +18,7 @@ import {DataTableComponent} from '../../datatable/table/table.component';
 import {Measurement} from '../measurement';
 import {RasterLayerMetadata} from '../layer-metadata.model';
 import {RasterSymbologyEditorComponent} from '../symbology/raster-symbology-editor/raster-symbology-editor.component';
+import {SimpleChanges} from '@angular/core';
 
 /**
  * The layer list component displays active layers, legends and other controlls.
@@ -28,11 +29,11 @@ import {RasterSymbologyEditorComponent} from '../symbology/raster-symbology-edit
     styleUrls: ['./layer-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LayerListComponent implements OnDestroy {
+export class LayerListComponent implements OnDestroy, OnChanges {
     /**
      * The desired height of the list
      */
-    @Input() height: number;
+    @Input() height?: number;
 
     /**
      * The empty list shows a button to trigger the generation of a first layer.
@@ -49,6 +50,8 @@ export class LayerListComponent implements OnDestroy {
      * sends if the map should be a grid (or else a single map)
      */
     readonly mapIsGrid$: Observable<boolean>;
+
+    maxHeight = 0;
 
     /**
      * The list of layers displayed in the layer list
@@ -93,6 +96,12 @@ export class LayerListComponent implements OnDestroy {
         );
 
         this.mapIsGrid$ = this.mapService.isGrid$;
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.height && this.height) {
+            this.maxHeight = this.height - LayoutService.getToolbarHeightPx();
+        }
     }
 
     ngOnDestroy(): void {

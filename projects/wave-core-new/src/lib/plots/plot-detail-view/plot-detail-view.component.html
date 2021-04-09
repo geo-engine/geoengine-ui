@@ -8,7 +8,11 @@
         <pre>{{ plotData?.data | json }}</pre>
     </ng-template>
     <ng-template ngSwitchCase="JsonVega">
-        <wave-vega-viewer [chartData]="plotData?.data" [width]="maxWidth$ | async" [height]="maxHeight$ | async"></wave-vega-viewer>
+        <ng-container *ngIf="maxWidth$ | async as maxWidth">
+            <ng-container *ngIf="maxHeight$ | async as maxHeight">
+                <wave-vega-viewer [chartData]="plotData?.data" [width]="maxWidth" [height]="maxHeight"></wave-vega-viewer>
+            </ng-container>
+        </ng-container>
     </ng-template>
     <ng-template ngSwitchDefault>
         <pre>{{ plotData?.data }}</pre>

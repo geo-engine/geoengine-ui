@@ -2,8 +2,8 @@
     <polygon
         [style.stroke-width]="iconStyle?.strokeWidth"
         [style.stroke-dasharray]="[]"
-        [style.stroke]="iconStyle?.strokeRGBA.rgbaCssString()"
-        [style.fill]="iconStyle?.fillRGBA.rgbaCssString()"
+        [style.stroke]="iconStyle.strokeRGBA.rgbaCssString()"
+        [style.fill]="iconStyle.fillRGBA.rgbaCssString()"
         points="2,2 22,10 8,22"
         id="polygon"
     />
