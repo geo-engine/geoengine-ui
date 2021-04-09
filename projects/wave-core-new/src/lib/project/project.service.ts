@@ -1,4 +1,4 @@
-import {combineLatest, Observable, Observer, of, ReplaySubject, Subject, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, Observer, of, ReplaySubject, Subject, Subscription} from 'rxjs';
 import {debounceTime, distinctUntilChanged, first, map, mergeMap, switchMap, tap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
@@ -30,6 +30,13 @@ import {Session} from '../users/session.model';
 import {HasPlotId, Plot} from '../plots/plot.model';
 import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata.model';
 import {Symbology} from '../layers/symbology/symbology.model';
+import OlFeature from 'ol/Feature';
+
+export type FeatureId = string | number;
+
+export interface FeatureSelection {
+    feature?: FeatureId;
+}
 
 /***
  * The ProjectService is the main housekeeping component of WAVE.
@@ -55,6 +62,8 @@ export class ProjectService {
     private readonly plotDataState$ = new Map<number, ReplaySubject<LoadingState>>();
     private readonly plotDataSubscriptions = new Map<number, Subscription>();
     private readonly newPlot$ = new Subject<void>();
+
+    private readonly selectedFeature$ = new BehaviorSubject<FeatureSelection>({feature: undefined});
 
     constructor(
         protected config: Config,
@@ -764,6 +773,17 @@ export class ProjectService {
         );
 
         return ProjectService.subscribeAndProvide(result);
+    }
+
+    /**
+     * @returns The currently selected feature as stream.
+     */
+    getSelectedFeatureStream(): Observable<FeatureSelection> {
+        return this.selectedFeature$.asObservable();
+    }
+
+    setSelectedFeature(feature?: OlFeature): void {
+        this.selectedFeature$.next({feature: !!feature ? ((feature as any).ol_uid as number) : undefined});
     }
 
     /**

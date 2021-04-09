@@ -11,12 +11,12 @@ import {
     SimpleChanges,
 } from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
-import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, Subject, Subscription} from 'rxjs';
 import {RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metadata.model';
 import {Layer, RasterLayer, VectorLayer} from '../../layers/layer.model';
 import {ResultTypes} from '../../operators/result-type.model';
-import {ProjectService} from '../../project/project.service';
 import {Feature as OlFeature} from 'ol';
+import {FeatureSelection, ProjectService} from '../../project/project.service';
 import {VectorData} from '../../layers/layer-data.model';
 import {DataSource} from '@angular/cdk/collections';
 
@@ -33,10 +33,14 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
 
     readonly layerTypes = ResultTypes.VECTOR_TYPES;
 
+    selectedFeature$ = new BehaviorSubject<FeatureSelection>({feature: undefined});
+
     dataSource = new FeatureDataSource();
     displayedColumns: Array<string> = [];
+    featureColumns: Array<string> = [];
 
     protected layerDataSubscription?: Subscription = undefined;
+    protected selectedFeatureSubscription?: Subscription = undefined;
 
     constructor(protected readonly projectService: ProjectService, protected readonly hostElement: ElementRef<HTMLElement>) {}
 
@@ -46,6 +50,25 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         } else {
             this.emptyTable();
         }
+
+        this.selectedFeatureSubscription = this.projectService.getSelectedFeatureStream().subscribe((selection) => {
+            this.selectedFeature$.next(selection);
+
+            if (!!this.paginator) {
+                for (let i = 0; i < this.dataSource.data.length; i++) {
+                    const feature = this.dataSource.data[i];
+                    if (((feature as any).ol_uid as number) === selection.feature) {
+                        const page = Math.floor(i / this.paginator.pageSize);
+                        this.paginator.pageIndex = page;
+                        this.paginator.page.next({
+                            pageIndex: page,
+                            pageSize: this.paginator.pageSize,
+                            length: this.paginator.length,
+                        });
+                    }
+                }
+            }
+        });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -65,6 +88,10 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     ngOnDestroy(): void {
         if (this.layerDataSubscription) {
             this.layerDataSubscription.unsubscribe();
+        }
+
+        if (this.selectedFeatureSubscription) {
+            this.selectedFeatureSubscription.unsubscribe();
         }
     }
 
@@ -97,7 +124,8 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     }
 
     processVectorLayer(_layer: VectorLayer, metadata: VectorLayerMetadata, data: VectorData): void {
-        this.displayedColumns = metadata.columns.keySeq().toArray();
+        this.featureColumns = metadata.columns.keySeq().toArray();
+        this.displayedColumns = ['_____select'].concat(this.featureColumns);
         this.dataSource.data = data.data;
     }
 
@@ -115,6 +143,18 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         this.dataSource.data = [];
 
         // TODO: implement some default message
+    }
+
+    isSelected(feature: OlFeature): boolean {
+        return ((feature as any).ol_uid as number) === this.selectedFeature$.value.feature;
+    }
+
+    select(feature: OlFeature, select: boolean): void {
+        if (select) {
+            this.projectService.setSelectedFeature(feature);
+        } else {
+            this.projectService.setSelectedFeature(undefined);
+        }
     }
 }
 

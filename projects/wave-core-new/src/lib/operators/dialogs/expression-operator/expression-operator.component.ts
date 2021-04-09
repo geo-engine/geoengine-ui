@@ -1,6 +1,5 @@
-import {map, mergeMap} from 'rxjs/operators';
-import {Observable, zip} from 'rxjs';
-
+import {map, mergeMap, tap} from 'rxjs/operators';
+import {combineLatest, Observable, zip} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
@@ -10,6 +9,8 @@ import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
 import {WorkflowDict} from '../../../backend/backend.model';
 import {RasterSymbology} from '../../../layers/symbology/symbology.model';
+import {RasterLayerMetadata} from '../../../layers/layer-metadata.model';
+import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 
 /**
  * This dialog allows calculations on (one or more) raster layers.
@@ -91,53 +92,48 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         //     }
         // });
 
-        // TODO: use layer data types for data type selection
         this.outputDataTypes$ = this.form.controls.rasterLayers.valueChanges.pipe(
-            map((_rasterLayers: Array<RasterLayer>) => {
-                const outputDataTypes = RasterDataTypes.ALL_DATATYPES.map((dataType: RasterDataType) => [dataType, '']) as Array<
-                    [RasterDataType, string]
-                >;
-
-                // const rasterDataTypes = rasterLayers.map(layer =>
-                //     layer ? layer.operator.getDataType(ExpressionOperatorComponent.RASTER_VALUE) : undefined);
-
-                // for (let i = 0; i < outputDataTypes.length; i++) {
-                //     const outputDataType = outputDataTypes[i][0];
-                //
-                //     const indices = rasterDataTypes
-                //         .map((dataType, index) => dataType === outputDataType ? index : -1)
-                //         .filter(index => index >= 0)
-                //         .map(index => LetterNumberConverter.toLetters(index + 1));
-                //
-                //     if (indices.length > 0) {
-                //         outputDataTypes[i][1] = `(like ${indices.length > 1 ? 'layers' : 'layer'} ${indices.join(', ')})`;
-                //     }
-                // }
-
-                return outputDataTypes;
+            mergeMap((rasterLayers: Array<RasterLayer>) => {
+                const metaData = rasterLayers.map((l) => this.projectService.getRasterLayerMetadata(l));
+                return combineLatest(metaData);
             }),
-            // ,
-            // tap(outputDataTypes => {
-            //     const dataTypeControl = this.form.controls.dataType;
-            //     const currentDataType: DataType = dataTypeControl.value;
-            //
-            //     const rasterDataTypes = (this.form.controls.rasterLayers.value as Array<RasterLayer>)
-            //         .map(layer => layer ? layer.operator.getDataType(ExpressionOperatorComponent.RASTER_VALUE) : undefined)
-            //         .filter(layer => !!layer);
-            //
-            //     if (rasterDataTypes.includes(currentDataType)) { // is already set at a meaningful type
-            //         return;
-            //     }
-            //
-            //     let selectedDataType: DataType = currentDataType ? currentDataType : outputDataTypes[0][0]; // use default
-            //     if (rasterDataTypes.length) {
-            //         selectedDataType = rasterDataTypes[0];
-            //     }
-            //
-            //     setTimeout(() => {
-            //         dataTypeControl.setValue(selectedDataType);
-            //     });
-            // }),
+            map((rasterLayers: Array<RasterLayerMetadata>) => {
+                const outputDataTypes: Array<[RasterDataType, string]> = RasterDataTypes.ALL_DATATYPES.map((dataType: RasterDataType) => [
+                    dataType,
+                    '',
+                ]);
+
+                for (const output of outputDataTypes) {
+                    const outputDataType = output[0];
+
+                    const indices = rasterLayers
+                        .map((layer, index) => (layer.dataType === outputDataType ? index : -1))
+                        .filter((index) => index >= 0)
+                        .map((index) => LetterNumberConverter.toLetters(index + 1));
+
+                    if (indices.length > 0) {
+                        output[1] = `(like ${indices.length > 1 ? 'layers' : 'layer'} ${indices.join(', ')})`;
+                    }
+                }
+                return [rasterLayers, outputDataTypes] as [Array<RasterLayerMetadata>, Array<[RasterDataType, string]>];
+            }),
+            tap(([rasterLayers, outputDataTypes]: [Array<RasterLayerMetadata>, Array<[RasterDataType, string]>]) => {
+                const dataTypeControl = this.form.controls.dataType;
+                const currentDataType: RasterDataType = dataTypeControl.value;
+                const rasterDataTypes = rasterLayers.map((layer) => layer.dataType);
+                if (rasterDataTypes.includes(currentDataType)) {
+                    // is already set at a meaningful type
+                    return;
+                }
+                let selectedDataType: RasterDataType = currentDataType ? currentDataType : outputDataTypes[0][0]; // use default
+                if (rasterDataTypes.length) {
+                    selectedDataType = rasterDataTypes[0];
+                }
+                setTimeout(() => {
+                    dataTypeControl.setValue(selectedDataType);
+                });
+            }),
+            map(([_rasterLayers, outputDataTypes]: [Array<RasterLayerMetadata>, Array<[RasterDataType, string]>]) => outputDataTypes),
         );
     }
 

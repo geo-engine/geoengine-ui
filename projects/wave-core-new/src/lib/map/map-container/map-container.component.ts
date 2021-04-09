@@ -20,6 +20,7 @@ import {
 import OlMap from 'ol/Map';
 import OlView from 'ol/View';
 import {FeatureLike as OlFeatureLike} from 'ol/Feature';
+import OlFeature from 'ol/Feature';
 
 import OlLayerImage from 'ol/layer/Image';
 import OlLayer from 'ol/layer/Layer';
@@ -43,15 +44,17 @@ import OlStyleStyle from 'ol/style/Style';
 
 import OlInteractionDraw from 'ol/interaction/Draw';
 import OlInteractionSelect from 'ol/interaction/Select';
+import OlInteractionSelectEvent from 'ol/interaction/Select';
 
 import {MapLayerComponent} from '../map-layer.component';
 
 import {SpatialReference, SpatialReferences} from '../../operators/spatial-reference.model';
-import {ProjectService} from '../../project/project.service';
+import {FeatureSelection, ProjectService} from '../../project/project.service';
 import {Extent, MapService} from '../map.service';
 import {Config} from '../../config.service';
 import {LayoutService} from '../../layout.service';
 import {MatGridList, MatGridTile} from '@angular/material/grid-list';
+import {VectorSymbology} from '../../layers/symbology/symbology.model';
 
 type MapLayer = MapLayerComponent<OlLayer, OlSource>;
 
@@ -100,6 +103,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
 
     private selectedOlLayer?: OlLayer = undefined;
     private userSelect?: OlInteractionSelect;
+
+    private selectedFeature?: OlFeature = undefined;
 
     private drawInteractionSource?: OlSourceVector;
     private drawType: OlGeometryType = OlGeometryType.POINT;
@@ -330,77 +335,59 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     private initUserSelect(): void {
-        this.userSelect = new OlInteractionSelect({
-            layers: (layerCandidate: OlLayer): boolean => layerCandidate === this.selectedOlLayer,
+        this.userSelect = new OlInteractionSelect({style: undefined});
+        this.attachUserSelectToMap();
+
+        this.userSelect.on('select', (selectEvent: OlInteractionSelectEvent) => {
+            if ((selectEvent as any).selected.length > 0) {
+                this.projectService.setSelectedFeature((selectEvent as any).selected[0]);
+            } else {
+                this.projectService.setSelectedFeature(undefined);
+            }
         });
-        this.userSelect.setActive(false);
 
-        // TODO: FIX
-        // this.subscriptions.push(
-        //     this.layerService.getSelectedLayerStream().subscribe(selectedLayer => {
-        //         // reset old selection
-        //         this.userSelect.getFeatures().forEach(feature => feature.setStyle(undefined));
-        //         this.userSelect.getFeatures().clear();
-        //
-        //         const filteredLayers = this.mapLayers.filter(mapLayer => mapLayer.layer === selectedLayer);
-        //         this.selectedOlLayer = filteredLayers.length ? filteredLayers[0].mapLayer : undefined;
-        //         this.userSelect.setActive(!!this.selectedOlLayer);
-        //
-        //         this.attachUserSelectToMap();
-        //     })
-        // );
+        this.projectService.getSelectedFeatureStream().subscribe((selection) => {
+            this.resetSelection();
+            this.performSelection(selection);
+        });
+    }
 
-        // this.userSelect.on('select', (selectEvent: OlInteractionSelectEvent) => {
-        //     const selectedLayerSymbology = this.layerService.getSelectedLayer().symbology;
-        //
-        //     if (selectedLayerSymbology instanceof AbstractVectorSymbology) {
-        //         const highlightSymbology = StyleCreator.createHighlightSymbology(selectedLayerSymbology);
-        //         const highlightStyle = StyleCreator.fromVectorSymbology(highlightSymbology);
-        //         selectEvent.selected.forEach(feature => feature.setStyle(highlightStyle));
-        //     }
-        //
-        //     selectEvent.deselected.forEach(feature => feature.setStyle(undefined));
-        //
-        //     this.layerService.updateSelectedFeatures(
-        //         selectEvent.selected.map(feature => feature.getId()),
-        //         selectEvent.deselected.map(feature => feature.getId()),
-        //     );
-        // });
+    private performSelection(selection: FeatureSelection): void {
+        if (!!selection.feature) {
+            // TODO: avoid going through all layers
+            for (const layer of this.mapLayersRaw) {
+                const source = layer.mapLayer.getSource();
+                if (source instanceof OlSourceVector) {
+                    for (const feature of source.getFeatures()) {
+                        if (((feature as any).ol_uid as number) === selection.feature) {
+                            this.selectedFeature = feature;
+                            const style = (layer.symbology as VectorSymbology).createHighlightStyle(feature);
+                            feature.setStyle(style);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-        // this.subscriptions.push(
-        //     this.layerService.getSelectedFeaturesStream().subscribe(selectedFeatures => {
-        //         const newSelection = new OlCollection<OlFeature>();
-        //         this.userSelect.getFeatures().forEach(feature => {
-        //             if (selectedFeatures.remove && selectedFeatures.remove.contains(feature.getId())) {
-        //                 newSelection.push(feature);
-        //                 feature.setStyle(undefined);
-        //             }
-        //         });
-        //
-        //         newSelection.forEach(feature => this.userSelect.getFeatures().remove(feature));
-        //
-        //         const selectedLayer = this.layerService.getSelectedLayer();
-        //
-        //         if (!selectedLayer || !this.selectedOlLayer) {
-        //             return;
-        //         }
-        //
-        //         if (this.selectedOlLayer instanceof OlLayerVector) {
-        //             const highlightSymbology = StyleCreator.createHighlightSymbology(selectedLayer.symbology as AbstractVectorSymbology);
-        //             const highlightStyle = StyleCreator.fromVectorSymbology(highlightSymbology);
-        //
-        //             this.selectedOlLayer.getSource().getFeatures().forEach(feature => {
-        //                 if (selectedFeatures.add && selectedFeatures.add.contains(feature.getId())) {
-        //                     if (this.userSelect.getFeatures().getArray().indexOf(feature) === -1) {
-        //                         this.userSelect.getFeatures().push(feature);
-        //                         // todo: add resolution as third parameter
-        //                         feature.setStyle(highlightStyle);
-        //                     }
-        //                 }
-        //             });
-        //         }
-        //     })
-        // );
+    private resetSelection(): void {
+        // TODO: avoid going through all layers
+        if (!!this.selectedFeature) {
+            for (const layer of this.mapLayersRaw) {
+                const source = layer.mapLayer.getSource();
+                if (source instanceof OlSourceVector) {
+                    for (const feature of source.getFeatures()) {
+                        if (((feature as any).ol_uid as number) === ((this.selectedFeature as any).ol_uid as number)) {
+                            this.selectedFeature = undefined;
+                            const style = (layer.symbology as VectorSymbology).createStyle(feature);
+                            feature.setStyle(style);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private attachUserSelectToMap(): void {
@@ -409,32 +396,9 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             return;
         }
 
-        let map: OlMap | undefined;
-        if (!this.selectedOlLayer) {
-            map = undefined;
-        } else if (this.maps.length === 1) {
-            // mono map, no choice
-            map = this.maps[0];
-        } else {
-            const selectedLayerIndex = this.mapLayers.map((layer) => layer.mapLayer).indexOf(this.selectedOlLayer);
-            if (selectedLayerIndex >= 0) {
-                const inverseIndex = this.maps.length - selectedLayerIndex - 1;
-                map = this.maps[inverseIndex];
-            } else {
-                map = undefined; // actually, something went wrong
-            }
-        }
-
-        const oldMap = this.userSelect.getMap();
-        if (map !== oldMap) {
-            if (oldMap) {
-                oldMap.removeInteraction(this.userSelect);
-            }
-            this.userSelect.setMap(map as any);
-            if (map) {
-                map.addInteraction(this.userSelect);
-            }
-        }
+        // TODO: add to all maps in grid view
+        const map: OlMap = this.maps[0];
+        map.addInteraction(this.userSelect);
     }
 
     private redrawLayers(projection: SpatialReference): void {

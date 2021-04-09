@@ -103,12 +103,25 @@ export abstract class VectorSymbology extends Symbology {
         };
     }
 
+    createStyle(feature: OlFeature): OlStyle {
+        return this.createStyler(feature).createStyle();
+    }
+
+    createHighlightStyle(feature: OlFeature): OlStyle {
+        return this.createStyler(feature).createHighlightStyle();
+    }
+
     protected abstract createStyler(feature: OlFeature): Styler;
 }
 
 export abstract class Styler {
     abstract createStyle(): OlStyle;
+    abstract createHighlightStyle(): OlStyle;
     abstract cacheKey(): string;
+
+    static invertColor(color: RgbaTuple): RgbaTuple {
+        return [255 - color[0], 255 - color[1], 255 - color[2], color[3]];
+    }
 
     static colorToKey(color: RgbaTuple): string {
         return `${color[0]}${color[1]}${color[2]}${color[3]}`;
@@ -142,6 +155,19 @@ export class PointStyler extends Styler {
         });
     }
 
+    createHighlightStyle(): OlStyle {
+        const imageStyle = new OlStyleCircle({
+            radius: this.radius,
+            fill: new OlStyleFill({color: Styler.invertColor(this.fillColor)}),
+            stroke: (this.stroke.createHighlightStyle() as unknown) as OlStyleStroke,
+        });
+
+        return new OlStyle({
+            image: imageStyle,
+            text: this.text ? ((this.text.createHighlightStyle() as unknown) as OlStyleText) : undefined,
+        });
+    }
+
     cacheKey(): string {
         return `${this.radius}${Styler.colorToKey(this.fillColor)}${this.stroke.cacheKey()}${this.text ? this.text.cacheKey() : ''}`;
     }
@@ -161,6 +187,13 @@ export class LineStyler extends Styler {
         return new OlStyle({
             stroke: (this.stroke.createStyle() as unknown) as OlStyleStroke,
             text: this.text ? ((this.text.createStyle() as unknown) as OlStyleText) : undefined,
+        });
+    }
+
+    createHighlightStyle(): OlStyle {
+        return new OlStyle({
+            stroke: (this.stroke.createHighlightStyle() as unknown) as OlStyleStroke,
+            text: this.text ? ((this.text.createHighlightStyle() as unknown) as OlStyleText) : undefined,
         });
     }
 
@@ -189,6 +222,14 @@ export class PolygonStyler extends Styler {
         });
     }
 
+    createHighlightStyle(): OlStyle {
+        return new OlStyle({
+            fill: new OlStyleFill({color: Styler.invertColor(this.fillColor)}),
+            stroke: (this.stroke.createHighlightStyle() as unknown) as OlStyleStroke,
+            text: this.text ? ((this.text.createHighlightStyle() as unknown) as OlStyleText) : undefined,
+        });
+    }
+
     cacheKey(): string {
         return `${Styler.colorToKey(this.fillColor)}${this.stroke.cacheKey()}${this.text ? this.text.cacheKey() : ''}`;
     }
@@ -207,6 +248,13 @@ export class StrokeStyler extends Styler {
     createStyle(): OlStyle {
         return (new OlStyleStroke({
             color: this.color,
+            width: this.width,
+        }) as unknown) as OlStyle;
+    }
+
+    createHighlightStyle(): OlStyle {
+        return (new OlStyleStroke({
+            color: Styler.invertColor(this.color),
             width: this.width,
         }) as unknown) as OlStyle;
     }
@@ -235,6 +283,16 @@ export class TextStyler extends Styler {
                 color: this.fillColor,
             }),
             stroke: (this.stroke.createStyle() as unknown) as OlStyleStroke,
+        }) as unknown) as OlStyle;
+    }
+
+    createHighlightStyle(): OlStyle {
+        return (new OlStyleText({
+            text: this.text.slice(0, MAX_ALLOWED_TEXT_LENGTH),
+            fill: new OlStyleFill({
+                color: Styler.invertColor(this.fillColor),
+            }),
+            stroke: (this.stroke.createHighlightStyle() as unknown) as OlStyleStroke,
         }) as unknown) as OlStyle;
     }
 
