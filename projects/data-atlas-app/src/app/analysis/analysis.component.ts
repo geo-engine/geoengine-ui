@@ -12,7 +12,7 @@ import {
     PolygonSymbology,
     RasterLayer,
 } from 'wave-core';
-import {filter, first, map, mergeMap, tap} from 'rxjs/operators';
+import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {DataSelectionService} from '../data-selection.service';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {Country, COUNTRY_LIST, COUNTRY_METADATA} from './country-data.model';
