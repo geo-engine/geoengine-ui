@@ -9,9 +9,10 @@ import {
     Input,
     OnChanges,
     SimpleChanges,
+    ChangeDetectorRef,
 } from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
-import {BehaviorSubject, combineLatest, Observable, Subject, Subscription} from 'rxjs';
+import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
 import {RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metadata.model';
 import {Layer, RasterLayer, VectorLayer} from '../../layers/layer.model';
 import {ResultTypes} from '../../operators/result-type.model';
@@ -33,7 +34,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
 
     readonly layerTypes = ResultTypes.VECTOR_TYPES;
 
-    selectedFeature$ = new BehaviorSubject<FeatureSelection>({feature: undefined});
+    // selectedFeature$ = new BehaviorSubject<FeatureSelection>({feature: undefined});
 
     dataSource = new FeatureDataSource();
     displayedColumns: Array<string> = [];
@@ -42,7 +43,11 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     protected layerDataSubscription?: Subscription = undefined;
     protected selectedFeatureSubscription?: Subscription = undefined;
 
-    constructor(protected readonly projectService: ProjectService, protected readonly hostElement: ElementRef<HTMLElement>) {}
+    constructor(
+        protected readonly projectService: ProjectService,
+        protected readonly hostElement: ElementRef<HTMLElement>,
+        protected readonly changeDetectorRef: ChangeDetectorRef,
+    ) {}
 
     ngOnInit(): void {
         if (this.layer) {
@@ -52,22 +57,8 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         }
 
         this.selectedFeatureSubscription = this.projectService.getSelectedFeatureStream().subscribe((selection) => {
-            this.selectedFeature$.next(selection);
-
-            if (!!this.paginator) {
-                for (let i = 0; i < this.dataSource.data.length; i++) {
-                    const feature = this.dataSource.data[i];
-                    if (((feature as any).ol_uid as number) === selection.feature) {
-                        const page = Math.floor(i / this.paginator.pageSize);
-                        this.paginator.pageIndex = page;
-                        this.paginator.page.next({
-                            pageIndex: page,
-                            pageSize: this.paginator.pageSize,
-                            length: this.paginator.length,
-                        });
-                    }
-                }
-            }
+            this.changeDetectorRef.markForCheck();
+            this.navigatePage(selection);
         });
     }
 
@@ -127,6 +118,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         this.featureColumns = metadata.columns.keySeq().toArray();
         this.displayedColumns = ['_____select'].concat(this.featureColumns);
         this.dataSource.data = data.data;
+        setTimeout(() => this.navigatePage(this.projectService.getSelectedFeature()));
     }
 
     processRasterLayer(_layer: RasterLayer, _metadata: RasterLayerMetadata, _data: any): void {
@@ -146,7 +138,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     }
 
     isSelected(feature: OlFeature): boolean {
-        return ((feature as any).ol_uid as number) === this.selectedFeature$.value.feature;
+        return feature.getId() === this.projectService.getSelectedFeature().feature;
     }
 
     select(feature: OlFeature, select: boolean): void {
@@ -154,6 +146,26 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
             this.projectService.setSelectedFeature(feature);
         } else {
             this.projectService.setSelectedFeature(undefined);
+        }
+    }
+
+    protected navigatePage(selection: FeatureSelection): void {
+        if (!this.paginator) {
+            return;
+        }
+
+        for (let i = 0; i < this.dataSource.data.length; i++) {
+            const feature = this.dataSource.data[i];
+            if (feature.getId() === selection.feature) {
+                const page = Math.floor(i / this.paginator.pageSize);
+                this.paginator.pageIndex = page;
+                this.paginator.page.next({
+                    pageIndex: page,
+                    pageSize: this.paginator.pageSize,
+                    length: this.paginator.length,
+                });
+                break;
+            }
         }
     }
 }

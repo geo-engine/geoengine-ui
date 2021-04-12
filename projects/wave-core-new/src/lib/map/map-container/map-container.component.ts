@@ -1,5 +1,5 @@
 import {combineLatest, Observable, Subscription} from 'rxjs';
-import {first, map as rxMap} from 'rxjs/operators';
+import {first, map as rxMap, mergeMap} from 'rxjs/operators';
 
 import {
     AfterViewInit,
@@ -158,6 +158,15 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     }),
             );
         });
+
+        this.subscriptions.push(
+            this.mapLayersRaw.changes
+                .pipe(mergeMap((layers: Array<MapLayer>) => combineLatest(layers.map((l) => l.loadedData$))))
+                .subscribe(() => {
+                    this.resetSelection();
+                    this.performSelection(this.projectService.getSelectedFeature());
+                }),
+        );
     }
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}): void {
@@ -335,7 +344,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     private initUserSelect(): void {
-        this.userSelect = new OlInteractionSelect({style: undefined});
+        this.userSelect = new OlInteractionSelect({style: null as any});
         this.attachUserSelectToMap();
 
         this.userSelect.on('select', (selectEvent: OlInteractionSelectEvent) => {
@@ -353,18 +362,20 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     private performSelection(selection: FeatureSelection): void {
-        if (!!selection.feature) {
-            // TODO: avoid going through all layers
-            for (const layer of this.mapLayersRaw) {
-                const source = layer.mapLayer.getSource();
-                if (source instanceof OlSourceVector) {
-                    for (const feature of source.getFeatures()) {
-                        if (((feature as any).ol_uid as number) === selection.feature) {
-                            this.selectedFeature = feature;
-                            const style = (layer.symbology as VectorSymbology).createHighlightStyle(feature);
-                            feature.setStyle(style);
-                            return;
-                        }
+        if (!selection.feature) {
+            return;
+        }
+        // TODO: avoid going through all layers
+        for (const layer of this.mapLayersRaw) {
+            const source = layer.mapLayer.getSource();
+            if (source instanceof OlSourceVector) {
+                for (const feature of source.getFeatures()) {
+                    if (feature.getId() === selection.feature) {
+                        this.selectedFeature = feature;
+                        const style = (layer.symbology as VectorSymbology).createHighlightStyle(feature);
+                        feature.setStyle(style);
+                        this.userSelect?.getFeatures().push(feature);
+                        return;
                     }
                 }
             }
@@ -372,18 +383,21 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     private resetSelection(): void {
+        this.userSelect?.getFeatures().clear();
+        if (!this.selectedFeature) {
+            return;
+        }
+
         // TODO: avoid going through all layers
-        if (!!this.selectedFeature) {
-            for (const layer of this.mapLayersRaw) {
-                const source = layer.mapLayer.getSource();
-                if (source instanceof OlSourceVector) {
-                    for (const feature of source.getFeatures()) {
-                        if (((feature as any).ol_uid as number) === ((this.selectedFeature as any).ol_uid as number)) {
-                            this.selectedFeature = undefined;
-                            const style = (layer.symbology as VectorSymbology).createStyle(feature);
-                            feature.setStyle(style);
-                            return;
-                        }
+        for (const layer of this.mapLayersRaw) {
+            const source = layer.mapLayer.getSource();
+            if (source instanceof OlSourceVector) {
+                for (const feature of source.getFeatures()) {
+                    if (feature.getId() === this.selectedFeature.getId()) {
+                        this.selectedFeature = undefined;
+                        const style = (layer.symbology as VectorSymbology).createStyle(feature);
+                        feature.setStyle(style);
+                        return;
                     }
                 }
             }
