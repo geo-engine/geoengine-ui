@@ -1,5 +1,5 @@
 import {map, mergeMap, tap} from 'rxjs/operators';
-import {combineLatest, Observable, zip} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
@@ -7,7 +7,7 @@ import {RasterDataType, RasterDataTypes} from '../../datatype.model';
 import {RasterLayer} from '../../../layers/layer.model';
 import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
-import {WorkflowDict} from '../../../backend/backend.model';
+import {OperatorDict, SourceOperatorDict, WorkflowDict} from '../../../backend/backend.model';
 import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 import {RasterLayerMetadata} from '../../../layers/layer-metadata.model';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
@@ -189,9 +189,12 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         // console.log(rasterLayers);
 
         // TODO: add projection operator
-        zip(this.projectService.getWorkflow(rasterLayers[0].workflowId), this.projectService.getWorkflow(rasterLayers[1].workflowId))
+
+        const sourceOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers(rasterLayers);
+
+        sourceOperators
             .pipe(
-                map(([a, b]) => {
+                map((operators: Array<OperatorDict | SourceOperatorDict>) => {
                     const workflow = {
                         type: 'Raster',
                         operator: {
@@ -200,9 +203,9 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                                 expression,
                                 output_type: dataType.getCode(),
                                 // TODO: make this configurable once units exist again
-                                output_no_data_value: dataType.noData(dataType.getMax()),
+                                output_no_data_value: dataType.getMax(),
                             },
-                            raster_sources: [a.operator, b.operator],
+                            raster_sources: operators,
                             vector_sources: [],
                         },
                     } as WorkflowDict;
