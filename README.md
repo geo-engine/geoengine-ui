@@ -33,15 +33,26 @@ You can find the output in the `dist` directory.
 
 ### Development Live Server
 
-You need to modify the `proxy.conf.json` file to point to a valid _MAPPING_ instance.
+You have to choose the app to use and the correct proxy configuration.
+
+For instance, here is what you need to do to run the default app with a locally running Geo Engine backend:
+
+For the first time:
 
 ```
 rm -rf node_modules package-lock.json
 npm install
-npm start
 ```
 
-You can visit `http://localhost:4200/`.
+Then:
+
+```
+npm install
+npm run build-watch:core
+npm run serve:geoengine:local
+```
+
+When the server is started, you can visit `http://localhost:4200/`.
 
 ### Apps
 
