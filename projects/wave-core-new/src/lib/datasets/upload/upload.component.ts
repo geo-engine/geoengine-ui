@@ -110,10 +110,10 @@ export class UploadComponent implements OnInit {
                             "columns": {
                                 "x": "",
                                 "y": null,
-                                "numeric": [
+                                "float": [
                                     "natlscale"
                                 ],
-                                "decimal": [
+                                "int": [
                                     "scalerank"
                                 ],
                                 "textual": [
@@ -131,11 +131,11 @@ export class UploadComponent implements OnInit {
                             "data_type": "MultiPoint",
                             "spatial_reference": "EPSG:4326",
                             "columns": {
-                                "website": "Text",
-                                "name": "Text",
-                                "natlscale": "Number",
-                                "scalerank": "Decimal",
-                                "featurecla": "Text"
+                                "website": "text",
+                                "name": "text",
+                                "natlscale": "float",
+                                "scalerank": "int",
+                                "featurecla": "text"
                             }
                         }
                     }
