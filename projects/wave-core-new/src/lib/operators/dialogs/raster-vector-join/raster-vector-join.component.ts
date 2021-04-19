@@ -84,17 +84,18 @@ export class RasterVectorJoinComponent implements OnDestroy {
             aggregation,
         };
 
-        const workflowIds = [vectorLayer.workflowId, ...rasterLayers.map((rasterLayer) => rasterLayer.workflowId)];
-        combineLatest(workflowIds.map((workflowId) => this.projectService.getWorkflow(workflowId)))
+        const sourceOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers([vectorLayer, ...rasterLayers]);
+
+        sourceOperators
             .pipe(
-                mergeMap(([vectorWorkflow, ...rasterWorkflows]) =>
+                mergeMap(([vectorOperator, ...rasterOperators]) =>
                     this.projectService.registerWorkflow({
                         type: 'Vector',
                         operator: {
                             type: 'RasterVectorJoin',
                             params,
-                            vector_sources: [vectorWorkflow.operator],
-                            raster_sources: rasterWorkflows.map((workflow) => workflow.operator),
+                            vector_sources: [vectorOperator],
+                            raster_sources: rasterOperators,
                         },
                     }),
                 ),

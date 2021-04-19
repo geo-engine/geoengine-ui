@@ -39,17 +39,18 @@ export class PointInPolygonFilterOperatorComponent {
 
         const name: string = this.form.controls['name'].value;
 
-        // TODO: add projection operator when the CRSs of points and polygons don't match
-        zip(this.projectService.getWorkflow(points.workflowId), this.projectService.getWorkflow(polygons.workflowId))
+        const sourceOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers([points, polygons]);
+
+        sourceOperators
             .pipe(
-                map(([a, b]) => {
+                map((operators) => {
                     const workflow = {
                         type: 'Vector',
                         operator: {
                             type: 'PointInPolygonFilter',
                             params: null,
                             raster_sources: [],
-                            vector_sources: [a.operator, b.operator],
+                            vector_sources: operators,
                         },
                     } as WorkflowDict;
 
