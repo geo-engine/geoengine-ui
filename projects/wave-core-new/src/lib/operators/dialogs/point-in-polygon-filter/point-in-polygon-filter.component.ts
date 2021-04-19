@@ -6,7 +6,6 @@ import {PointSymbology} from '../../../layers/symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
-import {zip} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 import {WorkflowDict} from '../../../backend/backend.model';
 import {colorToDict} from '../../../colors/color';

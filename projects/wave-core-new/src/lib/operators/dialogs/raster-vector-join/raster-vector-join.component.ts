@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {combineLatest, Subscription} from 'rxjs';
+import {Subscription} from 'rxjs';
 import {ResultTypes} from '../../result-type.model';
 import {RasterLayer, VectorLayer} from '../../../layers/layer.model';
 import {ProjectService} from '../../../project/project.service';
