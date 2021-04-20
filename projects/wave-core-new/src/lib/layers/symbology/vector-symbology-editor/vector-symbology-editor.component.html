@@ -1,0 +1,60 @@
+<wave-sidenav-header>Symbology Editor</wave-sidenav-header>
+
+<wave-dialog-help>
+    <p>The Symbology Editor enables customization of the style for vector layers.</p>
+    <p>
+        Vector features are shown in the map as points, lines or polygons. The <i>Global Layer Properties</i> define the default
+        visualization parameters. Points have a global <i>Radius</i>, which is used if no other rules exist. All vector features have a
+        stroke. You can adapt the stroke width and color. Points and Polygons have a fill color. As all other global settings, this is
+        overwritten by other style rules.
+    </p>
+    <p>
+        If the layer is a clustered point layer, the radius refers to the minimum point radius. You need to zoom in and out (or pan) to see
+        the effect.
+    </p>
+</wave-dialog-help>
+
+<mat-accordion multi="true">
+    <!-- For points and polygons -->
+    <mat-expansion-panel expanded="true" *ngIf="showFillColorEditor">
+        <mat-expansion-panel-header>
+            <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
+                <mat-icon>map</mat-icon>
+                <span fxFlex>Fill Color</span>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent> Test </ng-template>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel expanded="true">
+        <mat-expansion-panel-header>
+            <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
+                <mat-icon>map</mat-icon>
+                <span fxFlex>Stroke Color</span>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent> Test </ng-template>
+    </mat-expansion-panel>
+
+    <!-- Points only -->
+    <mat-expansion-panel expanded="true" *ngIf="showRadiusEditor">
+        <mat-expansion-panel-header>
+            <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
+                <mat-icon>map</mat-icon>
+                <span fxFlex>Radius</span>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent> Test </ng-template>
+    </mat-expansion-panel>
+
+    <!-- Optional -->
+    <mat-expansion-panel expanded="true">
+        <mat-expansion-panel-header>
+            <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
+                <mat-icon>map</mat-icon>
+                <span fxFlex>Text</span>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent> Test </ng-template>
+    </mat-expansion-panel>
+</mat-accordion>

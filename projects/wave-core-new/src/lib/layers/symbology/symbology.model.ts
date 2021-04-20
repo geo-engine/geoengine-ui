@@ -12,6 +12,7 @@ import {
     StrokeParamDict,
     SymbologyDict,
     TextSymbologyDict,
+    VectorSymbologyDict,
 } from '../../backend/backend.model';
 import {Circle as OlStyleCircle, Fill as OlStyleFill, Stroke as OlStyleStroke, Style as OlStyle, Text as OlStyleText} from 'ol/style';
 import {StyleFunction as OlStyleFunction} from 'ol/style/Style';
@@ -56,14 +57,7 @@ export abstract class Symbology {
         if (dict.Raster) {
             return RasterSymbology.fromRasterSymbologyDict(dict.Raster);
         } else if (dict.Vector) {
-            const vectorDict = dict.Vector;
-            if (vectorDict.Point) {
-                return PointSymbology.fromPointSymbologyDict(vectorDict.Point);
-            } else if (vectorDict.Line) {
-                return LineSymbology.fromLineSymbologyDict(vectorDict.Line);
-            } else if (vectorDict.Polygon) {
-                return PolygonSymbology.fromPolygonSymbologyDict(vectorDict.Polygon);
-            }
+            return VectorSymbology.fromVectorSymbologyDict(dict.Vector);
         }
         throw new Error('Invalid Symbology type.');
     }
@@ -88,6 +82,17 @@ export abstract class Symbology {
 }
 
 export abstract class VectorSymbology extends Symbology {
+    static fromVectorSymbologyDict(dict: VectorSymbologyDict): VectorSymbology {
+        if (dict.Point) {
+            return PointSymbology.fromPointSymbologyDict(dict.Point);
+        } else if (dict.Line) {
+            return LineSymbology.fromLineSymbologyDict(dict.Line);
+        } else if (dict.Polygon) {
+            return PolygonSymbology.fromPolygonSymbologyDict(dict.Polygon);
+        }
+        throw new Error('Invalid Vector Symbology type.');
+    }
+
     createStyleFunction(): OlStyleFunction {
         return (feature: FeatureLike, _resolution: number): OlStyle => {
             const styler = this.createStyler((feature as unknown) as OlFeature);
@@ -110,6 +115,8 @@ export abstract class VectorSymbology extends Symbology {
     createHighlightStyle(feature: OlFeature): OlStyle {
         return this.createStyler(feature).createHighlightStyle();
     }
+
+    abstract clone(): VectorSymbology;
 
     protected abstract createStyler(feature: OlFeature): Styler;
 }

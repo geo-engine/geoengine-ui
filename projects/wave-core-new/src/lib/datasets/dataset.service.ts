@@ -8,7 +8,14 @@ import {HttpEvent} from '@angular/common/http';
 import {AutoCreateDatasetDict, CreateDatasetDict, DatasetIdDict, DatasetIdResponseDict, UploadResponseDict} from '../backend/backend.model';
 import {RandomColorService} from '../util/services/random-color.service';
 import {RasterLayer, VectorLayer} from '../layers/layer.model';
-import {LineSymbology, PointSymbology, PolygonSymbology, RasterSymbology, Symbology} from '../layers/symbology/symbology.model';
+import {
+    LineSymbology,
+    PointSymbology,
+    PolygonSymbology,
+    RasterSymbology,
+    Symbology,
+    VectorSymbology,
+} from '../layers/symbology/symbology.model';
 import {VectorDataTypes} from '../operators/datatype.model';
 import {colorToDict} from '../colors/color';
 import {ProjectService} from '../project/project.service';
@@ -80,7 +87,7 @@ export class DatasetService {
                 } else {
                     const resultDescriptor = dataset.result_descriptor as VectorResultDescriptor;
 
-                    let symbology: Symbology;
+                    let symbology: VectorSymbology;
 
                     switch (resultDescriptor.data_type) {
                         case VectorDataTypes.MultiPoint:
