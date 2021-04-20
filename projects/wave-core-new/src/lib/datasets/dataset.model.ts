@@ -1,6 +1,13 @@
 import {DatasetDict, InternalDatasetIdDict, DatasetResultDescriptorDict, UUID, WorkflowDict} from '../backend/backend.model';
 import {SpatialReference, SpatialReferences} from '../operators/spatial-reference.model';
-import {RasterDataType, RasterDataTypes, VectorDataType, VectorDataTypes} from '../operators/datatype.model';
+import {
+    RasterDataType,
+    RasterDataTypes,
+    VectorColumnDataType,
+    VectorColumnDataTypes,
+    VectorDataType,
+    VectorDataTypes,
+} from '../operators/datatype.model';
 
 export class Dataset {
     readonly id: InternalDatasetId; // TODO: support all Id types
@@ -93,7 +100,7 @@ export class RasterResultDescriptor extends ResultDescriptor {
 
 export class VectorResultDescriptor extends ResultDescriptor {
     readonly data_type: VectorDataType;
-    readonly columns: Map<string, FeatureDataType>;
+    readonly columns: Map<string, VectorColumnDataType>;
 
     constructor(config: DatasetResultDescriptorDict) {
         if (!config.Vector) {
@@ -102,7 +109,7 @@ export class VectorResultDescriptor extends ResultDescriptor {
 
         super(SpatialReferences.fromCode(config.Vector.spatial_reference));
         this.data_type = VectorDataTypes.fromCode(config.Vector.data_type);
-        this.columns = new Map(Object.entries(config.Vector.columns).map(([key, value]) => [key, FeatureDataType[value]]));
+        this.columns = new Map(Object.entries(config.Vector.columns).map(([key, value]) => [key, VectorColumnDataTypes.fromCode(value)]));
     }
 
     static fromDict(dict: DatasetResultDescriptorDict): ResultDescriptor {
@@ -112,11 +119,4 @@ export class VectorResultDescriptor extends ResultDescriptor {
     getTypeString(): 'Vector' | 'Raster' {
         return 'Vector';
     }
-}
-
-export enum FeatureDataType {
-    Categorical = 'Categorical',
-    Decimal = 'Decimal',
-    Number = 'Number',
-    Text = 'Text',
 }

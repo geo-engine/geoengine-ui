@@ -11,6 +11,7 @@ import {NotificationService} from '../../../notification.service';
 import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
 import {WorkflowDict} from '../../../backend/backend.model';
 import {HistogramParams} from '../../../backend/operator.model';
+import {VectorColumnDataTypes} from '../../datatype.model';
 
 /**
  * Checks whether the layer is a vector layer (points, lines, polygons).
@@ -85,7 +86,10 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
                             return this.projectService.getVectorLayerMetadata(layer).pipe(
                                 map((metadata: VectorLayerMetadata) =>
                                     metadata.columns
-                                        .filter((columnType) => columnType.code === 'Number' || columnType.code === 'Decimal')
+                                        .filter(
+                                            (columnType) =>
+                                                columnType === VectorColumnDataTypes.Float || columnType === VectorColumnDataTypes.Int,
+                                        )
                                         .keySeq()
                                         .toArray(),
                                 ),
