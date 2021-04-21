@@ -23,7 +23,9 @@
                 <span fxFlex>Fill Color</span>
             </mat-panel-title>
         </mat-expansion-panel-header>
-        <ng-template matExpansionPanelContent> Test </ng-template>
+        <ng-template matExpansionPanelContent>
+            <wave-color-param-editor [(ngModel)]="fillColor"></wave-color-param-editor>
+        </ng-template>
     </mat-expansion-panel>
 
     <mat-expansion-panel expanded="true">
