@@ -349,37 +349,37 @@ export abstract class VectorColumnDataType {
     }
 }
 
-class NumberColumn extends VectorColumnDataType {
-    readonly code = 'Number';
+class FloatColumn extends VectorColumnDataType {
+    readonly code = 'float';
 }
 
-class DecimalColumn extends VectorColumnDataType {
-    readonly code = 'Decimal';
+class IntColumn extends VectorColumnDataType {
+    readonly code = 'int';
 }
 
 class TextColumn extends VectorColumnDataType {
-    readonly code = 'Text';
+    readonly code = 'text';
 }
 
 class CategoricalColumn extends VectorColumnDataType {
-    readonly code = 'Categorical';
+    readonly code = 'categorical';
 }
 
 export class VectorColumnDataTypeCollection {
     static readonly INSTANCE = new VectorColumnDataTypeCollection();
 
     /* eslint-disable @typescript-eslint/naming-convention,no-underscore-dangle,id-blacklist,id-match */
-    readonly Number: VectorColumnDataType = new NumberColumn();
-    readonly Decimal: VectorColumnDataType = new DecimalColumn();
+    readonly Float: VectorColumnDataType = new FloatColumn();
+    readonly Int: VectorColumnDataType = new IntColumn();
     readonly Text: VectorColumnDataType = new TextColumn();
     readonly Categorical: VectorColumnDataType = new CategoricalColumn();
 
     fromCode(code: string): VectorColumnDataType {
         switch (code) {
-            case this.Number.code:
-                return this.Number;
-            case this.Decimal.code:
-                return this.Decimal;
+            case this.Float.code:
+                return this.Float;
+            case this.Int.code:
+                return this.Int;
             case this.Text.code:
                 return this.Text;
             case this.Categorical.code:

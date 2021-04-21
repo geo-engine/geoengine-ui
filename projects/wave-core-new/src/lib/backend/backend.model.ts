@@ -283,7 +283,7 @@ export interface RasterResultDescriptorDict extends ResultDescriptorDict {
 
 export interface VectorResultDescriptorDict extends ResultDescriptorDict {
     data_type: VectorDataType;
-    columns: {[key: string]: 'Categorical' | 'Decimal' | 'Number' | 'Text'};
+    columns: {[key: string]: 'categorical' | 'int' | 'float' | 'text'};
 }
 
 type VectorDataType = 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
@@ -395,8 +395,8 @@ export interface OgrSourceTimeFormatDict {
 export interface OgrSourceColumnSpecDict {
     x: string;
     y?: string;
-    numeric: Array<string>;
-    decimal: Array<string>;
+    float: Array<string>;
+    int: Array<string>;
     textual: Array<string>;
 }
 

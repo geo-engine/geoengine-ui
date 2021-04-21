@@ -129,24 +129,24 @@
             </mat-form-field>
 
             <mat-form-field class="example-chip-list">
-                <mat-label>Numeric Columns</mat-label>
-                <mat-chip-list #columnNumericList formControlName="columns_numeric">
-                    <mat-chip *ngFor="let column of formMetaData.controls.columns_numeric.value" (removed)="removeNumeric(column)">
+                <mat-label>Float Columns</mat-label>
+                <mat-chip-list #columnNumericList formControlName="columns_float">
+                    <mat-chip *ngFor="let column of formMetaData.controls.columns_float.value" (removed)="removeFloat(column)">
                         {{ column }}
                         <mat-icon matChipRemove>cancel</mat-icon>
                     </mat-chip>
-                    <input placeholder="New column..." [matChipInputFor]="columnNumericList" (matChipInputTokenEnd)="addNumeric($event)" />
+                    <input placeholder="New column..." [matChipInputFor]="columnNumericList" (matChipInputTokenEnd)="addFloat($event)" />
                 </mat-chip-list>
             </mat-form-field>
 
             <mat-form-field class="example-chip-list">
-                <mat-label>Decimal Columns</mat-label>
-                <mat-chip-list #columnDecimalList formControlName="columns_decimal">
-                    <mat-chip *ngFor="let column of formMetaData.controls.columns_decimal.value" (removed)="removeDecimal(column)">
+                <mat-label>Integer Columns</mat-label>
+                <mat-chip-list #columnDecimalList formControlName="columns_int">
+                    <mat-chip *ngFor="let column of formMetaData.controls.columns_int.value" (removed)="removeInt(column)">
                         {{ column }}
                         <mat-icon matChipRemove>cancel</mat-icon>
                     </mat-chip>
-                    <input placeholder="New column..." [matChipInputFor]="columnDecimalList" (matChipInputTokenEnd)="addDecimal($event)" />
+                    <input placeholder="New column..." [matChipInputFor]="columnDecimalList" (matChipInputTokenEnd)="addInt($event)" />
                 </mat-chip-list>
             </mat-form-field>
 

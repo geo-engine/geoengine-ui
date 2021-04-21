@@ -50,7 +50,7 @@ export class RasterVectorJoinComponent implements OnDestroy {
             vectorLayer: [undefined, Validators.required],
             rasterLayers: [undefined, Validators.required],
             valueNames: this.formBuilder.array([]),
-            aggregation: ['first', Validators.required],
+            aggregation: ['none', Validators.required],
             name: ['Vectors With Raster Values', [Validators.required, WaveValidators.notOnlyWhitespace]],
         });
 

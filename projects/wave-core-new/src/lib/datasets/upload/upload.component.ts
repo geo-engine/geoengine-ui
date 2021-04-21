@@ -67,8 +67,8 @@ export class UploadComponent {
             columns_x: new FormControl(''),
             columns_y: new FormControl(''),
             columns_textual: new FormControl(''),
-            columns_numeric: new FormControl(''),
-            columns_decimal: new FormControl(''),
+            columns_float: new FormControl(''),
+            columns_int: new FormControl(''),
             error_handling: new FormControl('skip', Validators.required),
             spatial_reference: new FormControl('EPSG:4326', Validators.required), // TODO: validate sref string
         });
@@ -158,8 +158,8 @@ export class UploadComponent {
         }
     }
 
-    removeDecimal(column: string): void {
-        const columns: Array<string> = this.formMetaData.controls.columns_decimal.value;
+    removeInt(column: string): void {
+        const columns: Array<string> = this.formMetaData.controls.columns_int.value;
 
         const index = columns.indexOf(column);
         if (index > -1) {
@@ -167,8 +167,8 @@ export class UploadComponent {
         }
     }
 
-    addDecimal(event: MatChipInputEvent): void {
-        const columns: Array<string> = this.formMetaData.controls.columns_decimal.value;
+    addInt(event: MatChipInputEvent): void {
+        const columns: Array<string> = this.formMetaData.controls.columns_int.value;
         const column = event.value;
         const input = event.input;
 
@@ -181,8 +181,8 @@ export class UploadComponent {
         }
     }
 
-    removeNumeric(column: string): void {
-        const columns: Array<string> = this.formMetaData.controls.columns_numeric.value;
+    removeFloat(column: string): void {
+        const columns: Array<string> = this.formMetaData.controls.columns_float.value;
 
         const index = columns.indexOf(column);
         if (index > -1) {
@@ -190,8 +190,8 @@ export class UploadComponent {
         }
     }
 
-    addNumeric(event: MatChipInputEvent): void {
-        const columns: Array<string> = this.formMetaData.controls.columns_numeric.value;
+    addFloat(event: MatChipInputEvent): void {
+        const columns: Array<string> = this.formMetaData.controls.columns_float.value;
         const column = event.value;
         const input = event.input;
 
@@ -280,8 +280,8 @@ export class UploadComponent {
                         x: formMeta.columns_x.value,
                         y: formMeta.columns_y.value,
                         textual: formMeta.columns_textual.value,
-                        numeric: formMeta.columns_numeric.value,
-                        decimal: formMeta.columns_decimal.value,
+                        float: formMeta.columns_float.value,
+                        int: formMeta.columns_int.value,
                     },
                     default_geometry: undefined, // TODO
                     force_ogr_time_filter: false,
@@ -359,8 +359,8 @@ export class UploadComponent {
                     columns_x: info?.columns?.x,
                     columns_y: info?.columns?.y,
                     columns_textual: info?.columns?.textual,
-                    columns_numeric: info?.columns?.numeric,
-                    columns_decimal: info?.columns?.decimal,
+                    columns_float: info?.columns?.float,
+                    columns_int: info?.columns?.int,
                     error_handling: info?.on_error,
                     spatial_reference: suggest.meta_data.OgrMetaData?.result_descriptor.spatial_reference,
                 });
@@ -402,20 +402,20 @@ export class UploadComponent {
         return undefined;
     }
 
-    private getColumnsAsMap(): {[key: string]: 'Categorical' | 'Decimal' | 'Number' | 'Text'} {
+    private getColumnsAsMap(): {[key: string]: 'categorical' | 'int' | 'float' | 'text'} {
         const formMeta = this.formMetaData.controls;
-        const columns: {[key: string]: 'Categorical' | 'Decimal' | 'Number' | 'Text'} = {};
+        const columns: {[key: string]: 'categorical' | 'int' | 'float' | 'text'} = {};
 
         for (const column of formMeta.columns_textual.value as Array<string>) {
-            columns[column] = 'Text';
+            columns[column] = 'text';
         }
 
-        for (const column of formMeta.columns_decimal.value as Array<string>) {
-            columns[column] = 'Decimal';
+        for (const column of formMeta.columns_int.value as Array<string>) {
+            columns[column] = 'int';
         }
 
-        for (const column of formMeta.columns_numeric.value as Array<string>) {
-            columns[column] = 'Number';
+        for (const column of formMeta.columns_float.value as Array<string>) {
+            columns[column] = 'float';
         }
         return columns;
     }
