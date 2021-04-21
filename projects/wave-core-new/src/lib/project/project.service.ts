@@ -34,6 +34,7 @@ import {HasPlotId, Plot} from '../plots/plot.model';
 import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata.model';
 import {Symbology} from '../layers/symbology/symbology.model';
 import OlFeature from 'ol/Feature';
+import {getProjectionTarget} from '../util/spatial_reference';
 
 export type FeatureId = string | number;
 
@@ -346,7 +347,7 @@ export class ProjectService {
         return combineLatest(meta).pipe(
             mergeMap((descriptors: Array<ResultDescriptorDict>) => {
                 const srefs = descriptors.map((l) => SpatialReferences.fromCode(l.spatial_reference));
-                const targetSref = this.getProjectionTarget(srefs);
+                const targetSref = getProjectionTarget(srefs);
 
                 const workflowsObservable = layers.map((l) => this.getWorkflow(l.workflowId));
 
@@ -839,21 +840,6 @@ export class ProjectService {
 
     getSelectedFeature(): FeatureSelection {
         return this.selectedFeature$.value;
-    }
-
-    /**
-     * @returns the target spatial reference for a common projection of the given inputs
-     */
-    getProjectionTarget(inputRefs: Array<SpatialReference>): SpatialReference {
-        if (inputRefs.length === 0) {
-            return SpatialReferences.WGS_84;
-        }
-
-        if (inputRefs.indexOf(SpatialReferences.WGS_84) > 0) {
-            return SpatialReferences.WGS_84;
-        }
-
-        return inputRefs[0];
     }
 
     /**
