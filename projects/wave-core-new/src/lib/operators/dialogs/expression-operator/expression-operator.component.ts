@@ -1,5 +1,5 @@
 import {map, mergeMap, tap} from 'rxjs/operators';
-import {combineLatest, Observable, zip} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
@@ -7,7 +7,7 @@ import {RasterDataType, RasterDataTypes} from '../../datatype.model';
 import {RasterLayer} from '../../../layers/layer.model';
 import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
-import {WorkflowDict} from '../../../backend/backend.model';
+import {OperatorDict, SourceOperatorDict, WorkflowDict} from '../../../backend/backend.model';
 import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 import {RasterLayerMetadata} from '../../../layers/layer-metadata.model';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
@@ -46,6 +46,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                 // }),
                 // projection: new FormControl(undefined, [Validators.required]),
                 name: new FormControl('Expression', [Validators.required, WaveValidators.notOnlyWhitespace]),
+                noDataValue: new FormControl(0, Validators.required), // TODO: validate no-data-value is valid for dataType
             },
             // [unitOrCustomUnit]);
         );
@@ -160,6 +161,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         const dataType: RasterDataType = this.form.controls['dataType'].value;
         const expression: string = this.form.controls['expression'].value;
         const rasterLayers = this.form.controls['rasterLayers'].value;
+        const noDataValue = this.form.controls['noDataValue'].value;
         // TODO: incoroprate unit related info
         // const projection = this.form.controls['projection'].value;
         // const minValue =  this.form.controls['minValue'].value;
@@ -189,9 +191,12 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         // console.log(rasterLayers);
 
         // TODO: add projection operator
-        zip(this.projectService.getWorkflow(rasterLayers[0].workflowId), this.projectService.getWorkflow(rasterLayers[1].workflowId))
+
+        const sourceOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers(rasterLayers);
+
+        sourceOperators
             .pipe(
-                map(([a, b]) => {
+                map((operators: Array<OperatorDict | SourceOperatorDict>) => {
                     const workflow = {
                         type: 'Raster',
                         operator: {
@@ -200,9 +205,9 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                                 expression,
                                 output_type: dataType.getCode(),
                                 // TODO: make this configurable once units exist again
-                                output_no_data_value: dataType.noData(dataType.getMax()),
+                                output_no_data_value: noDataValue,
                             },
-                            raster_sources: [a.operator, b.operator],
+                            raster_sources: operators,
                             vector_sources: [],
                         },
                     } as WorkflowDict;
