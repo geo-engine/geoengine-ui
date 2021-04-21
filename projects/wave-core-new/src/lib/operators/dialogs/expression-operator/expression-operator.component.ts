@@ -46,6 +46,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                 // }),
                 // projection: new FormControl(undefined, [Validators.required]),
                 name: new FormControl('Expression', [Validators.required, WaveValidators.notOnlyWhitespace]),
+                noDataValue: new FormControl(0, Validators.required), // TODO: validate no-data-value is valid for dataType
             },
             // [unitOrCustomUnit]);
         );
@@ -160,6 +161,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         const dataType: RasterDataType = this.form.controls['dataType'].value;
         const expression: string = this.form.controls['expression'].value;
         const rasterLayers = this.form.controls['rasterLayers'].value;
+        const noDataValue = this.form.controls['noDataValue'].value;
         // TODO: incoroprate unit related info
         // const projection = this.form.controls['projection'].value;
         // const minValue =  this.form.controls['minValue'].value;
@@ -203,7 +205,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                                 expression,
                                 output_type: dataType.getCode(),
                                 // TODO: make this configurable once units exist again
-                                output_no_data_value: dataType.getMax(),
+                                output_no_data_value: noDataValue,
                             },
                             raster_sources: operators,
                             vector_sources: [],
