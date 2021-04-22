@@ -15,8 +15,11 @@ import {HasLayerId, HasLayerType, Layer, RasterLayer, VectorLayer} from '../laye
 import {BackendService} from '../backend/backend.service';
 import {
     LayerDict,
+    OperatorDict,
     PlotDict,
     RasterResultDescriptorDict,
+    ResultDescriptorDict,
+    SourceOperatorDict,
     ToDict,
     UUID,
     VectorResultDescriptorDict,
@@ -31,6 +34,7 @@ import {HasPlotId, Plot} from '../plots/plot.model';
 import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata.model';
 import {Symbology} from '../layers/symbology/symbology.model';
 import OlFeature from 'ol/Feature';
+import {getProjectionTarget} from '../util/spatial_reference';
 
 export type FeatureId = string | number;
 
@@ -326,6 +330,54 @@ export class ProjectService {
 
     getWorkflow(workflowId: UUID): Observable<WorkflowDict> {
         return this.userService.getSessionStream().pipe(mergeMap((session) => this.backend.getWorkflow(workflowId, session.sessionToken)));
+    }
+
+    getWorkflowMetaData(workflowId: UUID): Observable<ResultDescriptorDict> {
+        return this.userService
+            .getSessionStream()
+            .pipe(mergeMap((session) => this.backend.getWorkflowMetadata(workflowId, session.sessionToken)));
+    }
+
+    /**
+     * Determines a common projection for all layers and return their operator with an added a propjection if necessary
+     */
+    getAutomaticallyProjectedOperatorsFromLayers(layers: Array<Layer>): Observable<Array<OperatorDict | SourceOperatorDict>> {
+        const meta: Array<Observable<ResultDescriptorDict>> = layers.map((l) => this.getWorkflowMetaData(l.workflowId));
+
+        return combineLatest(meta).pipe(
+            mergeMap((descriptors: Array<ResultDescriptorDict>) => {
+                const srefs = descriptors.map((l) => SpatialReferences.fromCode(l.spatial_reference));
+                const targetSref = getProjectionTarget(srefs);
+
+                const workflowsObservable = layers.map((l) => this.getWorkflow(l.workflowId));
+
+                return combineLatest(workflowsObservable).pipe(
+                    map((workflows: Array<WorkflowDict>) => {
+                        const projectedOperators: Array<OperatorDict | SourceOperatorDict> = [];
+
+                        for (let i = 0; i < workflows.length; i++) {
+                            const sref: SpatialReference = srefs[i];
+                            const workflow = workflows[i];
+                            const operator: OperatorDict | SourceOperatorDict = workflow.operator;
+                            if (sref === targetSref) {
+                                projectedOperators.push(operator);
+                            } else {
+                                projectedOperators.push({
+                                    type: 'Reprojection',
+                                    params: {
+                                        target_spatial_reference: targetSref.getCode(),
+                                    },
+                                    vector_sources: workflow.type === 'Vector' ? [operator] : [],
+                                    raster_sources: workflow.type === 'Raster' ? [operator] : [],
+                                });
+                            }
+                        }
+
+                        return projectedOperators;
+                    }),
+                );
+            }),
+        );
     }
 
     /**
