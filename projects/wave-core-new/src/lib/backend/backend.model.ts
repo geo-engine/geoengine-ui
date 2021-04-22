@@ -283,7 +283,7 @@ export interface RasterResultDescriptorDict extends ResultDescriptorDict {
 
 export interface VectorResultDescriptorDict extends ResultDescriptorDict {
     data_type: 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
-    columns: {[key: string]: 'categorical' | 'int' | 'float' | 'text'};
+    columns: {[key: string]: 'category' | 'int' | 'float' | 'text'};
 }
 
 export interface PlotResultDescriptorDict extends ResultDescriptorDict {

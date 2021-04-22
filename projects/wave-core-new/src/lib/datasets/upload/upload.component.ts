@@ -116,7 +116,7 @@ export class UploadComponent implements OnInit {
                                 "int": [
                                     "scalerank"
                                 ],
-                                "textual": [
+                                "text": [
                                     "featurecla",
                                     "name",
                                     "website"
