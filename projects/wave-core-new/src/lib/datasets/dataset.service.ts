@@ -5,7 +5,15 @@ import {Dataset, VectorResultDescriptor} from './dataset.model';
 import {UserService} from '../users/user.service';
 import {map, mergeMap} from 'rxjs/operators';
 import {HttpEvent} from '@angular/common/http';
-import {AutoCreateDatasetDict, CreateDatasetDict, DatasetIdDict, DatasetIdResponseDict, UploadResponseDict} from '../backend/backend.model';
+import {
+    AutoCreateDatasetDict,
+    CreateDatasetDict,
+    DatasetIdDict,
+    DatasetIdResponseDict,
+    MetaDataSuggestionDict,
+    SuggestMetaDataDict,
+    UploadResponseDict,
+} from '../backend/backend.model';
 import {RandomColorService} from '../util/services/random-color.service';
 import {RasterLayer, VectorLayer} from '../layers/layer.model';
 import {LineSymbology, PointSymbology, PolygonSymbology, RasterSymbology, Symbology} from '../layers/symbology/symbology.model';
@@ -48,6 +56,10 @@ export class DatasetService {
 
     autoCreateDataset(create: AutoCreateDatasetDict): Observable<DatasetIdResponseDict> {
         return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.autoCreateDataset(token, create)));
+    }
+
+    suggestMetaData(suggest: SuggestMetaDataDict): Observable<MetaDataSuggestionDict> {
+        return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.suggestMetaData(token, suggest)));
     }
 
     addDatasetToMap(dataset: Dataset): Observable<void> {
