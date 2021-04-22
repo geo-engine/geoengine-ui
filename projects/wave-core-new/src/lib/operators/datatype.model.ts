@@ -340,6 +340,11 @@ export abstract class VectorColumnDataType {
     abstract readonly code: string;
 
     /**
+     * @return Is this type a numeric data type?
+     */
+    abstract readonly isNumeric: boolean;
+
+    /**
      * Create a human readable output of the data type.
      *
      * @returns The name.
@@ -351,18 +356,22 @@ export abstract class VectorColumnDataType {
 
 class FloatColumn extends VectorColumnDataType {
     readonly code = 'float';
+    readonly isNumeric = true;
 }
 
 class IntColumn extends VectorColumnDataType {
     readonly code = 'int';
+    readonly isNumeric = true;
 }
 
 class TextColumn extends VectorColumnDataType {
     readonly code = 'text';
+    readonly isNumeric = false;
 }
 
 class CategoricalColumn extends VectorColumnDataType {
     readonly code = 'categorical';
+    readonly isNumeric = false; // TODO: define data type propetly
 }
 
 export class VectorColumnDataTypeCollection {

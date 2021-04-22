@@ -7,11 +7,15 @@ import {
     forwardRef,
     OnChanges,
     SimpleChanges,
+    OnDestroy,
 } from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {ColorBreakpoint} from '../color-breakpoint.model';
 import {Color, stringToRgbaStruct, TRANSPARENT} from '../color';
+import {Subject, Subscription} from 'rxjs';
+import {Config} from '../../config.service';
+import {debounceTime} from 'rxjs/operators';
 
 @Component({
     selector: 'wave-color-breakpoint',
@@ -20,18 +24,28 @@ import {Color, stringToRgbaStruct, TRANSPARENT} from '../color';
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorBreakpointInputComponent), multi: true}],
 })
-export class ColorBreakpointInputComponent implements ControlValueAccessor, AfterViewInit, OnChanges {
+export class ColorBreakpointInputComponent implements ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy {
     @Input() readonlyAttribute = false;
     @Input() readonlyColor = false;
     @Input() attributePlaceholder = 'attribute';
     @Input() colorPlaceholder = 'color';
 
-    onTouched?: () => void;
-    onChange?: (_: ColorBreakpoint) => void = undefined;
-
     private input: ColorBreakpoint = new ColorBreakpoint(0, TRANSPARENT);
+    private changedValue = new Subject<ColorBreakpoint>();
+    private onChangePropagationSubscription: Subscription;
 
-    constructor(private changeDetectorRef: ChangeDetectorRef) {}
+    constructor(private config: Config, private changeDetectorRef: ChangeDetectorRef) {
+        this.onChangePropagationSubscription = this.changedValue
+            .pipe(debounceTime(this.config.DELAYS.DEBOUNCE)) // defer emitting values while the user is typing
+            .subscribe((colorBreakpoint) => this.onChange(colorBreakpoint.clone()));
+    }
+
+    onTouched = (): void => {};
+    onChange = (_: ColorBreakpoint): void => {};
+
+    ngOnDestroy(): void {
+        this.onChangePropagationSubscription.unsubscribe();
+    }
 
     get colorBreakpoint(): ColorBreakpoint {
         return this.input;
@@ -60,16 +74,19 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, Afte
             return;
         }
 
-        const color = Color.fromRgbaLike(stringToRgbaStruct(value));
+        let color: Color;
+        try {
+            color = Color.fromRgbaLike(stringToRgbaStruct(value));
+        } catch (_error) {
+            return;
+        }
 
         this.input.setColor(color);
 
         this.propagateChange();
     }
 
-    ngAfterViewInit(): void {
-        // setTimeout(() => this.changeDetectorRef.markForCheck());
-    }
+    ngAfterViewInit(): void {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.inputType || changes.attributePlaceholder || changes.colorPlaceholder) {
@@ -79,18 +96,19 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, Afte
 
     // Set touched on blur
     onBlur(): void {
-        if (this.onTouched) {
-            this.onTouched();
-        }
+        this.onTouched();
     }
 
-    writeValue(brk: ColorBreakpoint): void {
-        this.colorBreakpoint = brk;
+    writeValue(colorBreakpoint: ColorBreakpoint | null): void {
+        if (!colorBreakpoint || colorBreakpoint.equals(this.colorBreakpoint)) {
+            return;
+        }
+
+        this.colorBreakpoint = colorBreakpoint.clone();
     }
 
     registerOnChange(fn: (_: ColorBreakpoint) => void): void {
         this.onChange = fn;
-        this.propagateChange();
     }
 
     registerOnTouched(fn: () => void): void {
@@ -98,8 +116,8 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, Afte
     }
 
     private propagateChange(): void {
-        if (this.onChange && this.colorBreakpoint) {
-            this.onChange(this.colorBreakpoint.clone());
+        if (this.colorBreakpoint) {
+            this.changedValue.next(this.colorBreakpoint);
         }
     }
 }

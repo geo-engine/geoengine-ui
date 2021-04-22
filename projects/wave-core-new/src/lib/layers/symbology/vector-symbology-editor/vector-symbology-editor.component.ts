@@ -15,6 +15,8 @@ import {ProjectService} from '../../../project/project.service';
 import {Config} from '../../../config.service';
 import {BackendService} from '../../../backend/backend.service';
 import {UserService} from '../../../users/user.service';
+import {ReplaySubject} from 'rxjs';
+import {first} from 'rxjs/operators';
 
 /**
  * An editor for generating raster symbologies.
@@ -33,6 +35,8 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     showFillColorEditor = false;
     showRadiusEditor = false;
 
+    numericAttributes = new ReplaySubject<Array<string>>(1);
+
     constructor(
         protected readonly projectService: ProjectService,
         protected readonly backend: BackendService,
@@ -41,13 +45,37 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         protected readonly config: Config,
     ) {}
 
-    ngOnChanges(_changes: SimpleChanges): void {}
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.layer && this.layer) {
+            this.projectService
+                .getVectorLayerMetadata(this.layer)
+                .pipe(first())
+                .subscribe((metadata) => {
+                    const numericColumnNames: Array<string> = metadata.columns
+                        .filter((column) => column.isNumeric)
+                        .keySeq()
+                        .toArray();
+                    this.numericAttributes.next(numericColumnNames);
+                });
+        }
+    }
 
     ngOnInit(): void {
         this.symbology = this.layer.symbology.clone();
 
         this.showFillColorEditor = this.symbology instanceof PointSymbology || this.symbology instanceof PolygonSymbology;
         this.showRadiusEditor = this.symbology instanceof PointSymbology;
+
+        this.projectService
+            .getVectorLayerMetadata(this.layer)
+            .pipe(first())
+            .subscribe((metadata) => {
+                const numericColumnNames: Array<string> = metadata.columns
+                    .filter((column) => column.isNumeric)
+                    .keySeq()
+                    .toArray();
+                this.numericAttributes.next(numericColumnNames);
+            });
     }
 
     ngAfterViewInit(): void {}
@@ -72,10 +100,30 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         } else {
             throw Error('This symbology has no fill color');
         }
+    }
 
-        this.projectService.changeLayer(this.layer, {
-            symbology: this.symbology,
-        });
+    get strokeColor(): ColorParam {
+        if (this.symbology instanceof PointSymbology) {
+            return this.symbology.stroke.color;
+        } else if (this.symbology instanceof PolygonSymbology) {
+            return this.symbology.stroke.color;
+        } else if (this.symbology instanceof LineSymbology) {
+            return this.symbology.stroke.color;
+        } else {
+            throw Error('This symbology has no fill color');
+        }
+    }
+
+    set strokeColor(strokeColor: ColorParam) {
+        if (this.symbology instanceof PointSymbology) {
+            this.updatePointSymbology({stroke: new Stroke(this.symbology.stroke.width, strokeColor)});
+        } else if (this.symbology instanceof PolygonSymbology) {
+            this.updatePolygonSymbology({stroke: new Stroke(this.symbology.stroke.width, strokeColor)});
+        } else if (this.symbology instanceof LineSymbology) {
+            this.updateLineSymbology({stroke: new Stroke(this.symbology.stroke.width, strokeColor)});
+        } else {
+            throw Error('This symbology has no fill color');
+        }
     }
 
     updatePointSymbology(params: {radius?: NumberParam; fillColor?: ColorParam; stroke?: Stroke; text?: TextSymbology}): void {
@@ -89,6 +137,10 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
             params.stroke ?? this.symbology.stroke,
             params.text ?? this.symbology.text,
         );
+
+        this.projectService.changeLayer(this.layer, {
+            symbology: this.symbology,
+        });
     }
 
     updateLineSymbology(params: {stroke?: Stroke; text?: TextSymbology}): void {
@@ -97,6 +149,10 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         }
 
         this.symbology = new LineSymbology(params.stroke ?? this.symbology.stroke, params.text ?? this.symbology.text);
+
+        this.projectService.changeLayer(this.layer, {
+            symbology: this.symbology,
+        });
     }
 
     updatePolygonSymbology(params: {fillColor?: ColorParam; stroke?: Stroke; text?: TextSymbology}): void {
@@ -109,5 +165,9 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
             params.stroke ?? this.symbology.stroke,
             params.text ?? this.symbology.text,
         );
+
+        this.projectService.changeLayer(this.layer, {
+            symbology: this.symbology,
+        });
     }
 }

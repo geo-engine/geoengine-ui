@@ -24,7 +24,10 @@
             </mat-panel-title>
         </mat-expansion-panel-header>
         <ng-template matExpansionPanelContent>
-            <wave-color-param-editor [(ngModel)]="fillColor"></wave-color-param-editor>
+            <wave-color-param-editor
+                [(ngModel)]="fillColor"
+                [attributes]="numericAttributes | async | valueDefault: []"
+            ></wave-color-param-editor>
         </ng-template>
     </mat-expansion-panel>
 
@@ -35,7 +38,13 @@
                 <span fxFlex>Stroke Color</span>
             </mat-panel-title>
         </mat-expansion-panel-header>
-        <ng-template matExpansionPanelContent> Test </ng-template>
+        <ng-template matExpansionPanelContent
+            ><wave-color-param-editor
+                [(ngModel)]="strokeColor"
+                [attributes]="numericAttributes | async | valueDefault: []"
+            ></wave-color-param-editor
+        ></ng-template>
+        <!-- TODO: numberParam for width -->
     </mat-expansion-panel>
 
     <!-- Points only -->
@@ -46,7 +55,9 @@
                 <span fxFlex>Radius</span>
             </mat-panel-title>
         </mat-expansion-panel-header>
-        <ng-template matExpansionPanelContent> Test </ng-template>
+        <ng-template matExpansionPanelContent>
+            <!-- TODO: numberParam for radius -->
+        </ng-template>
     </mat-expansion-panel>
 
     <!-- Optional -->
@@ -54,9 +65,11 @@
         <mat-expansion-panel-header>
             <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
                 <mat-icon>map</mat-icon>
-                <span fxFlex>Text</span>
+                <span fxFlex>Label</span>
             </mat-panel-title>
         </mat-expansion-panel-header>
-        <ng-template matExpansionPanelContent> Test </ng-template>
+        <ng-template matExpansionPanelContent>
+            <!-- TODO: textParam for label -->
+        </ng-template>
     </mat-expansion-panel>
 </mat-accordion>
