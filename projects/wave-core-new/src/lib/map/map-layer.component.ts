@@ -256,7 +256,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
     }
 
     private updateProjection(p: SpatialReference): void {
-        if (!this.spatialReference || this.source.getProjection().getCode() !== this.spatialReference.getCode()) {
+        if (!this.spatialReference || p.getCode() !== this.spatialReference.getCode()) {
             this.spatialReference = p;
             this.updateOlLayerProjection();
         }
