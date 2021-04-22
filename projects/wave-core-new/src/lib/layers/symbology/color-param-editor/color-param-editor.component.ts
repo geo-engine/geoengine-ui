@@ -9,7 +9,6 @@ import {
     forwardRef,
     HostListener,
     Input,
-    ChangeDetectorRef,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {BLACK, Color} from '../../../colors/color';
@@ -40,7 +39,7 @@ export class ColorParamEditorComponent implements OnChanges, OnDestroy, AfterVie
 
     protected defaultColorParam: ColorParam = new StaticColor(BLACK);
 
-    constructor(private changeDetectorRef: ChangeDetectorRef) {
+    constructor() {
         this.colorParam = this.defaultColorParam;
     }
 

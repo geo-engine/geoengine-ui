@@ -39,6 +39,7 @@ export * from './lib/layers/legend/legend-raster/raster-legend.component';
 export * from './lib/layers/legend/legend-vector/vector-legend.component';
 export * from './lib/layers/rename-layer/rename-layer.component';
 export * from './lib/layers/symbology/color-param-editor/color-param-editor.component';
+export * from './lib/layers/symbology/number-param-editor/number-param-editor.component';
 export * from './lib/layers/symbology/raster-symbology-editor/raster-symbology-editor.component';
 export * from './lib/layers/symbology/vector-symbology-editor/vector-symbology-editor.component';
 export * from './lib/logo.component';

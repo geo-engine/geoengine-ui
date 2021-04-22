@@ -3,24 +3,6 @@
     padding: 1rem;
 }
 
-mat-divider {
-    padding-bottom: 1rem;
-}
-
-mat-slider {
-    min-width: unset;
+mat-form-field {
     width: 100%;
-}
-
-.colorizer-preview {
-    height: 1.5rem;
-    border: 1px solid black;
-}
-
-.histogram {
-    width: 100%;
-
-    .mat-progress-spinner {
-        margin: 0 auto;
-    }
 }

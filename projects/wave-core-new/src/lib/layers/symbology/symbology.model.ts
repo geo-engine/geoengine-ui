@@ -816,8 +816,16 @@ export class TextSymbology {
     }
 
     createStyler(feature: OlFeature): OlStyleText {
+        const featureAttributeValue = feature.get(this.attribute);
+        let featureAttributeString: string;
+        if (featureAttributeValue === null || featureAttributeValue === undefined) {
+            featureAttributeString = '';
+        } else {
+            featureAttributeString = featureAttributeValue.toString();
+        }
+
         const textStyler = new TextStyler(
-            feature.get(this.attribute),
+            featureAttributeString,
             this.fillColor.getColor(feature).rgbaTuple(),
             this.stroke.createStyler(feature),
         );

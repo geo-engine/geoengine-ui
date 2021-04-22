@@ -102,6 +102,7 @@ import {ColorBreakpointInputComponent} from './colors/color-breakpoint-input/col
 import {AsyncNumberSanitizer, AsyncStringSanitizer, AsyncValueDefault} from './util/pipes/async-converters.pipe';
 import {VectorSymbologyEditorComponent} from './layers/symbology/vector-symbology-editor/vector-symbology-editor.component';
 import {ColorParamEditorComponent} from './layers/symbology/color-param-editor/color-param-editor.component';
+import {NumberParamEditorComponent} from './layers/symbology/number-param-editor/number-param-editor.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -183,6 +184,7 @@ const WAVE_COMPONENTS = [
     MultiLayerSelectionComponent,
     NavigationComponent,
     NewProjectComponent,
+    NumberParamEditorComponent,
     OlRasterLayerComponent,
     OlVectorLayerComponent,
     OperatorListComponent,
