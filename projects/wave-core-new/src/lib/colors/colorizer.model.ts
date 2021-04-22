@@ -6,10 +6,10 @@ export abstract class Colorizer {
     abstract readonly defaultColor: Color;
 
     static fromDict(dict: ColorizerDict): Colorizer {
-        if (dict.LinearGradient) {
-            return LinearGradient.fromLinearGradientDict(dict.LinearGradient);
-        } else if (dict.Palette) {
-            return PaletteColorizer.fromPaletteDict(dict.Palette);
+        if (dict.linearGradient) {
+            return LinearGradient.fromLinearGradientDict(dict.linearGradient);
+        } else if (dict.palette) {
+            return PaletteColorizer.fromPaletteDict(dict.palette);
         }
         throw new Error('Unimplemented or invalid colorizer');
     }
@@ -52,8 +52,8 @@ export class LinearGradient extends Colorizer {
     static fromLinearGradientDict(dict: LinearGradientDict): LinearGradient {
         return new LinearGradient(
             dict.breakpoints.map((b) => ColorBreakpoint.fromDict(b)),
-            Color.fromRgbaLike(rgbaColorFromDict(dict.no_data_color)),
-            Color.fromRgbaLike(rgbaColorFromDict(dict.default_color)),
+            Color.fromRgbaLike(rgbaColorFromDict(dict.noDataColor)),
+            Color.fromRgbaLike(rgbaColorFromDict(dict.defaultColor)),
         );
     }
 
@@ -120,10 +120,10 @@ export class LinearGradient extends Colorizer {
 
     toDict(): ColorizerDict {
         return {
-            LinearGradient: {
+            linearGradient: {
                 breakpoints: this.breakpoints.map((b) => b.toDict()),
-                no_data_color: colorToDict(this.noDataColor),
-                default_color: colorToDict(this.defaultColor),
+                noDataColor: colorToDict(this.noDataColor),
+                defaultColor: colorToDict(this.defaultColor),
             },
         };
     }
@@ -168,8 +168,8 @@ export class PaletteColorizer extends Colorizer {
         }
         return new PaletteColorizer(
             colors,
-            Color.fromRgbaLike(rgbaColorFromDict(dict.no_data_color)),
-            Color.fromRgbaLike(rgbaColorFromDict(dict.default_color)),
+            Color.fromRgbaLike(rgbaColorFromDict(dict.noDataColor)),
+            Color.fromRgbaLike(rgbaColorFromDict(dict.defaultColor)),
         );
     }
 
@@ -247,10 +247,10 @@ export class PaletteColorizer extends Colorizer {
         }
 
         return {
-            Palette: {
+            palette: {
                 colors,
-                no_data_color: colorToDict(this.noDataColor),
-                default_color: colorToDict(this.defaultColor),
+                noDataColor: colorToDict(this.noDataColor),
+                defaultColor: colorToDict(this.defaultColor),
             },
         };
     }

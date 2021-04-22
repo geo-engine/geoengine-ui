@@ -39,11 +39,11 @@ export abstract class Layer implements HasLayerId, HasLayerType, ToDict<LayerDic
      * Create the suitable layer type
      */
     static fromDict(dict: LayerDict): Layer {
-        if (dict.symbology.Raster) {
+        if (dict.symbology.raster) {
             return RasterLayer.fromDict(dict);
         }
 
-        if (dict.symbology.Vector) {
+        if (dict.symbology.vector) {
             return VectorLayer.fromDict(dict);
         }
 
@@ -156,7 +156,7 @@ export class RasterLayer extends Layer {
     }
 
     static fromDict(dict: LayerDict): Layer {
-        if (!dict.symbology.Raster) {
+        if (!dict.symbology.raster) {
             throw new Error('missing `Raster` to deserialize');
         }
 
@@ -165,7 +165,7 @@ export class RasterLayer extends Layer {
             isLegendVisible: dict.visibility.legend,
             isVisible: dict.visibility.data,
             workflowId: dict.workflow,
-            symbology: RasterSymbology.fromRasterSymbologyDict(dict.symbology.Raster),
+            symbology: RasterSymbology.fromRasterSymbologyDict(dict.symbology.raster),
         });
     }
 

@@ -48,13 +48,13 @@ export class UploadComponent implements OnInit {
                     "id": null,
                     "name": "Uploaded NDVI",
                     "description": "NDVI data from MODIS",
-                    "source_operator": "GdalSource"
+                    "sourceOperator": "GdalSource"
                 },
                 "meta_data": {
                     "GdalMetaDataRegular": {
-                        "result_descriptor": {
-                            "data_type": "U8",
-                            "spatial_reference": "EPSG:4326",
+                        "resultDescriptor": {
+                            "dataType": "U8",
+                            "spatialReference": "EPSG:4326",
                             "measurement": "unitless"
                         },
                         "params": {
@@ -69,11 +69,11 @@ export class UploadComponent implements OnInit {
                                 "y_pixel_size": -0.1
                             },
                             "bbox": {
-                                "lower_left_coordinate": {
+                                "lowerLeftCoordinate": {
                                     "x": -180.0,
                                     "y": -90.0
                                 },
-                                "upper_right_coordinate": {
+                                "upperRightCoordinate": {
                                     "x": 180.0,
                                     "y": 90.0
                                 }
@@ -98,14 +98,14 @@ export class UploadComponent implements OnInit {
                     "id": null,
                     "name": "Uploaded Natural Earth 10m Ports",
                     "description": "Ports from Natural Earth",
-                    "source_operator": "OgrSource"
+                    "sourceOperator": "OgrSource"
                 },
                 "meta_data": {
                     "OgrMetaData": {
                         "loading_info": {
                             "file_name": "operators/test-data/vector/data/ne_10m_ports/ne_10m_ports.shp",
                             "layer_name": "ne_10m_ports",
-                            "data_type": "MultiPoint",
+                            "dataType": "MultiPoint",
                             "time": "none",
                             "columns": {
                                 "x": "",
@@ -127,9 +127,9 @@ export class UploadComponent implements OnInit {
                             "on_error": "skip",
                             "provenance": null
                         },
-                        "result_descriptor": {
-                            "data_type": "MultiPoint",
-                            "spatial_reference": "EPSG:4326",
+                        "resultDescriptor": {
+                            "dataType": "MultiPoint",
+                            "spatialReference": "EPSG:4326",
                             "columns": {
                                 "website": "text",
                                 "name": "text",
@@ -232,9 +232,9 @@ export class UploadComponent implements OnInit {
 
         const create: AutoCreateDatasetDict = {
             upload: uploadId,
-            dataset_name: this.simpleCreateForm.controls['name'].value,
-            dataset_description: this.simpleCreateForm.controls['description'].value,
-            main_file: this.selectedMainFile,
+            datasetName: this.simpleCreateForm.controls['name'].value,
+            datasetDescription: this.simpleCreateForm.controls['description'].value,
+            mainFile: this.selectedMainFile,
         };
 
         this.datasetService.autoCreateDataset(create).subscribe(

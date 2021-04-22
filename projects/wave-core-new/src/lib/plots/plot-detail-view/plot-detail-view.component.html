@@ -1,5 +1,5 @@
 <wave-dialog-header>{{ plot.name }}</wave-dialog-header>
-<mat-dialog-content [ngSwitch]="plotData?.output_format">
+<mat-dialog-content [ngSwitch]="plotData?.outputFormat">
     <ng-template ngSwitchCase="ImagePng">
         <img [src]="plotData?.data" [alt]="plot.name" />
         <mat-progress-bar mode="indeterminate" *ngIf="plotLoading$ | async"></mat-progress-bar>

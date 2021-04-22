@@ -1,13 +1,13 @@
 <mat-card>
     <mat-card-header>
-        <img mat-card-avatar [src]="plotIcon" [alt]="plotData?.output_format" />
+        <img mat-card-avatar [src]="plotIcon" [alt]="plotData?.outputFormat" />
         <mat-card-title>{{ plot.name }}</mat-card-title>
-        <mat-card-subtitle>{{ plotData?.plot_type }}</mat-card-subtitle>
+        <mat-card-subtitle>{{ plotData?.plotType }}</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content *ngIf="isLoading">
         <mat-spinner></mat-spinner>
     </mat-card-content>
-    <mat-card-content *ngIf="isOk" [ngSwitch]="plotData?.output_format">
+    <mat-card-content *ngIf="isOk" [ngSwitch]="plotData?.outputFormat">
         <ng-template ngSwitchCase="ImagePng">
             <img [src]="plotData?.data" [alt]="plot.name" />
         </ng-template>

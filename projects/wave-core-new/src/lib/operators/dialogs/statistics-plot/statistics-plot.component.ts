@@ -53,8 +53,8 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
                         operator: {
                             type: 'Statistics',
                             params: {},
-                            raster_sources: workflows.map((workflow) => workflow.operator),
-                            vector_sources: [],
+                            rasterSources: workflows.map((workflow) => workflow.operator),
+                            vectorSources: [],
                         },
                     }),
                 ),

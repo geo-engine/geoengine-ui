@@ -94,8 +94,8 @@ export class RasterVectorJoinComponent implements OnDestroy {
                         operator: {
                             type: 'RasterVectorJoin',
                             params,
-                            vector_sources: [vectorOperator],
-                            raster_sources: rasterOperators,
+                            vectorSources: [vectorOperator],
+                            rasterSources: rasterOperators,
                         },
                     }),
                 ),
