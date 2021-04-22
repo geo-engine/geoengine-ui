@@ -29,6 +29,8 @@ import {
     CreateDatasetDict,
     AutoCreateDatasetDict,
     DatasetIdResponseDict,
+    MetaDataSuggestionDict,
+    SuggestMetaDataDict,
     ResultDescriptorDict,
 } from './backend.model';
 
@@ -261,6 +263,17 @@ export class BackendService {
 
     autoCreateDataset(sessionId: UUID, createDataset: AutoCreateDatasetDict): Observable<DatasetIdResponseDict> {
         return this.http.post<DatasetIdResponseDict>(this.config.API_URL + '/dataset/auto', createDataset, {
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    suggestMetaData(sessionId: UUID, suggestMetaData: SuggestMetaDataDict): Observable<MetaDataSuggestionDict> {
+        const params = new NullDiscardingHttpParams();
+        params.set('upload', suggestMetaData.upload);
+        params.set('main_file', suggestMetaData.main_file);
+
+        return this.http.get<MetaDataSuggestionDict>(this.config.API_URL + '/dataset/suggest', {
+            params: params.httpParams,
             headers: BackendService.authorizationHeader(sessionId),
         });
     }

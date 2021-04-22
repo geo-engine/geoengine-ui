@@ -282,9 +282,11 @@ export interface RasterResultDescriptorDict extends ResultDescriptorDict {
 }
 
 export interface VectorResultDescriptorDict extends ResultDescriptorDict {
-    data_type: 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
+    data_type: VectorDataType;
     columns: {[key: string]: 'categorical' | 'int' | 'float' | 'text'};
 }
+
+type VectorDataType = 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
 
 export interface PlotResultDescriptorDict extends ResultDescriptorDict {
     spatial_reference: undefined;
@@ -313,7 +315,19 @@ export interface DatasetIdResponseDict {
 
 export interface CreateDatasetDict {
     upload: UUID;
-    // TODO: dataset definition
+    definition: DatasetDefinitionDict;
+}
+
+export interface DatasetDefinitionDict {
+    properties: AddDatasetDict;
+    meta_data: MetaDataDefinitionDict;
+}
+
+export interface AddDatasetDict {
+    id?: DatasetIdDict;
+    name: string;
+    description: string;
+    source_operator: string;
 }
 
 export interface AutoCreateDatasetDict {
@@ -321,4 +335,95 @@ export interface AutoCreateDatasetDict {
     dataset_name: string;
     dataset_description: string;
     main_file: string;
+}
+
+export interface SuggestMetaDataDict {
+    upload: UUID;
+    main_file?: string;
+}
+
+export interface MetaDataSuggestionDict {
+    main_file: string;
+    meta_data: MetaDataDefinitionDict;
+}
+
+export interface MetaDataDefinitionDict {
+    OgrMetaData?: OgrMetaDataDict;
+}
+
+export interface OgrMetaDataDict {
+    loading_info: OgrSourceDatasetDict;
+    result_descriptor: VectorResultDescriptorDict;
+}
+
+export interface OgrSourceDatasetDict {
+    file_name: string;
+    layer_name: string;
+    data_type?: VectorDataType;
+    time: 'none' | OgrSourceDatasetTimeTypeDict;
+    columns?: OgrSourceColumnSpecDict;
+    default_geometry?: TypedGeometryDict;
+    force_ogr_time_filter: boolean;
+    on_error: 'skip' | 'abort' | 'keep';
+    provenance?: ProvenanceInformationDict;
+}
+
+export interface OgrSourceDatasetTimeTypeDict {
+    start?: {
+        start_field: string;
+        start_format: OgrSourceTimeFormatDict;
+        duration: number;
+    };
+    'start+end'?: {
+        start_field: string;
+        start_format: OgrSourceTimeFormatDict;
+        end_field: string;
+        end_format: OgrSourceTimeFormatDict;
+    };
+    'start+duration'?: {
+        start_field: string;
+        start_format: OgrSourceTimeFormatDict;
+        duration_field: string;
+    };
+}
+
+export interface OgrSourceTimeFormatDict {
+    format: 'seconds' | 'iso' | 'custom';
+    custom_format?: string;
+}
+
+export interface OgrSourceColumnSpecDict {
+    x: string;
+    y?: string;
+    float: Array<string>;
+    int: Array<string>;
+    textual: Array<string>;
+}
+
+export interface TypedGeometryDict {
+    Data?: '';
+    MultiPoint?: MultiPointDict;
+    MultiLineString?: MultiLineStringDict;
+    MultiPolygon?: MultiPolygonDict;
+}
+
+export interface MultiPointDict {
+    coordinates: Array<CoordinateDict>;
+}
+
+export interface MultiLineStringDict {
+    coordinates: Array<Array<CoordinateDict>>;
+}
+
+export interface MultiPolygonDict {
+    polygons: Array<PolygonDict>;
+}
+
+export type PolygonDict = Array<RingDict>;
+export type RingDict = Array<CoordinateDict>;
+
+export interface ProvenanceInformationDict {
+    citation: string;
+    license: string;
+    uri: string;
 }
