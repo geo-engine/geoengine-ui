@@ -1,0 +1,11 @@
+<mat-card *ngIf='notifications.length' [style.overflow]="'auto'" [style.height.px]="'350'">
+    <mat-list *ngFor='let notification of notifications' dense>
+        <mat-list-item>
+            <mat-icon *ngIf='notification.type' matListIcon color="warn">error</mat-icon>
+            <mat-icon *ngIf='!notification.type' matListIcon>notifications</mat-icon>
+            <h3 matLine>{{notification.message}}</h3>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+    </mat-list>
+</mat-card>
+
