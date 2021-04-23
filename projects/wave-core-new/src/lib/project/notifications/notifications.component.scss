@@ -1,0 +1,16 @@
+:host {
+    display: list-item;
+    padding-top: 0;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+mat-card {
+    padding: 0;
+}
+.actions {
+    text-align: right;
+    padding-top: 1rem;
+}
+.deleteIcon {
+    transform: scale(0.75);
+}

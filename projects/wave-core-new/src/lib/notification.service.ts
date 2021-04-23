@@ -7,13 +7,14 @@ export enum NotificationType {
     Error,
 }
 
-interface Notification {
+export interface Notification {
     type: NotificationType;
     message: string;
 }
 
 @Injectable()
 export class NotificationService {
+    public notifications: Array<Notification> = [];
     private notification$ = new Subject<Notification>();
 
     constructor(private snackBar: MatSnackBar) {}
@@ -23,6 +24,7 @@ export class NotificationService {
     }
 
     info(message: string): void {
+        const notification: Notification = {type: NotificationType.Info, message};
         this.notification$.next({
             type: NotificationType.Info,
             message,
@@ -30,9 +32,11 @@ export class NotificationService {
         this.snackBar.open(message, undefined, {
             duration: 3000,
         });
+        this.notifications.push(notification);
     }
 
     error(message: string): void {
+        const notification: Notification = {type: NotificationType.Error, message};
         this.notification$.next({
             type: NotificationType.Error,
             message,
@@ -40,5 +44,6 @@ export class NotificationService {
         this.snackBar.open(message, undefined, {
             duration: 5000,
         });
+        this.notifications.push(notification);
     }
 }
