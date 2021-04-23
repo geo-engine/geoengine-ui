@@ -369,9 +369,9 @@ class TextColumn extends VectorColumnDataType {
     readonly isNumeric = false;
 }
 
-class CategoricalColumn extends VectorColumnDataType {
-    readonly code = 'categorical';
-    readonly isNumeric = false; // TODO: define data type propetly
+class CategoryColumn extends VectorColumnDataType {
+    readonly code = 'category';
+    readonly isNumeric = false;
 }
 
 export class VectorColumnDataTypeCollection {
@@ -381,7 +381,7 @@ export class VectorColumnDataTypeCollection {
     readonly Float: VectorColumnDataType = new FloatColumn();
     readonly Int: VectorColumnDataType = new IntColumn();
     readonly Text: VectorColumnDataType = new TextColumn();
-    readonly Categorical: VectorColumnDataType = new CategoricalColumn();
+    readonly Category: VectorColumnDataType = new CategoryColumn();
 
     fromCode(code: string): VectorColumnDataType {
         switch (code) {
@@ -391,8 +391,8 @@ export class VectorColumnDataTypeCollection {
                 return this.Int;
             case this.Text.code:
                 return this.Text;
-            case this.Categorical.code:
-                return this.Categorical;
+            case this.Category.code:
+                return this.Category;
             default:
                 throw new Error(`Invalid Column Data Type: ${code}`);
         }
