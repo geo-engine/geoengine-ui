@@ -733,7 +733,9 @@ export class DerivedNumber extends NumberParam {
     }
 
     getNumber(feature: OlFeature): number {
-        return feature.get(this.attribute) * this.factor;
+        const value = feature.get(this.attribute) * this.factor;
+        // ensure to only have values >= 0
+        return Math.max(value, 0);
     }
 
     equals(other: NumberParam): boolean {
