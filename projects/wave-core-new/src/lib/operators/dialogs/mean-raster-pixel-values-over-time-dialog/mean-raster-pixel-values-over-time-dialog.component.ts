@@ -11,7 +11,7 @@ import {OperatorParams, WorkflowDict} from '../../../backend/backend.model';
 import {Observable} from 'rxjs';
 
 interface MeanRasterPixelValuesOverTimeParams extends OperatorParams {
-    time_position: TimePosition;
+    timePosition: TimePosition;
     area: boolean;
 }
 
@@ -92,7 +92,7 @@ export class MeanRasterPixelValuesOverTimeDialogComponent implements OnInit, Aft
         const area: boolean = this.form.controls['area'].value;
 
         const params: MeanRasterPixelValuesOverTimeParams = {
-            time_position: timePosition,
+            timePosition,
             area,
         };
 
@@ -105,8 +105,8 @@ export class MeanRasterPixelValuesOverTimeDialogComponent implements OnInit, Aft
                         operator: {
                             type: 'MeanRasterPixelValuesOverTime',
                             params,
-                            raster_sources: [inputWorkflow.operator],
-                            vector_sources: [],
+                            rasterSources: [inputWorkflow.operator],
+                            vectorSources: [],
                         },
                     }),
                 ),

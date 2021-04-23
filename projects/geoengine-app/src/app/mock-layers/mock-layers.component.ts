@@ -36,13 +36,13 @@ export class MockLayersComponent implements OnInit {
                             symbology: RasterSymbology.fromRasterSymbologyDict({
                                 opacity: 1.0,
                                 colorizer: {
-                                    LinearGradient: {
+                                    linearGradient: {
                                         breakpoints: [
                                             {value: 0, color: [0, 0, 0, 255]},
                                             {value: 255, color: [255, 255, 255, 255]},
                                         ],
-                                        default_color: [0, 0, 0, 255],
-                                        no_data_color: [0, 0, 0, 255],
+                                        defaultColor: [0, 0, 0, 255],
+                                        noDataColor: [0, 0, 0, 255],
                                     },
                                 },
                             }),
@@ -91,9 +91,9 @@ export class MockLayersComponent implements OnInit {
                             workflowId,
                             name: 'Two cities and (0, 0)',
                             symbology: PointSymbology.fromPointSymbologyDict({
-                                radius: {Static: 10},
-                                stroke: {width: {Static: 10}, color: {Static: [0, 0, 0, 0]}},
-                                fill_color: {Static: [0, 0, 0, 0]},
+                                radius: {static: 10},
+                                stroke: {width: {static: 10}, color: {static: [0, 0, 0, 0]}},
+                                fillColor: {static: [0, 0, 0, 0]},
                             }),
                             isLegendVisible: false,
                             isVisible: true,

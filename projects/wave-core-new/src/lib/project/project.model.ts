@@ -42,11 +42,11 @@ export class Project implements ToDict<ProjectDict> {
             id: dict.id,
             name: dict.name,
             description: dict.description,
-            spatialReference: SpatialReferences.fromCode(dict.bounds.spatial_reference),
-            time: Time.fromDict(dict.bounds.time_interval),
+            spatialReference: SpatialReferences.fromCode(dict.bounds.spatialReference),
+            time: Time.fromDict(dict.bounds.timeInterval),
             plots: dict.plots.map(Plot.fromDict),
             layers: dict.layers.map(Layer.fromDict),
-            timeStepDuration: timeStepDictTotimeStepDuration(dict.time_step),
+            timeStepDuration: timeStepDictTotimeStepDuration(dict.timeStep),
         });
     }
 
@@ -101,7 +101,7 @@ export class Project implements ToDict<ProjectDict> {
             bounds: this.toBoundsDict(),
             layers: this._layers.map((layer) => layer.toDict()),
             plots: this._plots.map((plot) => plot.toDict()),
-            time_step: timeStepDurationToTimeStepDict(this.timeStepDuration),
+            timeStep: timeStepDurationToTimeStepDict(this.timeStepDuration),
         };
     }
 
@@ -109,14 +109,14 @@ export class Project implements ToDict<ProjectDict> {
         const bbox = this._spatialReference.getExtent(); // TODO: allow tighter bbox
 
         return {
-            spatial_reference: this._spatialReference.getCode(),
-            time_interval: this._time.toDict(),
-            bounding_box: {
-                lower_left_coordinate: {
+            spatialReference: this._spatialReference.getCode(),
+            timeInterval: this._time.toDict(),
+            boundingBox: {
+                lowerLeftCoordinate: {
                     x: bbox[0],
                     y: bbox[1],
                 },
-                upper_right_coordinate: {
+                upperRightCoordinate: {
                     x: bbox[2],
                     y: bbox[3],
                 },

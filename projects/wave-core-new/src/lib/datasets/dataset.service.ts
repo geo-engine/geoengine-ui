@@ -67,7 +67,7 @@ export class DatasetService {
 
         return this.projectService.registerWorkflow(workflow).pipe(
             mergeMap((workflowId) => {
-                if (dataset.result_descriptor.getTypeString() === 'Raster') {
+                if (dataset.resultDescriptor.getTypeString() === 'Raster') {
                     return this.projectService.addLayer(
                         new RasterLayer({
                             workflowId,
@@ -75,13 +75,13 @@ export class DatasetService {
                             symbology: RasterSymbology.fromRasterSymbologyDict({
                                 opacity: 1.0,
                                 colorizer: {
-                                    LinearGradient: {
+                                    linearGradient: {
                                         breakpoints: [
                                             {value: 1, color: [0, 0, 0, 255]},
                                             {value: 255, color: [255, 255, 255, 255]},
                                         ],
-                                        default_color: [0, 0, 0, 0],
-                                        no_data_color: [0, 0, 0, 0],
+                                        defaultColor: [0, 0, 0, 0],
+                                        noDataColor: [0, 0, 0, 0],
                                     },
                                 },
                             }),
@@ -90,33 +90,33 @@ export class DatasetService {
                         }),
                     );
                 } else {
-                    const resultDescriptor = dataset.result_descriptor as VectorResultDescriptor;
+                    const resultDescriptor = dataset.resultDescriptor as VectorResultDescriptor;
 
                     let symbology: Symbology;
 
-                    switch (resultDescriptor.data_type) {
+                    switch (resultDescriptor.dataType) {
                         case VectorDataTypes.MultiPoint:
                             symbology = PointSymbology.fromPointSymbologyDict({
-                                radius: {Static: 10},
+                                radius: {static: 10},
                                 stroke: {
-                                    width: {Static: 1},
-                                    color: {Static: [0, 0, 0, 255]},
+                                    width: {static: 1},
+                                    color: {static: [0, 0, 0, 255]},
                                 },
-                                fill_color: {Static: colorToDict(this.randomColorService.getRandomColorRgba())},
+                                fillColor: {static: colorToDict(this.randomColorService.getRandomColorRgba())},
                             });
                             break;
                         case VectorDataTypes.MultiLineString:
                             symbology = LineSymbology.fromLineSymbologyDict({
                                 stroke: {
-                                    width: {Static: 1},
-                                    color: {Static: colorToDict(this.randomColorService.getRandomColorRgba())},
+                                    width: {static: 1},
+                                    color: {static: colorToDict(this.randomColorService.getRandomColorRgba())},
                                 },
                             });
                             break;
                         case VectorDataTypes.MultiPolygon:
                             symbology = PolygonSymbology.fromPolygonSymbologyDict({
-                                stroke: {width: {Static: 1}, color: {Static: [0, 0, 0, 255]}},
-                                fill_color: {Static: colorToDict(this.randomColorService.getRandomColorRgba())},
+                                stroke: {width: {static: 1}, color: {static: [0, 0, 0, 255]}},
+                                fillColor: {static: colorToDict(this.randomColorService.getRandomColorRgba())},
                             });
                             break;
                         default:

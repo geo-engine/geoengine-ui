@@ -152,12 +152,12 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
                         operator: {
                             type: 'Histogram',
                             params: {
-                                column_name: attributeName,
+                                columnName: attributeName,
                                 buckets,
                                 bounds: range,
                             } as HistogramParams,
-                            raster_sources: inputWorkflow.type === 'Raster' ? [inputWorkflow.operator] : [],
-                            vector_sources: inputWorkflow.type === 'Vector' ? [inputWorkflow.operator] : [],
+                            rasterSources: inputWorkflow.type === 'Raster' ? [inputWorkflow.operator] : [],
+                            vectorSources: inputWorkflow.type === 'Vector' ? [inputWorkflow.operator] : [],
                         },
                     }),
                 ),

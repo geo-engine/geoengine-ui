@@ -13,15 +13,15 @@ export class Dataset {
     readonly id: InternalDatasetId; // TODO: support all Id types
     readonly name: string;
     readonly description: string;
-    readonly result_descriptor: ResultDescriptor;
-    readonly source_operator: string;
+    readonly resultDescriptor: ResultDescriptor;
+    readonly sourceOperator: string;
 
     constructor(config: DatasetDict) {
         this.id = InternalDatasetId.fromDict(config.id);
         this.name = config.name;
         this.description = config.description;
-        this.result_descriptor = ResultDescriptor.fromDict(config.result_descriptor);
-        this.source_operator = config.source_operator;
+        this.resultDescriptor = ResultDescriptor.fromDict(config.resultDescriptor);
+        this.sourceOperator = config.sourceOperator;
     }
 
     static fromDict(dict: DatasetDict): Dataset {
@@ -30,9 +30,9 @@ export class Dataset {
 
     createSourceWorkflow(): WorkflowDict {
         return {
-            type: this.result_descriptor.getTypeString(),
+            type: this.resultDescriptor.getTypeString(),
             operator: {
-                type: this.source_operator,
+                type: this.sourceOperator,
                 params: {
                     dataset: this.id.toDict(),
                 },
@@ -45,7 +45,7 @@ export class InternalDatasetId {
     Internal: UUID;
 
     constructor(config: InternalDatasetIdDict) {
-        this.Internal = config.Internal;
+        this.Internal = config.internal;
     }
 
     static fromDict(config: InternalDatasetIdDict): InternalDatasetId {
@@ -54,39 +54,41 @@ export class InternalDatasetId {
 
     toDict(): InternalDatasetIdDict {
         return {
-            Internal: this.Internal,
+            internal: this.Internal,
         };
     }
 }
 
 export abstract class ResultDescriptor {
-    readonly spatial_reference: SpatialReference;
+    readonly spatialReference: SpatialReference;
 
     protected constructor(spatialReference: SpatialReference) {
-        this.spatial_reference = spatialReference;
+        this.spatialReference = spatialReference;
     }
 
     static fromDict(dict: DatasetResultDescriptorDict): ResultDescriptor {
-        if ('Vector' in dict) {
+        if ('vector' in dict) {
             return VectorResultDescriptor.fromDict(dict);
-        } else {
+        } else if ('raster' in dict) {
             return RasterResultDescriptor.fromDict(dict);
         }
+
+        throw Error('invalid result descriptor type');
     }
 
     abstract getTypeString(): 'Vector' | 'Raster';
 }
 
 export class RasterResultDescriptor extends ResultDescriptor {
-    readonly data_type: RasterDataType;
+    readonly dataType: RasterDataType;
 
     constructor(config: DatasetResultDescriptorDict) {
-        if (!config.Raster) {
-            throw new Error('missing `VectorResultDescriptorDict`');
+        if (!config.raster) {
+            throw new Error('missing `RasterResultDescriptorDict`');
         }
 
-        super(SpatialReferences.fromCode(config.Raster.spatial_reference));
-        this.data_type = RasterDataTypes.fromCode(config.Raster.data_type);
+        super(SpatialReferences.fromCode(config.raster.spatialReference));
+        this.dataType = RasterDataTypes.fromCode(config.raster.dataType);
     }
 
     static fromDict(dict: DatasetResultDescriptorDict): ResultDescriptor {
@@ -99,17 +101,17 @@ export class RasterResultDescriptor extends ResultDescriptor {
 }
 
 export class VectorResultDescriptor extends ResultDescriptor {
-    readonly data_type: VectorDataType;
+    readonly dataType: VectorDataType;
     readonly columns: Map<string, VectorColumnDataType>;
 
     constructor(config: DatasetResultDescriptorDict) {
-        if (!config.Vector) {
+        if (!config.vector) {
             throw new Error('missing `VectorResultDescriptorDict`');
         }
 
-        super(SpatialReferences.fromCode(config.Vector.spatial_reference));
-        this.data_type = VectorDataTypes.fromCode(config.Vector.data_type);
-        this.columns = new Map(Object.entries(config.Vector.columns).map(([key, value]) => [key, VectorColumnDataTypes.fromCode(value)]));
+        super(SpatialReferences.fromCode(config.vector.spatialReference));
+        this.dataType = VectorDataTypes.fromCode(config.vector.dataType);
+        this.columns = new Map(Object.entries(config.vector.columns).map(([key, value]) => [key, VectorColumnDataTypes.fromCode(value)]));
     }
 
     static fromDict(dict: DatasetResultDescriptorDict): ResultDescriptor {

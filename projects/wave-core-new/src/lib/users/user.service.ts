@@ -136,9 +136,9 @@ export class UserService {
             user: new User({
                 id: sessionDict.user.id,
                 email: sessionDict.user.email,
-                realName: sessionDict.user.real_name,
+                realName: sessionDict.user.realName,
             }),
-            validUntil: utc(sessionDict.valid_until),
+            validUntil: utc(sessionDict.validUntil),
             lastProjectId: sessionDict.project,
             lastView: sessionDict.view,
         };

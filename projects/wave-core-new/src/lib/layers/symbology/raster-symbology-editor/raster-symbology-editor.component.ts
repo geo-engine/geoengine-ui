@@ -101,12 +101,12 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         }
     }
 
-    updateBounds(histogramSignal: {bin_start: [number, number]}): void {
-        if (!histogramSignal || !histogramSignal.bin_start || histogramSignal.bin_start.length !== 2) {
+    updateBounds(histogramSignal: {binStart: [number, number]}): void {
+        if (!histogramSignal || !histogramSignal.binStart || histogramSignal.binStart.length !== 2) {
             return;
         }
 
-        const [min, max] = histogramSignal.bin_start;
+        const [min, max] = histogramSignal.binStart;
 
         this.updateLayerMinValue(min);
         this.updateLayerMaxValue(max);
@@ -271,7 +271,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
                     workflowId,
                     {
                         bbox: extentToBboxDict(viewport.extent),
-                        spatial_resolution: [viewport.resolution, viewport.resolution],
+                        spatialResolution: [viewport.resolution, viewport.resolution],
                         time: time.toDict(),
                     },
                     sessionToken,
@@ -295,8 +295,8 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
                                 bounds: 'data',
                                 interactive: true,
                             } as HistogramParams,
-                            raster_sources: [workflow.operator],
-                            vector_sources: [],
+                            rasterSources: [workflow.operator],
+                            vectorSources: [],
                         },
                     } as WorkflowDict),
                     this.userService.getSessionTokenForRequest(),
