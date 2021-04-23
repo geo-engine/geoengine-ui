@@ -106,14 +106,14 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
     }
 
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}): void {
-        let minMaxInitialChanged = false;
+        let minMaxChanged = false;
 
         // eslint-disable-next-line guard-for-in
         for (const propName in changes) {
             switch (propName) {
                 case 'min':
                 case 'max':
-                    minMaxInitialChanged = true;
+                    minMaxChanged = true;
                     break;
                 case 'layers':
                 case 'types':
@@ -150,7 +150,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
             }
         }
 
-        if (minMaxInitialChanged) {
+        if (minMaxChanged) {
             this.updateLayersForSelection();
         }
     }
