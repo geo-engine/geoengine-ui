@@ -16,7 +16,7 @@ import {
 } from '../backend/backend.model';
 import {RandomColorService} from '../util/services/random-color.service';
 import {RasterLayer, VectorLayer} from '../layers/layer.model';
-import {LineSymbology, PointSymbology, PolygonSymbology, RasterSymbology, Symbology} from '../layers/symbology/symbology.model';
+import {LineSymbology, PointSymbology, PolygonSymbology, RasterSymbology, VectorSymbology} from '../layers/symbology/symbology.model';
 import {VectorDataTypes} from '../operators/datatype.model';
 import {colorToDict} from '../colors/color';
 import {ProjectService} from '../project/project.service';
@@ -92,7 +92,7 @@ export class DatasetService {
                 } else {
                     const resultDescriptor = dataset.resultDescriptor as VectorResultDescriptor;
 
-                    let symbology: Symbology;
+                    let symbology: VectorSymbology;
 
                     switch (resultDescriptor.dataType) {
                         case VectorDataTypes.MultiPoint:

@@ -62,7 +62,7 @@ export class LinearGradient extends Colorizer {
             return this.noDataColor;
         }
 
-        if (value < this.breakpoints[0].value || value > this.breakpoints[this.breakpoints.length].value) {
+        if (!this.breakpoints.length || value < this.breakpoints[0].value || value > this.breakpoints[this.breakpoints.length - 1].value) {
             return this.defaultColor;
         }
 

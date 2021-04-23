@@ -12,6 +12,7 @@ import {
     StrokeParamDict,
     SymbologyDict,
     TextSymbologyDict,
+    VectorSymbologyDict,
 } from '../../backend/backend.model';
 import {Circle as OlStyleCircle, Fill as OlStyleFill, Stroke as OlStyleStroke, Style as OlStyle, Text as OlStyleText} from 'ol/style';
 import {StyleFunction as OlStyleFunction} from 'ol/style/Style';
@@ -88,6 +89,17 @@ export abstract class Symbology {
 }
 
 export abstract class VectorSymbology extends Symbology {
+    static fromVectorSymbologyDict(dict: VectorSymbologyDict): VectorSymbology {
+        if (dict.point) {
+            return PointSymbology.fromPointSymbologyDict(dict.point);
+        } else if (dict.line) {
+            return LineSymbology.fromLineSymbologyDict(dict.line);
+        } else if (dict.polygon) {
+            return PolygonSymbology.fromPolygonSymbologyDict(dict.polygon);
+        }
+        throw new Error('Invalid Vector Symbology type.');
+    }
+
     createStyleFunction(): OlStyleFunction {
         return (feature: FeatureLike, _resolution: number): OlStyle => {
             const styler = this.createStyler((feature as unknown) as OlFeature);
@@ -110,6 +122,8 @@ export abstract class VectorSymbology extends Symbology {
     createHighlightStyle(feature: OlFeature): OlStyle {
         return this.createStyler(feature).createHighlightStyle();
     }
+
+    abstract clone(): VectorSymbology;
 
     protected abstract createStyler(feature: OlFeature): Styler;
 }
@@ -719,7 +733,9 @@ export class DerivedNumber extends NumberParam {
     }
 
     getNumber(feature: OlFeature): number {
-        return feature.get(this.attribute) * this.factor;
+        const value = feature.get(this.attribute) * this.factor;
+        // ensure to only have values >= 0
+        return Math.max(value, 0);
     }
 
     equals(other: NumberParam): boolean {
@@ -809,8 +825,16 @@ export class TextSymbology {
     }
 
     createStyler(feature: OlFeature): OlStyleText {
+        const featureAttributeValue = feature.get(this.attribute);
+        let featureAttributeString: string;
+        if (featureAttributeValue === null || featureAttributeValue === undefined) {
+            featureAttributeString = '';
+        } else {
+            featureAttributeString = featureAttributeValue.toString();
+        }
+
         const textStyler = new TextStyler(
-            feature.get(this.attribute),
+            featureAttributeString,
             this.fillColor.getColor(feature).rgbaTuple(),
             this.stroke.createStyler(feature),
         );
