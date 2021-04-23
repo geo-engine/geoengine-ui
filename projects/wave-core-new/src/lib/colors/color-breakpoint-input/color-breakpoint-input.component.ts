@@ -61,7 +61,7 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, Afte
     }
 
     updateValue(value: number): void {
-        if (!value || value === this.colorBreakpoint.value) {
+        if (value === undefined || value === null || value === this.colorBreakpoint.value) {
             return;
         }
 
