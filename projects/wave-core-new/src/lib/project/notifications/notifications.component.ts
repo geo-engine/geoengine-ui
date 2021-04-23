@@ -19,4 +19,13 @@ export class NotificationsComponent implements OnInit {
         this.notifications = this.notificationService.notifications;
         this.notifications = this.notifications.reverse();
     }
+
+    removeAllNotifications(): void {
+        this.notifications = [];
+    }
+
+    removeCurrentNotification(value: Notification): void {
+        const index: number = this.notifications.indexOf(value);
+        this.notifications.splice(index, 1);
+    }
 }

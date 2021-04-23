@@ -1,6 +1,9 @@
-<mat-card *ngIf="notifications.length" [style.overflow]="'auto'" [style.height.px]="'350'">
+<mat-card *ngIf="notifications.length" [style.overflow]="'auto'" [style.height.px]="'300'">
     <mat-list *ngFor="let notification of notifications" dense>
         <mat-list-item>
+            <button class="deleteIcon" mat-icon-button (click)="removeCurrentNotification(notification)">
+                <mat-icon>clear</mat-icon>
+            </button>
             <mat-icon *ngIf="notification.type" matListIcon color="warn">error</mat-icon>
             <mat-icon *ngIf="!notification.type" matListIcon>notifications</mat-icon>
             <h3 matLine>{{ notification.message }}</h3>
@@ -8,3 +11,6 @@
         <mat-divider></mat-divider>
     </mat-list>
 </mat-card>
+<div class="actions">
+    <button *ngIf="notifications.length" mat-raised-button (click)="removeAllNotifications()">Delete all notifications</button>
+</div>
