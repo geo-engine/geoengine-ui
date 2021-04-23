@@ -91,10 +91,10 @@ export class SelectLayersComponent implements OnInit {
                             symbology: RasterSymbology.fromRasterSymbologyDict({
                                 opacity: 1,
                                 colorizer: {
-                                    Palette: {
+                                    palette: {
                                         colors,
-                                        default_color: [0, 0, 0, 0],
-                                        no_data_color: [0, 0, 0, 0],
+                                        defaultColor: [0, 0, 0, 0],
+                                        noDataColor: [0, 0, 0, 0],
                                     },
                                 },
                             }),
@@ -169,10 +169,10 @@ export class SelectLayersComponent implements OnInit {
                             symbology: RasterSymbology.fromRasterSymbologyDict({
                                 opacity: 1.0,
                                 colorizer: {
-                                    LinearGradient: {
+                                    linearGradient: {
                                         breakpoints,
-                                        default_color: [0, 0, 0, 0],
-                                        no_data_color: [0, 0, 0, 0],
+                                        defaultColor: [0, 0, 0, 0],
+                                        noDataColor: [0, 0, 0, 0],
                                     },
                                 },
                             }),

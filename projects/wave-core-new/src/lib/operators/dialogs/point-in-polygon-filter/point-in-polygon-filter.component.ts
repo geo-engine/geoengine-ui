@@ -48,8 +48,8 @@ export class PointInPolygonFilterOperatorComponent {
                         operator: {
                             type: 'PointInPolygonFilter',
                             params: null,
-                            raster_sources: [],
-                            vector_sources: operators,
+                            rasterSources: [],
+                            vectorSources: operators,
                         },
                     } as WorkflowDict;
 
@@ -62,9 +62,9 @@ export class PointInPolygonFilterOperatorComponent {
                                         workflowId,
                                         name,
                                         symbology: PointSymbology.fromPointSymbologyDict({
-                                            radius: {Static: 10},
-                                            stroke: {width: {Static: 1}, color: {Static: [0, 0, 0, 255]}},
-                                            fill_color: {Static: colorToDict(this.randomColorService.getRandomColorRgba())},
+                                            radius: {static: 10},
+                                            stroke: {width: {static: 1}, color: {static: [0, 0, 0, 255]}},
+                                            fillColor: {static: colorToDict(this.randomColorService.getRandomColorRgba())},
                                         }),
                                         isLegendVisible: false,
                                         isVisible: true,

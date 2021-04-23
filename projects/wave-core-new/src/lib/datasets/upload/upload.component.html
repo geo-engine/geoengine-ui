@@ -1,124 +1,203 @@
 <wave-sidenav-header>Add Data</wave-sidenav-header>
 
-<ng-container *ngIf="state$ | async as state">
-    <mat-card>
-        <mat-card-header>
-            <mat-card-title>Select files for upload</mat-card-title>
-        </mat-card-header>
+<mat-vertical-stepper linear #stepper>
+    <mat-step completed="false">
+        <ng-template matStepLabel>Upload files</ng-template>
+        <input type="file" id="file" multiple (change)="selectFiles($any($event.target))" />
+        <div class="actions">
+            <button type="button" mat-raised-button color="primary" [disabled]="!selectedFiles" (click)="upload()">Upload</button>
+        </div>
+        <mat-progress-bar *ngIf="progress$ | async as progress" mode="determinate" [value]="progress"></mat-progress-bar>
+    </mat-step>
+    <mat-step [stepControl]="formMetaData">
+        <form [formGroup]="formMetaData">
+            <ng-template matStepLabel>Specify meta data</ng-template>
 
-        <mat-card-content>
-            <input type="file" id="file" multiple (change)="selectFiles($any($event.target))" [disabled]="state != State.Start" />
             <div class="actions">
-                <button
-                    type="button"
-                    mat-raised-button
-                    color="primary"
-                    (click)="upload()"
-                    [disabled]="!selectedFiles || state != State.Start"
-                >
-                    Upload
+                <button type="submit" mat-raised-button (click)="reloadSuggestion()">
+                    Suggest configuration based on selected main file
                 </button>
             </div>
-            <mat-progress-bar *ngIf="progress$ | async as progress" mode="determinate" [value]="progress"></mat-progress-bar>
-        </mat-card-content>
-    </mat-card>
 
-    <mat-card *ngIf="uploadId$ | async as uploadId">
-        <mat-card-header>
-            <mat-card-title>Specify loading information</mat-card-title>
-        </mat-card-header>
+            <mat-form-field appearance="fill">
+                <mat-label>Choose the main file</mat-label>
+                <mat-select id="mainFile" formControlName="mainFile">
+                    <mat-option *ngFor="let file of selectedFiles" [value]="file.name">
+                        {{ file.name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
 
-        <mat-card-content>
-            <p>Upload ID: {{ uploadId }}</p>
-            <mat-tab-group animationDuration="0">
-                <mat-tab label="Simple Mode" [disabled]="state >= State.Creating">
-                    <form [formGroup]="simpleCreateForm" (ngSubmit)="submitAutoCreate(uploadId)">
-                        <p>
-                            <mat-form-field appearance="fill">
-                                <mat-label>Dataset Name</mat-label>
-                                <input matInput type="text" placeholder="New Dataset" formControlName="name" />
-                            </mat-form-field>
-                        </p>
-                        <p>
-                            <mat-form-field appearance="fill">
-                                <mat-label>Dataset Description</mat-label>
-                                <textarea matInput formControlName="description"></textarea>
-                            </mat-form-field>
-                        </p>
-                        <p>
-                            <mat-form-field appearance="fill">
-                                <mat-label>Choose the main file</mat-label>
-                                <mat-select id="mainFile" [(value)]="selectedMainFile" formControlName="mainFile">
-                                    <mat-option *ngFor="let file of selectedFiles" [value]="file.name">
-                                        {{ file.name }}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        </p>
+            <mat-form-field appearance="fill">
+                <mat-label>Layer Name</mat-label>
+                <input matInput type="text" formControlName="layerName" />
+            </mat-form-field>
 
-                        <div class="actions">
-                            <button
-                                type="submit"
-                                mat-raised-button
-                                color="primary"
-                                [disabled]="state != State.Uploaded || (simpleCreateForm.statusChanges | async) !== 'VALID'"
-                            >
-                                Create
-                            </button>
-                        </div>
-                    </form>
-                </mat-tab>
-                <mat-tab label="Expert Mode" [disabled]="state >= State.Creating">
-                    <div>Specify the loading info as Json</div>
+            <mat-form-field appearance="fill">
+                <mat-label>Data Type</mat-label>
+                <mat-select formControlName="dataType">
+                    <mat-option *ngFor="let dataType of vectorDataTypes" [value]="dataType">
+                        {{ dataType }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
 
-                    <div>
-                        <mat-form-field appearance="fill">
-                            <mat-label>Choose an example</mat-label>
-                            <mat-select [disabled]="state != State.Uploaded">
-                                <mat-option *ngFor="let option of exampleLoadingInfos" [value]="option" (click)="selectLoadingInfo(option)">
-                                    {{ option.name }}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div>
-                        <textarea
-                            name="loadingInfo"
-                            mdInput
-                            placeholder="Loading Info"
-                            rows="25"
-                            [disabled]="state != State.Uploaded"
-                            [(ngModel)]="loadingInfo"
-                        >
-                        </textarea>
-                    </div>
-                    <div class="actions">
-                        <button
-                            type="button"
-                            mat-raised-button
-                            color="primary"
-                            (click)="submitLoadingInfo(uploadId)"
-                            [disabled]="state != State.Uploaded"
-                        >
-                            Create dataset
-                        </button>
-                    </div>
-                </mat-tab>
-            </mat-tab-group>
-        </mat-card-content>
-    </mat-card>
+            <mat-form-field appearance="fill">
+                <mat-label>Time Type</mat-label>
+                <mat-select formControlName="timeType" (selectionChange)="changeTimeType()">
+                    <mat-option *ngFor="let timeType of timeTypes" [value]="timeType">
+                        {{ timeType }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
 
-    <mat-card *ngIf="datasetId$ | async as datasetId">
-        <mat-card-header>
-            <mat-card-title>Upload succesful!</mat-card-title>
-        </mat-card-header>
+            <ng-container *ngIf="formMetaData.controls.timeType.value as time">
+                <ng-container *ngIf="time !== 'None'">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Name of column containing start</mat-label>
+                        <input matInput type="text" formControlName="timeStartColumn" />
+                    </mat-form-field>
 
-        <mat-card-content>
-            <div class="actions">
-                <button type="button" mat-raised-button color="primary" (click)="addToMap(datasetId)">Add dataset to map</button>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Format of column containing start</mat-label>
+                        <mat-select formControlName="timeStartFormat" (selectionChange)="changeTimeStartFormat()">
+                            <mat-option *ngFor="let timeFormat of timeFormats" [value]="timeFormat">
+                                {{ timeFormat }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="fill" *ngIf="formMetaData.controls.timeStartFormat.value === 'Custom'">
+                        <mat-label>Custom format of columns containing start</mat-label>
+                        <input matInput type="text" formControlName="timeStartFormatCustom" />
+                    </mat-form-field>
+                </ng-container>
+
+                <mat-form-field appearance="fill" *ngIf="formMetaData.controls.timeType.value === 'Start/Duration'">
+                    <mat-label>Name of column containing duration</mat-label>
+                    <input matInput type="text" formControlName="timeDurationColumn" />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" *ngIf="formMetaData.controls.timeType.value === 'Start'">
+                    <mat-label>Duration of feature validity in seconds</mat-label>
+                    <input matInput type="number" formControlName="timeDurationValue" />
+                </mat-form-field>
+
+                <ng-container *ngIf="time === 'Start/End'">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Name of column containing end</mat-label>
+                        <input matInput type="text" formControlName="timeEndColumn" />
+                    </mat-form-field>
+
+                    <mat-form-field appearance="fill">
+                        <mat-label>Format of column containing end</mat-label>
+                        <mat-select formControlName="timeEndFormat" (selectionChange)="changeTimeEndFormat()">
+                            <mat-option *ngFor="let timeFormat of timeFormats" [value]="timeFormat">
+                                {{ timeFormat }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="fill" *ngIf="formMetaData.controls.timeEndFormat.value === 'Custom'">
+                        <mat-label>Custom format of columns containing end</mat-label>
+                        <input matInput type="text" formControlName="timeEndFormatCustom" />
+                    </mat-form-field>
+                </ng-container>
+            </ng-container>
+
+            <div fxLayout="row">
+                <mat-form-field appearance="fill" class="example-full-width">
+                    <mat-label>Geometry column 1</mat-label>
+                    <input matInput type="text" formControlName="columnsX" />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" class="example-full-width">
+                    <mat-label>Geometry column 2</mat-label>
+                    <input matInput type="text" formControlName="columnsY" />
+                </mat-form-field>
             </div>
-        </mat-card-content>
-    </mat-card>
 
-    <mat-spinner *ngIf="state == State.Uploading || state == State.Creating"></mat-spinner>
-</ng-container>
+            <mat-form-field class="example-chip-list">
+                <mat-label>Text Columns</mat-label>
+                <mat-chip-list #columnTextualList formControlName="columnsTextual">
+                    <mat-chip *ngFor="let column of formMetaData.controls.columnsTextual.value" (removed)="removeTextual(column)">
+                        {{ column }}
+                        <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
+                    <input placeholder="New column..." [matChipInputFor]="columnTextualList" (matChipInputTokenEnd)="addTextual($event)" />
+                </mat-chip-list>
+            </mat-form-field>
+
+            <mat-form-field class="example-chip-list">
+                <mat-label>Float Columns</mat-label>
+                <mat-chip-list #columnNumericList formControlName="columnsFloat">
+                    <mat-chip *ngFor="let column of formMetaData.controls.columnsFloat.value" (removed)="removeFloat(column)">
+                        {{ column }}
+                        <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
+                    <input placeholder="New column..." [matChipInputFor]="columnNumericList" (matChipInputTokenEnd)="addFloat($event)" />
+                </mat-chip-list>
+            </mat-form-field>
+
+            <mat-form-field class="example-chip-list">
+                <mat-label>Integer Columns</mat-label>
+                <mat-chip-list #columnDecimalList formControlName="columnsInt">
+                    <mat-chip *ngFor="let column of formMetaData.controls.columnsInt.value" (removed)="removeInt(column)">
+                        {{ column }}
+                        <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
+                    <input placeholder="New column..." [matChipInputFor]="columnDecimalList" (matChipInputTokenEnd)="addInt($event)" />
+                </mat-chip-list>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+                <mat-label>Error Handling</mat-label>
+                <mat-select formControlName="errorHandling">
+                    <mat-option *ngFor="let errorHandling of errorHandlings" [value]="errorHandling">
+                        {{ errorHandling }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+                <mat-label>Spatial Reference</mat-label>
+                <input matInput type="text" formControlName="spatialReference" />
+            </mat-form-field>
+        </form>
+    </mat-step>
+
+    <mat-step [stepControl]="formNameDescription">
+        <form [formGroup]="formNameDescription" (ngSubmit)="submitCreate()">
+            <ng-template matStepLabel>Specify dataset name and description</ng-template>
+            <p>
+                <mat-form-field appearance="fill">
+                    <mat-label>Dataset Name</mat-label>
+                    <input matInput type="text" placeholder="New Dataset" formControlName="name" />
+                </mat-form-field>
+            </p>
+            <p>
+                <mat-form-field appearance="fill">
+                    <mat-label>Dataset Description</mat-label>
+                    <textarea matInput formControlName="description"></textarea>
+                </mat-form-field>
+            </p>
+
+            <div class="actions">
+                <button
+                    type="submit"
+                    mat-raised-button
+                    color="primary"
+                    [disabled]="(formNameDescription.statusChanges | async) !== 'VALID'"
+                >
+                    Create
+                </button>
+            </div>
+        </form>
+    </mat-step>
+    <mat-step editable="false" completed="false">
+        <ng-template matStepLabel>Done</ng-template>
+        <div class="actions">
+            <button mat-raised-button color="primary" (click)="addToMap()">Add to map</button>
+        </div>
+    </mat-step>
+</mat-vertical-stepper>

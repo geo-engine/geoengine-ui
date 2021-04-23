@@ -176,11 +176,11 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
             });
 
             // add children
-            for (const sourceType of ['raster_sources', 'vector_sources']) {
+            for (const sourceType of ['rasterSources', 'vectorSources']) {
                 if (sourceType in operator) {
                     const nonSourceOperator = operator as OperatorDict;
                     const sources: Array<OperatorDict | SourceOperatorDict> = nonSourceOperator[
-                        sourceType as 'raster_sources' | 'vector_sources'
+                        sourceType as 'rasterSources' | 'vectorSources'
                     ] as Array<OperatorDict | SourceOperatorDict>;
                     for (const source of sources) {
                         const childId = nextOperatorId++;

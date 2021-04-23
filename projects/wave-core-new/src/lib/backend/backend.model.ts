@@ -10,7 +10,7 @@ export interface SessionDict {
     id: UUID;
     user: UserDict;
     created: TimestampString;
-    valid_until: TimestampString;
+    validUntil: TimestampString;
     project?: UUID;
     view?: STRectangleDict;
 }
@@ -18,7 +18,7 @@ export interface SessionDict {
 export interface UserDict {
     id: UUID;
     email?: string;
-    real_name?: string;
+    realName?: string;
 }
 
 export interface CoordinateDict {
@@ -27,8 +27,8 @@ export interface CoordinateDict {
 }
 
 export interface BBoxDict {
-    lower_left_coordinate: CoordinateDict;
-    upper_right_coordinate: CoordinateDict;
+    lowerLeftCoordinate: CoordinateDict;
+    upperRightCoordinate: CoordinateDict;
 }
 
 /**
@@ -40,9 +40,9 @@ export interface TimeIntervalDict {
 }
 
 export interface STRectangleDict {
-    spatial_reference: SrsString;
-    bounding_box: BBoxDict;
-    time_interval: TimeIntervalDict;
+    spatialReference: SrsString;
+    boundingBox: BBoxDict;
+    timeInterval: TimeIntervalDict;
 }
 
 export interface CreateProjectResponseDict {
@@ -53,7 +53,7 @@ export interface ProjectListingDict {
     id: UUID;
     name: string;
     description: string;
-    layer_names: Array<string>;
+    layerNames: Array<string>;
     changed: TimestampString;
 }
 
@@ -71,7 +71,7 @@ export interface ProjectDict {
     layers: Array<LayerDict>;
     plots: Array<PlotDict>;
     bounds: STRectangleDict;
-    time_step: TimeStepDict;
+    timeStep: TimeStepDict;
 }
 
 export interface LayerDict {
@@ -97,36 +97,36 @@ export interface ProjectVersion {
 
 export interface LinearGradientDict {
     breakpoints: Array<BreakpointDict>;
-    no_data_color: RgbaColorDict;
-    default_color: RgbaColorDict;
+    noDataColor: RgbaColorDict;
+    defaultColor: RgbaColorDict;
 }
 
 export interface LogarithmitGradientDict {
     breakpoints: Array<BreakpointDict>;
-    no_data_color: RgbaColorDict;
-    default_color: RgbaColorDict;
+    noDataColor: RgbaColorDict;
+    defaultColor: RgbaColorDict;
 }
 
 export interface PaletteDict {
     colors: {
         [numberValue: string]: RgbaColorDict;
     };
-    no_data_color: RgbaColorDict;
-    default_color: RgbaColorDict;
+    noDataColor: RgbaColorDict;
+    defaultColor: RgbaColorDict;
 }
 
 export interface ColorizerDict {
-    LinearGradient?: LinearGradientDict;
-    LogarithmicGradient?: LogarithmitGradientDict;
-    Palette?: PaletteDict;
-    Rgba?: {[index: string]: never};
+    linearGradient?: LinearGradientDict;
+    logarithmicGradient?: LogarithmitGradientDict;
+    palette?: PaletteDict;
+    rgba?: {[index: string]: never};
 }
 
 export type RgbaColorDict = [number, number, number, number];
 
 export interface SymbologyDict {
-    Raster?: RasterSymbologyDict;
-    Vector?: VectorSymbologyDict;
+    raster?: RasterSymbologyDict;
+    vector?: VectorSymbologyDict;
 }
 
 export interface RasterSymbologyDict {
@@ -135,20 +135,20 @@ export interface RasterSymbologyDict {
 }
 
 export interface VectorSymbologyDict {
-    Point?: PointSymbologyDict;
-    Line?: LineSymbologyDict;
-    Polygon?: PolygonSymbologyDict;
+    point?: PointSymbologyDict;
+    line?: LineSymbologyDict;
+    polygon?: PolygonSymbologyDict;
 }
 
 export interface TextSymbologyDict {
     attribute: string;
-    fill_color: ColorParamDict;
+    fillColor: ColorParamDict;
     stroke: StrokeParamDict;
 }
 
 export interface PointSymbologyDict {
     radius: NumberParamDict;
-    fill_color: ColorParamDict;
+    fillColor: ColorParamDict;
     stroke: StrokeParamDict;
     text?: TextSymbologyDict;
 }
@@ -159,25 +159,25 @@ export interface LineSymbologyDict {
 }
 
 export interface PolygonSymbologyDict {
-    fill_color: ColorParamDict;
+    fillColor: ColorParamDict;
     stroke: StrokeParamDict;
     text?: TextSymbologyDict;
 }
 
 export interface NumberParamDict {
-    Static?: number;
-    Derived?: DerivedNumberDict;
+    static?: number;
+    derived?: DerivedNumberDict;
 }
 
 export interface ColorParamDict {
-    Static?: RgbaColorDict;
-    Derived?: DerivedColorDict;
+    static?: RgbaColorDict;
+    derived?: DerivedColorDict;
 }
 
 export interface DerivedNumberDict {
     attribute: string;
     factor: number;
-    default_value: number;
+    defaultValue: number;
 }
 
 export interface DerivedColorDict {
@@ -217,8 +217,8 @@ export interface WorkflowDict {
 export interface OperatorDict {
     type: string;
     params: OperatorParams | null;
-    vector_sources?: Array<OperatorDict | SourceOperatorDict>;
-    raster_sources?: Array<OperatorDict | SourceOperatorDict>;
+    vectorSources?: Array<OperatorDict | SourceOperatorDict>;
+    rasterSources?: Array<OperatorDict | SourceOperatorDict>;
 }
 
 type ParamTypes = string | number | boolean | Array<ParamTypes> | {[key: string]: ParamTypes} | undefined;
@@ -245,21 +245,21 @@ export interface DatasetDict {
     id: InternalDatasetIdDict; // TODO: support all Id types
     name: string;
     description: string;
-    result_descriptor: DatasetResultDescriptorDict;
-    source_operator: string;
+    resultDescriptor: DatasetResultDescriptorDict;
+    sourceOperator: string;
 }
 
 export interface DatasetIdDict {
-    Internal?: UUID;
+    internal?: UUID;
 }
 
 export interface InternalDatasetIdDict {
-    Internal: UUID;
+    internal: UUID;
 }
 
 export interface DatasetResultDescriptorDict {
-    Vector?: VectorResultDescriptorDict;
-    Raster?: RasterResultDescriptorDict;
+    vector?: VectorResultDescriptorDict;
+    raster?: RasterResultDescriptorDict;
 }
 
 export interface NoDataDict {
@@ -267,27 +267,29 @@ export interface NoDataDict {
 }
 
 export interface PlotDataDict {
-    plot_type: string;
-    output_format: 'JsonPlain' | 'JsonVega' | 'ImagePng';
+    plotType: string;
+    outputFormat: 'JsonPlain' | 'JsonVega' | 'ImagePng';
     data: any;
 }
 
 export interface ResultDescriptorDict {
-    spatial_reference?: SrsString;
+    spatialReference?: SrsString;
 }
 
 export interface RasterResultDescriptorDict extends ResultDescriptorDict {
-    data_type: 'U8' | 'U16' | 'U32' | 'U64' | 'I8' | 'I16' | 'I32' | 'I64' | 'F32' | 'F64';
+    dataType: 'U8' | 'U16' | 'U32' | 'U64' | 'I8' | 'I16' | 'I32' | 'I64' | 'F32' | 'F64';
     measurement: 'unitless' | MeasurementDict;
 }
 
 export interface VectorResultDescriptorDict extends ResultDescriptorDict {
-    data_type: 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
+    dataType: VectorDataType;
     columns: {[key: string]: 'categorical' | 'int' | 'float' | 'text'};
 }
 
+type VectorDataType = 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
+
 export interface PlotResultDescriptorDict extends ResultDescriptorDict {
-    spatial_reference: undefined;
+    spatialReference: undefined;
 }
 
 export interface MeasurementDict {
@@ -313,12 +315,115 @@ export interface DatasetIdResponseDict {
 
 export interface CreateDatasetDict {
     upload: UUID;
-    // TODO: dataset definition
+    definition: DatasetDefinitionDict;
+}
+
+export interface DatasetDefinitionDict {
+    properties: AddDatasetDict;
+    metaData: MetaDataDefinitionDict;
+}
+
+export interface AddDatasetDict {
+    id?: DatasetIdDict;
+    name: string;
+    description: string;
+    sourceOperator: string;
 }
 
 export interface AutoCreateDatasetDict {
     upload: UUID;
-    dataset_name: string;
-    dataset_description: string;
-    main_file: string;
+    datasetName: string;
+    datasetDescription: string;
+    mainFile: string;
+}
+
+export interface SuggestMetaDataDict {
+    upload: UUID;
+    mainFile?: string;
+}
+
+export interface MetaDataSuggestionDict {
+    mainFile: string;
+    metaData: MetaDataDefinitionDict;
+}
+
+export interface MetaDataDefinitionDict {
+    OgrMetaData?: OgrMetaDataDict;
+}
+
+export interface OgrMetaDataDict {
+    loadingInfo: OgrSourceDatasetDict;
+    resultDescriptor: VectorResultDescriptorDict;
+}
+
+export interface OgrSourceDatasetDict {
+    fileName: string;
+    layerName: string;
+    dataType?: VectorDataType;
+    time: 'none' | OgrSourceDatasetTimeTypeDict;
+    columns?: OgrSourceColumnSpecDict;
+    defaultGeometry?: TypedGeometryDict;
+    forceOgrTimeFilter: boolean;
+    onError: 'skip' | 'abort' | 'keep';
+    provenance?: ProvenanceInformationDict;
+}
+
+export interface OgrSourceDatasetTimeTypeDict {
+    start?: {
+        startField: string;
+        startFormat: OgrSourceTimeFormatDict;
+        duration: number;
+    };
+    'start+end'?: {
+        startField: string;
+        startFormat: OgrSourceTimeFormatDict;
+        endField: string;
+        endFormat: OgrSourceTimeFormatDict;
+    };
+    'start+duration'?: {
+        startField: string;
+        startFormat: OgrSourceTimeFormatDict;
+        durationField: string;
+    };
+}
+
+export interface OgrSourceTimeFormatDict {
+    format: 'seconds' | 'iso' | 'custom';
+    customFormat?: string;
+}
+
+export interface OgrSourceColumnSpecDict {
+    x: string;
+    y?: string;
+    float: Array<string>;
+    int: Array<string>;
+    textual: Array<string>;
+}
+
+export interface TypedGeometryDict {
+    Data?: '';
+    MultiPoint?: MultiPointDict;
+    MultiLineString?: MultiLineStringDict;
+    MultiPolygon?: MultiPolygonDict;
+}
+
+export interface MultiPointDict {
+    coordinates: Array<CoordinateDict>;
+}
+
+export interface MultiLineStringDict {
+    coordinates: Array<Array<CoordinateDict>>;
+}
+
+export interface MultiPolygonDict {
+    polygons: Array<PolygonDict>;
+}
+
+export type PolygonDict = Array<RingDict>;
+export type RingDict = Array<CoordinateDict>;
+
+export interface ProvenanceInformationDict {
+    citation: string;
+    license: string;
+    uri: string;
 }
