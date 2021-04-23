@@ -100,7 +100,7 @@ import {ColorMapSelectorComponent} from './colors/color-map-selector/color-map-s
 import {DrawFeaturesComponent} from './datasets/draw-features/draw-features.component';
 import {ColorBreakpointInputComponent} from './colors/color-breakpoint-input/color-breakpoint-input.component';
 import {AsyncNumberSanitizer, AsyncStringSanitizer, AsyncValueDefault} from './util/pipes/async-converters.pipe';
-import { NotificationsComponent } from './project/notifications/notifications.component';
+import {NotificationsComponent} from './project/notifications/notifications.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,

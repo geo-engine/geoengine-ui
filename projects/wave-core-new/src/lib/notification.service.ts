@@ -15,7 +15,7 @@ export interface Notification {
 @Injectable()
 export class NotificationService {
     private notification$ = new Subject<Notification>();
-    notifications: Array<Notification> = [];
+    public notifications: Array<Notification> = [];
 
     constructor(private snackBar: MatSnackBar) {}
 
