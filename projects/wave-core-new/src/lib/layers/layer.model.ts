@@ -83,7 +83,7 @@ export class VectorLayer extends Layer {
     }
 
     static fromDict(dict: LayerDict): Layer {
-        if (!dict.symbology.Vector) {
+        if (!dict.symbology.vector) {
             throw new Error('missing `Vector` to deserialize');
         }
 
@@ -92,7 +92,7 @@ export class VectorLayer extends Layer {
             workflowId: dict.workflow,
             isLegendVisible: dict.visibility.legend,
             isVisible: dict.visibility.data,
-            symbology: VectorSymbology.fromVectorSymbologyDict(dict.symbology.Vector),
+            symbology: VectorSymbology.fromVectorSymbologyDict(dict.symbology.vector),
         });
     }
 
