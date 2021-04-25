@@ -1,7 +1,7 @@
 import {OperatorParams} from './backend.model';
 
 export interface HistogramParams extends OperatorParams {
-    column_name?: string;
+    columnName?: string;
     bounds:
         | {
               min: number;

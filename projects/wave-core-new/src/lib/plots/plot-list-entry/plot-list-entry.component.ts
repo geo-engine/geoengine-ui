@@ -38,7 +38,7 @@ export class PlotListEntryComponent implements OnInit, OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.plotData && this.plotData) {
-            this.plotIcon = createIconDataUrl(this.plotData.output_format);
+            this.plotIcon = createIconDataUrl(this.plotData.outputFormat);
         }
 
         if (changes.plotStatus) {

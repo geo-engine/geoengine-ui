@@ -42,7 +42,7 @@ export class BackendService {
 
     constructor(protected readonly http: HttpClient, protected readonly config: Config) {}
 
-    registerUser(request: {email: string; password: string; real_name: string}): Observable<RegistrationDict> {
+    registerUser(request: {email: string; password: string; realName: string}): Observable<RegistrationDict> {
         return this.http.post<RegistrationDict>(this.config.API_URL + '/user', request);
     }
 
@@ -71,7 +71,7 @@ export class BackendService {
             name: string;
             description: string;
             bounds: STRectangleDict;
-            time_step: TimeStepDict;
+            timeStep: TimeStepDict;
         },
         sessionId: UUID,
     ): Observable<CreateProjectResponseDict> {
@@ -88,7 +88,7 @@ export class BackendService {
             layers?: Array<LayerDict | 'none' | 'delete'>;
             plots?: Array<PlotDict | 'none' | 'delete'>;
             bounds?: STRectangleDict;
-            time_step?: TimeStepDict;
+            timeStep?: TimeStepDict;
         },
         sessionId: UUID,
     ): Observable<void> {
@@ -211,7 +211,7 @@ export class BackendService {
         request: {
             bbox: BBoxDict;
             time: TimeIntervalDict;
-            spatial_resolution: [number, number];
+            spatialResolution: [number, number];
         },
         sessionId: UUID,
     ): Observable<PlotDataDict> {
@@ -219,7 +219,7 @@ export class BackendService {
 
         params.setMapped('bbox', request.bbox, (bbox) => bboxDictToExtent(bbox).join(','));
         params.setMapped('time', request.time, (time) => `${unixTimestampToIsoString(time.start)}/${unixTimestampToIsoString(time.end)}`);
-        params.setMapped('spatial_resolution', request.spatial_resolution, (resolution) => resolution.join(','));
+        params.setMapped('spatialResolution', request.spatialResolution, (resolution) => resolution.join(','));
 
         return this.http.get<PlotDataDict>(this.config.API_URL + `/plot/${workflowId}`, {
             headers: BackendService.authorizationHeader(sessionId),
@@ -242,7 +242,7 @@ export class BackendService {
 
     getDataset(sessionId: UUID, datasetId: DatasetIdDict): Observable<DatasetDict> {
         // TODO: external datasets
-        return this.http.get<DatasetDict>(this.config.API_URL + `/dataset/internal/${datasetId.Internal}`, {
+        return this.http.get<DatasetDict>(this.config.API_URL + `/dataset/internal/${datasetId.internal}`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
@@ -270,7 +270,7 @@ export class BackendService {
     suggestMetaData(sessionId: UUID, suggestMetaData: SuggestMetaDataDict): Observable<MetaDataSuggestionDict> {
         const params = new NullDiscardingHttpParams();
         params.set('upload', suggestMetaData.upload);
-        params.set('main_file', suggestMetaData.main_file);
+        params.set('main_file', suggestMetaData.mainFile);
 
         return this.http.get<MetaDataSuggestionDict>(this.config.API_URL + '/dataset/suggest', {
             params: params.httpParams,

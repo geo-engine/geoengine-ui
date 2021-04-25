@@ -100,6 +100,9 @@ import {ColorMapSelectorComponent} from './colors/color-map-selector/color-map-s
 import {DrawFeaturesComponent} from './datasets/draw-features/draw-features.component';
 import {ColorBreakpointInputComponent} from './colors/color-breakpoint-input/color-breakpoint-input.component';
 import {AsyncNumberSanitizer, AsyncStringSanitizer, AsyncValueDefault} from './util/pipes/async-converters.pipe';
+import {VectorSymbologyEditorComponent} from './layers/symbology/vector-symbology-editor/vector-symbology-editor.component';
+import {ColorParamEditorComponent} from './layers/symbology/color-param-editor/color-param-editor.component';
+import {NumberParamEditorComponent} from './layers/symbology/number-param-editor/number-param-editor.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -156,9 +159,10 @@ const WAVE_COMPONENTS = [
     ColorAttributeInputComponent,
     ColorBreakpointInputComponent,
     ColorMapSelectorComponent,
+    ColorParamEditorComponent,
+    DataTableComponent,
+    DataTableComponent,
     DatasetComponent,
-    DataTableComponent,
-    DataTableComponent,
     DatasetListComponent,
     DialogHeaderComponent,
     DialogHelpComponent,
@@ -180,6 +184,7 @@ const WAVE_COMPONENTS = [
     MultiLayerSelectionComponent,
     NavigationComponent,
     NewProjectComponent,
+    NumberParamEditorComponent,
     OlRasterLayerComponent,
     OlVectorLayerComponent,
     OperatorListComponent,
@@ -209,6 +214,7 @@ const WAVE_COMPONENTS = [
     UploadComponent,
     VatLogoComponent,
     VectorLegendComponent,
+    VectorSymbologyEditorComponent,
     VegaViewerComponent,
     WorkspaceSettingsComponent,
     ZoomHandlesComponent,
