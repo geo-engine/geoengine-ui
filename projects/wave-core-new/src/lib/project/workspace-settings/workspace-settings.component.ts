@@ -4,6 +4,7 @@ import {ChangeSpatialReferenceComponent} from '../change-spatial-reference/chang
 import {NewProjectComponent} from '../new-project/new-project.component';
 import {LoadProjectComponent} from '../load-project/load-project.component';
 import {SaveProjectAsComponent} from '../save-project-as/save-project-as.component';
+import {NotificationsComponent} from '../notifications/notifications.component';
 
 @Component({
     selector: 'wave-workspace-settings',
@@ -30,5 +31,9 @@ export class WorkspaceSettingsComponent implements OnInit {
 
     loadSaveAsDialog(): void {
         this.layoutService.setSidenavContentComponent({component: SaveProjectAsComponent, keepParent: true});
+    }
+
+    loadNotificationsDialog(): void {
+        this.layoutService.setSidenavContentComponent({component: NotificationsComponent, keepParent: true});
     }
 }

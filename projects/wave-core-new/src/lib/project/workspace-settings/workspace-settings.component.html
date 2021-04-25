@@ -48,6 +48,9 @@
         <h4 mat-line>Spatial Reference</h4>
         <p mat-line>Change the current spatial reference</p>
     </mat-list-item>
-    <h3 mat-subheader>Notifications</h3>
-    <wave-notifications></wave-notifications>
+    <mat-list-item (click)="loadNotificationsDialog()">
+        <mat-icon mat-list-icon color="default">notifications</mat-icon>
+        <h4 mat-line>Notifications</h4>
+        <p mat-line>Show all notifications</p>
+    </mat-list-item>
 </mat-nav-list>

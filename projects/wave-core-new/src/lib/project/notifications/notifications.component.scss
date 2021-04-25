@@ -1,8 +1,6 @@
 :host {
     display: list-item;
-    padding-top: 0;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding: 1rem;
 }
 mat-card {
     padding: 0;
@@ -13,4 +11,9 @@ mat-card {
 }
 .deleteIcon {
     transform: scale(0.75);
+}
+.no-notifications {
+    color: var(--wave-foreground-secondary-text-color, grey);
+    margin-top: 50%;
+    text-align: center;
 }
