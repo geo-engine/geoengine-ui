@@ -19,6 +19,7 @@ import {Measurement} from '../measurement';
 import {RasterLayerMetadata} from '../layer-metadata.model';
 import {RasterSymbologyEditorComponent} from '../symbology/raster-symbology-editor/raster-symbology-editor.component';
 import {SimpleChanges} from '@angular/core';
+import {VectorSymbologyEditorComponent} from '../symbology/vector-symbology-editor/vector-symbology-editor.component';
 
 /**
  * The layer list component displays active layers, legends and other controlls.
@@ -175,7 +176,7 @@ export class LayerListComponent implements OnDestroy, OnChanges {
         if (layer instanceof RasterLayer) {
             this.layoutService.setSidenavContentComponent({component: RasterSymbologyEditorComponent, config: {layer}});
         } else if (layer instanceof VectorLayer) {
-            // TODO: call vector symbology editor
+            this.layoutService.setSidenavContentComponent({component: VectorSymbologyEditorComponent, config: {layer}});
         } else {
             throw Error(`unknown layer type: ${layer.layerType}`);
         }

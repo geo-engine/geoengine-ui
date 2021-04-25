@@ -1,5 +1,5 @@
 import {LayerDict, UUID, ToDict} from '../backend/backend.model';
-import {RasterSymbology, Symbology} from './symbology/symbology.model';
+import {RasterSymbology, Symbology, VectorSymbology} from './symbology/symbology.model';
 
 export type LayerType = 'raster' | 'vector';
 
@@ -39,11 +39,11 @@ export abstract class Layer implements HasLayerId, HasLayerType, ToDict<LayerDic
      * Create the suitable layer type
      */
     static fromDict(dict: LayerDict): Layer {
-        if (dict.symbology.Raster) {
+        if (dict.symbology.raster) {
             return RasterLayer.fromDict(dict);
         }
 
-        if (dict.symbology.Vector) {
+        if (dict.symbology.vector) {
             return VectorLayer.fromDict(dict);
         }
 
@@ -68,7 +68,7 @@ export abstract class Layer implements HasLayerId, HasLayerType, ToDict<LayerDic
 export class VectorLayer extends Layer {
     readonly layerType = 'vector';
 
-    readonly symbology: Symbology;
+    readonly symbology: VectorSymbology;
 
     constructor(config: {
         id?: number;
@@ -76,19 +76,23 @@ export class VectorLayer extends Layer {
         workflowId: string;
         isVisible: boolean;
         isLegendVisible: boolean;
-        symbology: Symbology;
+        symbology: VectorSymbology;
     }) {
         super(config);
         this.symbology = config.symbology;
     }
 
     static fromDict(dict: LayerDict): Layer {
+        if (!dict.symbology.vector) {
+            throw new Error('missing `Vector` to deserialize');
+        }
+
         return new VectorLayer({
             name: dict.name,
             workflowId: dict.workflow,
             isLegendVisible: dict.visibility.legend,
             isVisible: dict.visibility.data,
-            symbology: Symbology.fromDict(dict.symbology),
+            symbology: VectorSymbology.fromVectorSymbologyDict(dict.symbology.vector),
         });
     }
 
@@ -110,7 +114,7 @@ export class VectorLayer extends Layer {
         workflowId?: string;
         isVisible?: boolean;
         isLegendVisible?: boolean;
-        symbology?: Symbology;
+        symbology?: VectorSymbology;
     }): VectorLayer {
         return new VectorLayer({
             id: changes.id ?? this.id,
@@ -156,7 +160,7 @@ export class RasterLayer extends Layer {
     }
 
     static fromDict(dict: LayerDict): Layer {
-        if (!dict.symbology.Raster) {
+        if (!dict.symbology.raster) {
             throw new Error('missing `Raster` to deserialize');
         }
 
@@ -165,7 +169,7 @@ export class RasterLayer extends Layer {
             isLegendVisible: dict.visibility.legend,
             isVisible: dict.visibility.data,
             workflowId: dict.workflow,
-            symbology: RasterSymbology.fromRasterSymbologyDict(dict.symbology.Raster),
+            symbology: RasterSymbology.fromRasterSymbologyDict(dict.symbology.raster),
         });
     }
 

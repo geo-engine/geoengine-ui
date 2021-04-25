@@ -203,12 +203,12 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                             type: 'Expression',
                             params: {
                                 expression,
-                                output_type: dataType.getCode(),
+                                outputType: dataType.getCode(),
                                 // TODO: make this configurable once units exist again
-                                output_no_data_value: noDataValue,
+                                outputNoDataValue: noDataValue,
                             },
-                            raster_sources: operators,
-                            vector_sources: [],
+                            rasterSources: operators,
+                            vectorSources: [],
                         },
                     } as WorkflowDict;
 
@@ -223,13 +223,13 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                                         symbology: RasterSymbology.fromRasterSymbologyDict({
                                             opacity: 1.0,
                                             colorizer: {
-                                                LinearGradient: {
+                                                linearGradient: {
                                                     breakpoints: [
                                                         {value: 0, color: [0, 0, 0, 255]},
                                                         {value: 255, color: [255, 255, 255, 255]},
                                                     ],
-                                                    default_color: [0, 0, 0, 255],
-                                                    no_data_color: [0, 0, 0, 255],
+                                                    defaultColor: [0, 0, 0, 255],
+                                                    noDataColor: [0, 0, 0, 255],
                                                 },
                                             },
                                         }),

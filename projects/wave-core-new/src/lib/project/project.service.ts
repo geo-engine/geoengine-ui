@@ -121,11 +121,11 @@ export class ProjectService {
                         name: config.name,
                         description: config.description,
                         bounds: {
-                            bounding_box: extentToBboxDict(config.spatialReference.getExtent()),
-                            spatial_reference: config.spatialReference.getCode(),
-                            time_interval: config.time.toDict(),
+                            boundingBox: extentToBboxDict(config.spatialReference.getExtent()),
+                            spatialReference: config.spatialReference.getCode(),
+                            timeInterval: config.time.toDict(),
                         },
-                        time_step: timeStepDurationToTimeStepDict(config.timeStepDuration),
+                        timeStep: timeStepDurationToTimeStepDict(config.timeStepDuration),
                     },
                     sessionToken,
                 ),
@@ -346,7 +346,7 @@ export class ProjectService {
 
         return combineLatest(meta).pipe(
             mergeMap((descriptors: Array<ResultDescriptorDict>) => {
-                const srefs = descriptors.map((l) => SpatialReferences.fromCode(l.spatial_reference));
+                const srefs = descriptors.map((l) => SpatialReferences.fromCode(l.spatialReference));
                 const targetSref = getProjectionTarget(srefs);
 
                 const workflowsObservable = layers.map((l) => this.getWorkflow(l.workflowId));
@@ -365,10 +365,10 @@ export class ProjectService {
                                 projectedOperators.push({
                                     type: 'Reprojection',
                                     params: {
-                                        target_spatial_reference: targetSref.getCode(),
+                                        targetSpatialReference: targetSref.getCode(),
                                     },
-                                    vector_sources: workflow.type === 'Vector' ? [operator] : [],
-                                    raster_sources: workflow.type === 'Raster' ? [operator] : [],
+                                    vectorSources: workflow.type === 'Vector' ? [operator] : [],
+                                    rasterSources: workflow.type === 'Raster' ? [operator] : [],
                                 });
                             }
                         }
@@ -980,7 +980,7 @@ export class ProjectService {
                             // TODO: add bbox
                             bounds: changes.time || changes.spatialReference ? project.toBoundsDict() : undefined,
                             // TODO: description: changes.description,
-                            time_step: changes.timeStepDuration ? timeStepDurationToTimeStepDict(changes.timeStepDuration) : undefined,
+                            timeStep: changes.timeStepDuration ? timeStepDurationToTimeStepDict(changes.timeStepDuration) : undefined,
                         },
                         sessionToken,
                     );
@@ -1238,7 +1238,7 @@ export class ProjectService {
                         {
                             time,
                             bbox: extentToBboxDict(viewport.extent),
-                            spatial_resolution: [viewport.resolution, viewport.resolution], // TODO: check if resolution needs two numbers
+                            spatialResolution: [viewport.resolution, viewport.resolution], // TODO: check if resolution needs two numbers
                         },
                         sessionToken,
                     ),

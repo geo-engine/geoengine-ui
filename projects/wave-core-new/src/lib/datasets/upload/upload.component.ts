@@ -52,25 +52,25 @@ export class UploadComponent {
         protected changeDetectorRef: ChangeDetectorRef,
     ) {
         this.formMetaData = new FormGroup({
-            main_file: new FormControl('', Validators.required),
-            layer_name: new FormControl('', Validators.required),
-            data_type: new FormControl('', Validators.required),
-            time_type: new FormControl('', Validators.required),
-            time_start_column: new FormControl(''),
-            time_start_format: new FormControl(''),
-            time_start_format_custom: new FormControl(''), // TODO: validate format
-            time_duration_column: new FormControl(''),
-            time_duration_value: new FormControl(0), // TODO: validate is positive integer
-            time_end_column: new FormControl(''),
-            time_end_format: new FormControl(''),
-            time_end_format_custom: new FormControl(''), // TODO: validate format
-            columns_x: new FormControl(''),
-            columns_y: new FormControl(''),
-            columns_textual: new FormControl(''),
-            columns_float: new FormControl(''),
-            columns_int: new FormControl(''),
-            error_handling: new FormControl('skip', Validators.required),
-            spatial_reference: new FormControl('EPSG:4326', Validators.required), // TODO: validate sref string
+            mainFile: new FormControl('', Validators.required),
+            layerName: new FormControl('', Validators.required),
+            dataType: new FormControl('', Validators.required),
+            timeType: new FormControl('', Validators.required),
+            timeStartColumn: new FormControl(''),
+            timeStartFormat: new FormControl(''),
+            timeStartFormatCustom: new FormControl(''), // TODO: validate format
+            timeDurationColumn: new FormControl(''),
+            timeDurationValue: new FormControl(0), // TODO: validate is positive integer
+            timeEndColumn: new FormControl(''),
+            timeEndFormat: new FormControl(''),
+            timeEndFormatCustom: new FormControl(''), // TODO: validate format
+            columnsX: new FormControl(''),
+            columnsY: new FormControl(''),
+            columnsTextual: new FormControl(''),
+            columnsFloat: new FormControl(''),
+            columnsInt: new FormControl(''),
+            errorHandling: new FormControl('skip', Validators.required),
+            spatialReference: new FormControl('EPSG:4326', Validators.required), // TODO: validate sref string
         });
 
         this.formNameDescription = new FormGroup({
@@ -81,62 +81,62 @@ export class UploadComponent {
 
     changeTimeType(): void {
         const form = this.formMetaData.controls;
-        const timeType = form.time_type.value;
+        const timeType = form.timeType.value;
 
-        form.time_start_column.clearValidators();
-        form.time_start_format.clearValidators();
-        form.time_start_format_custom.clearValidators();
-        form.time_duration_column.clearValidators();
-        form.time_duration_value.clearValidators();
-        form.time_end_column.clearValidators();
-        form.time_end_format.clearValidators();
-        form.time_end_format_custom.clearValidators();
+        form.timeStartColumn.clearValidators();
+        form.timeStartFormat.clearValidators();
+        form.timeStartFormatCustom.clearValidators();
+        form.timeDurationColumn.clearValidators();
+        form.timeDurationValue.clearValidators();
+        form.timeEndColumn.clearValidators();
+        form.timeEndFormat.clearValidators();
+        form.timeEndFormatCustom.clearValidators();
 
         if (timeType === 'Start') {
-            form.time_start_column.setValidators(Validators.required);
-            form.time_start_format.setValidators(Validators.required);
-            form.time_duration_value.setValidators(Validators.required);
+            form.timeStartColumn.setValidators(Validators.required);
+            form.timeStartFormat.setValidators(Validators.required);
+            form.timeDurationValue.setValidators(Validators.required);
         } else if (timeType === 'Start/Duration') {
-            form.time_start_column.setValidators(Validators.required);
-            form.time_start_format.setValidators(Validators.required);
-            form.time_duration_column.setValidators(Validators.required);
+            form.timeStartColumn.setValidators(Validators.required);
+            form.timeStartFormat.setValidators(Validators.required);
+            form.timeDurationColumn.setValidators(Validators.required);
         } else if (timeType === 'Start/End') {
-            form.time_start_column.setValidators(Validators.required);
-            form.time_start_format.setValidators(Validators.required);
-            form.time_end_column.setValidators(Validators.required);
-            form.time_end_format.setValidators(Validators.required);
+            form.timeStartColumn.setValidators(Validators.required);
+            form.timeStartFormat.setValidators(Validators.required);
+            form.timeEndColumn.setValidators(Validators.required);
+            form.timeEndFormat.setValidators(Validators.required);
         }
 
-        form.time_start_column.updateValueAndValidity();
-        form.time_start_format.updateValueAndValidity();
-        form.time_start_format_custom.updateValueAndValidity();
-        form.time_duration_column.updateValueAndValidity();
-        form.time_duration_value.updateValueAndValidity();
-        form.time_end_column.updateValueAndValidity();
-        form.time_end_format.updateValueAndValidity();
-        form.time_end_format_custom.updateValueAndValidity();
+        form.timeStartColumn.updateValueAndValidity();
+        form.timeStartFormat.updateValueAndValidity();
+        form.timeStartFormatCustom.updateValueAndValidity();
+        form.timeDurationColumn.updateValueAndValidity();
+        form.timeDurationValue.updateValueAndValidity();
+        form.timeEndColumn.updateValueAndValidity();
+        form.timeEndFormat.updateValueAndValidity();
+        form.timeEndFormatCustom.updateValueAndValidity();
     }
 
     changeTimeStartFormat(): void {
         const form = this.formMetaData.controls;
-        if (form.time_start_format.value === 'Custom') {
-            form.time_start_format_custom.setValidators(Validators.required);
+        if (form.timeStartFormat.value === 'Custom') {
+            form.timeStartFormatCustom.setValidators(Validators.required);
         } else {
-            form.time_start_format_custom.clearValidators();
+            form.timeStartFormatCustom.clearValidators();
         }
     }
 
     changeTimeEndFormat(): void {
         const form = this.formMetaData.controls;
-        if (form.time_end_format.value === 'Custom') {
-            form.time_end_format_custom.setValidators(Validators.required);
+        if (form.timeEndFormat.value === 'Custom') {
+            form.timeEndFormatCustom.setValidators(Validators.required);
         } else {
-            form.time_end_format_custom.clearValidators();
+            form.timeEndFormatCustom.clearValidators();
         }
     }
 
     removeTextual(column: string): void {
-        const columns: Array<string> = this.formMetaData.controls.columns_textual.value;
+        const columns: Array<string> = this.formMetaData.controls.columnsTextual.value;
 
         const index = columns.indexOf(column);
         if (index > -1) {
@@ -145,7 +145,7 @@ export class UploadComponent {
     }
 
     addTextual(event: MatChipInputEvent): void {
-        const columns: Array<string> = this.formMetaData.controls.columns_textual.value;
+        const columns: Array<string> = this.formMetaData.controls.columnsTextual.value;
         const column = event.value;
         const input = event.input;
 
@@ -159,7 +159,7 @@ export class UploadComponent {
     }
 
     removeInt(column: string): void {
-        const columns: Array<string> = this.formMetaData.controls.columns_int.value;
+        const columns: Array<string> = this.formMetaData.controls.columnsInt.value;
 
         const index = columns.indexOf(column);
         if (index > -1) {
@@ -168,7 +168,7 @@ export class UploadComponent {
     }
 
     addInt(event: MatChipInputEvent): void {
-        const columns: Array<string> = this.formMetaData.controls.columns_int.value;
+        const columns: Array<string> = this.formMetaData.controls.columnsInt.value;
         const column = event.value;
         const input = event.input;
 
@@ -182,7 +182,7 @@ export class UploadComponent {
     }
 
     removeFloat(column: string): void {
-        const columns: Array<string> = this.formMetaData.controls.columns_float.value;
+        const columns: Array<string> = this.formMetaData.controls.columnsFloat.value;
 
         const index = columns.indexOf(column);
         if (index > -1) {
@@ -191,7 +191,7 @@ export class UploadComponent {
     }
 
     addFloat(event: MatChipInputEvent): void {
-        const columns: Array<string> = this.formMetaData.controls.columns_float.value;
+        const columns: Array<string> = this.formMetaData.controls.columnsFloat.value;
         const column = event.value;
         const input = event.input;
 
@@ -258,7 +258,7 @@ export class UploadComponent {
     }
 
     reloadSuggestion(): void {
-        this.suggest(this.formMetaData.controls.main_file.value);
+        this.suggest(this.formMetaData.controls.mainFile.value);
     }
 
     submitCreate(): void {
@@ -271,26 +271,26 @@ export class UploadComponent {
 
         const metaData: MetaDataDefinitionDict = {
             OgrMetaData: {
-                loading_info: {
-                    file_name: formMeta.main_file.value,
-                    layer_name: formMeta.layer_name.value,
-                    data_type: formMeta.data_type.value,
+                loadingInfo: {
+                    fileName: formMeta.mainFile.value,
+                    layerName: formMeta.layerName.value,
+                    dataType: formMeta.dataType.value,
                     time: this.getTime(),
                     columns: {
-                        x: formMeta.columns_x.value,
-                        y: formMeta.columns_y.value,
-                        textual: formMeta.columns_textual.value,
-                        float: formMeta.columns_float.value,
-                        int: formMeta.columns_int.value,
+                        x: formMeta.columnsX.value,
+                        y: formMeta.columnsY.value,
+                        textual: formMeta.columnsTextual.value,
+                        float: formMeta.columnsFloat.value,
+                        int: formMeta.columnsInt.value,
                     },
-                    default_geometry: undefined, // TODO
-                    force_ogr_time_filter: false,
-                    on_error: formMeta.error_handling.value,
+                    defaultGeometry: undefined, // TODO
+                    forceOgrTimeFilter: false,
+                    onError: formMeta.errorHandling.value,
                     provenance: undefined, // TODO
                 },
-                result_descriptor: {
-                    data_type: formMeta.data_type.value,
-                    spatial_reference: formMeta.spatial_reference.value,
+                resultDescriptor: {
+                    dataType: formMeta.dataType.value,
+                    spatialReference: formMeta.spatialReference.value,
                     columns: this.getColumnsAsMap(),
                 },
             },
@@ -299,12 +299,12 @@ export class UploadComponent {
         const addData: AddDatasetDict = {
             name: formDataset.name.value,
             description: formDataset.description.value,
-            source_operator: 'OgrSource',
+            sourceOperator: 'OgrSource',
         };
 
         const definition: DatasetDefinitionDict = {
             properties: addData,
-            meta_data: metaData,
+            metaData,
         };
 
         const create: CreateDatasetDict = {
@@ -338,31 +338,31 @@ export class UploadComponent {
             return;
         }
 
-        this.datasetService.suggestMetaData({upload: this.uploadId, main_file: mainFile}).subscribe(
+        this.datasetService.suggestMetaData({upload: this.uploadId, mainFile}).subscribe(
             (suggest) => {
-                const info = suggest.meta_data.OgrMetaData?.loading_info;
+                const info = suggest.metaData.OgrMetaData?.loadingInfo;
                 const start = this.getStartTime(info?.time);
                 const end = this.getEndTime(info?.time);
                 this.formMetaData.patchValue({
-                    main_file: suggest.main_file,
-                    layer_name: info?.layer_name,
-                    data_type: info?.data_type,
-                    time_type: info ? this.getTimeType(info.time) : 'None',
-                    time_start_column: start ? start.start_field : '',
-                    time_start_format: start ? start.start_format.format : '',
-                    time_start_format_custom: start ? start.start_format.custom_format : '',
-                    time_duration_column: info?.time !== 'none' ? info?.time['start+duration']?.duration_field : '',
-                    time_duration_value: info?.time !== 'none' ? info?.time.start?.duration : 0,
-                    time_end_column: end ? end.end_field : '',
-                    time_end_format: end ? end.end_format.format : '',
-                    time_end_format_custom: end ? end.end_format.custom_format : '',
-                    columns_x: info?.columns?.x,
-                    columns_y: info?.columns?.y,
-                    columns_textual: info?.columns?.textual,
-                    columns_float: info?.columns?.float,
-                    columns_int: info?.columns?.int,
-                    error_handling: info?.on_error,
-                    spatial_reference: suggest.meta_data.OgrMetaData?.result_descriptor.spatial_reference,
+                    mainFile: suggest.mainFile,
+                    layerName: info?.layerName,
+                    dataType: info?.dataType,
+                    timeType: info ? this.getTimeType(info.time) : 'None',
+                    timeStartColumn: start ? start.startField : '',
+                    timeStartFormat: start ? start.startFormat.format : '',
+                    timeStartFormatCustom: start ? start.startFormat.customFormat : '',
+                    timeDurationColumn: info?.time !== 'none' ? info?.time['start+duration']?.durationField : '',
+                    timeDurationValue: info?.time !== 'none' ? info?.time.start?.duration : 0,
+                    timeEendColumn: end ? end.endField : '',
+                    timeEndFormat: end ? end.endFormat.format : '',
+                    timeEndFormatCustom: end ? end.endFormat.customFormat : '',
+                    columnsX: info?.columns?.x,
+                    columnsY: info?.columns?.y,
+                    columnsTextual: info?.columns?.textual,
+                    columnsFloat: info?.columns?.float,
+                    columnsInt: info?.columns?.int,
+                    errorHandling: info?.onError,
+                    spatialReference: suggest.metaData.OgrMetaData?.resultDescriptor.spatialReference,
                 });
                 this.changeDetectorRef.markForCheck();
             },
@@ -372,7 +372,7 @@ export class UploadComponent {
 
     private getStartTime(
         time: OgrSourceDatasetTimeTypeDict | undefined | 'none',
-    ): undefined | {start_field: string; start_format: OgrSourceTimeFormatDict; custom?: string} {
+    ): undefined | {startField: string; startFormat: OgrSourceTimeFormatDict; custom?: string} {
         if (!time || time === 'none') {
             return undefined;
         }
@@ -390,7 +390,7 @@ export class UploadComponent {
 
     private getEndTime(
         time: OgrSourceDatasetTimeTypeDict | undefined | 'none',
-    ): undefined | {end_field: string; end_format: OgrSourceTimeFormatDict; custom?: string} {
+    ): undefined | {endField: string; endFormat: OgrSourceTimeFormatDict; custom?: string} {
         if (!time || time === 'none') {
             return undefined;
         }
@@ -406,15 +406,15 @@ export class UploadComponent {
         const formMeta = this.formMetaData.controls;
         const columns: {[key: string]: 'categorical' | 'int' | 'float' | 'text'} = {};
 
-        for (const column of formMeta.columns_textual.value as Array<string>) {
+        for (const column of formMeta.columnsTextual.value as Array<string>) {
             columns[column] = 'text';
         }
 
-        for (const column of formMeta.columns_int.value as Array<string>) {
+        for (const column of formMeta.columnsInt.value as Array<string>) {
             columns[column] = 'int';
         }
 
-        for (const column of formMeta.columns_float.value as Array<string>) {
+        for (const column of formMeta.columnsFloat.value as Array<string>) {
             columns[column] = 'float';
         }
         return columns;
@@ -424,61 +424,61 @@ export class UploadComponent {
         const formMeta = this.formMetaData.controls;
         let time: 'none' | OgrSourceDatasetTimeTypeDict = 'none';
 
-        if (formMeta.time_type.value === 'Start') {
+        if (formMeta.timeType.value === 'Start') {
             const format: OgrSourceTimeFormatDict = {
-                format: formMeta.time_start_format.value.toLowerCase(),
+                format: formMeta.timeStartFormat.value.toLowerCase(),
             };
 
             if (format.format === 'custom') {
-                format.custom_format = formMeta.time_start_format_custom.value;
+                format.customFormat = formMeta.timeStartFormatCustom.value;
             }
 
             time = {
                 start: {
-                    start_field: formMeta.time_start_column.value,
-                    start_format: format,
-                    duration: formMeta.time_duration_value.value,
+                    startField: formMeta.timeStartColumn.value,
+                    startFormat: format,
+                    duration: formMeta.timeDurationValue.value,
                 },
             };
-        } else if (formMeta.time_type.value === 'Start/End') {
+        } else if (formMeta.timeType.value === 'Start/End') {
             const startFormat: OgrSourceTimeFormatDict = {
-                format: formMeta.time_start_format.value.toLowerCase(),
+                format: formMeta.timeStartFormat.value.toLowerCase(),
             };
 
             if (startFormat.format === 'custom') {
-                startFormat.custom_format = formMeta.time_start_format_custom.value;
+                startFormat.customFormat = formMeta.timeStartFormatCustom.value;
             }
 
             const endFormat: OgrSourceTimeFormatDict = {
-                format: formMeta.time_start_format.value.toLowerCase(),
+                format: formMeta.timeStartFormat.value.toLowerCase(),
             };
 
             if (endFormat.format === 'custom') {
-                endFormat.custom_format = formMeta.time_start_format_custom.value;
+                endFormat.customFormat = formMeta.timeStartFormatCustom.value;
             }
 
             time = {
                 'start+end': {
-                    start_field: formMeta.time_start_column.value,
-                    start_format: startFormat,
-                    end_field: formMeta.time_end_column.value,
-                    end_format: endFormat,
+                    startField: formMeta.timeStartColumn.value,
+                    startFormat,
+                    endField: formMeta.timeEndColumn.value,
+                    endFormat,
                 },
             };
-        } else if (formMeta.time_type.value === 'Start/Duration') {
+        } else if (formMeta.timeType.value === 'Start/Duration') {
             const format: OgrSourceTimeFormatDict = {
-                format: formMeta.time_start_format.value.toLowerCase(),
+                format: formMeta.timeStartFormat.value.toLowerCase(),
             };
 
             if (format.format === 'custom') {
-                format.custom_format = formMeta.time_start_format_custom.value;
+                format.customFormat = formMeta.timeStartFormatCustom.value;
             }
 
             time = {
                 'start+duration': {
-                    start_field: formMeta.time_start_column.value,
-                    start_format: format,
-                    duration_field: formMeta.time_duration_column.value,
+                    startField: formMeta.timeStartColumn.value,
+                    startFormat: format,
+                    durationField: formMeta.timeDurationColumn.value,
                 },
             };
         }

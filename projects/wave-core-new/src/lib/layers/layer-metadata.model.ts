@@ -32,7 +32,7 @@ export class VectorLayerMetadata extends LayerMetadata {
     }
 
     static fromDict(dict: VectorResultDescriptorDict): VectorLayerMetadata {
-        const dataType = VectorDataTypes.fromCode(dict.data_type);
+        const dataType = VectorDataTypes.fromCode(dict.dataType);
 
         const columns: {[index: string]: VectorColumnDataType} = {};
         for (const columnName of Object.keys(dict.columns)) {
@@ -61,7 +61,7 @@ export class RasterLayerMetadata extends LayerMetadata {
     }
 
     static fromDict(dict: RasterResultDescriptorDict): RasterLayerMetadata {
-        const dataType = RasterDataTypes.fromCode(dict.data_type);
+        const dataType = RasterDataTypes.fromCode(dict.dataType);
         const measurement = Measurement.fromDict(dict.measurement);
 
         return new RasterLayerMetadata(dataType, measurement);

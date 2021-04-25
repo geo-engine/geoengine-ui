@@ -18,7 +18,7 @@ import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {Country, COUNTRY_LIST, COUNTRY_METADATA} from './country-data.model';
 
 interface HistogramParams extends OperatorParams {
-    column_name?: string;
+    columnName?: string;
     bounds:
         | {
               min: number;
@@ -87,8 +87,8 @@ export class AnalysisComponent implements OnInit {
                             workflowId,
                             name: country,
                             symbology: PolygonSymbology.fromPolygonSymbologyDict({
-                                stroke: {width: {Static: 1}, color: {Static: [0, 0, 0, 255]}},
-                                fill_color: {Static: [0, 0, 128, 255]},
+                                stroke: {width: {static: 1}, color: {static: [0, 0, 0, 255]}},
+                                fillColor: {static: [0, 0, 128, 255]},
                             }),
                             isLegendVisible: false,
                             isVisible: true,
@@ -112,11 +112,11 @@ export class AnalysisComponent implements OnInit {
         }
         const [, xmax, ymax, xmin, ymin] = countryMetadata[0];
         const countryBounds: BBoxDict = {
-            lower_left_coordinate: {
+            lowerLeftCoordinate: {
                 x: xmin,
                 y: ymin,
             },
-            upper_right_coordinate: {
+            upperRightCoordinate: {
                 x: xmax,
                 y: ymax,
             },
@@ -156,12 +156,12 @@ export class AnalysisComponent implements OnInit {
                             params: {
                                 expression: '(B != 0) ? A : NAN',
                                 // TODO: get data type from data
-                                output_type: RasterDataTypes.Float64.getCode(),
+                                outputType: RasterDataTypes.Float64.getCode(),
                                 // TODO: get no data value from data
-                                output_no_data_value: RasterDataTypes.Float64.noData(Number.MIN_VALUE),
+                                outputNoDataValue: RasterDataTypes.Float64.noData(Number.MIN_VALUE),
                             },
-                            raster_sources: [rasterWorkflow.operator, polygonWorkflow.operator],
-                            vector_sources: [],
+                            rasterSources: [rasterWorkflow.operator, polygonWorkflow.operator],
+                            vectorSources: [],
                         },
                     }),
                 ),
@@ -178,8 +178,8 @@ export class AnalysisComponent implements OnInit {
                                 buckets: 20,
                                 bounds: dataRange,
                             } as HistogramParams,
-                            raster_sources: [rasterWorkflow.operator],
-                            vector_sources: [],
+                            rasterSources: [rasterWorkflow.operator],
+                            vectorSources: [],
                         },
                     }),
                 ),
@@ -193,7 +193,7 @@ export class AnalysisComponent implements OnInit {
                             time: time.toDict(),
                             bbox: countryBounds,
                             // TODO: set reasonable size
-                            spatial_resolution: [0.1, 0.1],
+                            spatialResolution: [0.1, 0.1],
                         },
                         sessionToken,
                     ),

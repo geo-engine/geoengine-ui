@@ -12,6 +12,7 @@ import {
     StrokeParamDict,
     SymbologyDict,
     TextSymbologyDict,
+    VectorSymbologyDict,
 } from '../../backend/backend.model';
 import {Circle as OlStyleCircle, Fill as OlStyleFill, Stroke as OlStyleStroke, Style as OlStyle, Text as OlStyleText} from 'ol/style';
 import {StyleFunction as OlStyleFunction} from 'ol/style/Style';
@@ -53,16 +54,16 @@ export interface IconStyle {}
 
 export abstract class Symbology {
     static fromDict(dict: SymbologyDict): Symbology {
-        if (dict.Raster) {
-            return RasterSymbology.fromRasterSymbologyDict(dict.Raster);
-        } else if (dict.Vector) {
-            const vectorDict = dict.Vector;
-            if (vectorDict.Point) {
-                return PointSymbology.fromPointSymbologyDict(vectorDict.Point);
-            } else if (vectorDict.Line) {
-                return LineSymbology.fromLineSymbologyDict(vectorDict.Line);
-            } else if (vectorDict.Polygon) {
-                return PolygonSymbology.fromPolygonSymbologyDict(vectorDict.Polygon);
+        if (dict.raster) {
+            return RasterSymbology.fromRasterSymbologyDict(dict.raster);
+        } else if (dict.vector) {
+            const vectorDict = dict.vector;
+            if (vectorDict.point) {
+                return PointSymbology.fromPointSymbologyDict(vectorDict.point);
+            } else if (vectorDict.line) {
+                return LineSymbology.fromLineSymbologyDict(vectorDict.line);
+            } else if (vectorDict.polygon) {
+                return PolygonSymbology.fromPolygonSymbologyDict(vectorDict.polygon);
             }
         }
         throw new Error('Invalid Symbology type.');
@@ -88,6 +89,17 @@ export abstract class Symbology {
 }
 
 export abstract class VectorSymbology extends Symbology {
+    static fromVectorSymbologyDict(dict: VectorSymbologyDict): VectorSymbology {
+        if (dict.point) {
+            return PointSymbology.fromPointSymbologyDict(dict.point);
+        } else if (dict.line) {
+            return LineSymbology.fromLineSymbologyDict(dict.line);
+        } else if (dict.polygon) {
+            return PolygonSymbology.fromPolygonSymbologyDict(dict.polygon);
+        }
+        throw new Error('Invalid Vector Symbology type.');
+    }
+
     createStyleFunction(): OlStyleFunction {
         return (feature: FeatureLike, _resolution: number): OlStyle => {
             const styler = this.createStyler((feature as unknown) as OlFeature);
@@ -110,6 +122,8 @@ export abstract class VectorSymbology extends Symbology {
     createHighlightStyle(feature: OlFeature): OlStyle {
         return this.createStyler(feature).createHighlightStyle();
     }
+
+    abstract clone(): VectorSymbology;
 
     protected abstract createStyler(feature: OlFeature): Styler;
 }
@@ -320,7 +334,7 @@ export class PointSymbology extends VectorSymbology {
     static fromPointSymbologyDict(dict: PointSymbologyDict): PointSymbology {
         return new PointSymbology(
             NumberParam.fromDict(dict.radius),
-            ColorParam.fromDict(dict.fill_color),
+            ColorParam.fromDict(dict.fillColor),
             Stroke.fromDict(dict.stroke),
             dict.text ? TextSymbology.fromDict(dict.text) : undefined,
         );
@@ -356,10 +370,10 @@ export class PointSymbology extends VectorSymbology {
 
     toDict(): SymbologyDict {
         return {
-            Vector: {
-                Point: {
+            vector: {
+                point: {
                     radius: this.radius.toDict(),
-                    fill_color: this.fillColor.toDict(),
+                    fillColor: this.fillColor.toDict(),
                     stroke: this.stroke.toDict(),
                     text: this.text ? this.text.toDict() : undefined,
                 },
@@ -412,8 +426,8 @@ export class LineSymbology extends VectorSymbology {
 
     toDict(): SymbologyDict {
         return {
-            Vector: {
-                Line: {
+            vector: {
+                line: {
                     stroke: this.stroke.toDict(),
                     text: this.text ? this.text.toDict() : undefined,
                 },
@@ -449,7 +463,7 @@ export class PolygonSymbology extends VectorSymbology {
 
     static fromPolygonSymbologyDict(dict: PolygonSymbologyDict): PolygonSymbology {
         return new PolygonSymbology(
-            ColorParam.fromDict(dict.fill_color),
+            ColorParam.fromDict(dict.fillColor),
             Stroke.fromDict(dict.stroke),
             dict.text ? TextSymbology.fromDict(dict.text) : undefined,
         );
@@ -478,9 +492,9 @@ export class PolygonSymbology extends VectorSymbology {
 
     toDict(): SymbologyDict {
         return {
-            Vector: {
-                Polygon: {
-                    fill_color: this.fillColor.toDict(),
+            vector: {
+                polygon: {
+                    fillColor: this.fillColor.toDict(),
                     stroke: this.stroke.toDict(),
                     text: this.text ? this.text.toDict() : undefined,
                 },
@@ -532,7 +546,7 @@ export class RasterSymbology extends Symbology {
 
     toDict(): SymbologyDict {
         return {
-            Raster: {
+            raster: {
                 opacity: this.opacity,
                 colorizer: this.colorizer.toDict(),
             },
@@ -550,10 +564,10 @@ export class RasterSymbology extends Symbology {
 
 export abstract class ColorParam {
     static fromDict(dict: ColorParamDict): ColorParam {
-        if (dict.Static) {
-            return new StaticColor(Color.fromRgbaLike(rgbaColorFromDict(dict.Static)));
-        } else if (dict.Derived) {
-            return DerivedColor.fromDerivedColorDict(dict.Derived);
+        if (dict.static) {
+            return new StaticColor(Color.fromRgbaLike(rgbaColorFromDict(dict.static)));
+        } else if (dict.derived) {
+            return DerivedColor.fromDerivedColorDict(dict.derived);
         } else {
             throw new Error('unable to deserialize `NumberParam`');
         }
@@ -572,10 +586,10 @@ export abstract class ColorParam {
 
 export abstract class NumberParam {
     static fromDict(dict: NumberParamDict): NumberParam {
-        if (dict.Static) {
-            return new StaticNumber(dict.Static);
-        } else if (dict.Derived) {
-            return DerivedNumber.fromDerivedNumberDict(dict.Derived);
+        if (dict.static) {
+            return new StaticNumber(dict.static);
+        } else if (dict.derived) {
+            return DerivedNumber.fromDerivedNumberDict(dict.derived);
         } else {
             throw new Error('unable to deserialize `NumberParam`');
         }
@@ -617,7 +631,7 @@ export class StaticColor extends ColorParam {
 
     toDict(): ColorParamDict {
         return {
-            Static: colorToDict(this.color),
+            static: colorToDict(this.color),
         };
     }
 
@@ -651,7 +665,7 @@ export class StaticNumber extends NumberParam {
 
     toDict(): NumberParamDict {
         return {
-            Static: this.num,
+            static: this.num,
         };
     }
 
@@ -690,7 +704,7 @@ export class DerivedColor implements ColorParam {
 
     toDict(): ColorParamDict {
         return {
-            Derived: {
+            derived: {
                 attribute: this.attribute,
                 colorizer: this.colorizer.toDict(),
             },
@@ -715,11 +729,13 @@ export class DerivedNumber extends NumberParam {
     }
 
     static fromDerivedNumberDict(dict: DerivedNumberDict): NumberParam {
-        return new DerivedNumber(dict.attribute, dict.factor, dict.default_value);
+        return new DerivedNumber(dict.attribute, dict.factor, dict.defaultValue);
     }
 
     getNumber(feature: OlFeature): number {
-        return feature.get(this.attribute) * this.factor;
+        const value = feature.get(this.attribute) * this.factor;
+        // ensure to only have values >= 0
+        return Math.max(value, 0);
     }
 
     equals(other: NumberParam): boolean {
@@ -735,10 +751,10 @@ export class DerivedNumber extends NumberParam {
 
     toDict(): NumberParamDict {
         return {
-            Derived: {
+            derived: {
                 attribute: this.attribute,
                 factor: this.factor,
-                default_value: this.defaultValue,
+                defaultValue: this.defaultValue,
             },
         };
     }
@@ -805,12 +821,20 @@ export class TextSymbology {
             throw Error('unable to deserialize `TextSymbology`');
         }
 
-        return new TextSymbology(dict.attribute, ColorParam.fromDict(dict.fill_color), Stroke.fromDict(dict.stroke));
+        return new TextSymbology(dict.attribute, ColorParam.fromDict(dict.fillColor), Stroke.fromDict(dict.stroke));
     }
 
     createStyler(feature: OlFeature): OlStyleText {
+        const featureAttributeValue = feature.get(this.attribute);
+        let featureAttributeString: string;
+        if (featureAttributeValue === null || featureAttributeValue === undefined) {
+            featureAttributeString = '';
+        } else {
+            featureAttributeString = featureAttributeValue.toString();
+        }
+
         const textStyler = new TextStyler(
-            feature.get(this.attribute),
+            featureAttributeString,
             this.fillColor.getColor(feature).rgbaTuple(),
             this.stroke.createStyler(feature),
         );
@@ -828,7 +852,7 @@ export class TextSymbology {
     toDict(): TextSymbologyDict {
         return {
             attribute: this.attribute,
-            fill_color: this.fillColor.toDict(),
+            fillColor: this.fillColor.toDict(),
             stroke: this.stroke.toDict(),
         };
     }
