@@ -2,7 +2,7 @@
     <mat-list *ngFor="let notification of notifications" dense>
         <mat-list-item>
             <button class="deleteIcon" mat-icon-button (click)="removeCurrentNotification(notification)">
-                <mat-icon>clear</mat-icon>
+                <mat-icon>delete</mat-icon>
             </button>
             <mat-icon *ngIf="notification.type" matListIcon color="warn">error</mat-icon>
             <mat-icon *ngIf="!notification.type" matListIcon>notifications</mat-icon>

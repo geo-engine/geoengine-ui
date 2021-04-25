@@ -75,6 +75,7 @@ export * from './lib/time/small-time-interaction/small-time-interaction.componen
 export * from './lib/time/time-config/time-config.component';
 export * from './lib/time/time-input/time-input.component';
 export * from './lib/users/login/login.component';
+export * from './lib/project/notifications/notifications.component';
 
 // Pipes
 export * from './lib/util/pipes/async-converters.pipe';

@@ -185,6 +185,7 @@ const WAVE_COMPONENTS = [
     MultiLayerSelectionComponent,
     NavigationComponent,
     NewProjectComponent,
+    NotificationsComponent,
     NumberParamEditorComponent,
     OlRasterLayerComponent,
     OlVectorLayerComponent,

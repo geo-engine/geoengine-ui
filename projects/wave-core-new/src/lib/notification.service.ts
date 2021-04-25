@@ -32,7 +32,7 @@ export class NotificationService {
         this.snackBar.open(message, undefined, {
             duration: 3000,
         });
-        this.notifications.push(notification);
+        this.notifications.unshift(notification);
     }
 
     error(message: string): void {
@@ -44,6 +44,6 @@ export class NotificationService {
         this.snackBar.open(message, undefined, {
             duration: 5000,
         });
-        this.notifications.push(notification);
+        this.notifications.unshift(notification);
     }
 }

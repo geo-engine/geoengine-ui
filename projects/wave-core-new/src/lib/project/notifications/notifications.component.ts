@@ -17,11 +17,10 @@ export class NotificationsComponent implements OnInit {
 
     ngOnInit(): void {
         this.notifications = this.notificationService.notifications;
-        this.notifications = this.notifications.reverse();
     }
 
     removeAllNotifications(): void {
-        this.notifications = [];
+        this.notifications.splice(0, this.notifications.length);
     }
 
     removeCurrentNotification(value: Notification): void {
