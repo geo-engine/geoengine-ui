@@ -86,7 +86,7 @@
                     },
                     {
                         "selector": "property",
-                        "format": ["camelCase", "UPPER_CASE", "snake_case", "PascalCase"],
+                        "format": ["camelCase", "UPPER_CASE", "PascalCase"],
                         "leadingUnderscore": "allow"
                     },
                     {

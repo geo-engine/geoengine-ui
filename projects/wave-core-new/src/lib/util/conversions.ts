@@ -4,21 +4,21 @@ import {Feature as OlFeature} from 'ol';
 import OlFormatGeoJson from 'ol/format/GeoJSON';
 
 export const extentToBboxDict = ([minx, miny, maxx, maxy]: [number, number, number, number]): BBoxDict => ({
-    lower_left_coordinate: {
+    lowerLeftCoordinate: {
         x: minx,
         y: miny,
     },
-    upper_right_coordinate: {
+    upperRightCoordinate: {
         x: maxx,
         y: maxy,
     },
 });
 
 export const bboxDictToExtent = (extent: BBoxDict): [number, number, number, number] => {
-    const minx = extent.lower_left_coordinate.x;
-    const miny = extent.lower_left_coordinate.y;
-    const maxx = extent.upper_right_coordinate.x;
-    const maxy = extent.upper_right_coordinate.y;
+    const minx = extent.lowerLeftCoordinate.x;
+    const miny = extent.lowerLeftCoordinate.y;
+    const maxx = extent.upperRightCoordinate.x;
+    const maxy = extent.upperRightCoordinate.y;
 
     return [minx, miny, maxx, maxy];
 };

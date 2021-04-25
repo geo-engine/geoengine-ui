@@ -152,9 +152,9 @@ export class DrawFeaturesComponent implements OnDestroy, OnInit {
                     const uploadId = response.id;
                     const create: AutoCreateDatasetDict = {
                         upload: uploadId,
-                        dataset_name: this.datasetName,
-                        dataset_description: this.datasetDescription,
-                        main_file: 'draw.json',
+                        datasetName: this.datasetName,
+                        datasetDescription: this.datasetDescription,
+                        mainFile: 'draw.json',
                     };
                     return this.datasetService.autoCreateDataset(create);
                 }),

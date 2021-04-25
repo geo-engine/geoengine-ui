@@ -137,7 +137,7 @@ export class Color implements IRgba, RgbaStruct {
             });
         }
 
-        throw new Error('invalid RgbaLike ' + rgba.toString());
+        throw new Error('invalid RgbaLike ' + JSON.stringify(rgba));
     }
 
     /**
