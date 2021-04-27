@@ -47,6 +47,7 @@ export * from './lib/map/map-container/map-container.component';
 export * from './lib/map/map-layer.component';
 export * from './lib/map/zoom-handles/zoom-handles.component';
 export * from './lib/operators/dialogs/expression-operator/expression-operator.component';
+export * from './lib/operators/dialogs/feature-attribute-over-time/feature-attribute-over-time.component';
 export * from './lib/operators/dialogs/helpers/layer-selection/layer-selection.component';
 export * from './lib/operators/dialogs/helpers/multi-layer-selection/multi-layer-selection.component';
 export * from './lib/operators/dialogs/helpers/operator-output-name/operator-output-name.component';
