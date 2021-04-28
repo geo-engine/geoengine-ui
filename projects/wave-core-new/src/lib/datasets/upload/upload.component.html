@@ -119,12 +119,12 @@
 
             <mat-form-field class="example-chip-list">
                 <mat-label>Text Columns</mat-label>
-                <mat-chip-list #columnTextualList formControlName="columnsTextual">
-                    <mat-chip *ngFor="let column of formMetaData.controls.columnsTextual.value" (removed)="removeTextual(column)">
+                <mat-chip-list #columnTextList formControlName="columnsText">
+                    <mat-chip *ngFor="let column of formMetaData.controls.columnsText.value" (removed)="removeText(column)">
                         {{ column }}
                         <mat-icon matChipRemove>cancel</mat-icon>
                     </mat-chip>
-                    <input placeholder="New column..." [matChipInputFor]="columnTextualList" (matChipInputTokenEnd)="addTextual($event)" />
+                    <input placeholder="New column..." [matChipInputFor]="columnTextList" (matChipInputTokenEnd)="addText($event)" />
                 </mat-chip-list>
             </mat-form-field>
 
