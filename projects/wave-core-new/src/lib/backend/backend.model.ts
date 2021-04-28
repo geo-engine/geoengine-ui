@@ -397,7 +397,7 @@ export interface OgrSourceColumnSpecDict {
     y?: string;
     float: Array<string>;
     int: Array<string>;
-    textual: Array<string>;
+    text: Array<string>;
 }
 
 export interface TypedGeometryDict {
