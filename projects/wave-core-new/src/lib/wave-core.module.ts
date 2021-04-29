@@ -103,6 +103,7 @@ import {AsyncNumberSanitizer, AsyncStringSanitizer, AsyncValueDefault} from './u
 import {VectorSymbologyEditorComponent} from './layers/symbology/vector-symbology-editor/vector-symbology-editor.component';
 import {ColorParamEditorComponent} from './layers/symbology/color-param-editor/color-param-editor.component';
 import {NumberParamEditorComponent} from './layers/symbology/number-param-editor/number-param-editor.component';
+import {FeatureAttributeOvertimeComponent} from './operators/dialogs/feature-attribute-over-time/feature-attribute-over-time.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -169,6 +170,7 @@ const WAVE_COMPONENTS = [
     DialogSectionHeadingComponent,
     DrawFeaturesComponent,
     ExpressionOperatorComponent,
+    FeatureAttributeOvertimeComponent,
     HistogramOperatorComponent,
     IfGuestDirective,
     IfLoggedInDirective,
