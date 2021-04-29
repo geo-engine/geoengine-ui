@@ -2,7 +2,7 @@ import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, On
 import {ProjectService} from '../../project/project.service';
 import {Observable, Subscription} from 'rxjs';
 import {Time, TimeStepDuration} from '../time.model';
-import {Moment} from 'moment';
+import moment, {Moment} from 'moment';
 import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {Config} from '../../config.service';
 
@@ -30,8 +30,6 @@ const startBeforeEndValidator = (control: AbstractControl): ValidationErrors | n
 })
 export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     timeForm: FormGroup;
-    start?: Moment;
-    end?: Moment;
 
     timeStepDuration$: Observable<TimeStepDuration>;
     timeStepDurations: Array<TimeStepDuration> = [
@@ -44,9 +42,8 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         {durationAmount: 1, durationUnit: 'year'},
     ];
 
-    private timeAsPoint = true;
-    private time?: Time;
-    private subscriptions: Array<Subscription> = [];
+    protected time: Time;
+    private projectTimeSubscription?: Subscription;
 
     constructor(
         private projectService: ProjectService,
@@ -54,14 +51,13 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         private formBuilder: FormBuilder,
         public config: Config,
     ) {
-        if (!this.config.TIME.ALLOW_RANGES) {
-            this.timeAsPoint = false;
-        }
+        // initialize with the current time to have a defined value
+        this.time = new Time(moment.utc(), moment.utc());
 
         this.timeForm = this.formBuilder.group({
-            start: [this.start, Validators.required],
-            timeAsPoint: [this.timeAsPoint, Validators.required],
-            end: [{value: this.end, disabled: this.timeAsPoint}, Validators.required],
+            start: [this.time.start.clone(), Validators.required],
+            timeAsPoint: [this.config.TIME.ALLOW_RANGES, Validators.required],
+            end: [this.time.end.clone(), Validators.required],
         });
 
         this.timeForm.setValidators(startBeforeEndValidator);
@@ -76,12 +72,10 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     ngOnInit(): void {
-        const sub = this.projectService.getTimeStream().subscribe((time) => {
+        this.projectTimeSubscription = this.projectService.getTimeStream().subscribe((time) => {
             this.time = time.clone();
             this.reset();
         });
-
-        this.subscriptions.push(sub);
     }
 
     ngAfterViewInit(): void {
@@ -89,37 +83,55 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     ngOnDestroy(): void {
-        this.subscriptions.forEach((s) => s.unsubscribe());
+        this.projectTimeSubscription?.unsubscribe();
     }
 
     applyTime(): void {
-        if (this.timeForm.valid) {
-            const start = this.timeForm.controls['start'].value;
-            if (this.timeForm.controls['timeAsPoint'].value) {
-                this.push(new Time(start));
-            } else {
-                const end = this.timeForm.controls['end'].value;
-                this.push((this.time = new Time(start, end)));
-            }
+        if (!this.timeForm.valid) {
+            return;
         }
+
+        this.updateTime(this.timeOfForm());
     }
 
     reset(): void {
-        this.timeForm.controls['timeAsPoint'].setValue(this.time?.type === 'TimePoint');
-        this.start = this.time?.start.clone();
-        this.timeForm.controls['start'].setValue(this.start);
-        this.end = this.time?.end.clone();
-        this.timeForm.controls['end'].setValue(this.end);
+        this.timeForm.controls['timeAsPoint'].setValue(this.time.type === 'TimePoint');
+        this.timeForm.controls['start'].setValue(this.time.start.clone());
+        this.timeForm.controls['end'].setValue(this.time.end.clone());
+    }
+
+    isNotResettable(): boolean {
+        return this.time.isSame(this.timeOfForm());
     }
 
     updateTimeStepDuration(timeStep: TimeStepDuration): void {
-        // console.log('updateTimeStepDuration()', event, this.selectedtimeStepDuration);
-        this.projectService.setTimeStepDuration(timeStep); // FIXME: this.selectedtimeStepDuration ?
+        this.projectService.setTimeStepDuration(timeStep);
     }
 
-    private push(time: Time): void {
-        if (!!time && time.isValid()) {
-            this.projectService.setTime(time);
+    protected getFormStartTime(): Moment {
+        return this.timeForm.get('start')?.value;
+    }
+
+    protected getFormEndTime(): Moment {
+        return this.timeForm.get('end')?.value;
+    }
+
+    protected isFormTimePoint(): boolean {
+        return this.timeForm.get('timeAsPoint')?.value;
+    }
+
+    protected timeOfForm(): Time {
+        if (this.isFormTimePoint()) {
+            return new Time(this.getFormStartTime());
+        } else {
+            return new Time(this.getFormStartTime(), this.getFormEndTime());
         }
+    }
+
+    protected updateTime(time: Time): void {
+        if (!time.isValid) {
+            return;
+        }
+        this.projectService.setTime(time);
     }
 }

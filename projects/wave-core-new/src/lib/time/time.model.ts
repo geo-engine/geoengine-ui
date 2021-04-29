@@ -108,7 +108,7 @@ export class Time implements ToDict<TimeIntervalDict> {
     }
 
     get type(): TimeType {
-        if (this.start === this.end) {
+        if (this.start.isSame(this.end)) {
             return 'TimePoint';
         } else {
             return 'TimeInterval';
