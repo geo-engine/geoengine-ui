@@ -20,7 +20,8 @@ import moment, {Moment, unitOfTime} from 'moment';
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => TimeInputComponent), multi: true}],
 })
 export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, OnChanges {
-    @Input() disabled = false;
+    // TODO: also react on disabled state in `ControlValueAccessor`
+    @Input() isDisabled = false;
 
     onTouched?: () => void;
     onChange?: (_: Moment) => void = undefined;
@@ -72,18 +73,22 @@ export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, 
         this.onTouched = fn;
     }
 
-    update(timeUnit: unitOfTime.Base, value: number): void {
-        if (value) {
-            this.time.set(timeUnit, value);
-            this.propagateChange();
+    update(timeUnit: unitOfTime.Base, value?: number): void {
+        if (typeof value !== 'number') {
+            return;
         }
+
+        this.time.set(timeUnit, value);
+        this.propagateChange();
     }
 
-    updateDate(value: number): void {
-        if (value) {
-            this.time.date(value);
-            this.propagateChange();
+    updateDate(value?: number): void {
+        if (typeof value !== 'number') {
+            return;
         }
+
+        this.time.date(value);
+        this.propagateChange();
     }
 
     private propagateChange(): void {

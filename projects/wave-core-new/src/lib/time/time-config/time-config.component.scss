@@ -3,10 +3,6 @@
     padding: 1rem;
 }
 
-.container {
-    padding: 1rem 1rem;
-}
-
 .error {
     color: var(--wave-warn-color, red);
 }
@@ -19,6 +15,6 @@ mat-card-header ::ng-deep .mat-card-header-text {
     margin-left: 1rem;
 }
 
-mat-card {
-    margin-bottom: 1rem;
+mat-form-field {
+    width: 100%;
 }

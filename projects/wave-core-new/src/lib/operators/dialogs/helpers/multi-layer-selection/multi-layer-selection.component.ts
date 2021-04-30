@@ -1,6 +1,6 @@
 import {combineLatest, Observable, ReplaySubject, Subject, BehaviorSubject, Subscription, of, zip, forkJoin} from 'rxjs';
 import {first, map, mergeMap} from 'rxjs/operators';
-import {Component, ChangeDetectionStrategy, forwardRef, SimpleChange, Input, OnChanges, OnDestroy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, forwardRef, SimpleChange, Input, OnChanges, OnDestroy, OnInit} from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {Layer} from '../../../../layers/layer.model';
 import {LayerMetadata} from '../../../../layers/layer-metadata.model';
@@ -46,7 +46,7 @@ export const LetterNumberConverter = {
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => MultiLayerSelectionComponent), multi: true}],
 })
-export class MultiLayerSelectionComponent implements ControlValueAccessor, OnChanges, OnDestroy {
+export class MultiLayerSelectionComponent implements ControlValueAccessor, OnChanges, OnDestroy, OnInit {
     /**
      * An array of possible layers.
      */
@@ -61,11 +61,6 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
      * The maximum number of elements to select.
      */
     @Input() max = 1;
-
-    /**
-     * The initial amount of elements to select.
-     */
-    @Input() initialAmount = 1;
 
     /**
      * The type is used as a filter for the layers to choose from.
@@ -87,15 +82,10 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
     layersAtMin: Observable<boolean>;
     layersAtMax: Observable<boolean>;
 
-    private layerSubscription: Subscription;
     private selectionSubscription: Subscription;
     private layerChangesSubscription?: Subscription;
 
     constructor(private projectService: ProjectService) {
-        this.layerSubscription = this.filteredLayers.subscribe((filteredLayers) => {
-            this.selectedLayers.next(this.layersForInitialSelection(filteredLayers, [], this.initialAmount));
-        });
-
         this.selectionSubscription = this.selectedLayers.subscribe((selectedLayers) => {
             if (this.onChange) {
                 this.onChange(selectedLayers);
@@ -111,20 +101,19 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
         );
     }
 
+    ngOnInit(): void {
+        this.updateLayersForSelection();
+    }
+
     ngOnChanges(changes: {[propertyName: string]: SimpleChange}): void {
-        let minMaxInitialChanged = false;
-        let initialChange = false;
+        let minMaxChanged = false;
 
         // eslint-disable-next-line guard-for-in
         for (const propName in changes) {
             switch (propName) {
-                case 'initialAmount':
-                    initialChange = changes[propName].isFirstChange();
-                    minMaxInitialChanged = true;
-                    break;
                 case 'min':
                 case 'max':
-                    minMaxInitialChanged = true;
+                    minMaxChanged = true;
                     break;
                 case 'layers':
                 case 'types':
@@ -161,45 +150,35 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
             }
         }
 
-        if (minMaxInitialChanged) {
-            combineLatest([this.filteredLayers, this.selectedLayers])
-                .pipe(first())
-                .subscribe(([filteredLayers, selectedLayers]) => {
-                    const amountOfLayers = selectedLayers.length;
-
-                    if (this.max < amountOfLayers) {
-                        // remove selected layers
-                        const difference = amountOfLayers - this.max;
-                        this.selectedLayers.next(selectedLayers.slice(0, amountOfLayers - difference));
-                    } else if (this.min > amountOfLayers) {
-                        // add selected layers
-                        const difference = this.min - amountOfLayers;
-                        this.selectedLayers.next(selectedLayers.concat(this.layersForInitialSelection(filteredLayers, [], difference)));
-                    }
-
-                    if (initialChange) {
-                        // set initial layers
-                        this.selectedLayers.next(this.layersForInitialSelection(filteredLayers, [], this.initialAmount));
-                    }
-                });
+        if (minMaxChanged) {
+            this.updateLayersForSelection();
         }
     }
 
+    updateLayersForSelection(): void {
+        combineLatest([this.filteredLayers, this.selectedLayers])
+            .pipe(first())
+            .subscribe(([filteredLayers, selectedLayers]) => {
+                const amountOfLayers = selectedLayers.length;
+
+                if (this.max < amountOfLayers) {
+                    // remove selected layers
+                    const difference = amountOfLayers - this.max;
+                    this.selectedLayers.next(selectedLayers.slice(0, amountOfLayers - difference));
+                } else if (this.min > amountOfLayers) {
+                    // add selected layers
+                    const difference = this.min - amountOfLayers;
+                    this.selectedLayers.next(selectedLayers.concat(this.layersForInitialSelection(filteredLayers, [], difference)));
+                }
+            });
+    }
+
     ngOnDestroy(): void {
-        this.layerSubscription.unsubscribe();
         this.selectionSubscription.unsubscribe();
 
         if (this.layerChangesSubscription) {
             this.layerChangesSubscription.unsubscribe();
         }
-    }
-
-    updateLayer(index: number, layer: Layer): void {
-        this.selectedLayers.pipe(first()).subscribe((selectedLayers) => {
-            const newSelectedLayers = [...selectedLayers];
-            newSelectedLayers[index] = layer;
-            this.selectedLayers.next(newSelectedLayers);
-        });
     }
 
     add(): void {
