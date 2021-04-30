@@ -29,7 +29,7 @@ import {DatasetService} from '../dataset.service';
 export class UploadComponent {
     vectorDataTypes = ['Data', 'MultiPoint', 'MultiLineString', 'MultiPolygon'];
     timeTypes = ['None', 'Start', 'Start/End', 'Start/Duration'];
-    timeFormats = ['iso', 'seconds', 'custom'];
+    timeFormats = ['auto', 'seconds', 'custom'];
     errorHandlings = ['skip', 'abort', 'keep'];
 
     @ViewChild(MatVerticalStepper) stepper!: MatVerticalStepper;
@@ -353,7 +353,7 @@ export class UploadComponent {
                     timeStartFormatCustom: start ? start.startFormat.customFormat : '',
                     timeDurationColumn: info?.time !== 'none' ? info?.time['start+duration']?.durationField : '',
                     timeDurationValue: info?.time !== 'none' ? info?.time.start?.duration : 0,
-                    timeEendColumn: end ? end.endField : '',
+                    timeEndColumn: end ? end.endField : '',
                     timeEndFormat: end ? end.endFormat.format : '',
                     timeEndFormatCustom: end ? end.endFormat.customFormat : '',
                     columnsX: info?.columns?.x,

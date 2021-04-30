@@ -388,7 +388,7 @@ export interface OgrSourceDatasetTimeTypeDict {
 }
 
 export interface OgrSourceTimeFormatDict {
-    format: 'seconds' | 'iso' | 'custom';
+    format: 'seconds' | 'auto' | 'custom';
     customFormat?: string;
 }
 
