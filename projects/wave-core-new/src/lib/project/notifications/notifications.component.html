@@ -1,6 +1,6 @@
 <wave-sidenav-header>Notifications</wave-sidenav-header>
 <p *ngIf="notifications.length == 0" class="no-notifications">no notifications available</p>
-<mat-card *ngIf="notifications.length" [style.overflow]="'auto'" [style.height.px]="'800'">
+<mat-card *ngIf="notifications.length">
     <mat-list *ngFor="let notification of notifications" dense>
         <mat-list-item>
             <button class="deleteIcon" mat-icon-button (click)="removeCurrentNotification(notification)">
