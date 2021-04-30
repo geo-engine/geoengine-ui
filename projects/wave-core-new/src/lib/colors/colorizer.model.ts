@@ -66,7 +66,7 @@ export class LinearGradient extends Colorizer {
             return this.defaultColor;
         }
 
-        const index = this.breakpoints.findIndex((b) => b.value >= value);
+        const index = this.breakpoints.findIndex((b) => value >= b.value);
 
         const brk = this.breakpoints[index];
         const nextBrk = this.breakpoints[Math.min(index + 1, this.breakpoints.length - 1)];

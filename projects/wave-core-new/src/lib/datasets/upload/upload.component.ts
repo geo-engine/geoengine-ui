@@ -66,7 +66,7 @@ export class UploadComponent {
             timeEndFormatCustom: new FormControl(''), // TODO: validate format
             columnsX: new FormControl(''),
             columnsY: new FormControl(''),
-            columnsTextual: new FormControl(''),
+            columnsText: new FormControl(''),
             columnsFloat: new FormControl(''),
             columnsInt: new FormControl(''),
             errorHandling: new FormControl('skip', Validators.required),
@@ -135,8 +135,8 @@ export class UploadComponent {
         }
     }
 
-    removeTextual(column: string): void {
-        const columns: Array<string> = this.formMetaData.controls.columnsTextual.value;
+    removeText(column: string): void {
+        const columns: Array<string> = this.formMetaData.controls.columnsText.value;
 
         const index = columns.indexOf(column);
         if (index > -1) {
@@ -144,8 +144,8 @@ export class UploadComponent {
         }
     }
 
-    addTextual(event: MatChipInputEvent): void {
-        const columns: Array<string> = this.formMetaData.controls.columnsTextual.value;
+    addText(event: MatChipInputEvent): void {
+        const columns: Array<string> = this.formMetaData.controls.columnsText.value;
         const column = event.value;
         const input = event.input;
 
@@ -279,7 +279,7 @@ export class UploadComponent {
                     columns: {
                         x: formMeta.columnsX.value,
                         y: formMeta.columnsY.value,
-                        textual: formMeta.columnsTextual.value,
+                        text: formMeta.columnsText.value,
                         float: formMeta.columnsFloat.value,
                         int: formMeta.columnsInt.value,
                     },
@@ -358,7 +358,7 @@ export class UploadComponent {
                     timeEndFormatCustom: end ? end.endFormat.customFormat : '',
                     columnsX: info?.columns?.x,
                     columnsY: info?.columns?.y,
-                    columnsTextual: info?.columns?.textual,
+                    columnsText: info?.columns?.text,
                     columnsFloat: info?.columns?.float,
                     columnsInt: info?.columns?.int,
                     errorHandling: info?.onError,
@@ -406,7 +406,7 @@ export class UploadComponent {
         const formMeta = this.formMetaData.controls;
         const columns: {[key: string]: 'categorical' | 'int' | 'float' | 'text'} = {};
 
-        for (const column of formMeta.columnsTextual.value as Array<string>) {
+        for (const column of formMeta.columnsText.value as Array<string>) {
             columns[column] = 'text';
         }
 

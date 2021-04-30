@@ -40,6 +40,7 @@ import {HistogramOperatorComponent} from '../histogram-operator/histogram-operat
 import {MeanRasterPixelValuesOverTimeDialogComponent} from '../mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
 import {PointInPolygonFilterOperatorComponent} from '../point-in-polygon-filter/point-in-polygon-filter.component';
 import {RasterVectorJoinComponent} from '../raster-vector-join/raster-vector-join.component';
+import {FeatureAttributeOvertimeComponent} from '../feature-attribute-over-time/feature-attribute-over-time.component';
 // import {RgbCompositeComponent} from '../rgb-composite/rgb-composite.component';
 // import {RgbaCompositeType} from '../../types/rgba-composite-type.model';
 // import {RasterMaskComponent} from '../raster-mask/raster-mask.component';
@@ -139,6 +140,14 @@ export class OperatorListComponent implements OnInit {
                 ICON_URL: createIconDataUrl('Temporal Raster Mean Plot'),
             },
             description: 'Create an area chart over the mean pixel values of the images of a raster time series',
+        },
+        {
+            component: FeatureAttributeOvertimeComponent,
+            type: {
+                NAME: 'Temporal Feature Attribute Plot',
+                ICON_URL: createIconDataUrl('Temporal Feature Attribute Plot'),
+            },
+            description: 'Create a multi line chart over the attribute values of a feature layer',
         },
     ];
 
