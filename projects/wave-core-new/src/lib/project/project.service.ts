@@ -1145,7 +1145,7 @@ export class ProjectService {
         ])
             .pipe(
                 tap(() => loadingState$.next(LoadingState.LOADING)),
-                switchMap(([time, [projection, viewportSize], sessionToken]) => {
+                switchMap(([time, [projection, viewport], sessionToken]) => {
                     const requestExtent: [number, number, number, number] = [0, 0, 0, 0];
 
                     // TODO: add resolution
@@ -1153,9 +1153,10 @@ export class ProjectService {
                         .wfsGetFeature(
                             {
                                 typeNames: `registry:${layer.workflowId}`,
-                                bbox: extentToBboxDict(viewportSize.extent),
+                                bbox: extentToBboxDict(viewport.extent),
                                 time: time.toDict(),
                                 srsName: projection.getCode(),
+                                queryResolution: viewport.resolution, // TODO: use two seperate values for x and y
                             },
                             sessionToken,
                         )
