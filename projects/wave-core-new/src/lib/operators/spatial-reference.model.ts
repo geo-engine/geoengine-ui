@@ -123,6 +123,28 @@ export class UTM32N extends SpatialReference {
     }
 }
 
+export class UTM36S extends SpatialReference {
+    getCode(): string {
+        return 'EPSG:32736';
+    }
+
+    getName(): string {
+        return 'WGS 84 / UTM 36 S';
+    }
+
+    getExtent(): [number, number, number, number] {
+        return [441867.78, 1116915.04, 833978.56, 10000000.0];
+    }
+
+    getCrsURI(): string {
+        return 'http://www.opengis.net/def/crs/EPSG/0/32736';
+    }
+
+    getProj4String(): string | undefined {
+        return '+proj=utm +zone=36 +south +datum=WGS84 +units=m +no_defs';
+    }
+}
+
 export class ETRS89UTM32N extends SpatialReference {
     getCode(): string {
         return 'EPSG:25832';
@@ -225,6 +247,7 @@ export class ProjectionCollection {
     WEB_MERCATOR: SpatialReference = new WebMercator();
     GEOS: SpatialReference = new GEOS();
     UTM32N: SpatialReference = new UTM32N();
+    UTM36S: SpatialReference = new UTM36S();
     ETRS89UTM32N: SpatialReference = new ETRS89UTM32N();
     ERTS89LAEA: SpatialReference = new ETRS89LAEA();
 
@@ -234,7 +257,7 @@ export class ProjectionCollection {
     ALL_PROJECTIONS: Array<SpatialReference>;
 
     protected constructor() {
-        this.ALL_PROJECTIONS = [this.WGS_84, this.WEB_MERCATOR, this.GEOS, this.UTM32N, this.ETRS89UTM32N, this.ERTS89LAEA];
+        this.ALL_PROJECTIONS = [this.WGS_84, this.WEB_MERCATOR, this.GEOS, this.UTM32N, this.ETRS89UTM32N, this.ERTS89LAEA, this.UTM36S];
         this.registerProj4Projections();
     }
 
@@ -254,6 +277,8 @@ export class ProjectionCollection {
                 return this.ETRS89UTM32N;
             case this.ERTS89LAEA.getCode():
                 return this.ERTS89LAEA;
+            case this.UTM36S.getCode():
+                return this.UTM36S;
             default:
                 throw new Error('Invalid Projection String');
         }
