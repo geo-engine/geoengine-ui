@@ -1,7 +1,7 @@
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {combineLatest, Observable} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
 import {RasterDataType, RasterDataTypes} from '../../datatype.model';
 import {RasterLayer} from '../../../layers/layer.model';
@@ -46,8 +46,9 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                 // }),
                 // projection: new FormControl(undefined, [Validators.required]),
                 name: new FormControl('Expression', [Validators.required, WaveValidators.notOnlyWhitespace]),
-                noDataValue: new FormControl(0, Validators.required), // TODO: validate no-data-value is valid for dataType
+                noDataValue: new FormControl('0', this.validateNoData),
             },
+            [this.validateNoDataType],
             // [unitOrCustomUnit]);
         );
 
@@ -152,6 +153,43 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         // this.unitSubscription.unsubscribe();
     }
 
+    validateNoData(control: AbstractControl): ValidationErrors | null {
+        if (!isNaN(parseFloat(control.value)) || control.value.toLowerCase() === 'nan') {
+            return null;
+        } else {
+            return {
+                error: true,
+            };
+        }
+    }
+
+    validateNoDataType(control: AbstractControl): ValidationErrors | null {
+        let valid = true;
+        const dataType = control.get('dataType')?.value;
+        const value = control.get('noDataValue')?.value;
+        const floatValue = parseFloat(value);
+
+        if (dataType == null || floatValue == null) {
+            return {
+                error: true,
+            };
+        }
+
+        if (!isNaN(floatValue)) {
+            valid = dataType.getMin() <= floatValue && floatValue <= dataType.getMax();
+        } else {
+            valid = value.toLowerCase() === 'nan' && (dataType === RasterDataTypes.Float32 || dataType === RasterDataTypes.Float64);
+        }
+
+        if (valid) {
+            return null;
+        } else {
+            return {
+                error: true,
+            };
+        }
+    }
+
     /**
      * Uses the user input and creates a new expression operator.
      * The resulting layer is added to the map.
@@ -161,7 +199,13 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         const dataType: RasterDataType = this.form.controls['dataType'].value;
         const expression: string = this.form.controls['expression'].value;
         const rasterLayers = this.form.controls['rasterLayers'].value;
-        const noDataValue = this.form.controls['noDataValue'].value;
+        let noDataValue = this.form.controls['noDataValue'].value;
+        if (isNaN(parseFloat(noDataValue))) {
+            noDataValue = 'nan';
+        } else {
+            noDataValue = parseFloat(noDataValue);
+        }
+
         // TODO: incoroprate unit related info
         // const projection = this.form.controls['projection'].value;
         // const minValue =  this.form.controls['minValue'].value;
