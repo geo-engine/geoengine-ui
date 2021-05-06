@@ -137,7 +137,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         let nextOperatorId = 0;
 
         const operatorQueue: Array<[number, OperatorDict | SourceOperatorDict]> = [[nextOperatorId++, initialOperator]];
-        const edges: Array<[number, number]> = [];
+        const edges: Array<[number, number, string]> = [];
 
         while (operatorQueue.length > 0) {
             const queueElement = operatorQueue.pop();
@@ -176,24 +176,35 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
             });
 
             // add children
-            for (const sourceType of ['rasterSources', 'vectorSources']) {
-                if (sourceType in operator) {
-                    const nonSourceOperator = operator as OperatorDict;
-                    const sources: Array<OperatorDict | SourceOperatorDict> = nonSourceOperator[
-                        sourceType as 'rasterSources' | 'vectorSources'
-                    ] as Array<OperatorDict | SourceOperatorDict>;
+            if ('sources' in operator) {
+                const nonSourceOperator = operator as OperatorDict;
+                for (const sourceKey of Object.keys(nonSourceOperator.sources)) {
+                    const operatorSource: OperatorDict | SourceOperatorDict | Array<OperatorDict | SourceOperatorDict> | undefined =
+                        nonSourceOperator.sources[sourceKey];
+
+                    if (!operatorSource) {
+                        continue;
+                    }
+
+                    let sources: Array<OperatorDict | SourceOperatorDict>;
+                    if (operatorSource instanceof Array) {
+                        sources = operatorSource;
+                    } else {
+                        sources = [operatorSource];
+                    }
+
                     for (const source of sources) {
                         const childId = nextOperatorId++;
                         operatorQueue.push([childId, source]);
-                        edges.push([childId, operatorId]);
+                        edges.push([childId, operatorId, sourceKey]);
                     }
                 }
             }
         }
 
         // add edges to graph
-        for (const [sourceId, targetId] of edges) {
-            graph.setEdge(`operator_${sourceId}`, `operator_${targetId}`);
+        for (const [sourceId, targetId, sourceKey] of edges) {
+            graph.setEdge(`operator_${sourceId}`, `operator_${targetId}`, {label: sourceKey});
         }
 
         // console.log(graph.edges(), graph);

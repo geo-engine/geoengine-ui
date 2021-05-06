@@ -12,6 +12,7 @@ import {NotificationService} from '../../../notification.service';
 import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
 import {VectorColumnDataTypes} from '../../datatype.model';
 import {WaveValidators} from '../../../util/form.validators';
+import {FeatureAttributeOverTimeDict} from '../../../backend/operator.model';
 
 interface AttributeCandidates {
     id: Array<string>;
@@ -107,9 +108,10 @@ export class FeatureAttributeOvertimeComponent implements AfterViewInit, OnDestr
                                 idColumn: idAttribute,
                                 valueColumn: valueAttribute,
                             },
-                            rasterSources: [],
-                            vectorSources: [inputWorkflow.operator],
-                        },
+                            sources: {
+                                vector: inputWorkflow.operator,
+                            },
+                        } as FeatureAttributeOverTimeDict,
                     }),
                 ),
                 mergeMap((workflowId) =>
