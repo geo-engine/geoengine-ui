@@ -160,7 +160,7 @@ class Float32 extends RasterDataType {
     }
 
     getMin(): number {
-        return Number.MIN_VALUE;
+        return -Number.MAX_VALUE;
     }
 
     getMax(): number {
@@ -191,7 +191,7 @@ class Float64 extends RasterDataType {
     }
 
     getMin(): number {
-        return Number.MIN_VALUE;
+        return -Number.MAX_VALUE;
     }
 
     getMax(): number {
