@@ -10,6 +10,7 @@ import {WorkflowDict} from '../../../backend/backend.model';
 import {map, mergeMap} from 'rxjs/operators';
 import {Plot} from '../../../plots/plot.model';
 import {NotificationService} from '../../../notification.service';
+import {StatisticsDict} from '../../../backend/operator.model';
 
 @Component({
     selector: 'wave-statistics-plot',
@@ -53,9 +54,10 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
                         operator: {
                             type: 'Statistics',
                             params: {},
-                            rasterSources: workflows.map((workflow) => workflow.operator),
-                            vectorSources: [],
-                        },
+                            sources: {
+                                rasters: workflows.map((workflow) => workflow.operator),
+                            },
+                        } as StatisticsDict,
                     }),
                 ),
                 mergeMap((workflowId) =>

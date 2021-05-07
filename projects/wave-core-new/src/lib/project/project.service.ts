@@ -35,6 +35,7 @@ import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers
 import {Symbology} from '../layers/symbology/symbology.model';
 import OlFeature from 'ol/Feature';
 import {getProjectionTarget} from '../util/spatial_reference';
+import {ReprojectionDict} from '../backend/operator.model';
 
 export type FeatureId = string | number;
 
@@ -367,9 +368,10 @@ export class ProjectService {
                                     params: {
                                         targetSpatialReference: targetSref.getCode(),
                                     },
-                                    vectorSources: workflow.type === 'Vector' ? [operator] : [],
-                                    rasterSources: workflow.type === 'Raster' ? [operator] : [],
-                                });
+                                    sources: {
+                                        source: operator,
+                                    },
+                                } as ReprojectionDict);
                             }
                         }
 

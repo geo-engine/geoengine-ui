@@ -11,6 +11,7 @@ import {OperatorDict, SourceOperatorDict, WorkflowDict} from '../../../backend/b
 import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 import {RasterLayerMetadata} from '../../../layers/layer-metadata.model';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
+import {ExpressionDict} from '../../../backend/operator.model';
 
 /**
  * This dialog allows calculations on (one or more) raster layers.
@@ -198,12 +199,14 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         const name: string = this.form.controls['name'].value;
         const dataType: RasterDataType = this.form.controls['dataType'].value;
         const expression: string = this.form.controls['expression'].value;
-        const rasterLayers = this.form.controls['rasterLayers'].value;
-        let noDataValue = this.form.controls['noDataValue'].value;
-        if (isNaN(parseFloat(noDataValue))) {
+        const rasterLayers: Array<RasterLayer> = this.form.controls['rasterLayers'].value;
+        const noDataValueString: string = this.form.controls['noDataValue'].value;
+
+        let noDataValue: number | 'nan';
+        if (isNaN(parseFloat(noDataValueString))) {
             noDataValue = 'nan';
         } else {
-            noDataValue = parseFloat(noDataValue);
+            noDataValue = parseFloat(noDataValueString);
         }
 
         // TODO: incoroprate unit related info
@@ -234,27 +237,28 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
 
         // console.log(rasterLayers);
 
-        // TODO: add projection operator
-
         const sourceOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers(rasterLayers);
 
         sourceOperators
             .pipe(
                 map((operators: Array<OperatorDict | SourceOperatorDict>) => {
-                    const workflow = {
+                    const workflow: WorkflowDict = {
                         type: 'Raster',
                         operator: {
                             type: 'Expression',
                             params: {
                                 expression,
                                 outputType: dataType.getCode(),
-                                // TODO: make this configurable once units exist again
                                 outputNoDataValue: noDataValue,
+                                // TODO: make this configurable once units exist again
+                                // outputMeasurement: undefined,
                             },
-                            rasterSources: operators,
-                            vectorSources: [],
-                        },
-                    } as WorkflowDict;
+                            sources: {
+                                a: operators[0],
+                                b: operators[1],
+                            },
+                        } as ExpressionDict,
+                    };
 
                     this.projectService
                         .registerWorkflow(workflow)

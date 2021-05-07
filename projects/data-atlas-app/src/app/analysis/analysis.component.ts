@@ -11,6 +11,8 @@ import {
     RasterDataTypes,
     PolygonSymbology,
     RasterLayer,
+    HistogramDict,
+    ExpressionDict,
 } from 'wave-core';
 import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {DataSelectionService} from '../data-selection.service';
@@ -158,11 +160,13 @@ export class AnalysisComponent implements OnInit {
                                 // TODO: get data type from data
                                 outputType: RasterDataTypes.Float64.getCode(),
                                 // TODO: get no data value from data
-                                outputNoDataValue: RasterDataTypes.Float64.noData(Number.MIN_VALUE),
+                                outputNoDataValue: 'nan',
                             },
-                            rasterSources: [rasterWorkflow.operator, polygonWorkflow.operator],
-                            vectorSources: [],
-                        },
+                            sources: {
+                                a: rasterWorkflow.operator,
+                                b: polygonWorkflow.operator,
+                            },
+                        } as ExpressionDict,
                     }),
                 ),
                 mergeMap((expressionWorkflowId) =>
@@ -178,9 +182,10 @@ export class AnalysisComponent implements OnInit {
                                 buckets: 20,
                                 bounds: dataRange,
                             } as HistogramParams,
-                            rasterSources: [rasterWorkflow.operator],
-                            vectorSources: [],
-                        },
+                            sources: {
+                                source: rasterWorkflow.operator,
+                            },
+                        } as HistogramDict,
                     }),
                 ),
                 mergeMap((workflowId) =>
