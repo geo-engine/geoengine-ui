@@ -1,4 +1,4 @@
-import {combineLatest, Observable, Subscription} from 'rxjs';
+import {combineLatest, concat, Observable, of, Subscription} from 'rxjs';
 import {first, map as rxMap, mergeMap} from 'rxjs/operators';
 
 import {
@@ -48,13 +48,14 @@ import OlInteractionSelectEvent from 'ol/interaction/Select';
 
 import {MapLayerComponent} from '../map-layer.component';
 
-import {SpatialReference, SpatialReferences} from '../../operators/spatial-reference.model';
+import {SpatialReference, WEB_MERCATOR} from '../../spatial-references/spatial-reference.model';
 import {FeatureSelection, ProjectService} from '../../project/project.service';
 import {Extent, MapService} from '../map.service';
 import {Config} from '../../config.service';
 import {LayoutService} from '../../layout.service';
 import {MatGridList, MatGridTile} from '@angular/material/grid-list';
 import {VectorSymbology} from '../../layers/symbology/symbology.model';
+import {SpatialReferenceService} from '../../spatial-references/spatial-reference.service';
 
 type MapLayer = MapLayerComponent<OlLayer, OlSource>;
 
@@ -123,6 +124,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         // private layerService: LayerService,
         private layoutService: LayoutService,
         private projectService: ProjectService,
+        private spatialReferenceService: SpatialReferenceService,
     ) {
         // set dummy maps so that they are not uninitialized
         this.view = new OlView({
@@ -151,7 +153,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             this.initUserSelect();
 
             this.subscriptions.push(
-                combineLatest([this.mapLayersRaw.changes as Observable<MapLayer>, this.projection$])
+                combineLatest([concat(of({}), this.mapLayersRaw.changes) as Observable<MapLayer>, this.projection$])
                     .pipe(rxMap(([_changes, newProjection]) => newProjection))
                     .subscribe((newProjection: SpatialReference) => {
                         this.redrawLayers(newProjection);
@@ -446,7 +448,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         });
 
         const oldProjection = this.view ? this.view.getProjection() : undefined;
-        const projectionChanged = oldProjection !== projection.getOpenlayersProjection();
+        const projectionChanged = oldProjection?.getCode() !== projection.srsString;
 
         if (projectionChanged) {
             this.createAndSetView(projection);
@@ -492,17 +494,18 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
 
     private createAndSetView(projection: SpatialReference): void {
         const zoomLevel = this.view ? this.view.getZoom() : DEFAULT_ZOOM_LEVEL;
+        const olProjection = this.spatialReferenceService.getOlProjection(projection);
 
         let newCenterPoint: OlGeomPoint;
         if (this.view && this.view.getCenter()) {
             const oldCenterPoint = new OlGeomPoint(this.view.getCenter() as any);
-            newCenterPoint = oldCenterPoint.transform(this.view.getProjection(), projection.getOpenlayersProjection()) as OlGeomPoint;
+            newCenterPoint = oldCenterPoint.transform(this.view.getProjection(), olProjection) as OlGeomPoint;
         } else {
             newCenterPoint = new OlGeomPoint([0, 0]);
         }
 
         this.view = new OlView({
-            projection: projection.getOpenlayersProjection(),
+            projection: olProjection,
             center: newCenterPoint.getCoordinates(),
             minZoom: MIN_ZOOM_LEVEL,
             maxZoom: MAX_ZOOM_LEVEL,
@@ -542,7 +545,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     private createBackgroundLayer(projection: SpatialReference): OlLayer {
         switch (this.config.MAP.BACKGROUND_LAYER) {
             case 'OSM':
-                if (projection === SpatialReferences.WEB_MERCATOR) {
+                if (projection === WEB_MERCATOR.spatialReference) {
                     return new OlLayerTile({
                         source: this.backgroundLayerSource as any,
                         // wrapX: false,
@@ -590,7 +593,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     private createBackgroundLayerSource(projection: SpatialReference): OlSource {
         switch (this.config.MAP.BACKGROUND_LAYER) {
             case 'OSM':
-                if (projection === SpatialReferences.WEB_MERCATOR) {
+                if (projection === WEB_MERCATOR.spatialReference) {
                     return new OlSourceOSM();
                 } else {
                     return new OlImageStatic({
@@ -603,11 +606,11 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     url: 'https://eumetview.eumetsat.int/geoserver/ows',
                     params: {
                         layers: 'bkg-raster:bkg-raster',
-                        projection: projection.getCode(),
+                        projection: projection.srsString,
                         version: '1.3.0',
                     },
                     wrapX: false,
-                    projection: projection.getCode(),
+                    projection: projection.srsString,
                     crossOrigin: 'anonymous',
                 });
             case 'countries': // eslint-disable-line no-fallthrough
@@ -620,18 +623,18 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     url: this.config.MAP.HOSTED_BACKGROUND_SERVICE,
                     params: {
                         layers: this.config.MAP.HOSTED_BACKGROUND_LAYER_NAME,
-                        projection: projection.getCode(),
+                        projection: projection.srsString,
                         version: this.config.MAP.HOSTED_BACKGROUND_SERVICE_VERSION,
                     },
                     wrapX: false,
-                    projection: projection.getCode(),
+                    projection: projection.srsString,
                     crossOrigin: 'anonymous',
                 });
             case 'XYZ':
                 return new XYZ({
                     url: this.config.MAP.BACKGROUND_LAYER_URL,
                     wrapX: false,
-                    projection: projection.getCode(),
+                    projection: projection.srsString,
                 });
             default:
                 throw Error('Unknown Background Layer Name');

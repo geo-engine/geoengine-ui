@@ -282,7 +282,7 @@ export interface PlotDataDict {
 }
 
 export interface ResultDescriptorDict {
-    spatialReference?: SrsString;
+    spatialReference: SrsString;
 }
 
 export interface RasterResultDescriptorDict extends ResultDescriptorDict {
@@ -296,10 +296,6 @@ export interface VectorResultDescriptorDict extends ResultDescriptorDict {
 }
 
 type VectorDataType = 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
-
-export interface PlotResultDescriptorDict extends ResultDescriptorDict {
-    spatialReference: undefined;
-}
 
 export interface MeasurementDict extends SerializableDict {
     continuous?: {
@@ -435,4 +431,12 @@ export interface ProvenanceInformationDict {
     citation: string;
     license: string;
     uri: string;
+}
+
+export interface SpatialReferenceSpecificationDict {
+    name: string;
+    spatialReference: SrsString;
+    projString: string;
+    extent: BBoxDict;
+    axisLabels?: [string, string];
 }

@@ -12,6 +12,7 @@ import {
     MapService,
     MapContainerComponent,
     Time,
+    SpatialReferenceService,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AppConfig} from './app-config.service';
@@ -46,6 +47,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         private _randomColorService: RandomColorService,
         private _notificationService: NotificationService,
         private mapService: MapService,
+        private _spatialReferenceService: SpatialReferenceService,
         private sanitizer: DomSanitizer,
     ) {
         this.registerIcons();
