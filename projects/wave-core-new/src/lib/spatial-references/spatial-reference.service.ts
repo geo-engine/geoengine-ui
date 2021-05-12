@@ -18,6 +18,27 @@ export class SpatialReferenceService {
     private specs = new Map<string, SpatialReferenceSpecification>();
 
     constructor(protected backend: BackendService, protected userService: UserService) {
+        this.registerDefaults();
+    }
+
+    /**
+     * lookup specification by srs string authority:code
+     */
+    getSpatialReferenceSpecification(srsString: SrsString): Observable<SpatialReferenceSpecification> {
+        const spec = this.specs.get(srsString.toUpperCase());
+
+        if (spec) {
+            return of(spec);
+        }
+
+        return this.getAndRegisterSpec(srsString);
+    }
+
+    getOlProjection(spatialReference: SpatialReference): OlProjection {
+        return olGetProjection(spatialReference.srsString);
+    }
+
+    private registerDefaults(): void {
         this.specs.set(
             'EPSG:4326',
             new SpatialReferenceSpecification({
@@ -58,27 +79,6 @@ export class SpatialReferenceService {
             }),
         );
 
-        this.registerDefaults();
-    }
-
-    /**
-     * lookup specification by srs string authority:code
-     */
-    getSpatialReferenceSpecification(srsString: SrsString): Observable<SpatialReferenceSpecification> {
-        const spec = this.specs.get(srsString.toUpperCase());
-
-        if (spec) {
-            return of(spec);
-        }
-
-        return this.getAndRegisterSpec(srsString);
-    }
-
-    getOlProjection(spatialReference: SpatialReference): OlProjection {
-        return olGetProjection(spatialReference.srsString);
-    }
-
-    private registerDefaults(): void {
         merge(
             WELL_KNOWN_SPATAL_REFERENCES.filter((sref) => !this.specs.has(sref.spatialReference.srsString)).map((sref) =>
                 this.getAndRegisterSpec(sref.spatialReference.srsString),

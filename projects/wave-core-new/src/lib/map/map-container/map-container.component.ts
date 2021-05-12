@@ -1,5 +1,5 @@
-import {combineLatest, concat, Observable, of, Subscription} from 'rxjs';
-import {first, map as rxMap, mergeMap} from 'rxjs/operators';
+import {combineLatest, Observable, Subscription} from 'rxjs';
+import {first, map as rxMap, mergeMap, startWith} from 'rxjs/operators';
 
 import {
     AfterViewInit,
@@ -153,7 +153,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             this.initUserSelect();
 
             this.subscriptions.push(
-                combineLatest([concat(of({}), this.mapLayersRaw.changes) as Observable<MapLayer>, this.projection$])
+                combineLatest([(this.mapLayersRaw.changes as Observable<MapLayer>).pipe(startWith({})), this.projection$])
                     .pipe(rxMap(([_changes, newProjection]) => newProjection))
                     .subscribe((newProjection: SpatialReference) => {
                         this.redrawLayers(newProjection);
