@@ -57,6 +57,7 @@ export * from './lib/operators/dialogs/operator-list/operator-list.component';
 export * from './lib/operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 export * from './lib/operators/dialogs/raster-vector-join/raster-vector-join.component';
 export * from './lib/operators/dialogs/statistics-plot/statistics-plot.component';
+export * from './lib/operators/dialogs/temporal-raster-aggregation/temporal-raster-aggregation.component';
 export * from './lib/plots/plot-detail-view/plot-detail-view.component';
 export * from './lib/plots/plot-list-entry/plot-list-entry.component';
 export * from './lib/plots/plot-list/plot-list.component';

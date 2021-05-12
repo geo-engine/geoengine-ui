@@ -104,3 +104,14 @@ export interface StatisticsDict extends OperatorDict {
         rasters: Array<SourceOperatorDict | OperatorDict>;
     };
 }
+
+export interface TemporalRasterAggregationDict extends OperatorDict {
+    type: 'TemporalRasterAggregation';
+    params: {
+        aggregationType: 'min' | 'max' | 'mean';
+        window: {
+            granularity: 'Millis' | 'Seconds' | 'Minutes' | 'Hours' | 'Days' | 'Months' | 'Years';
+            step: number;
+        };
+    };
+}
