@@ -10,7 +10,6 @@ import {Config} from '../config.service';
 import {LoadingState} from './loading-state.model';
 import {NotificationService} from '../notification.service';
 import {HttpErrorResponse} from '@angular/common/http';
-import {LayoutService} from '../layout.service';
 import {HasLayerId, HasLayerType, Layer, RasterLayer, VectorLayer} from '../layers/layer.model';
 import {BackendService} from '../backend/backend.service';
 import {
@@ -76,7 +75,6 @@ export class ProjectService {
         protected mapService: MapService,
         protected backend: BackendService,
         protected userService: UserService,
-        protected layoutService: LayoutService,
     ) {
         // set the starting project upon login
         this.userService
