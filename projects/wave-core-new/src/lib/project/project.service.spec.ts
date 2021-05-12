@@ -34,7 +34,7 @@ beforeEach(() => {
             user: new User({
                 id: 'cccccccc-cccc-4ccc-accc-cccccccccccc',
             }),
-            validUntil: moment.utc('2020-01-01'),
+            validUntil: moment.utc('3000-01-01'),
         }),
     );
     userServiceSpy.getSessionTokenForRequest.and.returnValue(of<UUID>('ffffffff-ffff-4fff-afff-ffffffffffff'));
