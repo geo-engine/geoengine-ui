@@ -30,14 +30,14 @@ beforeEach(() => {
     // always return the same session
     userServiceSpy.getSessionStream.and.returnValue(
         of<Session>({
-            sessionToken: 'session-token',
+            sessionToken: 'ffffffff-ffff-4fff-afff-ffffffffffff',
             user: new User({
-                id: 'user-id',
+                id: 'cccccccc-cccc-4ccc-accc-cccccccccccc',
             }),
             validUntil: moment.utc('2020-01-01'),
         }),
     );
-    userServiceSpy.getSessionTokenForRequest.and.returnValue(of<UUID>('session-token'));
+    userServiceSpy.getSessionTokenForRequest.and.returnValue(of<UUID>('ffffffff-ffff-4fff-afff-ffffffffffff'));
 
     // for constructor
     backendSpy.listProjects.and.returnValue(NEVER); // never complete and set any project
@@ -56,7 +56,7 @@ it(
     waitForAsync(() => {
         backendSpy.createProject.and.returnValue(
             of<CreateProjectResponseDict>({
-                id: 'the-project-id',
+                id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
             }),
         );
 
@@ -64,7 +64,7 @@ it(
             (project) =>
                 expect(project.toDict()).toEqual(
                     new Project({
-                        id: 'the-project-id',
+                        id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
                         name: 'Default',
                         description: 'Default project',
                         spatialReference: SpatialReferences.WGS_84,
@@ -102,7 +102,7 @@ it(
                             granularity: 'Months',
                         } as TimeStepDict,
                     },
-                    'session-token',
+                    'ffffffff-ffff-4fff-afff-ffffffffffff',
                 );
             },
         );
