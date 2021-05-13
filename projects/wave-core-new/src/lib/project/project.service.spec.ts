@@ -51,60 +51,59 @@ beforeEach(() => {
     );
 });
 
-it(
-    'should create a default project',
-    waitForAsync(() => {
-        backendSpy.createProject.and.returnValue(
-            of<CreateProjectResponseDict>({
-                id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
-            }),
-        );
+it('should create a default project', (done) => {
+    backendSpy.createProject.and.returnValue(
+        of<CreateProjectResponseDict>({
+            id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
+        }),
+    );
 
-        projectService.createDefaultProject().subscribe(
-            (project) =>
-                expect(project.toDict()).toEqual(
-                    new Project({
-                        id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
-                        name: 'Default',
-                        description: 'Default project',
-                        spatialReference: SpatialReferences.WGS_84,
-                        time: new Time(moment.utc('2014-04-01 12:00:00')),
-                        plots: [],
-                        layers: [],
-                        timeStepDuration: {
-                            durationAmount: 1,
-                            durationUnit: 'month',
-                        },
-                    }).toDict(),
-                ),
-            (error) => fail(error),
-            () => {
-                expect(backendSpy.createProject).toHaveBeenCalledOnceWith(
-                    {
-                        name: 'Default',
-                        description: 'Default project',
-                        bounds: {
-                            boundingBox: {
-                                lowerLeftCoordinate: {
-                                    x: -180,
-                                    y: -90,
-                                },
-                                upperRightCoordinate: {
-                                    x: 180,
-                                    y: 90,
-                                },
-                            },
-                            spatialReference: 'EPSG:4326',
-                            timeInterval: {start: 1396353600000, end: 1396353600000},
-                        } as STRectangleDict,
-                        timeStep: {
-                            step: 1,
-                            granularity: 'Months',
-                        } as TimeStepDict,
+    projectService.createDefaultProject().subscribe(
+        (project) =>
+            expect(project.toDict()).toEqual(
+                new Project({
+                    id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
+                    name: 'Default',
+                    description: 'Default project',
+                    spatialReference: SpatialReferences.WGS_84,
+                    time: new Time(moment.utc('2014-04-01 12:00:00')),
+                    plots: [],
+                    layers: [],
+                    timeStepDuration: {
+                        durationAmount: 1,
+                        durationUnit: 'month',
                     },
-                    'ffffffff-ffff-4fff-afff-ffffffffffff',
-                );
-            },
-        );
-    }),
-);
+                }).toDict(),
+            ),
+        (error) => fail(error),
+        () => {
+            expect(backendSpy.createProject).toHaveBeenCalledOnceWith(
+                {
+                    name: 'Default',
+                    description: 'Default project',
+                    bounds: {
+                        boundingBox: {
+                            lowerLeftCoordinate: {
+                                x: -180,
+                                y: -90,
+                            },
+                            upperRightCoordinate: {
+                                x: 180,
+                                y: 90,
+                            },
+                        },
+                        spatialReference: 'EPSG:4326',
+                        timeInterval: {start: 1396353600000, end: 1396353600000},
+                    } as STRectangleDict,
+                    timeStep: {
+                        step: 1,
+                        granularity: 'Months',
+                    } as TimeStepDict,
+                },
+                'ffffffff-ffff-4fff-afff-ffffffffffff',
+            );
+
+            done();
+        },
+    );
+});
