@@ -8,7 +8,6 @@ import {User} from '../users/user.model';
 import {NEVER, of} from 'rxjs';
 import {Config, WAVE_DEFAULT_CONFIG} from '../config.service';
 import {CreateProjectResponseDict, STRectangleDict, TimeStepDict, UUID} from '../backend/backend.model';
-import {waitForAsync} from '@angular/core/testing';
 import {NotificationService} from '../notification.service';
 import {MapService} from '../map/map.service';
 import {BackendService} from '../backend/backend.service';
