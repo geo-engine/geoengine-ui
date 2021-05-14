@@ -1,10 +1,13 @@
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, zip} from 'rxjs';
 import {first, mergeMap} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {ProjectService} from '../project.service';
 import {NotificationService} from '../../notification.service';
-import {SpatialReferences} from '../../operators/spatial-reference.model';
+import {SpatialReferenceSpecification, WEB_MERCATOR, WELL_KNOWN_SPATAL_REFERENCES} from '../../spatial-references/spatial-reference.model';
+import {SpatialReferenceService} from '../../spatial-references/spatial-reference.service';
+import {Time} from '../../time/time.model';
+import {extentToBboxDict} from '../../util/conversions';
 
 @Component({
     selector: 'wave-new-project',
@@ -13,7 +16,7 @@ import {SpatialReferences} from '../../operators/spatial-reference.model';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewProjectComponent implements OnInit, AfterViewInit {
-    spatialReferenceOptions = SpatialReferences.ALL_PROJECTIONS;
+    spatialReferenceOptions = WELL_KNOWN_SPATAL_REFERENCES;
 
     form: FormGroup;
 
@@ -23,6 +26,7 @@ export class NewProjectComponent implements OnInit, AfterViewInit {
         protected formBuilder: FormBuilder,
         protected projectService: ProjectService,
         protected notificationService: NotificationService,
+        protected spatialReferenceService: SpatialReferenceService,
     ) {
         this.form = this.formBuilder.group({
             name: [
@@ -31,7 +35,7 @@ export class NewProjectComponent implements OnInit, AfterViewInit {
                 // TODO: check for uniqueness
                 // WaveValidators.uniqueProjectName(this.storageService),
             ],
-            spatialReference: [SpatialReferences.WEB_MERCATOR, Validators.required],
+            spatialReference: [WEB_MERCATOR, Validators.required],
         });
         this.projectService
             .getSpatialReferenceStream()
@@ -51,17 +55,19 @@ export class NewProjectComponent implements OnInit, AfterViewInit {
      * Create a new project and switch to it.
      */
     create(): void {
-        this.projectService
-            .getTimeStream()
+        const spatialReference = this.form.controls['spatialReference'].value;
+
+        zip(this.projectService.getTimeStream(), this.spatialReferenceService.getSpatialReferenceSpecification(spatialReference.srsString))
             .pipe(
                 first(),
-                mergeMap((time) => {
+                mergeMap(([time, spec]: [Time, SpatialReferenceSpecification]) => {
                     const projectName: string = this.form.controls['name'].value;
 
                     return this.projectService.createProject({
                         name: projectName,
                         description: projectName, // TODO: add description
-                        spatialReference: this.form.controls['spatialReference'].value,
+                        spatialReference: spec.spatialReference,
+                        bounds: extentToBboxDict(spec.extent),
                         time,
                         timeStepDuration: {durationAmount: 1, durationUnit: 'months'},
                     });

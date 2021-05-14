@@ -1,5 +1,4 @@
-import {DatasetDict, InternalDatasetIdDict, DatasetResultDescriptorDict, UUID, WorkflowDict} from '../backend/backend.model';
-import {SpatialReference, SpatialReferences} from '../operators/spatial-reference.model';
+import {DatasetDict, InternalDatasetIdDict, DatasetResultDescriptorDict, UUID, WorkflowDict, SrsString} from '../backend/backend.model';
 import {
     RasterDataType,
     RasterDataTypes,
@@ -60,9 +59,9 @@ export class InternalDatasetId {
 }
 
 export abstract class ResultDescriptor {
-    readonly spatialReference: SpatialReference;
+    readonly spatialReference: SrsString;
 
-    protected constructor(spatialReference: SpatialReference) {
+    protected constructor(spatialReference: SrsString) {
         this.spatialReference = spatialReference;
     }
 
@@ -87,7 +86,7 @@ export class RasterResultDescriptor extends ResultDescriptor {
             throw new Error('missing `RasterResultDescriptorDict`');
         }
 
-        super(SpatialReferences.fromCode(config.raster.spatialReference));
+        super(config.raster.spatialReference);
         this.dataType = RasterDataTypes.fromCode(config.raster.dataType);
     }
 
@@ -109,7 +108,7 @@ export class VectorResultDescriptor extends ResultDescriptor {
             throw new Error('missing `VectorResultDescriptorDict`');
         }
 
-        super(SpatialReferences.fromCode(config.vector.spatialReference));
+        super(config.vector.spatialReference);
         this.dataType = VectorDataTypes.fromCode(config.vector.dataType);
         this.columns = new Map(Object.entries(config.vector.columns).map(([key, value]) => [key, VectorColumnDataTypes.fromCode(value)]));
     }

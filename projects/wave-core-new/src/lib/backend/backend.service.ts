@@ -32,6 +32,7 @@ import {
     MetaDataSuggestionDict,
     SuggestMetaDataDict,
     ResultDescriptorDict,
+    SpatialReferenceSpecificationDict,
 } from './backend.model';
 
 @Injectable({
@@ -274,6 +275,12 @@ export class BackendService {
 
         return this.http.get<MetaDataSuggestionDict>(this.config.API_URL + '/dataset/suggest', {
             params: params.httpParams,
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    getSpatialReferenceSpecification(sessionId: UUID, srsString: SrsString): Observable<SpatialReferenceSpecificationDict> {
+        return this.http.get<SpatialReferenceSpecificationDict>(this.config.API_URL + `/spatialReferenceSpecification/${srsString}`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
