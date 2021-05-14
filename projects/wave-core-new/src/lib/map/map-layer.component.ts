@@ -19,7 +19,7 @@ import {Config} from '../config.service';
 import {ProjectService} from '../project/project.service';
 import {LoadingState} from '../project/loading-state.model';
 import {Time} from '../time/time.model';
-import {SpatialReference} from '../operators/spatial-reference.model';
+import {SpatialReference} from '../spatial-references/spatial-reference.model';
 import {RasterData} from '../layers/layer-data.model';
 import {BackendService} from '../backend/backend.service';
 import {UUID} from '../backend/backend.model';
@@ -256,7 +256,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
     }
 
     private updateProjection(p: SpatialReference): void {
-        if (!this.spatialReference || p.getCode() !== this.spatialReference.getCode()) {
+        if (!this.spatialReference || p.srsString !== this.spatialReference.srsString) {
             this.spatialReference = p;
             this.updateOlLayerProjection();
         }
@@ -295,7 +295,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
                 time: this.time.asRequestString(),
                 STYLES: this.stylesFromColorizer(this.symbology.colorizer),
             },
-            projection: this.spatialReference.getCode(),
+            projection: this.spatialReference.srsString,
             wrapX: false,
         });
 

@@ -1,6 +1,6 @@
 import {Time} from '../time/time.model';
 import {LayerType} from './layer.model';
-import {SpatialReference} from '../operators/spatial-reference.model';
+import {SpatialReference} from '../spatial-references/spatial-reference.model';
 import {GeoJSON as OlFormatGeoJSON} from 'ol/format';
 import OlFeature from 'ol/Feature';
 import {ProjectionLike as OlProjectionLike} from 'ol/proj';
