@@ -10,7 +10,7 @@ import {Plot} from '../../../plots/plot.model';
 import {NotificationService} from '../../../notification.service';
 import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
 import {WorkflowDict} from '../../../backend/backend.model';
-import {HistogramParams} from '../../../backend/operator.model';
+import {HistogramDict, HistogramParams} from '../../../backend/operator.model';
 import {VectorColumnDataTypes} from '../../datatype.model';
 
 /**
@@ -156,9 +156,10 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
                                 buckets,
                                 bounds: range,
                             } as HistogramParams,
-                            rasterSources: inputWorkflow.type === 'Raster' ? [inputWorkflow.operator] : [],
-                            vectorSources: inputWorkflow.type === 'Vector' ? [inputWorkflow.operator] : [],
-                        },
+                            sources: {
+                                source: inputWorkflow.operator,
+                            },
+                        } as HistogramDict,
                     }),
                 ),
                 mergeMap((workflowId) =>

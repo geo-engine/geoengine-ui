@@ -7,13 +7,9 @@ import {WaveValidators} from '../../../util/form.validators';
 import {map, mergeMap} from 'rxjs/operators';
 import {Plot} from '../../../plots/plot.model';
 import {NotificationService} from '../../../notification.service';
-import {OperatorParams, WorkflowDict} from '../../../backend/backend.model';
+import {WorkflowDict} from '../../../backend/backend.model';
 import {Observable} from 'rxjs';
-
-interface MeanRasterPixelValuesOverTimeParams extends OperatorParams {
-    timePosition: TimePosition;
-    area: boolean;
-}
+import {MeanRasterPixelValuesOverTimeDict, MeanRasterPixelValuesOverTimeParams} from '../../../backend/operator.model';
 
 type TimePosition = 'start' | 'center' | 'end';
 
@@ -105,9 +101,10 @@ export class MeanRasterPixelValuesOverTimeDialogComponent implements OnInit, Aft
                         operator: {
                             type: 'MeanRasterPixelValuesOverTime',
                             params,
-                            rasterSources: [inputWorkflow.operator],
-                            vectorSources: [],
-                        },
+                            sources: {
+                                raster: inputWorkflow.operator,
+                            },
+                        } as MeanRasterPixelValuesOverTimeDict,
                     }),
                 ),
                 mergeMap((workflowId) =>

@@ -23,7 +23,7 @@ export class SelectLayersComponent implements OnInit {
                 type: 'GdalSource',
                 params: {
                     dataset: {
-                        Internal: '73b13876-bdd2-48b2-a628-ce0a1b0eee9d',
+                        internal: '73b13876-bdd2-48b2-a628-ce0a1b0eee9d',
                     },
                 },
             },
@@ -121,7 +121,7 @@ export class SelectLayersComponent implements OnInit {
                 type: 'GdalSource',
                 params: {
                     dataset: {
-                        Internal: sourceId,
+                        internal: sourceId,
                     },
                 },
             },
