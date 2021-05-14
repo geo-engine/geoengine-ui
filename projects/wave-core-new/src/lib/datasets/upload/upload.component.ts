@@ -33,6 +33,7 @@ export class UploadComponent {
     errorHandlings = ['skip', 'abort', 'keep'];
 
     @ViewChild(MatVerticalStepper) stepper!: MatVerticalStepper;
+    @ViewChild('fileInput') fileInput: any;
 
     progress$ = new Subject<number>();
     metaDataSuggestion$ = new Subject<MetaDataSuggestionDict>();
@@ -210,8 +211,33 @@ export class UploadComponent {
         if (!fileList) {
             return;
         }
+        if (!this.selectedFiles) {
+            this.selectedFiles = Array.from(fileList);
+            this.fileInput.nativeElement.value = '';
+            return;
+        }
 
-        this.selectedFiles = Array.from(fileList);
+        for (const file of Array.from(fileList)) {
+            this.selectedFiles.unshift(file);
+            this.fileInput.nativeElement.value = '';
+        }
+    }
+
+    removeFile(file: File): void {
+        if (this.selectedFiles) {
+            const index: number = this.selectedFiles.indexOf(file);
+            this.selectedFiles?.splice(index, 1);
+        } else return;
+    }
+
+    formatBytes(bytes: number): string {
+        if (bytes === 0) {
+            return '0 Bytes';
+        }
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(0)) + ' ' + sizes[i];
     }
 
     upload(): void {
