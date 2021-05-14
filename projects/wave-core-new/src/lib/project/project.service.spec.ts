@@ -1,6 +1,5 @@
 import {Project} from './project.model';
 import {ProjectService} from './project.service';
-import {SpatialReferences} from '../operators/spatial-reference.model';
 import {Time} from '../time/time.model';
 import moment from 'moment';
 import {Session} from '../users/session.model';
@@ -12,11 +11,14 @@ import {NotificationService} from '../notification.service';
 import {MapService} from '../map/map.service';
 import {BackendService} from '../backend/backend.service';
 import {UserService} from '../users/user.service';
+import {SpatialReferenceService} from '../spatial-references/spatial-reference.service';
+import {SpatialReferenceSpecification, WGS_84} from '../spatial-references/spatial-reference.model';
 
 let notificationServiceSpy: {get: jasmine.Spy};
 let mapServiceSpy: {get: jasmine.Spy};
 let backendSpy: {createProject: jasmine.Spy; listProjects: jasmine.Spy};
 let userServiceSpy: {getSessionStream: jasmine.Spy; getSessionTokenForRequest: jasmine.Spy};
+let spatialReferenceSpy: {getSpatialReferenceSpecification: jasmine.Spy};
 
 let projectService: ProjectService;
 
@@ -25,6 +27,7 @@ beforeEach(() => {
     mapServiceSpy = jasmine.createSpyObj('MapService', ['getViewportSizeStream']);
     backendSpy = jasmine.createSpyObj('BackendService', ['createProject', 'listProjects']);
     userServiceSpy = jasmine.createSpyObj('UserService', ['getSessionStream', 'getSessionTokenForRequest']);
+    spatialReferenceSpy = jasmine.createSpyObj('SpatialRefernceService', ['getSpatialReferenceSpecification']);
 
     // always return the same session
     userServiceSpy.getSessionStream.and.returnValue(
@@ -38,6 +41,27 @@ beforeEach(() => {
     );
     userServiceSpy.getSessionTokenForRequest.and.returnValue(of<UUID>('ffffffff-ffff-4fff-afff-ffffffffffff'));
 
+    spatialReferenceSpy.getSpatialReferenceSpecification.and.returnValue(
+        of<SpatialReferenceSpecification>(
+            new SpatialReferenceSpecification({
+                name: 'WGS84',
+                spatialReference: 'EPSG:4326',
+                projString: '+proj=longlat +datum=WGS84 +no_defs +type=crs',
+                extent: {
+                    lowerLeftCoordinate: {
+                        x: -180,
+                        y: -90,
+                    },
+                    upperRightCoordinate: {
+                        x: 180,
+                        y: 90,
+                    },
+                },
+                axisLabels: ['longitude', 'latitude'],
+            }),
+        ),
+    );
+
     // for constructor
     backendSpy.listProjects.and.returnValue(NEVER); // never complete and set any project
 
@@ -47,6 +71,7 @@ beforeEach(() => {
         (mapServiceSpy as any) as MapService,
         (backendSpy as any) as BackendService,
         (userServiceSpy as any) as UserService,
+        (spatialReferenceSpy as any) as SpatialReferenceService,
     );
 });
 
@@ -64,8 +89,9 @@ it('should create a default project', (done) => {
                     id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
                     name: 'Default',
                     description: 'Default project',
-                    spatialReference: SpatialReferences.WGS_84,
+                    spatialReference: WGS_84.spatialReference,
                     time: new Time(moment.utc('2014-04-01 12:00:00')),
+                    bbox: {lowerLeftCoordinate: {x: -180, y: -90}, upperRightCoordinate: {x: 180, y: 90}},
                     plots: [],
                     layers: [],
                     timeStepDuration: {
