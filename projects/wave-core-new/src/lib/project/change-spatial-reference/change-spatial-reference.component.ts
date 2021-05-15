@@ -1,7 +1,8 @@
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy} from '@angular/core';
 import {ProjectService} from '../project.service';
-import {Observable} from 'rxjs';
-import {SpatialReference, SpatialReferences} from '../../operators/spatial-reference.model';
+import {NamedSpatialReference, SpatialReference, WELL_KNOWN_SPATAL_REFERENCES} from '../../spatial-references/spatial-reference.model';
+import {SpatialReferenceService} from '../../spatial-references/spatial-reference.service';
+import {Subscription} from 'rxjs/internal/Subscription';
 
 @Component({
     selector: 'wave-change-projection',
@@ -9,13 +10,37 @@ import {SpatialReference, SpatialReferences} from '../../operators/spatial-refer
     styleUrls: ['./change-spatial-reference.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChangeSpatialReferenceComponent implements OnInit {
-    readonly SpatialReferences = SpatialReferences;
+export class ChangeSpatialReferenceComponent implements OnInit, OnDestroy {
+    readonly SpatialReferences = WELL_KNOWN_SPATAL_REFERENCES;
 
-    readonly spatialReference$: Observable<SpatialReference>;
+    spatialReference?: NamedSpatialReference;
 
-    constructor(public projectService: ProjectService) {
-        this.spatialReference$ = this.projectService.getSpatialReferenceStream();
+    private subscription: Subscription;
+
+    constructor(
+        public projectService: ProjectService,
+        protected spatialReferenceService: SpatialReferenceService,
+        protected changeDetectorRef: ChangeDetectorRef,
+    ) {
+        this.subscription = this.projectService.getSpatialReferenceStream().subscribe((sref: SpatialReference) => {
+            const index = this.SpatialReferences.findIndex((v) => v.spatialReference.srsString === sref.srsString);
+
+            if (index >= 0) {
+                this.spatialReference = this.SpatialReferences[index];
+            } else {
+                this.spatialReference = undefined;
+            }
+
+            this.changeDetectorRef.markForCheck();
+        });
+    }
+
+    setSpatialReference(sref: NamedSpatialReference): void {
+        this.projectService.setSpatialReference(new SpatialReference(sref.spatialReference.srsString));
+    }
+
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe();
     }
 
     ngOnInit(): void {}

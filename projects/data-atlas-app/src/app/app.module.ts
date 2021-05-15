@@ -12,6 +12,7 @@ import {
     ProjectService,
     RandomColorService,
     SidenavRef,
+    SpatialReferenceService,
     UserService,
     WaveCoreModule,
 } from 'wave-core';
@@ -47,6 +48,7 @@ import {AboutComponent} from './about/about.component';
         ProjectService,
         RandomColorService,
         SidenavRef,
+        SpatialReferenceService,
         UserService,
     ],
     bootstrap: [AppComponent],

@@ -4,7 +4,6 @@ import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {ProjectService} from '../project.service';
 import {NotificationService} from '../../notification.service';
 import {WaveValidators} from '../../util/form.validators';
-import {SpatialReferences} from '../../operators/spatial-reference.model';
 
 @Component({
     selector: 'wave-save-project-as',
@@ -28,7 +27,6 @@ export class SaveProjectAsComponent implements OnInit, AfterViewInit {
                 Validators.compose([Validators.required, WaveValidators.notOnlyWhitespace]),
                 // WaveValidators.uniqueProjectName(this.storageService), // TODO: check for uniqueness
             ],
-            projection: [SpatialReferences.WEB_MERCATOR, Validators.required],
         });
         this.projectService.getProjectOnce().subscribe((project) => {
             this.form.controls['name'].setValue(project.name);
