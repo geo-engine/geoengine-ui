@@ -4,7 +4,7 @@
     <mat-step completed="false">
         <ng-template matStepLabel>Upload files</ng-template>
         <mat-card class="dropzone">
-            <input type="file" #fileInput id="file" multiple (change)="selectFiles($any($event.target))" />
+            <input class="input-dropzone" type="file" #fileInput id="file" multiple (change)="selectFiles($any($event.target))" />
             <h3>Drag and drop file here</h3>
             <h3>or</h3>
             <button class="browse-button" type="button" mat-raised-button color="primary" (click)="fileInput.click()">
