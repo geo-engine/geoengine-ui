@@ -78,6 +78,7 @@ export * from './lib/time/time-config/time-config.component';
 export * from './lib/time/time-input/time-input.component';
 export * from './lib/users/login/login.component';
 export * from './lib/project/notifications/notifications.component';
+export * from './lib/datasets/drag-and-drop/drag-and-drop.component';
 
 // Pipes
 export * from './lib/util/pipes/async-converters.pipe';
