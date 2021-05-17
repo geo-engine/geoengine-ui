@@ -204,16 +204,6 @@ export class UploadComponent {
         }
     }
 
-    selectFiles(target: HTMLInputElement | null): void {
-        const fileList = target?.files;
-
-        if (!fileList) {
-            return;
-        }
-
-        this.selectedFiles = Array.from(fileList);
-    }
-
     upload(): void {
         if (!this.selectedFiles) {
             return;
