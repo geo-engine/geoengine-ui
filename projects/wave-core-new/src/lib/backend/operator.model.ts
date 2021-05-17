@@ -113,5 +113,6 @@ export interface TemporalRasterAggregationDict extends OperatorDict {
             granularity: 'Millis' | 'Seconds' | 'Minutes' | 'Hours' | 'Days' | 'Months' | 'Years';
             step: number;
         };
+        ignoreNoData: boolean;
     };
 }

@@ -25,6 +25,8 @@
             <input matInput type="number" placeholder="Window Size" formControlName="windowSize" />
         </mat-form-field>
 
+        <mat-checkbox formControlName="ignoreNoData">Ignore No Data</mat-checkbox>
+
         <wave-operator-output-name
             formControlName="name"
             [suggestion]="'Temporal Aggregation of ' + (form.controls.layer.valueChanges | async)?.name"

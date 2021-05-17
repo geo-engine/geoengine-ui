@@ -36,6 +36,7 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
             granularity: ['Months', Validators.required],
             windowSize: [1, Validators.required], // TODO: check > 0
             aggregationType: ['Max', Validators.required],
+            ignoreNoData: [false],
         });
         this.disallowSubmit = this.form.statusChanges.pipe(map((status) => status !== 'VALID'));
     }
@@ -58,6 +59,7 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
         const aggregationType: string = this.form.controls['aggregationType'].value.toLowerCase();
         const granularity: string = this.form.controls['granularity'].value;
         const step: number = this.form.controls['windowSize'].value;
+        const ignoreNoData: boolean = this.form.controls['ignoreNoData'].value;
 
         this.projectService
             .getWorkflow(inputLayer.workflowId)
@@ -73,6 +75,7 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
                                     granularity,
                                     step,
                                 },
+                                ignoreNoData,
                             },
                             sources: {
                                 raster: inputWorkflow.operator,
