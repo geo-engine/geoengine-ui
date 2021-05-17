@@ -4,8 +4,8 @@
     all intermediate steps with as few re-projections as necessary.
 </p>
 <mat-form-field>
-    <mat-select placeholder="Projection" [ngModel]="spatialReference$ | async" (ngModelChange)="projectService.setSpatialReference($event)">
+    <mat-select placeholder="Projection" [ngModel]="spatialReference" (ngModelChange)="setSpatialReference($event)">
         <!-- TODO: get available spatial references from server -->
-        <mat-option *ngFor="let projection of SpatialReferences.ALL_PROJECTIONS" [value]="projection">{{ projection }}</mat-option>
+        <mat-option *ngFor="let projection of SpatialReferences" [value]="projection">{{ projection.name }}</mat-option>
     </mat-select>
 </mat-form-field>

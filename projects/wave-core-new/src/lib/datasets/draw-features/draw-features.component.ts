@@ -5,7 +5,7 @@ import {BehaviorSubject, of, Subject, Subscription} from 'rxjs';
 import {ResultType, ResultTypes} from '../../operators/result-type.model';
 import {ProjectService} from '../../project/project.service';
 import {NotificationService} from '../../notification.service';
-import {SpatialReference, SpatialReferences} from '../../operators/spatial-reference.model';
+import {SpatialReference, WGS_84} from '../../spatial-references/spatial-reference.model';
 import {MapService} from '../../map/map.service';
 import {DatasetService} from '../dataset.service';
 import {HttpEventType, HttpResponse} from '@angular/common/http';
@@ -110,8 +110,8 @@ export class DrawFeaturesComponent implements OnDestroy, OnInit {
         }
 
         const geoJson = this.olFeatureWriter.writeFeaturesObject(olSource.getFeatures(), {
-            featureProjection: this.mapSpatialRef?.getCode(),
-            dataProjection: SpatialReferences.WGS_84.getCode(),
+            featureProjection: this.mapSpatialRef?.srsString,
+            dataProjection: WGS_84.spatialReference.srsString,
         });
 
         if (geoJson.features.length === 0) {

@@ -11,8 +11,8 @@
         <div fxLayout="row">
             <mat-form-field fxFlex>
                 <mat-select placeholder="Spatial Reference" formControlName="spatialReference">
-                    <mat-option *ngFor="let spatialReference of spatialReferenceOptions" [value]="spatialReference">
-                        {{ spatialReference }}
+                    <mat-option *ngFor="let spatialReference of spatialReferenceOptions" [value]="spatialReference.spatialReference">
+                        {{ spatialReference.name }}
                     </mat-option>
                 </mat-select>
             </mat-form-field>

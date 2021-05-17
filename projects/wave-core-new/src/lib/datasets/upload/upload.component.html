@@ -3,9 +3,11 @@
 <mat-vertical-stepper linear #stepper>
     <mat-step completed="false">
         <ng-template matStepLabel>Upload files</ng-template>
-        <input type="file" id="file" multiple (change)="selectFiles($any($event.target))" />
+
+        <wave-drag-and-drop (selectFilesEvent)="selectedFiles = $event"></wave-drag-and-drop>
+
         <div class="actions">
-            <button type="button" mat-raised-button color="primary" [disabled]="!selectedFiles" (click)="upload()">Upload</button>
+            <button type="button" mat-raised-button color="primary" [disabled]="!selectedFiles?.length" (click)="upload()">Upload</button>
         </div>
         <mat-progress-bar *ngIf="progress$ | async as progress" mode="determinate" [value]="progress"></mat-progress-bar>
     </mat-step>

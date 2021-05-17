@@ -24,9 +24,9 @@ jobs:
             #            -   run: npm ci    # use instead of install if we choose to commit the `package-lock.json`
             -   run: npm install
             -   run: npm run build --if-present
-    #            -   run: npm test
-    #                env:
-    #                    CI: true
+            -   run: npm test
+                env:
+                    CI: true
 
     codestyle:
         name: Code Format and Lints
