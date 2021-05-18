@@ -20,7 +20,7 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
     readonly inputTypes = [ResultTypes.RASTER];
 
     readonly timeGranularityOptions = ['Millis', 'Seconds', 'Minutes', 'Hours', 'Days', 'Months', 'Years'];
-    readonly aggregationTypes = ['Min', 'Max', 'Mean'];
+    readonly aggregationTypes = ['Min', 'Max'];
 
     form: FormGroup;
     disallowSubmit: Observable<boolean>;
