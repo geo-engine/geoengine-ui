@@ -367,9 +367,8 @@ export interface OgrSourceDatasetDict {
     dataType?: VectorDataType;
     time: 'none' | OgrSourceDatasetTimeTypeDict;
     columns?: OgrSourceColumnSpecDict;
-    defaultGeometry?: TypedGeometryDict;
     forceOgrTimeFilter: boolean;
-    onError: 'skip' | 'abort' | 'keep';
+    onError: 'ignore' | 'abort';
     provenance?: ProvenanceInformationDict;
 }
 
