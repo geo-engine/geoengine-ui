@@ -106,6 +106,8 @@ import {NumberParamEditorComponent} from './layers/symbology/number-param-editor
 import {FeatureAttributeOvertimeComponent} from './operators/dialogs/feature-attribute-over-time/feature-attribute-over-time.component';
 import {NotificationsComponent} from './project/notifications/notifications.component';
 import {DragAndDropComponent} from './datasets/drag-and-drop/drag-and-drop.component';
+import {ProviderListComponent} from './datasets/provider-list/provider-list.component';
+import {ExternalDatasetListComponent} from './datasets/external-dataset-list/external-dataset-list.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -173,6 +175,7 @@ const WAVE_COMPONENTS = [
     DragAndDropComponent,
     DrawFeaturesComponent,
     ExpressionOperatorComponent,
+    ExternalDatasetListComponent,
     FeatureAttributeOvertimeComponent,
     HistogramOperatorComponent,
     IfGuestDirective,
@@ -201,6 +204,7 @@ const WAVE_COMPONENTS = [
     PointIconComponent,
     PointInPolygonFilterOperatorComponent,
     PolygonIconComponent,
+    ProviderListComponent,
     RasterIconComponent,
     RasterLegendComponent,
     RasterLegendComponent,
