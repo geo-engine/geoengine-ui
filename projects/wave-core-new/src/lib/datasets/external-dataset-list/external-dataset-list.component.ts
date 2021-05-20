@@ -1,5 +1,5 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input, OnDestroy} from '@angular/core';
-import {Observable, Subject, Subscription} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 import {UUID} from '../../backend/backend.model';
 import {Dataset} from '../dataset.model';
 import {DatasetService} from '../dataset.service';
