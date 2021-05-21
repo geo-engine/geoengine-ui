@@ -3,17 +3,17 @@ import {debounceTime, distinctUntilChanged, first, map, mergeMap, switchMap, tap
 
 import {Injectable} from '@angular/core';
 
-import {SpatialReference, SpatialReferences} from '../operators/spatial-reference.model';
+import {SpatialReference, SpatialReferenceSpecification} from '../spatial-references/spatial-reference.model';
 import {Project} from './project.model';
 import {Time, TimeStepDuration, timeStepDurationToTimeStepDict} from '../time/time.model';
 import {Config} from '../config.service';
 import {LoadingState} from './loading-state.model';
 import {NotificationService} from '../notification.service';
 import {HttpErrorResponse} from '@angular/common/http';
-import {LayoutService} from '../layout.service';
 import {HasLayerId, HasLayerType, Layer, RasterLayer, VectorLayer} from '../layers/layer.model';
 import {BackendService} from '../backend/backend.service';
 import {
+    BBoxDict,
     LayerDict,
     OperatorDict,
     PlotDict,
@@ -35,6 +35,8 @@ import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers
 import {Symbology} from '../layers/symbology/symbology.model';
 import OlFeature from 'ol/Feature';
 import {getProjectionTarget} from '../util/spatial_reference';
+import {ReprojectionDict} from '../backend/operator.model';
+import {SpatialReferenceService} from '../spatial-references/spatial-reference.service';
 
 export type FeatureId = string | number;
 
@@ -75,7 +77,7 @@ export class ProjectService {
         protected mapService: MapService,
         protected backend: BackendService,
         protected userService: UserService,
-        protected layoutService: LayoutService,
+        protected spatialReferenceServce: SpatialReferenceService,
     ) {
         // set the starting project upon login
         this.userService
@@ -89,19 +91,23 @@ export class ProjectService {
      */
     createDefaultProject(): Observable<Project> {
         const name = this.config.DEFAULTS.PROJECT.NAME;
-        const spatialReference = SpatialReferences.fromCode(this.config.DEFAULTS.PROJECT.PROJECTION);
         const time = new Time(this.config.DEFAULTS.PROJECT.TIME, this.config.DEFAULTS.PROJECT.TIME);
         const timeStepDuration = this.getDefaultTimeStep();
 
         // TODO: solidify default project creation
 
-        return this.createProject({
-            name,
-            description: 'Default project',
-            spatialReference,
-            time,
-            timeStepDuration,
-        });
+        return this.spatialReferenceServce.getSpatialReferenceSpecification(this.config.DEFAULTS.PROJECT.PROJECTION).pipe(
+            mergeMap((spec: SpatialReferenceSpecification) =>
+                this.createProject({
+                    name,
+                    description: 'Default project',
+                    spatialReference: spec.spatialReference,
+                    bounds: extentToBboxDict(spec.extent),
+                    time,
+                    timeStepDuration,
+                }),
+            ),
+        );
     }
 
     /**
@@ -111,6 +117,7 @@ export class ProjectService {
         name: string;
         description: string;
         spatialReference: SpatialReference;
+        bounds: BBoxDict;
         time: Time;
         timeStepDuration: TimeStepDuration;
     }): Observable<Project> {
@@ -121,8 +128,8 @@ export class ProjectService {
                         name: config.name,
                         description: config.description,
                         bounds: {
-                            boundingBox: extentToBboxDict(config.spatialReference.getExtent()),
-                            spatialReference: config.spatialReference.getCode(),
+                            boundingBox: config.bounds,
+                            spatialReference: config.spatialReference.srsString,
                             timeInterval: config.time.toDict(),
                         },
                         timeStep: timeStepDurationToTimeStepDict(config.timeStepDuration),
@@ -137,6 +144,7 @@ export class ProjectService {
                         name: config.name,
                         description: config.description,
                         spatialReference: config.spatialReference,
+                        bbox: config.bounds,
                         layers: [],
                         plots: [],
                         time: config.time,
@@ -155,6 +163,7 @@ export class ProjectService {
                         name: newName,
                         description: project.description,
                         spatialReference: project.spatialReference,
+                        bounds: project._bbox,
                         time: project.time,
                         timeStepDuration: project.timeStepDuration,
                     }),
@@ -289,8 +298,8 @@ export class ProjectService {
      */
     getSpatialReferenceStream(): Observable<SpatialReference> {
         return this.project$.pipe(
-            map((project) => project.spatialReference),
-            distinctUntilChanged(),
+            map((project: Project) => project.spatialReference),
+            distinctUntilChanged((x, y) => x.srsString === y.srsString),
         );
     }
 
@@ -346,7 +355,7 @@ export class ProjectService {
 
         return combineLatest(meta).pipe(
             mergeMap((descriptors: Array<ResultDescriptorDict>) => {
-                const srefs = descriptors.map((l) => SpatialReferences.fromCode(l.spatialReference));
+                const srefs = descriptors.map((l) => SpatialReference.fromSrsString(l.spatialReference));
                 const targetSref = getProjectionTarget(srefs);
 
                 const workflowsObservable = layers.map((l) => this.getWorkflow(l.workflowId));
@@ -359,17 +368,18 @@ export class ProjectService {
                             const sref: SpatialReference = srefs[i];
                             const workflow = workflows[i];
                             const operator: OperatorDict | SourceOperatorDict = workflow.operator;
-                            if (sref === targetSref) {
+                            if (sref.srsString === targetSref.srsString) {
                                 projectedOperators.push(operator);
                             } else {
                                 projectedOperators.push({
                                     type: 'Reprojection',
                                     params: {
-                                        targetSpatialReference: targetSref.getCode(),
+                                        targetSpatialReference: targetSref.srsString,
                                     },
-                                    vectorSources: workflow.type === 'Vector' ? [operator] : [],
-                                    rasterSources: workflow.type === 'Raster' ? [operator] : [],
-                                });
+                                    sources: {
+                                        source: operator,
+                                    },
+                                } as ReprojectionDict);
                             }
                         }
 
@@ -961,7 +971,6 @@ export class ProjectService {
         }
 
         let project: Project;
-
         combineLatest([this.getProjectOnce(), this.userService.getSessionTokenForRequest()])
             .pipe(
                 mergeMap(([oldProject, sessionToken]) => {
@@ -977,7 +986,6 @@ export class ProjectService {
                             plots: changes.plots
                                 ? ProjectService.optimizeVecUpdates<Plot, PlotDict>(oldProject.plots, project.plots)
                                 : undefined,
-                            // TODO: add bbox
                             bounds: changes.time || changes.spatialReference ? project.toBoundsDict() : undefined,
                             // TODO: description: changes.description,
                             timeStep: changes.timeStepDuration ? timeStepDurationToTimeStepDict(changes.timeStepDuration) : undefined,
@@ -1155,7 +1163,7 @@ export class ProjectService {
                                 typeNames: `registry:${layer.workflowId}`,
                                 bbox: extentToBboxDict(viewport.extent),
                                 time: time.toDict(),
-                                srsName: projection.getCode(),
+                                srsName: projection.srsString,
                                 queryResolution: viewport.resolution, // TODO: use two seperate values for x and y
                             },
                             sessionToken,

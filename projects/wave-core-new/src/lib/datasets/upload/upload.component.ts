@@ -30,7 +30,7 @@ export class UploadComponent {
     vectorDataTypes = ['Data', 'MultiPoint', 'MultiLineString', 'MultiPolygon'];
     timeTypes = ['None', 'Start', 'Start/End', 'Start/Duration'];
     timeFormats = ['auto', 'seconds', 'custom'];
-    errorHandlings = ['skip', 'abort', 'keep'];
+    errorHandlings = ['ignore', 'abort'];
 
     @ViewChild(MatVerticalStepper) stepper!: MatVerticalStepper;
 
@@ -204,16 +204,6 @@ export class UploadComponent {
         }
     }
 
-    selectFiles(target: HTMLInputElement | null): void {
-        const fileList = target?.files;
-
-        if (!fileList) {
-            return;
-        }
-
-        this.selectedFiles = Array.from(fileList);
-    }
-
     upload(): void {
         if (!this.selectedFiles) {
             return;
@@ -283,7 +273,6 @@ export class UploadComponent {
                         float: formMeta.columnsFloat.value,
                         int: formMeta.columnsInt.value,
                     },
-                    defaultGeometry: undefined, // TODO
                     forceOgrTimeFilter: false,
                     onError: formMeta.errorHandling.value,
                     provenance: undefined, // TODO

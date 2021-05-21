@@ -13,6 +13,7 @@ export * from './lib/map/map.service';
 export * from './lib/notification.service';
 export * from './lib/project/project.service';
 export * from './lib/sidenav/sidenav-ref.service';
+export * from './lib/spatial-references/spatial-reference.service';
 export * from './lib/tabs/tabs.service';
 export * from './lib/users/user.service';
 export * from './lib/util/services/random-color.service';
@@ -57,6 +58,7 @@ export * from './lib/operators/dialogs/operator-list/operator-list.component';
 export * from './lib/operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 export * from './lib/operators/dialogs/raster-vector-join/raster-vector-join.component';
 export * from './lib/operators/dialogs/statistics-plot/statistics-plot.component';
+export * from './lib/operators/dialogs/temporal-raster-aggregation/temporal-raster-aggregation.component';
 export * from './lib/plots/plot-detail-view/plot-detail-view.component';
 export * from './lib/plots/plot-list-entry/plot-list-entry.component';
 export * from './lib/plots/plot-list/plot-list.component';
@@ -77,6 +79,7 @@ export * from './lib/time/time-config/time-config.component';
 export * from './lib/time/time-input/time-input.component';
 export * from './lib/users/login/login.component';
 export * from './lib/project/notifications/notifications.component';
+export * from './lib/datasets/drag-and-drop/drag-and-drop.component';
 
 // Pipes
 export * from './lib/util/pipes/async-converters.pipe';
@@ -91,6 +94,7 @@ export * from './lib/util/pipes/trim.pipe';
 
 // Models
 export * from './lib/backend/backend.model';
+export * from './lib/backend/operator.model';
 export * from './lib/colors/color-breakpoint.model';
 export * from './lib/layers/layer-metadata.model';
 export * from './lib/layers/layer.model';
@@ -98,7 +102,7 @@ export * from './lib/layers/symbology/symbology.model';
 export * from './lib/operators/datatype.model';
 export * from './lib/operators/operator-type.model';
 export * from './lib/operators/result-type.model';
-export * from './lib/operators/spatial-reference.model';
+export * from './lib/spatial-references/spatial-reference.model';
 export * from './lib/plots/plot.model';
 export * from './lib/time/time.model';
 export * from './lib/users/session.model';

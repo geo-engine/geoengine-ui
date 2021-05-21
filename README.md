@@ -126,3 +126,9 @@ We format our code with [prettier](https://prettier.io/) and lint our code with 
 This is also checked in our CI process.
 
 You can check your PR beforehand by calling `npm run check`.
+
+## Testing
+
+You need to have either `Chrome` or `Chromium` installed.
+
+Run tests with `npm test`.

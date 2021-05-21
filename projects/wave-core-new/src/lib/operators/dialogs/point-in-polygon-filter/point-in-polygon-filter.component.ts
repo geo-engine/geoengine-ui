@@ -9,6 +9,7 @@ import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap} from 'rxjs/operators';
 import {WorkflowDict} from '../../../backend/backend.model';
 import {colorToDict} from '../../../colors/color';
+import {PointInPolygonFilterDict} from '../../../backend/operator.model';
 
 /**
  * This component allows creating the point in polygon filter operator.
@@ -33,24 +34,26 @@ export class PointInPolygonFilterOperatorComponent {
     }
 
     add(): void {
-        const points = this.form.controls['pointLayer'].value as Layer;
-        const polygons = this.form.controls['polygonLayer'].value as Layer;
+        const pointsLayer = this.form.controls['pointLayer'].value as Layer;
+        const polygonsLayer = this.form.controls['polygonLayer'].value as Layer;
 
         const name: string = this.form.controls['name'].value;
 
-        const sourceOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers([points, polygons]);
+        const sourceOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers([pointsLayer, polygonsLayer]);
 
         sourceOperators
             .pipe(
-                map((operators) => {
+                map(([points, polygons]) => {
                     const workflow = {
                         type: 'Vector',
                         operator: {
                             type: 'PointInPolygonFilter',
-                            params: null,
-                            rasterSources: [],
-                            vectorSources: operators,
-                        },
+                            params: {},
+                            sources: {
+                                points,
+                                polygons,
+                            },
+                        } as PointInPolygonFilterDict,
                     } as WorkflowDict;
 
                     this.projectService

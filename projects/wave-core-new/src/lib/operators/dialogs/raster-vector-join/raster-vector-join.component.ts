@@ -7,18 +7,13 @@ import {ProjectService} from '../../../project/project.service';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {WaveValidators} from '../../../util/form.validators';
 import {filter, map, mergeMap} from 'rxjs/operators';
-import {OperatorParams} from '../../../backend/backend.model';
 import {NotificationService} from '../../../notification.service';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
 import {PointSymbology, StaticColor} from '../../../layers/symbology/symbology.model';
+import {RasterVectorJoinDict, RasterVectorJoinParams} from '../../../backend/operator.model';
 
 type Aggregation = 'first' | 'mean';
-
-interface RasterVectorJoinParams extends OperatorParams {
-    names: Array<string>;
-    aggregation: Aggregation;
-}
 
 @Component({
     selector: 'wave-raster-vector-join',
@@ -94,9 +89,11 @@ export class RasterVectorJoinComponent implements OnDestroy {
                         operator: {
                             type: 'RasterVectorJoin',
                             params,
-                            vectorSources: [vectorOperator],
-                            rasterSources: rasterOperators,
-                        },
+                            sources: {
+                                vector: vectorOperator,
+                                rasters: rasterOperators,
+                            },
+                        } as RasterVectorJoinDict,
                     }),
                 ),
                 mergeMap((workflowId) =>

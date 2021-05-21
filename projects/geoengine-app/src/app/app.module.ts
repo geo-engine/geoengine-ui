@@ -13,15 +13,15 @@ import {
     ProjectService,
     RandomColorService,
     SidenavRef,
+    SpatialReferenceService,
     TabsService,
     UserService,
     WaveCoreModule,
 } from 'wave-core';
 import {AppConfig} from './app-config.service';
-import {MockLayersComponent} from './mock-layers/mock-layers.component';
 
 @NgModule({
-    declarations: [AppComponent, MockLayersComponent],
+    declarations: [AppComponent],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,
@@ -43,6 +43,7 @@ import {MockLayersComponent} from './mock-layers/mock-layers.component';
         ProjectService,
         RandomColorService,
         SidenavRef,
+        SpatialReferenceService,
         UserService,
         TabsService,
     ],

@@ -8,7 +8,7 @@ import {ProjectService} from '../../../project/project.service';
 import {Config} from '../../../config.service';
 import {BackendService} from '../../../backend/backend.service';
 import {MatSliderChange} from '@angular/material/slider';
-import {HistogramParams} from '../../../backend/operator.model';
+import {HistogramDict, HistogramParams} from '../../../backend/operator.model';
 import {LinearGradient, PaletteColorizer} from '../../../colors/colorizer.model';
 import {ColorAttributeInput} from '../../../colors/color-attribute-input/color-attribute-input.component';
 import {UUID, WorkflowDict} from '../../../backend/backend.model';
@@ -295,9 +295,10 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
                                 bounds: 'data',
                                 interactive: true,
                             } as HistogramParams,
-                            rasterSources: [workflow.operator],
-                            vectorSources: [],
-                        },
+                            sources: {
+                                source: workflow.operator,
+                            },
+                        } as HistogramDict,
                     } as WorkflowDict),
                     this.userService.getSessionTokenForRequest(),
                 ]),

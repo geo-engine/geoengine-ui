@@ -1,13 +1,15 @@
-import {SpatialReference, SpatialReferences} from '../operators/spatial-reference.model';
+import {SpatialReference} from '../spatial-references/spatial-reference.model';
 import {Time, timeStepDictTotimeStepDuration, TimeStepDuration, timeStepDurationToTimeStepDict} from '../time/time.model';
 import {Layer} from '../layers/layer.model';
-import {UUID, ToDict, ProjectDict, STRectangleDict} from '../backend/backend.model';
+import {UUID, ToDict, ProjectDict, STRectangleDict, BBoxDict} from '../backend/backend.model';
 import {Plot} from '../plots/plot.model';
 
 export class Project implements ToDict<ProjectDict> {
     readonly id: UUID;
     readonly name: string;
     readonly description: string;
+
+    readonly _bbox: BBoxDict;
 
     readonly _spatialReference: SpatialReference;
 
@@ -26,6 +28,7 @@ export class Project implements ToDict<ProjectDict> {
         plots: Array<Plot>;
         layers: Array<Layer>;
         timeStepDuration: TimeStepDuration;
+        bbox: BBoxDict;
     }) {
         this.id = config.id;
         this.name = config.name;
@@ -35,6 +38,7 @@ export class Project implements ToDict<ProjectDict> {
         this._plots = config.plots;
         this._layers = config.layers;
         this._timeStepDuration = config.timeStepDuration;
+        this._bbox = config.bbox;
     }
 
     static fromDict(dict: ProjectDict): Project {
@@ -42,11 +46,12 @@ export class Project implements ToDict<ProjectDict> {
             id: dict.id,
             name: dict.name,
             description: dict.description,
-            spatialReference: SpatialReferences.fromCode(dict.bounds.spatialReference),
+            spatialReference: SpatialReference.fromSrsString(dict.bounds.spatialReference),
             time: Time.fromDict(dict.bounds.timeInterval),
             plots: dict.plots.map(Plot.fromDict),
             layers: dict.layers.map(Layer.fromDict),
             timeStepDuration: timeStepDictTotimeStepDuration(dict.timeStep),
+            bbox: dict.bounds.boundingBox,
         });
     }
 
@@ -59,6 +64,7 @@ export class Project implements ToDict<ProjectDict> {
         plots?: Array<any>;
         layers?: Array<Layer>;
         timeStepDuration?: TimeStepDuration;
+        bbox?: BBoxDict;
     }): Project {
         return new Project({
             id: changes.id ?? this.id,
@@ -69,6 +75,7 @@ export class Project implements ToDict<ProjectDict> {
             plots: changes.plots ?? this.plots,
             layers: changes.layers ?? this.layers,
             timeStepDuration: changes.timeStepDuration ?? this.timeStepDuration,
+            bbox: changes.bbox ?? this._bbox,
         });
     }
 
@@ -106,21 +113,10 @@ export class Project implements ToDict<ProjectDict> {
     }
 
     toBoundsDict(): STRectangleDict {
-        const bbox = this._spatialReference.getExtent(); // TODO: allow tighter bbox
-
         return {
-            spatialReference: this._spatialReference.getCode(),
+            spatialReference: this._spatialReference.srsString,
             timeInterval: this._time.toDict(),
-            boundingBox: {
-                lowerLeftCoordinate: {
-                    x: bbox[0],
-                    y: bbox[1],
-                },
-                upperRightCoordinate: {
-                    x: bbox[2],
-                    y: bbox[3],
-                },
-            },
+            boundingBox: this._bbox,
         };
     }
 

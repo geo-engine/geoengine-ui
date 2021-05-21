@@ -105,6 +105,8 @@ import {ColorParamEditorComponent} from './layers/symbology/color-param-editor/c
 import {NumberParamEditorComponent} from './layers/symbology/number-param-editor/number-param-editor.component';
 import {FeatureAttributeOvertimeComponent} from './operators/dialogs/feature-attribute-over-time/feature-attribute-over-time.component';
 import {NotificationsComponent} from './project/notifications/notifications.component';
+import {TemporalRasterAggregationComponent} from './operators/dialogs/temporal-raster-aggregation/temporal-raster-aggregation.component';
+import {DragAndDropComponent} from './datasets/drag-and-drop/drag-and-drop.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -169,6 +171,7 @@ const WAVE_COMPONENTS = [
     DialogHeaderComponent,
     DialogHelpComponent,
     DialogSectionHeadingComponent,
+    DragAndDropComponent,
     DrawFeaturesComponent,
     ExpressionOperatorComponent,
     FeatureAttributeOvertimeComponent,
@@ -213,6 +216,7 @@ const WAVE_COMPONENTS = [
     SmallTimeInteractionComponent,
     StatisticsPlotComponent,
     TabsComponent,
+    TemporalRasterAggregationComponent,
     TimeConfigComponent,
     TimeInputComponent,
     UploadComponent,

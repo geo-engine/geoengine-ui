@@ -37,6 +37,7 @@ import {
     TimeConfigComponent,
     PlotListComponent,
     SidenavConfig,
+    SpatialReferenceService,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
@@ -81,6 +82,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         private activatedRoute: ActivatedRoute,
         private notificationService: NotificationService,
         private mapService: MapService,
+        private spatialReferenceService: SpatialReferenceService,
         private sanitizer: DomSanitizer,
     ) {
         this.registerIcons();

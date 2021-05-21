@@ -2,6 +2,12 @@ export type UUID = string;
 export type TimestampString = string;
 export type SrsString = string;
 
+/**
+ * Marker dictionary for types that only use primitive types and sub-types.
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface SerializableDict {}
+
 export interface RegistrationDict {
     id: UUID;
 }
@@ -217,11 +223,14 @@ export interface WorkflowDict {
 export interface OperatorDict {
     type: string;
     params: OperatorParams | null;
-    vectorSources?: Array<OperatorDict | SourceOperatorDict>;
-    rasterSources?: Array<OperatorDict | SourceOperatorDict>;
+    sources: OperatorSourcesDict;
 }
 
-type ParamTypes = string | number | boolean | Array<ParamTypes> | {[key: string]: ParamTypes} | undefined;
+export interface OperatorSourcesDict {
+    [name: string]: OperatorDict | SourceOperatorDict | Array<OperatorDict | SourceOperatorDict> | undefined;
+}
+
+type ParamTypes = string | number | boolean | Array<ParamTypes> | {[key: string]: ParamTypes} | SerializableDict | undefined;
 
 export interface OperatorParams {
     [key: string]: ParamTypes;
@@ -273,7 +282,7 @@ export interface PlotDataDict {
 }
 
 export interface ResultDescriptorDict {
-    spatialReference?: SrsString;
+    spatialReference: SrsString;
 }
 
 export interface RasterResultDescriptorDict extends ResultDescriptorDict {
@@ -288,11 +297,7 @@ export interface VectorResultDescriptorDict extends ResultDescriptorDict {
 
 type VectorDataType = 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
 
-export interface PlotResultDescriptorDict extends ResultDescriptorDict {
-    spatialReference: undefined;
-}
-
-export interface MeasurementDict {
+export interface MeasurementDict extends SerializableDict {
     continuous?: {
         measurement: string;
         unit?: string;
@@ -362,9 +367,8 @@ export interface OgrSourceDatasetDict {
     dataType?: VectorDataType;
     time: 'none' | OgrSourceDatasetTimeTypeDict;
     columns?: OgrSourceColumnSpecDict;
-    defaultGeometry?: TypedGeometryDict;
     forceOgrTimeFilter: boolean;
-    onError: 'skip' | 'abort' | 'keep';
+    onError: 'ignore' | 'abort';
     provenance?: ProvenanceInformationDict;
 }
 
@@ -426,4 +430,12 @@ export interface ProvenanceInformationDict {
     citation: string;
     license: string;
     uri: string;
+}
+
+export interface SpatialReferenceSpecificationDict {
+    name: string;
+    spatialReference: SrsString;
+    projString: string;
+    extent: BBoxDict;
+    axisLabels?: [string, string];
 }
