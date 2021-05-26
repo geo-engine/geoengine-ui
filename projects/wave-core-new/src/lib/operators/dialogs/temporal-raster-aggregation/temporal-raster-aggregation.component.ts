@@ -90,7 +90,7 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
                             params: {
                                 aggregation: {
                                     type: aggregation.type.toLowerCase(),
-                                    ignoreNoData: ignoreNoData,
+                                    ignoreNoData,
                                 },
                                 window: {
                                     granularity,
