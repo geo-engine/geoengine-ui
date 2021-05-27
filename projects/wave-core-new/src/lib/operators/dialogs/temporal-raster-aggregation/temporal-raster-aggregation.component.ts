@@ -7,7 +7,7 @@ import {WaveValidators} from '../../../util/form.validators';
 import {map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {WorkflowDict} from '../../../backend/backend.model';
-import {Observable, Subscription} from 'rxjs';
+import {Observable} from 'rxjs';
 import {TemporalRasterAggregationDict} from '../../../backend/operator.model';
 
 @Component({
