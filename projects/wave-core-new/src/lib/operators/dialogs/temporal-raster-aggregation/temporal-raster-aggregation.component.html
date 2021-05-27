@@ -11,7 +11,7 @@
 
         <mat-form-field>
             <mat-select placeholder="Aggregation Type" formControlName="aggregation">
-                <mat-option *ngFor="let aggregation of aggregations" [value]="aggregation">{{ aggregation.type }}</mat-option>
+                <mat-option *ngFor="let aggregation of aggregations" [value]="aggregation">{{ aggregation }}</mat-option>
             </mat-select>
         </mat-form-field>
 
