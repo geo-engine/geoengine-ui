@@ -10,9 +10,11 @@ import {
     CreateDatasetDict,
     DatasetIdDict,
     DatasetIdResponseDict,
+    DataSetProviderListingDict,
     MetaDataSuggestionDict,
     SuggestMetaDataDict,
     UploadResponseDict,
+    UUID,
 } from '../backend/backend.model';
 import {RandomColorService} from '../util/services/random-color.service';
 import {RasterLayer, VectorLayer} from '../layers/layer.model';
@@ -37,6 +39,17 @@ export class DatasetService {
             mergeMap((session) => this.backend.getDatasets(session.sessionToken)),
             map((datasetDicts) => datasetDicts.map((dict) => Dataset.fromDict(dict))),
         );
+    }
+
+    getExternalDatasets(providerId: UUID): Observable<Array<Dataset>> {
+        return this.userService.getSessionStream().pipe(
+            mergeMap((session) => this.backend.getExternalDatasets(session.sessionToken, providerId)),
+            map((datasetDicts) => datasetDicts.map((dict) => Dataset.fromDict(dict))),
+        );
+    }
+
+    getDatasetProviders(): Observable<Array<DataSetProviderListingDict>> {
+        return this.userService.getSessionStream().pipe(mergeMap((session) => this.backend.getDatasetProviders(session.sessionToken)));
     }
 
     getDataset(id: DatasetIdDict): Observable<Dataset> {

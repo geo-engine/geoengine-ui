@@ -239,7 +239,7 @@ export interface OperatorParams {
 export interface SourceOperatorDict {
     type: string;
     params: {
-        dataset: InternalDatasetIdDict; // TODO: support all Id types
+        dataset: DatasetIdDict;
     };
 }
 
@@ -251,7 +251,7 @@ export interface TimeStepDict {
 export type TimeStepGranularityDict = 'Millis' | 'Seconds' | 'Minutes' | 'Hours' | 'Days' | 'Months' | 'Years';
 
 export interface DatasetDict {
-    id: InternalDatasetIdDict; // TODO: support all Id types
+    id: DatasetIdDict;
     name: string;
     description: string;
     resultDescriptor: DatasetResultDescriptorDict;
@@ -260,10 +260,12 @@ export interface DatasetDict {
 
 export interface DatasetIdDict {
     internal?: UUID;
+    external?: ExternalDatasetIdDict;
 }
 
-export interface InternalDatasetIdDict {
-    internal: UUID;
+export interface ExternalDatasetIdDict {
+    provider: UUID;
+    id: string;
 }
 
 export interface DatasetResultDescriptorDict {
@@ -438,4 +440,10 @@ export interface SpatialReferenceSpecificationDict {
     projString: string;
     extent: BBoxDict;
     axisLabels?: [string, string];
+}
+
+export interface DataSetProviderListingDict {
+    id: UUID;
+    typeName: string;
+    name: string;
 }

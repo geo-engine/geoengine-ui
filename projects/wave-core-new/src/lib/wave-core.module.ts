@@ -107,6 +107,8 @@ import {FeatureAttributeOvertimeComponent} from './operators/dialogs/feature-att
 import {NotificationsComponent} from './project/notifications/notifications.component';
 import {TemporalRasterAggregationComponent} from './operators/dialogs/temporal-raster-aggregation/temporal-raster-aggregation.component';
 import {DragAndDropComponent} from './datasets/drag-and-drop/drag-and-drop.component';
+import {ProviderListComponent} from './datasets/provider-list/provider-list.component';
+import {ExternalDatasetListComponent} from './datasets/external-dataset-list/external-dataset-list.component';
 
 const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -174,6 +176,7 @@ const WAVE_COMPONENTS = [
     DragAndDropComponent,
     DrawFeaturesComponent,
     ExpressionOperatorComponent,
+    ExternalDatasetListComponent,
     FeatureAttributeOvertimeComponent,
     HistogramOperatorComponent,
     IfGuestDirective,
@@ -202,6 +205,7 @@ const WAVE_COMPONENTS = [
     PointIconComponent,
     PointInPolygonFilterOperatorComponent,
     PolygonIconComponent,
+    ProviderListComponent,
     RasterIconComponent,
     RasterLegendComponent,
     RasterLegendComponent,
