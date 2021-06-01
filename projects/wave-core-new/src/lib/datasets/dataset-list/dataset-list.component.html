@@ -1,7 +1,36 @@
 <wave-sidenav-header>Data Repository</wave-sidenav-header>
-
+<!--
 <mat-list>
     <ng-template ngFor let-dataset [ngForOf]="datasets | async">
         <wave-dataset [dataset]="dataset"></wave-dataset>
     </ng-template>
 </mat-list>
+-->
+<mat-table  [dataSource]="datasets" class="mat-elevation-z8">
+    <mat-header-row  *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row  *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    <ng-container matColumnDef="id">
+        <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
+        <mat-cell  *matCellDef="let element"> {{element.id.Internal}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="name">
+        <mat-header-cell  *matHeaderCellDef> Name </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="description">
+        <mat-header-cell  *matHeaderCellDef> Description </mat-header-cell>
+        <mat-cell *matCellDef="let element"> {{element.description}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="add">
+        <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+        <mat-cell  *matCellDef="let element">
+            <button type="button" mat-raised-button (click)="add(element)">Add</button>
+        </mat-cell>
+    </ng-container>
+</mat-table>
+<mat-paginator
+    [length]="100"
+    [pageSize]="5"
+    [pageSizeOptions]="[1, 2, 3, 5, 10]"
+    (page)="pageEvent= $event; onPaginationChange($event)">
+</mat-paginator>

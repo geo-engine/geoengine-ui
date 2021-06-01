@@ -1,0 +1,13 @@
+table {
+    width: 100%;
+}
+.mat-header-row,
+.mat-row {
+    display: inline-flex;
+    min-width: 100%;
+    height: auto;
+
+}
+.mat-header-cell, .mat-cell {
+    padding-right: 20px;
+}

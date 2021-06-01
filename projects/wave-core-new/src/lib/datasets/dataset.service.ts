@@ -32,9 +32,9 @@ export class DatasetService {
         protected randomColorService: RandomColorService,
     ) {}
 
-    getDatasets(): Observable<Array<Dataset>> {
+    getDatasets(offset='0', limit='20'): Observable<Array<Dataset>> {
         return this.userService.getSessionStream().pipe(
-            mergeMap((session) => this.backend.getDatasets(session.sessionToken)),
+            mergeMap((session) => this.backend.getDatasets(session.sessionToken, offset, limit)),
             map((datasetDicts) => datasetDicts.map((dict) => Dataset.fromDict(dict))),
         );
     }
@@ -45,7 +45,6 @@ export class DatasetService {
             map((dict) => Dataset.fromDict(dict)),
         );
     }
-
     upload(form: FormData): Observable<HttpEvent<UploadResponseDict>> {
         return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.upload(token, form)));
     }

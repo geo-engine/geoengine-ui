@@ -232,17 +232,18 @@ export class BackendService {
     }
 
     // TODO: turn into paginated data source
-    getDatasets(sessionId: UUID): Observable<Array<DatasetDict>> {
+    getDatasets(sessionId: UUID, offset='0', limit='20'): Observable<Array<DatasetDict>> {
         const params = new NullDiscardingHttpParams();
         params.set('order', 'NameAsc');
-        params.set('offset', '0');
-        params.set('limit', '20');
+        params.set('offset', offset);
+        params.set('limit', limit);
 
         return this.http.get<Array<DatasetDict>>(this.config.API_URL + '/datasets', {
             params: params.httpParams,
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
+
 
     getDataset(sessionId: UUID, datasetId: DatasetIdDict): Observable<DatasetDict> {
         // TODO: external datasets
