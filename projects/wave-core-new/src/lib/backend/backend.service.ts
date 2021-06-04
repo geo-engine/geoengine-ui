@@ -33,6 +33,7 @@ import {
     SuggestMetaDataDict,
     ResultDescriptorDict,
     SpatialReferenceSpecificationDict,
+    DataSetProviderListingDict,
 } from './backend.model';
 
 @Injectable({
@@ -244,6 +245,18 @@ export class BackendService {
         });
     }
 
+    getExternalDatasets(sessionId: UUID, providerId: UUID): Observable<Array<DatasetDict>> {
+        const params = new NullDiscardingHttpParams();
+        params.set('order', 'NameAsc');
+        params.set('offset', '0');
+        params.set('limit', '20');
+
+        return this.http.get<Array<DatasetDict>>(this.config.API_URL + `/datasets/external/${providerId}`, {
+            params: params.httpParams,
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
     getDataset(sessionId: UUID, datasetId: DatasetIdDict): Observable<DatasetDict> {
         // TODO: external datasets
         return this.http.get<DatasetDict>(this.config.API_URL + `/dataset/internal/${datasetId.internal}`, {
@@ -284,6 +297,18 @@ export class BackendService {
 
     getSpatialReferenceSpecification(sessionId: UUID, srsString: SrsString): Observable<SpatialReferenceSpecificationDict> {
         return this.http.get<SpatialReferenceSpecificationDict>(this.config.API_URL + `/spatialReferenceSpecification/${srsString}`, {
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    getDatasetProviders(sessionId: UUID): Observable<Array<DataSetProviderListingDict>> {
+        const params = new NullDiscardingHttpParams();
+        params.set('order', 'NameAsc');
+        params.set('offset', '0');
+        params.set('limit', '20');
+
+        return this.http.get<Array<DataSetProviderListingDict>>(this.config.API_URL + '/providers', {
+            params: params.httpParams,
             headers: BackendService.authorizationHeader(sessionId),
         });
     }

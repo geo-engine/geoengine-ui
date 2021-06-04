@@ -3,6 +3,7 @@ import {LayoutService, SidenavConfig} from '../../layout.service';
 import {createIconDataUrl} from '../../util/icons';
 import {DatasetListComponent} from '../dataset-list/dataset-list.component';
 import {DrawFeaturesComponent} from '../draw-features/draw-features.component';
+import {ProviderListComponent} from '../provider-list/provider-list.component';
 import {UploadComponent} from '../upload/upload.component';
 
 export interface AddDataButton {
@@ -47,6 +48,15 @@ export class AddDataComponent implements OnInit {
             description: 'Available Datasets',
             iconSrc: createIconDataUrl('Datasets'),
             sidenavConfig: {component: DatasetListComponent, keepParent: true},
+        };
+    }
+
+    static createExternalDataButton(): AddDataButton {
+        return {
+            name: 'External Data',
+            description: 'Available external data',
+            iconSrc: createIconDataUrl('External Data'),
+            sidenavConfig: {component: ProviderListComponent, keepParent: true},
         };
     }
 
