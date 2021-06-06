@@ -7,7 +7,7 @@ import {User} from './user.model';
  */
 export interface Session {
     sessionToken: string;
-    user: User;
+    user?: User; // TODO: split for pro
     validUntil: Moment; // TODO: custom time point?
     lastProjectId?: UUID;
     lastView?: STRectangleDict;

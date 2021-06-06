@@ -14,7 +14,7 @@ export interface RegistrationDict {
 
 export interface SessionDict {
     id: UUID;
-    user: UserDict;
+    user?: UserDict;
     created: TimestampString;
     validUntil: TimestampString;
     project?: UUID;
