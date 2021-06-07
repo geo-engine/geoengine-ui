@@ -10,8 +10,8 @@
         <wave-dialog-section-heading title="Config" subtitle="Specify the aggregation"></wave-dialog-section-heading>
 
         <mat-form-field>
-            <mat-select placeholder="Aggregation Type" formControlName="aggregationType">
-                <mat-option *ngFor="let aggregationType of aggregationTypes" [value]="aggregationType">{{ aggregationType }}</mat-option>
+            <mat-select placeholder="Aggregation Type" formControlName="aggregation">
+                <mat-option *ngFor="let aggregation of aggregations" [value]="aggregation">{{ aggregation }}</mat-option>
             </mat-select>
         </mat-form-field>
 

@@ -20,7 +20,7 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
     readonly inputTypes = [ResultTypes.RASTER];
 
     readonly timeGranularityOptions = ['Millis', 'Seconds', 'Minutes', 'Hours', 'Days', 'Months', 'Years'];
-    readonly aggregationTypes = ['Min', 'Max'];
+    readonly aggregations = ['Min', 'Max', 'First', 'Last'];
 
     form: FormGroup;
     disallowSubmit: Observable<boolean>;
@@ -35,7 +35,7 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
             layer: [undefined, Validators.required],
             granularity: ['Months', Validators.required],
             windowSize: [1, Validators.required], // TODO: check > 0
-            aggregationType: ['Max', Validators.required],
+            aggregation: [this.aggregations[0], Validators.required],
             ignoreNoData: [false],
         });
         this.disallowSubmit = this.form.statusChanges.pipe(map((status) => status !== 'VALID'));
@@ -56,7 +56,7 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
         const inputLayer: RasterLayer = this.form.controls['layer'].value;
         const outputName: string = this.form.controls['name'].value;
 
-        const aggregationType: string = this.form.controls['aggregationType'].value.toLowerCase();
+        const aggregation: string = this.form.controls['aggregation'].value;
         const granularity: string = this.form.controls['granularity'].value;
         const step: number = this.form.controls['windowSize'].value;
         const ignoreNoData: boolean = this.form.controls['ignoreNoData'].value;
@@ -70,12 +70,14 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
                         operator: {
                             type: 'TemporalRasterAggregation',
                             params: {
-                                aggregationType,
+                                aggregation: {
+                                    type: aggregation.toLowerCase(),
+                                    ignoreNoData,
+                                },
                                 window: {
                                     granularity,
                                     step,
                                 },
-                                ignoreNoData,
                             },
                             sources: {
                                 raster: inputWorkflow.operator,
