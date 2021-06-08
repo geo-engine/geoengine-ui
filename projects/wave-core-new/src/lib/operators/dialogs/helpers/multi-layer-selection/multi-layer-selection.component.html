@@ -10,8 +10,9 @@
     </div>
 </div>
 <div *ngIf="hasLayers | async; else noInputAvailable" fxLayout="column">
-    <mat-form-field fxFlex *ngFor="let selectedLayer of selectedLayers | async; let i = index">
-        <mat-select placeholder="Input {{ toLetters(i) }}" [ngModel]="selectedLayer" (onBlur)="onBlur()">
+    <mat-form-field *ngFor="let number of [].constructor(this.selectedLayers.value.length); let i = index">
+        <mat-label>Input {{ toLetters(i) }}</mat-label>
+        <mat-select [(value)]="selectedLayers.value[i]" (selectionChange)="updateLayer(i, $event.value)" (onBlur)="onBlur()">
             <mat-option *ngFor="let layer of filteredLayers | async" [value]="layer">{{ layer.name }}</mat-option>
         </mat-select>
     </mat-form-field>

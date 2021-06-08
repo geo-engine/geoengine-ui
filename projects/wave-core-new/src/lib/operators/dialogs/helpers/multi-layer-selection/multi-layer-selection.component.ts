@@ -155,6 +155,10 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
         }
     }
 
+    updateLayer(index: number, layer: Layer): void {
+        this.selectedLayers.value[index] = layer;
+    }
+
     updateLayersForSelection(): void {
         combineLatest([this.filteredLayers, this.selectedLayers])
             .pipe(first())
