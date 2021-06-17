@@ -269,16 +269,16 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                                         workflowId,
                                         name,
                                         symbology: RasterSymbology.fromRasterSymbologyDict({
+                                            type: 'raster',
                                             opacity: 1.0,
                                             colorizer: {
-                                                linearGradient: {
-                                                    breakpoints: [
-                                                        {value: 0, color: [0, 0, 0, 255]},
-                                                        {value: 255, color: [255, 255, 255, 255]},
-                                                    ],
-                                                    defaultColor: [0, 0, 0, 255],
-                                                    noDataColor: [0, 0, 0, 255],
-                                                },
+                                                type: 'linearGradient',
+                                                breakpoints: [
+                                                    {value: 0, color: [0, 0, 0, 255]},
+                                                    {value: 255, color: [255, 255, 255, 255]},
+                                                ],
+                                                defaultColor: [0, 0, 0, 255],
+                                                noDataColor: [0, 0, 0, 255],
                                             },
                                         }),
                                         isLegendVisible: false,

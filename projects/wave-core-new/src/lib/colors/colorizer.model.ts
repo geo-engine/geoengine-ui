@@ -6,10 +6,10 @@ export abstract class Colorizer {
     abstract readonly defaultColor: Color;
 
     static fromDict(dict: ColorizerDict): Colorizer {
-        if (dict.linearGradient) {
-            return LinearGradient.fromLinearGradientDict(dict.linearGradient);
-        } else if (dict.palette) {
-            return PaletteColorizer.fromPaletteDict(dict.palette);
+        if (dict.type === 'linearGradient') {
+            return LinearGradient.fromLinearGradientDict(dict);
+        } else if (dict.type === 'palette') {
+            return PaletteColorizer.fromPaletteDict(dict);
         }
         throw new Error('Unimplemented or invalid colorizer');
     }
@@ -120,11 +120,10 @@ export class LinearGradient extends Colorizer {
 
     toDict(): ColorizerDict {
         return {
-            linearGradient: {
-                breakpoints: this.breakpoints.map((b) => b.toDict()),
-                noDataColor: colorToDict(this.noDataColor),
-                defaultColor: colorToDict(this.defaultColor),
-            },
+            type: 'linearGradient',
+            breakpoints: this.breakpoints.map((b) => b.toDict()),
+            noDataColor: colorToDict(this.noDataColor),
+            defaultColor: colorToDict(this.defaultColor),
         };
     }
 
@@ -247,11 +246,10 @@ export class PaletteColorizer extends Colorizer {
         }
 
         return {
-            palette: {
-                colors,
-                noDataColor: colorToDict(this.noDataColor),
-                defaultColor: colorToDict(this.defaultColor),
-            },
+            type: 'palette',
+            colors,
+            noDataColor: colorToDict(this.noDataColor),
+            defaultColor: colorToDict(this.defaultColor),
         };
     }
 

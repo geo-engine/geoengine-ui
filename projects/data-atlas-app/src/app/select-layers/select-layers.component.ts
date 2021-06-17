@@ -23,7 +23,8 @@ export class SelectLayersComponent implements OnInit {
                 type: 'GdalSource',
                 params: {
                     dataset: {
-                        internal: '73b13876-bdd2-48b2-a628-ce0a1b0eee9d',
+                        type: 'internal',
+                        dataset: '73b13876-bdd2-48b2-a628-ce0a1b0eee9d',
                     },
                 },
             },
@@ -89,13 +90,13 @@ export class SelectLayersComponent implements OnInit {
                             workflowId,
                             name: 'Biome',
                             symbology: RasterSymbology.fromRasterSymbologyDict({
+                                type: 'raster',
                                 opacity: 1,
                                 colorizer: {
-                                    palette: {
-                                        colors,
-                                        defaultColor: [0, 0, 0, 0],
-                                        noDataColor: [0, 0, 0, 0],
-                                    },
+                                    type: 'palette',
+                                    colors,
+                                    defaultColor: [0, 0, 0, 0],
+                                    noDataColor: [0, 0, 0, 0],
                                 },
                             }),
                             isLegendVisible: false,
@@ -121,7 +122,8 @@ export class SelectLayersComponent implements OnInit {
                 type: 'GdalSource',
                 params: {
                     dataset: {
-                        internal: sourceId,
+                        type: 'internal',
+                        dataset: sourceId,
                     },
                 },
             },
@@ -167,13 +169,13 @@ export class SelectLayersComponent implements OnInit {
                             workflowId,
                             name: 'KK09',
                             symbology: RasterSymbology.fromRasterSymbologyDict({
+                                type: 'raster',
                                 opacity: 1.0,
                                 colorizer: {
-                                    linearGradient: {
-                                        breakpoints,
-                                        defaultColor: [0, 0, 0, 0],
-                                        noDataColor: [0, 0, 0, 0],
-                                    },
+                                    type: 'linearGradient',
+                                    breakpoints,
+                                    defaultColor: [0, 0, 0, 0],
+                                    noDataColor: [0, 0, 0, 0],
                                 },
                             }),
                             isLegendVisible: false,
