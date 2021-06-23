@@ -378,7 +378,7 @@ export interface OgrSourceDatasetTimeTypeDict {
     start?: {
         startField: string;
         startFormat: OgrSourceTimeFormatDict;
-        duration: number;
+        duration: OgrSourceDurationSpecDict;
     };
     'start+end'?: {
         startField: string;
@@ -404,6 +404,23 @@ export interface OgrSourceColumnSpecDict {
     float: Array<string>;
     int: Array<string>;
     text: Array<string>;
+}
+
+export type OgrSourceDurationSpecDict =
+    | FiniteOgrSourceDurationSpecDict
+    | InfiniteOgrSourceDurationSpecDict
+    | InstantOgrSourceDurationSpecDict;
+
+export interface FiniteOgrSourceDurationSpecDict extends TimeStepDict {
+    type: 'finite';
+}
+
+export interface InfiniteOgrSourceDurationSpecDict {
+    type: 'infinite';
+}
+
+export interface InstantOgrSourceDurationSpecDict {
+    type: 'instant';
 }
 
 export interface TypedGeometryDict {
