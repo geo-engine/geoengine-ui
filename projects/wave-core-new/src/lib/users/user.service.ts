@@ -60,7 +60,7 @@ export class UserService {
     }
 
     isGuestUserStream(): Observable<boolean> {
-        return this.session$.pipe(map((s) => s.user.isGuest));
+        return this.session$.pipe(map((s) => !s.user || s.user.isGuest));
     }
 
     /**
@@ -131,13 +131,18 @@ export class UserService {
     }
 
     protected createSession(sessionDict: SessionDict): Observable<Session> {
-        const session: Session = {
-            sessionToken: sessionDict.id,
-            user: new User({
+        let user: User | undefined;
+        if (sessionDict.user) {
+            user = new User({
                 id: sessionDict.user.id,
                 email: sessionDict.user.email,
                 realName: sessionDict.user.realName,
-            }),
+            });
+        }
+
+        const session: Session = {
+            sessionToken: sessionDict.id,
+            user,
             validUntil: utc(sessionDict.validUntil),
             lastProjectId: sessionDict.project,
             lastView: sessionDict.view,

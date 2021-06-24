@@ -108,11 +108,13 @@ export interface StatisticsDict extends OperatorDict {
 export interface TemporalRasterAggregationDict extends OperatorDict {
     type: 'TemporalRasterAggregation';
     params: {
-        aggregationType: 'min' | 'max';
+        aggregation: {
+            type: 'min' | 'max' | 'first' | 'last';
+            ignoreNoData?: boolean;
+        };
         window: {
             granularity: 'Millis' | 'Seconds' | 'Minutes' | 'Hours' | 'Days' | 'Months' | 'Years';
             step: number;
         };
-        ignoreNoData: boolean;
     };
 }

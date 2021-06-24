@@ -119,7 +119,7 @@ export class UploadComponent {
 
     changeTimeStartFormat(): void {
         const form = this.formMetaData.controls;
-        if (form.timeStartFormat.value === 'Custom') {
+        if (form.timeStartFormat.value === 'custom') {
             form.timeStartFormatCustom.setValidators(Validators.required);
         } else {
             form.timeStartFormatCustom.clearValidators();
@@ -128,7 +128,7 @@ export class UploadComponent {
 
     changeTimeEndFormat(): void {
         const form = this.formMetaData.controls;
-        if (form.timeEndFormat.value === 'Custom') {
+        if (form.timeEndFormat.value === 'custom') {
             form.timeEndFormatCustom.setValidators(Validators.required);
         } else {
             form.timeEndFormatCustom.clearValidators();

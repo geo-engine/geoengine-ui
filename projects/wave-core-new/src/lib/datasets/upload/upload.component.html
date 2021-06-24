@@ -69,7 +69,7 @@
                         </mat-select>
                     </mat-form-field>
 
-                    <mat-form-field appearance="fill" *ngIf="formMetaData.controls.timeStartFormat.value === 'Custom'">
+                    <mat-form-field appearance="fill" *ngIf="formMetaData.controls.timeStartFormat.value === 'custom'">
                         <mat-label>Custom format of columns containing start</mat-label>
                         <input matInput type="text" formControlName="timeStartFormatCustom" />
                     </mat-form-field>
@@ -81,7 +81,7 @@
                 </mat-form-field>
 
                 <mat-form-field appearance="fill" *ngIf="formMetaData.controls.timeType.value === 'Start'">
-                    <mat-label>Duration of feature validity in seconds</mat-label>
+                    <mat-label>Duration of feature validity in milli-seconds</mat-label>
                     <input matInput type="number" formControlName="timeDurationValue" />
                 </mat-form-field>
 
@@ -100,7 +100,7 @@
                         </mat-select>
                     </mat-form-field>
 
-                    <mat-form-field appearance="fill" *ngIf="formMetaData.controls.timeEndFormat.value === 'Custom'">
+                    <mat-form-field appearance="fill" *ngIf="formMetaData.controls.timeEndFormat.value === 'custom'">
                         <mat-label>Custom format of columns containing end</mat-label>
                         <input matInput type="text" formControlName="timeEndFormatCustom" />
                     </mat-form-field>
