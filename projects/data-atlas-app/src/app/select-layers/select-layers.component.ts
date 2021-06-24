@@ -24,7 +24,7 @@ export class SelectLayersComponent implements OnInit {
                 params: {
                     dataset: {
                         type: 'internal',
-                        dataset: '73b13876-bdd2-48b2-a628-ce0a1b0eee9d',
+                        datasetId: '73b13876-bdd2-48b2-a628-ce0a1b0eee9d',
                     },
                 },
             },
@@ -123,7 +123,7 @@ export class SelectLayersComponent implements OnInit {
                 params: {
                     dataset: {
                         type: 'internal',
-                        dataset: sourceId,
+                        datasetId: sourceId,
                     },
                 },
             },
