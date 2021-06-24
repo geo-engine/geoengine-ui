@@ -53,7 +53,7 @@ export class Dataset {
 export abstract class DatasetId {
     static fromDict(dict: DatasetIdDict): DatasetId {
         if (dict.type === 'internal') {
-            return InternalDatasetId.fromDict(dict.dataset);
+            return InternalDatasetId.fromDict(dict.datasetId);
         } else if (dict.type === 'external') {
             return ExternalDatasetId.fromDict(dict);
         }
@@ -78,7 +78,7 @@ export class InternalDatasetId {
     toDict(): DatasetIdDict {
         return {
             type: 'internal',
-            dataset: this.id,
+            datasetId: this.id,
         };
     }
 }
@@ -88,8 +88,8 @@ export class ExternalDatasetId {
     dataset: string;
 
     constructor(config: ExternalDatasetIdDict) {
-        this.provider = config.provider;
-        this.dataset = config.dataset;
+        this.provider = config.providerId;
+        this.dataset = config.datasetId;
     }
 
     static fromDict(config: ExternalDatasetIdDict): ExternalDatasetId {
@@ -99,8 +99,8 @@ export class ExternalDatasetId {
     toDict(): DatasetIdDict {
         return {
             type: 'external',
-            provider: this.provider,
-            dataset: this.dataset,
+            providerId: this.provider,
+            datasetId: this.dataset,
         };
     }
 }

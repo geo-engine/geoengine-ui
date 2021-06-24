@@ -266,12 +266,12 @@ export type DatasetIdDict = InternalDatasetIdDict | ExternalDatasetIdDict;
 
 export interface InternalDatasetIdDict {
     type: 'internal';
-    dataset: UUID;
+    datasetId: UUID;
 }
 export interface ExternalDatasetIdDict {
     type: 'external';
-    provider: UUID;
-    dataset: string;
+    providerId: UUID;
+    datasetId: string;
 }
 
 export interface NoDataDict {
@@ -369,7 +369,7 @@ export interface MetaDataSuggestionDict {
 export type MetaDataDefinitionDict = OgrMetaDataDict;
 
 export interface OgrMetaDataDict {
-    type: 'ogrMetaData';
+    type: 'OgrMetaData';
     loadingInfo: OgrSourceDatasetDict;
     resultDescriptor: VectorResultDescriptorDict;
 }

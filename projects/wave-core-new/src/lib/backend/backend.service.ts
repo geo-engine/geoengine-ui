@@ -260,7 +260,7 @@ export class BackendService {
     getDataset(sessionId: UUID, datasetId: DatasetIdDict): Observable<DatasetDict> {
         // TODO: external datasets
         if (datasetId.type === 'internal') {
-            return this.http.get<DatasetDict>(this.config.API_URL + `/dataset/internal/${datasetId.dataset}`, {
+            return this.http.get<DatasetDict>(this.config.API_URL + `/dataset/internal/${datasetId.datasetId}`, {
                 headers: BackendService.authorizationHeader(sessionId),
             });
         } else {

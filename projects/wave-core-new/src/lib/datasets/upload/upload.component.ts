@@ -260,7 +260,7 @@ export class UploadComponent {
         const formDataset = this.formNameDescription.controls;
 
         const metaData: MetaDataDefinitionDict = {
-            type: 'ogrMetaData',
+            type: 'OgrMetaData',
             loadingInfo: {
                 fileName: formMeta.mainFile.value,
                 layerName: formMeta.layerName.value,
