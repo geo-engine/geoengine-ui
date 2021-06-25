@@ -2,1908 +2,2384 @@ import {UUID} from 'wave-core';
 
 export interface Country {
     polygon: {
-        internal: UUID;
+        type: 'internal';
+        datasetId: UUID;
     };
     raster: {
-        internal: UUID;
+        type: 'internal';
+        datasetId: UUID;
     };
 }
 
 export const COUNTRY_LIST: {[name: string]: Country} = {
     Indonesia: {
         polygon: {
-            internal: 'e1a17ad7-8665-4c86-84fd-15ce1b3f13f9',
+            type: 'internal',
+            datasetId: 'e1a17ad7-8665-4c86-84fd-15ce1b3f13f9',
         },
         raster: {
-            internal: '59cfa7a8-c8f4-400a-b171-fa97d91e5649',
+            type: 'internal',
+            datasetId: '59cfa7a8-c8f4-400a-b171-fa97d91e5649',
         },
     },
     Malaysia: {
         polygon: {
-            internal: '32431e72-06cf-44ee-9149-3d8bc0fd0ec6',
+            type: 'internal',
+            datasetId: '32431e72-06cf-44ee-9149-3d8bc0fd0ec6',
         },
         raster: {
-            internal: '9001fd1e-c560-4629-b72f-83fc084728bc',
+            type: 'internal',
+            datasetId: '9001fd1e-c560-4629-b72f-83fc084728bc',
         },
     },
     Chile: {
         polygon: {
-            internal: '63146c5f-588b-48ec-b70b-e987913dbd6d',
+            type: 'internal',
+            datasetId: '63146c5f-588b-48ec-b70b-e987913dbd6d',
         },
         raster: {
-            internal: '3857536b-08b2-4e78-8e43-ad145498968e',
+            type: 'internal',
+            datasetId: '3857536b-08b2-4e78-8e43-ad145498968e',
         },
     },
     Bolivia: {
         polygon: {
-            internal: '0dabfdd0-00d4-4015-ad65-f41d16985aad',
+            type: 'internal',
+            datasetId: '0dabfdd0-00d4-4015-ad65-f41d16985aad',
         },
         raster: {
-            internal: '1bbdc706-b867-412a-9e8d-9adae716f6a9',
+            type: 'internal',
+            datasetId: '1bbdc706-b867-412a-9e8d-9adae716f6a9',
         },
     },
     Peru: {
         polygon: {
-            internal: '85b795c2-983e-4e25-bfe0-20ddafd5b4b3',
+            type: 'internal',
+            datasetId: '85b795c2-983e-4e25-bfe0-20ddafd5b4b3',
         },
         raster: {
-            internal: '7ebcd29b-281d-436e-a047-cf13dde40861',
+            type: 'internal',
+            datasetId: '7ebcd29b-281d-436e-a047-cf13dde40861',
         },
     },
     Argentina: {
         polygon: {
-            internal: '447c19d5-09c4-4531-a7c2-bacbfb426650',
+            type: 'internal',
+            datasetId: '447c19d5-09c4-4531-a7c2-bacbfb426650',
         },
         raster: {
-            internal: '989bdfb8-0268-4712-a76e-9ded1705ff7c',
+            type: 'internal',
+            datasetId: '989bdfb8-0268-4712-a76e-9ded1705ff7c',
         },
     },
     Cyprus: {
         polygon: {
-            internal: '6de8345d-8a50-47c6-920b-1107016a4084',
+            type: 'internal',
+            datasetId: '6de8345d-8a50-47c6-920b-1107016a4084',
         },
         raster: {
-            internal: 'e9737f70-e4a8-47c9-b25a-372a306b5bf5',
+            type: 'internal',
+            datasetId: 'e9737f70-e4a8-47c9-b25a-372a306b5bf5',
         },
     },
     India: {
         polygon: {
-            internal: '6477c509-474a-4d1c-906b-a6970622a4ee',
+            type: 'internal',
+            datasetId: '6477c509-474a-4d1c-906b-a6970622a4ee',
         },
         raster: {
-            internal: '8afeb4ee-567d-4e36-8e87-add9d3e1bab9',
+            type: 'internal',
+            datasetId: '8afeb4ee-567d-4e36-8e87-add9d3e1bab9',
         },
     },
     China: {
         polygon: {
-            internal: '2bf5d430-3458-46d9-8ac6-4f9f4123c69e',
+            type: 'internal',
+            datasetId: '2bf5d430-3458-46d9-8ac6-4f9f4123c69e',
         },
         raster: {
-            internal: '2e08e15b-ee47-4f33-ad4d-6baeb0487081',
+            type: 'internal',
+            datasetId: '2e08e15b-ee47-4f33-ad4d-6baeb0487081',
         },
     },
     Lebanon: {
         polygon: {
-            internal: '2cee6ebe-1226-4e3a-9d72-a18f2fed9562',
+            type: 'internal',
+            datasetId: '2cee6ebe-1226-4e3a-9d72-a18f2fed9562',
         },
         raster: {
-            internal: 'bde89bf4-8ecf-4562-8933-5bcbc11f3ecf',
+            type: 'internal',
+            datasetId: 'bde89bf4-8ecf-4562-8933-5bcbc11f3ecf',
         },
     },
     Ethiopia: {
         polygon: {
-            internal: 'ec6b0a86-6fe7-4a1e-b75f-1dcf38a1c9d0',
+            type: 'internal',
+            datasetId: 'ec6b0a86-6fe7-4a1e-b75f-1dcf38a1c9d0',
         },
         raster: {
-            internal: '3a2f140d-4198-478e-b915-95317b7b5964',
+            type: 'internal',
+            datasetId: '3a2f140d-4198-478e-b915-95317b7b5964',
         },
     },
     Somalia: {
         polygon: {
-            internal: '59e3cc4a-b546-4a1b-a812-18d06b8ed06e',
+            type: 'internal',
+            datasetId: '59e3cc4a-b546-4a1b-a812-18d06b8ed06e',
         },
         raster: {
-            internal: 'd9abbf4a-2f58-40c8-9b9f-9c3188d37e0f',
+            type: 'internal',
+            datasetId: 'd9abbf4a-2f58-40c8-9b9f-9c3188d37e0f',
         },
     },
     Kenya: {
         polygon: {
-            internal: 'f22fc916-0229-41b1-ae77-061fdf986b97',
+            type: 'internal',
+            datasetId: 'f22fc916-0229-41b1-ae77-061fdf986b97',
         },
         raster: {
-            internal: 'fda9e471-a5fd-426b-9840-9fc917a3c536',
+            type: 'internal',
+            datasetId: 'fda9e471-a5fd-426b-9840-9fc917a3c536',
         },
     },
     Pakistan: {
         polygon: {
-            internal: '4102c9fd-c81d-4bd8-b034-b1fb4dc0dee7',
+            type: 'internal',
+            datasetId: '4102c9fd-c81d-4bd8-b034-b1fb4dc0dee7',
         },
         raster: {
-            internal: '5b2620f8-7026-4f37-863b-6f902a0645b5',
+            type: 'internal',
+            datasetId: '5b2620f8-7026-4f37-863b-6f902a0645b5',
         },
     },
     Malawi: {
         polygon: {
-            internal: '7d583ae2-1510-4833-ace7-23088aa525c9',
+            type: 'internal',
+            datasetId: '7d583ae2-1510-4833-ace7-23088aa525c9',
         },
         raster: {
-            internal: '39b9f0f6-1fca-4e00-a912-4e6a957f3f1c',
+            type: 'internal',
+            datasetId: '39b9f0f6-1fca-4e00-a912-4e6a957f3f1c',
         },
     },
     Tanzania: {
         polygon: {
-            internal: 'b42ad3c9-de08-4de3-b39e-f0a42538b079',
+            type: 'internal',
+            datasetId: 'b42ad3c9-de08-4de3-b39e-f0a42538b079',
         },
         raster: {
-            internal: '7bee87e0-a840-472b-81a1-03d5e5511250',
+            type: 'internal',
+            datasetId: '7bee87e0-a840-472b-81a1-03d5e5511250',
         },
     },
     Syria: {
         polygon: {
-            internal: 'b92b0225-f45c-4ca7-a6de-890dca85a93a',
+            type: 'internal',
+            datasetId: 'b92b0225-f45c-4ca7-a6de-890dca85a93a',
         },
         raster: {
-            internal: 'baaa34d8-48e6-45bf-8085-13d74917b616',
+            type: 'internal',
+            datasetId: 'baaa34d8-48e6-45bf-8085-13d74917b616',
         },
     },
     France: {
         polygon: {
-            internal: '8623c231-e04f-4528-958e-103019a25793',
+            type: 'internal',
+            datasetId: '8623c231-e04f-4528-958e-103019a25793',
         },
         raster: {
-            internal: 'caafc7e8-4c43-4aed-a759-3e08ad9a49d3',
+            type: 'internal',
+            datasetId: 'caafc7e8-4c43-4aed-a759-3e08ad9a49d3',
         },
     },
     Suriname: {
         polygon: {
-            internal: 'bf483d00-1eea-49fe-996f-f0d6717750db',
+            type: 'internal',
+            datasetId: 'bf483d00-1eea-49fe-996f-f0d6717750db',
         },
         raster: {
-            internal: 'abe3c42f-c7fc-4f06-bd90-f91a35864ded',
+            type: 'internal',
+            datasetId: 'abe3c42f-c7fc-4f06-bd90-f91a35864ded',
         },
     },
     Guyana: {
         polygon: {
-            internal: '23e26115-14f9-42c4-99f7-f1eeacf7b99e',
+            type: 'internal',
+            datasetId: '23e26115-14f9-42c4-99f7-f1eeacf7b99e',
         },
         raster: {
-            internal: '28ba244e-fc10-4e67-85f2-1f89731895f0',
+            type: 'internal',
+            datasetId: '28ba244e-fc10-4e67-85f2-1f89731895f0',
         },
     },
     'South Korea': {
         polygon: {
-            internal: '0782b6dc-449f-4786-a4a0-14c4ef649ccc',
+            type: 'internal',
+            datasetId: '0782b6dc-449f-4786-a4a0-14c4ef649ccc',
         },
         raster: {
-            internal: '56b453f8-a707-431c-9081-4d22cedfbf59',
+            type: 'internal',
+            datasetId: '56b453f8-a707-431c-9081-4d22cedfbf59',
         },
     },
     'North Korea': {
         polygon: {
-            internal: '65b2b9af-5b55-4f22-aa39-1af94709be8e',
+            type: 'internal',
+            datasetId: '65b2b9af-5b55-4f22-aa39-1af94709be8e',
         },
         raster: {
-            internal: 'c8f1abdd-d77c-4eb9-9738-564db6042adc',
+            type: 'internal',
+            datasetId: 'c8f1abdd-d77c-4eb9-9738-564db6042adc',
         },
     },
     Morocco: {
         polygon: {
-            internal: '280cf770-14db-4b94-85f9-caad2b0d00b4',
+            type: 'internal',
+            datasetId: '280cf770-14db-4b94-85f9-caad2b0d00b4',
         },
         raster: {
-            internal: '783bac19-9409-4378-9fb6-6066801c9259',
+            type: 'internal',
+            datasetId: '783bac19-9409-4378-9fb6-6066801c9259',
         },
     },
     'W. Sahara': {
         polygon: {
-            internal: '740c1e05-d4b9-4da4-bc4c-d89b8001f516',
+            type: 'internal',
+            datasetId: '740c1e05-d4b9-4da4-bc4c-d89b8001f516',
         },
         raster: {
-            internal: 'd9cde33e-d547-418d-b554-1e27d00a6952',
+            type: 'internal',
+            datasetId: 'd9cde33e-d547-418d-b554-1e27d00a6952',
         },
     },
     'Costa Rica': {
         polygon: {
-            internal: '03f990e0-6793-440a-a82a-060380538023',
+            type: 'internal',
+            datasetId: '03f990e0-6793-440a-a82a-060380538023',
         },
         raster: {
-            internal: '46029244-3039-4bf7-9713-5c0291a6c21d',
+            type: 'internal',
+            datasetId: '46029244-3039-4bf7-9713-5c0291a6c21d',
         },
     },
     Nicaragua: {
         polygon: {
-            internal: 'dc1ef7e9-d4c3-4707-9b2e-4482e1e0d513',
+            type: 'internal',
+            datasetId: 'dc1ef7e9-d4c3-4707-9b2e-4482e1e0d513',
         },
         raster: {
-            internal: 'c1d096e1-9371-4a59-80e2-d3d594c8e36a',
+            type: 'internal',
+            datasetId: 'c1d096e1-9371-4a59-80e2-d3d594c8e36a',
         },
     },
     Congo: {
         polygon: {
-            internal: '612a3c30-e046-4169-ab18-b8261356de07',
+            type: 'internal',
+            datasetId: '612a3c30-e046-4169-ab18-b8261356de07',
         },
         raster: {
-            internal: 'f7bf26e1-be1a-434a-bb61-7583b35b60d4',
+            type: 'internal',
+            datasetId: 'f7bf26e1-be1a-434a-bb61-7583b35b60d4',
         },
     },
     'Dem. Rep. Congo': {
         polygon: {
-            internal: '9d8366f5-df53-461a-af7a-05732687e397',
+            type: 'internal',
+            datasetId: '9d8366f5-df53-461a-af7a-05732687e397',
         },
         raster: {
-            internal: '73d27f9c-cc5f-441f-8731-06923e97d031',
+            type: 'internal',
+            datasetId: '73d27f9c-cc5f-441f-8731-06923e97d031',
         },
     },
     Bhutan: {
         polygon: {
-            internal: '2bf9dd5b-160e-4e2c-bd94-be9ea33dd467',
+            type: 'internal',
+            datasetId: '2bf9dd5b-160e-4e2c-bd94-be9ea33dd467',
         },
         raster: {
-            internal: '749eb6f5-b5b2-4d84-a694-a2e995fd9675',
+            type: 'internal',
+            datasetId: '749eb6f5-b5b2-4d84-a694-a2e995fd9675',
         },
     },
     Ukraine: {
         polygon: {
-            internal: '3cfd3400-b5cd-4794-811a-c10b7c7a13f9',
+            type: 'internal',
+            datasetId: '3cfd3400-b5cd-4794-811a-c10b7c7a13f9',
         },
         raster: {
-            internal: 'b3ff34bb-8d87-4153-9123-32ef2e9d4634',
+            type: 'internal',
+            datasetId: 'b3ff34bb-8d87-4153-9123-32ef2e9d4634',
         },
     },
     Belarus: {
         polygon: {
-            internal: 'e221b2c5-f873-4e32-a11c-c38246dfceac',
+            type: 'internal',
+            datasetId: 'e221b2c5-f873-4e32-a11c-c38246dfceac',
         },
         raster: {
-            internal: 'b9835b9e-d097-4dbe-a9d4-f2ac88b2b19a',
+            type: 'internal',
+            datasetId: 'b9835b9e-d097-4dbe-a9d4-f2ac88b2b19a',
         },
     },
     Namibia: {
         polygon: {
-            internal: 'bbaba7a1-2a6a-4cd7-8e67-e9a8d95ac824',
+            type: 'internal',
+            datasetId: 'bbaba7a1-2a6a-4cd7-8e67-e9a8d95ac824',
         },
         raster: {
-            internal: '4016ec72-2f14-4896-bd6c-58f38b27a584',
+            type: 'internal',
+            datasetId: '4016ec72-2f14-4896-bd6c-58f38b27a584',
         },
     },
     'South Africa': {
         polygon: {
-            internal: '3b4e3717-2ae2-4450-9da3-e6b3c0962361',
+            type: 'internal',
+            datasetId: '3b4e3717-2ae2-4450-9da3-e6b3c0962361',
         },
         raster: {
-            internal: '4dd7524d-5312-4dd4-bf33-f266aed2adfc',
+            type: 'internal',
+            datasetId: '4dd7524d-5312-4dd4-bf33-f266aed2adfc',
         },
     },
     'St-Martin': {
         polygon: {
-            internal: '189ede92-d316-4b33-a092-a2c2199f205c',
+            type: 'internal',
+            datasetId: '189ede92-d316-4b33-a092-a2c2199f205c',
         },
         raster: {
-            internal: '3c0abd53-5704-49b3-b7bd-28f75a32abe2',
+            type: 'internal',
+            datasetId: '3c0abd53-5704-49b3-b7bd-28f75a32abe2',
         },
     },
     'Sint Maarten': {
         polygon: {
-            internal: '434bbf83-c371-424d-b939-789db25fe4ad',
+            type: 'internal',
+            datasetId: '434bbf83-c371-424d-b939-789db25fe4ad',
         },
         raster: {
-            internal: 'bb34d179-3b49-44bd-b03b-9f81c3a3e93f',
+            type: 'internal',
+            datasetId: 'bb34d179-3b49-44bd-b03b-9f81c3a3e93f',
         },
     },
     Oman: {
         polygon: {
-            internal: '6c35291e-b209-4aa5-a55e-853fd805fc39',
+            type: 'internal',
+            datasetId: '6c35291e-b209-4aa5-a55e-853fd805fc39',
         },
         raster: {
-            internal: '4372bdf8-340e-4023-8eac-330ed466c261',
+            type: 'internal',
+            datasetId: '4372bdf8-340e-4023-8eac-330ed466c261',
         },
     },
     Uzbekistan: {
         polygon: {
-            internal: 'cd2ad716-306e-45e7-ad5d-895d3023eb4f',
+            type: 'internal',
+            datasetId: 'cd2ad716-306e-45e7-ad5d-895d3023eb4f',
         },
         raster: {
-            internal: '66f9cc43-d9e7-4417-9607-0b471ebd9ef6',
+            type: 'internal',
+            datasetId: '66f9cc43-d9e7-4417-9607-0b471ebd9ef6',
         },
     },
     Kazakhstan: {
         polygon: {
-            internal: '68fbd180-4601-4318-8305-a48d70d1ceeb',
+            type: 'internal',
+            datasetId: '68fbd180-4601-4318-8305-a48d70d1ceeb',
         },
         raster: {
-            internal: '0b13ddc8-1afa-4a96-abcb-389a0c352806',
+            type: 'internal',
+            datasetId: '0b13ddc8-1afa-4a96-abcb-389a0c352806',
         },
     },
     Tajikistan: {
         polygon: {
-            internal: '814c269a-dc2a-46fd-ab45-9939f1ebc607',
+            type: 'internal',
+            datasetId: '814c269a-dc2a-46fd-ab45-9939f1ebc607',
         },
         raster: {
-            internal: '9b0e5299-bd3e-43a6-a4d0-28ceca12f48a',
+            type: 'internal',
+            datasetId: '9b0e5299-bd3e-43a6-a4d0-28ceca12f48a',
         },
     },
     Lithuania: {
         polygon: {
-            internal: 'bbffcc15-53b4-45fb-a1d5-db1a77ba7869',
+            type: 'internal',
+            datasetId: 'bbffcc15-53b4-45fb-a1d5-db1a77ba7869',
         },
         raster: {
-            internal: '2b669154-c193-4b1b-9e82-30cb04914a72',
+            type: 'internal',
+            datasetId: '2b669154-c193-4b1b-9e82-30cb04914a72',
         },
     },
     Brazil: {
         polygon: {
-            internal: '2ac06c6c-0d21-43e5-8cf9-fbc853d4907b',
+            type: 'internal',
+            datasetId: '2ac06c6c-0d21-43e5-8cf9-fbc853d4907b',
         },
         raster: {
-            internal: '060d1773-4dc3-49ed-9244-2b3d26cbacf1',
+            type: 'internal',
+            datasetId: '060d1773-4dc3-49ed-9244-2b3d26cbacf1',
         },
     },
     Uruguay: {
         polygon: {
-            internal: '5f4e21a4-d8f4-407f-9de0-56ceeb4a3ab0',
+            type: 'internal',
+            datasetId: '5f4e21a4-d8f4-407f-9de0-56ceeb4a3ab0',
         },
         raster: {
-            internal: 'd2cf2d6e-23e6-4790-a905-4fc635404110',
+            type: 'internal',
+            datasetId: 'd2cf2d6e-23e6-4790-a905-4fc635404110',
         },
     },
     Mongolia: {
         polygon: {
-            internal: '75911c66-869b-4eb5-91b1-4844100d633f',
+            type: 'internal',
+            datasetId: '75911c66-869b-4eb5-91b1-4844100d633f',
         },
         raster: {
-            internal: '91df811c-41ee-43a9-84c1-b236cbeaf958',
+            type: 'internal',
+            datasetId: '91df811c-41ee-43a9-84c1-b236cbeaf958',
         },
     },
     Russia: {
         polygon: {
-            internal: '8c49967e-106c-4a09-9095-493aaaa70781',
+            type: 'internal',
+            datasetId: '8c49967e-106c-4a09-9095-493aaaa70781',
         },
         raster: {
-            internal: '3969c500-159b-4c58-bf7d-b21789630d3c',
+            type: 'internal',
+            datasetId: '3969c500-159b-4c58-bf7d-b21789630d3c',
         },
     },
     Czechia: {
         polygon: {
-            internal: 'bac1b4c4-d998-40ac-90cc-b0bc82c4b7cd',
+            type: 'internal',
+            datasetId: 'bac1b4c4-d998-40ac-90cc-b0bc82c4b7cd',
         },
         raster: {
-            internal: '15f0ff8d-14be-4880-aa7a-31bed3b5dc95',
+            type: 'internal',
+            datasetId: '15f0ff8d-14be-4880-aa7a-31bed3b5dc95',
         },
     },
     Germany: {
         polygon: {
-            internal: '08633448-f20e-419a-9aff-7a953a91c368',
+            type: 'internal',
+            datasetId: '08633448-f20e-419a-9aff-7a953a91c368',
         },
         raster: {
-            internal: '8652ded5-da0c-45c6-ad9d-7e046bd0e00f',
+            type: 'internal',
+            datasetId: '8652ded5-da0c-45c6-ad9d-7e046bd0e00f',
         },
     },
     Estonia: {
         polygon: {
-            internal: 'e2c625a3-262c-4950-8dc3-c15b4e09b9f1',
+            type: 'internal',
+            datasetId: 'e2c625a3-262c-4950-8dc3-c15b4e09b9f1',
         },
         raster: {
-            internal: '1584cc60-e029-4f31-9cea-f9e5d53d2fde',
+            type: 'internal',
+            datasetId: '1584cc60-e029-4f31-9cea-f9e5d53d2fde',
         },
     },
     Latvia: {
         polygon: {
-            internal: '780ef6af-9d28-4e0f-a25f-7aca8a774e4e',
+            type: 'internal',
+            datasetId: '780ef6af-9d28-4e0f-a25f-7aca8a774e4e',
         },
         raster: {
-            internal: '433192d8-5e83-4363-b8a4-f2ccaace4a37',
+            type: 'internal',
+            datasetId: '433192d8-5e83-4363-b8a4-f2ccaace4a37',
         },
     },
     Sweden: {
         polygon: {
-            internal: '57f47ccd-15e9-45d0-bf5b-01572300adfa',
+            type: 'internal',
+            datasetId: '57f47ccd-15e9-45d0-bf5b-01572300adfa',
         },
         raster: {
-            internal: '347e1953-6f73-42d5-95eb-eb260394f0bd',
+            type: 'internal',
+            datasetId: '347e1953-6f73-42d5-95eb-eb260394f0bd',
         },
     },
     Finland: {
         polygon: {
-            internal: 'c307ac1c-dbbf-418b-a4e8-68bb90362740',
+            type: 'internal',
+            datasetId: 'c307ac1c-dbbf-418b-a4e8-68bb90362740',
         },
         raster: {
-            internal: 'a487bde5-fd4b-4cdd-9fda-ea65e1be0f5d',
+            type: 'internal',
+            datasetId: 'a487bde5-fd4b-4cdd-9fda-ea65e1be0f5d',
         },
     },
     Vietnam: {
         polygon: {
-            internal: 'c61b9f7d-6ce0-413b-8b2d-ce25d9e96ba1',
+            type: 'internal',
+            datasetId: 'c61b9f7d-6ce0-413b-8b2d-ce25d9e96ba1',
         },
         raster: {
-            internal: '89f71de0-97e5-474f-8689-b699213f2b39',
+            type: 'internal',
+            datasetId: '89f71de0-97e5-474f-8689-b699213f2b39',
         },
     },
     Cambodia: {
         polygon: {
-            internal: '9ce27a4e-3be1-4e01-9ad1-f7311f1f6f3f',
+            type: 'internal',
+            datasetId: '9ce27a4e-3be1-4e01-9ad1-f7311f1f6f3f',
         },
         raster: {
-            internal: 'dc659f71-dbf2-4172-82c3-c181b84a8704',
+            type: 'internal',
+            datasetId: 'dc659f71-dbf2-4172-82c3-c181b84a8704',
         },
     },
     Luxembourg: {
         polygon: {
-            internal: '53a0c37a-0afa-45c5-be4d-04af9a88c2dc',
+            type: 'internal',
+            datasetId: '53a0c37a-0afa-45c5-be4d-04af9a88c2dc',
         },
         raster: {
-            internal: '046c7476-019a-4058-8f96-2dd9a9d3c8b7',
+            type: 'internal',
+            datasetId: '046c7476-019a-4058-8f96-2dd9a9d3c8b7',
         },
     },
     'United Arab Emirates': {
         polygon: {
-            internal: '944d12b6-902d-41ec-ac54-af6b4180c540',
+            type: 'internal',
+            datasetId: '944d12b6-902d-41ec-ac54-af6b4180c540',
         },
         raster: {
-            internal: '4cebec86-77ef-4dee-a30e-eedb6efce740',
+            type: 'internal',
+            datasetId: '4cebec86-77ef-4dee-a30e-eedb6efce740',
         },
     },
     Belgium: {
         polygon: {
-            internal: 'a5f3ae3b-4905-4c81-87f8-5310c2eb5171',
+            type: 'internal',
+            datasetId: 'a5f3ae3b-4905-4c81-87f8-5310c2eb5171',
         },
         raster: {
-            internal: 'b042603f-22de-4542-9af6-0604e95074ce',
+            type: 'internal',
+            datasetId: 'b042603f-22de-4542-9af6-0604e95074ce',
         },
     },
     Georgia: {
         polygon: {
-            internal: '7c3a1b23-2682-4706-9e34-af07033c0f0d',
+            type: 'internal',
+            datasetId: '7c3a1b23-2682-4706-9e34-af07033c0f0d',
         },
         raster: {
-            internal: '5b65e846-caf0-4016-a151-bcb2d85ae46c',
+            type: 'internal',
+            datasetId: '5b65e846-caf0-4016-a151-bcb2d85ae46c',
         },
     },
     Macedonia: {
         polygon: {
-            internal: '1cf4280a-9f44-4a3d-be2f-ee939020fc03',
+            type: 'internal',
+            datasetId: '1cf4280a-9f44-4a3d-be2f-ee939020fc03',
         },
         raster: {
-            internal: '9748b32a-8995-4c5e-a853-cd5c77c84a2b',
+            type: 'internal',
+            datasetId: '9748b32a-8995-4c5e-a853-cd5c77c84a2b',
         },
     },
     Albania: {
         polygon: {
-            internal: '19ad16dc-dd34-4880-8ae8-e6b3fb1a30e3',
+            type: 'internal',
+            datasetId: '19ad16dc-dd34-4880-8ae8-e6b3fb1a30e3',
         },
         raster: {
-            internal: 'f3ebf21a-61b5-4cec-a4c5-aec84d9b4f9d',
+            type: 'internal',
+            datasetId: 'f3ebf21a-61b5-4cec-a4c5-aec84d9b4f9d',
         },
     },
     Azerbaijan: {
         polygon: {
-            internal: 'f0b5edcf-3bf8-4c41-a530-ebd7cff7982d',
+            type: 'internal',
+            datasetId: 'f0b5edcf-3bf8-4c41-a530-ebd7cff7982d',
         },
         raster: {
-            internal: '06fc0553-9277-40aa-9fc1-b9a9a585ebf6',
+            type: 'internal',
+            datasetId: '06fc0553-9277-40aa-9fc1-b9a9a585ebf6',
         },
     },
     Kosovo: {
         polygon: {
-            internal: '16b8c63e-8676-4057-969e-6237c58c6aeb',
+            type: 'internal',
+            datasetId: '16b8c63e-8676-4057-969e-6237c58c6aeb',
         },
         raster: {
-            internal: '47f30479-bf6c-4995-b619-4d5bf063512a',
+            type: 'internal',
+            datasetId: '47f30479-bf6c-4995-b619-4d5bf063512a',
         },
     },
     Turkey: {
         polygon: {
-            internal: '4f06ea1a-58fe-46ff-9095-6c411e054312',
+            type: 'internal',
+            datasetId: '4f06ea1a-58fe-46ff-9095-6c411e054312',
         },
         raster: {
-            internal: '7bda0ed6-b620-4258-ad45-cf6277a384bc',
+            type: 'internal',
+            datasetId: '7bda0ed6-b620-4258-ad45-cf6277a384bc',
         },
     },
     Spain: {
         polygon: {
-            internal: '45b4badd-987b-4a48-8b06-df54b1275a02',
+            type: 'internal',
+            datasetId: '45b4badd-987b-4a48-8b06-df54b1275a02',
         },
         raster: {
-            internal: '25e3afd6-c2b7-410e-a2c1-e2a07478044e',
+            type: 'internal',
+            datasetId: '25e3afd6-c2b7-410e-a2c1-e2a07478044e',
         },
     },
     Laos: {
         polygon: {
-            internal: '3eb8ad03-3ddb-4ed2-800a-84c6591ad9ef',
+            type: 'internal',
+            datasetId: '3eb8ad03-3ddb-4ed2-800a-84c6591ad9ef',
         },
         raster: {
-            internal: '056b22fc-7c55-44d3-96d5-a7fe3d31f649',
+            type: 'internal',
+            datasetId: '056b22fc-7c55-44d3-96d5-a7fe3d31f649',
         },
     },
     Kyrgyzstan: {
         polygon: {
-            internal: '004fe12d-c31e-420f-b2fd-648646ff2d00',
+            type: 'internal',
+            datasetId: '004fe12d-c31e-420f-b2fd-648646ff2d00',
         },
         raster: {
-            internal: '23235be5-0e5e-400f-9e38-984d8dda8f70',
+            type: 'internal',
+            datasetId: '23235be5-0e5e-400f-9e38-984d8dda8f70',
         },
     },
     Armenia: {
         polygon: {
-            internal: '36b97780-f30d-4c12-886d-c1ed3d4ab3e8',
+            type: 'internal',
+            datasetId: '36b97780-f30d-4c12-886d-c1ed3d4ab3e8',
         },
         raster: {
-            internal: 'a7dde7e5-8ab4-4bf7-9254-6de13b31ba84',
+            type: 'internal',
+            datasetId: 'a7dde7e5-8ab4-4bf7-9254-6de13b31ba84',
         },
     },
     Denmark: {
         polygon: {
-            internal: 'dab29c31-c0b5-4eac-a918-0696f50f472a',
+            type: 'internal',
+            datasetId: 'dab29c31-c0b5-4eac-a918-0696f50f472a',
         },
         raster: {
-            internal: 'd548bb3a-46b2-4606-9f84-be1340d66dd5',
+            type: 'internal',
+            datasetId: 'd548bb3a-46b2-4606-9f84-be1340d66dd5',
         },
     },
     Libya: {
         polygon: {
-            internal: 'b75d0102-0289-4781-a300-5dd64794321b',
+            type: 'internal',
+            datasetId: 'b75d0102-0289-4781-a300-5dd64794321b',
         },
         raster: {
-            internal: '9972fe1d-414b-426f-b85a-e1cb6292ce3b',
+            type: 'internal',
+            datasetId: '9972fe1d-414b-426f-b85a-e1cb6292ce3b',
         },
     },
     Tunisia: {
         polygon: {
-            internal: 'a89eaaa3-344e-4ef1-aba9-5a094c7ace90',
+            type: 'internal',
+            datasetId: 'a89eaaa3-344e-4ef1-aba9-5a094c7ace90',
         },
         raster: {
-            internal: '93b51f89-8185-4c9a-ad2f-bbab24955821',
+            type: 'internal',
+            datasetId: '93b51f89-8185-4c9a-ad2f-bbab24955821',
         },
     },
     Romania: {
         polygon: {
-            internal: '298e73d8-ba74-47ae-be26-b36811fe4f23',
+            type: 'internal',
+            datasetId: '298e73d8-ba74-47ae-be26-b36811fe4f23',
         },
         raster: {
-            internal: '3c3f5681-7eea-4964-9e75-65547fff9146',
+            type: 'internal',
+            datasetId: '3c3f5681-7eea-4964-9e75-65547fff9146',
         },
     },
     Hungary: {
         polygon: {
-            internal: '5e63b58b-485a-4d5e-bb32-719ad7d160d4',
+            type: 'internal',
+            datasetId: '5e63b58b-485a-4d5e-bb32-719ad7d160d4',
         },
         raster: {
-            internal: 'c3b34df6-fcf5-4f7c-9a64-8460fb7ab598',
+            type: 'internal',
+            datasetId: 'c3b34df6-fcf5-4f7c-9a64-8460fb7ab598',
         },
     },
     Slovakia: {
         polygon: {
-            internal: 'f957b8a9-038e-4171-8d69-45de022b7e1f',
+            type: 'internal',
+            datasetId: 'f957b8a9-038e-4171-8d69-45de022b7e1f',
         },
         raster: {
-            internal: 'b356d45e-6ca9-4df9-8189-8fe9747602a0',
+            type: 'internal',
+            datasetId: 'b356d45e-6ca9-4df9-8189-8fe9747602a0',
         },
     },
     Poland: {
         polygon: {
-            internal: 'b52f91bf-dcaf-40e8-a458-5f44443bbf79',
+            type: 'internal',
+            datasetId: 'b52f91bf-dcaf-40e8-a458-5f44443bbf79',
         },
         raster: {
-            internal: 'f05abdd6-7583-4d69-b495-942e77dcaafb',
+            type: 'internal',
+            datasetId: 'f05abdd6-7583-4d69-b495-942e77dcaafb',
         },
     },
     Ireland: {
         polygon: {
-            internal: '85ae66c2-60a9-4d46-a99c-8da02e2c2c87',
+            type: 'internal',
+            datasetId: '85ae66c2-60a9-4d46-a99c-8da02e2c2c87',
         },
         raster: {
-            internal: '612ac903-9e5e-4c53-ba21-2dde766c58b7',
+            type: 'internal',
+            datasetId: '612ac903-9e5e-4c53-ba21-2dde766c58b7',
         },
     },
     'United Kingdom': {
         polygon: {
-            internal: '87b6167c-7de9-4789-8427-4b941cc12527',
+            type: 'internal',
+            datasetId: '87b6167c-7de9-4789-8427-4b941cc12527',
         },
         raster: {
-            internal: '1244ce4c-6d90-4779-85a0-131beac114d7',
+            type: 'internal',
+            datasetId: '1244ce4c-6d90-4779-85a0-131beac114d7',
         },
     },
     Greece: {
         polygon: {
-            internal: 'e59b40f8-2b31-4e91-b69e-9495af45d36c',
+            type: 'internal',
+            datasetId: 'e59b40f8-2b31-4e91-b69e-9495af45d36c',
         },
         raster: {
-            internal: 'c6f060ff-3ff4-417e-a394-7f94c47775b4',
+            type: 'internal',
+            datasetId: 'c6f060ff-3ff4-417e-a394-7f94c47775b4',
         },
     },
     Zambia: {
         polygon: {
-            internal: '60f26451-44ea-4e9e-9d68-653c92c017a2',
+            type: 'internal',
+            datasetId: '60f26451-44ea-4e9e-9d68-653c92c017a2',
         },
         raster: {
-            internal: '5db70d75-ac21-4b1b-86fb-00e25664e1f7',
+            type: 'internal',
+            datasetId: '5db70d75-ac21-4b1b-86fb-00e25664e1f7',
         },
     },
     'Sierra Leone': {
         polygon: {
-            internal: '4c678eee-52c6-4297-842f-fb518ea54c32',
+            type: 'internal',
+            datasetId: '4c678eee-52c6-4297-842f-fb518ea54c32',
         },
         raster: {
-            internal: '066c900b-1dea-4142-8e62-f0309110151c',
+            type: 'internal',
+            datasetId: '066c900b-1dea-4142-8e62-f0309110151c',
         },
     },
     Guinea: {
         polygon: {
-            internal: 'ca0e3ce7-1ff2-4b06-b301-88933e7a00f0',
+            type: 'internal',
+            datasetId: 'ca0e3ce7-1ff2-4b06-b301-88933e7a00f0',
         },
         raster: {
-            internal: '35ccb0e1-78dc-4b7e-87ef-a13089dea2ce',
+            type: 'internal',
+            datasetId: '35ccb0e1-78dc-4b7e-87ef-a13089dea2ce',
         },
     },
     Liberia: {
         polygon: {
-            internal: 'b2d92254-6186-4b6e-83f7-a5cf8809854e',
+            type: 'internal',
+            datasetId: 'b2d92254-6186-4b6e-83f7-a5cf8809854e',
         },
         raster: {
-            internal: '64b8c0a4-ff6e-487f-ae3b-4c83589d3004',
+            type: 'internal',
+            datasetId: '64b8c0a4-ff6e-487f-ae3b-4c83589d3004',
         },
     },
     'Central African Rep.': {
         polygon: {
-            internal: '2b335224-25bd-4f03-a112-91657da63c84',
+            type: 'internal',
+            datasetId: '2b335224-25bd-4f03-a112-91657da63c84',
         },
         raster: {
-            internal: 'e13e6185-631b-477f-9a02-119a9858ba52',
+            type: 'internal',
+            datasetId: 'e13e6185-631b-477f-9a02-119a9858ba52',
         },
     },
     Sudan: {
         polygon: {
-            internal: 'd5ff9543-04cc-4dc4-8886-a49692a20e26',
+            type: 'internal',
+            datasetId: 'd5ff9543-04cc-4dc4-8886-a49692a20e26',
         },
         raster: {
-            internal: '75588efd-a298-45bf-be27-46def5618e64',
+            type: 'internal',
+            datasetId: '75588efd-a298-45bf-be27-46def5618e64',
         },
     },
     Djibouti: {
         polygon: {
-            internal: 'a8f47d39-a178-4c6c-8c5d-59443b3c3ddf',
+            type: 'internal',
+            datasetId: 'a8f47d39-a178-4c6c-8c5d-59443b3c3ddf',
         },
         raster: {
-            internal: '202865fc-1a0a-47c6-ad76-de669bc89b6b',
+            type: 'internal',
+            datasetId: '202865fc-1a0a-47c6-ad76-de669bc89b6b',
         },
     },
     Eritrea: {
         polygon: {
-            internal: 'b98b86ac-9916-49dc-a811-284fa9977e80',
+            type: 'internal',
+            datasetId: 'b98b86ac-9916-49dc-a811-284fa9977e80',
         },
         raster: {
-            internal: '9e4770e5-73f2-4137-8fa7-61fe4ac8eb65',
+            type: 'internal',
+            datasetId: '9e4770e5-73f2-4137-8fa7-61fe4ac8eb65',
         },
     },
     Austria: {
         polygon: {
-            internal: '32ef4f91-edb5-42bf-ace7-2a1b2500eceb',
+            type: 'internal',
+            datasetId: '32ef4f91-edb5-42bf-ace7-2a1b2500eceb',
         },
         raster: {
-            internal: '9b7670c6-228b-42fd-a58a-bfc6a74be36b',
+            type: 'internal',
+            datasetId: '9b7670c6-228b-42fd-a58a-bfc6a74be36b',
         },
     },
     Iraq: {
         polygon: {
-            internal: 'db3f32de-3733-4510-8a59-0f99aca9e0f1',
+            type: 'internal',
+            datasetId: 'db3f32de-3733-4510-8a59-0f99aca9e0f1',
         },
         raster: {
-            internal: 'fe9d069f-38dc-4f2e-8cbe-72ef34f103be',
+            type: 'internal',
+            datasetId: 'fe9d069f-38dc-4f2e-8cbe-72ef34f103be',
         },
     },
     Italy: {
         polygon: {
-            internal: '90ab7634-f142-4628-bfb3-aacb3e7c71ab',
+            type: 'internal',
+            datasetId: '90ab7634-f142-4628-bfb3-aacb3e7c71ab',
         },
         raster: {
-            internal: '7349df92-1ac8-4804-b42c-f77f54a69922',
+            type: 'internal',
+            datasetId: '7349df92-1ac8-4804-b42c-f77f54a69922',
         },
     },
     Switzerland: {
         polygon: {
-            internal: 'e8429509-3be5-46bf-be03-2914e0891900',
+            type: 'internal',
+            datasetId: 'e8429509-3be5-46bf-be03-2914e0891900',
         },
         raster: {
-            internal: 'b0ee5e6e-f750-444f-ab8a-cbff64bc1c28',
+            type: 'internal',
+            datasetId: 'b0ee5e6e-f750-444f-ab8a-cbff64bc1c28',
         },
     },
     Iran: {
         polygon: {
-            internal: 'aaf26b7a-0f4c-4747-99c7-458c05849759',
+            type: 'internal',
+            datasetId: 'aaf26b7a-0f4c-4747-99c7-458c05849759',
         },
         raster: {
-            internal: '992e28a1-d58d-440a-9261-0f3bac1767c1',
+            type: 'internal',
+            datasetId: '992e28a1-d58d-440a-9261-0f3bac1767c1',
         },
     },
     Netherlands: {
         polygon: {
-            internal: '9712b710-f86e-4871-abce-e6c28ef797e6',
+            type: 'internal',
+            datasetId: '9712b710-f86e-4871-abce-e6c28ef797e6',
         },
         raster: {
-            internal: 'abcd1cc6-77c4-4a6d-9550-adbd50b1b5b6',
+            type: 'internal',
+            datasetId: 'abcd1cc6-77c4-4a6d-9550-adbd50b1b5b6',
         },
     },
     Liechtenstein: {
         polygon: {
-            internal: '5000b5e0-6f90-4cce-bf0f-dba177e82ff4',
+            type: 'internal',
+            datasetId: '5000b5e0-6f90-4cce-bf0f-dba177e82ff4',
         },
         raster: {
-            internal: 'd8196f7a-cbdb-48bf-81a9-99f9bdaffd6d',
+            type: 'internal',
+            datasetId: 'd8196f7a-cbdb-48bf-81a9-99f9bdaffd6d',
         },
     },
     'C\u00f4te d"Ivoire': {
         polygon: {
-            internal: '93779b62-8a1b-4188-b9f6-cf10dfdef8e6',
+            type: 'internal',
+            datasetId: '93779b62-8a1b-4188-b9f6-cf10dfdef8e6',
         },
         raster: {
-            internal: 'c90395ff-38ef-40f6-a655-bd367e1bb40f',
+            type: 'internal',
+            datasetId: 'c90395ff-38ef-40f6-a655-bd367e1bb40f',
         },
     },
     Serbia: {
         polygon: {
-            internal: '6147a5ed-0c00-4c73-8a54-306ee44fa45a',
+            type: 'internal',
+            datasetId: '6147a5ed-0c00-4c73-8a54-306ee44fa45a',
         },
         raster: {
-            internal: '522ae468-43d3-465f-8753-352c510761de',
+            type: 'internal',
+            datasetId: '522ae468-43d3-465f-8753-352c510761de',
         },
     },
     Mali: {
         polygon: {
-            internal: '24b5610a-25ec-4945-8fe9-deafd1550611',
+            type: 'internal',
+            datasetId: '24b5610a-25ec-4945-8fe9-deafd1550611',
         },
         raster: {
-            internal: '64d8ee55-13aa-4b96-8085-66195b679314',
+            type: 'internal',
+            datasetId: '64d8ee55-13aa-4b96-8085-66195b679314',
         },
     },
     Senegal: {
         polygon: {
-            internal: '306bf0a0-179b-487e-b325-de82b1a44106',
+            type: 'internal',
+            datasetId: '306bf0a0-179b-487e-b325-de82b1a44106',
         },
         raster: {
-            internal: '7155d4b7-d337-4bbd-9d16-16e10ee01fe9',
+            type: 'internal',
+            datasetId: '7155d4b7-d337-4bbd-9d16-16e10ee01fe9',
         },
     },
     Nigeria: {
         polygon: {
-            internal: '867b2077-c46e-46fd-b2bc-4d0cb40f690e',
+            type: 'internal',
+            datasetId: '867b2077-c46e-46fd-b2bc-4d0cb40f690e',
         },
         raster: {
-            internal: 'a858d2ff-f09a-4cb9-8657-bdf8a014da3a',
+            type: 'internal',
+            datasetId: 'a858d2ff-f09a-4cb9-8657-bdf8a014da3a',
         },
     },
     Benin: {
         polygon: {
-            internal: 'c7a5fa62-2f23-47dd-ba43-bcf70603b828',
+            type: 'internal',
+            datasetId: 'c7a5fa62-2f23-47dd-ba43-bcf70603b828',
         },
         raster: {
-            internal: '24c2fd0c-e8bf-4dc9-9fa5-2716811e5da6',
+            type: 'internal',
+            datasetId: '24c2fd0c-e8bf-4dc9-9fa5-2716811e5da6',
         },
     },
     Angola: {
         polygon: {
-            internal: '580c2224-0f2b-4982-b2f6-edfcda8d98eb',
+            type: 'internal',
+            datasetId: '580c2224-0f2b-4982-b2f6-edfcda8d98eb',
         },
         raster: {
-            internal: '6183d245-0aa3-4fd9-b6bb-4ea42a1dd5a8',
+            type: 'internal',
+            datasetId: '6183d245-0aa3-4fd9-b6bb-4ea42a1dd5a8',
         },
     },
     Croatia: {
         polygon: {
-            internal: '3c974a96-b87b-4e49-b136-fd902f1c3e41',
+            type: 'internal',
+            datasetId: '3c974a96-b87b-4e49-b136-fd902f1c3e41',
         },
         raster: {
-            internal: '5c966147-52f0-4a08-b08a-80e4699861b7',
+            type: 'internal',
+            datasetId: '5c966147-52f0-4a08-b08a-80e4699861b7',
         },
     },
     Slovenia: {
         polygon: {
-            internal: '89d3d8f8-35d3-4871-97d3-9225fe8c3777',
+            type: 'internal',
+            datasetId: '89d3d8f8-35d3-4871-97d3-9225fe8c3777',
         },
         raster: {
-            internal: '9b49fb3d-375f-4872-996f-c0cd5fbe5ca0',
+            type: 'internal',
+            datasetId: '9b49fb3d-375f-4872-996f-c0cd5fbe5ca0',
         },
     },
     Qatar: {
         polygon: {
-            internal: '2ecf08f2-7fb3-4d14-a124-e5dfc02a0fde',
+            type: 'internal',
+            datasetId: '2ecf08f2-7fb3-4d14-a124-e5dfc02a0fde',
         },
         raster: {
-            internal: 'c2408a06-226b-4aea-8847-709e0329ca8a',
+            type: 'internal',
+            datasetId: 'c2408a06-226b-4aea-8847-709e0329ca8a',
         },
     },
     'Saudi Arabia': {
         polygon: {
-            internal: '2c288952-6b99-48e6-8b66-196fa768f240',
+            type: 'internal',
+            datasetId: '2c288952-6b99-48e6-8b66-196fa768f240',
         },
         raster: {
-            internal: 'cad0fafe-04e6-4772-b90d-056248529a8d',
+            type: 'internal',
+            datasetId: 'cad0fafe-04e6-4772-b90d-056248529a8d',
         },
     },
     Botswana: {
         polygon: {
-            internal: '33cfa33d-cc88-46b1-99a9-078c3e4c162f',
+            type: 'internal',
+            datasetId: '33cfa33d-cc88-46b1-99a9-078c3e4c162f',
         },
         raster: {
-            internal: '63e09bc8-bc14-494e-b798-71a4c00bea56',
+            type: 'internal',
+            datasetId: '63e09bc8-bc14-494e-b798-71a4c00bea56',
         },
     },
     Zimbabwe: {
         polygon: {
-            internal: '55815a5e-c0f0-4946-a1a1-d6ff23f1514f',
+            type: 'internal',
+            datasetId: '55815a5e-c0f0-4946-a1a1-d6ff23f1514f',
         },
         raster: {
-            internal: 'b0eec7c3-74a2-45db-b712-5d78e53a8e52',
+            type: 'internal',
+            datasetId: 'b0eec7c3-74a2-45db-b712-5d78e53a8e52',
         },
     },
     Bulgaria: {
         polygon: {
-            internal: '114badec-00c0-4847-9fff-224358fa0ce1',
+            type: 'internal',
+            datasetId: '114badec-00c0-4847-9fff-224358fa0ce1',
         },
         raster: {
-            internal: '0c6e33fd-da7c-493f-8add-8b0912f95d83',
+            type: 'internal',
+            datasetId: '0c6e33fd-da7c-493f-8add-8b0912f95d83',
         },
     },
     Thailand: {
         polygon: {
-            internal: 'd3309929-1cda-418d-89fd-140fe62070ba',
+            type: 'internal',
+            datasetId: 'd3309929-1cda-418d-89fd-140fe62070ba',
         },
         raster: {
-            internal: '4ecb7900-eeec-4fc9-abba-a204617aac13',
+            type: 'internal',
+            datasetId: '4ecb7900-eeec-4fc9-abba-a204617aac13',
         },
     },
     'San Marino': {
         polygon: {
-            internal: '7847023a-e4b1-407b-9992-2ecba4469eae',
+            type: 'internal',
+            datasetId: '7847023a-e4b1-407b-9992-2ecba4469eae',
         },
         raster: {
-            internal: 'e45d777b-4131-44d9-91ec-a0150a38bd3e',
+            type: 'internal',
+            datasetId: 'e45d777b-4131-44d9-91ec-a0150a38bd3e',
         },
     },
     Haiti: {
         polygon: {
-            internal: 'afd01678-4834-4e40-b474-07350d71a60c',
+            type: 'internal',
+            datasetId: 'afd01678-4834-4e40-b474-07350d71a60c',
         },
         raster: {
-            internal: '3f3aa536-848a-4614-966b-8fddd1324595',
+            type: 'internal',
+            datasetId: '3f3aa536-848a-4614-966b-8fddd1324595',
         },
     },
     'Dominican Rep.': {
         polygon: {
-            internal: 'd90c2c6e-0098-4465-8eda-80c7e64eb4a3',
+            type: 'internal',
+            datasetId: 'd90c2c6e-0098-4465-8eda-80c7e64eb4a3',
         },
         raster: {
-            internal: '938d32aa-1432-4c59-9980-d086fefbf547',
+            type: 'internal',
+            datasetId: '938d32aa-1432-4c59-9980-d086fefbf547',
         },
     },
     Chad: {
         polygon: {
-            internal: 'b1acf710-a18e-4879-8ce0-8827d434e269',
+            type: 'internal',
+            datasetId: 'b1acf710-a18e-4879-8ce0-8827d434e269',
         },
         raster: {
-            internal: '78657ac5-68bd-446a-824b-18545428fedf',
+            type: 'internal',
+            datasetId: '78657ac5-68bd-446a-824b-18545428fedf',
         },
     },
     Kuwait: {
         polygon: {
-            internal: '855165e7-8ade-4f72-ba9f-393cde8db142',
+            type: 'internal',
+            datasetId: '855165e7-8ade-4f72-ba9f-393cde8db142',
         },
         raster: {
-            internal: 'ba094ecd-8e5f-42a1-941a-d7d56767fbdc',
+            type: 'internal',
+            datasetId: 'ba094ecd-8e5f-42a1-941a-d7d56767fbdc',
         },
     },
     'El Salvador': {
         polygon: {
-            internal: 'f1c73370-bd06-4ae4-8e23-953754915bda',
+            type: 'internal',
+            datasetId: 'f1c73370-bd06-4ae4-8e23-953754915bda',
         },
         raster: {
-            internal: '99b75e37-3626-4cd1-8dc3-1eb492203765',
+            type: 'internal',
+            datasetId: '99b75e37-3626-4cd1-8dc3-1eb492203765',
         },
     },
     Guatemala: {
         polygon: {
-            internal: '3a0176d8-8354-4e6e-9751-3d8121beab61',
+            type: 'internal',
+            datasetId: '3a0176d8-8354-4e6e-9751-3d8121beab61',
         },
         raster: {
-            internal: 'cc928c20-95c4-44ef-8ce9-fdef30341af7',
+            type: 'internal',
+            datasetId: 'cc928c20-95c4-44ef-8ce9-fdef30341af7',
         },
     },
     'Timor-Leste': {
         polygon: {
-            internal: 'cb28bf09-e563-4a8f-9f3e-bc2c09180f2f',
+            type: 'internal',
+            datasetId: 'cb28bf09-e563-4a8f-9f3e-bc2c09180f2f',
         },
         raster: {
-            internal: '5e450c70-2ae1-4085-9be7-2d081b2391c6',
+            type: 'internal',
+            datasetId: '5e450c70-2ae1-4085-9be7-2d081b2391c6',
         },
     },
     Brunei: {
         polygon: {
-            internal: '1df6009d-bba6-4f21-a07d-b375037906ba',
+            type: 'internal',
+            datasetId: '1df6009d-bba6-4f21-a07d-b375037906ba',
         },
         raster: {
-            internal: 'f519ed0f-9ae8-4621-8c39-5519c0e45a73',
+            type: 'internal',
+            datasetId: 'f519ed0f-9ae8-4621-8c39-5519c0e45a73',
         },
     },
     Monaco: {
         polygon: {
-            internal: '38d6dedc-426e-422a-8def-1890eb3ffa9a',
+            type: 'internal',
+            datasetId: '38d6dedc-426e-422a-8def-1890eb3ffa9a',
         },
         raster: {
-            internal: '6f8b5e29-2ce3-4ddf-9aa2-e390415337e2',
+            type: 'internal',
+            datasetId: '6f8b5e29-2ce3-4ddf-9aa2-e390415337e2',
         },
     },
     Algeria: {
         polygon: {
-            internal: '6924e320-89e6-40fa-8c6b-01fb09d137e9',
+            type: 'internal',
+            datasetId: '6924e320-89e6-40fa-8c6b-01fb09d137e9',
         },
         raster: {
-            internal: '18915088-5eb8-418e-971d-539741dcc31a',
+            type: 'internal',
+            datasetId: '18915088-5eb8-418e-971d-539741dcc31a',
         },
     },
     Mozambique: {
         polygon: {
-            internal: 'f636ebe1-4806-46ea-a94c-3f0b615da4b6',
+            type: 'internal',
+            datasetId: 'f636ebe1-4806-46ea-a94c-3f0b615da4b6',
         },
         raster: {
-            internal: '811dabe4-6122-46b4-8b96-96510d0b3dda',
+            type: 'internal',
+            datasetId: '811dabe4-6122-46b4-8b96-96510d0b3dda',
         },
     },
     eSwatini: {
         polygon: {
-            internal: '181da035-fe56-4f5e-b0ed-328e4d8ca58f',
+            type: 'internal',
+            datasetId: '181da035-fe56-4f5e-b0ed-328e4d8ca58f',
         },
         raster: {
-            internal: '2027a3cf-32d7-40ae-974d-391858af8b38',
+            type: 'internal',
+            datasetId: '2027a3cf-32d7-40ae-974d-391858af8b38',
         },
     },
     Burundi: {
         polygon: {
-            internal: 'a7bbd67c-b709-4add-971a-819c0ad76173',
+            type: 'internal',
+            datasetId: 'a7bbd67c-b709-4add-971a-819c0ad76173',
         },
         raster: {
-            internal: '747a4b3e-0d93-4a26-a966-33e0da37992f',
+            type: 'internal',
+            datasetId: '747a4b3e-0d93-4a26-a966-33e0da37992f',
         },
     },
     Rwanda: {
         polygon: {
-            internal: '247bc582-d6fc-49c9-ae56-c43b00eced8b',
+            type: 'internal',
+            datasetId: '247bc582-d6fc-49c9-ae56-c43b00eced8b',
         },
         raster: {
-            internal: '68f905f9-01d8-4cf8-9597-66b632cb395f',
+            type: 'internal',
+            datasetId: '68f905f9-01d8-4cf8-9597-66b632cb395f',
         },
     },
     Myanmar: {
         polygon: {
-            internal: 'e1335d80-33e5-4a71-affd-cb812294ba0b',
+            type: 'internal',
+            datasetId: 'e1335d80-33e5-4a71-affd-cb812294ba0b',
         },
         raster: {
-            internal: 'cf0553f9-f14f-45b0-a632-4aa16d48f6ec',
+            type: 'internal',
+            datasetId: 'cf0553f9-f14f-45b0-a632-4aa16d48f6ec',
         },
     },
     Bangladesh: {
         polygon: {
-            internal: 'c4e56e5f-2e5b-43fd-9732-ff93cdf79dc7',
+            type: 'internal',
+            datasetId: 'c4e56e5f-2e5b-43fd-9732-ff93cdf79dc7',
         },
         raster: {
-            internal: 'a3c21af5-9087-42d0-b3df-8c88b8f39f1c',
+            type: 'internal',
+            datasetId: 'a3c21af5-9087-42d0-b3df-8c88b8f39f1c',
         },
     },
     Andorra: {
         polygon: {
-            internal: '688a3d13-8048-4db0-b5ed-02cd53295234',
+            type: 'internal',
+            datasetId: '688a3d13-8048-4db0-b5ed-02cd53295234',
         },
         raster: {
-            internal: '54fb2c2b-0c55-4bd7-9648-927d03f123bf',
+            type: 'internal',
+            datasetId: '54fb2c2b-0c55-4bd7-9648-927d03f123bf',
         },
     },
     Afghanistan: {
         polygon: {
-            internal: '0dbe25e5-3e1c-41f5-8269-ed6349acac30',
+            type: 'internal',
+            datasetId: '0dbe25e5-3e1c-41f5-8269-ed6349acac30',
         },
         raster: {
-            internal: '25506faa-92f5-4db6-8747-7132cb5d7098',
+            type: 'internal',
+            datasetId: '25506faa-92f5-4db6-8747-7132cb5d7098',
         },
     },
     Montenegro: {
         polygon: {
-            internal: '1ef240a2-e90d-4563-9f32-4444d1551f05',
+            type: 'internal',
+            datasetId: '1ef240a2-e90d-4563-9f32-4444d1551f05',
         },
         raster: {
-            internal: '8bb46993-af9b-47aa-8f9f-7153271d8ca1',
+            type: 'internal',
+            datasetId: '8bb46993-af9b-47aa-8f9f-7153271d8ca1',
         },
     },
     'Bosnia and Herz.': {
         polygon: {
-            internal: '3ba8f346-4db9-4742-9479-8a7b800440b6',
+            type: 'internal',
+            datasetId: '3ba8f346-4db9-4742-9479-8a7b800440b6',
         },
         raster: {
-            internal: 'eb618e84-1b0e-4e39-a62a-dd386f3a5084',
+            type: 'internal',
+            datasetId: 'eb618e84-1b0e-4e39-a62a-dd386f3a5084',
         },
     },
     Uganda: {
         polygon: {
-            internal: '1c7b150d-7a30-436b-af50-b0aa05057bbc',
+            type: 'internal',
+            datasetId: '1c7b150d-7a30-436b-af50-b0aa05057bbc',
         },
         raster: {
-            internal: '8f461fdc-183e-404e-bff9-d55fd51c21d9',
+            type: 'internal',
+            datasetId: '8f461fdc-183e-404e-bff9-d55fd51c21d9',
         },
     },
     Cuba: {
         polygon: {
-            internal: '6e01bb56-1ba5-410d-aa85-d848b40ff760',
+            type: 'internal',
+            datasetId: '6e01bb56-1ba5-410d-aa85-d848b40ff760',
         },
         raster: {
-            internal: 'de20638f-0569-4a78-850a-4119b217a0fa',
+            type: 'internal',
+            datasetId: 'de20638f-0569-4a78-850a-4119b217a0fa',
         },
     },
     Honduras: {
         polygon: {
-            internal: '92c31dea-6d6a-4d5b-b7b2-dab1417e3722',
+            type: 'internal',
+            datasetId: '92c31dea-6d6a-4d5b-b7b2-dab1417e3722',
         },
         raster: {
-            internal: 'fff2f721-6b6c-4768-9b2f-abadae413e3e',
+            type: 'internal',
+            datasetId: 'fff2f721-6b6c-4768-9b2f-abadae413e3e',
         },
     },
     Ecuador: {
         polygon: {
-            internal: '05a724af-9580-4dca-8b86-f1436d60ca87',
+            type: 'internal',
+            datasetId: '05a724af-9580-4dca-8b86-f1436d60ca87',
         },
         raster: {
-            internal: '73edd2e5-5fa0-4ecf-87d4-81a121dcf42b',
+            type: 'internal',
+            datasetId: '73edd2e5-5fa0-4ecf-87d4-81a121dcf42b',
         },
     },
     Colombia: {
         polygon: {
-            internal: 'f56aa12a-1f26-4049-95fc-744832ee8d60',
+            type: 'internal',
+            datasetId: 'f56aa12a-1f26-4049-95fc-744832ee8d60',
         },
         raster: {
-            internal: 'd4f339ff-5fde-4f04-b0ea-e718d469145a',
+            type: 'internal',
+            datasetId: 'd4f339ff-5fde-4f04-b0ea-e718d469145a',
         },
     },
     Paraguay: {
         polygon: {
-            internal: '9e2a6262-45f2-4679-8c12-1fae38f00529',
+            type: 'internal',
+            datasetId: '9e2a6262-45f2-4679-8c12-1fae38f00529',
         },
         raster: {
-            internal: '4dec2985-9853-429d-b99e-69b069fe5e52',
+            type: 'internal',
+            datasetId: '4dec2985-9853-429d-b99e-69b069fe5e52',
         },
     },
     Portugal: {
         polygon: {
-            internal: '45288c6d-cd1d-4f84-b95b-2a0a89dff565',
+            type: 'internal',
+            datasetId: '45288c6d-cd1d-4f84-b95b-2a0a89dff565',
         },
         raster: {
-            internal: 'c5da6a46-4a54-4ea0-809d-329ac13457e2',
+            type: 'internal',
+            datasetId: 'c5da6a46-4a54-4ea0-809d-329ac13457e2',
         },
     },
     Moldova: {
         polygon: {
-            internal: '5b317486-7d8e-4098-b09a-fa4a46969697',
+            type: 'internal',
+            datasetId: '5b317486-7d8e-4098-b09a-fa4a46969697',
         },
         raster: {
-            internal: '311508a7-ce47-4677-9062-4768c28cfac6',
+            type: 'internal',
+            datasetId: '311508a7-ce47-4677-9062-4768c28cfac6',
         },
     },
     Turkmenistan: {
         polygon: {
-            internal: '601c854e-cd02-4488-bb0e-7b7ead7060c2',
+            type: 'internal',
+            datasetId: '601c854e-cd02-4488-bb0e-7b7ead7060c2',
         },
         raster: {
-            internal: '750d9273-d8f3-4393-b659-9c79931f9b7b',
+            type: 'internal',
+            datasetId: '750d9273-d8f3-4393-b659-9c79931f9b7b',
         },
     },
     Jordan: {
         polygon: {
-            internal: 'e8f04e60-3d98-43db-a8c7-c32f6f9d65c5',
+            type: 'internal',
+            datasetId: 'e8f04e60-3d98-43db-a8c7-c32f6f9d65c5',
         },
         raster: {
-            internal: 'a53f9bf9-485e-480d-bb76-590e4dcb9b5f',
+            type: 'internal',
+            datasetId: 'a53f9bf9-485e-480d-bb76-590e4dcb9b5f',
         },
     },
     Nepal: {
         polygon: {
-            internal: 'c45b36cc-86a3-4f74-9f0d-b44b9b5f85e5',
+            type: 'internal',
+            datasetId: 'c45b36cc-86a3-4f74-9f0d-b44b9b5f85e5',
         },
         raster: {
-            internal: 'bda00bcf-db59-4ba7-9fb0-cffb0ec5c4b3',
+            type: 'internal',
+            datasetId: 'bda00bcf-db59-4ba7-9fb0-cffb0ec5c4b3',
         },
     },
     Lesotho: {
         polygon: {
-            internal: '473c7397-36a5-4457-b6c4-98a602d96988',
+            type: 'internal',
+            datasetId: '473c7397-36a5-4457-b6c4-98a602d96988',
         },
         raster: {
-            internal: '61e8779f-47e8-4a0e-9fe9-03abdaf9220b',
+            type: 'internal',
+            datasetId: '61e8779f-47e8-4a0e-9fe9-03abdaf9220b',
         },
     },
     Cameroon: {
         polygon: {
-            internal: 'b4c1b6a1-5768-40e8-bbc2-c16c56d8e224',
+            type: 'internal',
+            datasetId: 'b4c1b6a1-5768-40e8-bbc2-c16c56d8e224',
         },
         raster: {
-            internal: '0b2abe53-4b04-42d4-941f-0ad55d26ca02',
+            type: 'internal',
+            datasetId: '0b2abe53-4b04-42d4-941f-0ad55d26ca02',
         },
     },
     Gabon: {
         polygon: {
-            internal: '4af5b29b-2870-4dc9-96bd-1de254222914',
+            type: 'internal',
+            datasetId: '4af5b29b-2870-4dc9-96bd-1de254222914',
         },
         raster: {
-            internal: 'ccfbfc5e-a959-4e3d-a542-da6807e7746c',
+            type: 'internal',
+            datasetId: 'ccfbfc5e-a959-4e3d-a542-da6807e7746c',
         },
     },
     Niger: {
         polygon: {
-            internal: '0e2bd237-65d8-4def-a088-a6f15d56c343',
+            type: 'internal',
+            datasetId: '0e2bd237-65d8-4def-a088-a6f15d56c343',
         },
         raster: {
-            internal: '229e4923-c123-4b7f-8442-e0267f80100a',
+            type: 'internal',
+            datasetId: '229e4923-c123-4b7f-8442-e0267f80100a',
         },
     },
     'Burkina Faso': {
         polygon: {
-            internal: '683a97cc-73f7-439e-b7e4-7511152bd523',
+            type: 'internal',
+            datasetId: '683a97cc-73f7-439e-b7e4-7511152bd523',
         },
         raster: {
-            internal: 'b098172f-8b5a-4126-93df-98d23ea1f586',
+            type: 'internal',
+            datasetId: 'b098172f-8b5a-4126-93df-98d23ea1f586',
         },
     },
     Togo: {
         polygon: {
-            internal: '69e011bc-85ca-45a2-8c5d-b9847ebf90a7',
+            type: 'internal',
+            datasetId: '69e011bc-85ca-45a2-8c5d-b9847ebf90a7',
         },
         raster: {
-            internal: 'a7ad94f1-3690-4afd-8735-8cb73fd39dcc',
+            type: 'internal',
+            datasetId: 'a7ad94f1-3690-4afd-8735-8cb73fd39dcc',
         },
     },
     Ghana: {
         polygon: {
-            internal: 'b0051acb-2236-4c48-90e0-e2869dc5b3f7',
+            type: 'internal',
+            datasetId: 'b0051acb-2236-4c48-90e0-e2869dc5b3f7',
         },
         raster: {
-            internal: '120a578a-8847-4ddf-bf9e-27762a235fe9',
+            type: 'internal',
+            datasetId: '120a578a-8847-4ddf-bf9e-27762a235fe9',
         },
     },
     'Guinea-Bissau': {
         polygon: {
-            internal: '3dddef7b-9264-4f0b-903b-8247e9cf398c',
+            type: 'internal',
+            datasetId: '3dddef7b-9264-4f0b-903b-8247e9cf398c',
         },
         raster: {
-            internal: '52c07d23-e117-47f9-93a1-d74d1a6f85d0',
+            type: 'internal',
+            datasetId: '52c07d23-e117-47f9-93a1-d74d1a6f85d0',
         },
     },
     Gibraltar: {
         polygon: {
-            internal: 'eeddcfd5-d07f-41c1-8345-82bbd116052b',
+            type: 'internal',
+            datasetId: 'eeddcfd5-d07f-41c1-8345-82bbd116052b',
         },
         raster: {
-            internal: 'c18a9f2d-212b-44a9-9a4d-07a2aeb00d2d',
+            type: 'internal',
+            datasetId: 'c18a9f2d-212b-44a9-9a4d-07a2aeb00d2d',
         },
     },
     'United States of America': {
         polygon: {
-            internal: 'd4955ac8-9434-46cb-b0b5-309cff44d00f',
+            type: 'internal',
+            datasetId: 'd4955ac8-9434-46cb-b0b5-309cff44d00f',
         },
         raster: {
-            internal: 'b8f059f4-3111-402b-ac77-b857dce326cf',
+            type: 'internal',
+            datasetId: 'b8f059f4-3111-402b-ac77-b857dce326cf',
         },
     },
     Canada: {
         polygon: {
-            internal: 'a1df0042-391f-493a-ad57-54a90a634ed6',
+            type: 'internal',
+            datasetId: 'a1df0042-391f-493a-ad57-54a90a634ed6',
         },
         raster: {
-            internal: 'b82d907f-41f9-46b2-be5e-c872106ce7e9',
+            type: 'internal',
+            datasetId: 'b82d907f-41f9-46b2-be5e-c872106ce7e9',
         },
     },
     Mexico: {
         polygon: {
-            internal: '33292fab-9e5a-4b89-a166-3c07b62bcc44',
+            type: 'internal',
+            datasetId: '33292fab-9e5a-4b89-a166-3c07b62bcc44',
         },
         raster: {
-            internal: '11ffb75a-27fd-4d11-9d86-8ca4c4a24806',
+            type: 'internal',
+            datasetId: '11ffb75a-27fd-4d11-9d86-8ca4c4a24806',
         },
     },
     Belize: {
         polygon: {
-            internal: '42bbb515-e81d-46a2-8928-4858ad6f4ed4',
+            type: 'internal',
+            datasetId: '42bbb515-e81d-46a2-8928-4858ad6f4ed4',
         },
         raster: {
-            internal: 'fd861331-b364-4a87-8d09-557de75e6b45',
+            type: 'internal',
+            datasetId: 'fd861331-b364-4a87-8d09-557de75e6b45',
         },
     },
     Panama: {
         polygon: {
-            internal: 'dd651eeb-13c4-4c47-87a7-ffdd00074f28',
+            type: 'internal',
+            datasetId: 'dd651eeb-13c4-4c47-87a7-ffdd00074f28',
         },
         raster: {
-            internal: '46b91d3d-3ceb-47ea-81e3-b706f799da80',
+            type: 'internal',
+            datasetId: '46b91d3d-3ceb-47ea-81e3-b706f799da80',
         },
     },
     Venezuela: {
         polygon: {
-            internal: 'ee180c9b-31bd-40fc-9978-6ce2e8522b98',
+            type: 'internal',
+            datasetId: 'ee180c9b-31bd-40fc-9978-6ce2e8522b98',
         },
         raster: {
-            internal: '571fac0e-2c01-4dfe-b386-d45ce25cad8e',
+            type: 'internal',
+            datasetId: '571fac0e-2c01-4dfe-b386-d45ce25cad8e',
         },
     },
     'Papua New Guinea': {
         polygon: {
-            internal: '47c7483b-1ecb-417e-9859-846a72c10ca7',
+            type: 'internal',
+            datasetId: '47c7483b-1ecb-417e-9859-846a72c10ca7',
         },
         raster: {
-            internal: '181e15df-860d-4896-858c-02116dec098f',
+            type: 'internal',
+            datasetId: '181e15df-860d-4896-858c-02116dec098f',
         },
     },
     Egypt: {
         polygon: {
-            internal: 'bb206197-a008-404f-931f-2cc0b62b0aaf',
+            type: 'internal',
+            datasetId: 'bb206197-a008-404f-931f-2cc0b62b0aaf',
         },
         raster: {
-            internal: '97db0c98-d6c0-46e6-9b00-68d895d1c0f7',
+            type: 'internal',
+            datasetId: '97db0c98-d6c0-46e6-9b00-68d895d1c0f7',
         },
     },
     Yemen: {
         polygon: {
-            internal: '9ea1a932-20fb-4a13-9600-9ef4ff2de970',
+            type: 'internal',
+            datasetId: '9ea1a932-20fb-4a13-9600-9ef4ff2de970',
         },
         raster: {
-            internal: '4b075dfa-2ec8-4fd0-9eb6-64e3bf70c6df',
+            type: 'internal',
+            datasetId: '4b075dfa-2ec8-4fd0-9eb6-64e3bf70c6df',
         },
     },
     Mauritania: {
         polygon: {
-            internal: '6f2886c3-11e2-4668-9f13-009508785116',
+            type: 'internal',
+            datasetId: '6f2886c3-11e2-4668-9f13-009508785116',
         },
         raster: {
-            internal: '934ea6f7-1f66-48ca-ad90-195b0e9c9ad7',
+            type: 'internal',
+            datasetId: '934ea6f7-1f66-48ca-ad90-195b0e9c9ad7',
         },
     },
     'Eq. Guinea': {
         polygon: {
-            internal: '1e6a83f8-93a2-4188-aa49-ab705d03c55b',
+            type: 'internal',
+            datasetId: '1e6a83f8-93a2-4188-aa49-ab705d03c55b',
         },
         raster: {
-            internal: 'd2adec35-67b5-49d9-b9c1-1b0651cb178f',
+            type: 'internal',
+            datasetId: 'd2adec35-67b5-49d9-b9c1-1b0651cb178f',
         },
     },
     Gambia: {
         polygon: {
-            internal: '450bac8e-2787-4e8a-b9a0-b387d041b17f',
+            type: 'internal',
+            datasetId: '450bac8e-2787-4e8a-b9a0-b387d041b17f',
         },
         raster: {
-            internal: '51741d41-f69c-4412-8da3-1215a29341c2',
+            type: 'internal',
+            datasetId: '51741d41-f69c-4412-8da3-1215a29341c2',
         },
     },
     'Hong Kong': {
         polygon: {
-            internal: 'd7d940f4-7b73-4152-af87-205675eb9cd9',
+            type: 'internal',
+            datasetId: 'd7d940f4-7b73-4152-af87-205675eb9cd9',
         },
         raster: {
-            internal: '30e96f6b-3867-4842-bda1-b8ebe5ed6cf0',
+            type: 'internal',
+            datasetId: '30e96f6b-3867-4842-bda1-b8ebe5ed6cf0',
         },
     },
     Vatican: {
         polygon: {
-            internal: '2166c951-9b00-4ced-ae92-f911a5731bf2',
+            type: 'internal',
+            datasetId: '2166c951-9b00-4ced-ae92-f911a5731bf2',
         },
         raster: {
-            internal: 'b733d2cd-4ba6-40a6-afaa-b034dfae36e9',
+            type: 'internal',
+            datasetId: 'b733d2cd-4ba6-40a6-afaa-b034dfae36e9',
         },
     },
     Antarctica: {
         polygon: {
-            internal: 'be313d09-a6d6-4216-93bc-715b4cd896a6',
+            type: 'internal',
+            datasetId: 'be313d09-a6d6-4216-93bc-715b4cd896a6',
         },
         raster: {
-            internal: '376e8ac6-e099-4b6b-9367-226c9b7ec916',
+            type: 'internal',
+            datasetId: '376e8ac6-e099-4b6b-9367-226c9b7ec916',
         },
     },
     Australia: {
         polygon: {
-            internal: 'e9e72de4-0559-40b0-bf62-f17c79524d0b',
+            type: 'internal',
+            datasetId: 'e9e72de4-0559-40b0-bf62-f17c79524d0b',
         },
         raster: {
-            internal: 'cc3fa402-79ae-433d-9d11-e2093ec562ff',
+            type: 'internal',
+            datasetId: 'cc3fa402-79ae-433d-9d11-e2093ec562ff',
         },
     },
     Greenland: {
         polygon: {
-            internal: 'b99a321f-833f-4b65-92cb-8946f57a88cf',
+            type: 'internal',
+            datasetId: 'b99a321f-833f-4b65-92cb-8946f57a88cf',
         },
         raster: {
-            internal: '9cfdc060-ff30-49e1-8dcb-619f70e736cc',
+            type: 'internal',
+            datasetId: '9cfdc060-ff30-49e1-8dcb-619f70e736cc',
         },
     },
     Fiji: {
         polygon: {
-            internal: 'a917c0ee-5cb9-43ab-8679-c6a809d96e61',
+            type: 'internal',
+            datasetId: 'a917c0ee-5cb9-43ab-8679-c6a809d96e61',
         },
         raster: {
-            internal: '3f391b18-8835-4933-be41-fdb5d6ab55e7',
+            type: 'internal',
+            datasetId: '3f391b18-8835-4933-be41-fdb5d6ab55e7',
         },
     },
     'New Zealand': {
         polygon: {
-            internal: '0eb245f3-bbe6-4077-aea3-8b83228d03c3',
+            type: 'internal',
+            datasetId: '0eb245f3-bbe6-4077-aea3-8b83228d03c3',
         },
         raster: {
-            internal: '8576f1da-8e33-4ab8-8903-8bf520b0937a',
+            type: 'internal',
+            datasetId: '8576f1da-8e33-4ab8-8903-8bf520b0937a',
         },
     },
     'New Caledonia': {
         polygon: {
-            internal: 'bffe73e6-4b96-4b67-a903-07fcb7d8d9a6',
+            type: 'internal',
+            datasetId: 'bffe73e6-4b96-4b67-a903-07fcb7d8d9a6',
         },
         raster: {
-            internal: '3ef388bc-2c5b-4f8b-b0b0-1b52a6d4f6d3',
+            type: 'internal',
+            datasetId: '3ef388bc-2c5b-4f8b-b0b0-1b52a6d4f6d3',
         },
     },
     Madagascar: {
         polygon: {
-            internal: '2cf06b80-3f8e-4f49-afcf-e4e4a7021145',
+            type: 'internal',
+            datasetId: '2cf06b80-3f8e-4f49-afcf-e4e4a7021145',
         },
         raster: {
-            internal: 'acae8af6-2332-40a9-967d-b025376dead7',
+            type: 'internal',
+            datasetId: 'acae8af6-2332-40a9-967d-b025376dead7',
         },
     },
     Philippines: {
         polygon: {
-            internal: 'a3596a02-c2aa-4614-a11d-5ff181844bd9',
+            type: 'internal',
+            datasetId: 'a3596a02-c2aa-4614-a11d-5ff181844bd9',
         },
         raster: {
-            internal: 'f2fd9caf-bdea-450e-8c57-1bd26cff8fcb',
+            type: 'internal',
+            datasetId: 'f2fd9caf-bdea-450e-8c57-1bd26cff8fcb',
         },
     },
     'Sri Lanka': {
         polygon: {
-            internal: '1ad1f21d-3211-472d-b333-3e24253c08d5',
+            type: 'internal',
+            datasetId: '1ad1f21d-3211-472d-b333-3e24253c08d5',
         },
         raster: {
-            internal: '4582f08f-a99c-4a70-9fb7-1028d7282cd5',
+            type: 'internal',
+            datasetId: '4582f08f-a99c-4a70-9fb7-1028d7282cd5',
         },
     },
     Curaçao: {
         polygon: {
-            internal: '78f5ed66-e966-482f-9b65-8ce64c7a689f',
+            type: 'internal',
+            datasetId: '78f5ed66-e966-482f-9b65-8ce64c7a689f',
         },
         raster: {
-            internal: '212a659e-8bf6-4873-9fbe-e4b5064c7181',
+            type: 'internal',
+            datasetId: '212a659e-8bf6-4873-9fbe-e4b5064c7181',
         },
     },
     Aruba: {
         polygon: {
-            internal: '379228f3-d59f-4133-bdd3-1ffc0c699874',
+            type: 'internal',
+            datasetId: '379228f3-d59f-4133-bdd3-1ffc0c699874',
         },
         raster: {
-            internal: '4ac5e142-11b0-4b7f-baae-5a53604f5ed0',
+            type: 'internal',
+            datasetId: '4ac5e142-11b0-4b7f-baae-5a53604f5ed0',
         },
     },
     Bahamas: {
         polygon: {
-            internal: 'ae757fdc-540e-4fac-a1f6-6c6a1d7bcd1d',
+            type: 'internal',
+            datasetId: 'ae757fdc-540e-4fac-a1f6-6c6a1d7bcd1d',
         },
         raster: {
-            internal: '04cc9e27-c793-4208-9dae-f4ad4d7ef7fe',
+            type: 'internal',
+            datasetId: '04cc9e27-c793-4208-9dae-f4ad4d7ef7fe',
         },
     },
     'Turks and Caicos Is.': {
         polygon: {
-            internal: 'a6b14a40-a845-4512-85e0-83e6dd94ecf9',
+            type: 'internal',
+            datasetId: 'a6b14a40-a845-4512-85e0-83e6dd94ecf9',
         },
         raster: {
-            internal: '07d2866e-553c-46f0-9304-ffe6566b65e7',
+            type: 'internal',
+            datasetId: '07d2866e-553c-46f0-9304-ffe6566b65e7',
         },
     },
     Taiwan: {
         polygon: {
-            internal: '4b5f14ec-978a-4253-8ecc-08c4d292cff9',
+            type: 'internal',
+            datasetId: '4b5f14ec-978a-4253-8ecc-08c4d292cff9',
         },
         raster: {
-            internal: 'e4a35608-a07b-4f4b-b08c-c9d4a4638c60',
+            type: 'internal',
+            datasetId: 'e4a35608-a07b-4f4b-b08c-c9d4a4638c60',
         },
     },
     Japan: {
         polygon: {
-            internal: '7a612883-3d99-4b40-bffb-09bb6402daf6',
+            type: 'internal',
+            datasetId: '7a612883-3d99-4b40-bffb-09bb6402daf6',
         },
         raster: {
-            internal: 'b24768a1-91fe-498a-9a55-d4d5e4b23a62',
+            type: 'internal',
+            datasetId: 'b24768a1-91fe-498a-9a55-d4d5e4b23a62',
         },
     },
     'St. Pierre and Miquelon': {
         polygon: {
-            internal: 'd8d38b9d-c4a9-4659-91ca-a157a03086e6',
+            type: 'internal',
+            datasetId: 'd8d38b9d-c4a9-4659-91ca-a157a03086e6',
         },
         raster: {
-            internal: '274b231e-7b83-4ce6-a7b5-8ce28366621f',
+            type: 'internal',
+            datasetId: '274b231e-7b83-4ce6-a7b5-8ce28366621f',
         },
     },
     Iceland: {
         polygon: {
-            internal: '9c87ebcb-efbe-4994-a42d-a5f2d00ac12e',
+            type: 'internal',
+            datasetId: '9c87ebcb-efbe-4994-a42d-a5f2d00ac12e',
         },
         raster: {
-            internal: 'e2f161e5-afb3-48e8-8c75-608f841ef6e7',
+            type: 'internal',
+            datasetId: 'e2f161e5-afb3-48e8-8c75-608f841ef6e7',
         },
     },
     'Pitcairn Is.': {
         polygon: {
-            internal: '8fe2e25f-43a5-4765-af8d-1bc00763e543',
+            type: 'internal',
+            datasetId: '8fe2e25f-43a5-4765-af8d-1bc00763e543',
         },
         raster: {
-            internal: '2f2f12cc-1873-4736-b4e2-fb2814453727',
+            type: 'internal',
+            datasetId: '2f2f12cc-1873-4736-b4e2-fb2814453727',
         },
     },
     'Fr. Polynesia': {
         polygon: {
-            internal: 'bc5212ff-187d-47e3-854c-3957e65583e6',
+            type: 'internal',
+            datasetId: 'bc5212ff-187d-47e3-854c-3957e65583e6',
         },
         raster: {
-            internal: '029a9c49-cd55-4054-b6ec-b3d39fcd9481',
+            type: 'internal',
+            datasetId: '029a9c49-cd55-4054-b6ec-b3d39fcd9481',
         },
     },
     'Fr. S. Antarctic Lands': {
         polygon: {
-            internal: '67f31aa2-97a7-4949-953e-005a3b8c8ede',
+            type: 'internal',
+            datasetId: '67f31aa2-97a7-4949-953e-005a3b8c8ede',
         },
         raster: {
-            internal: 'd06bfe99-941f-4764-81d8-40ff4f37612e',
+            type: 'internal',
+            datasetId: 'd06bfe99-941f-4764-81d8-40ff4f37612e',
         },
     },
     Seychelles: {
         polygon: {
-            internal: 'ded832e5-894a-472e-b304-4cce94528757',
+            type: 'internal',
+            datasetId: 'ded832e5-894a-472e-b304-4cce94528757',
         },
         raster: {
-            internal: '7f291c00-6da0-48b2-ab7a-08984eb03326',
+            type: 'internal',
+            datasetId: '7f291c00-6da0-48b2-ab7a-08984eb03326',
         },
     },
     Kiribati: {
         polygon: {
-            internal: '0ad08627-9874-4cde-903e-3ef58ded36cf',
+            type: 'internal',
+            datasetId: '0ad08627-9874-4cde-903e-3ef58ded36cf',
         },
         raster: {
-            internal: '62a20da5-816d-466d-a1e3-07a57e8d44f0',
+            type: 'internal',
+            datasetId: '62a20da5-816d-466d-a1e3-07a57e8d44f0',
         },
     },
     'Marshall Is.': {
         polygon: {
-            internal: '8765bf99-e40b-4643-aee2-8c9957420d34',
+            type: 'internal',
+            datasetId: '8765bf99-e40b-4643-aee2-8c9957420d34',
         },
         raster: {
-            internal: 'f2b59436-2557-43a5-bae1-144b5bf7dcc0',
+            type: 'internal',
+            datasetId: 'f2b59436-2557-43a5-bae1-144b5bf7dcc0',
         },
     },
     'Trinidad and Tobago': {
         polygon: {
-            internal: 'b284ceb3-fd1c-4730-b7c9-3b4990aee539',
+            type: 'internal',
+            datasetId: 'b284ceb3-fd1c-4730-b7c9-3b4990aee539',
         },
         raster: {
-            internal: '16ddc703-57ea-4dbc-b1e3-d03b90002980',
+            type: 'internal',
+            datasetId: '16ddc703-57ea-4dbc-b1e3-d03b90002980',
         },
     },
     Grenada: {
         polygon: {
-            internal: 'f5d70f49-5861-4c4c-8c37-e45259395ba5',
+            type: 'internal',
+            datasetId: 'f5d70f49-5861-4c4c-8c37-e45259395ba5',
         },
         raster: {
-            internal: '0d5ebb2c-a8cc-4481-909d-e929eda987e6',
+            type: 'internal',
+            datasetId: '0d5ebb2c-a8cc-4481-909d-e929eda987e6',
         },
     },
     'St. Vin. and Gren.': {
         polygon: {
-            internal: 'c356d274-2a6f-45c9-9b36-7a95fa6d226e',
+            type: 'internal',
+            datasetId: 'c356d274-2a6f-45c9-9b36-7a95fa6d226e',
         },
         raster: {
-            internal: '061071c7-696a-474f-bcd7-83739ff68c77',
+            type: 'internal',
+            datasetId: '061071c7-696a-474f-bcd7-83739ff68c77',
         },
     },
     Barbados: {
         polygon: {
-            internal: 'bc8d9ff1-8343-4294-9c96-267a1a739f38',
+            type: 'internal',
+            datasetId: 'bc8d9ff1-8343-4294-9c96-267a1a739f38',
         },
         raster: {
-            internal: '47cd861c-0c66-4c84-a92c-21ad1c6943c8',
+            type: 'internal',
+            datasetId: '47cd861c-0c66-4c84-a92c-21ad1c6943c8',
         },
     },
     'Saint Lucia': {
         polygon: {
-            internal: '5a8c5e49-5e71-4871-a574-f3e3a94fc549',
+            type: 'internal',
+            datasetId: '5a8c5e49-5e71-4871-a574-f3e3a94fc549',
         },
         raster: {
-            internal: '7a512237-1df4-4b89-a32b-9faf8b3279a7',
+            type: 'internal',
+            datasetId: '7a512237-1df4-4b89-a32b-9faf8b3279a7',
         },
     },
     Dominica: {
         polygon: {
-            internal: '3c76e9a9-5adf-4f0f-ad07-f80788e30e4c',
+            type: 'internal',
+            datasetId: '3c76e9a9-5adf-4f0f-ad07-f80788e30e4c',
         },
         raster: {
-            internal: '2ea8f56d-e9a3-4997-8392-0b4c39298816',
+            type: 'internal',
+            datasetId: '2ea8f56d-e9a3-4997-8392-0b4c39298816',
         },
     },
     Montserrat: {
         polygon: {
-            internal: 'b422d6a0-dbaf-4b8f-a455-5f58ca5d6c53',
+            type: 'internal',
+            datasetId: 'b422d6a0-dbaf-4b8f-a455-5f58ca5d6c53',
         },
         raster: {
-            internal: '2a29800a-84d0-40c7-855f-dde97b277ce3',
+            type: 'internal',
+            datasetId: '2a29800a-84d0-40c7-855f-dde97b277ce3',
         },
     },
     'Antigua and Barb.': {
         polygon: {
-            internal: '22ca33df-0855-444b-81dd-c57676ed0979',
+            type: 'internal',
+            datasetId: '22ca33df-0855-444b-81dd-c57676ed0979',
         },
         raster: {
-            internal: 'cf08909d-1e56-4df2-b2b4-3175d4839402',
+            type: 'internal',
+            datasetId: 'cf08909d-1e56-4df2-b2b4-3175d4839402',
         },
     },
     'St. Kitts and Nevis': {
         polygon: {
-            internal: '20edfea3-2479-45a7-ac34-d6d20fc8ef27',
+            type: 'internal',
+            datasetId: '20edfea3-2479-45a7-ac34-d6d20fc8ef27',
         },
         raster: {
-            internal: 'a900bd6e-fc8e-47f0-8ed0-0fb698562ed8',
+            type: 'internal',
+            datasetId: 'a900bd6e-fc8e-47f0-8ed0-0fb698562ed8',
         },
     },
     'U.S. Virgin Is.': {
         polygon: {
-            internal: '192a9455-238e-4b61-bced-061da16749bc',
+            type: 'internal',
+            datasetId: '192a9455-238e-4b61-bced-061da16749bc',
         },
         raster: {
-            internal: '60a72609-4af2-4b3f-9573-87c41062e2f5',
+            type: 'internal',
+            datasetId: '60a72609-4af2-4b3f-9573-87c41062e2f5',
         },
     },
     'St-Barth\u00e9lemy': {
         polygon: {
-            internal: '6e09c68c-7719-4069-be8b-5801f8f446e3',
+            type: 'internal',
+            datasetId: '6e09c68c-7719-4069-be8b-5801f8f446e3',
         },
         raster: {
-            internal: 'bd2e80f4-bdf8-4e2c-af65-679197b40de1',
+            type: 'internal',
+            datasetId: 'bd2e80f4-bdf8-4e2c-af65-679197b40de1',
         },
     },
     'Puerto Rico': {
         polygon: {
-            internal: '2b486286-fdcd-4f3e-aefd-4f3016551006',
+            type: 'internal',
+            datasetId: '2b486286-fdcd-4f3e-aefd-4f3016551006',
         },
         raster: {
-            internal: '2b25ab57-b3c7-46be-b947-520adff30423',
+            type: 'internal',
+            datasetId: '2b25ab57-b3c7-46be-b947-520adff30423',
         },
     },
     Anguilla: {
         polygon: {
-            internal: 'ceea83a8-cc83-4d79-a66a-92cb8bcaa31b',
+            type: 'internal',
+            datasetId: 'ceea83a8-cc83-4d79-a66a-92cb8bcaa31b',
         },
         raster: {
-            internal: '57b431b7-6bcf-414a-a5b3-1271a685a3da',
+            type: 'internal',
+            datasetId: '57b431b7-6bcf-414a-a5b3-1271a685a3da',
         },
     },
     'British Virgin Is.': {
         polygon: {
-            internal: 'e488152a-a179-4783-86e4-3571415577d1',
+            type: 'internal',
+            datasetId: 'e488152a-a179-4783-86e4-3571415577d1',
         },
         raster: {
-            internal: '47645863-a1dc-40f7-8df7-d5071ce49b0d',
+            type: 'internal',
+            datasetId: '47645863-a1dc-40f7-8df7-d5071ce49b0d',
         },
     },
     Jamaica: {
         polygon: {
-            internal: 'd2cf351f-d222-43d3-82f7-1e4051738d39',
+            type: 'internal',
+            datasetId: 'd2cf351f-d222-43d3-82f7-1e4051738d39',
         },
         raster: {
-            internal: '2e47beed-5e25-4573-82ea-39e8e988f108',
+            type: 'internal',
+            datasetId: '2e47beed-5e25-4573-82ea-39e8e988f108',
         },
     },
     'Cayman Is.': {
         polygon: {
-            internal: 'ee412aa7-7d60-43a1-a323-6a9664d895fb',
+            type: 'internal',
+            datasetId: 'ee412aa7-7d60-43a1-a323-6a9664d895fb',
         },
         raster: {
-            internal: '71dce41e-8e82-4905-b9be-31eb305bf8ec',
+            type: 'internal',
+            datasetId: '71dce41e-8e82-4905-b9be-31eb305bf8ec',
         },
     },
     Bermuda: {
         polygon: {
-            internal: '68a5763f-c9dc-4800-8f08-e481373f8d1b',
+            type: 'internal',
+            datasetId: '68a5763f-c9dc-4800-8f08-e481373f8d1b',
         },
         raster: {
-            internal: 'b1513ec0-8c7e-4fb1-aede-fc8442ab6644',
+            type: 'internal',
+            datasetId: 'b1513ec0-8c7e-4fb1-aede-fc8442ab6644',
         },
     },
     'Heard I. and McDonald Is.': {
         polygon: {
-            internal: '2951db3e-9ce7-4cab-9e6f-ccdab7c60126',
+            type: 'internal',
+            datasetId: '2951db3e-9ce7-4cab-9e6f-ccdab7c60126',
         },
         raster: {
-            internal: '238f62a3-caca-4d08-bac1-1e8dfef4d1b4',
+            type: 'internal',
+            datasetId: '238f62a3-caca-4d08-bac1-1e8dfef4d1b4',
         },
     },
     'Saint Helena': {
         polygon: {
-            internal: 'a4622a2c-d7fe-4405-a64a-d2cb1c0b914e',
+            type: 'internal',
+            datasetId: 'a4622a2c-d7fe-4405-a64a-d2cb1c0b914e',
         },
         raster: {
-            internal: 'b4545fc4-a1e3-45e5-a007-2b8319a8b4cd',
+            type: 'internal',
+            datasetId: 'b4545fc4-a1e3-45e5-a007-2b8319a8b4cd',
         },
     },
     Mauritius: {
         polygon: {
-            internal: '80dc9c14-4c35-44e3-9f27-a445eb515118',
+            type: 'internal',
+            datasetId: '80dc9c14-4c35-44e3-9f27-a445eb515118',
         },
         raster: {
-            internal: '2fd826b3-a443-4dd6-9029-95eae5dda080',
+            type: 'internal',
+            datasetId: '2fd826b3-a443-4dd6-9029-95eae5dda080',
         },
     },
     Comoros: {
         polygon: {
-            internal: 'e83fbbd2-7c74-42a9-aebb-4674084c8177',
+            type: 'internal',
+            datasetId: 'e83fbbd2-7c74-42a9-aebb-4674084c8177',
         },
         raster: {
-            internal: 'ed2bcb48-b3e0-4b41-b0c5-af9010861122',
+            type: 'internal',
+            datasetId: 'ed2bcb48-b3e0-4b41-b0c5-af9010861122',
         },
     },
     'S\u00e3o Tom\u00e9 and Principe': {
         polygon: {
-            internal: 'e7b3f481-4cd3-46bd-ba7b-77f77d4b542e',
+            type: 'internal',
+            datasetId: 'e7b3f481-4cd3-46bd-ba7b-77f77d4b542e',
         },
         raster: {
-            internal: 'b646b029-a5a6-4a74-a6a7-58672c8638a4',
+            type: 'internal',
+            datasetId: 'b646b029-a5a6-4a74-a6a7-58672c8638a4',
         },
     },
     'Cabo Verde': {
         polygon: {
-            internal: '07991816-6c60-4742-9f3b-697876c5b9b2',
+            type: 'internal',
+            datasetId: '07991816-6c60-4742-9f3b-697876c5b9b2',
         },
         raster: {
-            internal: 'ac875275-cc8c-4cd3-b043-be87ddf5aa09',
+            type: 'internal',
+            datasetId: 'ac875275-cc8c-4cd3-b043-be87ddf5aa09',
         },
     },
     Malta: {
         polygon: {
-            internal: '98134b0c-cc64-4e05-ac5f-4d07be697d0d',
+            type: 'internal',
+            datasetId: '98134b0c-cc64-4e05-ac5f-4d07be697d0d',
         },
         raster: {
-            internal: '6473dda4-4393-4b5e-9475-8e405eb2f030',
+            type: 'internal',
+            datasetId: '6473dda4-4393-4b5e-9475-8e405eb2f030',
         },
     },
     Jersey: {
         polygon: {
-            internal: '9c1cb144-9d5f-4912-a701-7e471eddf51b',
+            type: 'internal',
+            datasetId: '9c1cb144-9d5f-4912-a701-7e471eddf51b',
         },
         raster: {
-            internal: '2d625119-b187-4b5a-9798-af83085a3d62',
+            type: 'internal',
+            datasetId: '2d625119-b187-4b5a-9798-af83085a3d62',
         },
     },
     Guernsey: {
         polygon: {
-            internal: '0d8b35f2-fc12-4810-9b6a-0e315d542373',
+            type: 'internal',
+            datasetId: '0d8b35f2-fc12-4810-9b6a-0e315d542373',
         },
         raster: {
-            internal: '05072c45-0f96-4786-a2c0-d80802147cb8',
+            type: 'internal',
+            datasetId: '05072c45-0f96-4786-a2c0-d80802147cb8',
         },
     },
     'Isle of Man': {
         polygon: {
-            internal: 'e73b716e-7549-4e9d-a03a-7cf75cef548c',
+            type: 'internal',
+            datasetId: 'e73b716e-7549-4e9d-a03a-7cf75cef548c',
         },
         raster: {
-            internal: '5c5afb3c-6b4e-4634-bfec-1cb5ee238131',
+            type: 'internal',
+            datasetId: '5c5afb3c-6b4e-4634-bfec-1cb5ee238131',
         },
     },
     'Faeroe Is.': {
         polygon: {
-            internal: '23d5a0f7-4eca-44fd-998b-cd269f043d88',
+            type: 'internal',
+            datasetId: '23d5a0f7-4eca-44fd-998b-cd269f043d88',
         },
         raster: {
-            internal: 'ba077529-918d-4695-a5c3-6c2a060bc588',
+            type: 'internal',
+            datasetId: 'ba077529-918d-4695-a5c3-6c2a060bc588',
         },
     },
     'Br. Indian Ocean Ter.': {
         polygon: {
-            internal: 'e3290cd7-1dc1-4e32-bb38-9f3ea891d94e',
+            type: 'internal',
+            datasetId: 'e3290cd7-1dc1-4e32-bb38-9f3ea891d94e',
         },
         raster: {
-            internal: 'd1dcb77e-f0a1-407f-aecf-7b460393cd4c',
+            type: 'internal',
+            datasetId: 'd1dcb77e-f0a1-407f-aecf-7b460393cd4c',
         },
     },
     Singapore: {
         polygon: {
-            internal: 'd424cf1d-baa4-4277-87a6-f1ffac526e64',
+            type: 'internal',
+            datasetId: 'd424cf1d-baa4-4277-87a6-f1ffac526e64',
         },
         raster: {
-            internal: '809d63ee-b546-452e-8088-c731219e3114',
+            type: 'internal',
+            datasetId: '809d63ee-b546-452e-8088-c731219e3114',
         },
     },
     'Norfolk Island': {
         polygon: {
-            internal: '0b743095-a3ee-4c3b-8f5f-d306e2af48ff',
+            type: 'internal',
+            datasetId: '0b743095-a3ee-4c3b-8f5f-d306e2af48ff',
         },
         raster: {
-            internal: '5e9cb157-e11a-447c-af20-231780a6883d',
+            type: 'internal',
+            datasetId: '5e9cb157-e11a-447c-af20-231780a6883d',
         },
     },
     'Cook Is.': {
         polygon: {
-            internal: 'd7f8e660-76bd-45c1-8d66-0f04db6e7a4c',
+            type: 'internal',
+            datasetId: 'd7f8e660-76bd-45c1-8d66-0f04db6e7a4c',
         },
         raster: {
-            internal: 'd1227261-e7f6-4469-9bac-930180ba1e27',
+            type: 'internal',
+            datasetId: 'd1227261-e7f6-4469-9bac-930180ba1e27',
         },
     },
     Tonga: {
         polygon: {
-            internal: 'cac64c8f-6fa7-4909-b09c-f924ecbd10c7',
+            type: 'internal',
+            datasetId: 'cac64c8f-6fa7-4909-b09c-f924ecbd10c7',
         },
         raster: {
-            internal: '0401ab25-106e-44ec-98b4-9ca1b6f4d0cb',
+            type: 'internal',
+            datasetId: '0401ab25-106e-44ec-98b4-9ca1b6f4d0cb',
         },
     },
     'Wallis and Futuna Is.': {
         polygon: {
-            internal: '7f2c3dc2-40ae-40bf-93de-23338b3c6c48',
+            type: 'internal',
+            datasetId: '7f2c3dc2-40ae-40bf-93de-23338b3c6c48',
         },
         raster: {
-            internal: '9552fdd0-5012-4e72-b726-5d1d3b524b72',
+            type: 'internal',
+            datasetId: '9552fdd0-5012-4e72-b726-5d1d3b524b72',
         },
     },
     Samoa: {
         polygon: {
-            internal: '666ea9b6-6d80-4927-8f7d-d17b6b28c64a',
+            type: 'internal',
+            datasetId: '666ea9b6-6d80-4927-8f7d-d17b6b28c64a',
         },
         raster: {
-            internal: '833d4180-9dc5-496d-9414-24e874021cb4',
+            type: 'internal',
+            datasetId: '833d4180-9dc5-496d-9414-24e874021cb4',
         },
     },
     'Solomon Is.': {
         polygon: {
-            internal: '1d3b3234-c768-48cf-aea8-6884d738b6a4',
+            type: 'internal',
+            datasetId: '1d3b3234-c768-48cf-aea8-6884d738b6a4',
         },
         raster: {
-            internal: '2f84656d-3a73-4ed9-b109-a63d32a9129a',
+            type: 'internal',
+            datasetId: '2f84656d-3a73-4ed9-b109-a63d32a9129a',
         },
     },
     Tuvalu: {
         polygon: {
-            internal: 'a6d26b1b-61da-49d5-b2c4-c14a36f85f31',
+            type: 'internal',
+            datasetId: 'a6d26b1b-61da-49d5-b2c4-c14a36f85f31',
         },
         raster: {
-            internal: '481ae41b-94fb-4eed-8d0d-51bf722c5075',
+            type: 'internal',
+            datasetId: '481ae41b-94fb-4eed-8d0d-51bf722c5075',
         },
     },
     Maldives: {
         polygon: {
-            internal: '9588aee8-945e-4f41-bcce-36085ca7115f',
+            type: 'internal',
+            datasetId: '9588aee8-945e-4f41-bcce-36085ca7115f',
         },
         raster: {
-            internal: 'af59c999-6a37-4f08-b995-9ad72defc50a',
+            type: 'internal',
+            datasetId: 'af59c999-6a37-4f08-b995-9ad72defc50a',
         },
     },
     Nauru: {
         polygon: {
-            internal: '99b1ed71-b15f-4e40-b808-4d4a0b9b17c2',
+            type: 'internal',
+            datasetId: '99b1ed71-b15f-4e40-b808-4d4a0b9b17c2',
         },
         raster: {
-            internal: '239c86c7-7290-42c7-b6b0-bb3afe59eb01',
+            type: 'internal',
+            datasetId: '239c86c7-7290-42c7-b6b0-bb3afe59eb01',
         },
     },
     Micronesia: {
         polygon: {
-            internal: '19120243-fdb9-4efe-adf4-478907b5b689',
+            type: 'internal',
+            datasetId: '19120243-fdb9-4efe-adf4-478907b5b689',
         },
         raster: {
-            internal: 'fcb79e71-835b-46ca-bf88-7c14aa581540',
+            type: 'internal',
+            datasetId: 'fcb79e71-835b-46ca-bf88-7c14aa581540',
         },
     },
     'S. Geo. and the Is.': {
         polygon: {
-            internal: '93a74688-f2b4-4caf-bc30-dbd778a4aa47',
+            type: 'internal',
+            datasetId: '93a74688-f2b4-4caf-bc30-dbd778a4aa47',
         },
         raster: {
-            internal: '9ba66af1-8cbf-477c-882e-86bf5f17f493',
+            type: 'internal',
+            datasetId: '9ba66af1-8cbf-477c-882e-86bf5f17f493',
         },
     },
     'Falkland Is.': {
         polygon: {
-            internal: '5ee84361-d9fd-45b8-b744-7e853f126687',
+            type: 'internal',
+            datasetId: '5ee84361-d9fd-45b8-b744-7e853f126687',
         },
         raster: {
-            internal: 'b9147883-ac96-4318-b841-1b75c82d815b',
+            type: 'internal',
+            datasetId: 'b9147883-ac96-4318-b841-1b75c82d815b',
         },
     },
     Vanuatu: {
         polygon: {
-            internal: '03f748b9-2d34-45ee-8bf8-8692322c9cf8',
+            type: 'internal',
+            datasetId: '03f748b9-2d34-45ee-8bf8-8692322c9cf8',
         },
         raster: {
-            internal: 'ce40bcb3-9e6e-46c2-8dda-ef59f0bc6991',
+            type: 'internal',
+            datasetId: 'ce40bcb3-9e6e-46c2-8dda-ef59f0bc6991',
         },
     },
     Niue: {
         polygon: {
-            internal: 'e9a23c06-632a-4e75-8f0d-d7789a96351f',
+            type: 'internal',
+            datasetId: 'e9a23c06-632a-4e75-8f0d-d7789a96351f',
         },
         raster: {
-            internal: '353916dc-4ca4-4e41-ba0b-b565599af582',
+            type: 'internal',
+            datasetId: '353916dc-4ca4-4e41-ba0b-b565599af582',
         },
     },
     'American Samoa': {
         polygon: {
-            internal: '50c4b689-153f-47d2-8ada-603747a01604',
+            type: 'internal',
+            datasetId: '50c4b689-153f-47d2-8ada-603747a01604',
         },
         raster: {
-            internal: 'ac258909-8cc8-4a13-a20a-6cf7297eeb9a',
+            type: 'internal',
+            datasetId: 'ac258909-8cc8-4a13-a20a-6cf7297eeb9a',
         },
     },
     Palau: {
         polygon: {
-            internal: 'ba85d80b-726b-4a01-94f2-2c8c52dc3432',
+            type: 'internal',
+            datasetId: 'ba85d80b-726b-4a01-94f2-2c8c52dc3432',
         },
         raster: {
-            internal: '72249ba8-47ca-41ba-bc7d-1abf11277468',
+            type: 'internal',
+            datasetId: '72249ba8-47ca-41ba-bc7d-1abf11277468',
         },
     },
     Guam: {
         polygon: {
-            internal: '0388e1ba-415b-4a30-beb5-e6e78e4465fc',
+            type: 'internal',
+            datasetId: '0388e1ba-415b-4a30-beb5-e6e78e4465fc',
         },
         raster: {
-            internal: 'e5fd4c61-2876-4c13-889b-4fa9fe6407dd',
+            type: 'internal',
+            datasetId: 'e5fd4c61-2876-4c13-889b-4fa9fe6407dd',
         },
     },
     'N. Mariana Is.': {
         polygon: {
-            internal: '8e8745b5-2b02-4cc2-862e-c2af672fe1bd',
+            type: 'internal',
+            datasetId: '8e8745b5-2b02-4cc2-862e-c2af672fe1bd',
         },
         raster: {
-            internal: '25053625-678d-4e67-b4b6-b29200e0bc23',
+            type: 'internal',
+            datasetId: '25053625-678d-4e67-b4b6-b29200e0bc23',
         },
     },
     Bahrain: {
         polygon: {
-            internal: 'cb552a76-6e0d-4231-ac16-3f9f655b2a5f',
+            type: 'internal',
+            datasetId: 'cb552a76-6e0d-4231-ac16-3f9f655b2a5f',
         },
         raster: {
-            internal: '715f4769-acbb-40c2-b8e0-203cdc13f316',
+            type: 'internal',
+            datasetId: '715f4769-acbb-40c2-b8e0-203cdc13f316',
         },
     },
     'Coral Sea Is.': {
         polygon: {
-            internal: 'bbaa567e-5ef8-4d4b-9b7d-54a1faf9c67c',
+            type: 'internal',
+            datasetId: 'bbaa567e-5ef8-4d4b-9b7d-54a1faf9c67c',
         },
         raster: {
-            internal: '847fbffd-4504-403d-b368-775f237a516c',
+            type: 'internal',
+            datasetId: '847fbffd-4504-403d-b368-775f237a516c',
         },
     },
     'Spratly Is.': {
         polygon: {
-            internal: 'e7078d6c-25aa-4f13-b159-bdd5b9d363c3',
+            type: 'internal',
+            datasetId: 'e7078d6c-25aa-4f13-b159-bdd5b9d363c3',
         },
         raster: {
-            internal: '027a3f4d-df6c-4cb6-9433-4fdabd6f78ac',
+            type: 'internal',
+            datasetId: '027a3f4d-df6c-4cb6-9433-4fdabd6f78ac',
         },
     },
     'Clipperton I.': {
         polygon: {
-            internal: '80f2824c-2439-4b34-9121-5ecd7ea6107c',
+            type: 'internal',
+            datasetId: '80f2824c-2439-4b34-9121-5ecd7ea6107c',
         },
         raster: {
-            internal: '0283b05d-ca8b-4fe0-96c3-ce5cb5ca2ae0',
+            type: 'internal',
+            datasetId: '0283b05d-ca8b-4fe0-96c3-ce5cb5ca2ae0',
         },
     },
     Macao: {
         polygon: {
-            internal: '5060242b-f4a7-4b8d-8d1e-0dd05d9e34b0',
+            type: 'internal',
+            datasetId: '5060242b-f4a7-4b8d-8d1e-0dd05d9e34b0',
         },
         raster: {
-            internal: '44585287-269c-476f-8a2f-c35b5f6cdb3a',
+            type: 'internal',
+            datasetId: '44585287-269c-476f-8a2f-c35b5f6cdb3a',
         },
     },
     'Ashmore and Cartier Is.': {
         polygon: {
-            internal: '2fe583ac-427d-4c0b-b81e-1eebf4ea2f58',
+            type: 'internal',
+            datasetId: '2fe583ac-427d-4c0b-b81e-1eebf4ea2f58',
         },
         raster: {
-            internal: '177cad8c-e1ff-42d7-b256-59b0f1283244',
+            type: 'internal',
+            datasetId: '177cad8c-e1ff-42d7-b256-59b0f1283244',
         },
     },
 };

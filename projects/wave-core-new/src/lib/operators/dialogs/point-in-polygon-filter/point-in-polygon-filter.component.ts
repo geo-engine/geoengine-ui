@@ -65,9 +65,25 @@ export class PointInPolygonFilterOperatorComponent {
                                         workflowId,
                                         name,
                                         symbology: PointSymbology.fromPointSymbologyDict({
-                                            radius: {static: 10},
-                                            stroke: {width: {static: 1}, color: {static: [0, 0, 0, 255]}},
-                                            fillColor: {static: colorToDict(this.randomColorService.getRandomColorRgba())},
+                                            type: 'point',
+                                            radius: {
+                                                type: 'static',
+                                                value: 10,
+                                            },
+                                            stroke: {
+                                                width: {
+                                                    type: 'static',
+                                                    value: 1,
+                                                },
+                                                color: {
+                                                    type: 'static',
+                                                    color: [0, 0, 0, 255],
+                                                },
+                                            },
+                                            fillColor: {
+                                                type: 'static',
+                                                color: colorToDict(this.randomColorService.getRandomColorRgba()),
+                                            },
                                         }),
                                         isLegendVisible: false,
                                         isVisible: true,
