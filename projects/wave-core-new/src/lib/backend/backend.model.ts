@@ -260,6 +260,7 @@ export interface DatasetDict {
     description: string;
     resultDescriptor: TypedResultDescriptorDict;
     sourceOperator: string;
+    symbology?: SymbologyDict;
 }
 
 export type DatasetIdDict = InternalDatasetIdDict | ExternalDatasetIdDict;
@@ -347,6 +348,7 @@ export interface AddDatasetDict {
     name: string;
     description: string;
     sourceOperator: string;
+    symbology?: SymbologyDict;
 }
 
 export interface AutoCreateDatasetDict {

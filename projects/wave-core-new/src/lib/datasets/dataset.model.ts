@@ -9,6 +9,7 @@ import {
     RasterResultDescriptorDict,
     VectorResultDescriptorDict,
 } from '../backend/backend.model';
+import {Symbology} from '../layers/symbology/symbology.model';
 import {
     RasterDataType,
     RasterDataTypes,
@@ -24,6 +25,7 @@ export class Dataset {
     readonly description: string;
     readonly resultDescriptor: ResultDescriptor;
     readonly sourceOperator: string;
+    readonly symbology?: Symbology;
 
     constructor(config: DatasetDict) {
         this.id = DatasetId.fromDict(config.id);
@@ -31,6 +33,7 @@ export class Dataset {
         this.description = config.description;
         this.resultDescriptor = ResultDescriptor.fromDict(config.resultDescriptor);
         this.sourceOperator = config.sourceOperator;
+        this.symbology = config.symbology ? Symbology.fromDict(config.symbology) : undefined;
     }
 
     static fromDict(dict: DatasetDict): Dataset {
