@@ -259,9 +259,13 @@ export class BackendService {
 
     getDataset(sessionId: UUID, datasetId: DatasetIdDict): Observable<DatasetDict> {
         // TODO: external datasets
-        return this.http.get<DatasetDict>(this.config.API_URL + `/dataset/internal/${datasetId.internal}`, {
-            headers: BackendService.authorizationHeader(sessionId),
-        });
+        if (datasetId.type === 'internal') {
+            return this.http.get<DatasetDict>(this.config.API_URL + `/dataset/internal/${datasetId.datasetId}`, {
+                headers: BackendService.authorizationHeader(sessionId),
+            });
+        } else {
+            throw Error('cannot load external datasets yet');
+        }
     }
 
     upload(sessionId: UUID, form: FormData): Observable<HttpEvent<UploadResponseDict>> {

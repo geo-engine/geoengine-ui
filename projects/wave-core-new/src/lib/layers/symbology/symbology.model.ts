@@ -54,18 +54,16 @@ export interface IconStyle {}
 
 export abstract class Symbology {
     static fromDict(dict: SymbologyDict): Symbology {
-        if (dict.raster) {
-            return RasterSymbology.fromRasterSymbologyDict(dict.raster);
-        } else if (dict.vector) {
-            const vectorDict = dict.vector;
-            if (vectorDict.point) {
-                return PointSymbology.fromPointSymbologyDict(vectorDict.point);
-            } else if (vectorDict.line) {
-                return LineSymbology.fromLineSymbologyDict(vectorDict.line);
-            } else if (vectorDict.polygon) {
-                return PolygonSymbology.fromPolygonSymbologyDict(vectorDict.polygon);
-            }
+        if (dict.type === 'raster') {
+            return RasterSymbology.fromRasterSymbologyDict(dict);
+        } else if (dict.type === 'point') {
+            return PointSymbology.fromPointSymbologyDict(dict);
+        } else if (dict.type === 'line') {
+            return LineSymbology.fromLineSymbologyDict(dict);
+        } else if (dict.type === 'polygon') {
+            return PolygonSymbology.fromPolygonSymbologyDict(dict);
         }
+
         throw new Error('Invalid Symbology type.');
     }
 
@@ -90,12 +88,12 @@ export abstract class Symbology {
 
 export abstract class VectorSymbology extends Symbology {
     static fromVectorSymbologyDict(dict: VectorSymbologyDict): VectorSymbology {
-        if (dict.point) {
-            return PointSymbology.fromPointSymbologyDict(dict.point);
-        } else if (dict.line) {
-            return LineSymbology.fromLineSymbologyDict(dict.line);
-        } else if (dict.polygon) {
-            return PolygonSymbology.fromPolygonSymbologyDict(dict.polygon);
+        if (dict.type === 'point') {
+            return PointSymbology.fromPointSymbologyDict(dict);
+        } else if (dict.type === 'line') {
+            return LineSymbology.fromLineSymbologyDict(dict);
+        } else if (dict.type === 'polygon') {
+            return PolygonSymbology.fromPolygonSymbologyDict(dict);
         }
         throw new Error('Invalid Vector Symbology type.');
     }
@@ -370,14 +368,11 @@ export class PointSymbology extends VectorSymbology {
 
     toDict(): SymbologyDict {
         return {
-            vector: {
-                point: {
-                    radius: this.radius.toDict(),
-                    fillColor: this.fillColor.toDict(),
-                    stroke: this.stroke.toDict(),
-                    text: this.text ? this.text.toDict() : undefined,
-                },
-            },
+            type: 'point',
+            radius: this.radius.toDict(),
+            fillColor: this.fillColor.toDict(),
+            stroke: this.stroke.toDict(),
+            text: this.text ? this.text.toDict() : undefined,
         };
     }
 
@@ -426,12 +421,9 @@ export class LineSymbology extends VectorSymbology {
 
     toDict(): SymbologyDict {
         return {
-            vector: {
-                line: {
-                    stroke: this.stroke.toDict(),
-                    text: this.text ? this.text.toDict() : undefined,
-                },
-            },
+            type: 'line',
+            stroke: this.stroke.toDict(),
+            text: this.text ? this.text.toDict() : undefined,
         };
     }
 
@@ -492,13 +484,10 @@ export class PolygonSymbology extends VectorSymbology {
 
     toDict(): SymbologyDict {
         return {
-            vector: {
-                polygon: {
-                    fillColor: this.fillColor.toDict(),
-                    stroke: this.stroke.toDict(),
-                    text: this.text ? this.text.toDict() : undefined,
-                },
-            },
+            type: 'polygon',
+            fillColor: this.fillColor.toDict(),
+            stroke: this.stroke.toDict(),
+            text: this.text ? this.text.toDict() : undefined,
         };
     }
 
@@ -546,10 +535,9 @@ export class RasterSymbology extends Symbology {
 
     toDict(): SymbologyDict {
         return {
-            raster: {
-                opacity: this.opacity,
-                colorizer: this.colorizer.toDict(),
-            },
+            type: 'raster',
+            opacity: this.opacity,
+            colorizer: this.colorizer.toDict(),
         };
     }
 
@@ -564,10 +552,10 @@ export class RasterSymbology extends Symbology {
 
 export abstract class ColorParam {
     static fromDict(dict: ColorParamDict): ColorParam {
-        if (dict.static) {
-            return new StaticColor(Color.fromRgbaLike(rgbaColorFromDict(dict.static)));
-        } else if (dict.derived) {
-            return DerivedColor.fromDerivedColorDict(dict.derived);
+        if (dict.type === 'static') {
+            return new StaticColor(Color.fromRgbaLike(rgbaColorFromDict(dict.color)));
+        } else if (dict.type === 'derived') {
+            return DerivedColor.fromDerivedColorDict(dict);
         } else {
             throw new Error('unable to deserialize `NumberParam`');
         }
@@ -586,10 +574,10 @@ export abstract class ColorParam {
 
 export abstract class NumberParam {
     static fromDict(dict: NumberParamDict): NumberParam {
-        if (dict.static) {
-            return new StaticNumber(dict.static);
-        } else if (dict.derived) {
-            return DerivedNumber.fromDerivedNumberDict(dict.derived);
+        if (dict.type === 'static') {
+            return new StaticNumber(dict.value);
+        } else if (dict.type === 'derived') {
+            return DerivedNumber.fromDerivedNumberDict(dict);
         } else {
             throw new Error('unable to deserialize `NumberParam`');
         }
@@ -631,7 +619,8 @@ export class StaticColor extends ColorParam {
 
     toDict(): ColorParamDict {
         return {
-            static: colorToDict(this.color),
+            type: 'static',
+            color: colorToDict(this.color),
         };
     }
 
@@ -665,7 +654,8 @@ export class StaticNumber extends NumberParam {
 
     toDict(): NumberParamDict {
         return {
-            static: this.num,
+            type: 'static',
+            value: this.num,
         };
     }
 
@@ -704,10 +694,9 @@ export class DerivedColor implements ColorParam {
 
     toDict(): ColorParamDict {
         return {
-            derived: {
-                attribute: this.attribute,
-                colorizer: this.colorizer.toDict(),
-            },
+            type: 'derived',
+            attribute: this.attribute,
+            colorizer: this.colorizer.toDict(),
         };
     }
 
@@ -751,11 +740,10 @@ export class DerivedNumber extends NumberParam {
 
     toDict(): NumberParamDict {
         return {
-            derived: {
-                attribute: this.attribute,
-                factor: this.factor,
-                defaultValue: this.defaultValue,
-            },
+            type: 'derived',
+            attribute: this.attribute,
+            factor: this.factor,
+            defaultValue: this.defaultValue,
         };
     }
 

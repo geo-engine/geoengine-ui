@@ -280,28 +280,28 @@ export class UploadComponent {
         const formDataset = this.formNameDescription.controls;
 
         const metaData: MetaDataDefinitionDict = {
-            OgrMetaData: {
-                loadingInfo: {
-                    fileName: formMeta.mainFile.value,
-                    layerName: formMeta.layerName.value,
-                    dataType: formMeta.dataType.value,
-                    time: this.getTime(),
-                    columns: {
-                        x: formMeta.columnsX.value,
-                        y: formMeta.columnsY.value,
-                        text: formMeta.columnsText.value,
-                        float: formMeta.columnsFloat.value,
-                        int: formMeta.columnsInt.value,
-                    },
-                    forceOgrTimeFilter: false,
-                    onError: formMeta.errorHandling.value,
-                    provenance: undefined, // TODO
+            type: 'OgrMetaData',
+            loadingInfo: {
+                fileName: formMeta.mainFile.value,
+                layerName: formMeta.layerName.value,
+                dataType: formMeta.dataType.value,
+                time: this.getTime(),
+                columns: {
+                    x: formMeta.columnsX.value,
+                    y: formMeta.columnsY.value,
+                    text: formMeta.columnsText.value,
+                    float: formMeta.columnsFloat.value,
+                    int: formMeta.columnsInt.value,
                 },
-                resultDescriptor: {
-                    dataType: formMeta.dataType.value,
-                    spatialReference: formMeta.spatialReference.value,
-                    columns: this.getColumnsAsMap(),
-                },
+                forceOgrTimeFilter: false,
+                onError: formMeta.errorHandling.value,
+                provenance: undefined, // TODO
+            },
+            resultDescriptor: {
+                type: 'vector',
+                dataType: formMeta.dataType.value,
+                spatialReference: formMeta.spatialReference.value,
+                columns: this.getColumnsAsMap(),
             },
         };
 
@@ -349,7 +349,7 @@ export class UploadComponent {
 
         this.datasetService.suggestMetaData({upload: this.uploadId, mainFile}).subscribe(
             (suggest) => {
-                const info = suggest.metaData.OgrMetaData?.loadingInfo;
+                const info = suggest.metaData.loadingInfo;
                 const start = this.getStartTime(info?.time);
                 const end = this.getEndTime(info?.time);
                 this.formMetaData.patchValue({
@@ -360,9 +360,9 @@ export class UploadComponent {
                     timeStartColumn: start ? start.startField : '',
                     timeStartFormat: start ? start.startFormat.format : '',
                     timeStartFormatCustom: start ? start.startFormat.customFormat : '',
-                    timeDurationColumn: info?.time !== 'none' ? info?.time['start+duration']?.durationField : '',
-                    timeDurationValueType: info?.time === 'start' ? info?.time.start?.duration.type : 'infinite',
-                    timeDurationValue: info?.time !== 'none' ? info?.time.start?.duration : 0,
+                    timeDurationColumn: info?.time.type === 'start+duration' ? info?.time.durationField : '',
+                    timeDurationValue: info?.time.type === 'start' ? info?.time.duration : 1,
+                    timeDurationValueType: info?.time.type === 'start' ? info?.time.duration.type : 'infinite',
                     timeEndColumn: end ? end.endField : '',
                     timeEndFormat: end ? end.endFormat.format : '',
                     timeEndFormatCustom: end ? end.endFormat.customFormat : '',
@@ -372,7 +372,7 @@ export class UploadComponent {
                     columnsFloat: info?.columns?.float,
                     columnsInt: info?.columns?.int,
                     errorHandling: info?.onError,
-                    spatialReference: suggest.metaData.OgrMetaData?.resultDescriptor.spatialReference,
+                    spatialReference: suggest.metaData.resultDescriptor.spatialReference,
                 });
                 this.changeDetectorRef.markForCheck();
             },
@@ -381,32 +381,24 @@ export class UploadComponent {
     }
 
     private getStartTime(
-        time: OgrSourceDatasetTimeTypeDict | undefined | 'none',
+        time: OgrSourceDatasetTimeTypeDict | undefined,
     ): undefined | {startField: string; startFormat: OgrSourceTimeFormatDict; custom?: string} {
-        if (!time || time === 'none') {
+        if (!time || time.type === 'none') {
             return undefined;
         }
 
-        if (time.start) {
-            return time.start;
-        } else if (time['start+duration']) {
-            return time['start+duration'];
-        } else if (time['start+end']) {
-            return time['start+end'];
-        }
-
-        return undefined;
+        return time;
     }
 
     private getEndTime(
-        time: OgrSourceDatasetTimeTypeDict | undefined | 'none',
+        time: OgrSourceDatasetTimeTypeDict | undefined,
     ): undefined | {endField: string; endFormat: OgrSourceTimeFormatDict; custom?: string} {
-        if (!time || time === 'none') {
+        if (!time || time.type === 'none') {
             return undefined;
         }
 
-        if (time['start+end']) {
-            return time['start+end'];
+        if (time.type === 'start+end') {
+            return time;
         }
 
         return undefined;
@@ -452,9 +444,11 @@ export class UploadComponent {
         throw Error('Invalid time duration type');
     }
 
-    private getTime(): 'none' | OgrSourceDatasetTimeTypeDict {
+    private getTime(): OgrSourceDatasetTimeTypeDict {
         const formMeta = this.formMetaData.controls;
-        let time: 'none' | OgrSourceDatasetTimeTypeDict = 'none';
+        let time: OgrSourceDatasetTimeTypeDict = {
+            type: 'none',
+        };
 
         if (formMeta.timeType.value === 'Start') {
             const format: OgrSourceTimeFormatDict = {
@@ -466,11 +460,10 @@ export class UploadComponent {
             }
 
             time = {
-                start: {
-                    startField: formMeta.timeStartColumn.value,
-                    startFormat: format,
-                    duration: this.getDuration(),
-                },
+                type: 'start',
+                startField: formMeta.timeStartColumn.value,
+                startFormat: format,
+                duration: this.getDuration(),
             };
         } else if (formMeta.timeType.value === 'Start/End') {
             const startFormat: OgrSourceTimeFormatDict = {
@@ -490,12 +483,11 @@ export class UploadComponent {
             }
 
             time = {
-                'start+end': {
-                    startField: formMeta.timeStartColumn.value,
-                    startFormat,
-                    endField: formMeta.timeEndColumn.value,
-                    endFormat,
-                },
+                type: 'start+end',
+                startField: formMeta.timeStartColumn.value,
+                startFormat,
+                endField: formMeta.timeEndColumn.value,
+                endFormat,
             };
         } else if (formMeta.timeType.value === 'Start/Duration') {
             const format: OgrSourceTimeFormatDict = {
@@ -507,25 +499,24 @@ export class UploadComponent {
             }
 
             time = {
-                'start+duration': {
-                    startField: formMeta.timeStartColumn.value,
-                    startFormat: format,
-                    durationField: formMeta.timeDurationColumn.value,
-                },
+                type: 'start+duration',
+                startField: formMeta.timeStartColumn.value,
+                startFormat: format,
+                durationField: formMeta.timeDurationColumn.value,
             };
         }
         return time;
     }
 
-    private getTimeType(time: 'none' | OgrSourceDatasetTimeTypeDict): string {
-        if (time === 'none') {
+    private getTimeType(time: OgrSourceDatasetTimeTypeDict): string {
+        if (time.type === 'none') {
             return 'None';
         }
-        if (time.start) {
+        if (time.type === 'start') {
             return 'Start';
-        } else if (time['start+duration']) {
+        } else if (time.type === 'start+duration') {
             return 'Start/Duration';
-        } else if (time['start+end']) {
+        } else if (time.type === 'start+end') {
             return 'Start/End';
         }
         return 'None';

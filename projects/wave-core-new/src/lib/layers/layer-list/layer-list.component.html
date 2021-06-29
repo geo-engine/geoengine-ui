@@ -116,6 +116,10 @@
                             <mat-icon>table</mat-icon>
                             <span>Show datatable</span>
                         </button>
+                        <button mat-menu-item (click)="copyWorkflowIdToClipboard(layer)">
+                            <mat-icon>content_copy</mat-icon>
+                            <span>Copy workflow id to clipboard</span>
+                        </button>
                         <!--                                    <button mat-menu-item (click)="dialog.open(LayerExportComponent, {data: {layer: layer}})">-->
                         <!--                                        <mat-icon>file_download</mat-icon>-->
                         <!--                                        <span>Export</span>-->
