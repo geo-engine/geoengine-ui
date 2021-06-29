@@ -406,21 +406,18 @@ export interface OgrSourceColumnSpecDict {
     text: Array<string>;
 }
 
-export type OgrSourceDurationSpecDict =
-    | FiniteOgrSourceDurationSpecDict
-    | InfiniteOgrSourceDurationSpecDict
-    | InstantOgrSourceDurationSpecDict;
+export type OgrSourceDurationSpecDict = ValueOgrSourceDurationSpecDict | InfiniteOgrSourceDurationSpecDict | ZeroOgrSourceDurationSpecDict;
 
-export interface FiniteOgrSourceDurationSpecDict extends TimeStepDict {
-    type: 'finite';
+export interface ValueOgrSourceDurationSpecDict extends TimeStepDict {
+    type: 'value';
 }
 
 export interface InfiniteOgrSourceDurationSpecDict {
     type: 'infinite';
 }
 
-export interface InstantOgrSourceDurationSpecDict {
-    type: 'instant';
+export interface ZeroOgrSourceDurationSpecDict {
+    type: 'zero';
 }
 
 export interface TypedGeometryDict {

@@ -29,7 +29,7 @@ import {DatasetService} from '../dataset.service';
 })
 export class UploadComponent {
     vectorDataTypes = ['Data', 'MultiPoint', 'MultiLineString', 'MultiPolygon'];
-    timeDurationValueTypes = ['infinite', 'finite', 'instant'];
+    timeDurationValueTypes = ['infinite', 'value', 'zero'];
     timeTypes = ['None', 'Start', 'Start/End', 'Start/Duration'];
     timeFormats = ['auto', 'seconds', 'custom'];
     errorHandlings = ['ignore', 'abort'];
@@ -146,7 +146,7 @@ export class UploadComponent {
 
     changeTimeDurationValueType(): void {
         const form = this.formMetaData.controls;
-        if (form.timeDurationValueType.value === 'finite') {
+        if (form.timeDurationValueType.value === 'value') {
             form.timeDurationValue.setValidators(Validators.required);
             form.timeDurationGranularity.setValidators(Validators.required);
         } else {
@@ -433,17 +433,17 @@ export class UploadComponent {
     private getDuration(): OgrSourceDurationSpecDict {
         const formMeta = this.formMetaData.controls;
 
-        if (formMeta.timeDurationValueType.value === 'instant') {
+        if (formMeta.timeDurationValueType.value === 'zero') {
             return {
-                type: 'instant',
+                type: 'zero',
             };
         } else if (formMeta.timeDurationValueType.value === 'infinite') {
             return {
                 type: 'infinite',
             };
-        } else if (formMeta.timeDurationValueType.value === 'finite') {
+        } else if (formMeta.timeDurationValueType.value === 'value') {
             return {
-                type: 'finite',
+                type: 'value',
                 granularity: formMeta.timeDurationGranularity.value,
                 step: formMeta.timeDurationValue.value,
             };

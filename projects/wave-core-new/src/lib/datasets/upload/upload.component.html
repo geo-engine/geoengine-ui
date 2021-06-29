@@ -89,7 +89,7 @@
                     </mat-select>
                 </mat-form-field>
 
-                <ng-container *ngIf="formMetaData.controls.timeDurationValueType.value === 'finite'">
+                <ng-container *ngIf="formMetaData.controls.timeDurationValueType.value === 'value'">
                     <mat-form-field appearance="fill">
                         <mat-label>Granularity of Duration</mat-label>
                         <mat-select placeholder="Time Granularity" formControlName="timeDurationGranularity">
