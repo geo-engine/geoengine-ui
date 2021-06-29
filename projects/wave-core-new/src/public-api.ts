@@ -23,8 +23,10 @@ export * from './lib/colors/color-attribute-input/color-attribute-input.componen
 export * from './lib/colors/color-breakpoint-input/color-breakpoint-input.component';
 export * from './lib/colors/color-map-selector/color-map-selector.component';
 export * from './lib/datasets/add-data/add-data.component';
+export * from './lib/datasets/add-workflow/add-workflow.component';
 export * from './lib/datasets/dataset-list/dataset-list.component';
 export * from './lib/datasets/dataset/dataset.component';
+export * from './lib/datasets/drag-and-drop/drag-and-drop.component';
 export * from './lib/datasets/draw-features/draw-features.component';
 export * from './lib/datasets/external-dataset-list/external-dataset-list.component';
 export * from './lib/datasets/provider-list/provider-list.component';
@@ -68,6 +70,7 @@ export * from './lib/plots/vega-viewer/vega-viewer.component';
 export * from './lib/project/change-spatial-reference/change-spatial-reference.component';
 export * from './lib/project/load-project/load-project.component';
 export * from './lib/project/new-project/new-project.component';
+export * from './lib/project/notifications/notifications.component';
 export * from './lib/project/save-project-as/save-project-as.component';
 export * from './lib/project/workspace-settings/workspace-settings.component';
 export * from './lib/provenance/lineage-graph/lineage-graph.component';
@@ -80,8 +83,6 @@ export * from './lib/time/small-time-interaction/small-time-interaction.componen
 export * from './lib/time/time-config/time-config.component';
 export * from './lib/time/time-input/time-input.component';
 export * from './lib/users/login/login.component';
-export * from './lib/project/notifications/notifications.component';
-export * from './lib/datasets/drag-and-drop/drag-and-drop.component';
 
 // Pipes
 export * from './lib/util/pipes/async-converters.pipe';

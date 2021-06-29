@@ -464,3 +464,8 @@ export interface DataSetProviderListingDict {
     typeName: string;
     name: string;
 }
+
+export interface GeoEngineError {
+    readonly error: string;
+    readonly message: string;
+}
