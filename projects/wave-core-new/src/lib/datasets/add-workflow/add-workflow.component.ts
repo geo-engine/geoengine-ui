@@ -71,27 +71,30 @@ export class AddWorkflowComponent implements OnInit {
                 throw Error('we cannot add data layers here, yet');
             case 'MultiPoint':
                 return PointSymbology.fromPointSymbologyDict({
-                    radius: {static: 10},
+                    type: 'point',
+                    radius: {type: 'static', value: 10},
                     stroke: {
-                        width: {static: 1},
-                        color: {static: [0, 0, 0, 255]},
+                        width: {type: 'static', value: 1},
+                        color: {type: 'static', color: [0, 0, 0, 255]},
                     },
-                    fillColor: {static: colorToDict(this.randomColorService.getRandomColorRgba())},
+                    fillColor: {type: 'static', color: colorToDict(this.randomColorService.getRandomColorRgba())},
                 });
             case 'MultiLineString':
                 return LineSymbology.fromLineSymbologyDict({
+                    type: 'line',
                     stroke: {
-                        width: {static: 1},
-                        color: {static: [0, 0, 0, 255]},
+                        width: {type: 'static', value: 1},
+                        color: {type: 'static', color: [0, 0, 0, 255]},
                     },
                 });
             case 'MultiPolygon':
                 return PolygonSymbology.fromPolygonSymbologyDict({
+                    type: 'polygon',
                     stroke: {
-                        width: {static: 1},
-                        color: {static: [0, 0, 0, 255]},
+                        width: {type: 'static', value: 1},
+                        color: {type: 'static', color: [0, 0, 0, 255]},
                     },
-                    fillColor: {static: colorToDict(this.randomColorService.getRandomColorRgba())},
+                    fillColor: {type: 'static', color: colorToDict(this.randomColorService.getRandomColorRgba())},
                 });
         }
     }
@@ -103,16 +106,16 @@ export class AddWorkflowComponent implements OnInit {
             isVisible: true,
             isLegendVisible: false,
             symbology: RasterSymbology.fromRasterSymbologyDict({
+                type: 'raster',
                 opacity: 1.0,
                 colorizer: {
-                    linearGradient: {
-                        breakpoints: [
-                            {value: 1, color: [0, 0, 0, 255]},
-                            {value: 255, color: [255, 255, 255, 255]},
-                        ],
-                        defaultColor: [0, 0, 0, 0],
-                        noDataColor: [0, 0, 0, 0],
-                    },
+                    type: 'linearGradient',
+                    breakpoints: [
+                        {value: 1, color: [0, 0, 0, 255]},
+                        {value: 255, color: [255, 255, 255, 255]},
+                    ],
+                    defaultColor: [0, 0, 0, 0],
+                    noDataColor: [0, 0, 0, 0],
                 },
             }),
         });
