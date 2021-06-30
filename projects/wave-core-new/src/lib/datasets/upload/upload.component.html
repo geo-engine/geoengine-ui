@@ -81,9 +81,29 @@
                 </mat-form-field>
 
                 <mat-form-field appearance="fill" *ngIf="formMetaData.controls.timeType.value === 'Start'">
-                    <mat-label>Duration of feature validity in milli-seconds</mat-label>
-                    <input matInput type="number" formControlName="timeDurationValue" />
+                    <mat-label>Duration type of feature validity</mat-label>
+                    <mat-select formControlName="timeDurationValueType" (selectionChange)="changeTimeDurationValueType()">
+                        <mat-option *ngFor="let valueType of timeDurationValueTypes" [value]="valueType">
+                            {{ valueType }}
+                        </mat-option>
+                    </mat-select>
                 </mat-form-field>
+
+                <ng-container *ngIf="formMetaData.controls.timeDurationValueType.value === 'value'">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Granularity of Duration</mat-label>
+                        <mat-select placeholder="Time Granularity" formControlName="timeDurationGranularity">
+                            <mat-option *ngFor="let granularity of timeGranularityOptions" [value]="granularity">{{
+                                granularity
+                            }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="fill">
+                        <mat-label>Duration Value</mat-label>
+                        <input matInput type="number" formControlName="timeDurationValue" />
+                    </mat-form-field>
+                </ng-container>
 
                 <ng-container *ngIf="time === 'Start/End'">
                     <mat-form-field appearance="fill">
