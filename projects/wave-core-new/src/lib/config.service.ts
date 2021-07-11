@@ -176,9 +176,7 @@ export class Config {
         return this.http
             .get<WaveConfigStructure>(Config.CONFIG_FILE)
             .pipe(
-                map((appConfig) => {
-                    return {...appConfig}; // The interface returned by http get is not indexable, create an object with the same content.
-                }),
+                map((appConfig) => ({...appConfig})), // The interface returned by http get is not indexable, create an object with the same content.
                 tap(
                     (appConfig) => {
                         this.config = mergeDeep(defaults, appConfig);
