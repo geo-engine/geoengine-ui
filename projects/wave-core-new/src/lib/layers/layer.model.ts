@@ -39,11 +39,11 @@ export abstract class Layer implements HasLayerId, HasLayerType, ToDict<LayerDic
      * Create the suitable layer type
      */
     static fromDict(dict: LayerDict): Layer {
-        if (dict.symbology.raster) {
+        if (dict.symbology.type === 'raster') {
             return RasterLayer.fromDict(dict);
         }
 
-        if (dict.symbology.vector) {
+        if (dict.symbology.type === 'point' || dict.symbology.type === 'line' || dict.symbology.type === 'polygon') {
             return VectorLayer.fromDict(dict);
         }
 
@@ -83,17 +83,16 @@ export class VectorLayer extends Layer {
     }
 
     static fromDict(dict: LayerDict): Layer {
-        if (!dict.symbology.vector) {
-            throw new Error('missing `Vector` to deserialize');
+        if (dict.symbology.type === 'point' || dict.symbology.type === 'line' || dict.symbology.type === 'polygon') {
+            return new VectorLayer({
+                name: dict.name,
+                workflowId: dict.workflow,
+                isLegendVisible: dict.visibility.legend,
+                isVisible: dict.visibility.data,
+                symbology: VectorSymbology.fromVectorSymbologyDict(dict.symbology),
+            });
         }
-
-        return new VectorLayer({
-            name: dict.name,
-            workflowId: dict.workflow,
-            isLegendVisible: dict.visibility.legend,
-            isVisible: dict.visibility.data,
-            symbology: VectorSymbology.fromVectorSymbologyDict(dict.symbology.vector),
-        });
+        throw new Error('missing `Vector` to deserialize');
     }
 
     toDict(): LayerDict {
@@ -160,17 +159,16 @@ export class RasterLayer extends Layer {
     }
 
     static fromDict(dict: LayerDict): Layer {
-        if (!dict.symbology.raster) {
-            throw new Error('missing `Raster` to deserialize');
+        if (dict.symbology.type === 'raster') {
+            return new RasterLayer({
+                name: dict.name,
+                isLegendVisible: dict.visibility.legend,
+                isVisible: dict.visibility.data,
+                workflowId: dict.workflow,
+                symbology: RasterSymbology.fromRasterSymbologyDict(dict.symbology),
+            });
         }
-
-        return new RasterLayer({
-            name: dict.name,
-            isLegendVisible: dict.visibility.legend,
-            isVisible: dict.visibility.data,
-            workflowId: dict.workflow,
-            symbology: RasterSymbology.fromRasterSymbologyDict(dict.symbology.raster),
-        });
+        throw new Error('invalid symbology type');
     }
 
     updateFields(changes: {

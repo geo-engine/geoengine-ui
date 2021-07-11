@@ -198,8 +198,8 @@ export class AppComponent implements OnInit, AfterViewInit {
             AddDataComponent.createExternalDataButton(),
             AddDataComponent.createUploadButton(),
             AddDataComponent.createDrawFeaturesButton(),
+            AddDataComponent.createAddWorkflowByIdButton(),
 
-            // SourceOperatorListComponent.createDrawFeaturesButton(),
             // ...SourceOperatorListComponent.createCustomFeaturesButtons(),
             // {
             //     name: 'Species Occurrences',
