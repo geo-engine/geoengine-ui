@@ -1,28 +1,26 @@
 import {MeasurementDict, ToDict} from '../backend/backend.model';
 import * as Immutable from 'immutable';
 
-export abstract class Measurement implements ToDict<'unitless' | MeasurementDict> {
+export abstract class Measurement implements ToDict<MeasurementDict> {
     abstract readonly measurement: string;
 
-    static fromDict(dict: 'unitless' | MeasurementDict): Measurement {
-        if (dict === 'unitless') {
+    static fromDict(dict: MeasurementDict): Measurement {
+        if (dict.type === 'unitless') {
             return new UnitlessMeasurement();
         }
 
-        if (dict.continuous) {
-            const continuous = dict.continuous;
-            return new ContinuousMeasurement(continuous.measurement, continuous.unit);
+        if (dict.type === 'continuous') {
+            return new ContinuousMeasurement(dict.measurement, dict.unit);
         }
 
-        if (dict.classification) {
-            const classification = dict.classification;
-            return new ClassificationMeasurement(classification.measurement, classification.classes);
+        if (dict.type === 'classification') {
+            return new ClassificationMeasurement(dict.measurement, dict.classes);
         }
 
         throw new Error('unable to deserialize `Measurement`');
     }
 
-    abstract toDict(): 'unitless' | MeasurementDict;
+    abstract toDict(): MeasurementDict;
 }
 
 export class UnitlessMeasurement extends Measurement {
@@ -32,8 +30,10 @@ export class UnitlessMeasurement extends Measurement {
         super();
     }
 
-    toDict(): 'unitless' {
-        return 'unitless';
+    toDict(): MeasurementDict {
+        return {
+            type: 'unitless',
+        };
     }
 }
 
@@ -50,10 +50,9 @@ export class ContinuousMeasurement extends Measurement {
 
     toDict(): MeasurementDict {
         return {
-            continuous: {
-                measurement: this.measurement,
-                unit: this.unit,
-            },
+            type: 'continuous',
+            measurement: this.measurement,
+            unit: this.unit,
         };
     }
 }
@@ -78,10 +77,9 @@ export class ClassificationMeasurement extends Measurement {
 
     toDict(): MeasurementDict {
         return {
-            classification: {
-                measurement: this.measurement,
-                classes: this.classes.toObject(),
-            },
+            type: 'classification',
+            measurement: this.measurement,
+            classes: this.classes.toObject(),
         };
     }
 }
