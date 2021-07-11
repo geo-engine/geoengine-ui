@@ -109,6 +109,7 @@ import {TemporalRasterAggregationComponent} from './operators/dialogs/temporal-r
 import {DragAndDropComponent} from './datasets/drag-and-drop/drag-and-drop.component';
 import {ProviderListComponent} from './datasets/provider-list/provider-list.component';
 import {ExternalDatasetListComponent} from './datasets/external-dataset-list/external-dataset-list.component';
+import {AddWorkflowComponent} from './datasets/add-workflow/add-workflow.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -161,15 +162,16 @@ const WAVE_PIPES = [
 
 const WAVE_COMPONENTS = [
     AddDataComponent,
+    AddWorkflowComponent,
     ChangeSpatialReferenceComponent,
     ColorAttributeInputComponent,
     ColorBreakpointInputComponent,
     ColorMapSelectorComponent,
     ColorParamEditorComponent,
-    DataTableComponent,
-    DataTableComponent,
     DatasetComponent,
     DatasetListComponent,
+    DataTableComponent,
+    DataTableComponent,
     DialogHeaderComponent,
     DialogHelpComponent,
     DialogSectionHeadingComponent,
@@ -183,9 +185,9 @@ const WAVE_COMPONENTS = [
     IfLoggedInDirective,
     LayerListComponent,
     LayerSelectionComponent,
+    LineageGraphComponent,
+    LineageGraphComponent,
     LineIconComponent,
-    LineageGraphComponent,
-    LineageGraphComponent,
     LoadProjectComponent,
     LoginComponent,
     MapContainerComponent,
