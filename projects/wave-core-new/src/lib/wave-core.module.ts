@@ -110,7 +110,7 @@ import {DragAndDropComponent} from './datasets/drag-and-drop/drag-and-drop.compo
 import {ProviderListComponent} from './datasets/provider-list/provider-list.component';
 import {ExternalDatasetListComponent} from './datasets/external-dataset-list/external-dataset-list.component';
 
-export const MATERIAL_MODULES = [
+const MATERIAL_MODULES = [
     MatAutocompleteModule,
     MatButtonModule,
     MatButtonToggleModule,

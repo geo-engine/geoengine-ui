@@ -12,15 +12,8 @@
 <div *ngIf="hasLayers | async; else noInputAvailable" fxLayout="column">
     <mat-form-field *ngFor="let number of [].constructor(this.selectedLayers.value.length); let i = index">
         <mat-label>Input {{ toLetters(i) }}</mat-label>
-        <mat-select
-            class="mat-select-{{ i }}"
-            [(value)]="selectedLayers.value[i]"
-            (selectionChange)="updateLayer(i, $event.value)"
-            (onBlur)="onBlur()"
-        >
-            <mat-option class="mat-option-{{ i }}" *ngFor="let layer of filteredLayers | async" [value]="layer">{{
-                layer.name
-            }}</mat-option>
+        <mat-select [(value)]="selectedLayers.value[i]" (selectionChange)="updateLayer(i, $event.value)" (onBlur)="onBlur()">
+            <mat-option *ngFor="let layer of filteredLayers | async" [value]="layer">{{ layer.name }}</mat-option>
         </mat-select>
     </mat-form-field>
 </div>
