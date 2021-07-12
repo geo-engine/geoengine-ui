@@ -133,6 +133,7 @@ export class UploadComponent {
         } else {
             form.timeStartFormatCustom.clearValidators();
         }
+        form.timeStartFormatCustom.updateValueAndValidity();
     }
 
     changeTimeEndFormat(): void {
@@ -142,6 +143,7 @@ export class UploadComponent {
         } else {
             form.timeEndFormatCustom.clearValidators();
         }
+        form.timeEndFormatCustom.updateValueAndValidity();
     }
 
     changeTimeDurationValueType(): void {
@@ -153,6 +155,8 @@ export class UploadComponent {
             form.timeDurationValue.clearValidators();
             form.timeDurationGranularity.clearValidators();
         }
+        form.timeDurationValue.updateValueAndValidity();
+        form.timeDurationGranularity.updateValueAndValidity();
     }
 
     removeText(column: string): void {
