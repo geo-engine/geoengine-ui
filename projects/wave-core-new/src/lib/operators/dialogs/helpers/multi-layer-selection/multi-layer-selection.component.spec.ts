@@ -158,6 +158,7 @@ describe('MultiLayerSelectionComponent', () => {
         component.add();
         component.add();
         const amount = component.selectedLayers.value.length;
+        expect(amount).toEqual(mockLayers.length);
         for (let j = 0; j < amount; j++) {
             deb = fixture.debugElement.query(By.css('.mat-select-' + j));
             html = deb.nativeElement;
@@ -192,6 +193,7 @@ describe('MultiLayerSelectionComponent', () => {
         component.add();
         component.add();
         const amount = component.selectedLayers.value.length;
+        expect(amount).toEqual(mockLayers.length);
         await testInputs(amount);
 
         for (let i = 0; i < amount; i++) {
