@@ -26,16 +26,16 @@ describe('MultiLayerSelectionComponent', () => {
         isLegendVisible: true,
         isVisible: true,
         symbology: RasterSymbology.fromRasterSymbologyDict({
+            type: 'raster',
             opacity: 1.0,
             colorizer: {
-                linearGradient: {
-                    breakpoints: [
-                        {value: 0, color: [0, 0, 0, 255]},
-                        {value: 255, color: [255, 255, 255, 255]},
-                    ],
-                    defaultColor: [0, 0, 0, 255],
-                    noDataColor: [0, 0, 0, 255],
-                },
+                type: 'linearGradient',
+                breakpoints: [
+                    {value: 1, color: [0, 0, 0, 255]},
+                    {value: 255, color: [255, 255, 255, 255]},
+                ],
+                defaultColor: [0, 0, 0, 0],
+                noDataColor: [0, 0, 0, 0],
             },
         }),
     });
@@ -45,16 +45,16 @@ describe('MultiLayerSelectionComponent', () => {
         isLegendVisible: true,
         isVisible: true,
         symbology: RasterSymbology.fromRasterSymbologyDict({
+            type: 'raster',
             opacity: 1.0,
             colorizer: {
-                linearGradient: {
-                    breakpoints: [
-                        {value: 0, color: [0, 0, 0, 255]},
-                        {value: 255, color: [255, 255, 255, 255]},
-                    ],
-                    defaultColor: [0, 0, 0, 255],
-                    noDataColor: [0, 0, 0, 255],
-                },
+                type: 'linearGradient',
+                breakpoints: [
+                    {value: 1, color: [0, 0, 0, 255]},
+                    {value: 255, color: [255, 255, 255, 255]},
+                ],
+                defaultColor: [0, 0, 0, 0],
+                noDataColor: [0, 0, 0, 0],
             },
         }),
     });
@@ -64,16 +64,16 @@ describe('MultiLayerSelectionComponent', () => {
         isLegendVisible: true,
         isVisible: true,
         symbology: RasterSymbology.fromRasterSymbologyDict({
+            type: 'raster',
             opacity: 1.0,
             colorizer: {
-                linearGradient: {
-                    breakpoints: [
-                        {value: 0, color: [0, 0, 0, 255]},
-                        {value: 255, color: [255, 255, 255, 255]},
-                    ],
-                    defaultColor: [0, 0, 0, 255],
-                    noDataColor: [0, 0, 0, 255],
-                },
+                type: 'linearGradient',
+                breakpoints: [
+                    {value: 1, color: [0, 0, 0, 255]},
+                    {value: 255, color: [255, 255, 255, 255]},
+                ],
+                defaultColor: [0, 0, 0, 0],
+                noDataColor: [0, 0, 0, 0],
             },
         }),
     });
@@ -117,7 +117,7 @@ describe('MultiLayerSelectionComponent', () => {
     /** Adding three layers
      * checking the number of possible layers to select from
      * checking the default layer displayed **/
-    it('testing with min = max = 1', async () => {
+    it('should display the first of selectedLayers per default, min = max = 1', async () => {
         component.ngOnChanges({layers: new SimpleChange(undefined, component.layers, true)});
         fixture.detectChanges();
         html = fixture.nativeElement.querySelector('mat-select');
@@ -152,7 +152,7 @@ describe('MultiLayerSelectionComponent', () => {
     /** Adding three layers
      * adding two more input fields
      * checking the default layers displayed and the number of possible layers to select **/
-    it('testing with max = 3', async () => {
+    it('should display the selectedLayers per default, max = 3', async () => {
         component.ngOnChanges({max: new SimpleChange(component.max, 3, true), layers: new SimpleChange(undefined, component.layers, true)});
         fixture.detectChanges();
         component.add();
