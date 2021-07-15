@@ -111,7 +111,7 @@ import {ProviderListComponent} from './datasets/provider-list/provider-list.comp
 import {ExternalDatasetListComponent} from './datasets/external-dataset-list/external-dataset-list.component';
 import {AddWorkflowComponent} from './datasets/add-workflow/add-workflow.component';
 
-const MATERIAL_MODULES = [
+export const MATERIAL_MODULES = [
     MatAutocompleteModule,
     MatButtonModule,
     MatButtonToggleModule,
