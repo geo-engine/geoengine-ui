@@ -75,7 +75,8 @@ export interface PointInPolygonFilterDict extends OperatorDict {
 
 export interface RasterVectorJoinParams extends OperatorParams {
     names: Array<string>;
-    aggregation: 'first' | 'mean';
+    temporalAggregation: 'none' | 'first' | 'mean';
+    featureAggregation: 'first' | 'mean';
 }
 
 export interface RasterVectorJoinDict extends OperatorDict {

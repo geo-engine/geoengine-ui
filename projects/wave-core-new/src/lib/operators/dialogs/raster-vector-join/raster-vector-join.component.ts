@@ -13,7 +13,8 @@ import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
 import {PointSymbology, StaticColor} from '../../../layers/symbology/symbology.model';
 import {RasterVectorJoinDict, RasterVectorJoinParams} from '../../../backend/operator.model';
 
-type Aggregation = 'first' | 'mean';
+type TemporalAggregation = 'none' | 'first' | 'mean';
+type FeatureAggregation = 'first' | 'mean';
 
 @Component({
     selector: 'wave-raster-vector-join',
@@ -45,7 +46,8 @@ export class RasterVectorJoinComponent implements OnDestroy {
             vectorLayer: [undefined, Validators.required],
             rasterLayers: [undefined, Validators.required],
             valueNames: this.formBuilder.array([]),
-            aggregation: ['none', Validators.required],
+            temporalAggregation: ['none', Validators.required],
+            featureAggregation: ['first', Validators.required],
             name: ['Vectors With Raster Values', [Validators.required, WaveValidators.notOnlyWhitespace]],
         });
 
@@ -70,13 +72,15 @@ export class RasterVectorJoinComponent implements OnDestroy {
         const vectorLayer: VectorLayer = this.form.controls['vectorLayer'].value;
         const rasterLayers: Array<RasterLayer> = this.form.controls['rasterLayers'].value;
         const valueNames: Array<string> = this.form.controls['valueNames'].value;
-        const aggregation: Aggregation = this.form.controls['aggregation'].value;
+        const temporalAggregation: TemporalAggregation = this.form.controls['temporalAggregation'].value;
+        const featureAggregation: FeatureAggregation = this.form.controls['featureAggregation'].value;
 
         const outputLayerName: string = this.form.controls['name'].value;
 
         const params: RasterVectorJoinParams = {
             names: valueNames,
-            aggregation,
+            temporalAggregation,
+            featureAggregation,
         };
 
         const sourceOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers([vectorLayer, ...rasterLayers]);
