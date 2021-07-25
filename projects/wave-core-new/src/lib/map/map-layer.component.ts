@@ -13,8 +13,8 @@ import {
 } from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 
-import {Layer as OlLayer, Tile as OlLayerTile, Vector as OlLayerVector} from 'ol/layer';
-import {Source as OlSource, TileWMS as OlTileWmsSource, Vector as OlVectorSource} from 'ol/source';
+import {Layer as OlLayer, Image as OlLayerImage, Vector as OlLayerVector} from 'ol/layer';
+import {Source as OlSource, ImageWMS as OlImageWmsSource, Vector as OlVectorSource} from 'ol/source';
 import {Config} from '../config.service';
 import {ProjectService} from '../project/project.service';
 import {LoadingState} from '../project/loading-state.model';
@@ -161,7 +161,7 @@ export class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector, OlV
     providers: [{provide: MapLayerComponent, useExisting: OlRasterLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTileWmsSource> implements OnInit, OnDestroy, OnChanges {
+export class OlRasterLayerComponent extends MapLayerComponent<OlLayerImage, OlImageWmsSource> implements OnInit, OnDestroy, OnChanges {
     symbology?: RasterSymbology;
 
     protected dataSubscription?: Subscription;
@@ -174,12 +174,13 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
     constructor(protected projectService: ProjectService, protected backend: BackendService, protected config: Config) {
         super(
             projectService,
-            new OlTileWmsSource({
+            new OlImageWmsSource({
                 // empty for start
                 params: {},
+                url: '',
             }),
             (source) =>
-                new OlLayerTile({
+                new OlLayerImage({
                     source,
                     opacity: 1,
                 }),
@@ -288,7 +289,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
             return;
         }
 
-        this.source = new OlTileWmsSource({
+        this.source = new OlImageWmsSource({
             url: this.backend.wmsUrl,
             params: {
                 layers: this.workflow,
@@ -296,7 +297,6 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
                 STYLES: this.stylesFromColorizer(this.symbology.colorizer),
             },
             projection: this.spatialReference.srsString,
-            wrapX: false,
         });
 
         this.addStateListenersToOlSource();
@@ -311,7 +311,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
         if (this._mapLayer) {
             this._mapLayer.setSource(this.source);
         } else if (this.symbology) {
-            this._mapLayer = new OlLayerTile({
+            this._mapLayer = new OlLayerImage({
                 source: this.source,
                 opacity: this.symbology.opacity,
             });
