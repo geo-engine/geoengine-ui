@@ -299,7 +299,6 @@ export class UploadComponent {
                 },
                 forceOgrTimeFilter: false,
                 onError: formMeta.errorHandling.value,
-                provenance: undefined, // TODO
             },
             resultDescriptor: {
                 type: 'vector',
