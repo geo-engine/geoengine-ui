@@ -25,7 +25,7 @@ type FeatureAggregation = 'first' | 'mean';
 export class RasterVectorJoinComponent implements OnDestroy {
     minNumberOfRasterInputs = 1;
     maxNumberOfRasterInputs = 8;
-    allowedVectorTypes = [ResultTypes.POINTS];
+    allowedVectorTypes = [ResultTypes.POINTS, ResultTypes.POLYGONS];
     allowedRasterTypes = [ResultTypes.RASTER];
 
     form: FormGroup;

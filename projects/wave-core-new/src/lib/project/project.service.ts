@@ -78,7 +78,7 @@ export class ProjectService {
         protected mapService: MapService,
         protected backend: BackendService,
         protected userService: UserService,
-        protected spatialReferenceServce: SpatialReferenceService,
+        protected spatialReferenceService: SpatialReferenceService,
     ) {
         // set the starting project upon login
         this.userService
@@ -97,7 +97,7 @@ export class ProjectService {
 
         // TODO: solidify default project creation
 
-        return this.spatialReferenceServce.getSpatialReferenceSpecification(this.config.DEFAULTS.PROJECT.PROJECTION).pipe(
+        return this.spatialReferenceService.getSpatialReferenceSpecification(this.config.DEFAULTS.PROJECT.PROJECTION).pipe(
             mergeMap((spec: SpatialReferenceSpecification) =>
                 this.createProject({
                     name,
