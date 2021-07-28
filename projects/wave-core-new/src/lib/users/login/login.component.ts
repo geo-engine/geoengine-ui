@@ -51,7 +51,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
             .getSessionStream()
             .pipe(first())
             .subscribe((session) => {
-                if (session.user.isGuest) {
+                if (!session.user || session.user.isGuest) {
                     this.formStatus$.next(FormStatus.LoggedOut);
                 } else {
                     this.user = session.user;

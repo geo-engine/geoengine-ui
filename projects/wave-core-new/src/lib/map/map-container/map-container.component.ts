@@ -40,7 +40,7 @@ import OlFormatGeoJSON from 'ol/format/GeoJSON';
 
 import OlStyleFill from 'ol/style/Fill';
 import OlStyleStroke from 'ol/style/Stroke';
-import OlStyleStyle from 'ol/style/Style';
+import OlStyleStyle, {StyleLike as OlStyleLike} from 'ol/style/Style';
 
 import OlInteractionDraw from 'ol/interaction/Draw';
 import OlInteractionSelect from 'ol/interaction/Select';
@@ -106,6 +106,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     private userSelect?: OlInteractionSelect;
 
     private selectedFeature?: OlFeature = undefined;
+    private selectedFeatureOriginalStyle?: OlStyleLike = undefined;
 
     private drawInteractionSource?: OlSourceVector;
     private drawType: OlGeometryType = OlGeometryType.POINT;
@@ -374,6 +375,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 for (const feature of source.getFeatures()) {
                     if (feature.getId() === selection.feature) {
                         this.selectedFeature = feature;
+                        this.selectedFeatureOriginalStyle = feature.getStyle();
                         const style = (layer.symbology as VectorSymbology).createHighlightStyle(feature);
                         feature.setStyle(style);
                         this.userSelect?.getFeatures().push(feature);
@@ -397,8 +399,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 for (const feature of source.getFeatures()) {
                     if (feature.getId() === this.selectedFeature.getId()) {
                         this.selectedFeature = undefined;
-                        const style = (layer.symbology as VectorSymbology).createStyle(feature);
-                        feature.setStyle(style);
+                        feature.setStyle(this.selectedFeatureOriginalStyle);
                         return;
                     }
                 }

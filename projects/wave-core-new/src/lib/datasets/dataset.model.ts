@@ -1,4 +1,15 @@
-import {DatasetDict, InternalDatasetIdDict, DatasetResultDescriptorDict, UUID, WorkflowDict, SrsString} from '../backend/backend.model';
+import {
+    DatasetDict,
+    TypedResultDescriptorDict,
+    UUID,
+    WorkflowDict,
+    SrsString,
+    DatasetIdDict,
+    ExternalDatasetIdDict,
+    RasterResultDescriptorDict,
+    VectorResultDescriptorDict,
+} from '../backend/backend.model';
+import {Symbology} from '../layers/symbology/symbology.model';
 import {
     RasterDataType,
     RasterDataTypes,
@@ -9,18 +20,20 @@ import {
 } from '../operators/datatype.model';
 
 export class Dataset {
-    readonly id: InternalDatasetId; // TODO: support all Id types
+    readonly id: DatasetId;
     readonly name: string;
     readonly description: string;
     readonly resultDescriptor: ResultDescriptor;
     readonly sourceOperator: string;
+    readonly symbology?: Symbology;
 
     constructor(config: DatasetDict) {
-        this.id = InternalDatasetId.fromDict(config.id);
+        this.id = DatasetId.fromDict(config.id);
         this.name = config.name;
         this.description = config.description;
         this.resultDescriptor = ResultDescriptor.fromDict(config.resultDescriptor);
         this.sourceOperator = config.sourceOperator;
+        this.symbology = config.symbology ? Symbology.fromDict(config.symbology) : undefined;
     }
 
     static fromDict(dict: DatasetDict): Dataset {
@@ -40,20 +53,57 @@ export class Dataset {
     }
 }
 
-export class InternalDatasetId {
-    Internal: UUID;
+export abstract class DatasetId {
+    static fromDict(dict: DatasetIdDict): DatasetId {
+        if (dict.type === 'internal') {
+            return InternalDatasetId.fromDict(dict.datasetId);
+        } else if (dict.type === 'external') {
+            return ExternalDatasetId.fromDict(dict);
+        }
 
-    constructor(config: InternalDatasetIdDict) {
-        this.Internal = config.internal;
+        throw Error('Unknown DatasetId type');
     }
 
-    static fromDict(config: InternalDatasetIdDict): InternalDatasetId {
+    abstract toDict(): DatasetIdDict;
+}
+
+export class InternalDatasetId {
+    id: UUID;
+
+    constructor(id: UUID) {
+        this.id = id;
+    }
+
+    static fromDict(config: UUID): InternalDatasetId {
         return new InternalDatasetId(config);
     }
 
-    toDict(): InternalDatasetIdDict {
+    toDict(): DatasetIdDict {
         return {
-            internal: this.Internal,
+            type: 'internal',
+            datasetId: this.id,
+        };
+    }
+}
+
+export class ExternalDatasetId {
+    provider: UUID;
+    dataset: string;
+
+    constructor(config: ExternalDatasetIdDict) {
+        this.provider = config.providerId;
+        this.dataset = config.datasetId;
+    }
+
+    static fromDict(config: ExternalDatasetIdDict): ExternalDatasetId {
+        return new ExternalDatasetId(config);
+    }
+
+    toDict(): DatasetIdDict {
+        return {
+            type: 'external',
+            providerId: this.provider,
+            datasetId: this.dataset,
         };
     }
 }
@@ -65,10 +115,10 @@ export abstract class ResultDescriptor {
         this.spatialReference = spatialReference;
     }
 
-    static fromDict(dict: DatasetResultDescriptorDict): ResultDescriptor {
-        if ('vector' in dict) {
+    static fromDict(dict: TypedResultDescriptorDict): ResultDescriptor {
+        if (dict.type === 'vector') {
             return VectorResultDescriptor.fromDict(dict);
-        } else if ('raster' in dict) {
+        } else if (dict.type === 'raster') {
             return RasterResultDescriptor.fromDict(dict);
         }
 
@@ -81,16 +131,12 @@ export abstract class ResultDescriptor {
 export class RasterResultDescriptor extends ResultDescriptor {
     readonly dataType: RasterDataType;
 
-    constructor(config: DatasetResultDescriptorDict) {
-        if (!config.raster) {
-            throw new Error('missing `RasterResultDescriptorDict`');
-        }
-
-        super(config.raster.spatialReference);
-        this.dataType = RasterDataTypes.fromCode(config.raster.dataType);
+    constructor(config: RasterResultDescriptorDict) {
+        super(config.spatialReference);
+        this.dataType = RasterDataTypes.fromCode(config.dataType);
     }
 
-    static fromDict(dict: DatasetResultDescriptorDict): ResultDescriptor {
+    static fromDict(dict: RasterResultDescriptorDict): ResultDescriptor {
         return new RasterResultDescriptor(dict);
     }
 
@@ -103,17 +149,13 @@ export class VectorResultDescriptor extends ResultDescriptor {
     readonly dataType: VectorDataType;
     readonly columns: Map<string, VectorColumnDataType>;
 
-    constructor(config: DatasetResultDescriptorDict) {
-        if (!config.vector) {
-            throw new Error('missing `VectorResultDescriptorDict`');
-        }
-
-        super(config.vector.spatialReference);
-        this.dataType = VectorDataTypes.fromCode(config.vector.dataType);
-        this.columns = new Map(Object.entries(config.vector.columns).map(([key, value]) => [key, VectorColumnDataTypes.fromCode(value)]));
+    constructor(config: VectorResultDescriptorDict) {
+        super(config.spatialReference);
+        this.dataType = VectorDataTypes.fromCode(config.dataType);
+        this.columns = new Map(Object.entries(config.columns).map(([key, value]) => [key, VectorColumnDataTypes.fromCode(value)]));
     }
 
-    static fromDict(dict: DatasetResultDescriptorDict): ResultDescriptor {
+    static fromDict(dict: VectorResultDescriptorDict): ResultDescriptor {
         return new VectorResultDescriptor(dict);
     }
 

@@ -1,6 +1,6 @@
 import {Observable, Observer} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {AbstractControl, AsyncValidatorFn, ValidationErrors} from '@angular/forms';
+import {AbstractControl, AsyncValidatorFn, ValidationErrors, Validators} from '@angular/forms';
 
 const isFiniteNumber = (value: any): boolean => value !== null && value !== undefined && !isNaN(value) && isFinite(value);
 
@@ -201,3 +201,5 @@ export function valueRelation(
         return Object.keys(errors).length > 0 ? errors : null;
     };
 }
+
+export const isValidUuid = Validators.pattern(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i);

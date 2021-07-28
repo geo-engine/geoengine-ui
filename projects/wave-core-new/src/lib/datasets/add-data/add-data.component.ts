@@ -1,8 +1,10 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
 import {LayoutService, SidenavConfig} from '../../layout.service';
 import {createIconDataUrl} from '../../util/icons';
+import {AddWorkflowComponent} from '../add-workflow/add-workflow.component';
 import {DatasetListComponent} from '../dataset-list/dataset-list.component';
 import {DrawFeaturesComponent} from '../draw-features/draw-features.component';
+import {ProviderListComponent} from '../provider-list/provider-list.component';
 import {UploadComponent} from '../upload/upload.component';
 
 export interface AddDataButton {
@@ -50,6 +52,15 @@ export class AddDataComponent implements OnInit {
         };
     }
 
+    static createExternalDataButton(): AddDataButton {
+        return {
+            name: 'External Data',
+            description: 'Available external data',
+            iconSrc: createIconDataUrl('External Data'),
+            sidenavConfig: {component: ProviderListComponent, keepParent: true},
+        };
+    }
+
     static createUploadButton(): AddDataButton {
         return {
             name: 'Upload',
@@ -68,6 +79,18 @@ export class AddDataComponent implements OnInit {
             description: 'Draw features on the map',
             icon: 'create',
             sidenavConfig: {component: DrawFeaturesComponent, keepParent: true},
+        };
+    }
+
+    /**
+     * Add workflow id dialog
+     */
+    static createAddWorkflowByIdButton(): AddDataButton {
+        return {
+            name: 'Add Workflow by Id',
+            description: 'Add a workflow by its id',
+            iconSrc: createIconDataUrl('Add Workflow by id'),
+            sidenavConfig: {component: AddWorkflowComponent, keepParent: true},
         };
     }
 }

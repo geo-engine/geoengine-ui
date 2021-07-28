@@ -10,9 +10,11 @@ import {
     CreateDatasetDict,
     DatasetIdDict,
     DatasetIdResponseDict,
+    DataSetProviderListingDict,
     MetaDataSuggestionDict,
     SuggestMetaDataDict,
     UploadResponseDict,
+    UUID,
 } from '../backend/backend.model';
 import {RandomColorService} from '../util/services/random-color.service';
 import {RasterLayer, VectorLayer} from '../layers/layer.model';
@@ -37,6 +39,17 @@ export class DatasetService {
             mergeMap((session) => this.backend.getDatasets(session.sessionToken, offset, limit)),
             map((datasetDicts) => datasetDicts.map((dict) => Dataset.fromDict(dict))),
         );
+    }
+
+    getExternalDatasets(providerId: UUID): Observable<Array<Dataset>> {
+        return this.userService.getSessionStream().pipe(
+            mergeMap((session) => this.backend.getExternalDatasets(session.sessionToken, providerId)),
+            map((datasetDicts) => datasetDicts.map((dict) => Dataset.fromDict(dict))),
+        );
+    }
+
+    getDatasetProviders(): Observable<Array<DataSetProviderListingDict>> {
+        return this.userService.getSessionStream().pipe(mergeMap((session) => this.backend.getDatasetProviders(session.sessionToken)));
     }
 
     getDataset(id: DatasetIdDict): Observable<Dataset> {
@@ -67,23 +80,27 @@ export class DatasetService {
         return this.projectService.registerWorkflow(workflow).pipe(
             mergeMap((workflowId) => {
                 if (dataset.resultDescriptor.getTypeString() === 'Raster') {
+                    const symbology = dataset.symbology as RasterSymbology;
+
                     return this.projectService.addLayer(
                         new RasterLayer({
                             workflowId,
                             name: dataset.name,
-                            symbology: RasterSymbology.fromRasterSymbologyDict({
-                                opacity: 1.0,
-                                colorizer: {
-                                    linearGradient: {
-                                        breakpoints: [
-                                            {value: 1, color: [0, 0, 0, 255]},
-                                            {value: 255, color: [255, 255, 255, 255]},
-                                        ],
-                                        defaultColor: [0, 0, 0, 0],
-                                        noDataColor: [0, 0, 0, 0],
-                                    },
-                                },
-                            }),
+                            symbology: symbology
+                                ? symbology
+                                : RasterSymbology.fromRasterSymbologyDict({
+                                      type: 'raster',
+                                      opacity: 1.0,
+                                      colorizer: {
+                                          type: 'linearGradient',
+                                          breakpoints: [
+                                              {value: 1, color: [0, 0, 0, 255]},
+                                              {value: 255, color: [255, 255, 255, 255]},
+                                          ],
+                                          defaultColor: [0, 0, 0, 0],
+                                          noDataColor: [0, 0, 0, 0],
+                                      },
+                                  }),
                             isLegendVisible: false,
                             isVisible: true,
                         }),
@@ -95,28 +112,64 @@ export class DatasetService {
 
                     switch (resultDescriptor.dataType) {
                         case VectorDataTypes.MultiPoint:
-                            symbology = PointSymbology.fromPointSymbologyDict({
-                                radius: {static: 10},
-                                stroke: {
-                                    width: {static: 1},
-                                    color: {static: [0, 0, 0, 255]},
-                                },
-                                fillColor: {static: colorToDict(this.randomColorService.getRandomColorRgba())},
-                            });
+                            symbology = (dataset.symbology as PointSymbology)
+                                ? (dataset.symbology as PointSymbology)
+                                : PointSymbology.fromPointSymbologyDict({
+                                      type: 'point',
+                                      radius: {
+                                          type: 'static',
+                                          value: 10,
+                                      },
+                                      stroke: {
+                                          width: {
+                                              type: 'static',
+                                              value: 1,
+                                          },
+                                          color: {
+                                              type: 'static',
+                                              color: [0, 0, 0, 255],
+                                          },
+                                      },
+                                      fillColor: {
+                                          type: 'static',
+                                          color: colorToDict(this.randomColorService.getRandomColorRgba()),
+                                      },
+                                  });
                             break;
                         case VectorDataTypes.MultiLineString:
-                            symbology = LineSymbology.fromLineSymbologyDict({
-                                stroke: {
-                                    width: {static: 1},
-                                    color: {static: colorToDict(this.randomColorService.getRandomColorRgba())},
-                                },
-                            });
+                            symbology = (dataset.symbology as LineSymbology)
+                                ? (dataset.symbology as LineSymbology)
+                                : LineSymbology.fromLineSymbologyDict({
+                                      type: 'line',
+                                      stroke: {
+                                          width: {type: 'static', value: 1},
+                                          color: {
+                                              type: 'static',
+                                              color: colorToDict(this.randomColorService.getRandomColorRgba()),
+                                          },
+                                      },
+                                  });
                             break;
                         case VectorDataTypes.MultiPolygon:
-                            symbology = PolygonSymbology.fromPolygonSymbologyDict({
-                                stroke: {width: {static: 1}, color: {static: [0, 0, 0, 255]}},
-                                fillColor: {static: colorToDict(this.randomColorService.getRandomColorRgba())},
-                            });
+                            symbology = (dataset.symbology as PolygonSymbology)
+                                ? (dataset.symbology as PolygonSymbology)
+                                : PolygonSymbology.fromPolygonSymbologyDict({
+                                      type: 'polygon',
+                                      stroke: {
+                                          width: {
+                                              type: 'static',
+                                              value: 1,
+                                          },
+                                          color: {
+                                              type: 'static',
+                                              color: [0, 0, 0, 255],
+                                          },
+                                      },
+                                      fillColor: {
+                                          type: 'static',
+                                          color: colorToDict(this.randomColorService.getRandomColorRgba()),
+                                      },
+                                  });
                             break;
                         default:
                             throw Error('unknown symbology type');

@@ -1,6 +1,7 @@
 import {Observable, Subscription} from 'rxjs';
 import {Component, OnDestroy, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnChanges} from '@angular/core';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import {Clipboard} from '@angular/cdk/clipboard';
 import {MatDialog} from '@angular/material/dialog';
 import {LayoutService, SidenavConfig} from '../../layout.service';
 import {IconStyle, Symbology, SymbologyType} from '../symbology/symbology.model';
@@ -20,6 +21,7 @@ import {RasterLayerMetadata} from '../layer-metadata.model';
 import {RasterSymbologyEditorComponent} from '../symbology/raster-symbology-editor/raster-symbology-editor.component';
 import {SimpleChanges} from '@angular/core';
 import {VectorSymbologyEditorComponent} from '../symbology/vector-symbology-editor/vector-symbology-editor.component';
+import {NotificationService} from '../../notification.service';
 
 /**
  * The layer list component displays active layers, legends and other controlls.
@@ -84,6 +86,8 @@ export class LayerListComponent implements OnDestroy, OnChanges {
         public config: Config,
         public changeDetectorRef: ChangeDetectorRef,
         protected readonly tabsService: TabsService,
+        protected readonly clipboard: Clipboard,
+        protected readonly notificationService: NotificationService,
     ) {
         this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
 
@@ -187,5 +191,10 @@ export class LayerListComponent implements OnDestroy, OnChanges {
             map((metaData) => metaData as RasterLayerMetadata),
             map((metaData) => metaData.measurement),
         );
+    }
+
+    copyWorkflowIdToClipboard(layer: Layer): void {
+        this.clipboard.copy(layer.workflowId);
+        this.notificationService.info('Copied workflow id to clipboard');
     }
 }

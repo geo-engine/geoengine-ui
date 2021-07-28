@@ -1,0 +1,17 @@
+<wave-sidenav-header>Data Repository</wave-sidenav-header>
+
+<mat-list>
+    <ng-template ngFor let-provider [ngForOf]="providers | async">
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>
+                    <span class="dataset-name">{{ provider.typeName }} : {{ provider.name }}</span>
+                </mat-card-title>
+            </mat-card-header>
+
+            <mat-card-content>
+                <button type="button" mat-raised-button (click)="show(provider.id)">Show available datasets</button>
+            </mat-card-content>
+        </mat-card>
+    </ng-template>
+</mat-list>

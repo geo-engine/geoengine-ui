@@ -195,10 +195,11 @@ export class AppComponent implements OnInit, AfterViewInit {
     private static createAddDataListButtons(): Array<AddDataButton> {
         return [
             AddDataComponent.createDatasetListButton(),
+            AddDataComponent.createExternalDataButton(),
             AddDataComponent.createUploadButton(),
             AddDataComponent.createDrawFeaturesButton(),
+            AddDataComponent.createAddWorkflowByIdButton(),
 
-            // SourceOperatorListComponent.createDrawFeaturesButton(),
             // ...SourceOperatorListComponent.createCustomFeaturesButtons(),
             // {
             //     name: 'Species Occurrences',

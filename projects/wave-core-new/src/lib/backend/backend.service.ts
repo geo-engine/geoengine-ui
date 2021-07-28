@@ -33,6 +33,8 @@ import {
     SuggestMetaDataDict,
     ResultDescriptorDict,
     SpatialReferenceSpecificationDict,
+    DataSetProviderListingDict,
+    DatasetOrderByDict,
 } from './backend.model';
 
 @Injectable({
@@ -231,12 +233,27 @@ export class BackendService {
         });
     }
 
-    // TODO: turn into paginated data source
-    getDatasets(sessionId: UUID, offset='0', limit='20'): Observable<Array<DatasetDict>> {
+    getDataset(sessionId: UUID, datasetId: DatasetIdDict): Observable<DatasetDict> {
+        // TODO: external datasets
+        if (datasetId.type === 'internal') {
+            return this.http.get<DatasetDict>(this.config.API_URL + `/dataset/internal/${datasetId.datasetId}`, {
+                headers: BackendService.authorizationHeader(sessionId),
+            });
+        } else {
+            throw Error('cannot load external datasets yet');
+        }
+    }
+
+    getDatasets(
+        sessionId: UUID,
+        offset: number = 0,
+        limit: number = 20,
+        order: DatasetOrderByDict = 'NameAsc',
+    ): Observable<Array<DatasetDict>> {
         const params = new NullDiscardingHttpParams();
-        params.set('order', 'NameAsc');
-        params.set('offset', offset);
-        params.set('limit', limit);
+        params.set('order', order);
+        params.setMapped('offset', offset, Number.toString);
+        params.setMapped('limit', limit, Number.toString);
 
         return this.http.get<Array<DatasetDict>>(this.config.API_URL + '/datasets', {
             params: params.httpParams,
@@ -244,10 +261,20 @@ export class BackendService {
         });
     }
 
+    getExternalDatasets(
+        sessionId: UUID,
+        providerId: UUID,
+        offset: number = 0,
+        limit: number = 20,
+        order: DatasetOrderByDict = 'NameAsc',
+    ): Observable<Array<DatasetDict>> {
+        const params = new NullDiscardingHttpParams();
+        params.set('order', order);
+        params.setMapped('offset', offset, Number.toString);
+        params.setMapped('limit', limit, Number.toString);
 
-    getDataset(sessionId: UUID, datasetId: DatasetIdDict): Observable<DatasetDict> {
-        // TODO: external datasets
-        return this.http.get<DatasetDict>(this.config.API_URL + `/dataset/internal/${datasetId.internal}`, {
+        return this.http.get<Array<DatasetDict>>(this.config.API_URL + `/datasets/external/${providerId}`, {
+            params: params.httpParams,
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
@@ -285,6 +312,18 @@ export class BackendService {
 
     getSpatialReferenceSpecification(sessionId: UUID, srsString: SrsString): Observable<SpatialReferenceSpecificationDict> {
         return this.http.get<SpatialReferenceSpecificationDict>(this.config.API_URL + `/spatialReferenceSpecification/${srsString}`, {
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    getDatasetProviders(sessionId: UUID): Observable<Array<DataSetProviderListingDict>> {
+        const params = new NullDiscardingHttpParams();
+        params.set('order', 'NameAsc');
+        params.set('offset', '0');
+        params.set('limit', '20');
+
+        return this.http.get<Array<DataSetProviderListingDict>>(this.config.API_URL + '/providers', {
+            params: params.httpParams,
             headers: BackendService.authorizationHeader(sessionId),
         });
     }

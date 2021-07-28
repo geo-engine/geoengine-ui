@@ -89,8 +89,21 @@ export class AnalysisComponent implements OnInit {
                             workflowId,
                             name: country,
                             symbology: PolygonSymbology.fromPolygonSymbologyDict({
-                                stroke: {width: {static: 1}, color: {static: [0, 0, 0, 255]}},
-                                fillColor: {static: [0, 0, 128, 255]},
+                                type: 'polygon',
+                                stroke: {
+                                    width: {
+                                        type: 'static',
+                                        value: 1,
+                                    },
+                                    color: {
+                                        type: 'static',
+                                        color: [0, 0, 0, 255],
+                                    },
+                                },
+                                fillColor: {
+                                    type: 'static',
+                                    color: [0, 0, 128, 255],
+                                },
                             }),
                             isLegendVisible: false,
                             isVisible: true,

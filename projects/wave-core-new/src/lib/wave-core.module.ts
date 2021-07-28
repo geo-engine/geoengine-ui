@@ -107,8 +107,11 @@ import {FeatureAttributeOvertimeComponent} from './operators/dialogs/feature-att
 import {NotificationsComponent} from './project/notifications/notifications.component';
 import {TemporalRasterAggregationComponent} from './operators/dialogs/temporal-raster-aggregation/temporal-raster-aggregation.component';
 import {DragAndDropComponent} from './datasets/drag-and-drop/drag-and-drop.component';
+import {ProviderListComponent} from './datasets/provider-list/provider-list.component';
+import {ExternalDatasetListComponent} from './datasets/external-dataset-list/external-dataset-list.component';
+import {AddWorkflowComponent} from './datasets/add-workflow/add-workflow.component';
 
-const MATERIAL_MODULES = [
+export const MATERIAL_MODULES = [
     MatAutocompleteModule,
     MatButtonModule,
     MatButtonToggleModule,
@@ -159,30 +162,32 @@ const WAVE_PIPES = [
 
 const WAVE_COMPONENTS = [
     AddDataComponent,
+    AddWorkflowComponent,
     ChangeSpatialReferenceComponent,
     ColorAttributeInputComponent,
     ColorBreakpointInputComponent,
     ColorMapSelectorComponent,
     ColorParamEditorComponent,
-    DataTableComponent,
-    DataTableComponent,
     DatasetComponent,
     DatasetListComponent,
+    DataTableComponent,
+    DataTableComponent,
     DialogHeaderComponent,
     DialogHelpComponent,
     DialogSectionHeadingComponent,
     DragAndDropComponent,
     DrawFeaturesComponent,
     ExpressionOperatorComponent,
+    ExternalDatasetListComponent,
     FeatureAttributeOvertimeComponent,
     HistogramOperatorComponent,
     IfGuestDirective,
     IfLoggedInDirective,
     LayerListComponent,
     LayerSelectionComponent,
+    LineageGraphComponent,
+    LineageGraphComponent,
     LineIconComponent,
-    LineageGraphComponent,
-    LineageGraphComponent,
     LoadProjectComponent,
     LoginComponent,
     MapContainerComponent,
@@ -202,6 +207,7 @@ const WAVE_COMPONENTS = [
     PointIconComponent,
     PointInPolygonFilterOperatorComponent,
     PolygonIconComponent,
+    ProviderListComponent,
     RasterIconComponent,
     RasterLegendComponent,
     RasterLegendComponent,
