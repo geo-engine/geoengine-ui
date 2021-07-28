@@ -13,24 +13,28 @@ import {PageEvent} from '@angular/material/paginator';
 export class DatasetListComponent implements OnInit {
     searchTerm = '';
     pageEvent: PageEvent | undefined;
-    offset = '0';
-    limit = '5';
+    offset = 0;
+    limit = 5;
     datasets: Observable<Array<Dataset>>;
-    displayedColumns: string[] = ['id','name','description','add'];
+    displayedColumns: string[] = ['id', 'name', 'description', 'add'];
+
     constructor(public datasetService: DatasetService) {
-        this.datasets = this.datasetService.getDatasets(this.offset,this.limit);
+        this.datasets = this.datasetService.getDatasets(this.offset, this.limit);
     }
 
     ngOnInit(): void {}
 
-    add(dataset:Dataset): void {
+    add(dataset: Dataset): void {
         this.datasetService.addDatasetToMap(dataset).subscribe();
     }
-    onPaginationChange(event:PageEvent):void{
+
+    onPaginationChange(event: PageEvent): void {
         const page = event.pageIndex;
         const size = event.pageSize;
-        this.offset = (page*size).toString();
-        this.limit = size.toString();
-        this.datasets = this.datasetService.getDatasets(this.offset, this.limit)
+
+        this.offset = page * size;
+        this.limit = size;
+
+        this.datasets = this.datasetService.getDatasets(this.offset, this.limit);
     }
 }
