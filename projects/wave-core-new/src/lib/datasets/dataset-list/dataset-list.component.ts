@@ -1,11 +1,10 @@
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, ViewChild} from '@angular/core';
-import {Dataset} from '../dataset.model';
+import {Dataset, DatasetId} from '../dataset.model';
 import {DatasetService} from '../dataset.service';
 import {DataSource} from '@angular/cdk/collections';
-import {BehaviorSubject, Observable, Subject, Subscription} from 'rxjs';
+import {BehaviorSubject, EMPTY, Observable, Subject} from 'rxjs';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
-import {filter} from 'rxjs/operators';
-import {Config} from '../../config.service';
+import {filter, mergeMap, scan, tap} from 'rxjs/operators';
 import {LayoutService} from '../../layout.service';
 
 @Component({
@@ -26,8 +25,8 @@ export class DatasetListComponent implements OnInit, AfterViewInit {
 
     readonly datasetSource: DatasetDataSource;
 
-    constructor(public datasetService: DatasetService, protected config: Config) {
-        this.datasetSource = new DatasetDataSource(this.datasetService, this.config);
+    constructor(public datasetService: DatasetService) {
+        this.datasetSource = new DatasetDataSource(this.datasetService);
     }
 
     ngOnInit(): void {}
@@ -46,29 +45,28 @@ export class DatasetListComponent implements OnInit, AfterViewInit {
             this.datasetSource.fetchMoreData();
         }
     }
+
+    trackById(_index: number, dataset: Dataset): DatasetId {
+        return dataset.id;
+    }
 }
 
 /**
  * A custom data source that allows fetching datasets for a virtual scroll source.
  */
 class DatasetDataSource extends DataSource<Dataset> {
-    readonly scrollFetchSize = 3;
-    readonly debounceTime: number;
+    readonly scrollFetchSize = 20;
 
     readonly loading$ = new BehaviorSubject(false);
 
-    protected data$ = new BehaviorSubject<Array<Dataset>>([]);
-
     protected datasetService: DatasetService;
 
-    protected moreData$ = new Subject<void>();
-    protected moreDataSubscription?: Subscription;
+    protected nextBatch$ = new Subject<void>();
     protected noMoreData = false;
+    protected offset = 0;
 
-    constructor(datasetService: DatasetService, config: Config) {
+    constructor(datasetService: DatasetService) {
         super();
-
-        this.debounceTime = config.DELAYS.DEBOUNCE;
 
         this.datasetService = datasetService;
 
@@ -76,44 +74,42 @@ class DatasetDataSource extends DataSource<Dataset> {
     }
 
     connect(): Observable<Array<Dataset>> {
-        this.moreDataSubscription = this.moreData$.pipe(filter(() => !this.loading$.value)).subscribe(() => {
-            this.getMoreDataFromServer();
-        });
-
-        return this.data$;
+        return this.nextBatch$.pipe(
+            filter(() => !this.loading$.value),
+            mergeMap(() => this.getMoreDataFromServer()),
+            scan((acc, newValues) => [...acc, ...newValues]),
+        );
     }
 
     /**
      * Clean up resources
      */
-    disconnect(): void {
-        this.moreDataSubscription?.unsubscribe();
-    }
+    disconnect(): void {}
 
     fetchMoreData(): void {
-        this.moreData$.next();
+        this.nextBatch$.next();
     }
 
-    protected getMoreDataFromServer(): void {
+    protected getMoreDataFromServer(): Observable<Array<Dataset>> {
         if (this.noMoreData) {
-            return;
+            return EMPTY;
         }
 
         this.loading$.next(true);
 
-        const offset = this.data$.value.length;
+        const offset = this.offset;
         const limit = this.scrollFetchSize;
 
-        this.datasetService.getDatasets(offset, limit).subscribe((datasets) => {
-            const data = this.data$.value;
-            data.push(...datasets);
-            this.data$.next(data);
+        return this.datasetService.getDatasets(offset, limit).pipe(
+            tap((datasets) => {
+                this.offset += datasets.length;
 
-            if (datasets.length < limit) {
-                this.noMoreData = true;
-            }
+                if (datasets.length < limit) {
+                    this.noMoreData = true;
+                }
 
-            this.loading$.next(false);
-        });
+                this.loading$.next(false);
+            }),
+        );
     }
 }
