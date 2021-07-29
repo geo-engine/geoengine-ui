@@ -41,9 +41,9 @@ export class DatasetService {
         );
     }
 
-    getExternalDatasets(providerId: UUID): Observable<Array<Dataset>> {
+    getExternalDatasets(providerId: UUID, offset = 0, limit = 20): Observable<Array<Dataset>> {
         return this.userService.getSessionStream().pipe(
-            mergeMap((session) => this.backend.getExternalDatasets(session.sessionToken, providerId)),
+            mergeMap((session) => this.backend.getExternalDatasets(session.sessionToken, providerId, offset, limit)),
             map((datasetDicts) => datasetDicts.map((dict) => Dataset.fromDict(dict))),
         );
     }

@@ -1,12 +1,6 @@
-<mat-card>
-    <mat-card-header>
-        <mat-card-title>
-            <span class="dataset-name">{{ dataset.name }}</span>
-        </mat-card-title>
-    </mat-card-header>
+<div (click)="add()" class="dataset-box">
+    <img [src]="datasetImg" [alt]="datasetType" />
+    <h3 class="dataset-name">{{ dataset.name }}</h3>
 
-    <mat-card-content>
-        <p>{{ dataset.description }}</p>
-        <button type="button" mat-raised-button (click)="add()">Add layer to project</button>
-    </mat-card-content>
-</mat-card>
+    <p class="body-1 dataset-description">{{ dataset.description }}</p>
+</div>

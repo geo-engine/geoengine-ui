@@ -110,6 +110,7 @@ import {DragAndDropComponent} from './datasets/drag-and-drop/drag-and-drop.compo
 import {ProviderListComponent} from './datasets/provider-list/provider-list.component';
 import {ExternalDatasetListComponent} from './datasets/external-dataset-list/external-dataset-list.component';
 import {AddWorkflowComponent} from './datasets/add-workflow/add-workflow.component';
+import {ScrollingModule} from '@angular/cdk/scrolling';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -246,6 +247,7 @@ const WAVE_COMPONENTS = [
         HttpClientModule,
         PortalModule,
         ReactiveFormsModule,
+        ScrollingModule,
     ],
     exports: [
         /* re-exports */
@@ -253,6 +255,7 @@ const WAVE_COMPONENTS = [
         FlexLayoutModule,
         PortalModule,
         ReactiveFormsModule,
+        ScrollingModule,
         /* library exports */
         ...WAVE_PIPES,
         ...WAVE_COMPONENTS,

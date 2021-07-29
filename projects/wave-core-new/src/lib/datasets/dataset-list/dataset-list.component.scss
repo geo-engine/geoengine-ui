@@ -1,13 +1,7 @@
-table {
-    width: 100%;
+cdk-virtual-scroll-viewport {
+    height: 100%;
 }
-.mat-header-row,
-.mat-row {
-    display: inline-flex;
-    min-width: 100%;
-    height: auto;
 
-}
-.mat-header-cell, .mat-cell {
-    padding-right: 20px;
+mat-spinner {
+    margin: 0.5rem auto;
 }

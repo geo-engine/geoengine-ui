@@ -251,9 +251,9 @@ export class BackendService {
         order: DatasetOrderByDict = 'NameAsc',
     ): Observable<Array<DatasetDict>> {
         const params = new NullDiscardingHttpParams();
+        params.setMapped('offset', offset, (r) => r.toString());
+        params.setMapped('limit', limit, (r) => r.toString());
         params.set('order', order);
-        params.setMapped('offset', offset, Number.toString);
-        params.setMapped('limit', limit, Number.toString);
 
         return this.http.get<Array<DatasetDict>>(this.config.API_URL + '/datasets', {
             params: params.httpParams,
@@ -269,9 +269,9 @@ export class BackendService {
         order: DatasetOrderByDict = 'NameAsc',
     ): Observable<Array<DatasetDict>> {
         const params = new NullDiscardingHttpParams();
+        params.setMapped('offset', offset, (r) => r.toString());
+        params.setMapped('limit', limit, (r) => r.toString());
         params.set('order', order);
-        params.setMapped('offset', offset, Number.toString);
-        params.setMapped('limit', limit, Number.toString);
 
         return this.http.get<Array<DatasetDict>>(this.config.API_URL + `/datasets/external/${providerId}`, {
             params: params.httpParams,
