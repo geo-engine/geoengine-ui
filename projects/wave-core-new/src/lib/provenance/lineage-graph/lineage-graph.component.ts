@@ -1,7 +1,6 @@
 import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit, Inject} from '@angular/core';
-import * as dagre from 'dagre';
 import * as dagreD3 from 'dagre-d3';
 import * as d3 from 'd3';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
@@ -133,7 +132,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         });
     }
 
-    private static addOperatorsToGraph(graph: dagre.graphlib.Graph, initialOperator: OperatorDict | SourceOperatorDict): void {
+    private static addOperatorsToGraph(graph: dagreD3.graphlib.Graph, initialOperator: OperatorDict | SourceOperatorDict): void {
         let nextOperatorId = 0;
 
         const operatorQueue: Array<[number, OperatorDict | SourceOperatorDict]> = [[nextOperatorId++, initialOperator]];
@@ -210,7 +209,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         // console.log(graph.edges(), graph);
     }
 
-    private static addLayerToGraph(graph: dagre.graphlib.Graph, layer: Layer, workflowId: number): void {
+    private static addLayerToGraph(graph: dagreD3.graphlib.Graph, layer: Layer, workflowId: number): void {
         // add node
         graph.setNode(`layer_${layer.workflowId}`, {
             class: 'layer',
@@ -231,7 +230,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
     private addZoomSupport(
         svg: d3.Selection<SVGElement, any, any, any>,
         svgGroup: d3.Selection<SVGElement, any, any, any>,
-        graph: dagre.graphlib.Graph,
+        graph: dagreD3.graphlib.Graph,
         svgWidth: number,
         svgHeight: number,
     ): void {
@@ -239,8 +238,8 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         const paddedWidth = svgWidth - GRAPH_STYLE.surrounding.margin;
         const paddedHeight = svgHeight - GRAPH_STYLE.surrounding.margin;
 
-        const grapWidth = graph.graph().width ?? 1;
-        const grapHeight = graph.graph().height ?? 1;
+        const grapWidth = (graph.graph() as any).width ?? 1;
+        const grapHeight = (graph.graph() as any).height ?? 1;
 
         // calculate the initial zoom level that captures the whole graph
         const scale = Math.min(
@@ -270,7 +269,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         svg.call(zoom as any);
     }
 
-    private addClickHandler(svg: d3.Selection<SVGElement, any, any, any>, graph: dagre.graphlib.Graph): void {
+    private addClickHandler(svg: d3.Selection<SVGElement, any, any, any>, graph: dagreD3.graphlib.Graph): void {
         svg.selectAll('.node').on('click', (_event, theNodeId) => {
             const nodeId = (theNodeId as any) as string; // conversion since the signature is of the wrong type
 
@@ -330,7 +329,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         svg.selectAll('.label > g').attr('transform', null);
     }
 
-    private setupWidthObservables(graph: dagre.graphlib.Graph): {width: number; height: number} {
+    private setupWidthObservables(graph: dagreD3.graphlib.Graph): {width: number; height: number} {
         const widthBound = (maxWidth: number, graphWidth: number): number =>
             Math.min(maxWidth - GRAPH_STYLE.surrounding.detailComponentWidth - GRAPH_STYLE.surrounding.margin, graphWidth);
         const heightBound = (maxWidth: number, _graphWidth: number): number =>
@@ -339,8 +338,8 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
             maxWidth;
         // return the current width bounds
 
-        const grapWidth = graph.graph().width ?? 1;
-        const grapHeight = graph.graph().height ?? 1;
+        const grapWidth = (graph.graph() as any).width ?? 1;
+        const grapHeight = (graph.graph() as any).height ?? 1;
 
         return {
             width: widthBound(this.maxWidth$.getValue(), grapWidth),
