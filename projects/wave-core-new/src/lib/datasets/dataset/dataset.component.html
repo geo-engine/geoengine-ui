@@ -1,6 +1,5 @@
-<div (click)="add()" class="dataset-box">
-    <img [src]="datasetImg" [alt]="datasetType" />
-    <h3 class="dataset-name">{{ dataset.name }}</h3>
-
-    <p class="body-1 dataset-description">{{ dataset.description }}</p>
-</div>
+<mat-list-item (click)="add()">
+    <img mat-list-icon [src]="datasetImg" [alt]="datasetType" />
+    <h4 mat-line>{{ dataset.name }}</h4>
+    <p mat-line>{{ dataset.description }}</p>
+</mat-list-item>
