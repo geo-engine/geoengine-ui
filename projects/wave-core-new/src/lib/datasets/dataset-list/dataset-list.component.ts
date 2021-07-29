@@ -4,7 +4,7 @@ import {DatasetService} from '../dataset.service';
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, Observable, Subject, Subscription} from 'rxjs';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
-import {debounceTime} from 'rxjs/operators';
+import {filter} from 'rxjs/operators';
 import {Config} from '../../config.service';
 import {LayoutService} from '../../layout.service';
 
@@ -52,7 +52,7 @@ export class DatasetListComponent implements OnInit, AfterViewInit {
  * A custom data source that allows fetching datasets for a virtual scroll source.
  */
 class DatasetDataSource extends DataSource<Dataset> {
-    readonly scrollFetchSize = 20;
+    readonly scrollFetchSize = 3;
     readonly debounceTime: number;
 
     readonly loading$ = new BehaviorSubject(false);
@@ -76,7 +76,7 @@ class DatasetDataSource extends DataSource<Dataset> {
     }
 
     connect(): Observable<Array<Dataset>> {
-        this.moreDataSubscription = this.moreData$.pipe(debounceTime(this.debounceTime)).subscribe(() => {
+        this.moreDataSubscription = this.moreData$.pipe(filter(() => !this.loading$.value)).subscribe(() => {
             this.getMoreDataFromServer();
         });
 
@@ -109,7 +109,7 @@ class DatasetDataSource extends DataSource<Dataset> {
             data.push(...datasets);
             this.data$.next(data);
 
-            if (datasets.length === 0) {
+            if (datasets.length < limit) {
                 this.noMoreData = true;
             }
 
