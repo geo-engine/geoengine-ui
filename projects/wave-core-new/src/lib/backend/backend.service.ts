@@ -34,6 +34,7 @@ import {
     ResultDescriptorDict,
     SpatialReferenceSpecificationDict,
     DataSetProviderListingDict,
+    DatasetOrderByDict,
 } from './backend.model';
 
 @Injectable({
@@ -232,31 +233,6 @@ export class BackendService {
         });
     }
 
-    // TODO: turn into paginated data source
-    getDatasets(sessionId: UUID): Observable<Array<DatasetDict>> {
-        const params = new NullDiscardingHttpParams();
-        params.set('order', 'NameAsc');
-        params.set('offset', '0');
-        params.set('limit', '20');
-
-        return this.http.get<Array<DatasetDict>>(this.config.API_URL + '/datasets', {
-            params: params.httpParams,
-            headers: BackendService.authorizationHeader(sessionId),
-        });
-    }
-
-    getExternalDatasets(sessionId: UUID, providerId: UUID): Observable<Array<DatasetDict>> {
-        const params = new NullDiscardingHttpParams();
-        params.set('order', 'NameAsc');
-        params.set('offset', '0');
-        params.set('limit', '20');
-
-        return this.http.get<Array<DatasetDict>>(this.config.API_URL + `/datasets/external/${providerId}`, {
-            params: params.httpParams,
-            headers: BackendService.authorizationHeader(sessionId),
-        });
-    }
-
     getDataset(sessionId: UUID, datasetId: DatasetIdDict): Observable<DatasetDict> {
         // TODO: external datasets
         if (datasetId.type === 'internal') {
@@ -266,6 +242,41 @@ export class BackendService {
         } else {
             throw Error('cannot load external datasets yet');
         }
+    }
+
+    getDatasets(
+        sessionId: UUID,
+        offset: number = 0,
+        limit: number = 20,
+        order: DatasetOrderByDict = 'NameAsc',
+    ): Observable<Array<DatasetDict>> {
+        const params = new NullDiscardingHttpParams();
+        params.setMapped('offset', offset, (r) => r.toString());
+        params.setMapped('limit', limit, (r) => r.toString());
+        params.set('order', order);
+
+        return this.http.get<Array<DatasetDict>>(this.config.API_URL + '/datasets', {
+            params: params.httpParams,
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    getExternalDatasets(
+        sessionId: UUID,
+        providerId: UUID,
+        offset: number = 0,
+        limit: number = 20,
+        order: DatasetOrderByDict = 'NameAsc',
+    ): Observable<Array<DatasetDict>> {
+        const params = new NullDiscardingHttpParams();
+        params.setMapped('offset', offset, (r) => r.toString());
+        params.setMapped('limit', limit, (r) => r.toString());
+        params.set('order', order);
+
+        return this.http.get<Array<DatasetDict>>(this.config.API_URL + `/datasets/external/${providerId}`, {
+            params: params.httpParams,
+            headers: BackendService.authorizationHeader(sessionId),
+        });
     }
 
     upload(sessionId: UUID, form: FormData): Observable<HttpEvent<UploadResponseDict>> {
