@@ -275,6 +275,8 @@ export interface ExternalDatasetIdDict {
     datasetId: string;
 }
 
+export type DatasetOrderByDict = 'NameAsc' | 'NameDesc';
+
 export interface NoDataDict {
     [key: string]: number;
 }
