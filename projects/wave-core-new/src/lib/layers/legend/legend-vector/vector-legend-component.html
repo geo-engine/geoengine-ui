@@ -1,13 +1,87 @@
-<div fxLayout="column">
-    <div fxLayout="row" fxLayoutAlign="start center" class="segment" *ngIf="showDefaultStyle">
+<mat-card fxLayout="column">
+    <!-- Default Style   -->
+    <div fxLayout="row" fxLayoutAlign="start center" class="single-line" *ngIf="showDefaultStyle">
         <mat-icon>
-            <ng-container [ngSwitch]="symbology.symbologyType">
+            <ng-container [ngSwitch]="layer.symbology.symbologyType">
                 <wave-point-icon *ngSwitchCase="ST.POINT" [iconStyle]="$any(symbology.iconStyle)"></wave-point-icon>
-                <wave-line-icon *ngSwitchCase="ST.LINE" [iconStyle]="$any(symbology.iconStyle)"></wave-line-icon>
-                <wave-polygon-icon *ngSwitchCase="ST.POLYGON" [iconStyle]="$any(symbology.iconStyle)"></wave-polygon-icon>
+                <wave-line-icon *ngSwitchCase="ST.LINE" [iconStyle]="$any(layer.symbology.iconStyle)"></wave-line-icon>
+                <wave-polygon-icon *ngSwitchCase="ST.POLYGON" [iconStyle]="$any(layer.symbology.iconStyle)"></wave-polygon-icon>
             </ng-container>
         </mat-icon>
         <!-- TODO: visualize the symbology -->
         <span fxFlex>Default style</span>
     </div>
-</div>
+
+    <!-- Color Legend   -->
+    <div *ngIf="colorBreakPoints">
+        <mat-divider></mat-divider>
+        <div fxLayout="row" fxLayoutAlign="start center" class="heading">
+            <span fxFlex
+                >Fill Colors derived by <b><i>{{ colorAttributeName }}</i></b></span
+            >
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center" class="segment" *ngFor="let breakpoint of colorBreakPoints">
+            <mat-icon>
+                <ng-container [ngSwitch]="layer.symbology.symbologyType">
+                    <wave-point-icon
+                        *ngSwitchCase="ST.POINT"
+                        [iconStyle]="getPointIconStyle({fillColor: breakpoint.color})"
+                    ></wave-point-icon>
+                    <wave-polygon-icon
+                        *ngSwitchCase="ST.POLYGON"
+                        [iconStyle]="getPolygonIconStyle({fillColor: breakpoint.color})"
+                    ></wave-polygon-icon>
+                </ng-container>
+            </mat-icon>
+            <span fxFlex>{{breakpoint.value}}</span>
+        </div>
+    </div>
+
+    <!-- Stroke Color Legend   -->
+    <div *ngIf="strokeColorBreakpoints">
+        <mat-divider></mat-divider>
+        <div fxLayout="row" fxLayoutAlign="start center" class="heading">
+            <span fxFlex
+                >Stroke Colors derived by <b><i>{{ strokeColorAttributeName }}</i></b></span
+            >
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center" class="segment" *ngFor="let breakpoint of strokeColorBreakpoints">
+            <mat-icon>
+                <ng-container [ngSwitch]="layer.symbology.symbologyType">
+                    <wave-point-icon
+                        *ngSwitchCase="ST.POINT"
+                        [iconStyle]="getPointIconStyle({strokeWidth: 1, strokeColor: breakpoint.color})"
+                    ></wave-point-icon>
+                    <wave-polygon-icon
+                        *ngSwitchCase="ST.POLYGON"
+                        [iconStyle]="getPolygonIconStyle({strokeWidth: 1, strokeColor: breakpoint.color})"
+                    ></wave-polygon-icon>
+                </ng-container>
+            </mat-icon>
+            <span fxFlex>{{breakpoint.value}}</span>
+        </div>
+    </div>
+
+    <!-- Stroke Width Legend   -->
+    <div *ngIf="strokeWidthAttributeName">
+        <mat-divider></mat-divider>
+        <div fxLayout="row" fxLayoutAlign="start center" class="heading">
+            <span fxFlex
+                >Stroke Width derived by <b><i>{{ strokeWidthAttributeName }}</i></b></span
+            >
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center" class="segment">
+            <span fxFlex> with factor: {{ strokeWidthFactor }}</span>
+        </div>
+    </div>
+
+    <!-- Radius Legend  ??? -->
+    <div *ngIf="radiusAttributeName">
+        <mat-divider></mat-divider>
+        <div fxLayout="row" fxLayoutAlign="start center" class="single-line">
+            <span fxFlex
+                >Radius derived by <b><i>{{ radiusAttributeName }}</i></b></span
+            >
+        </div>
+    </div>
+</mat-card>
