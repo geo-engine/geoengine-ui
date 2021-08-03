@@ -17,6 +17,7 @@ import {
     LayerDict,
     OperatorDict,
     PlotDict,
+    ProvenanceOutputDict,
     RasterResultDescriptorDict,
     ResultDescriptorDict,
     SourceOperatorDict,
@@ -345,6 +346,12 @@ export class ProjectService {
         return this.userService
             .getSessionStream()
             .pipe(mergeMap((session) => this.backend.getWorkflowMetadata(workflowId, session.sessionToken)));
+    }
+
+    getWorkflowProvenance(workflowId: UUID): Observable<Array<ProvenanceOutputDict>> {
+        return this.userService
+            .getSessionStream()
+            .pipe(mergeMap((session) => this.backend.getWorkflowProvenance(workflowId, session.sessionToken)));
     }
 
     /**

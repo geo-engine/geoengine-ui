@@ -34,6 +34,7 @@ import {
     ResultDescriptorDict,
     SpatialReferenceSpecificationDict,
     DataSetProviderListingDict,
+    ProvenanceOutputDict,
     DatasetOrderByDict,
 } from './backend.model';
 
@@ -154,6 +155,12 @@ export class BackendService {
 
     getWorkflowMetadata(workflowId: UUID, sessionId: UUID): Observable<ResultDescriptorDict> {
         return this.http.get<ResultDescriptorDict>(this.config.API_URL + `/workflow/${workflowId}/metadata`, {
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    getWorkflowProvenance(workflowId: UUID, sessionId: UUID): Observable<Array<ProvenanceOutputDict>> {
+        return this.http.get<Array<ProvenanceOutputDict>>(this.config.API_URL + `/workflow/${workflowId}/provenance`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
