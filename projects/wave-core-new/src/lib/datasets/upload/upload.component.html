@@ -1,6 +1,6 @@
 <wave-sidenav-header>Add Data</wave-sidenav-header>
 
-<mat-vertical-stepper linear #stepper>
+<mat-stepper orientation="vertical" linear #stepper>
     <mat-step completed="false">
         <ng-template matStepLabel>Upload files</ng-template>
 
@@ -222,4 +222,4 @@
             <button mat-raised-button color="primary" (click)="addToMap()">Add to map</button>
         </div>
     </mat-step>
-</mat-vertical-stepper>
+</mat-stepper>
