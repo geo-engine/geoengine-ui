@@ -76,7 +76,6 @@
                         "main": "projects/geoengine-app/src/main.ts",
                         "polyfills": "projects/geoengine-app/src/polyfills.ts",
                         "tsConfig": "projects/geoengine-app/tsconfig.app.json",
-                        "aot": true,
                         "assets": [
                             "projects/geoengine-app/src/favicon.ico",
                             "projects/geoengine-app/src/assets",
@@ -94,7 +93,13 @@
                             "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
-                        "scripts": []
+                        "scripts": [],
+                        "vendorChunk": true,
+                        "extractLicenses": false,
+                        "buildOptimizer": false,
+                        "sourceMap": true,
+                        "optimization": false,
+                        "namedChunks": true
                     },
                     "configurations": {
                         "production": {
@@ -124,7 +129,8 @@
                                 }
                             ]
                         }
-                    }
+                    },
+                    "defaultConfiguration": ""
                 },
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
@@ -202,7 +208,6 @@
                         "main": "projects/data-atlas-app/src/main.ts",
                         "polyfills": "projects/data-atlas-app/src/polyfills.ts",
                         "tsConfig": "projects/data-atlas-app/tsconfig.app.json",
-                        "aot": true,
                         "assets": [
                             "projects/data-atlas-app/src/favicon.ico",
                             "projects/data-atlas-app/src/assets",
@@ -220,7 +225,13 @@
                             "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
-                        "scripts": []
+                        "scripts": [],
+                        "vendorChunk": true,
+                        "extractLicenses": false,
+                        "buildOptimizer": false,
+                        "sourceMap": true,
+                        "optimization": false,
+                        "namedChunks": true
                     },
                     "configurations": {
                         "production": {
@@ -250,7 +261,8 @@
                                 }
                             ]
                         }
-                    }
+                    },
+                    "defaultConfiguration": ""
                 },
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
