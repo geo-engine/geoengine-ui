@@ -30,8 +30,10 @@
                     "configurations": {
                         "production": {
                             "tsConfig": "projects/wave-core-new/tsconfig.lib.prod.json"
-                        }
-                    }
+                        },
+                        "development": {}
+                    },
+                    "defaultConfiguration": "production"
                 },
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
@@ -128,20 +130,24 @@
                                     "maximumError": "10kb"
                                 }
                             ]
-                        }
+                        },
+                        "development": {}
                     },
-                    "defaultConfiguration": ""
+                    "defaultConfiguration": "production"
                 },
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
-                        "browserTarget": "geoengine-app:build"
                     },
                     "configurations": {
                         "production": {
                             "browserTarget": "geoengine-app:build:production"
+                        },
+                        "development": {
+                            "browserTarget": "geoengine-app:build:development"
                         }
-                    }
+                    },
+                    "defaultConfiguration": "development"
                 },
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -170,14 +176,17 @@
                 "e2e": {
                     "builder": "@angular-devkit/build-angular:protractor",
                     "options": {
-                        "protractorConfig": "projects/geoengine-app/e2e/protractor.conf.js",
-                        "devServerTarget": "geoengine-app:serve"
+                        "protractorConfig": "projects/geoengine-app/e2e/protractor.conf.js"
                     },
                     "configurations": {
                         "production": {
                             "devServerTarget": "geoengine-app:serve:production"
+                        },
+                        "development": {
+                            "devServerTarget": "geoengine-app:serve:development"
                         }
-                    }
+                    },
+                    "defaultConfiguration": "development"
                 }
             }
         },
@@ -260,20 +269,24 @@
                                     "maximumError": "10kb"
                                 }
                             ]
-                        }
+                        },
+                        "development": {}
                     },
-                    "defaultConfiguration": ""
+                    "defaultConfiguration": "production"
                 },
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
-                        "browserTarget": "data-atlas-app:build"
                     },
                     "configurations": {
                         "production": {
                             "browserTarget": "data-atlas-app:build:production"
+                        },
+                        "development": {
+                            "browserTarget": "data-atlas-app:build:development"
                         }
-                    }
+                    },
+                    "defaultConfiguration": "development"
                 },
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -302,14 +315,17 @@
                 "e2e": {
                     "builder": "@angular-devkit/build-angular:protractor",
                     "options": {
-                        "protractorConfig": "projects/data-atlas-app/e2e/protractor.conf.js",
-                        "devServerTarget": "data-atlas-app:serve"
+                        "protractorConfig": "projects/data-atlas-app/e2e/protractor.conf.js"
                     },
                     "configurations": {
                         "production": {
                             "devServerTarget": "data-atlas-app:serve:production"
+                        },
+                        "development": {
+                            "devServerTarget": "data-atlas-app:serve:development"
                         }
-                    }
+                    },
+                    "defaultConfiguration": "development"
                 }
             }
         }
