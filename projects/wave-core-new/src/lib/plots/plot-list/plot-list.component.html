@@ -1,5 +1,5 @@
 <wave-sidenav-header>Plots</wave-sidenav-header>
-<p *ngIf="(projectService.getPlotStream() | async)?.length == 0" class="no-plots">
+<p *ngIf="(projectService.getPlotStream() | async)?.length === 0" class="no-plots">
     no plots available
     <br />
     <button mat-button (click)="goToOperatorsTab()">⇢ go to operators tab to create a plot ⇢</button>
