@@ -20,13 +20,13 @@
                     placeholder="Feature type"
                     [value]="selectedFeatureType"
                     (valueChange)="updateFeatureType($event)"
-                    [disabled]="state == State.Finished"
+                    [disabled]="state === State.Finished"
                 >
                     <mat-option *ngFor="let featureType of featureTypes" [value]="featureType">{{ featureType }}</mat-option>
                 </mat-select>
             </mat-form-field>
             <div class="actions">
-                <button mat-raised-button color="accent" (click)="resetDrawing()" [disabled]="state == State.Finished">
+                <button mat-raised-button color="accent" (click)="resetDrawing()" [disabled]="state === State.Finished">
                     Reset Drawing
                 </button>
             </div>
@@ -48,7 +48,7 @@
                             placeholder="Dataset/Layer Name"
                             [(ngModel)]="datasetName"
                             name="datasetName"
-                            [disabled]="state == State.Finished"
+                            [disabled]="state === State.Finished"
                             required
                         />
                     </mat-form-field>
@@ -59,13 +59,13 @@
                             matInput
                             placeholder="Dataset Description"
                             [value]="datasetDescription"
-                            [disabled]="state == State.Finished"
+                            [disabled]="state === State.Finished"
                         ></textarea>
                     </mat-form-field>
                 </p>
 
                 <div class="actions">
-                    <button type="submit" mat-raised-button color="primary" [disabled]="!drawForm.form.valid || state == State.Finished">
+                    <button type="submit" mat-raised-button color="primary" [disabled]="!drawForm.form.valid || state === State.Finished">
                         Create dataset and add to map
                     </button>
                 </div>

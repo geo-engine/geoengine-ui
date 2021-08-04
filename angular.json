@@ -137,8 +137,7 @@
                 },
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
-                    "options": {
-                    },
+                    "options": {},
                     "configurations": {
                         "production": {
                             "browserTarget": "geoengine-app:build:production"
@@ -276,8 +275,7 @@
                 },
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
-                    "options": {
-                    },
+                    "options": {},
                     "configurations": {
                         "production": {
                             "browserTarget": "data-atlas-app:build:production"
