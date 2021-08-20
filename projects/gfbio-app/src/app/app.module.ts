@@ -19,9 +19,10 @@ import {
     WaveCoreModule,
 } from 'wave-core';
 import {AppConfig} from './app-config.service';
+import {HelpComponent} from './help/help.component';
 
 @NgModule({
-    declarations: [AppComponent],
+    declarations: [AppComponent, HelpComponent],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,

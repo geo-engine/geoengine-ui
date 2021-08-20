@@ -42,6 +42,7 @@ import {
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from './app-config.service';
+import {HelpComponent} from './help/help.component';
 
 @Component({
     selector: 'wave-app-root',
@@ -176,11 +177,11 @@ export class AppComponent implements OnInit, AfterViewInit {
                 icon: 'settings',
                 tooltip: 'Workspace',
             },
-            // {
-            //     sidenavConfig: {component: HelpComponent},
-            //     icon: 'help',
-            //     tooltip: 'Help',
-            // },
+            {
+                sidenavConfig: {component: HelpComponent},
+                icon: 'help',
+                tooltip: 'Help',
+            },
         ];
     }
 
