@@ -43,3 +43,4 @@ jobs:
                     npm run ng -- lint wave-core-new
                     npm run ng -- lint geoengine-app
                     npm run ng -- lint data-atlas-app
+                    npm run ng -- lint gfbio-app

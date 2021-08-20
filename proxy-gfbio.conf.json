@@ -1,0 +1,15 @@
+{
+    "/api/*": {
+        "target": "http://peter.geoengine.io:6060/",
+        "changeOrigin": true,
+        "pathRewrite": {
+            "^/api": ""
+        },
+        "secure": false,
+        "logLevel": "debug"
+    },
+    "/mapcache/*": {
+        "target": "http://sng107.sng.uni-frankfurt.de/mapcache/",
+        "logLevel": "debug"
+    }
+}
