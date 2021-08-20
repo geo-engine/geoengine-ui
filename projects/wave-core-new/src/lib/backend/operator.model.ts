@@ -119,3 +119,10 @@ export interface TemporalRasterAggregationDict extends OperatorDict {
         };
     };
 }
+
+export interface VisualPointClusteringParams extends OperatorParams {
+    minRadiusPx: number;
+    deltaPx: number;
+    radiusColumn: string;
+    countColumn: string;
+}
