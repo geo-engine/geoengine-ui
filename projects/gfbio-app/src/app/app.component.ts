@@ -43,6 +43,7 @@ import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from './app-config.service';
 import {HelpComponent} from './help/help.component';
+import {SplashDialogComponent} from './splash-dialog/splash-dialog.component';
 
 @Component({
     selector: 'wave-app-root',
@@ -120,6 +121,11 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.projectService
             .getNewPlotStream()
             .subscribe(() => this.layoutService.setSidenavContentComponent({component: PlotListComponent}));
+
+        // TODO: don't show this message if the user has clicked the checkbox
+        setTimeout(() => {
+            this.dialog.open(SplashDialogComponent, {});
+        });
 
         // set the stored tab index
         // this.layoutService.getLayerDetailViewTabIndexStream().subscribe(tabIndex => {

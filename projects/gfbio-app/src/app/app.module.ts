@@ -20,9 +20,10 @@ import {
 } from 'wave-core';
 import {AppConfig} from './app-config.service';
 import {HelpComponent} from './help/help.component';
+import {SplashDialogComponent} from './splash-dialog/splash-dialog.component';
 
 @NgModule({
-    declarations: [AppComponent, HelpComponent],
+    declarations: [AppComponent, HelpComponent, SplashDialogComponent],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,
