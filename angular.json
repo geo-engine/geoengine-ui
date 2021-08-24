@@ -326,6 +326,144 @@
                     "defaultConfiguration": "development"
                 }
             }
+        },
+        "gfbio-app": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:component": {
+                    "changeDetection": "OnPush",
+                    "inlineStyle": false,
+                    "inlineTemplate": false,
+                    "prefix": "wave-app",
+                    "style": "scss"
+                },
+                "@schematics/angular:directive": {
+                    "prefix": "wave-app"
+                }
+            },
+            "root": "projects/gfbio-app",
+            "sourceRoot": "projects/gfbio-app/src",
+            "prefix": "wave-app",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:browser",
+                    "options": {
+                        "allowedCommonJsDependencies": ["dagre-d3", "pbf"],
+                        "outputPath": "dist/gfbio-app",
+                        "index": "projects/gfbio-app/src/index.html",
+                        "main": "projects/gfbio-app/src/main.ts",
+                        "polyfills": "projects/gfbio-app/src/polyfills.ts",
+                        "tsConfig": "projects/gfbio-app/tsconfig.app.json",
+                        "assets": [
+                            "projects/gfbio-app/src/favicon.ico",
+                            "projects/gfbio-app/src/assets",
+                            {
+                                "glob": "**/*",
+                                "input": "dist/wave-core/assets",
+                                "output": "assets"
+                            }
+                        ],
+                        "styles": [
+                            "projects/gfbio-app/src/styles.scss",
+                            "dist/wave-core/assets/fonts/roboto/roboto.css",
+                            "dist/wave-core/assets/fonts/pacifico/pacifico.css",
+                            "dist/wave-core/assets/fonts/material-design-icons/material-icons.css",
+                            "node_modules/codemirror/lib/codemirror.css",
+                            "node_modules/ol/ol.css"
+                        ],
+                        "scripts": [],
+                        "vendorChunk": true,
+                        "extractLicenses": false,
+                        "buildOptimizer": false,
+                        "sourceMap": true,
+                        "optimization": false,
+                        "namedChunks": true
+                    },
+                    "configurations": {
+                        "production": {
+                            "fileReplacements": [
+                                {
+                                    "replace": "projects/gfbio-app/src/environments/environment.ts",
+                                    "with": "projects/gfbio-app/src/environments/environment.prod.ts"
+                                }
+                            ],
+                            "optimization": true,
+                            "outputHashing": "all",
+                            "sourceMap": false,
+                            "namedChunks": false,
+                            "extractLicenses": true,
+                            "vendorChunk": false,
+                            "buildOptimizer": true,
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "5mb",
+                                    "maximumError": "10mb"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "6kb",
+                                    "maximumError": "10kb"
+                                }
+                            ]
+                        },
+                        "development": {}
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "serve": {
+                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "options": {},
+                    "configurations": {
+                        "production": {
+                            "browserTarget": "gfbio-app:build:production"
+                        },
+                        "development": {
+                            "browserTarget": "gfbio-app:build:development"
+                        }
+                    },
+                    "defaultConfiguration": "development"
+                },
+                "extract-i18n": {
+                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "options": {
+                        "browserTarget": "gfbio-app:build"
+                    }
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "main": "projects/gfbio-app/src/test.ts",
+                        "polyfills": "projects/gfbio-app/src/polyfills.ts",
+                        "tsConfig": "projects/gfbio-app/tsconfig.spec.json",
+                        "karmaConfig": "projects/gfbio-app/karma.conf.js",
+                        "assets": ["projects/gfbio-app/src/favicon.ico", "projects/gfbio-app/src/assets"],
+                        "styles": ["projects/gfbio-app/src/styles.scss"],
+                        "scripts": []
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-eslint/builder:lint",
+                    "options": {
+                        "lintFilePatterns": ["projects/gfbio-app/**/*.ts", "projects/gfbio-app/**/*.html"]
+                    }
+                },
+                "e2e": {
+                    "builder": "@angular-devkit/build-angular:protractor",
+                    "options": {
+                        "protractorConfig": "projects/gfbio-app/e2e/protractor.conf.js"
+                    },
+                    "configurations": {
+                        "production": {
+                            "devServerTarget": "gfbio-app:serve:production"
+                        },
+                        "development": {
+                            "devServerTarget": "gfbio-app:serve:development"
+                        }
+                    },
+                    "defaultConfiguration": "development"
+                }
+            }
         }
     },
     "defaultProject": "wave-core-new"

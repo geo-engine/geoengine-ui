@@ -1,0 +1,24 @@
+@use '~@angular/material' as mat;
+@import 'app-theme';
+
+:root {
+    --wave-primary-color: #{mat.get-color-from-palette($wave-app-primary)};
+    --wave-accent-color: #{mat.get-color-from-palette($wave-app-accent)};
+    --wave-warn-color: #{mat.get-color-from-palette($wave-app-warn)};
+
+    --wave-faded-accent-color: #{mat.get-color-from-palette($wave-app-accent, 0.32)};
+
+    --wave-foreground-text-color: #{mat.get-color-from-palette(map-get($wave-app-theme, foreground), text)};
+    --wave-foreground-secondary-text-color: #{mat.get-color-from-palette(map-get($wave-app-theme, foreground), secondary-text)};
+
+    --wave-background-color: #{map-get(map-get($wave-app-theme, background), background)};
+    --wave-background-hover-color: #{mat.get-color-from-palette(map-get($wave-app-theme, background), hover)};
+    --wave-card-background-color: #{map-get(map-get($wave-app-theme, background), card)};
+
+    font-family: Roboto, 'Helvetica Neue', sans-serif;
+    font-size: 16px;
+}
+
+a {
+    color: mat.get-color-from-palette(map-get($wave-app-theme, foreground), secondary-text);
+}
