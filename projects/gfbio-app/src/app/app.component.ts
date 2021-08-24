@@ -126,14 +126,6 @@ export class AppComponent implements OnInit, AfterViewInit {
             this.dialog.open(SplashDialogComponent, {});
         });
 
-        // set the stored tab index
-        // this.layoutService.getLayerDetailViewTabIndexStream().subscribe(tabIndex => {
-        //     if (this.bottomTabs.selectedIndex !== tabIndex) {
-        //         this.bottomTabs.selectedIndex = tabIndex;
-        //         setTimeout(() => this.changeDetectorRef.markForCheck());
-        //     }
-        // });
-
         // this.handleQueryParameters();
     }
 
