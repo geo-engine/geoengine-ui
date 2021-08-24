@@ -28,7 +28,6 @@ import {
     Config,
     ProjectService,
     NavigationButton,
-    NavigationComponent,
     MapService,
     MapContainerComponent,
     WorkspaceSettingsComponent,
@@ -156,7 +155,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     private setupNavigation(): Array<NavigationButton> {
         return [
-            NavigationComponent.createLoginButton(this.userService, this.layoutService, this.config),
             {
                 sidenavConfig: AppComponent.setupAddDataConfig(),
                 icon: 'add',
