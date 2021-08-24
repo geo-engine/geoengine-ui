@@ -8,7 +8,7 @@
         "build:core": "ng build --configuration development wave-core-new",
         "build-watch:core": "ng build --configuration development wave-core-new --watch",
         "build-prod:core": "ng build --configuration production wave-core-new",
-        "build-apps": "npm run build-prod:geoengine && npm run build-prod:data-atlas",
+        "build-apps": "npm run build-prod:geoengine && npm run build-prod:data-atlas && npm run build-prod:gfbio",
         "serve:geoengine:local": "ng serve --configuration development geoengine-app --proxy-config proxy-local.conf.json",
         "serve:geoengine:nightly": "ng serve --configuration development geoengine-app --proxy-config proxy-geoengine.conf.json",
         "serve:data-atlas:local": "ng serve --configuration development data-atlas-app --proxy-config proxy-local.conf.json",
