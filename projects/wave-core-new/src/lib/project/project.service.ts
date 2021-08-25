@@ -38,6 +38,7 @@ import OlFeature from 'ol/Feature';
 import {getProjectionTarget} from '../util/spatial_reference';
 import {ReprojectionDict, VisualPointClusteringParams} from '../backend/operator.model';
 import {SpatialReferenceService} from '../spatial-references/spatial-reference.service';
+import {VectorColumnDataTypes} from '../operators/datatype.model';
 
 export type FeatureId = string | number;
 
@@ -232,8 +233,8 @@ export class ProjectService {
         // add layer streams
         for (const layer of project.layers) {
             this.createLayerChangesStream(layer);
-            this.createLayerDataStreams(layer);
             this.createLayerMetadataStreams(layer);
+            this.createLayerDataStreams(layer);
             this.createCombinedLoadingState(layer);
         }
 
@@ -402,8 +403,8 @@ export class ProjectService {
      */
     addLayer(layer: Layer, notify = true): Observable<void> {
         this.createLayerChangesStream(layer);
-        this.createLayerDataStreams(layer);
         this.createLayerMetadataStreams(layer);
+        this.createLayerDataStreams(layer);
         this.createCombinedLoadingState(layer);
 
         const result = this.getProjectOnce().pipe(
@@ -1147,7 +1148,35 @@ export class ProjectService {
      * In order to visually cluster points depending on the symbology, we need to create a temporary workflow
      * the puts a new operator on top of the actual workflow.
      */
-    private createClusteredPointLayerQueryWorkflow(workflowId: UUID): Observable<UUID> {
+    private createClusteredPointLayerQueryWorkflow(workflowId: UUID, metadata: VectorLayerMetadata): Observable<UUID> {
+        const columnAggregates: {
+            [columnName: string]: {
+                columnName: string;
+                aggregateType: 'meanNumber' | 'stringSample' | 'null';
+            };
+        } = {};
+
+        for (const [columnName, dataType] of metadata.columns.entries()) {
+            let aggregateType: 'meanNumber' | 'stringSample' | 'null';
+            switch (dataType) {
+                case VectorColumnDataTypes.Category:
+                case VectorColumnDataTypes.Float:
+                case VectorColumnDataTypes.Int:
+                    aggregateType = 'meanNumber';
+                    break;
+                case VectorColumnDataTypes.Text:
+                    aggregateType = 'stringSample';
+                    break;
+                default:
+                    aggregateType = 'null';
+            }
+
+            columnAggregates[columnName] = {
+                columnName,
+                aggregateType,
+            };
+        }
+
         return this.userService.getSessionTokenForRequest().pipe(
             mergeMap((sessionToken) => combineLatest([of(sessionToken), this.backend.getWorkflow(workflowId, sessionToken)])),
             mergeMap(([sessionToken, workflow]) =>
@@ -1161,6 +1190,7 @@ export class ProjectService {
                                 deltaPx: ClusteredPointSymbology.DELTA_PX,
                                 radiusColumn: ClusteredPointSymbology.RADIUS_COLUMN,
                                 countColumn: ClusteredPointSymbology.COUNT_COLUMN,
+                                columnAggregates,
                             } as VisualPointClusteringParams,
                             sources: {
                                 vector: workflow.operator,
@@ -1188,7 +1218,9 @@ export class ProjectService {
                     return of(layer.workflowId);
                 }
 
-                return this.createClusteredPointLayerQueryWorkflow(layer.workflowId);
+                return this.getVectorLayerMetadata(layer).pipe(
+                    mergeMap((metadata) => this.createClusteredPointLayerQueryWorkflow(layer.workflowId, metadata)),
+                );
             }),
         );
     }

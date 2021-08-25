@@ -125,4 +125,10 @@ export interface VisualPointClusteringParams extends OperatorParams {
     deltaPx: number;
     radiusColumn: string;
     countColumn: string;
+    columnAggregates: {
+        [columnName: string]: {
+            columnName: string;
+            aggregateType: 'meanNumber' | 'stringSample' | 'null';
+        };
+    };
 }
