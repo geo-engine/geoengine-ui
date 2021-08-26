@@ -12,6 +12,7 @@ import {UnitlessMeasurement} from '../../../../layers/measurement';
 import {MATERIAL_MODULES} from '../../../../wave-core.module';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {By} from '@angular/platform-browser';
+import {WGS_84} from '../../../../spatial-references/spatial-reference.model';
 
 describe('MultiLayerSelectionComponent', () => {
     let component: MultiLayerSelectionComponent;
@@ -88,7 +89,7 @@ describe('MultiLayerSelectionComponent', () => {
         /** ProjectService returns Mock Layers **/
         projectServiceSpy.getLayerStream.and.returnValue(of<Array<Layer>>(mockLayers));
         projectServiceSpy.getLayerMetadata.and.returnValue(
-            of<RasterLayerMetadata>(new RasterLayerMetadata(RasterDataTypes.Byte, new UnitlessMeasurement())),
+            of<RasterLayerMetadata>(new RasterLayerMetadata(RasterDataTypes.Byte, WGS_84.spatialReference, new UnitlessMeasurement())),
         );
 
         await TestBed.configureTestingModule({
