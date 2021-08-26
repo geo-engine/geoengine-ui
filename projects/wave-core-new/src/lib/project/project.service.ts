@@ -1178,8 +1178,10 @@ export class ProjectService {
         }
 
         return this.userService.getSessionTokenForRequest().pipe(
-            mergeMap((sessionToken) => combineLatest([of(sessionToken), this.backend.getWorkflow(workflowId, sessionToken)])),
-            mergeMap(([sessionToken, workflow]) =>
+            mergeMap((sessionToken) =>
+                combineLatest([of(sessionToken), this.backend.getWorkflow(workflowId, sessionToken), this.getSpatialReferenceStream()]),
+            ),
+            mergeMap(([sessionToken, workflow, mapSpatialReference]) =>
                 this.backend.registerWorkflow(
                     {
                         type: 'Vector',
@@ -1193,7 +1195,7 @@ export class ProjectService {
                                 columnAggregates,
                             } as VisualPointClusteringParams,
                             sources: {
-                                vector: workflow.operator,
+                                vector: this.createProjectedOperator(workflow.operator, metadata, mapSpatialReference),
                             },
                         },
                     },
@@ -1202,6 +1204,26 @@ export class ProjectService {
             ),
             map((registerWorkflowResult) => registerWorkflowResult.id),
         );
+    }
+
+    private createProjectedOperator(
+        inputOperator: OperatorDict | SourceOperatorDict,
+        metadata: VectorLayerMetadata,
+        mapSpatialReference: SpatialReference,
+    ): OperatorDict | SourceOperatorDict {
+        if (metadata.spatialReference === mapSpatialReference) {
+            return inputOperator;
+        }
+
+        return {
+            type: 'Reprojection',
+            params: {
+                targetSpatialReference: mapSpatialReference.srsString,
+            },
+            sources: {
+                source: inputOperator,
+            },
+        } as ReprojectionDict;
     }
 
     /**

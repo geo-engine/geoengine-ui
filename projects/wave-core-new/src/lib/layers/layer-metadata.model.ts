@@ -11,11 +11,17 @@ import {
 import * as Immutable from 'immutable';
 import {Measurement} from './measurement';
 import {ResultType, ResultTypes} from '../operators/result-type.model';
+import {SpatialReference} from '../spatial-references/spatial-reference.model';
 
 export abstract class LayerMetadata implements HasLayerType {
     abstract readonly layerType: LayerType;
+    readonly spatialReference: SpatialReference;
 
     public abstract get resultType(): ResultType;
+
+    constructor(spatialReference: SpatialReference) {
+        this.spatialReference = spatialReference;
+    }
 }
 
 export class VectorLayerMetadata extends LayerMetadata {
@@ -24,8 +30,8 @@ export class VectorLayerMetadata extends LayerMetadata {
     readonly dataType: VectorDataType;
     readonly columns: Immutable.Map<string, VectorColumnDataType>;
 
-    constructor(dataType: VectorDataType, columns: {[index: string]: VectorColumnDataType}) {
-        super();
+    constructor(dataType: VectorDataType, spatialReference: SpatialReference, columns: {[index: string]: VectorColumnDataType}) {
+        super(spatialReference);
 
         this.dataType = dataType;
         this.columns = Immutable.Map(columns);
@@ -39,7 +45,7 @@ export class VectorLayerMetadata extends LayerMetadata {
             columns[columnName] = VectorColumnDataTypes.fromCode(dict.columns[columnName]);
         }
 
-        return new VectorLayerMetadata(dataType, columns);
+        return new VectorLayerMetadata(dataType, SpatialReference.fromSrsString(dict.spatialReference), columns);
     }
 
     public get resultType(): ResultType {
@@ -53,8 +59,8 @@ export class RasterLayerMetadata extends LayerMetadata {
     readonly dataType: RasterDataType;
     readonly measurement: Measurement;
 
-    constructor(dataType: RasterDataType, measurement: Measurement) {
-        super();
+    constructor(dataType: RasterDataType, spatialReference: SpatialReference, measurement: Measurement) {
+        super(spatialReference);
 
         this.dataType = dataType;
         this.measurement = measurement;
@@ -64,7 +70,7 @@ export class RasterLayerMetadata extends LayerMetadata {
         const dataType = RasterDataTypes.fromCode(dict.dataType);
         const measurement = Measurement.fromDict(dict.measurement);
 
-        return new RasterLayerMetadata(dataType, measurement);
+        return new RasterLayerMetadata(dataType, SpatialReference.fromSrsString(dict.spatialReference), measurement);
     }
 
     public get resultType(): ResultType {
