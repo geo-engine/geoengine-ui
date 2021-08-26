@@ -35,6 +35,10 @@ export class SpatialReference {
     static fromSrsString(srsString: SrsString): SpatialReference {
         return new SpatialReference(srsString);
     }
+
+    equals(other: SpatialReference): boolean {
+        return this.srsString === other.srsString;
+    }
 }
 
 export class NamedSpatialReference {
@@ -44,6 +48,10 @@ export class NamedSpatialReference {
     constructor(name: string, srsString: SrsString) {
         this.name = name;
         this.spatialReference = SpatialReference.fromSrsString(srsString);
+    }
+
+    equals(other: NamedSpatialReference): boolean {
+        return this.name === other.name && this.spatialReference.equals(other.spatialReference);
     }
 }
 

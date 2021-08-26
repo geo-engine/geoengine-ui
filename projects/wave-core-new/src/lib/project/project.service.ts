@@ -1211,7 +1211,7 @@ export class ProjectService {
         metadata: VectorLayerMetadata,
         mapSpatialReference: SpatialReference,
     ): OperatorDict | SourceOperatorDict {
-        if (metadata.spatialReference === mapSpatialReference) {
+        if (metadata.spatialReference.equals(mapSpatialReference)) {
             return inputOperator;
         }
 
