@@ -181,10 +181,10 @@ export class PaletteColorizer extends Colorizer {
     }
 
     getBreakpoints(): Array<ColorBreakpoint> {
-        const breakpoints = [];
-        for (const [value, color] of Object.entries(this.colors)) {
-            breakpoints.push(new ColorBreakpoint(parseInt(value, 10), color));
-        }
+        const breakpoints: Array<ColorBreakpoint> = [];
+        this.colors.forEach((value, key) => {
+            breakpoints.push(new ColorBreakpoint(key, value));
+        });
         return breakpoints;
     }
 

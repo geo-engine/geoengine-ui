@@ -227,15 +227,15 @@
                             class="legend no-drag"
                         >
                             <ng-template [ngSwitchCase]="ST.POINT">
-                                <wave-vector-legend fxFlex="grow" [symbology]="layer.symbology"> </wave-vector-legend>
+                                <wave-vector-legend fxFlex="grow" [layer]="$any(layer)"> </wave-vector-legend>
                             </ng-template>
 
                             <ng-template [ngSwitchCase]="ST.LINE">
-                                <wave-vector-legend fxFlex="grow" [symbology]="layer.symbology"> </wave-vector-legend>
+                                <wave-vector-legend fxFlex="grow" [layer]="$any(layer)"> </wave-vector-legend>
                             </ng-template>
 
                             <ng-template [ngSwitchCase]="ST.POLYGON">
-                                <wave-vector-legend fxFlex="grow" [symbology]="layer.symbology"> </wave-vector-legend>
+                                <wave-vector-legend fxFlex="grow" [layer]="$any(layer)"> </wave-vector-legend>
                             </ng-template>
 
                             <ng-template [ngSwitchCase]="ST.RASTER">
