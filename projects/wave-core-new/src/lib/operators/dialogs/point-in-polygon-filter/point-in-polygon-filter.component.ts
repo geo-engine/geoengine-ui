@@ -2,7 +2,7 @@ import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {Layer, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {PointSymbology} from '../../../layers/symbology/symbology.model';
+import {ClusteredPointSymbology, PointSymbology} from '../../../layers/symbology/symbology.model';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
@@ -64,11 +64,11 @@ export class PointInPolygonFilterOperatorComponent {
                                     new VectorLayer({
                                         workflowId,
                                         name,
-                                        symbology: PointSymbology.fromPointSymbologyDict({
+                                        symbology: ClusteredPointSymbology.fromPointSymbologyDict({
                                             type: 'point',
                                             radius: {
                                                 type: 'static',
-                                                value: 10,
+                                                value: PointSymbology.DEFAULT_POINT_RADIUS,
                                             },
                                             stroke: {
                                                 width: {

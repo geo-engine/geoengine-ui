@@ -16,6 +16,21 @@
 </wave-dialog-help>
 
 <mat-accordion multi="true">
+    <!-- For points -->
+    <mat-expansion-panel expanded="true" *ngIf="isPointLayer">
+        <mat-expansion-panel-header>
+            <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
+                <mat-icon>map</mat-icon>
+                <span fxFlex>Symbology Type</span>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+            <mat-slide-toggle [checked]="isClustered" (change)="setClusterSymbology($event.checked)"
+                >Visually clustered points</mat-slide-toggle
+            >
+        </ng-template>
+    </mat-expansion-panel>
+
     <!-- For points and polygons -->
     <mat-expansion-panel expanded="true" *ngIf="showFillColorEditor">
         <mat-expansion-panel-header>

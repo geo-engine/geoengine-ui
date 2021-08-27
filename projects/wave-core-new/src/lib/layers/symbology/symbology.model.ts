@@ -1,4 +1,4 @@
-import {Color, colorToDict, RgbaTuple, rgbaColorFromDict} from '../../colors/color';
+import {Color, colorToDict, RgbaTuple, rgbaColorFromDict, WHITE, BLACK} from '../../colors/color';
 import {Feature as OlFeature} from 'ol';
 import {
     ColorParamDict,
@@ -89,7 +89,11 @@ export abstract class Symbology {
 export abstract class VectorSymbology extends Symbology {
     static fromVectorSymbologyDict(dict: VectorSymbologyDict): VectorSymbology {
         if (dict.type === 'point') {
-            return PointSymbology.fromPointSymbologyDict(dict);
+            if (dict.radius.type === 'derived' && dict.radius.attribute === ClusteredPointSymbology.RADIUS_COLUMN) {
+                return ClusteredPointSymbology.fromPointSymbologyDict(dict);
+            } else {
+                return PointSymbology.fromPointSymbologyDict(dict);
+            }
         } else if (dict.type === 'line') {
             return LineSymbology.fromLineSymbologyDict(dict);
         } else if (dict.type === 'polygon') {
@@ -314,6 +318,8 @@ export class TextStyler extends Styler {
 }
 
 export class PointSymbology extends VectorSymbology {
+    static readonly DEFAULT_POINT_RADIUS = 10;
+
     // TODO: visiblity
     radius: NumberParam;
     fillColor: ColorParam;
@@ -364,6 +370,75 @@ export class PointSymbology extends VectorSymbology {
             this.stroke.clone(),
             this.text ? this.text.clone() : undefined,
         );
+    }
+
+    toDict(): SymbologyDict {
+        return {
+            type: 'point',
+            radius: this.radius.toDict(),
+            fillColor: this.fillColor.toDict(),
+            stroke: this.stroke.toDict(),
+            text: this.text ? this.text.toDict() : undefined,
+        };
+    }
+
+    getSymbologyType(): SymbologyType {
+        return SymbologyType.POINT;
+    }
+
+    getIconStyle(): PointIconStyle {
+        return {
+            strokeWidth: this.stroke.width.getDefault(),
+            // strokeDashStyle: StrokeDashStyle;
+            strokeRGBA: this.stroke.color.getDefault(),
+            fillRGBA: this.fillColor.getDefault(),
+        };
+    }
+}
+
+export class ClusteredPointSymbology extends VectorSymbology {
+    static readonly RADIUS_COLUMN = '___radius';
+    static readonly COUNT_COLUMN = '___count';
+    static readonly DELTA_PX = 1;
+
+    // TODO: visiblity
+
+    readonly fillColor: ColorParam;
+    readonly stroke: Stroke;
+
+    readonly radius = new DerivedNumber(ClusteredPointSymbology.RADIUS_COLUMN, 1, PointSymbology.DEFAULT_POINT_RADIUS);
+    readonly text = new TextSymbology(
+        ClusteredPointSymbology.COUNT_COLUMN,
+        new StaticColor(WHITE),
+        new Stroke(new StaticNumber(1), new StaticColor(BLACK)),
+    );
+
+    constructor(fillColor: ColorParam, stroke: Stroke) {
+        super();
+        this.fillColor = fillColor;
+        this.stroke = stroke;
+    }
+
+    static fromPointSymbologyDict(dict: PointSymbologyDict): ClusteredPointSymbology {
+        // we ignore anything that is stored for radius and text
+        return new ClusteredPointSymbology(ColorParam.fromDict(dict.fillColor), Stroke.fromDict(dict.stroke));
+    }
+
+    createStyler(feature: OlFeature): PointStyler {
+        return new PointStyler(
+            this.radius.getNumber(feature),
+            this.fillColor.getColor(feature).rgbaTuple(),
+            this.stroke.createStyler(feature),
+            (this.text.createStyler(feature) as unknown) as TextStyler,
+        );
+    }
+
+    equals(other: ClusteredPointSymbology): boolean {
+        return other instanceof ClusteredPointSymbology && this.fillColor.equals(other.fillColor) && this.stroke.equals(other.stroke);
+    }
+
+    clone(): ClusteredPointSymbology {
+        return new ClusteredPointSymbology(this.fillColor.clone(), this.stroke.clone());
     }
 
     toDict(): SymbologyDict {

@@ -33,11 +33,12 @@ import {MapService} from '../map/map.service';
 import {Session} from '../users/session.model';
 import {HasPlotId, Plot} from '../plots/plot.model';
 import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata.model';
-import {Symbology} from '../layers/symbology/symbology.model';
+import {Symbology, ClusteredPointSymbology, PointSymbology} from '../layers/symbology/symbology.model';
 import OlFeature from 'ol/Feature';
 import {getProjectionTarget} from '../util/spatial_reference';
-import {ReprojectionDict} from '../backend/operator.model';
+import {ReprojectionDict, VisualPointClusteringParams} from '../backend/operator.model';
 import {SpatialReferenceService} from '../spatial-references/spatial-reference.service';
+import {VectorColumnDataTypes} from '../operators/datatype.model';
 
 export type FeatureId = string | number;
 
@@ -231,9 +232,9 @@ export class ProjectService {
 
         // add layer streams
         for (const layer of project.layers) {
-            this.createLayerDataStreams(layer);
             this.createLayerChangesStream(layer);
             this.createLayerMetadataStreams(layer);
+            this.createLayerDataStreams(layer);
             this.createCombinedLoadingState(layer);
         }
 
@@ -401,9 +402,9 @@ export class ProjectService {
      * Add a a new layer to the project.
      */
     addLayer(layer: Layer, notify = true): Observable<void> {
-        this.createLayerDataStreams(layer);
         this.createLayerChangesStream(layer);
         this.createLayerMetadataStreams(layer);
+        this.createLayerDataStreams(layer);
         this.createCombinedLoadingState(layer);
 
         const result = this.getProjectOnce().pipe(
@@ -1144,6 +1145,109 @@ export class ProjectService {
     }
 
     /**
+     * In order to visually cluster points depending on the symbology, we need to create a temporary workflow
+     * the puts a new operator on top of the actual workflow.
+     */
+    private createClusteredPointLayerQueryWorkflow(workflowId: UUID, metadata: VectorLayerMetadata): Observable<UUID> {
+        const columnAggregates: {
+            [columnName: string]: {
+                columnName: string;
+                aggregateType: 'meanNumber' | 'stringSample' | 'null';
+            };
+        } = {};
+
+        for (const [columnName, dataType] of metadata.columns.entries()) {
+            let aggregateType: 'meanNumber' | 'stringSample' | 'null';
+            switch (dataType) {
+                case VectorColumnDataTypes.Category:
+                case VectorColumnDataTypes.Float:
+                case VectorColumnDataTypes.Int:
+                    aggregateType = 'meanNumber';
+                    break;
+                case VectorColumnDataTypes.Text:
+                    aggregateType = 'stringSample';
+                    break;
+                default:
+                    aggregateType = 'null';
+            }
+
+            columnAggregates[columnName] = {
+                columnName,
+                aggregateType,
+            };
+        }
+
+        return this.userService.getSessionTokenForRequest().pipe(
+            mergeMap((sessionToken) =>
+                combineLatest([of(sessionToken), this.backend.getWorkflow(workflowId, sessionToken), this.getSpatialReferenceStream()]),
+            ),
+            mergeMap(([sessionToken, workflow, mapSpatialReference]) =>
+                this.backend.registerWorkflow(
+                    {
+                        type: 'Vector',
+                        operator: {
+                            type: 'VisualPointClustering',
+                            params: {
+                                minRadiusPx: PointSymbology.DEFAULT_POINT_RADIUS,
+                                deltaPx: ClusteredPointSymbology.DELTA_PX,
+                                radiusColumn: ClusteredPointSymbology.RADIUS_COLUMN,
+                                countColumn: ClusteredPointSymbology.COUNT_COLUMN,
+                                columnAggregates,
+                            } as VisualPointClusteringParams,
+                            sources: {
+                                vector: this.createProjectedOperator(workflow.operator, metadata, mapSpatialReference),
+                            },
+                        },
+                    },
+                    sessionToken,
+                ),
+            ),
+            map((registerWorkflowResult) => registerWorkflowResult.id),
+        );
+    }
+
+    private createProjectedOperator(
+        inputOperator: OperatorDict | SourceOperatorDict,
+        metadata: VectorLayerMetadata,
+        mapSpatialReference: SpatialReference,
+    ): OperatorDict | SourceOperatorDict {
+        if (metadata.spatialReference.equals(mapSpatialReference)) {
+            return inputOperator;
+        }
+
+        return {
+            type: 'Reprojection',
+            params: {
+                targetSpatialReference: mapSpatialReference.srsString,
+            },
+            sources: {
+                source: inputOperator,
+            },
+        } as ReprojectionDict;
+    }
+
+    /**
+     * For point data, we need to react on symbology changes.
+     * Thus, we introduce a new layer of observables that react on changes of the symbology
+     * between clustered and normal.
+     */
+    private createPointLayerQueryWorkflow(layer: VectorLayer): Observable<UUID> {
+        return this.getLayerChangesStream(layer).pipe(
+            map((changedLayer) => changedLayer.symbology instanceof ClusteredPointSymbology),
+            distinctUntilChanged(),
+            mergeMap((isClustered) => {
+                if (!isClustered) {
+                    return of(layer.workflowId);
+                }
+
+                return this.getVectorLayerMetadata(layer).pipe(
+                    mergeMap((metadata) => this.createClusteredPointLayerQueryWorkflow(layer.workflowId, metadata)),
+                );
+            }),
+        );
+    }
+
+    /**
      * Create a subscription for layer data, symbology and provenance with loading state checks and error handling
      */
     private createVectorLayerDataSubscription(
@@ -1151,7 +1255,14 @@ export class ProjectService {
         data$: Observer<VectorData>,
         loadingState$: Observer<LoadingState>,
     ): Subscription {
+        let workflowIdOnce = of(layer.workflowId);
+
+        if (layer.symbology instanceof PointSymbology || layer.symbology instanceof ClusteredPointSymbology) {
+            workflowIdOnce = this.createPointLayerQueryWorkflow(layer);
+        }
+
         return combineLatest([
+            workflowIdOnce,
             this.getTimeStream(),
             combineLatest([this.getSpatialReferenceStream(), this.mapService.getViewportSizeStream()]).pipe(
                 debounceTime(this.config.DELAYS.DEBOUNCE),
@@ -1160,14 +1271,14 @@ export class ProjectService {
         ])
             .pipe(
                 tap(() => loadingState$.next(LoadingState.LOADING)),
-                switchMap(([time, [projection, viewport], sessionToken]) => {
+                switchMap(([workflowId, time, [projection, viewport], sessionToken]) => {
                     const requestExtent: [number, number, number, number] = [0, 0, 0, 0];
 
                     // TODO: add resolution
                     return this.backend
                         .wfsGetFeature(
                             {
-                                typeNames: `registry:${layer.workflowId}`,
+                                typeNames: `registry:${workflowId}`,
                                 bbox: extentToBboxDict(viewport.extent),
                                 time: time.toDict(),
                                 srsName: projection.srsString,
