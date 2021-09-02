@@ -21,7 +21,7 @@ export class DatasetListComponent implements OnInit, AfterViewInit {
     // leave undefined for internal datasets
     @Input() externalDatasetProviderId?: UUID = undefined;
 
-    @Input() repositoryName: UUID = 'Data Repository';
+    @Input() repositoryName = 'Data Repository';
 
     // TODO: dataset search
 
