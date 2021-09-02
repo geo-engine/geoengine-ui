@@ -1,9 +1,9 @@
-<wave-sidenav-header>Data Repository</wave-sidenav-header>
+<wave-sidenav-header>{{ repositoryName }}</wave-sidenav-header>
 
 <cdk-virtual-scroll-viewport itemSize="72" (scrolledIndexChange)="onScrolledIndexChange($event)">
     <mat-nav-list>
         <wave-dataset *cdkVirtualFor="let dataset of datasetSource; trackBy: trackById" [dataset]="dataset"></wave-dataset>
     </mat-nav-list>
 
-    <mat-spinner [diameter]="loadingSpinnerDiameterPx" *ngIf="datasetSource.loading$ | async"></mat-spinner>
+    <mat-spinner [diameter]="loadingSpinnerDiameterPx" *ngIf="datasetSource?.loading$ | async"></mat-spinner>
 </cdk-virtual-scroll-viewport>
