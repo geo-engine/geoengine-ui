@@ -64,7 +64,7 @@ Under `assets/config.json` can be an (optional) configuration file.
 You can override any of these default settings by specifying them.
 
 ```
-    API_URL: '/cgi-bin/mapping_cgi',
+    API_URL: '/api',
     WMS: {
         VERSION: '1.3.0',
         FORMAT: 'image/png',
@@ -77,20 +77,11 @@ You can override any of these default settings by specifying them.
         SERVICE: 'WCS',
         VERSION: '2.0.1',
     },
-    DEBUG_MODE: {
-        WAVE: false,
-        MAPPING: false,
-    },
-    USER: {
-        GUEST: {
-            NAME: 'guest',
-            PASSWORD: 'guest',
-        },
-    },
     DELAYS: {
         LOADING: {
             MIN: 500,
         },
+        TOOLTIP: 400,
         DEBOUNCE: 400,
         STORAGE_DEBOUNCE: 1500,
         GUEST_LOGIN_HINT: 5000,
@@ -99,19 +90,18 @@ You can override any of these default settings by specifying them.
     DEFAULTS: {
         PROJECT: {
             NAME: 'Default',
-            TIME: '2000-06-06T12:00:00.000Z',
-            PROJECTION: 'EPSG:3857',
+            TIME: '2014-04-01T12:00:00.000Z',
+            TIMESTEP: '1 month',
+            PROJECTION: 'EPSG:4326',
         },
     },
     MAP: {
-        BACKGROUND_LAYER: 'OSM',
+        BACKGROUND_LAYER: 'eumetview',
+        BACKGROUND_LAYER_URL: '',
         HOSTED_BACKGROUND_SERVICE: '/mapcache/',
         HOSTED_BACKGROUND_LAYER_NAME: 'osm',
         HOSTED_BACKGROUND_SERVICE_VERSION: '1.1.1',
         REFRESH_LAYERS_ON_CHANGE: false,
-    },
-    GFBIO: {
-        LIFERAY_PORTAL_URL: 'https://gfbio-dev1.inf-bb.uni-jena.de/',
     },
     TIME: {
         ALLOW_RANGES: true,
