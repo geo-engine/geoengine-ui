@@ -1,21 +1,21 @@
 [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fumr-dbs%2Fwave%2Fbadge&style=flat)](https://actions-badge.atrox.dev/umr-dbs/wave/goto)
 
-# WAVE - Workflow, Analysis and Visualization Editor
+# Geo Engine UI
 
-_WAVE_ is the official frontend of _VAT_.
+This repository contains the official frontend of Geo Engine.
 It is a web application that is built via nodejs.
-You can serve _WAVE_ via any http server, e.g. Apache.
+You can serve it via any http server, e.g. Apache.
 
 ## Requirements
 
 You need to have [Node.js](https://nodejs.org) installed.
-Verify that you are running at least `node v12.x.x` and `npm 6.x.x`.
-You can check this by running node -v and npm -v in a terminal or console window.
+Verify that you are running at least `node v14.x.x` and `npm 6.x.x`.
+You can check this by running `node -v` and `npm -v` in a terminal or console window.
 
-### Ubuntu 18.04 LTS and higher
+### Ubuntu 20.04 LTS and higher
 
 ```
-curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
@@ -64,7 +64,7 @@ Under `assets/config.json` can be an (optional) configuration file.
 You can override any of these default settings by specifying them.
 
 ```
-MAPPING_URL: '/cgi-bin/mapping_cgi',
+    API_URL: '/cgi-bin/mapping_cgi',
     WMS: {
         VERSION: '1.3.0',
         FORMAT: 'image/png',
