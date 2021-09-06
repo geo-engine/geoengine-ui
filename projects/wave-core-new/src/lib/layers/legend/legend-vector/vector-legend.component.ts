@@ -29,13 +29,15 @@ export class VectorLegendComponent implements OnInit {
 
     @Input() layer!: VectorLayer;
 
-    symbology!: VectorSymbology;
+    symbology?: VectorSymbology;
 
     fillColors?: ColorParam;
     strokeColor?: ColorParam;
     strokeWidth?: NumberParam;
     radius?: NumberParam;
+
     strokeWidthFactor = 1;
+    radiusFactor = 1;
 
     colorBreakPoints?: ColorBreakpoint[];
     strokeColorBreakpoints?: ColorBreakpoint[];
@@ -48,7 +50,7 @@ export class VectorLegendComponent implements OnInit {
     constructor() {}
 
     ngOnInit(): void {
-        this.symbology = this.layer.symbology.clone();
+        this.symbology = this.layer.symbology;
 
         if (this.symbology instanceof PointSymbology) {
             this.fillColors = this.symbology.fillColor;
@@ -81,6 +83,7 @@ export class VectorLegendComponent implements OnInit {
 
         if (this.radius instanceof DerivedNumber) {
             this.radiusAttributeName = this.radius.attribute;
+            this.radiusFactor = this.radius.factor;
         }
     }
 

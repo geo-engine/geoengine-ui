@@ -1,9 +1,9 @@
-<mat-card fxLayout="column">
+<div fxLayout="column">
     <!-- Default Style   -->
     <div fxLayout="row" fxLayoutAlign="start center" class="single-line" *ngIf="showDefaultStyle">
         <mat-icon>
             <ng-container [ngSwitch]="layer.symbology.symbologyType">
-                <wave-point-icon *ngSwitchCase="ST.POINT" [iconStyle]="$any(symbology.iconStyle)"></wave-point-icon>
+                <wave-point-icon *ngSwitchCase="ST.POINT" [iconStyle]="$any(layer.symbology.iconStyle)"></wave-point-icon>
                 <wave-line-icon *ngSwitchCase="ST.LINE" [iconStyle]="$any(layer.symbology.iconStyle)"></wave-line-icon>
                 <wave-polygon-icon *ngSwitchCase="ST.POLYGON" [iconStyle]="$any(layer.symbology.iconStyle)"></wave-polygon-icon>
             </ng-container>
@@ -75,13 +75,16 @@
         </div>
     </div>
 
-    <!-- Radius Legend  ??? -->
+    <!-- Radius Legend   -->
     <div *ngIf="radiusAttributeName">
         <mat-divider></mat-divider>
-        <div fxLayout="row" fxLayoutAlign="start center" class="single-line">
+        <div fxLayout="row" fxLayoutAlign="start center" class="heading">
             <span fxFlex
                 >Radius derived by <b><i>{{ radiusAttributeName }}</i></b></span
             >
         </div>
+        <div fxLayout="row" fxLayoutAlign="start center" class="segment">
+            <span fxFlex> with factor: {{ radiusFactor }}</span>
+        </div>
     </div>
-</mat-card>
+</div>

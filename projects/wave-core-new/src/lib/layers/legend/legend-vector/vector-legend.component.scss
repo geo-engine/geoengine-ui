@@ -1,12 +1,6 @@
 :host {
-    padding-left: 0.4rem;
-    padding-bottom: 0.4rem;
-    margin: 0;
-}
-mat-card {
-    padding-top: 0;
     padding-left: 1rem;
-    padding-bottom: 0;
+    padding-bottom: 0.4rem;
     margin: 0;
 }
 .heading {
@@ -20,9 +14,6 @@ mat-card {
 }
 .segment {
     font-size: 12px;
-}
-.segment:first-child {
-    padding-top: 0.5rem;
 }
 .segment:last-child {
     padding-bottom: 0.5rem;
