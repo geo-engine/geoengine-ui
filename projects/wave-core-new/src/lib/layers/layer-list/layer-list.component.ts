@@ -22,6 +22,7 @@ import {RasterSymbologyEditorComponent} from '../symbology/raster-symbology-edit
 import {SimpleChanges} from '@angular/core';
 import {VectorSymbologyEditorComponent} from '../symbology/vector-symbology-editor/vector-symbology-editor.component';
 import {NotificationService} from '../../notification.service';
+import {ProvenanceTableComponent} from '../../provenance/table/provenance-table.component';
 
 /**
  * The layer list component displays active layers, legends and other controlls.
@@ -159,6 +160,21 @@ export class LayerListComponent implements OnDestroy, OnChanges {
 
         // TODO: re-implement
         return false;
+    }
+
+    showProvenance(layer: Layer): void {
+        const name = this.projectService.getLayerChangesStream(layer).pipe(map((l) => 'Provenance of ' + l.name));
+        const removeTrigger = this.projectService.getLayerChangesStream(layer).pipe(
+            last(),
+            map(() => {}),
+        );
+        this.tabsService.addComponent({
+            name,
+            component: ProvenanceTableComponent,
+            inputs: {layer},
+            equals: (a, b): boolean => a.layer.id === b.layer.id,
+            removeTrigger,
+        });
     }
 
     showDatatable(layer: Layer): void {

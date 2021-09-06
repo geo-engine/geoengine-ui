@@ -386,7 +386,6 @@ export interface OgrSourceDatasetDict {
     columns?: OgrSourceColumnSpecDict;
     forceOgrTimeFilter: boolean;
     onError: 'ignore' | 'abort';
-    provenance?: ProvenanceInformationDict;
 }
 
 export type OgrSourceDatasetTimeTypeDict =
@@ -470,10 +469,15 @@ export interface MultiPolygonDict {
 export type PolygonDict = Array<RingDict>;
 export type RingDict = Array<CoordinateDict>;
 
-export interface ProvenanceInformationDict {
+export interface ProvenanceDict {
     citation: string;
     license: string;
     uri: string;
+}
+
+export interface ProvenanceOutputDict {
+    dataset: DatasetIdDict;
+    provenance: ProvenanceDict;
 }
 
 export interface SpatialReferenceSpecificationDict {

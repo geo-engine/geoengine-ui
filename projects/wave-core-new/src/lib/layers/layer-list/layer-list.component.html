@@ -112,13 +112,17 @@
                             <mat-icon>color_lens</mat-icon>
                             <span>Edit Symbology</span>
                         </button>
+                        <button mat-menu-item (click)="showProvenance(layer)">
+                            <mat-icon>description</mat-icon>
+                            <span>Show Provenance</span>
+                        </button>
                         <button mat-menu-item (click)="showDatatable(layer)">
                             <mat-icon>table</mat-icon>
-                            <span>Show datatable</span>
+                            <span>Show Datatable</span>
                         </button>
                         <button mat-menu-item (click)="copyWorkflowIdToClipboard(layer)">
                             <mat-icon>content_copy</mat-icon>
-                            <span>Copy workflow id to clipboard</span>
+                            <span>Copy Workflow Id to Clipboard</span>
                         </button>
                         <!--                                    <button mat-menu-item (click)="dialog.open(LayerExportComponent, {data: {layer: layer}})">-->
                         <!--                                        <mat-icon>file_download</mat-icon>-->

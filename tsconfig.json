@@ -15,10 +15,9 @@
         "paths": {
             "wave-core": ["dist/wave-core/wave-core", "dist/wave-core"]
         },
-        // TODO: remove once vega-lite fixes (https://github.com/visjs/vis-network/issues/67)
+        // TODO: set to false if no longer needed for moment and proj4
         "allowSyntheticDefaultImports": true,
-        // TODO: remove once vega-lite fixes (https://github.com/vega/vega-lite/issues/3897)
-        "resolveJsonModule": true,
+        "resolveJsonModule": false,
         "forceConsistentCasingInFileNames": true,
         "strict": true,
         "noImplicitReturns": true,

@@ -1,9 +1,9 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {Observable} from 'rxjs';
-import {DataSetProviderListingDict, UUID} from '../../backend/backend.model';
+import {DataSetProviderListingDict} from '../../backend/backend.model';
 import {LayoutService} from '../../layout.service';
+import {DatasetListComponent} from '../dataset-list/dataset-list.component';
 import {DatasetService} from '../dataset.service';
-import {ExternalDatasetListComponent} from '../external-dataset-list/external-dataset-list.component';
 
 @Component({
     selector: 'wave-provider-list',
@@ -18,7 +18,11 @@ export class ProviderListComponent {
         this.providers = this.datasetService.getDatasetProviders();
     }
 
-    show(providerId: UUID): void {
-        this.layoutService.setSidenavContentComponent({component: ExternalDatasetListComponent, config: {providerId}});
+    show(provider: DataSetProviderListingDict): void {
+        this.layoutService.setSidenavContentComponent({
+            component: DatasetListComponent,
+            config: {externalDatasetProviderId: provider.id, repositoryName: provider.name},
+            keepParent: true,
+        });
     }
 }

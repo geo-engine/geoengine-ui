@@ -1,5 +1,6 @@
 import {Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChanges, OnDestroy, AfterViewInit, OnInit} from '@angular/core';
 import {
+    ClusteredPointSymbology,
     ColorParam,
     LineSymbology,
     NumberParam,
@@ -8,6 +9,7 @@ import {
     StaticColor,
     StaticNumber,
     Stroke,
+    SymbologyType,
     TextSymbology,
     VectorSymbology,
 } from '../symbology.model';
@@ -53,7 +55,10 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         if (changes.layer && this.layer) {
             this.symbology = this.layer.symbology.clone();
 
-            this.showFillColorEditor = this.symbology instanceof PointSymbology || this.symbology instanceof PolygonSymbology;
+            this.showFillColorEditor =
+                this.symbology instanceof PointSymbology ||
+                this.symbology instanceof ClusteredPointSymbology ||
+                this.symbology instanceof PolygonSymbology;
             this.showRadiusEditor = this.symbology instanceof PointSymbology;
 
             this.initializeAttributes();
@@ -63,7 +68,10 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     ngOnInit(): void {
         this.symbology = this.layer.symbology.clone();
 
-        this.showFillColorEditor = this.symbology instanceof PointSymbology || this.symbology instanceof PolygonSymbology;
+        this.showFillColorEditor =
+            this.symbology instanceof PointSymbology ||
+            this.symbology instanceof ClusteredPointSymbology ||
+            this.symbology instanceof PolygonSymbology;
         this.showRadiusEditor = this.symbology instanceof PointSymbology;
 
         this.initializeAttributes();
@@ -73,10 +81,38 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
 
     ngOnDestroy(): void {}
 
+    get isPointLayer(): boolean {
+        return this.symbology.symbologyType === SymbologyType.POINT;
+    }
+
+    get isClustered(): boolean {
+        return this.symbology instanceof ClusteredPointSymbology;
+    }
+
+    setClusterSymbology(clustered: boolean): void {
+        if (clustered && this.symbology instanceof PointSymbology) {
+            this.symbology = new ClusteredPointSymbology(this.symbology.fillColor, this.symbology.stroke);
+            this.showRadiusEditor = false;
+            this.updateClusteredPointSymbology({});
+        } else if (!clustered && this.symbology instanceof ClusteredPointSymbology) {
+            this.symbology = new PointSymbology(
+                new StaticNumber(PointSymbology.DEFAULT_POINT_RADIUS),
+                this.symbology.fillColor,
+                this.symbology.stroke,
+            );
+            this.showRadiusEditor = true;
+            this.updatePointSymbology({});
+        } else {
+            // should not be called
+        }
+    }
+
     get fillColor(): ColorParam {
-        if (this.symbology instanceof PointSymbology) {
-            return this.symbology.fillColor;
-        } else if (this.symbology instanceof PolygonSymbology) {
+        if (
+            this.symbology instanceof PointSymbology ||
+            this.symbology instanceof ClusteredPointSymbology ||
+            this.symbology instanceof PolygonSymbology
+        ) {
             return this.symbology.fillColor;
         } else {
             throw Error('This symbology has no fill color');
@@ -86,6 +122,8 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     set fillColor(fillColor: ColorParam) {
         if (this.symbology instanceof PointSymbology) {
             this.updatePointSymbology({fillColor});
+        } else if (this.symbology instanceof ClusteredPointSymbology) {
+            this.updateClusteredPointSymbology({fillColor});
         } else if (this.symbology instanceof PolygonSymbology) {
             this.updatePolygonSymbology({fillColor});
         } else {
@@ -94,11 +132,12 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     }
 
     get strokeColor(): ColorParam {
-        if (this.symbology instanceof PointSymbology) {
-            return this.symbology.stroke.color;
-        } else if (this.symbology instanceof PolygonSymbology) {
-            return this.symbology.stroke.color;
-        } else if (this.symbology instanceof LineSymbology) {
+        if (
+            this.symbology instanceof PointSymbology ||
+            this.symbology instanceof ClusteredPointSymbology ||
+            this.symbology instanceof PolygonSymbology ||
+            this.symbology instanceof LineSymbology
+        ) {
             return this.symbology.stroke.color;
         } else {
             throw Error('This symbology has no stroke');
@@ -108,6 +147,8 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     set strokeColor(strokeColor: ColorParam) {
         if (this.symbology instanceof PointSymbology) {
             this.updatePointSymbology({stroke: new Stroke(this.symbology.stroke.width, strokeColor)});
+        } else if (this.symbology instanceof ClusteredPointSymbology) {
+            this.updateClusteredPointSymbology({stroke: new Stroke(this.symbology.stroke.width, strokeColor)});
         } else if (this.symbology instanceof PolygonSymbology) {
             this.updatePolygonSymbology({stroke: new Stroke(this.symbology.stroke.width, strokeColor)});
         } else if (this.symbology instanceof LineSymbology) {
@@ -118,11 +159,12 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     }
 
     get strokeWidth(): NumberParam {
-        if (this.symbology instanceof PointSymbology) {
-            return this.symbology.stroke.width;
-        } else if (this.symbology instanceof PolygonSymbology) {
-            return this.symbology.stroke.width;
-        } else if (this.symbology instanceof LineSymbology) {
+        if (
+            this.symbology instanceof PointSymbology ||
+            this.symbology instanceof ClusteredPointSymbology ||
+            this.symbology instanceof PolygonSymbology ||
+            this.symbology instanceof LineSymbology
+        ) {
             return this.symbology.stroke.width;
         } else {
             throw Error('This symbology has no stroke');
@@ -132,6 +174,8 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     set strokeWidth(strokeWidth: NumberParam) {
         if (this.symbology instanceof PointSymbology) {
             this.updatePointSymbology({stroke: new Stroke(strokeWidth, this.symbology.stroke.color)});
+        } else if (this.symbology instanceof ClusteredPointSymbology) {
+            this.updateClusteredPointSymbology({stroke: new Stroke(strokeWidth, this.symbology.stroke.color)});
         } else if (this.symbology instanceof PolygonSymbology) {
             this.updatePolygonSymbology({stroke: new Stroke(strokeWidth, this.symbology.stroke.color)});
         } else if (this.symbology instanceof LineSymbology) {
@@ -142,7 +186,7 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     }
 
     get radius(): NumberParam {
-        if (this.symbology instanceof PointSymbology) {
+        if (this.symbology instanceof PointSymbology || this.symbology instanceof ClusteredPointSymbology) {
             return this.symbology.radius;
         } else {
             throw Error('This symbology has no radius');
@@ -150,7 +194,7 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     }
 
     set radius(radius: NumberParam) {
-        if (this.symbology instanceof PointSymbology) {
+        if (this.symbology instanceof PointSymbology || this.symbology instanceof ClusteredPointSymbology) {
             this.updatePointSymbology({radius});
         } else {
             throw Error('This symbology has no radius');
@@ -158,23 +202,19 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     }
 
     get supportsText(): boolean {
-        if (this.symbology instanceof PointSymbology) {
-            return true;
-        } else if (this.symbology instanceof LineSymbology) {
-            return true;
-        } else if (this.symbology instanceof PolygonSymbology) {
-            return true;
-        } else {
-            return false;
-        }
+        return (
+            this.symbology instanceof PointSymbology ||
+            this.symbology instanceof LineSymbology ||
+            this.symbology instanceof PolygonSymbology
+        );
     }
 
     get hasText(): boolean {
-        if (this.symbology instanceof PointSymbology) {
-            return !!this.symbology.text;
-        } else if (this.symbology instanceof LineSymbology) {
-            return !!this.symbology.text;
-        } else if (this.symbology instanceof PolygonSymbology) {
+        if (
+            this.symbology instanceof PointSymbology ||
+            this.symbology instanceof LineSymbology ||
+            this.symbology instanceof PolygonSymbology
+        ) {
             return !!this.symbology.text;
         } else {
             // This symbology has no text
@@ -185,11 +225,12 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     get textFillColor(): ColorParam {
         let textSymbology: TextSymbology | undefined;
 
-        if (this.symbology instanceof PointSymbology) {
-            textSymbology = this.symbology.text;
-        } else if (this.symbology instanceof LineSymbology) {
-            textSymbology = this.symbology.text;
-        } else if (this.symbology instanceof PolygonSymbology) {
+        if (
+            this.symbology instanceof PointSymbology ||
+            this.symbology instanceof ClusteredPointSymbology ||
+            this.symbology instanceof LineSymbology ||
+            this.symbology instanceof PolygonSymbology
+        ) {
             textSymbology = this.symbology.text;
         } else {
             throw Error('This symbology has no text');
@@ -361,6 +402,18 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
             params.stroke ?? this.symbology.stroke,
             text,
         );
+
+        this.projectService.changeLayer(this.layer, {
+            symbology: this.symbology,
+        });
+    }
+
+    updateClusteredPointSymbology(params: {fillColor?: ColorParam; stroke?: Stroke}): void {
+        if (!(this.symbology instanceof ClusteredPointSymbology)) {
+            return;
+        }
+
+        this.symbology = new ClusteredPointSymbology(params.fillColor ?? this.symbology.fillColor, params.stroke ?? this.symbology.stroke);
 
         this.projectService.changeLayer(this.layer, {
             symbology: this.symbology,

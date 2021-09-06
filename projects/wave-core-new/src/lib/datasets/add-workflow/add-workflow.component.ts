@@ -3,7 +3,14 @@ import {FormGroup, FormControl, Validators} from '@angular/forms';
 import {GeoEngineError, RasterResultDescriptorDict, UUID, VectorResultDescriptorDict} from '../../backend/backend.model';
 import {colorToDict} from '../../colors/color';
 import {RasterLayer, VectorLayer} from '../../layers/layer.model';
-import {LineSymbology, PointSymbology, PolygonSymbology, RasterSymbology, VectorSymbology} from '../../layers/symbology/symbology.model';
+import {
+    ClusteredPointSymbology,
+    LineSymbology,
+    PointSymbology,
+    PolygonSymbology,
+    RasterSymbology,
+    VectorSymbology,
+} from '../../layers/symbology/symbology.model';
 import {NotificationService} from '../../notification.service';
 import {ProjectService} from '../../project/project.service';
 import {isValidUuid} from '../../util/form.validators';
@@ -70,9 +77,9 @@ export class AddWorkflowComponent implements OnInit {
                 // TODO: cope with that
                 throw Error('we cannot add data layers here, yet');
             case 'MultiPoint':
-                return PointSymbology.fromPointSymbologyDict({
+                return ClusteredPointSymbology.fromPointSymbologyDict({
                     type: 'point',
-                    radius: {type: 'static', value: 10},
+                    radius: {type: 'static', value: PointSymbology.DEFAULT_POINT_RADIUS},
                     stroke: {
                         width: {type: 'static', value: 1},
                         color: {type: 'static', color: [0, 0, 0, 255]},

@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, ViewChild, Input} from '@angular/core';
 import {Dataset, DatasetId} from '../dataset.model';
 import {DatasetService} from '../dataset.service';
 import {DataSource} from '@angular/cdk/collections';
@@ -6,6 +6,7 @@ import {BehaviorSubject, EMPTY, Observable, Subject} from 'rxjs';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {filter, mergeMap, scan, tap} from 'rxjs/operators';
 import {LayoutService} from '../../layout.service';
+import {UUID} from '../../backend/backend.model';
 
 @Component({
     selector: 'wave-dataset-list',
@@ -17,19 +18,24 @@ export class DatasetListComponent implements OnInit, AfterViewInit {
     @ViewChild(CdkVirtualScrollViewport)
     viewport!: CdkVirtualScrollViewport;
 
+    // leave undefined for internal datasets
+    @Input() externalDatasetProviderId?: UUID = undefined;
+
+    @Input() repositoryName = 'Data Repository';
+
     // TODO: dataset search
 
     // TODO: ordering of datasets
 
     readonly loadingSpinnerDiameterPx: number = 3 * LayoutService.remInPx;
 
-    readonly datasetSource: DatasetDataSource;
+    datasetSource?: DatasetDataSource;
 
-    constructor(public datasetService: DatasetService) {
-        this.datasetSource = new DatasetDataSource(this.datasetService);
+    constructor(public datasetService: DatasetService) {}
+
+    ngOnInit(): void {
+        this.datasetSource = new DatasetDataSource(this.datasetService, this.externalDatasetProviderId);
     }
-
-    ngOnInit(): void {}
 
     ngAfterViewInit(): void {}
 
@@ -42,7 +48,7 @@ export class DatasetListComponent implements OnInit, AfterViewInit {
 
         // only fetch when scrolled to the end
         if (end >= total) {
-            this.datasetSource.fetchMoreData();
+            this.datasetSource?.fetchMoreData();
         }
     }
 
@@ -59,16 +65,21 @@ class DatasetDataSource extends DataSource<Dataset> {
 
     readonly loading$ = new BehaviorSubject(false);
 
-    protected datasetService: DatasetService;
-
     protected nextBatch$ = new Subject<void>();
     protected noMoreData = false;
     protected offset = 0;
 
-    constructor(datasetService: DatasetService) {
+    protected getDatasets: (offset: number, limit: number) => Observable<Array<Dataset>>;
+
+    constructor(protected datasetService: DatasetService, protected externalDatasetProviderId?: UUID) {
         super();
 
-        this.datasetService = datasetService;
+        if (externalDatasetProviderId) {
+            this.getDatasets = (offset, limit): Observable<Array<Dataset>> =>
+                datasetService.getExternalDatasets(externalDatasetProviderId, offset, limit);
+        } else {
+            this.getDatasets = (offset, limit): Observable<Array<Dataset>> => datasetService.getDatasets(offset, limit);
+        }
 
         this.fetchMoreData(); // initially populate source
     }
@@ -100,7 +111,7 @@ class DatasetDataSource extends DataSource<Dataset> {
         const offset = this.offset;
         const limit = this.scrollFetchSize;
 
-        return this.datasetService.getDatasets(offset, limit).pipe(
+        return this.getDatasets(offset, limit).pipe(
             tap((datasets) => {
                 this.offset += datasets.length;
 

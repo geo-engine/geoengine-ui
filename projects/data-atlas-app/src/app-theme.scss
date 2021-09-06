@@ -1,7 +1,7 @@
-@import '~@angular/material/theming';
+@use '~@angular/material' as mat;
 
 // Material Base Styles
-@include mat-core();
+@include mat.core();
 
 // Define Colors
 $geoengine-dark-green: (
@@ -71,12 +71,12 @@ $geoengine-light-green: (
 );
 
 // Define App Theme
-$wave-app-primary: mat-palette($geoengine-dark-green);
-$wave-app-accent: mat-palette($geoengine-light-green, A200, A100, A400);
-$wave-app-warn: mat-palette($mat-red);
+$wave-app-primary: mat.define-palette($geoengine-dark-green);
+$wave-app-accent: mat.define-palette($geoengine-light-green, A200, A100, A400);
+$wave-app-warn: mat.define-palette(mat.$red-palette);
 
 // Create the theme object (a Sass map containing all of the palettes).
-$wave-app-theme: mat-light-theme($wave-app-primary, $wave-app-accent, $wave-app-warn);
+$wave-app-theme: mat.define-light-theme($wave-app-primary, $wave-app-accent, $wave-app-warn);
 
 // Apply Angular Material Mixin to Color Theme
-@include angular-material-theme($wave-app-theme);
+@include mat.all-component-themes($wave-app-theme);

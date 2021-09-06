@@ -18,7 +18,14 @@ import {
 } from '../backend/backend.model';
 import {RandomColorService} from '../util/services/random-color.service';
 import {RasterLayer, VectorLayer} from '../layers/layer.model';
-import {LineSymbology, PointSymbology, PolygonSymbology, RasterSymbology, VectorSymbology} from '../layers/symbology/symbology.model';
+import {
+    ClusteredPointSymbology,
+    LineSymbology,
+    PointSymbology,
+    PolygonSymbology,
+    RasterSymbology,
+    VectorSymbology,
+} from '../layers/symbology/symbology.model';
 import {VectorDataTypes} from '../operators/datatype.model';
 import {colorToDict} from '../colors/color';
 import {ProjectService} from '../project/project.service';
@@ -114,11 +121,11 @@ export class DatasetService {
                         case VectorDataTypes.MultiPoint:
                             symbology = (dataset.symbology as PointSymbology)
                                 ? (dataset.symbology as PointSymbology)
-                                : PointSymbology.fromPointSymbologyDict({
+                                : ClusteredPointSymbology.fromPointSymbologyDict({
                                       type: 'point',
                                       radius: {
                                           type: 'static',
-                                          value: 10,
+                                          value: PointSymbology.DEFAULT_POINT_RADIUS,
                                       },
                                       stroke: {
                                           width: {

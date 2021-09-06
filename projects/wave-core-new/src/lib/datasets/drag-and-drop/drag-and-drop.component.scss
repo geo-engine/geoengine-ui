@@ -4,12 +4,11 @@
 }
 
 .dropzone {
-    width: 450px;
-    height: 150px;
+    width: 100%;
     padding: 2rem;
+    box-sizing: border-box;
     text-align: center;
     border: dashed 1px #979797;
-    position: relative;
     margin: 0 auto;
 }
 
@@ -27,7 +26,7 @@
 }
 
 .files-list {
-    width: 450px;
+    width: 100%;
     border: dashed 1px #979797;
     margin: 1rem auto auto;
     padding: 0;

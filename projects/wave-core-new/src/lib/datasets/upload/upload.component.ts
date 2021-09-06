@@ -2,7 +2,7 @@ import {HttpEventType} from '@angular/common/http';
 import {Component, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatChipInputEvent} from '@angular/material/chips';
-import {MatVerticalStepper} from '@angular/material/stepper';
+import {MatStepper} from '@angular/material/stepper';
 import {Subject} from 'rxjs';
 import {mergeMap} from 'rxjs/operators';
 import {
@@ -35,7 +35,7 @@ export class UploadComponent {
     errorHandlings = ['ignore', 'abort'];
     readonly timeGranularityOptions = ['Millis', 'Seconds', 'Minutes', 'Hours', 'Days', 'Months', 'Years'];
 
-    @ViewChild(MatVerticalStepper) stepper!: MatVerticalStepper;
+    @ViewChild(MatStepper) stepper!: MatStepper;
 
     progress$ = new Subject<number>();
     metaDataSuggestion$ = new Subject<MetaDataSuggestionDict>();
@@ -247,8 +247,10 @@ export class UploadComponent {
                 } else if (event.type === HttpEventType.Response) {
                     const uploadId = event.body?.id as UUID;
                     this.uploadId = uploadId;
-                    this.stepper.selected.completed = true;
-                    this.stepper.selected.editable = false;
+                    if (this.stepper.selected) {
+                        this.stepper.selected.completed = true;
+                        this.stepper.selected.editable = false;
+                    }
                     this.stepper.next();
 
                     this.suggest();
@@ -299,7 +301,6 @@ export class UploadComponent {
                 },
                 forceOgrTimeFilter: false,
                 onError: formMeta.errorHandling.value,
-                provenance: undefined, // TODO
             },
             resultDescriptor: {
                 type: 'vector',
@@ -328,8 +329,10 @@ export class UploadComponent {
         this.datasetService.createDataset(create).subscribe(
             (response) => {
                 this.datasetId = response.id;
-                this.stepper.selected.completed = true;
-                this.stepper.selected.editable = false;
+                if (this.stepper.selected) {
+                    this.stepper.selected.completed = true;
+                    this.stepper.selected.editable = false;
+                }
                 const prevStep = this.stepper.steps.get(this.stepper.selectedIndex - 1);
                 if (prevStep) {
                     prevStep.completed = true;

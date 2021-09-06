@@ -108,8 +108,8 @@ import {NotificationsComponent} from './project/notifications/notifications.comp
 import {TemporalRasterAggregationComponent} from './operators/dialogs/temporal-raster-aggregation/temporal-raster-aggregation.component';
 import {DragAndDropComponent} from './datasets/drag-and-drop/drag-and-drop.component';
 import {ProviderListComponent} from './datasets/provider-list/provider-list.component';
-import {ExternalDatasetListComponent} from './datasets/external-dataset-list/external-dataset-list.component';
 import {AddWorkflowComponent} from './datasets/add-workflow/add-workflow.component';
+import {ProvenanceTableComponent} from './provenance/table/provenance-table.component';
 import {ScrollingModule} from '@angular/cdk/scrolling';
 
 export const MATERIAL_MODULES = [
@@ -172,14 +172,12 @@ const WAVE_COMPONENTS = [
     DatasetComponent,
     DatasetListComponent,
     DataTableComponent,
-    DataTableComponent,
     DialogHeaderComponent,
     DialogHelpComponent,
     DialogSectionHeadingComponent,
     DragAndDropComponent,
     DrawFeaturesComponent,
     ExpressionOperatorComponent,
-    ExternalDatasetListComponent,
     FeatureAttributeOvertimeComponent,
     HistogramOperatorComponent,
     IfGuestDirective,
@@ -208,6 +206,7 @@ const WAVE_COMPONENTS = [
     PointIconComponent,
     PointInPolygonFilterOperatorComponent,
     PolygonIconComponent,
+    ProvenanceTableComponent,
     ProviderListComponent,
     RasterIconComponent,
     RasterLegendComponent,
