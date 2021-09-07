@@ -75,8 +75,18 @@
         </div>
     </div>
 
-    <!-- Radius Legend   -->
-    <div *ngIf="radiusAttributeName">
+    <!-- Radius Legend for ClusteredPointSymbology  -->
+    <div *ngIf="radiusAttributeName === '___radius'">
+        <mat-divider></mat-divider>
+        <div fxLayout="row" fxLayoutAlign="start center" class="single-line">
+            <span fxFlex *ngIf="radiusAttributeName === '___radius'"
+                >Radius derived by <b><i>clustering</i></b></span
+            >
+        </div>
+    </div>
+
+    <!-- Radius Legend for PointSymbology -->
+    <div *ngIf="radiusAttributeName && radiusAttributeName !== '___radius'">
         <mat-divider></mat-divider>
         <div fxLayout="row" fxLayoutAlign="start center" class="heading">
             <span fxFlex

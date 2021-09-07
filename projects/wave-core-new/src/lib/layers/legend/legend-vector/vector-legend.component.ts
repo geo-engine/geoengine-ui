@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {
+    ClusteredPointSymbology,
     ColorParam,
     DerivedColor,
     DerivedNumber,
@@ -53,6 +54,11 @@ export class VectorLegendComponent implements OnInit {
         this.symbology = this.layer.symbology;
 
         if (this.symbology instanceof PointSymbology) {
+            this.fillColors = this.symbology.fillColor;
+            this.strokeColor = this.symbology.stroke.color;
+            this.strokeWidth = this.symbology.stroke.width;
+            this.radius = this.symbology.radius;
+        } else if (this.symbology instanceof ClusteredPointSymbology) {
             this.fillColors = this.symbology.fillColor;
             this.strokeColor = this.symbology.stroke.color;
             this.strokeWidth = this.symbology.stroke.width;
