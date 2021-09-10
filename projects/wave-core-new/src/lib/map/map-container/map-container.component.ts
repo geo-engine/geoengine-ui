@@ -56,6 +56,7 @@ import {LayoutService} from '../../layout.service';
 import {MatGridList, MatGridTile} from '@angular/material/grid-list';
 import {VectorSymbology} from '../../layers/symbology/symbology.model';
 import {SpatialReferenceService} from '../../spatial-references/spatial-reference.service';
+import {containsCoordinate, getCenter} from 'ol/extent';
 
 type MapLayer = MapLayerComponent<OlLayer, OlSource>;
 
@@ -494,13 +495,18 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     private createAndSetView(projection: SpatialReference): void {
-        const zoomLevel = this.view ? this.view.getZoom() : DEFAULT_ZOOM_LEVEL;
+        let zoomLevel = this.view ? this.view.getZoom() : DEFAULT_ZOOM_LEVEL;
         const olProjection = this.spatialReferenceService.getOlProjection(projection);
 
         let newCenterPoint: OlGeomPoint;
         if (this.view && this.view.getCenter()) {
             const oldCenterPoint = new OlGeomPoint(this.view.getCenter() as any);
             newCenterPoint = oldCenterPoint.transform(this.view.getProjection(), olProjection) as OlGeomPoint;
+
+            if (!containsCoordinate(olProjection.getExtent(), newCenterPoint.getCoordinates())) {
+                newCenterPoint = new OlGeomPoint(getCenter(olProjection.getExtent()));
+                zoomLevel = DEFAULT_ZOOM_LEVEL;
+            }
         } else {
             newCenterPoint = new OlGeomPoint([0, 0]);
         }
