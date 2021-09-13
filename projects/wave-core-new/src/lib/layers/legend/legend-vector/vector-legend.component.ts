@@ -16,6 +16,7 @@ import {PointIconStyle} from '../../layer-icons/point-icon/point-icon.component'
 import {VectorLayer} from '../../layer.model';
 import {BLACK, Color, WHITE} from '../../../colors/color';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
+import {LineIconStyle} from '../../layer-icons/line-icon/line-icon.component';
 
 @Component({
     selector: 'wave-vector-legend',
@@ -107,6 +108,14 @@ export class VectorLegendComponent implements OnInit {
             strokeWidth: params.strokeWidth ?? 0,
             strokeRGBA: params.strokeColor ?? BLACK,
             fillRGBA: params.fillColor ?? WHITE,
+        };
+        return iconStyle;
+    }
+
+    getLineIconStyle(params: {strokeWidth?: number; strokeColor?: Color | null}): LineIconStyle {
+        const iconStyle: LineIconStyle = {
+            strokeWidth: params.strokeWidth ?? 0,
+            strokeRGBA: params.strokeColor ?? BLACK,
         };
         return iconStyle;
     }

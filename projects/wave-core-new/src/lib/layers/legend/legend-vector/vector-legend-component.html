@@ -12,7 +12,7 @@
         <span fxFlex>Default style</span>
     </div>
 
-    <!-- Color Legend   -->
+    <!-- Fill Color Legend   -->
     <div *ngIf="colorBreakPoints">
         <mat-divider></mat-divider>
         <div fxLayout="row" fxLayoutAlign="start center" class="heading">
@@ -56,6 +56,10 @@
                         *ngSwitchCase="ST.POLYGON"
                         [iconStyle]="getPolygonIconStyle({strokeWidth: 1, strokeColor: breakpoint.color})"
                     ></wave-polygon-icon>
+                    <wave-line-icon
+                        *ngSwitchCase="ST.LINE"
+                        [iconStyle]="getLineIconStyle({strokeWidth: 1, strokeColor: breakpoint.color})"
+                    ></wave-line-icon>
                 </ng-container>
             </mat-icon>
             <span fxFlex>{{breakpoint.value}}</span>
