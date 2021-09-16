@@ -1,23 +1,25 @@
 :host {
-    padding-left: 8px;
-    padding-right: 0px;
+    padding-left: 1rem;
+    padding-bottom: 0.4rem;
+    margin: 0;
 }
 
-.segment:first-child {
-    margin-top: 4px;
+mat-icon {
+    margin-right: 0.25rem;
 }
 
+.heading {
+    font-size: 12px;
+    margin-top: 0.5rem;
+}
+.single-line {
+    font-size: 12px;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
 .segment {
     font-size: 12px;
-    // height: 20px;
 }
-
-.segment_head {
-    margin-top: 4px;
-    margin-left: 24px;
-    font-weight: bold;
-}
-
 .segment:last-child {
-    margin-bottom: 4px;
+    padding-bottom: 0.5rem;
 }
