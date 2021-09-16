@@ -4,8 +4,8 @@ import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angula
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {ProjectService} from '../project.service';
 import {NotificationService} from '../../notification.service';
-import {SpatialReferenceSpecification, WEB_MERCATOR, WELL_KNOWN_SPATAL_REFERENCES} from '../../spatial-references/spatial-reference.model';
-import {SpatialReferenceService} from '../../spatial-references/spatial-reference.service';
+import {NamedSpatialReference, SpatialReferenceSpecification} from '../../spatial-references/spatial-reference.model';
+import {SpatialReferenceService, WEB_MERCATOR} from '../../spatial-references/spatial-reference.service';
 import {Time} from '../../time/time.model';
 import {extentToBboxDict} from '../../util/conversions';
 
@@ -16,7 +16,7 @@ import {extentToBboxDict} from '../../util/conversions';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewProjectComponent implements OnInit, AfterViewInit {
-    spatialReferenceOptions = WELL_KNOWN_SPATAL_REFERENCES;
+    spatialReferenceOptions: Array<NamedSpatialReference>;
 
     form: FormGroup;
 
@@ -28,6 +28,7 @@ export class NewProjectComponent implements OnInit, AfterViewInit {
         protected notificationService: NotificationService,
         protected spatialReferenceService: SpatialReferenceService,
     ) {
+        this.spatialReferenceOptions = this.spatialReferenceService.getSpatialReferences();
         this.form = this.formBuilder.group({
             name: [
                 '',

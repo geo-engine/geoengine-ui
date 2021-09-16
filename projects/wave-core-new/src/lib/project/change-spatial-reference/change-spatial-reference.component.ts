@@ -1,6 +1,6 @@
 import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy} from '@angular/core';
 import {ProjectService} from '../project.service';
-import {NamedSpatialReference, SpatialReference, WELL_KNOWN_SPATAL_REFERENCES} from '../../spatial-references/spatial-reference.model';
+import {NamedSpatialReference, SpatialReference} from '../../spatial-references/spatial-reference.model';
 import {SpatialReferenceService} from '../../spatial-references/spatial-reference.service';
 import {Subscription} from 'rxjs/internal/Subscription';
 
@@ -11,7 +11,7 @@ import {Subscription} from 'rxjs/internal/Subscription';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChangeSpatialReferenceComponent implements OnInit, OnDestroy {
-    readonly SpatialReferences = WELL_KNOWN_SPATAL_REFERENCES;
+    readonly SpatialReferences: Array<NamedSpatialReference>;
 
     spatialReference?: NamedSpatialReference;
 
@@ -22,6 +22,7 @@ export class ChangeSpatialReferenceComponent implements OnInit, OnDestroy {
         protected spatialReferenceService: SpatialReferenceService,
         protected changeDetectorRef: ChangeDetectorRef,
     ) {
+        this.SpatialReferences = this.spatialReferenceService.getSpatialReferences();
         this.subscription = this.projectService.getSpatialReferenceStream().subscribe((sref: SpatialReference) => {
             const index = this.SpatialReferences.findIndex((v) => v.spatialReference.srsString === sref.srsString);
 

@@ -4,11 +4,15 @@ import {map, mergeMap} from 'rxjs/operators';
 import {SpatialReferenceSpecificationDict, SrsString, UUID} from '../backend/backend.model';
 import {BackendService} from '../backend/backend.service';
 import {UserService} from '../users/user.service';
-import {SpatialReference, SpatialReferenceSpecification, WELL_KNOWN_SPATAL_REFERENCES} from './spatial-reference.model';
+import {NamedSpatialReference, SpatialReference, SpatialReferenceSpecification} from './spatial-reference.model';
 import {get as olGetProjection, addProjection as olAddProjection} from 'ol/proj';
 import {register as olProj4Register} from 'ol/proj/proj4';
 import OlProjection from 'ol/proj/Projection';
 import proj4 from 'proj4';
+import {Config} from '../config.service';
+
+export const WEB_MERCATOR = new NamedSpatialReference('WGS 84 / Pseudomercator', 'EPSG:3857');
+export const WGS_84 = new NamedSpatialReference('WGS 84', 'EPSG:4326');
 
 /**
  * Service for managing spatial references and projections
@@ -17,8 +21,22 @@ import proj4 from 'proj4';
 export class SpatialReferenceService {
     private specs = new Map<string, SpatialReferenceSpecification>();
 
-    constructor(protected backend: BackendService, protected userService: UserService) {
+    constructor(protected backend: BackendService, protected userService: UserService, protected readonly config: Config) {
         this.registerDefaults();
+    }
+
+    /**
+     * get the list of known spatial references
+     */
+    getSpatialReferences(): Array<NamedSpatialReference> {
+        const srefs = [];
+
+        for (const spec of this.specs.values()) {
+            srefs.push(new NamedSpatialReference(spec.name, spec.spatialReference.srsString));
+        }
+
+        srefs.sort((a, b) => a.name.localeCompare(b.name));
+        return srefs;
     }
 
     /**
@@ -80,8 +98,8 @@ export class SpatialReferenceService {
         );
 
         merge(
-            WELL_KNOWN_SPATAL_REFERENCES.filter((sref) => !this.specs.has(sref.spatialReference.srsString)).map((sref) =>
-                this.getAndRegisterSpec(sref.spatialReference.srsString),
+            this.config.SPATIAL_REFERENCES.filter((sref) => !this.specs.has(sref.SRS_STRING)).map((sref) =>
+                this.getAndRegisterSpec(sref.SRS_STRING),
             ),
         ).subscribe((specs) => {
             specs.forEach((spec) => {

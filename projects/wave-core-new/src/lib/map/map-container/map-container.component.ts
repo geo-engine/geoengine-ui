@@ -48,14 +48,14 @@ import OlInteractionSelectEvent from 'ol/interaction/Select';
 
 import {MapLayerComponent} from '../map-layer.component';
 
-import {SpatialReference, WEB_MERCATOR} from '../../spatial-references/spatial-reference.model';
+import {SpatialReference} from '../../spatial-references/spatial-reference.model';
 import {FeatureSelection, ProjectService} from '../../project/project.service';
 import {Extent, MapService} from '../map.service';
 import {Config} from '../../config.service';
 import {LayoutService} from '../../layout.service';
 import {MatGridList, MatGridTile} from '@angular/material/grid-list';
 import {VectorSymbology} from '../../layers/symbology/symbology.model';
-import {SpatialReferenceService} from '../../spatial-references/spatial-reference.service';
+import {SpatialReferenceService, WEB_MERCATOR} from '../../spatial-references/spatial-reference.service';
 import {containsCoordinate, getCenter} from 'ol/extent';
 
 type MapLayer = MapLayerComponent<OlLayer, OlSource>;
