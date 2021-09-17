@@ -58,6 +58,11 @@ interface Time {
     readonly ALLOW_RANGES: boolean;
 }
 
+interface SpatialReferenceConfig {
+    readonly NAME: string;
+    readonly SRS_STRING: string;
+}
+
 export interface WaveConfigStructure {
     readonly DEFAULTS: Defaults;
     readonly DELAYS: Delays;
@@ -68,6 +73,7 @@ export interface WaveConfigStructure {
     readonly WCS: Wcs;
     readonly WFS: Wfs;
     readonly WMS: Wms;
+    readonly SPATIAL_REFERENCES: Array<SpatialReferenceConfig>;
 }
 
 export const WAVE_DEFAULT_CONFIG: WaveConfigStructure = {
@@ -118,6 +124,36 @@ export const WAVE_DEFAULT_CONFIG: WaveConfigStructure = {
         VERSION: '1.3.0',
         FORMAT: 'image/png',
     },
+    SPATIAL_REFERENCES: [
+        {
+            NAME: 'WGS 84',
+            SRS_STRING: 'EPSG:4326',
+        },
+        {
+            NAME: 'WGS 84 / Pseudo-Mercator',
+            SRS_STRING: 'EPSG:3857',
+        },
+        {
+            NAME: 'WGS 84 / UTM zone 32N',
+            SRS_STRING: 'EPSG:32632',
+        },
+        {
+            NAME: 'WGS 84 / UTM zone 36N',
+            SRS_STRING: 'EPSG:32636',
+        },
+        {
+            NAME: 'WGS 84 / UTM zone 36S',
+            SRS_STRING: 'EPSG:32736',
+        },
+        {
+            NAME: 'WGS 84 / UTM zone 37N',
+            SRS_STRING: 'EPSG:32637',
+        },
+        {
+            NAME: 'WGS 84 / UTM zone 37S',
+            SRS_STRING: 'EPSG:32737',
+        },
+    ],
 };
 
 /**
@@ -164,6 +200,10 @@ export class Config {
 
     get TIME(): Time {
         return this.config.TIME;
+    }
+
+    get SPATIAL_REFERENCES(): Array<SpatialReferenceConfig> {
+        return this.config.SPATIAL_REFERENCES;
     }
 
     constructor(protected http: HttpClient) {}

@@ -5,12 +5,13 @@ import {BehaviorSubject, of, Subject, Subscription} from 'rxjs';
 import {ResultType, ResultTypes} from '../../operators/result-type.model';
 import {ProjectService} from '../../project/project.service';
 import {NotificationService} from '../../notification.service';
-import {SpatialReference, WGS_84} from '../../spatial-references/spatial-reference.model';
+import {SpatialReference} from '../../spatial-references/spatial-reference.model';
 import {MapService} from '../../map/map.service';
 import {DatasetService} from '../dataset.service';
 import {HttpEventType, HttpResponse} from '@angular/common/http';
 import {AutoCreateDatasetDict, DatasetIdDict, UploadResponseDict, UUID} from '../../backend/backend.model';
 import {mergeMap} from 'rxjs/operators';
+import {WGS_84} from '../../spatial-references/spatial-reference.service';
 
 enum State {
     Start = 1,

@@ -1,4 +1,5 @@
-import {SpatialReference, WGS_84} from '../spatial-references/spatial-reference.model';
+import {SpatialReference} from '../spatial-references/spatial-reference.model';
+import {WGS_84} from '../spatial-references/spatial-reference.service';
 
 /**
  * @returns the target spatial reference for a common projection of the given inputs

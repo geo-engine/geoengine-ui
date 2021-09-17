@@ -12,7 +12,7 @@ import {UnitlessMeasurement} from '../../../../layers/measurement';
 import {MATERIAL_MODULES} from '../../../../wave-core.module';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {By} from '@angular/platform-browser';
-import {WGS_84} from '../../../../spatial-references/spatial-reference.model';
+import {WGS_84} from '../../../../spatial-references/spatial-reference.service';
 
 describe('MultiLayerSelectionComponent', () => {
     let component: MultiLayerSelectionComponent;

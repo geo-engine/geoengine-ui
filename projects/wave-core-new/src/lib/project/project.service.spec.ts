@@ -11,8 +11,8 @@ import {NotificationService} from '../notification.service';
 import {MapService} from '../map/map.service';
 import {BackendService} from '../backend/backend.service';
 import {UserService} from '../users/user.service';
-import {SpatialReferenceService} from '../spatial-references/spatial-reference.service';
-import {SpatialReferenceSpecification, WGS_84} from '../spatial-references/spatial-reference.model';
+import {SpatialReferenceService, WGS_84} from '../spatial-references/spatial-reference.service';
+import {SpatialReferenceSpecification} from '../spatial-references/spatial-reference.model';
 import {first} from 'rxjs/operators';
 
 describe('test project methods in projectService', () => {
