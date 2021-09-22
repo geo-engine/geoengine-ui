@@ -75,7 +75,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         readonly layoutService: LayoutService,
         readonly projectService: ProjectService,
         readonly vcRef: ViewContainerRef, // reference used by color picker
-        private userService: UserService,
+        readonly userService: UserService,
         private changeDetectorRef: ChangeDetectorRef,
         private dialog: MatDialog,
         private iconRegistry: MatIconRegistry,

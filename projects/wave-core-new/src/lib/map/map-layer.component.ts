@@ -164,6 +164,8 @@ export class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector, OlV
 export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTileWmsSource> implements OnInit, OnDestroy, OnChanges {
     symbology?: RasterSymbology;
 
+    @Input() sessionToken?: UUID;
+
     protected dataSubscription?: Subscription;
     protected layerChangesSubscription?: Subscription;
     protected timeSubscription?: Subscription;
@@ -231,7 +233,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
         return this._mapLayer.getExtent() ?? [0, 0, 0, 0];
     }
 
-    private updateOlLayer(changes: {isVisible?: boolean; symbology?: RasterSymbology; workflow?: UUID}): void {
+    private updateOlLayer(changes: {isVisible?: boolean; symbology?: RasterSymbology; workflow?: UUID; sessionToken?: UUID}): void {
         if (this.source === undefined || this._mapLayer === undefined) {
             return;
         }
@@ -246,7 +248,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
                 STYLES: this.stylesFromColorizer(this.symbology.colorizer),
             });
         }
-        if (changes.workflow !== undefined) {
+        if (changes.workflow !== undefined || changes.sessionToken !== undefined) {
             this.initializeOrReplaceOlSource();
         }
 
@@ -297,6 +299,19 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
             },
             projection: this.spatialReference.srsString,
             wrapX: false,
+        });
+
+        this.source.setTileLoadFunction((tile, src) => {
+            const client = new XMLHttpRequest();
+            client.open('GET', src);
+            client.responseType = 'blob';
+            client.setRequestHeader('Authorization', `Bearer ${this.sessionToken}`);
+            client.onload = function (): any {
+                const data = URL.createObjectURL(client.response);
+                // TODO: proper type cast
+                (tile as any).getImage().src = data;
+            };
+            client.send();
         });
 
         this.addStateListenersToOlSource();

@@ -52,11 +52,12 @@ export class UserService {
         return this.session$;
     }
 
+    getSessionTokenStream(): Observable<UUID> {
+        return this.session$.pipe(map((session) => session.sessionToken));
+    }
+
     getSessionTokenForRequest(): Observable<UUID> {
-        return this.session$.pipe(
-            first(),
-            map((session) => session.sessionToken),
-        );
+        return this.getSessionTokenStream().pipe(first());
     }
 
     isGuestUserStream(): Observable<boolean> {
