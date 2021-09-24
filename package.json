@@ -42,7 +42,7 @@
         "@angular/platform-browser-dynamic": "~12.1.4",
         "@angular/router": "~12.1.4",
         "codemirror": "~5.58.1",
-        "d3": "~6.2.0",
+        "d3": "~7.0.4",
         "dagre": "~0.8.5",
         "dagre-d3": "~0.6.4",
         "hellojs": "~1.18.6",
