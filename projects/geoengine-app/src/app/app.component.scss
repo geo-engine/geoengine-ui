@@ -2,6 +2,15 @@ wave-navigation {
     z-index: 10;
 }
 
+.navbar {
+    display: flex;
+    justify-content: center;
+}
+
+.space {
+    width: 2rem;
+}
+
 wave-layer-list {
     position: absolute;
     z-index: 2;
