@@ -26,26 +26,29 @@
 
     <div class="mid-container" [style.height.px]="middleContainerHeight$ | async">
         <wave-map-container #map [grid]="mapIsGrid$ | async | valueDefault: false">
-            <ng-template ngFor let-layer [ngForOf]="layersReverse$ | async" [ngForTrackBy]="idFromLayer">
-                <ng-template [ngIf]="layer.layerType === 'vector'">
-                    <wave-ol-vector-layer
-                        [layerId]="layer.id"
-                        [workflow]="layer.workflowId"
-                        [symbology]="$any(layer.symbology)"
-                        [isVisible]="layer.isVisible"
-                        (mapRedraw)="map.layerForcesRedraw()"
-                    ></wave-ol-vector-layer>
+            <ng-container *ngIf="userService.getSessionTokenStream() | async as sessionToken">
+                <ng-template ngFor let-layer [ngForOf]="layersReverse$ | async" [ngForTrackBy]="idFromLayer">
+                    <ng-template [ngIf]="layer.layerType === 'vector'">
+                        <wave-ol-vector-layer
+                            [layerId]="layer.id"
+                            [workflow]="layer.workflowId"
+                            [symbology]="$any(layer.symbology)"
+                            [isVisible]="layer.isVisible"
+                            (mapRedraw)="map.layerForcesRedraw()"
+                        ></wave-ol-vector-layer>
+                    </ng-template>
+                    <ng-template [ngIf]="layer.layerType === 'raster'">
+                        <wave-ol-raster-layer
+                            [layerId]="layer.id"
+                            [workflow]="layer.workflowId"
+                            [symbology]="$any(layer.symbology)"
+                            [isVisible]="layer.isVisible"
+                            [sessionToken]="sessionToken"
+                            (mapRedraw)="map.layerForcesRedraw()"
+                        ></wave-ol-raster-layer>
+                    </ng-template>
                 </ng-template>
-                <ng-template [ngIf]="layer.layerType === 'raster'">
-                    <wave-ol-raster-layer
-                        [layerId]="layer.id"
-                        [workflow]="layer.workflowId"
-                        [symbology]="$any(layer.symbology)"
-                        [isVisible]="layer.isVisible"
-                        (mapRedraw)="map.layerForcesRedraw()"
-                    ></wave-ol-raster-layer>
-                </ng-template>
-            </ng-template>
+            </ng-container>
         </wave-map-container>
     </div>
     <wave-tab-panel
