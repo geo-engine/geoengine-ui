@@ -13,38 +13,32 @@ wave-layer-list {
     border-bottom-right-radius: 2px;
 }
 
-.time-container {
-    position: absolute;
-    left: 16vw;
-    right: 16vw;
+.navbar {
+    display: flex;
+    justify-content: center;
+}
 
-    wave-ticker-interaction,
-    wave-small-time-interaction,
-    wave-zoom-handles {
-        background-color: rgba(255, 255, 255, 0.87);
-        border-bottom-left-radius: 2px;
-        border-bottom-right-radius: 2px;
-        z-index: 3;
+.space {
+    width: 2rem;
+}
+
+.back-button {
+    z-index: 2;
+
+    border-radius: 0 0 2px 2px;
+    margin-left: 1rem;
+
+    padding: 0.2rem 1rem;
+
+    background-color: rgba(255, 255, 255, 0.87);
+
+    span {
+        margin: 0 0.5rem;
     }
 
-    .back-button {
-        z-index: 3;
-
-        border-radius: 0 0 2px 2px;
-        margin-left: 1rem;
-
-        padding: 0.2rem 1rem;
-
-        background-color: rgba(255, 255, 255, 0.87);
-
-        span {
-            margin: 0 0.5rem;
-        }
-
-        img {
-            height: 1.8rem;
-            vertical-align: middle;
-        }
+    img {
+        height: 1.8rem;
+        vertical-align: middle;
     }
 }
 
