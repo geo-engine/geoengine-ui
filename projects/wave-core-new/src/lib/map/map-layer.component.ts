@@ -96,7 +96,8 @@ export abstract class MapLayerComponent<OL extends OlLayer<OS>, OS extends OlSou
 })
 export class OlVectorLayerComponent
     extends MapLayerComponent<OlLayerVector<OlVectorSource<OlGeometry>>, OlVectorSource<OlGeometry>>
-    implements OnInit, OnDestroy, OnChanges {
+    implements OnInit, OnDestroy, OnChanges
+{
     symbology?: VectorSymbology;
 
     protected dataSubscription?: Subscription;
@@ -167,7 +168,8 @@ export class OlVectorLayerComponent
 })
 export class OlRasterLayerComponent
     extends MapLayerComponent<OlLayerTile<OlTileWmsSource>, OlTileWmsSource>
-    implements OnInit, OnDestroy, OnChanges {
+    implements OnInit, OnDestroy, OnChanges
+{
     symbology?: RasterSymbology;
 
     @Input() sessionToken?: UUID;

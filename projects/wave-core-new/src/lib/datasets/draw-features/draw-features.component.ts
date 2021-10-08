@@ -141,7 +141,7 @@ export class DrawFeaturesComponent implements OnDestroy, OnInit {
                         return of<UploadResponseDict>(); // filter out
                     }
 
-                    const httpResponse: HttpResponse<UploadResponseDict> = (event as unknown) as HttpResponse<UploadResponseDict>;
+                    const httpResponse: HttpResponse<UploadResponseDict> = event as unknown as HttpResponse<UploadResponseDict>;
 
                     if (!httpResponse.body) {
                         return of<UploadResponseDict>(); // filter out

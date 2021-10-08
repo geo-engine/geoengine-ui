@@ -104,7 +104,7 @@
                     }
                 ],
                 "arrow-parens": ["off", "always"],
-                "brace-style": ["error", "1tbs"],
+                "brace-style": ["off", "1tbs"], // prettier is curretly inconsistent, re-enable if possible
                 "id-blacklist": "off",
                 "id-match": "off",
                 "import/order": "off",
