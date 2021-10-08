@@ -6,6 +6,7 @@ import OlFeature from 'ol/Feature';
 import {ProjectionLike as OlProjectionLike} from 'ol/proj';
 import {UUID} from '../backend/backend.model';
 import {featureToHash} from '../util/conversions';
+import OlGeometry from 'ol/geom/Geometry';
 
 export abstract class LayerData {
     readonly type: LayerType;
@@ -32,10 +33,10 @@ export class RasterData extends LayerData {
 }
 
 export class VectorData extends LayerData {
-    readonly data: Array<OlFeature>;
+    readonly data: Array<OlFeature<OlGeometry>>;
     readonly extent: [number, number, number, number];
 
-    constructor(time: Time, projection: SpatialReference, data: Array<OlFeature>, extent: [number, number, number, number]) {
+    constructor(time: Time, projection: SpatialReference, data: Array<OlFeature<OlGeometry>>, extent: [number, number, number, number]) {
         super('vector', time, projection);
         this.data = data;
         this.extent = extent;

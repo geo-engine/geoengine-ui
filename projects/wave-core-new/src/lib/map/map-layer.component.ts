@@ -25,6 +25,8 @@ import {BackendService} from '../backend/backend.service';
 import {UUID} from '../backend/backend.model';
 import {RasterSymbology, Symbology, VectorSymbology} from '../layers/symbology/symbology.model';
 import {Colorizer} from '../colors/colorizer.model';
+import OlGeometry from 'ol/geom/Geometry';
+import {olExtentToTuple} from '../util/conversions';
 
 type VectorData = any; // TODO: use correct type
 
@@ -33,7 +35,7 @@ type VectorData = any; // TODO: use correct type
  */
 @Directive()
 // eslint-disable-next-line @angular-eslint/directive-class-suffix
-export abstract class MapLayerComponent<OL extends OlLayer, OS extends OlSource> {
+export abstract class MapLayerComponent<OL extends OlLayer<OS>, OS extends OlSource> {
     @Input() layerId!: number;
     @Input() isVisible = true;
     @Input() workflow?: UUID;
@@ -92,7 +94,9 @@ export abstract class MapLayerComponent<OL extends OlLayer, OS extends OlSource>
     providers: [{provide: MapLayerComponent, useExisting: OlVectorLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector, OlVectorSource> implements OnInit, OnDestroy, OnChanges {
+export class OlVectorLayerComponent
+    extends MapLayerComponent<OlLayerVector<OlVectorSource<OlGeometry>>, OlVectorSource<OlGeometry>>
+    implements OnInit, OnDestroy, OnChanges {
     symbology?: VectorSymbology;
 
     protected dataSubscription?: Subscription;
@@ -127,7 +131,7 @@ export class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector, OlV
     }
 
     getExtent(): [number, number, number, number] {
-        return this.source.getExtent();
+        return olExtentToTuple(this.source.getExtent());
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -161,7 +165,9 @@ export class OlVectorLayerComponent extends MapLayerComponent<OlLayerVector, OlV
     providers: [{provide: MapLayerComponent, useExisting: OlRasterLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTileWmsSource> implements OnInit, OnDestroy, OnChanges {
+export class OlRasterLayerComponent
+    extends MapLayerComponent<OlLayerTile<OlTileWmsSource>, OlTileWmsSource>
+    implements OnInit, OnDestroy, OnChanges {
     symbology?: RasterSymbology;
 
     @Input() sessionToken?: UUID;
@@ -230,7 +236,7 @@ export class OlRasterLayerComponent extends MapLayerComponent<OlLayerTile, OlTil
     }
 
     getExtent(): [number, number, number, number] {
-        return this._mapLayer.getExtent() ?? [0, 0, 0, 0];
+        return olExtentToTuple(this._mapLayer.getExtent() ?? [0, 0, 0, 0]);
     }
 
     private updateOlLayer(changes: {isVisible?: boolean; symbology?: RasterSymbology; workflow?: UUID; sessionToken?: UUID}): void {

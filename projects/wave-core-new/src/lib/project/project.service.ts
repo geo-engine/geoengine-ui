@@ -35,6 +35,7 @@ import {HasPlotId, Plot} from '../plots/plot.model';
 import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata.model';
 import {Symbology, ClusteredPointSymbology, PointSymbology} from '../layers/symbology/symbology.model';
 import OlFeature from 'ol/Feature';
+import OlGeometry from 'ol/geom/Geometry';
 import {getProjectionTarget} from '../util/spatial_reference';
 import {ReprojectionDict, VisualPointClusteringParams} from '../backend/operator.model';
 import {SpatialReferenceService} from '../spatial-references/spatial-reference.service';
@@ -852,7 +853,7 @@ export class ProjectService {
         return this.selectedFeature$.asObservable();
     }
 
-    setSelectedFeature(feature?: OlFeature): void {
+    setSelectedFeature(feature?: OlFeature<OlGeometry>): void {
         this.selectedFeature$.next({feature: feature?.getId()});
     }
 

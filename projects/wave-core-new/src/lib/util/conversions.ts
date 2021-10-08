@@ -2,6 +2,19 @@ import {BBoxDict} from '../backend/backend.model';
 import {utc} from 'moment';
 import {Feature as OlFeature} from 'ol';
 import OlFormatGeoJson from 'ol/format/GeoJSON';
+import OlGeometry from 'ol/geom/Geometry';
+import {Extent as OlExtent} from 'ol/extent';
+
+/**
+ * Converts an `OlExtent` to an extent as a tuple of four numbers.
+ * Throws an error if something went wrong.
+ */
+export const olExtentToTuple = (extent: OlExtent): [number, number, number, number] => {
+    if (extent?.length !== 4) {
+        throw Error('OlExtent must be of size 4');
+    }
+    return [extent[0], extent[1], extent[2], extent[3]];
+};
 
 export const extentToBboxDict = ([minx, miny, maxx, maxy]: [number, number, number, number]): BBoxDict => ({
     lowerLeftCoordinate: {
@@ -38,7 +51,7 @@ export function hashCode(str: string): number {
 }
 
 // TODO: use a faster hash function
-export function featureToHash(feature: OlFeature): number {
+export function featureToHash(feature: OlFeature<OlGeometry>): number {
     const sortObjKeys = (obj: {[_: string]: any}): any => {
         Object.keys(obj)
             .sort()
