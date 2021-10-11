@@ -72,7 +72,7 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "allowedCommonJsDependencies": ["dagre-d3", "pbf"],
+                        "allowedCommonJsDependencies": ["dagre-d3", "pbf", "lru-cache"],
                         "outputPath": "dist/geoengine-app",
                         "index": "projects/geoengine-app/src/index.html",
                         "main": "projects/geoengine-app/src/main.ts",
@@ -210,7 +210,7 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "allowedCommonJsDependencies": ["dagre-d3", "pbf"],
+                        "allowedCommonJsDependencies": ["dagre-d3", "pbf", "lru-cache"],
                         "outputPath": "dist/data-atlas-app",
                         "index": "projects/data-atlas-app/src/index.html",
                         "main": "projects/data-atlas-app/src/main.ts",
@@ -348,7 +348,7 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "allowedCommonJsDependencies": ["dagre-d3", "pbf"],
+                        "allowedCommonJsDependencies": ["dagre-d3", "pbf", "lru-cache"],
                         "outputPath": "dist/gfbio-app",
                         "index": "projects/gfbio-app/src/index.html",
                         "main": "projects/gfbio-app/src/main.ts",

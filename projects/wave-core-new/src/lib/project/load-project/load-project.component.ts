@@ -8,17 +8,19 @@ import {BackendService} from '../../backend/backend.service';
 import {UserService} from '../../users/user.service';
 import {UUID} from '../../backend/backend.model';
 
-const notCurrentProject = (currentProjectId: () => string): ValidatorFn => (control: AbstractControl): ValidationErrors | null => {
-    const errors: {
-        currentProject?: boolean;
-    } = {};
+const notCurrentProject =
+    (currentProjectId: () => string): ValidatorFn =>
+    (control: AbstractControl): ValidationErrors | null => {
+        const errors: {
+            currentProject?: boolean;
+        } = {};
 
-    if (currentProjectId() === control.value) {
-        errors.currentProject = true;
-    }
+        if (currentProjectId() === control.value) {
+            errors.currentProject = true;
+        }
 
-    return Object.keys(errors).length > 0 ? errors : null;
-};
+        return Object.keys(errors).length > 0 ? errors : null;
+    };
 
 interface ProjectListing {
     id: UUID;

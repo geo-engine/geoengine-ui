@@ -2,12 +2,12 @@ import {distinctUntilChanged} from 'rxjs/operators';
 import {BehaviorSubject, Observable} from 'rxjs';
 
 import {Injectable} from '@angular/core';
-import {Extent as OlExtent} from 'ol/extent';
 import {containsExtent as olExtentContainsExtent, getIntersection as olExtentGetIntersection} from 'ol/extent';
-import OlGeometryType from 'ol/geom/GeometryType';
+import OlGeometry from 'ol/geom/Geometry';
 import {Vector as OlSourceVector} from 'ol/source';
 
 import {MapContainerComponent} from './map-container/map-container.component';
+import {olExtentToTuple} from '../util/conversions';
 
 /**
  * The viewport combines…
@@ -24,7 +24,7 @@ export interface ViewportSize {
 /**
  * The extent is defined as [min x, min y, max x, max y] map units
  */
-export type Extent = [number, number, number, number] | OlExtent;
+export type Extent = [number, number, number, number];
 
 /**
  * Is the extent of `vps1` contained in the extent of `vps2`?
@@ -77,7 +77,7 @@ export class MapService {
         this.mapComponent = mapComponent;
     }
 
-    public startDrawInteraction(drawType: OlGeometryType): void {
+    public startDrawInteraction(drawType: string): void {
         if (!this.mapComponent) {
             throw new Error('no MapComponent registered');
         }
@@ -99,7 +99,7 @@ export class MapService {
     /**
      * Stops a draw interaction on the map and returns the output vector as result
      */
-    public endDrawInteraction(): OlSourceVector | undefined {
+    public endDrawInteraction(): OlSourceVector<OlGeometry> | undefined {
         if (!this.mapComponent) {
             throw new Error('no MapComponent registered');
         }
@@ -122,7 +122,7 @@ export class MapService {
             let newExtent = newViewportSize.extent;
 
             if (newViewportSize.maxExtent) {
-                newExtent = olExtentGetIntersection(newExtent, newViewportSize.maxExtent);
+                newExtent = olExtentToTuple(olExtentGetIntersection(newExtent, newViewportSize.maxExtent));
             }
 
             newViewportSize.extent = newExtent;

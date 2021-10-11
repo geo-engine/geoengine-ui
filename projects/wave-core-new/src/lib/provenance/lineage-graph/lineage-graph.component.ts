@@ -271,7 +271,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
 
     private addClickHandler(svg: d3.Selection<SVGElement, any, any, any>, graph: dagreD3.graphlib.Graph): void {
         svg.selectAll('.node').on('click', (_event, theNodeId) => {
-            const nodeId = (theNodeId as any) as string; // conversion since the signature is of the wrong type
+            const nodeId = theNodeId as any as string; // conversion since the signature is of the wrong type
 
             const node = graph.node(nodeId);
             if ((node as any).type === 'operator') {

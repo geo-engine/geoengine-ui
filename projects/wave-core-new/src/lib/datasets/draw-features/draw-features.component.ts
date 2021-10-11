@@ -41,7 +41,7 @@ export class DrawFeaturesComponent implements OnDestroy, OnInit {
     // the current feature type
     selectedFeatureType: ResultType = ResultTypes.POINTS;
     // the corresponding open layers geometry type
-    olGeometryType: OlGeometryType = OlGeometryType.POINT;
+    olGeometryType: string = OlGeometryType.POINT;
 
     // the open layers feature writer - we use GeoJson
     olFeatureWriter = new OlFormatGeoJson();
@@ -141,7 +141,7 @@ export class DrawFeaturesComponent implements OnDestroy, OnInit {
                         return of<UploadResponseDict>(); // filter out
                     }
 
-                    const httpResponse: HttpResponse<UploadResponseDict> = (event as unknown) as HttpResponse<UploadResponseDict>;
+                    const httpResponse: HttpResponse<UploadResponseDict> = event as unknown as HttpResponse<UploadResponseDict>;
 
                     if (!httpResponse.body) {
                         return of<UploadResponseDict>(); // filter out

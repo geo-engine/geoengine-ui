@@ -66,54 +66,56 @@ const minAndMax = (
 /**
  * A validator that invokes the underlying one only if the condition holds.
  */
-const conditionalValidator = (validator: (control: AbstractControl) => ValidationErrors | null, condition: () => boolean) => (
-    control: AbstractControl,
-): {[key: string]: boolean} | null => {
-    if (condition()) {
-        return validator(control);
-    } else {
-        return null;
-    }
-};
+const conditionalValidator =
+    (validator: (control: AbstractControl) => ValidationErrors | null, condition: () => boolean) =>
+    (control: AbstractControl): {[key: string]: boolean} | null => {
+        if (condition()) {
+            return validator(control);
+        } else {
+            return null;
+        }
+    };
 
 /**
  * Checks if keyword is a reserved keyword.
  */
-const keywordValidator = (keywords: Array<string>) => (control: AbstractControl): {keyword: true} | null =>
-    keywords.indexOf(control.value) >= 0 ? {keyword: true} : null;
+const keywordValidator =
+    (keywords: Array<string>) =>
+    (control: AbstractControl): {keyword: true} | null =>
+        keywords.indexOf(control.value) >= 0 ? {keyword: true} : null;
 
 /**
  * Checks if the project name is unique.
  */
-const uniqueProjectNameValidator = (storageService: {projectExists(_: string): Observable<boolean>}): AsyncValidatorFn => (
-    control: AbstractControl,
-): Observable<ValidationErrors | null> =>
-    new Observable((observer: Observer<ValidationErrors | null>) => {
-        storageService
-            .projectExists(control.value as string)
-            .pipe(
-                map((projectExists) => {
-                    const errors: {
-                        nameInUsage?: boolean;
-                    } = {};
+const uniqueProjectNameValidator =
+    (storageService: {projectExists(_: string): Observable<boolean>}): AsyncValidatorFn =>
+    (control: AbstractControl): Observable<ValidationErrors | null> =>
+        new Observable((observer: Observer<ValidationErrors | null>) => {
+            storageService
+                .projectExists(control.value as string)
+                .pipe(
+                    map((projectExists) => {
+                        const errors: {
+                            nameInUsage?: boolean;
+                        } = {};
 
-                    if (projectExists) {
-                        errors.nameInUsage = true;
-                    }
+                        if (projectExists) {
+                            errors.nameInUsage = true;
+                        }
 
-                    return Object.keys(errors).length > 0 ? errors : null;
-                }),
-            )
-            .subscribe(
-                (errors) => {
-                    observer.next(errors);
-                    observer.complete();
-                },
-                (error) => {
-                    observer.error(error);
-                },
-            );
-    });
+                        return Object.keys(errors).length > 0 ? errors : null;
+                    }),
+                )
+                .subscribe(
+                    (errors) => {
+                        observer.next(errors);
+                        observer.complete();
+                    },
+                    (error) => {
+                        observer.error(error);
+                    },
+                );
+        });
 
 const notOnlyWhitespace = (control: AbstractControl): {onlyWhitespace: true} | null => {
     const text = control.value as string;
