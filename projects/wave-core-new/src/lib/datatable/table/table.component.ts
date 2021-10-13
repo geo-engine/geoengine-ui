@@ -20,6 +20,7 @@ import {Feature as OlFeature} from 'ol';
 import {FeatureSelection, ProjectService} from '../../project/project.service';
 import {VectorData} from '../../layers/layer-data.model';
 import {DataSource} from '@angular/cdk/collections';
+import OlGeometry from 'ol/geom/Geometry';
 
 @Component({
     selector: 'wave-datatable',
@@ -137,11 +138,11 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         // TODO: implement some default message
     }
 
-    isSelected(feature: OlFeature): boolean {
+    isSelected(feature: OlFeature<OlGeometry>): boolean {
         return feature.getId() === this.projectService.getSelectedFeature().feature;
     }
 
-    select(feature: OlFeature, select: boolean): void {
+    select(feature: OlFeature<OlGeometry>, select: boolean): void {
         if (select) {
             this.projectService.setSelectedFeature(feature);
         } else {
@@ -175,9 +176,9 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
  *
  * It was necessary to implement it because it seems to be much faster than `MatTableDataSource`.
  */
-class FeatureDataSource extends DataSource<OlFeature> {
-    protected _data: Array<OlFeature> = [];
-    protected data$ = new Subject<Array<OlFeature>>();
+class FeatureDataSource extends DataSource<OlFeature<OlGeometry>> {
+    protected _data: Array<OlFeature<OlGeometry>> = [];
+    protected data$ = new Subject<Array<OlFeature<OlGeometry>>>();
 
     protected _paginator?: MatPaginator;
     protected paginatorSubscription?: Subscription;
@@ -186,7 +187,7 @@ class FeatureDataSource extends DataSource<OlFeature> {
         super();
     }
 
-    set data(data: Array<OlFeature>) {
+    set data(data: Array<OlFeature<OlGeometry>>) {
         this._data = data;
 
         if (this.paginator) {
@@ -195,7 +196,7 @@ class FeatureDataSource extends DataSource<OlFeature> {
         }
     }
 
-    get data(): Array<OlFeature> {
+    get data(): Array<OlFeature<OlGeometry>> {
         return this._data;
     }
 
@@ -224,7 +225,7 @@ class FeatureDataSource extends DataSource<OlFeature> {
         return this._paginator;
     }
 
-    connect(): Observable<Array<OlFeature>> {
+    connect(): Observable<Array<OlFeature<OlGeometry>>> {
         return this.data$;
     }
 

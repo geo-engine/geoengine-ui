@@ -44,7 +44,8 @@ import OlStyleStyle, {StyleLike as OlStyleLike} from 'ol/style/Style';
 
 import OlInteractionDraw from 'ol/interaction/Draw';
 import OlInteractionSelect from 'ol/interaction/Select';
-import OlInteractionSelectEvent from 'ol/interaction/Select';
+import {SelectEvent as OlSelectEvent} from 'ol/interaction/Select';
+import OlGeometry from 'ol/geom/Geometry';
 
 import {MapLayerComponent} from '../map-layer.component';
 
@@ -57,8 +58,9 @@ import {MatGridList, MatGridTile} from '@angular/material/grid-list';
 import {VectorSymbology} from '../../layers/symbology/symbology.model';
 import {SpatialReferenceService, WEB_MERCATOR} from '../../spatial-references/spatial-reference.service';
 import {containsCoordinate, getCenter} from 'ol/extent';
+import {olExtentToTuple} from '../../util/conversions';
 
-type MapLayer = MapLayerComponent<OlLayer, OlSource>;
+type MapLayer = MapLayerComponent<OlLayer<OlSource>, OlSource>;
 
 const DEFAULT_ZOOM_LEVEL = 2;
 const MIN_ZOOM_LEVEL = 0;
@@ -101,18 +103,18 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     private maps: Array<OlMap>;
     private view: OlView;
     private backgroundLayerSource?: OlSource;
-    private backgroundLayers: Array<OlLayer> = [];
+    private backgroundLayers: Array<OlLayer<OlSource>> = [];
 
-    private selectedOlLayer?: OlLayer = undefined;
+    private selectedOlLayer?: OlLayer<OlSource> = undefined;
     private userSelect?: OlInteractionSelect;
 
-    private selectedFeature?: OlFeature = undefined;
+    private selectedFeature?: OlFeature<OlGeometry> = undefined;
     private selectedFeatureOriginalStyle?: OlStyleLike = undefined;
 
-    private drawInteractionSource?: OlSourceVector;
-    private drawType: OlGeometryType = OlGeometryType.POINT;
+    private drawInteractionSource?: OlSourceVector<OlGeometry>;
+    private drawType: string = OlGeometryType.POINT;
     private drawInteractions: Array<OlInteractionDraw> = [];
-    private drawInteractionLayers: Array<OlLayerVector> = [];
+    private drawInteractionLayers: Array<OlLayerVector<OlSourceVector<OlGeometry>>> = [];
 
     private subscriptions: Array<Subscription> = [];
 
@@ -221,7 +223,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     /**
      * Enable user input (hand drawn) for the map
      */
-    public startDrawInteraction(drawType: OlGeometryType): void {
+    public startDrawInteraction(drawType: string): void {
         if (this.isDrawInteractionAttached()) {
             throw new Error('only one draw interaction can be active!');
         }
@@ -242,7 +244,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     /**
      * Disable user input (hand drawn) for the map and return the result
      */
-    public endDrawInteraction(): OlSourceVector | undefined {
+    public endDrawInteraction(): OlSourceVector<OlGeometry> | undefined {
         if (!this.isDrawInteractionAttached()) {
             console.error('no interaction or layer active!');
             return undefined;
@@ -264,7 +266,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         this.projection$.pipe(first()).subscribe((projection) => this.redrawLayers(projection));
     }
 
-    private createDrawInteractionLayer(): OlLayerVector {
+    private createDrawInteractionLayer(): OlLayerVector<OlSourceVector<OlGeometry>> {
         return new OlLayerVector({
             source: this.drawInteractionSource,
         });
@@ -351,8 +353,12 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         this.userSelect = new OlInteractionSelect({style: null as any});
         this.attachUserSelectToMap();
 
-        this.userSelect.on('select', (selectEvent: OlInteractionSelectEvent) => {
-            if ((selectEvent as any).selected.length > 0) {
+        this.userSelect.on(['select'], (selectEvent) => {
+            if (!(selectEvent instanceof OlSelectEvent)) {
+                throw new Error(`unexpected event type ${selectEvent.type}}, expected ${`select`}`);
+            }
+
+            if (selectEvent.selected.length > 0) {
                 this.projectService.setSelectedFeature((selectEvent as any).selected[0]);
             } else {
                 this.projectService.setSelectedFeature(undefined);
@@ -543,13 +549,13 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         }
 
         this.mapService.setViewportSize({
-            extent: this.view.calculateExtent(this.maps[0].getSize()),
+            extent: olExtentToTuple(this.view.calculateExtent(this.maps[0].getSize())),
             resolution,
-            maxExtent: this.view.getProjection().getExtent(),
+            maxExtent: olExtentToTuple(this.view.getProjection().getExtent()),
         });
     }
 
-    private createBackgroundLayer(projection: SpatialReference): OlLayer {
+    private createBackgroundLayer(projection: SpatialReference): OlLayer<OlSource> {
         switch (this.config.MAP.BACKGROUND_LAYER) {
             case 'OSM':
                 if (projection === WEB_MERCATOR.spatialReference) {
