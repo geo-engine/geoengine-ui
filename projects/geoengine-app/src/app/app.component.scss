@@ -2,47 +2,47 @@ wave-navigation {
     z-index: 10;
 }
 
-.navbar {
-    display: flex;
-    justify-content: center;
-}
+mat-toolbar {
+    padding: 0;
 
-.space {
-    width: 2rem;
+    .box {
+        max-height: inherit;
+        height: inherit;
+    }
+    .logo .mat-icon {
+        width: 100%;
+
+        ::ng-deep svg {
+            border: none;
+            border-radius: unset;
+        }
+    }
+    .navbar {
+        width: 68vw;
+        display: flex;
+        justify-content: center;
+
+        .space {
+            width: 2rem;
+        }
+    }
 }
 
 wave-layer-list {
     position: absolute;
     z-index: 2;
-    width: 16vw;
-    min-width: 200px;
     left: 0;
-    top: 0;
+    top: 4rem;
     background-color: rgba(255, 255, 255, 0.87);
     border-bottom-right-radius: 2px;
-}
 
-wave-layer-list .logo .mat-icon {
-    width: 100%;
+    @media (max-width: 600px) {
+        top: 3.5rem;
+    }
 
     ::ng-deep svg {
         border: none;
         border-radius: unset;
-    }
-}
-
-.time-container {
-    position: absolute;
-    left: 16vw;
-    right: 16vw;
-
-    wave-ticker-interaction,
-    wave-small-time-interaction,
-    wave-zoom-handles {
-        background-color: rgba(255, 255, 255, 0.87);
-        border-bottom-left-radius: 2px;
-        border-bottom-right-radius: 2px;
-        z-index: 3;
     }
 }
 
