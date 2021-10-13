@@ -77,10 +77,6 @@
 ::ng-deep .logo {
     text-align: center;
 
-    @media (max-width: 1480px) {
-        flex: 1;
-    }
-
     mat-icon {
         vertical-align: sub;
     }

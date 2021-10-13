@@ -1,19 +1,27 @@
 <mat-sidenav-container fullscreen>
-    <mat-toolbar color="primary" class="navbar">
-        <div>
-            <a href="https://www.gfbio.org" mat-flat-button color="default" class="back-button mat-elevation-z4">
-                <mat-icon>keyboard_return</mat-icon>
-                <span></span>
-                <img src="assets/logo_gfbio.png" alt="GFBio Portal" matTooltip="Back to GFBio Portal" />
-            </a>
-        </div>
-        <div class="space"></div>
-        <div class="zoom">
-            <wave-zoom-handles (zoomIn)="map.zoomIn()" (zoomOut)="map.zoomOut()"></wave-zoom-handles>
-        </div>
-        <div class="space"></div>
-        <div class="time-interaction">
-            <wave-small-time-interaction></wave-small-time-interaction>
+    <mat-toolbar color="primary">
+        <wave-layer-list-menu class="box">
+            <div class="logo">
+                <mat-icon mat-list-icon svgIcon="vat:logo" aria-label="VAT"></mat-icon>
+                <span class="title">VAT</span>
+            </div>
+        </wave-layer-list-menu>
+        <div class="navbar">
+            <div class="zoom">
+                <wave-zoom-handles (zoomIn)="map.zoomIn()" (zoomOut)="map.zoomOut()"></wave-zoom-handles>
+            </div>
+            <div class="space"></div>
+            <div class="time-interaction">
+                <wave-small-time-interaction></wave-small-time-interaction>
+            </div>
+            <div class="space"></div>
+            <div>
+                <a href="https://www.gfbio.org" mat-flat-button color="default" class="back-button mat-elevation-z4">
+                    <mat-icon>keyboard_return</mat-icon>
+                    <span></span>
+                    <img src="assets/logo_gfbio.png" alt="GFBio Portal" matTooltip="Back to GFBio Portal" />
+                </a>
+            </div>
         </div>
     </mat-toolbar>
 
@@ -27,10 +35,6 @@
         [height]="middleContainerHeight$ | async | numberSanitizer"
         [addAFirstLayerSidenavConfig]="addAFirstLayerConfig"
     >
-        <div class="logo">
-            <mat-icon mat-list-icon svgIcon="vat:logo" aria-label="VAT"></mat-icon>
-            <span class="title">VAT</span>
-        </div>
     </wave-layer-list>
 
     <div class="mid-container" [style.height.px]="middleContainerHeight$ | async">
