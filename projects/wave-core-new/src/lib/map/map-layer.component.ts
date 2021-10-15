@@ -299,7 +299,7 @@ export class OlRasterLayerComponent
         }
 
         this.source = new OlTileWmsSource({
-            url: this.backend.wmsUrl,
+            url: `${this.backend.wmsUrl}/${this.workflow}`,
             params: {
                 layers: this.workflow,
                 time: this.time.asRequestString(),

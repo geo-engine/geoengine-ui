@@ -1279,7 +1279,7 @@ export class ProjectService {
                     return this.backend
                         .wfsGetFeature(
                             {
-                                typeNames: `registry:${workflowId}`,
+                                workflowId,
                                 bbox: extentToBboxDict(viewport.extent),
                                 time: time.toDict(),
                                 srsName: projection.srsString,
