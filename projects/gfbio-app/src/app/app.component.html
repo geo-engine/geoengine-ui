@@ -1,17 +1,20 @@
 <mat-sidenav-container fullscreen>
     <mat-toolbar color="primary">
-        <wave-layer-list-menu class="box">
-            <div class="logo">
-                <mat-icon mat-list-icon svgIcon="vat:logo" aria-label="VAT"></mat-icon>
-                <span class="title">VAT</span>
-            </div>
-        </wave-layer-list-menu>
+        <div class="box">
+            <wave-layer-list-menu>
+                <div class="logo">
+                    <mat-icon mat-list-icon svgIcon="vat:logo" aria-label="VAT"></mat-icon>
+                    <span class="title">VAT</span>
+                </div>
+            </wave-layer-list-menu>
+        </div>
+
         <div class="navbar">
-            <div class="zoom">
+            <div>
                 <wave-zoom-handles (zoomIn)="map.zoomIn()" (zoomOut)="map.zoomOut()"></wave-zoom-handles>
             </div>
             <div class="space"></div>
-            <div class="time-interaction">
+            <div>
                 <wave-small-time-interaction></wave-small-time-interaction>
             </div>
             <div class="space"></div>

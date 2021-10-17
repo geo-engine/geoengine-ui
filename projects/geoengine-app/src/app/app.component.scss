@@ -8,15 +8,16 @@ mat-toolbar {
     .box {
         max-height: inherit;
         height: inherit;
-    }
-    .logo .mat-icon {
-        width: 100%;
+        .logo .mat-icon {
+            width: 100%;
 
-        ::ng-deep svg {
-            border: none;
-            border-radius: unset;
+            ::ng-deep svg {
+                border: none;
+                border-radius: unset;
+            }
         }
     }
+
     .navbar {
         width: 68vw;
         display: flex;
