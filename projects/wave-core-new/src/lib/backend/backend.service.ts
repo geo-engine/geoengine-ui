@@ -42,7 +42,7 @@ import {
     providedIn: 'root',
 })
 export class BackendService {
-    readonly wmsUrl = `${this.config.API_URL}/wms`;
+    readonly wmsBaseUrl = `${this.config.API_URL}/wms`;
 
     constructor(protected readonly http: HttpClient, protected readonly config: Config) {}
 

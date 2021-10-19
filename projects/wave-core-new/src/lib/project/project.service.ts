@@ -1092,7 +1092,7 @@ export class ProjectService {
                             //     time,
                             //     projection,
                             // })
-                            this.backend.wmsUrl,
+                            this.backend.wmsBaseUrl,
                         ),
                 ),
                 tap(
