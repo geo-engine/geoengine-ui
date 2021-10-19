@@ -98,12 +98,11 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     logout(): void {
-        this.formStatus$.next(FormStatus.Loading);
+        this.formStatus$.next(FormStatus.LoggedOut);
 
         this.userService.guestLogin().subscribe(
             (_) => {
                 this.loginForm.controls['password'].setValue('');
-                this.formStatus$.next(FormStatus.LoggedOut);
             },
             (error) => this.notificationService.error(`The backend is currently unavailable (${error})`),
         );

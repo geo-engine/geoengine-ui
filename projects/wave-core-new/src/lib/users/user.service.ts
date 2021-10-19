@@ -9,8 +9,10 @@ import {User} from './user.model';
 import {Config} from '../config.service';
 import {NotificationService} from '../notification.service';
 import {BackendService} from '../backend/backend.service';
-import {ErrorDict, SessionDict, UUID} from '../backend/backend.model';
+import {SessionDict, UUID} from '../backend/backend.model';
 import {Session} from './session.model';
+import {MatDialog} from '@angular/material/dialog';
+import {ModalLoginComponent, UserLogin} from './modal-login/modal-login.component';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
@@ -25,6 +27,7 @@ export class UserService {
         protected readonly config: Config,
         protected readonly backend: BackendService,
         protected readonly notificationService: NotificationService,
+        protected readonly dialog: MatDialog,
     ) {
         // storage of the session
         this.session$.subscribe((session) => this.saveSessionInBrowser(session));
@@ -36,7 +39,18 @@ export class UserService {
                 this.createGuestUser().subscribe(
                     (session) => this.session$.next(session),
                     // TODO: use error translation
-                    (error: ErrorDict) => this.notificationService.error(error.message),
+                    (error) => {
+                        if (error.error.error === 'AnonymousAccessDisabled') {
+                            const dialogRef = this.dialog.open(ModalLoginComponent, {
+                                disableClose: true,
+                                autoFocus: true,
+                            });
+                            dialogRef.componentInstance.loginCallback = (credentials: UserLogin): Observable<Session> =>
+                                this.login(credentials);
+                        } else {
+                            this.notificationService.error(error.error.message);
+                        }
+                    },
                 ),
         );
     }
@@ -96,7 +110,19 @@ export class UserService {
                     this.session$.next(session);
                     result.next(session);
                 },
-                (error) => result.error(error),
+                (error) => {
+                    if (error.error.error === 'AnonymousAccessDisabled') {
+                        result.complete();
+                        const dialogRef = this.dialog.open(ModalLoginComponent, {
+                            disableClose: true,
+                            autoFocus: true,
+                        });
+                        dialogRef.componentInstance.loginCallback = (credentials: UserLogin): Observable<Session> =>
+                            this.login(credentials);
+                    } else {
+                        result.error(error);
+                    }
+                },
                 () => result.complete(),
             );
         });
