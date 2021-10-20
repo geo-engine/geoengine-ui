@@ -199,7 +199,7 @@ export class BackendService {
         params.set('request', 'GetFeature');
         params.set('outputFormat', 'application/json');
 
-        params.set('typeNames', `registry:${request.workflowId}`);
+        params.set('typeNames', `${request.workflowId}`);
         params.setMapped('bbox', request.bbox, (bbox) => bboxDictToExtent(bbox).join(','));
         params.setMapped('time', request.time, (time) => `${unixTimestampToIsoString(time.start)}/${unixTimestampToIsoString(time.end)}`);
         params.set('srsName', request.srsName);
