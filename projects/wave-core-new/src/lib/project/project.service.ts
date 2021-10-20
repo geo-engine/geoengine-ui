@@ -1092,7 +1092,7 @@ export class ProjectService {
                             //     time,
                             //     projection,
                             // })
-                            this.backend.wmsUrl,
+                            this.backend.wmsBaseUrl,
                         ),
                 ),
                 tap(
@@ -1279,7 +1279,7 @@ export class ProjectService {
                     return this.backend
                         .wfsGetFeature(
                             {
-                                typeNames: `registry:${workflowId}`,
+                                workflowId,
                                 bbox: extentToBboxDict(viewport.extent),
                                 time: time.toDict(),
                                 srsName: projection.srsString,
