@@ -78,7 +78,7 @@
         "@types/ol": "^6.5.3",
         "@types/proj4": "^2.5.2",
         "@typescript-eslint/eslint-plugin": "~4.33.0",
-        "@typescript-eslint/parser": "~4.29.0",
+        "@typescript-eslint/parser": "~4.33.0",
         "eslint": "^7.32.0",
         "eslint-config-prettier": "^8.3.0",
         "eslint-plugin-import": "2.23.4",
