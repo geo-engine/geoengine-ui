@@ -36,6 +36,7 @@ import {LayoutService} from '../../../layout.service';
 import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
 import {createIconDataUrl} from '../../../util/icons';
 import {HistogramOperatorComponent} from '../histogram-operator/histogram-operator.component';
+import {BoxPlotOperatorComponent} from '../boxplot-operator/boxplot-operator.component';
 // eslint-disable-next-line max-len
 import {MeanRasterPixelValuesOverTimeDialogComponent} from '../mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
 import {PointInPolygonFilterOperatorComponent} from '../point-in-polygon-filter/point-in-polygon-filter.component';
@@ -121,11 +122,14 @@ export class OperatorListComponent implements OnInit {
         //         type: ScatterPlotType,
         //         description: 'Scatter plot your data'
         //     },
-        //     {
-        //         component: BoxPlotComponent,
-        //         type: BoxPlotType,
-        //         description: 'Box plot your data'
-        //     },
+        {
+           component: BoxPlotOperatorComponent,
+           type: {
+                NAME: "Box Plot",
+                ICON_URL: createIconDataUrl('Box Plot'),
+           },
+           description: 'Box plot your data'
+        },
         {
             component: StatisticsPlotComponent,
             type: {

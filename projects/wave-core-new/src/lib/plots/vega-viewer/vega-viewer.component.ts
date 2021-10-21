@@ -83,6 +83,8 @@ export class VegaViewerComponent implements OnInit, OnChanges {
                     contains: 'padding',
                 },
             },
+            // This is required, since width and height are ignored for vega-lite specs see https://github.com/vega/vega-embed Options -> Width
+            patch: (spec:VgSpec) =>  { spec.width = width; spec.height = height; return spec; },
             width,
             height,
         })

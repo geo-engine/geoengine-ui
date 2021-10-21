@@ -1,0 +1,47 @@
+<wave-sidenav-header>Box Plot</wave-sidenav-header>
+
+<wave-dialog-help>
+    <p>
+        This operator generates a <i>Boxplot</i> based on a raster or vector dataset (<i>Input</i>). For rasters this operator
+        results in a single box covering the median as well as q1 and q3 quartiles. The whiskers span the minimum and maximum value.
+        For vector datasets the boxes correspond to the selected feature attributes.<br/>
+        <i>Note</i>: If your dataset contains more than 10,000 elements, the mean and quartiles will be estimates.
+    </p>
+    <p>Note: Plots change dynamically with the map view and include only pixels or features, which are located in this area.</p>
+    <p>Note: If your dataset contains more than 10,000 elements, the mean and quartiles will be estimates.</p>
+</wave-dialog-help>
+
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault(); add()" fxLayout="column">
+    <div fxFlex>
+        <wave-layer-selection [types]="inputTypes" formControlName="layer"></wave-layer-selection>
+        <div *ngIf="isVectorLayer$ | async" formArrayName="columnNames">
+            <wave-dialog-section-heading title="Attribute Selection" subtitle="Please select the attributes to generate the box plot for."></wave-dialog-section-heading>
+            <table>
+                <tr *ngFor="let column of columnNames.controls; let i=index">
+                    <td style='width: 100%'>
+                        <mat-form-field>
+                            <mat-select placeholder="Attribute" [formControlName]="i">
+                                <mat-option *ngFor="let attribute of attributes$ | async" [value]="attribute">{{ attribute }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <button *ngIf='columnNames.length > 1' type="button" (click)="removeColumn(i)" mat-raised-button color="primary">-</button>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="actions">
+                <button type="button" (click)="addColumn()" mat-raised-button color="primary">+ Add Attribute</button>
+            </div>
+        </div>
+        <wave-operator-output-name formControlName="name" [suggestion]="'BoxPlot of ' + (form.controls.layer.valueChanges | async)?.name">
+            <mat-hint align="end" class="error" *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace">
+                The name must be non-empty.
+            </mat-hint>
+        </wave-operator-output-name>
+    </div>
+    <div class="actions">
+        <button type="submit" mat-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">Create</button>
+    </div>
+</form>
