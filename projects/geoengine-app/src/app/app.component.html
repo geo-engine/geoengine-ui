@@ -5,12 +5,19 @@
                 <mat-icon mat-list-izcon svgIcon="geoengine:logo" aria-label="Geo Engine"></mat-icon>
             </div>
         </wave-layer-list-menu>
+
         <div class="navbar">
-            <div>
+            <wave-layer-list-menu class="small-box">
+                <div class="logo">
+                    <mat-icon mat-list-izcon svgIcon="geoengine:logo" aria-label="Geo Engine"></mat-icon>
+                </div>
+            </wave-layer-list-menu>
+            <div class="space"></div>
+            <div class="navbar-element">
                 <wave-zoom-handles (zoomIn)="map.zoomIn()" (zoomOut)="map.zoomOut()"></wave-zoom-handles>
             </div>
             <div class="space"></div>
-            <div>
+            <div class="navbar-element">
                 <wave-small-time-interaction></wave-small-time-interaction>
             </div>
         </div>

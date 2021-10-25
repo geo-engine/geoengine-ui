@@ -16,12 +16,37 @@ mat-toolbar {
                 border-radius: unset;
             }
         }
+        @media (max-width: 680px) {
+            display: none;
+        }
     }
 
     .navbar {
         width: 68vw;
+        @media (max-width: 680px) {
+            width: 100vw;
+        }
         display: flex;
         justify-content: center;
+
+        .small-box {
+            ::ng-deep .container {
+                border-right: none;
+                width: 10vw;
+                min-width: 70px;
+            }
+            @media (min-width: 680px) {
+                display: none;
+            }
+        }
+        .navbar-element {
+            @media (max-width: 680px) and (min-width: 600px) {
+                padding-top: 0.6rem;
+            }
+            @media (max-width: 600px) {
+                padding-top: 0.4rem;
+            }
+        }
 
         .space {
             width: 2rem;
@@ -50,20 +75,20 @@ wave-layer-list {
 .back-button {
     z-index: 2;
 
-    border-radius: 0 0 2px 2px;
-    margin-left: 1rem;
-
-    padding: 0.2rem 1rem;
-
-    background-color: rgba(255, 255, 255, 0.87);
+    background-color: #335aa3;
 
     span {
         margin: 0 0.5rem;
     }
 
+    mat-icon {
+        color: white;
+    }
+
     img {
         height: 1.8rem;
         vertical-align: middle;
+        filter: brightness(600%);
     }
 }
 
