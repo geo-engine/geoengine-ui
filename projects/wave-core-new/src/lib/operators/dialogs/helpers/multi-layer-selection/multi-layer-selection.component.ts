@@ -72,6 +72,18 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
      */
     @Input() title?: string = undefined;
 
+    /**
+     * The subtitle of the component (optional)
+     */
+    @Input() subtitle?: string = undefined;
+
+    /**
+     * A function for naming the individual raster selections
+     */
+    @Input() inputNaming: (index: number) => string = (idx) => {
+        return "Input " + this.toLetters(idx);
+    };
+
     onTouched?: () => void;
     onChange?: (_: Array<Layer>) => void = undefined;
 
@@ -143,6 +155,10 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
                     if (this.title === undefined) {
                         this.title = this.types.map((type) => type.toString()).join(', ');
                     }
+                    if (this.subtitle === undefined) {
+                        this.subtitle = "Select input " + this.title;
+                    }
+
                     break;
 
                 default:

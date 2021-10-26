@@ -1,7 +1,7 @@
-import {Layer, VectorLayer} from '../../../layers/layer.model';
+import {Layer, RasterLayer, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, FormArray, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, FormArray, Validators, FormControl} from '@angular/forms';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {WaveValidators} from '../../../util/form.validators';
@@ -9,7 +9,7 @@ import {map, mergeMap, tap} from 'rxjs/operators';
 import {Plot} from '../../../plots/plot.model';
 import {NotificationService} from '../../../notification.service';
 import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
-import {WorkflowDict} from '../../../backend/backend.model';
+import {OperatorDict, SourceOperatorDict, WorkflowDict} from '../../../backend/backend.model';
 import {BoxPlotDict, BoxPlotParams} from '../../../backend/operator.model';
 import {VectorColumnDataTypes} from '../../datatype.model';
 
@@ -24,6 +24,16 @@ const isVectorLayer = (layer: Layer): boolean => {
 };
 
 /**
+ * Checks whether the layer is a raster layer.
+ */
+const isRasterLayer = (layer: Layer): boolean => {
+    if (!layer) {
+        return false;
+    }
+    return layer.layerType === 'raster';
+};
+
+/**
  * This dialog allows creating a box plot of a layer's values.
  */
 @Component({
@@ -33,13 +43,17 @@ const isVectorLayer = (layer: Layer): boolean => {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
-    inputTypes = ResultTypes.INPUT_TYPES;
+    readonly inputTypes = ResultTypes.INPUT_TYPES;
+
+    readonly RASTER_TYPE = [ResultTypes.RASTER];
 
     form: FormGroup;
 
     attributes$ = new ReplaySubject<Array<string>>(1);
 
     isVectorLayer$: Observable<boolean>;
+
+    isRasterLayer$: Observable<boolean>;
 
     private subscriptions: Array<Subscription> = [];
 
@@ -55,7 +69,9 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
         this.form = this.formBuilder.group({
             name: ['Filtered Values', [Validators.required, WaveValidators.notOnlyWhitespace]],
             layer: layerControl,
-            columnNames: this.formBuilder.array( [], WaveValidators.conditionalValidator(Validators.required, () => isVectorLayer(layerControl.value)) )
+            columnNames: this.formBuilder.array( [], WaveValidators.conditionalValidator(Validators.required, () => isVectorLayer(layerControl.value)) ),
+            additionalRasterLayers: new FormControl(undefined),
+            includeNoData: [false]
         });
 
         this.subscriptions.push(
@@ -63,6 +79,7 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
                 .pipe(
                     tap(() => {
                         this.columnNames.clear();
+                        this.additionalRasterLayers.setValue(undefined);
                         if ( isVectorLayer(layerControl.value)) {
                             this.addColumn();
                         }
@@ -88,6 +105,7 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
                 .subscribe((attributes) => this.attributes$.next(attributes)),
         );
         this.isVectorLayer$ = this.form.controls['layer'].valueChanges.pipe(map((layer) => isVectorLayer(layer)));
+        this.isRasterLayer$ = this.form.controls['layer'].valueChanges.pipe(map((layer) => isRasterLayer(layer)));
     }
 
     ngOnInit(): void {}
@@ -103,6 +121,14 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
         this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
+    get additionalRasterLayers() {
+        return this.form.get('additionalRasterLayers') as FormControl;
+    }
+
+    rasterInputNaming(idx: number): string {
+        return "Input";
+    }
+
     get columnNames() {
         return this.form.get('columnNames') as FormArray;
     }
@@ -113,6 +139,10 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
 
     removeColumn(i: number): void {
         this.columnNames.removeAt(i);
+    }
+
+    get includeNoData() {
+        return this.form.controls['includeNoData'].value as boolean;
     }
 
 
@@ -127,19 +157,32 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
 
         const outputName: string = this.form.controls['name'].value;
 
+        let sources = [inputLayer] as Array<Layer>;
+
+        if ( inputLayer.layerType == 'raster' ) {
+            const rasterLayers: Array<RasterLayer> = this.form.controls['additionalRasterLayers'].value;
+            columnNames.push(inputLayer.name);
+            rasterLayers.forEach(value => {
+                sources.push(value);
+                columnNames.push(value.name);
+            });
+        }
+
+
         this.projectService
-            .getWorkflow(inputLayer.workflowId)
+            .getAutomaticallyProjectedOperatorsFromLayers(sources)
             .pipe(
-                mergeMap((inputWorkflow: WorkflowDict) =>
+                mergeMap((inputOperators: Array<OperatorDict|SourceOperatorDict>) =>
                     this.projectService.registerWorkflow({
                         type: 'Plot',
                         operator: {
                             type: 'BoxPlot',
                             params: {
                                 columnNames: columnNames,
+                                includeNoData: this.includeNoData
                             } as BoxPlotParams,
                             sources: {
-                                source: inputWorkflow.operator,
+                                source: isVectorLayer(inputLayer) ? inputOperators[0] : inputOperators,
                             },
                         } as BoxPlotDict,
                     }),
