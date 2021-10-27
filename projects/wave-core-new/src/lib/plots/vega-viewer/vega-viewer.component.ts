@@ -10,6 +10,7 @@ import {
     Output,
     EventEmitter,
 } from '@angular/core';
+import {Config} from '../../config.service';
 import vegaEmbed from 'vega-embed';
 import {View} from 'vega';
 import {TopLevelSpec as VlSpec} from 'vega-lite';
@@ -50,7 +51,7 @@ export class VegaViewerComponent implements OnInit, OnChanges {
         finalize: () => void;
     } = undefined;
 
-    constructor(protected element: ElementRef) {}
+    constructor(protected element: ElementRef, private config: Config) {}
 
     ngOnInit(): void {}
 
@@ -75,7 +76,7 @@ export class VegaViewerComponent implements OnInit, OnChanges {
 
         vegaEmbed(div, spec, {
             actions: false,
-            theme: 'ggplot2',
+            theme: this.config.PLOTS.THEME,
             renderer: 'svg',
             config: {
                 autosize: {

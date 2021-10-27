@@ -4,6 +4,10 @@ import {Injectable} from '@angular/core';
 import {mergeDeep} from 'immutable';
 import {HttpClient} from '@angular/common/http';
 
+interface Plots {
+    readonly THEME: 'excel' | 'ggplot2' | 'quartz' | 'vox' | 'dark';
+}
+
 interface Wms {
     readonly VERSION: string;
     readonly FORMAT: string;
@@ -73,6 +77,7 @@ export interface WaveConfigStructure {
     readonly WCS: Wcs;
     readonly WFS: Wfs;
     readonly WMS: Wms;
+    readonly PLOTS: Plots;
     readonly SPATIAL_REFERENCES: Array<SpatialReferenceConfig>;
 }
 
@@ -123,6 +128,9 @@ export const WAVE_DEFAULT_CONFIG: WaveConfigStructure = {
     WMS: {
         VERSION: '1.3.0',
         FORMAT: 'image/png',
+    },
+    PLOTS: {
+        THEME: 'excel'
     },
     SPATIAL_REFERENCES: [
         {
@@ -200,6 +208,10 @@ export class Config {
 
     get TIME(): Time {
         return this.config.TIME;
+    }
+
+    get PLOTS(): Plots {
+        return this.config.PLOTS;
     }
 
     get SPATIAL_REFERENCES(): Array<SpatialReferenceConfig> {
