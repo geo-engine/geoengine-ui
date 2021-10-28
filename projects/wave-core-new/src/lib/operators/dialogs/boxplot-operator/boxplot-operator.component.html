@@ -10,28 +10,31 @@
     <p>Note: If your dataset contains more than 10,000 elements, the mean and quartiles will be estimates.</p>
 </wave-dialog-help>
 
-<form [formGroup]="form" (ngSubmit)="$event.preventDefault(); add()" fxLayout="column">
-    <div fxFlex>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault(); add()">
+    <div fxFlex class='container'>
         <wave-layer-selection [types]="inputTypes" formControlName="layer"></wave-layer-selection>
-        <div *ngIf="isVectorLayer$ | async" formArrayName="columnNames">
-            <wave-dialog-section-heading title="Attribute Selection" subtitle="Please select the attributes to generate the box plot for."></wave-dialog-section-heading>
-            <table>
-                <tr *ngFor="let column of columnNames.controls; let i=index">
-                    <td style='width: 100%'>
-                        <mat-form-field>
-                            <mat-select placeholder="Attribute" [formControlName]="i">
-                                <mat-option *ngFor="let attribute of attributes$ | async" [value]="attribute">{{ attribute }}</mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </td>
-                    <td>
-                        <button *ngIf='columnNames.length > 1' type="button" (click)="removeColumn(i)" mat-raised-button color="primary">-</button>
-                    </td>
-                </tr>
-            </table>
+        <div *ngIf='isRasterLayer$ | async'>
+            <wave-multi-layer-selection [types]="RASTER_TYPE" [inputNaming]='rasterInputNaming' title='Additional Rasters' subtitle='' formControlName="additionalRasterLayers" [min]="0" [max]="7"></wave-multi-layer-selection>
+            <mat-checkbox formControlName="includeNoData">Include No Data</mat-checkbox>
+        </div>
 
-            <div class="actions">
-                <button type="button" (click)="addColumn()" mat-raised-button color="primary">+ Add Attribute</button>
+        <div *ngIf="isVectorLayer$ | async" formArrayName="columnNames">
+            <div fxLayout="row">
+                <wave-dialog-section-heading title="Attribute Selection" subtitle="Please select the attributes to generate the box plot for."></wave-dialog-section-heading>
+                <div fxFlex fxLayout="row"  fxLayoutAlign="end">
+                    <button type="button" (click)="addColumn()" mat-button color="primary"><mat-icon>add_circle_outline</mat-icon></button>
+                </div>
+            </div>
+
+            <div *ngFor="let column of columnNames.controls; let i=index" fxLayout="column" class='attributeRow'>
+                <div class='attributeRow' fxLayout="row" fxFlex>
+                    <mat-form-field>
+                        <mat-select placeholder="Attribute" [formControlName]="i">
+                            <mat-option *ngFor="let attribute of attributes$ | async" [value]="attribute">{{ attribute }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <button *ngIf='columnNames.length > 1' type="button" (click)="removeColumn(i)" mat-button color="primary"><mat-icon>remove_circle_outline</mat-icon></button>
+                </div>
             </div>
         </div>
         <wave-operator-output-name formControlName="name" [suggestion]="'BoxPlot of ' + (form.controls.layer.valueChanges | async)?.name">
@@ -39,8 +42,8 @@
                 The name must be non-empty.
             </mat-hint>
         </wave-operator-output-name>
-    </div>
-    <div class="actions">
-        <button type="submit" mat-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">Create</button>
+        <div class="actions">
+            <button type="submit" mat-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">Create</button>
+        </div>
     </div>
 </form>

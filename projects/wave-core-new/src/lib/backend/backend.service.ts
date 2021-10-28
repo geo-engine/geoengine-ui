@@ -42,7 +42,7 @@ import {
     providedIn: 'root',
 })
 export class BackendService {
-    readonly wmsUrl = `${this.config.API_URL}/wms`;
+    readonly wmsBaseUrl = `${this.config.API_URL}/wms`;
 
     constructor(protected readonly http: HttpClient, protected readonly config: Config) {}
 
@@ -177,7 +177,7 @@ export class BackendService {
 
     wfsGetFeature(
         request: {
-            typeNames: string;
+            workflowId: UUID;
             bbox: BBoxDict;
             time?: TimeIntervalDict;
             srsName?: SrsString;
@@ -199,7 +199,7 @@ export class BackendService {
         params.set('request', 'GetFeature');
         params.set('outputFormat', 'application/json');
 
-        params.set('typeNames', request.typeNames);
+        params.set('typeNames', `${request.workflowId}`);
         params.setMapped('bbox', request.bbox, (bbox) => bboxDictToExtent(bbox).join(','));
         params.setMapped('time', request.time, (time) => `${unixTimestampToIsoString(time.start)}/${unixTimestampToIsoString(time.end)}`);
         params.set('srsName', request.srsName);
@@ -213,7 +213,7 @@ export class BackendService {
         params.set('filter', request.filter);
         params.set('propertyName', request.propertyName);
 
-        return this.http.get<any>(this.config.API_URL + '/wfs', {
+        return this.http.get<any>(`${this.config.API_URL}/wfs/${request.workflowId}`, {
             headers: BackendService.authorizationHeader(sessionId),
             params: params.httpParams,
         });
