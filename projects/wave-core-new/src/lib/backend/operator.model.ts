@@ -56,7 +56,6 @@ export interface BoxPlotParams extends OperatorParams {
     includeNoData: boolean;
 }
 
-
 export interface BoxPlotDict extends OperatorDict {
     type: 'BoxPlot';
     params: BoxPlotParams;

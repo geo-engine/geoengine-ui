@@ -77,13 +77,6 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
      */
     @Input() subtitle?: string = undefined;
 
-    /**
-     * A function for naming the individual raster selections
-     */
-    @Input() inputNaming: (index: number) => string = (idx) => {
-        return "Input " + this.toLetters(idx);
-    };
-
     onTouched?: () => void;
     onChange?: (_: Array<Layer>) => void = undefined;
 
@@ -112,6 +105,11 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
             map(([selectedLayers, hasLayers]) => !hasLayers || selectedLayers.length >= this.max),
         );
     }
+
+    /**
+     * A function for naming the individual raster selections
+     */
+    @Input() inputNaming: (index: number) => string = (idx) => 'Input ' + this.toLetters(idx);
 
     ngOnInit(): void {
         this.updateLayersForSelection();
@@ -156,7 +154,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
                         this.title = this.types.map((type) => type.toString()).join(', ');
                     }
                     if (this.subtitle === undefined) {
-                        this.subtitle = "Select input " + this.title;
+                        this.subtitle = 'Select input ' + this.title;
                     }
 
                     break;

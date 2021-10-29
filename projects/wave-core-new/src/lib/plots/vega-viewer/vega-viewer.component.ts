@@ -85,7 +85,11 @@ export class VegaViewerComponent implements OnInit, OnChanges {
                 },
             },
             // This is required, since width and height are ignored for vega-lite specs see https://github.com/vega/vega-embed Options -> Width
-            patch: (spec:VgSpec) =>  { spec.width = width; spec.height = height; return spec; },
+            patch: (s: VgSpec) => {
+                s.width = width;
+                s.height = height;
+                return s;
+            },
             width,
             height,
         })

@@ -11,7 +11,7 @@
 </div>
 <div *ngIf="hasLayers | async; else noInputAvailable" fxLayout="column">
     <mat-form-field *ngFor="let number of [].constructor(this.selectedLayers.value.length); let i = index">
-        <mat-label>{{inputNaming(i)}}</mat-label>
+        <mat-label>{{ inputNaming(i) }}</mat-label>
         <mat-select
             class="mat-select-{{ i }}"
             [(value)]="selectedLayers.value[i]"
