@@ -2,38 +2,51 @@
 
 <wave-dialog-help>
     <p>
-        This operator generates a <i>Boxplot</i> based on a raster or vector dataset (<i>Input</i>). For rasters this operator
-        results in a single box covering the median as well as q1 and q3 quartiles. The whiskers span the minimum and maximum value.
-        For vector datasets the boxes correspond to the selected feature attributes.<br/>
+        This operator generates a <i>Boxplot</i> based on a raster or vector dataset (<i>Input</i>). For rasters this operator results in a
+        single box covering the median as well as q1 and q3 quartiles. The whiskers span the minimum and maximum value. For vector datasets
+        the boxes correspond to the selected feature attributes.<br />
     </p>
     <p>Note: Plots change dynamically with the map view and include only pixels or features, which are located in this area.</p>
     <p>Note: If your dataset contains more than 10,000 elements, the mean and quartiles will be estimates.</p>
 </wave-dialog-help>
 
 <form [formGroup]="form" (ngSubmit)="$event.preventDefault(); add()">
-    <div fxFlex class='container'>
+    <div fxFlex class="container">
         <wave-layer-selection [types]="inputTypes" formControlName="layer"></wave-layer-selection>
-        <div *ngIf='isRasterLayer$ | async'>
-            <wave-multi-layer-selection [types]="RASTER_TYPE" [inputNaming]='rasterInputNaming' title='Additional Rasters' subtitle='' formControlName="additionalRasterLayers" [min]="0" [max]="7"></wave-multi-layer-selection>
+        <div *ngIf="isRasterLayer$ | async">
+            <wave-multi-layer-selection
+                [types]="RASTER_TYPE"
+                [inputNaming]="rasterInputNaming"
+                title="Additional Rasters"
+                subtitle=""
+                formControlName="additionalRasterLayers"
+                [min]="0"
+                [max]="7"
+            ></wave-multi-layer-selection>
             <mat-checkbox formControlName="includeNoData">Include No Data</mat-checkbox>
         </div>
 
         <div *ngIf="isVectorLayer$ | async" formArrayName="columnNames">
             <div fxLayout="row">
-                <wave-dialog-section-heading title="Attribute Selection" subtitle="Please select the attributes to generate the box plot for."></wave-dialog-section-heading>
-                <div fxFlex fxLayout="row"  fxLayoutAlign="end">
+                <wave-dialog-section-heading
+                    title="Attribute Selection"
+                    subtitle="Please select the attributes to generate the box plot for."
+                ></wave-dialog-section-heading>
+                <div fxFlex fxLayout="row" fxLayoutAlign="end">
                     <button type="button" (click)="addColumn()" mat-button color="primary"><mat-icon>add_circle_outline</mat-icon></button>
                 </div>
             </div>
 
-            <div *ngFor="let column of columnNames.controls; let i=index" fxLayout="column" class='attributeRow'>
-                <div class='attributeRow' fxLayout="row" fxFlex>
+            <div *ngFor="let column of columnNames.controls; let i = index" fxLayout="column" class="attributeRow">
+                <div class="attributeRow" fxLayout="row" fxFlex>
                     <mat-form-field>
                         <mat-select placeholder="Attribute" [formControlName]="i">
                             <mat-option *ngFor="let attribute of attributes$ | async" [value]="attribute">{{ attribute }}</mat-option>
                         </mat-select>
                     </mat-form-field>
-                    <button *ngIf='columnNames.length > 1' type="button" (click)="removeColumn(i)" mat-button color="primary"><mat-icon>remove_circle_outline</mat-icon></button>
+                    <button *ngIf="columnNames.length > 1" type="button" (click)="removeColumn(i)" mat-button color="primary">
+                        <mat-icon>remove_circle_outline</mat-icon>
+                    </button>
                 </div>
             </div>
         </div>

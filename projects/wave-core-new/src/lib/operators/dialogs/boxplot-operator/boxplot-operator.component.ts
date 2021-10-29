@@ -9,7 +9,7 @@ import {map, mergeMap, tap} from 'rxjs/operators';
 import {Plot} from '../../../plots/plot.model';
 import {NotificationService} from '../../../notification.service';
 import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
-import {OperatorDict, SourceOperatorDict, WorkflowDict} from '../../../backend/backend.model';
+import {OperatorDict, SourceOperatorDict} from '../../../backend/backend.model';
 import {BoxPlotDict, BoxPlotParams} from '../../../backend/operator.model';
 import {VectorColumnDataTypes} from '../../datatype.model';
 
@@ -69,9 +69,12 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
         this.form = this.formBuilder.group({
             name: ['Filtered Values', [Validators.required, WaveValidators.notOnlyWhitespace]],
             layer: layerControl,
-            columnNames: this.formBuilder.array( [], WaveValidators.conditionalValidator(Validators.required, () => isVectorLayer(layerControl.value)) ),
+            columnNames: this.formBuilder.array(
+                [],
+                WaveValidators.conditionalValidator(Validators.required, () => isVectorLayer(layerControl.value)),
+            ),
             additionalRasterLayers: new FormControl(undefined),
-            includeNoData: [false]
+            includeNoData: [false],
         });
 
         this.subscriptions.push(
@@ -80,7 +83,7 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
                     tap(() => {
                         this.columnNames.clear();
                         this.additionalRasterLayers.setValue(undefined);
-                        if ( isVectorLayer(layerControl.value)) {
+                        if (isVectorLayer(layerControl.value)) {
                             this.addColumn();
                         }
                     }),
@@ -121,15 +124,15 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
         this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
-    get additionalRasterLayers() {
+    get additionalRasterLayers(): FormControl {
         return this.form.get('additionalRasterLayers') as FormControl;
     }
 
-    rasterInputNaming(idx: number): string {
-        return "Input";
+    rasterInputNaming(_idx: number): string {
+        return 'Input';
     }
 
-    get columnNames() {
+    get columnNames(): FormArray {
         return this.form.get('columnNames') as FormArray;
     }
 
@@ -141,10 +144,9 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
         this.columnNames.removeAt(i);
     }
 
-    get includeNoData() {
+    get includeNoData(): boolean {
         return this.form.controls['includeNoData'].value as boolean;
     }
-
 
     /**
      * Uses the user input to create a box plot.
@@ -153,33 +155,32 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
     add(): void {
         const inputLayer = this.form.controls['layer'].value as Layer;
 
-        const columnNames = this.columnNames.controls.map( fc => fc.value.toString() );
+        const columnNames = this.columnNames.controls.map((fc) => fc.value.toString());
 
         const outputName: string = this.form.controls['name'].value;
 
-        let sources = [inputLayer] as Array<Layer>;
+        const sources = [inputLayer] as Array<Layer>;
 
-        if ( inputLayer.layerType == 'raster' ) {
+        if (inputLayer.layerType === 'raster') {
             const rasterLayers: Array<RasterLayer> = this.form.controls['additionalRasterLayers'].value;
             columnNames.push(inputLayer.name);
-            rasterLayers.forEach(value => {
+            rasterLayers.forEach((value) => {
                 sources.push(value);
                 columnNames.push(value.name);
             });
         }
 
-
         this.projectService
             .getAutomaticallyProjectedOperatorsFromLayers(sources)
             .pipe(
-                mergeMap((inputOperators: Array<OperatorDict|SourceOperatorDict>) =>
+                mergeMap((inputOperators: Array<OperatorDict | SourceOperatorDict>) =>
                     this.projectService.registerWorkflow({
                         type: 'Plot',
                         operator: {
                             type: 'BoxPlot',
                             params: {
-                                columnNames: columnNames,
-                                includeNoData: this.includeNoData
+                                columnNames,
+                                includeNoData: this.includeNoData,
                             } as BoxPlotParams,
                             sources: {
                                 source: isVectorLayer(inputLayer) ? inputOperators[0] : inputOperators,

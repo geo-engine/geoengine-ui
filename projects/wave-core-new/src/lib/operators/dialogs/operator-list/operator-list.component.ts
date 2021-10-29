@@ -123,12 +123,12 @@ export class OperatorListComponent implements OnInit {
         //         description: 'Scatter plot your data'
         //     },
         {
-           component: BoxPlotOperatorComponent,
-           type: {
-                NAME: "Box Plot",
+            component: BoxPlotOperatorComponent,
+            type: {
+                NAME: 'Box Plot',
                 ICON_URL: createIconDataUrl('Box Plot'),
-           },
-           description: 'Box plot your data'
+            },
+            description: 'Box plot your data',
         },
         {
             component: StatisticsPlotComponent,

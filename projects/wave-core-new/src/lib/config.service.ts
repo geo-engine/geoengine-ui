@@ -130,7 +130,7 @@ export const WAVE_DEFAULT_CONFIG: WaveConfigStructure = {
         FORMAT: 'image/png',
     },
     PLOTS: {
-        THEME: 'excel'
+        THEME: 'excel',
     },
     SPATIAL_REFERENCES: [
         {
