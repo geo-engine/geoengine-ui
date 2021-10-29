@@ -13,7 +13,6 @@ import {WorkflowDict} from '../../../backend/backend.model';
 import {ScatterPlotDict, ScatterPlotParams} from '../../../backend/operator.model';
 import {VectorColumnDataTypes} from '../../datatype.model';
 
-
 /**
  * This dialog allows creating a box plot of a layer's values.
  */
@@ -51,8 +50,8 @@ export class ScatterplotOperatorComponent implements OnInit, AfterViewInit, OnDe
         this.subscriptions.push(
             this.form.controls['layer'].valueChanges
                 .pipe(
-                    mergeMap((layer: Layer) => {
-                        return this.projectService.getVectorLayerMetadata(layer as VectorLayer).pipe(
+                    mergeMap((layer: Layer) =>
+                        this.projectService.getVectorLayerMetadata(layer as VectorLayer).pipe(
                             map((metadata: VectorLayerMetadata) =>
                                 metadata.columns
                                     .filter(
@@ -62,8 +61,8 @@ export class ScatterplotOperatorComponent implements OnInit, AfterViewInit, OnDe
                                     .keySeq()
                                     .toArray(),
                             ),
-                        );
-                    }),
+                        ),
+                    ),
                 )
                 .subscribe((attributes) => this.attributes$.next(attributes)),
         );
@@ -104,8 +103,8 @@ export class ScatterplotOperatorComponent implements OnInit, AfterViewInit, OnDe
                         operator: {
                             type: 'ScatterPlot',
                             params: {
-                                columnX: columnX,
-                                columnY: columnY,
+                                columnX,
+                                columnY,
                             } as ScatterPlotParams,
                             sources: {
                                 vector: inputWorkflow.operator,

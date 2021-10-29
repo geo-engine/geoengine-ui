@@ -121,10 +121,10 @@ export class OperatorListComponent implements OnInit {
         {
             component: ScatterplotOperatorComponent,
             type: {
-                NAME: "Scatter Plot",
+                NAME: 'Scatter Plot',
                 ICON_URL: createIconDataUrl('Scatter Plot'),
             },
-            description: 'Scatter plot your data'
+            description: 'Scatter plot your data',
         },
         {
             component: BoxPlotOperatorComponent,

@@ -69,7 +69,6 @@ export interface ScatterPlotParams extends OperatorParams {
     columnY: string;
 }
 
-
 export interface ScatterPlotDict extends OperatorDict {
     type: 'ScatterPlot';
     params: ScatterPlotParams;
