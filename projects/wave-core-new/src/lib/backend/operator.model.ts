@@ -51,6 +51,19 @@ export interface HistogramDict extends OperatorDict {
     };
 }
 
+export interface BoxPlotParams extends OperatorParams {
+    columnNames: Array<string>;
+    includeNoData: boolean;
+}
+
+export interface BoxPlotDict extends OperatorDict {
+    type: 'BoxPlot';
+    params: BoxPlotParams;
+    sources: {
+        source: SourceOperatorDict | OperatorDict | Array<SourceOperatorDict | OperatorDict>;
+    };
+}
+
 export interface MeanRasterPixelValuesOverTimeParams extends OperatorParams {
     timePosition: 'start' | 'center' | 'end';
     area: boolean;

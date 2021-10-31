@@ -10,6 +10,7 @@ import {
     Output,
     EventEmitter,
 } from '@angular/core';
+import {Config} from '../../config.service';
 import vegaEmbed from 'vega-embed';
 import {View} from 'vega';
 import {TopLevelSpec as VlSpec} from 'vega-lite';
@@ -50,7 +51,7 @@ export class VegaViewerComponent implements OnInit, OnChanges {
         finalize: () => void;
     } = undefined;
 
-    constructor(protected element: ElementRef) {}
+    constructor(protected element: ElementRef, private config: Config) {}
 
     ngOnInit(): void {}
 
@@ -75,13 +76,19 @@ export class VegaViewerComponent implements OnInit, OnChanges {
 
         vegaEmbed(div, spec, {
             actions: false,
-            theme: 'ggplot2',
+            theme: this.config.PLOTS.THEME,
             renderer: 'svg',
             config: {
                 autosize: {
                     type: 'fit',
                     contains: 'padding',
                 },
+            },
+            // This is required, since width and height are ignored for vega-lite specs see https://github.com/vega/vega-embed Options -> Width
+            patch: (s: VgSpec) => {
+                s.width = width;
+                s.height = height;
+                return s;
             },
             width,
             height,

@@ -83,6 +83,7 @@ import {StatisticsPlotComponent} from './operators/dialogs/statistics-plot/stati
 import {PlotDetailViewComponent} from './plots/plot-detail-view/plot-detail-view.component';
 import {PlotListEntryComponent} from './plots/plot-list-entry/plot-list-entry.component';
 import {HistogramOperatorComponent} from './operators/dialogs/histogram-operator/histogram-operator.component';
+import {BoxPlotOperatorComponent} from './operators/dialogs/boxplot-operator/boxplot-operator.component';
 import {LayerSelectionComponent} from './operators/dialogs/helpers/layer-selection/layer-selection.component';
 import {VegaViewerComponent} from './plots/vega-viewer/vega-viewer.component';
 import {LineageGraphComponent} from './provenance/lineage-graph/lineage-graph.component';
@@ -181,6 +182,7 @@ const WAVE_COMPONENTS = [
     ExpressionOperatorComponent,
     FeatureAttributeOvertimeComponent,
     HistogramOperatorComponent,
+    BoxPlotOperatorComponent,
     IfGuestDirective,
     IfLoggedInDirective,
     LayerListComponent,
