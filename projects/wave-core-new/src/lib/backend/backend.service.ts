@@ -223,6 +223,7 @@ export class BackendService {
         workflowId: UUID,
         request: {
             bbox: BBoxDict;
+            crs: SrsString,
             time: TimeIntervalDict;
             spatialResolution: [number, number];
         },
@@ -231,6 +232,7 @@ export class BackendService {
         const params = new NullDiscardingHttpParams();
 
         params.setMapped('bbox', request.bbox, (bbox) => bboxDictToExtent(bbox).join(','));
+        params.set('crs', request.crs);
         params.setMapped('time', request.time, (time) => `${unixTimestampToIsoString(time.start)}/${unixTimestampToIsoString(time.end)}`);
         params.setMapped('spatialResolution', request.spatialResolution, (resolution) => resolution.join(','));
 
