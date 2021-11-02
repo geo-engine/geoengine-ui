@@ -202,14 +202,20 @@ export class AnalysisComponent implements OnInit {
                     }),
                 ),
                 mergeMap((workflowId) =>
-                    combineLatest([of(workflowId), this.userService.getSessionTokenForRequest(), this.projectService.getTimeOnce()]),
+                    combineLatest([
+                        of(workflowId),
+                        this.userService.getSessionTokenForRequest(),
+                        this.projectService.getTimeOnce(),
+                        this.projectService.getSpatialReferenceStream(),
+                    ]),
                 ),
-                mergeMap(([workflowId, sessionToken, time]) =>
+                mergeMap(([workflowId, sessionToken, time, crs]) =>
                     this.backend.getPlot(
                         workflowId,
                         {
                             time: time.toDict(),
                             bbox: countryBounds,
+                            crs: crs.srsString,
                             // TODO: set reasonable size
                             spatialResolution: [0.1, 0.1],
                         },
