@@ -223,7 +223,7 @@ export class BackendService {
         workflowId: UUID,
         request: {
             bbox: BBoxDict;
-            crs: SrsString,
+            crs: SrsString;
             time: TimeIntervalDict;
             spatialResolution: [number, number];
         },
