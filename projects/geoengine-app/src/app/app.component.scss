@@ -35,10 +35,14 @@ mat-toolbar {
                 width: 10vw;
                 min-width: 70px;
             }
-            .logo img {
-                height: 1.8rem;
+            .logo .mat-icon {
                 vertical-align: middle;
-                filter: brightness(150%); //make it 600% to get it all white
+                transform: scale(1.3);
+
+                ::ng-deep svg {
+                    border: none;
+                    border-radius: unset;
+                }
             }
             @media (min-width: 550px) {
                 display: none;
