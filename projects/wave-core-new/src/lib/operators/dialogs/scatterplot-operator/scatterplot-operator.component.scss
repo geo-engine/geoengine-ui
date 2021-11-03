@@ -1,0 +1,30 @@
+:host {
+    display: block;
+    overflow-y: auto;
+    padding: 0 1rem 1rem 1rem;
+}
+
+form {
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.actions {
+    text-align: right;
+    padding: 1rem 0 1rem 1rem;
+}
+
+mat-form-field {
+    width: 100%;
+    margin: 1rem 0;
+}
+
+.error {
+    color: var(--wave-warn-color, red);
+}
+
+div {
+    padding-bottom: 0.5rem;
+    padding-top: 1rem;
+}

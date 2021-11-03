@@ -57,6 +57,7 @@ export * from './lib/operators/dialogs/helpers/multi-layer-selection/multi-layer
 export * from './lib/operators/dialogs/helpers/operator-output-name/operator-output-name.component';
 export * from './lib/operators/dialogs/histogram-operator/histogram-operator.component';
 export * from './lib/operators/dialogs/boxplot-operator/boxplot-operator.component';
+export * from './lib/operators/dialogs/scatterplot-operator/scatterplot-operator.component';
 export * from './lib/operators/dialogs/mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
 export * from './lib/operators/dialogs/operator-list/operator-list.component';
 export * from './lib/operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
