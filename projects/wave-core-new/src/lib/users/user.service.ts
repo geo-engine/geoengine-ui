@@ -1,5 +1,5 @@
 import {Observable, ReplaySubject, of, Subject} from 'rxjs';
-import {catchError, first, map, mergeMap} from 'rxjs/operators';
+import {catchError, filter, first, map, mergeMap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
 
@@ -9,8 +9,9 @@ import {User} from './user.model';
 import {Config} from '../config.service';
 import {NotificationService} from '../notification.service';
 import {BackendService} from '../backend/backend.service';
-import {ErrorDict, SessionDict, UUID} from '../backend/backend.model';
+import {SessionDict, UUID} from '../backend/backend.model';
 import {Session} from './session.model';
+import {Router} from '@angular/router';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
@@ -19,15 +20,24 @@ const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '
  */
 @Injectable()
 export class UserService {
-    protected readonly session$ = new ReplaySubject<Session>(1);
+    protected readonly session$ = new ReplaySubject<Session | undefined>(1);
+    protected logoutCallback?: () => void;
 
     constructor(
         protected readonly config: Config,
         protected readonly backend: BackendService,
         protected readonly notificationService: NotificationService,
+        protected readonly router: Router,
     ) {
-        // storage of the session
-        this.session$.subscribe((session) => this.saveSessionInBrowser(session));
+        this.session$.subscribe((session) => {
+            // storage of the session
+            this.saveSessionInBrowser(session);
+
+            // redirect to login page if logged out
+            if (!session && this.logoutCallback) {
+                this.logoutCallback();
+            }
+        });
 
         // restore old session if possible
         this.restoreSessionFromBrowser().subscribe(
@@ -36,7 +46,14 @@ export class UserService {
                 this.createGuestUser().subscribe(
                     (session) => this.session$.next(session),
                     // TODO: use error translation
-                    (error: ErrorDict) => this.notificationService.error(error.message),
+                    (error) => {
+                        this.session$.next(undefined);
+
+                        // only show error if we did not expect it
+                        if (error.error.error !== 'AnonymousAccessDisabled') {
+                            this.notificationService.error(error.error.message);
+                        }
+                    },
                 ),
         );
     }
@@ -49,11 +66,19 @@ export class UserService {
      * @returns Retrieve a stream that notifies about the current session.
      */
     getSessionStream(): Observable<Session> {
+        return this.session$.pipe(filter(isDefined));
+    }
+
+    /**
+     * @returns Retrieve a stream that notifies about the current session.
+     *          May be undefined if there is no current session.
+     */
+    getSessionOrUndefinedStream(): Observable<Session | undefined> {
         return this.session$;
     }
 
     getSessionTokenStream(): Observable<UUID> {
-        return this.session$.pipe(map((session) => session.sessionToken));
+        return this.getSessionStream().pipe(map((session) => session.sessionToken));
     }
 
     getSessionTokenForRequest(): Observable<UUID> {
@@ -61,7 +86,7 @@ export class UserService {
     }
 
     isGuestUserStream(): Observable<boolean> {
-        return this.session$.pipe(map((s) => !s.user || s.user.isGuest));
+        return this.getSessionStream().pipe(map((s) => !s.user || s.user.isGuest));
     }
 
     /**
@@ -90,13 +115,21 @@ export class UserService {
     guestLogin(): Observable<Session> {
         const result = new Subject<Session>();
         this.session$.pipe(first()).subscribe((oldSession) => {
-            this.backend.logoutUser(oldSession.sessionToken).subscribe();
+            if (oldSession) {
+                this.backend.logoutUser(oldSession.sessionToken).subscribe();
+            }
+
             this.createGuestUser().subscribe(
                 (session) => {
                     this.session$.next(session);
                     result.next(session);
                 },
-                (error) => result.error(error),
+                (error) => {
+                    // failing on a guest login means we cannot do it,
+                    // so we are logged out
+                    this.session$.next(undefined);
+                    result.error(error);
+                },
                 () => result.complete(),
             );
         });
@@ -104,7 +137,7 @@ export class UserService {
     }
 
     getSessionOnce(): Observable<Session> {
-        return this.session$.pipe(first());
+        return this.getSessionStream().pipe(first());
     }
 
     /**
@@ -121,8 +154,24 @@ export class UserService {
         );
     }
 
-    protected saveSessionInBrowser(session: Session): void {
-        localStorage.setItem(PATH_PREFIX + 'session', session.sessionToken);
+    isLoggedIn(): Observable<boolean> {
+        return this.session$.pipe(first(), map(isDefined));
+    }
+
+    /**
+     * This callback is called when the user is logged out.
+     * This can be used to re-route to login pages.
+     */
+    setLogoutCallback(callback: () => void): void {
+        this.logoutCallback = callback;
+    }
+
+    protected saveSessionInBrowser(session: Session | undefined): void {
+        if (session) {
+            localStorage.setItem(PATH_PREFIX + 'session', session.sessionToken);
+        } else {
+            localStorage.removeItem(PATH_PREFIX + 'session');
+        }
     }
 
     protected restoreSessionFromBrowser(): Observable<Session> {
@@ -151,4 +200,12 @@ export class UserService {
 
         return of(session);
     }
+}
+
+/**
+ * Used as filter argument for T | undefined
+ */
+// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
+function isDefined<T>(arg: T | null | undefined): arg is T {
+    return arg !== null && arg !== undefined;
 }

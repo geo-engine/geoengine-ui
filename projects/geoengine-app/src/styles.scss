@@ -19,6 +19,11 @@
     font-size: 16px;
 }
 
+body {
+    margin: 0;
+    padding: 0;
+}
+
 a {
     color: mat.get-color-from-palette(map-get($wave-app-theme, foreground), secondary-text);
 }
