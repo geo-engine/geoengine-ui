@@ -1,5 +1,5 @@
 <div fxLayout="row">
-    <wave-dialog-section-heading [title]="title" subtitle="Select input {{ title }}"></wave-dialog-section-heading>
+    <wave-dialog-section-heading [title]="title" [subtitle]="subtitle"></wave-dialog-section-heading>
     <div fxFlex fxLayout="row" fxLayoutAlign="end">
         <button mat-button color="primary" type="button" (click)="add()" *ngIf="max - min > 0" [disabled]="layersAtMax | async">
             <mat-icon>add_circle_outline</mat-icon>
@@ -11,7 +11,7 @@
 </div>
 <div *ngIf="hasLayers | async; else noInputAvailable" fxLayout="column">
     <mat-form-field *ngFor="let number of [].constructor(this.selectedLayers.value.length); let i = index">
-        <mat-label>Input {{ toLetters(i) }}</mat-label>
+        <mat-label>{{ inputNaming(i) }}</mat-label>
         <mat-select
             class="mat-select-{{ i }}"
             [(value)]="selectedLayers.value[i]"

@@ -122,3 +122,11 @@ You can check your PR beforehand by calling `npm run check`.
 You need to have either `Chrome` or `Chromium` installed.
 
 Run tests with `npm test`.
+
+## Troubleshooting
+
+### Header Fields/Request URI length
+
+Problem: Requests fail with HTTP Error 431 `Request Header Fields Too Large`.
+
+Solution: Make sure you are using a Node version >= 14 where the HTTP header size was increased, or increase it manually using the `--max-http-header-size=` argument of `node`.
