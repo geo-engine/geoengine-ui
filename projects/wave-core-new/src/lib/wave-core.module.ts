@@ -239,7 +239,7 @@ const WAVE_COMPONENTS = [
 ];
 
 @NgModule({
-    declarations: [...WAVE_PIPES, ...WAVE_COMPONENTS, LayerListMenuComponent],
+    declarations: [...WAVE_PIPES, ...WAVE_COMPONENTS],
     imports: [
         ...MATERIAL_MODULES,
         ColorPickerModule,
