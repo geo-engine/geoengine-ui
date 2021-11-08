@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {LayoutService} from '../../../layout.service';
 import {MapService} from '../../../map/map.service';
 import {ProjectService} from '../../../project/project.service';
@@ -11,7 +11,7 @@ import {Config} from '../../../config.service';
     styleUrls: ['./layer-list-menu.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LayerListMenuComponent implements OnInit {
+export class LayerListMenuComponent {
     /**
      * sends if the layerlist should be visible
      */
@@ -32,6 +32,4 @@ export class LayerListMenuComponent implements OnInit {
 
         this.mapIsGrid$ = this.mapService.isGrid$;
     }
-
-    ngOnInit(): void {}
 }
