@@ -22,7 +22,10 @@ button {
 div,
 mat-toolbar {
     width: 33vw;
-    height: 64px !important;
+    height: 64px;
+    @media (max-width: 600px) {
+        height: 56px;
+    }
 }
 
 div {
