@@ -1,0 +1,11 @@
+# CI tasks that are required to succeed
+# TODO: use only wildcard once it works
+status = [
+    # "build %",
+    "build (12.x)",
+    "build (14.x)",
+    "Code Format and Lints",
+]
+
+# One approval necessary for bors to work
+required_approvals = 1
