@@ -50,17 +50,18 @@ export * from './lib/logo.component';
 export * from './lib/map/map-container/map-container.component';
 export * from './lib/map/map-layer.component';
 export * from './lib/map/zoom-handles/zoom-handles.component';
+export * from './lib/operators/dialogs/boxplot-operator/boxplot-operator.component';
 export * from './lib/operators/dialogs/expression-operator/expression-operator.component';
 export * from './lib/operators/dialogs/feature-attribute-over-time/feature-attribute-over-time.component';
 export * from './lib/operators/dialogs/helpers/layer-selection/layer-selection.component';
 export * from './lib/operators/dialogs/helpers/multi-layer-selection/multi-layer-selection.component';
 export * from './lib/operators/dialogs/helpers/operator-output-name/operator-output-name.component';
 export * from './lib/operators/dialogs/histogram-operator/histogram-operator.component';
-export * from './lib/operators/dialogs/boxplot-operator/boxplot-operator.component';
 export * from './lib/operators/dialogs/mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
 export * from './lib/operators/dialogs/operator-list/operator-list.component';
 export * from './lib/operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 export * from './lib/operators/dialogs/raster-vector-join/raster-vector-join.component';
+export * from './lib/operators/dialogs/scatterplot-operator/scatterplot-operator.component';
 export * from './lib/operators/dialogs/statistics-plot/statistics-plot.component';
 export * from './lib/operators/dialogs/temporal-raster-aggregation/temporal-raster-aggregation.component';
 export * from './lib/plots/plot-detail-view/plot-detail-view.component';
@@ -85,6 +86,7 @@ export * from './lib/time/time-config/time-config.component';
 export * from './lib/time/time-input/time-input.component';
 export * from './lib/users/login/login.component';
 export * from './lib/layers/layer-list/layer-list-menu/layer-list-menu.component';
+export * from './lib/users/modal-login/modal-login.component';
 
 // Pipes
 export * from './lib/util/pipes/async-converters.pipe';
@@ -112,6 +114,9 @@ export * from './lib/plots/plot.model';
 export * from './lib/time/time.model';
 export * from './lib/users/session.model';
 export * from './lib/users/user.model';
+
+// Guards
+export * from './lib/util/guards/is-logged-in.guard';
 
 // Misc
 export * from './lib/util/directives/if-guest.directive';
