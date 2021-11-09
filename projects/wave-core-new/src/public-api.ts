@@ -85,8 +85,8 @@ export * from './lib/time/small-time-interaction/small-time-interaction.componen
 export * from './lib/time/time-config/time-config.component';
 export * from './lib/time/time-input/time-input.component';
 export * from './lib/users/login/login.component';
-export * from './lib/users/modal-login/modal-login.component';
 export * from './lib/layers/layer-list/layer-list-menu/layer-list-menu.component';
+export * from './lib/users/modal-login/modal-login.component';
 
 // Pipes
 export * from './lib/util/pipes/async-converters.pipe';

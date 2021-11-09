@@ -113,8 +113,8 @@ import {ProviderListComponent} from './datasets/provider-list/provider-list.comp
 import {AddWorkflowComponent} from './datasets/add-workflow/add-workflow.component';
 import {ProvenanceTableComponent} from './provenance/table/provenance-table.component';
 import {ScrollingModule} from '@angular/cdk/scrolling';
-import {ModalLoginComponent} from './users/modal-login/modal-login.component';
 import {LayerListMenuComponent} from './layers/layer-list/layer-list-menu/layer-list-menu.component';
+import {ModalLoginComponent} from './users/modal-login/modal-login.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
