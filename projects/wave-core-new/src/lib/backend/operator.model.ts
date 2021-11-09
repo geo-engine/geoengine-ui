@@ -64,6 +64,19 @@ export interface BoxPlotDict extends OperatorDict {
     };
 }
 
+export interface ScatterPlotParams extends OperatorParams {
+    columnX: string;
+    columnY: string;
+}
+
+export interface ScatterPlotDict extends OperatorDict {
+    type: 'ScatterPlot';
+    params: ScatterPlotParams;
+    sources: {
+        vector: SourceOperatorDict | OperatorDict;
+    };
+}
+
 export interface MeanRasterPixelValuesOverTimeParams extends OperatorParams {
     timePosition: 'start' | 'center' | 'end';
     area: boolean;

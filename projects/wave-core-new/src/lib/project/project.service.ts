@@ -1352,13 +1352,14 @@ export class ProjectService {
             this.getTimeStream(),
             this.mapService.getViewportSizeStream(),
             this.userService.getSessionTokenForRequest(),
+            this.getSpatialReferenceStream(),
         ];
 
         return combineLatest(observables)
             .pipe(
                 debounceTime(this.config.DELAYS.DEBOUNCE),
                 tap(() => loadingState$.next(LoadingState.LOADING)),
-                switchMap(([time, viewport, sessionToken]) =>
+                switchMap(([time, viewport, sessionToken, sref]) =>
                     // TODO: add image size for png
 
                     this.backend.getPlot(
@@ -1366,6 +1367,7 @@ export class ProjectService {
                         {
                             time,
                             bbox: extentToBboxDict(viewport.extent),
+                            crs: sref.srsString,
                             spatialResolution: [viewport.resolution, viewport.resolution], // TODO: check if resolution needs two numbers
                         },
                         sessionToken,

@@ -2,7 +2,6 @@ import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserModule} from '@angular/platform-browser';
 import {HttpClientModule} from '@angular/common/http';
-import {RouterModule} from '@angular/router';
 
 import {AppComponent} from './app.component';
 import {
@@ -19,16 +18,13 @@ import {
     WaveCoreModule,
 } from 'wave-core';
 import {AppConfig} from './app-config.service';
+import {LoginComponent} from './login/login.component';
+import {MainComponent} from './main/main.component';
+import {AppRoutingModule} from './app-routing.module';
 
 @NgModule({
-    declarations: [AppComponent],
-    imports: [
-        BrowserAnimationsModule,
-        BrowserModule,
-        HttpClientModule,
-        RouterModule.forRoot([{path: '**', component: AppComponent}], {useHash: true}),
-        WaveCoreModule,
-    ],
+    declarations: [AppComponent, LoginComponent, MainComponent],
+    imports: [BrowserAnimationsModule, BrowserModule, HttpClientModule, AppRoutingModule, WaveCoreModule],
     providers: [
         {provide: Config, useClass: AppConfig},
         {

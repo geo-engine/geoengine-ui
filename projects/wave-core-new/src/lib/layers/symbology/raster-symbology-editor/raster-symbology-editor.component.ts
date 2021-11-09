@@ -264,13 +264,15 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
             this.projectService.getTimeStream(),
             this.mapService.getViewportSizeStream(),
             this.userService.getSessionTokenForRequest(),
+            this.projectService.getSpatialReferenceStream(),
         ]).pipe(
             tap(() => this.histogramLoading.next(true)),
-            mergeMap(([workflowId, time, viewport, sessionToken]) =>
+            mergeMap(([workflowId, time, viewport, sessionToken, sref]) =>
                 this.backend.getPlot(
                     workflowId,
                     {
                         bbox: extentToBboxDict(viewport.extent),
+                        crs: sref.srsString,
                         spatialResolution: [viewport.resolution, viewport.resolution],
                         time: time.toDict(),
                     },

@@ -3,12 +3,9 @@ import {BehaviorSubject, Subscription} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 
-import {Config} from '../../config.service';
-import {WaveValidators} from '../../util/form.validators';
-import {UserService} from '../user.service';
-import {User} from '../user.model';
-import {NotificationService} from '../../notification.service';
+import {Config, NotificationService, UserService, User, WaveValidators} from 'wave-core';
 import {first} from 'rxjs/operators';
+import {Router} from '@angular/router';
 
 enum FormStatus {
     LoggedOut,
@@ -17,7 +14,7 @@ enum FormStatus {
 }
 
 @Component({
-    selector: 'wave-login',
+    selector: 'wave-app-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,6 +36,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         private readonly config: Config,
         private readonly userService: UserService,
         private readonly notificationService: NotificationService,
+        private readonly router: Router,
     ) {
         this.loginForm = new FormGroup({
             email: new FormControl('', Validators.compose([Validators.required, WaveValidators.keyword([this.config.USER.GUEST.NAME])])),
@@ -48,10 +46,10 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngOnInit(): void {
         this.userService
-            .getSessionStream()
+            .getSessionOrUndefinedStream()
             .pipe(first())
             .subscribe((session) => {
-                if (!session.user || session.user.isGuest) {
+                if (!session || !session.user || session.user.isGuest) {
                     this.formStatus$.next(FormStatus.LoggedOut);
                 } else {
                     this.user = session.user;
@@ -87,6 +85,8 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.user = session.user;
                     this.invalidCredentials$.next(false);
                     this.formStatus$.next(FormStatus.LoggedIn);
+
+                    this.redirectToMainView();
                 },
                 () => {
                     // on error
@@ -100,6 +100,8 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     logout(): void {
         this.formStatus$.next(FormStatus.LoggedOut);
 
+        // we log out by trying to perform a guest login
+        // if this fails, we will get logged out
         this.userService.guestLogin().subscribe(
             (_) => {
                 this.loginForm.controls['password'].setValue('');
@@ -110,5 +112,9 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             },
         );
+    }
+
+    redirectToMainView(): void {
+        this.router.navigate(['map']);
     }
 }
