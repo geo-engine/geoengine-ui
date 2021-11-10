@@ -12,15 +12,6 @@
         </tr>
     </ng-template>
 
-    <ng-template [ngIf]="layer.symbology.colorizer.isDiscrete()">
-        <tr *ngFor="let breakpoint of layer.symbology.colorizer.getBreakpoints(); let isFirst = first">
-            <td class="classes">
-                <div class="icon" [style.background-color]="breakpoint | breakpointToCssStringPipe"></div>
-            </td>
-            <td>{{ breakpoint.value }}</td>
-        </tr>
-    </ng-template>
-
     <ng-container *ngIf="measurement$ | async | classificationMeasurement as measurement">
         <tr *ngFor="let breakpoint of layer.symbology.colorizer.getBreakpoints(); let isFirst = first">
             <td class="classes">
