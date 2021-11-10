@@ -19,6 +19,10 @@ button {
     padding: 0;
 }
 
+.mat-toolbar {
+    border-left: 1px solid rgba(245, 245, 245, 0.32);
+}
+
 div,
 mat-toolbar {
     width: 33vw;
