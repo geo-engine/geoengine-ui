@@ -2,49 +2,99 @@ wave-navigation {
     z-index: 10;
 }
 
+mat-toolbar {
+    padding: 0;
+    position: relative;
+    z-index: 1;
+
+    .box {
+        max-height: inherit;
+        height: inherit;
+        .logo .mat-icon {
+            width: 100%;
+
+            ::ng-deep svg {
+                border: none;
+                border-radius: unset;
+            }
+        }
+        @media (max-width: 680px) {
+            display: none;
+        }
+    }
+
+    .navbar {
+        width: 68vw;
+        @media (max-width: 680px) {
+            width: 100vw;
+        }
+        display: flex;
+        justify-content: center;
+
+        .small-box {
+            ::ng-deep .container {
+                border-right: none;
+                width: 10vw;
+                min-width: 70px;
+            }
+            @media (min-width: 680px) {
+                display: none;
+            }
+        }
+        .navbar-element {
+            @media (max-width: 680px) and (min-width: 600px) {
+                padding-top: 0.6rem;
+            }
+            @media (max-width: 600px) {
+                padding-top: 0.4rem;
+            }
+        }
+
+        .space {
+            width: 2rem;
+        }
+    }
+}
+
 wave-layer-list {
     position: absolute;
     z-index: 2;
-    width: 16vw;
-    min-width: 200px;
     left: 0;
-    top: 0;
+    top: 4rem;
     background-color: rgba(255, 255, 255, 0.87);
     border-bottom-right-radius: 2px;
-}
 
-.time-container {
-    position: absolute;
-    left: 16vw;
-    right: 16vw;
-
-    wave-ticker-interaction,
-    wave-small-time-interaction,
-    wave-zoom-handles {
-        background-color: rgba(255, 255, 255, 0.87);
-        border-bottom-left-radius: 2px;
-        border-bottom-right-radius: 2px;
-        z-index: 3;
+    @media (max-width: 600px) {
+        top: 3.5rem;
     }
 
-    .back-button {
-        z-index: 3;
+    ::ng-deep svg {
+        border: none;
+        border-radius: unset;
+    }
+}
 
-        border-radius: 0 0 2px 2px;
-        margin-left: 1rem;
+.mat-sidenav {
+    border: none;
+}
 
-        padding: 0.2rem 1rem;
+.back-button {
+    z-index: 2;
 
-        background-color: rgba(255, 255, 255, 0.87);
+    background-color: #335aa3;
 
-        span {
-            margin: 0 0.5rem;
-        }
+    span {
+        margin: 0 0.5rem;
+    }
 
-        img {
-            height: 1.8rem;
-            vertical-align: middle;
-        }
+    mat-icon {
+        color: white;
+    }
+
+    img {
+        height: 1.8rem;
+        vertical-align: middle;
+        filter: brightness(600%);
     }
 }
 

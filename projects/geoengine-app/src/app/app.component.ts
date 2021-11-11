@@ -31,6 +31,12 @@ export class AppComponent {
 
         this.iconRegistry.addSvgIconInNamespace(
             'geoengine',
+            'favicon-white',
+            this.sanitizer.bypassSecurityTrustResourceUrl('assets/geoengine-favicon-white.svg'),
+        );
+
+        this.iconRegistry.addSvgIconInNamespace(
+            'geoengine',
             'logo-green',
             this.sanitizer.bypassSecurityTrustResourceUrl('assets/geoengine.svg'),
         );

@@ -1,29 +1,49 @@
 <mat-sidenav-container fullscreen>
+    <mat-toolbar color="primary" class="mat-elevation-z4">
+        <wave-layer-list-menu class="box">
+            <div class="logo">
+                <mat-icon mat-list-icon svgIcon="vat:logo" aria-label="VAT"></mat-icon>
+                <span class="title">VAT</span>
+            </div>
+        </wave-layer-list-menu>
+
+        <div class="navbar">
+            <div class="small-box">
+                <wave-layer-list-menu>
+                    <div class="logo">
+                        <mat-icon mat-list-icon svgIcon="vat:logo" aria-label="VAT"></mat-icon>
+                    </div>
+                </wave-layer-list-menu>
+            </div>
+            <div class="space"></div>
+            <div class="navbar-element">
+                <wave-zoom-handles (zoomIn)="map.zoomIn()" (zoomOut)="map.zoomOut()"></wave-zoom-handles>
+            </div>
+            <div class="space"></div>
+            <div class="navbar-element">
+                <wave-small-time-interaction></wave-small-time-interaction>
+            </div>
+            <div class="space"></div>
+            <div class="navbar-element">
+                <a href="https://www.gfbio.org" mat-flat-button color="default" class="back-button">
+                    <mat-icon>keyboard_return</mat-icon>
+                    <span></span>
+                    <img src="assets/logo_gfbio.png" alt="GFBio Portal" matTooltip="Back to GFBio Portal" />
+                </a>
+            </div>
+        </div>
+    </mat-toolbar>
+
     <mat-sidenav position="end" mode="side" (openedChange)="mapComponent.resize()">
         <wave-sidenav-container></wave-sidenav-container>
     </mat-sidenav>
-    <div class="time-container" fxLayoutAlign="space-between start">
-        <a href="https://www.gfbio.org" mat-flat-button color="default" class="back-button mat-elevation-z4">
-            <mat-icon>keyboard_return</mat-icon>
-            <span></span>
-            <img src="assets/logo_gfbio.png" alt="GFBio Portal" matTooltip="Back to GFBio Portal" />
-        </a>
-        <wave-zoom-handles (zoomIn)="map.zoomIn()" (zoomOut)="map.zoomOut()" class="mat-elevation-z4"></wave-zoom-handles>
-        <wave-small-time-interaction class="mat-elevation-z4"></wave-small-time-interaction>
-        <div></div>
-        <div></div>
-        <!-- moves Time Interaction to center (cf. space-around @ flex) -->
-    </div>
+
     <wave-navigation [buttons]="navigationButtons"></wave-navigation>
     <wave-layer-list
         class="mat-elevation-z4"
         [height]="middleContainerHeight$ | async | numberSanitizer"
         [addAFirstLayerSidenavConfig]="addAFirstLayerConfig"
     >
-        <div class="logo">
-            <mat-icon mat-list-icon svgIcon="vat:logo" aria-label="VAT"></mat-icon>
-            <span class="title">VAT</span>
-        </div>
     </wave-layer-list>
 
     <div class="mid-container" [style.height.px]="middleContainerHeight$ | async">

@@ -19,10 +19,17 @@ button {
     padding: 0;
 }
 
+.mat-toolbar {
+    border-left: 1px solid rgba(245, 245, 245, 0.32);
+}
+
 div,
 mat-toolbar {
     width: 33vw;
-    height: 64px !important;
+    height: 64px;
+    @media (max-width: 600px) {
+        height: 56px;
+    }
 }
 
 div {
