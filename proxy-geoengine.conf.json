@@ -1,6 +1,6 @@
 {
     "/api/*": {
-        "target": "http://peter.geoengine.io:6060/",
+        "target": "https://nightly.peter.geoengine.io/api",
         "changeOrigin": true,
         "pathRewrite": {
             "^/api": ""
