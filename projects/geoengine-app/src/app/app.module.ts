@@ -21,9 +21,10 @@ import {AppConfig} from './app-config.service';
 import {LoginComponent} from './login/login.component';
 import {MainComponent} from './main/main.component';
 import {AppRoutingModule} from './app-routing.module';
+import {RegisterComponent} from './register/register.component';
 
 @NgModule({
-    declarations: [AppComponent, LoginComponent, MainComponent],
+    declarations: [AppComponent, LoginComponent, MainComponent, RegisterComponent],
     imports: [BrowserAnimationsModule, BrowserModule, HttpClientModule, AppRoutingModule, WaveCoreModule],
     providers: [
         {provide: Config, useClass: AppConfig},

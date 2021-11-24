@@ -35,11 +35,18 @@
                     </table>
                 </ng-template>
             </mat-card-content>
-            <mat-card-actions [ngSwitch]="formStatus$ | async">
+            <mat-card-actions [ngSwitch]="formStatus$ | async" fxLayout="row" fxLayoutGap="1rem" fxLayoutAlign="space-between center">
                 <ng-template [ngSwitchCase]="FormStatus.LoggedOut">
-                    <button mat-raised-button type="submit" [disabled]="(loginForm.statusChanges | async) !== 'VALID'" color="primary">
+                    <button
+                        mat-raised-button
+                        type="submit"
+                        [disabled]="(loginForm.statusChanges | async) !== 'VALID'"
+                        color="primary"
+                        fxFlex
+                    >
                         Login
                     </button>
+                    <a routerLink="/register" *ngIf="canRegister">Register</a>
                 </ng-template>
                 <ng-template [ngSwitchCase]="FormStatus.LoggedIn">
                     <button mat-raised-button (click)="$event.preventDefault(); redirectToMainView()" fxFlex>To Map</button>
