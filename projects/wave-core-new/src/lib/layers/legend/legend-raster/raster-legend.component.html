@@ -13,7 +13,7 @@
     </ng-template>
 
     <ng-template [ngIf]="layer.symbology.colorizer.isDiscrete()">
-        <tr *ngFor="let breakpoint of layer.symbology.colorizer.getBreakpoints(); let isFirst = first">
+        <tr *ngFor="let breakpoint of layer.symbology.colorizer.getBreakpoints()">
             <td class="classes">
                 <div class="icon" [style.background-color]="breakpoint | breakpointToCssStringPipe"></div>
             </td>
