@@ -47,19 +47,27 @@ export class RasterLegendComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.symbology) {
-            const symbology = changes.symbology.currentValue;
+        if (changes.layer) {
+            const symbology = changes.layer.currentValue.symbology;
             this.numberPipeParameters = RasterLegendComponent.calculateNumberPipeParameters(symbology.colorizer.breakpoints);
         }
     }
 
     private static calculateNumberPipeParameters(breakpoints: Array<ColorBreakpoint>): string {
+        //minimal and maximal breakpoint
         const firstNumber = (breakpoints[0].value as number).toString(10);
         const lastNumber = (breakpoints[breakpoints.length - 1].value as number).toString(10);
+        //maximal decimal places of the minimal and maximal breakpoint
         const decimalPlacesFirst = firstNumber.indexOf('.') >= 0 ? firstNumber.split('.')[1].length : 0;
         const decimalPlacesLast = lastNumber.indexOf('.') >= 0 ? lastNumber.split('.')[1].length : 0;
-        const maximumDecimalPlaces = Math.max(decimalPlacesFirst, decimalPlacesLast) + 2;
+        const maximumDecimalPlaces = Math.max(decimalPlacesFirst, decimalPlacesLast);
+        //stepsize
+        const range = breakpoints[breakpoints.length - 1].value - breakpoints[0].value;
+        const steps = breakpoints.length;
+        const stepSize = range / steps;
 
-        return `1.0-${maximumDecimalPlaces}`;
+        if (stepSize >= 1) return `1.0-${Math.max(0, maximumDecimalPlaces)}`;
+        else if (stepSize >= 0.1) return `1.0-${Math.max(1, maximumDecimalPlaces)}`;
+        else return `1.0-${Math.max(2, maximumDecimalPlaces)}`;
     }
 }
