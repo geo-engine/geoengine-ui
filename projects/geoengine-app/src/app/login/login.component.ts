@@ -1,11 +1,12 @@
 import {BehaviorSubject, Subscription} from 'rxjs';
 
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 
 import {Config, NotificationService, UserService, User, WaveValidators} from 'wave-core';
 import {first} from 'rxjs/operators';
 import {Router} from '@angular/router';
+import {AppConfig} from '../app-config.service';
 
 enum FormStatus {
     LoggedOut,
@@ -23,6 +24,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly FormStatus = FormStatus;
 
     formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.Loading);
+    canRegister = this.config.COMPONENTS.REGISTRATION.AVAILABLE;
 
     loginForm: FormGroup;
 
@@ -33,7 +35,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly config: Config,
+        @Inject(Config) private readonly config: AppConfig,
         private readonly userService: UserService,
         private readonly notificationService: NotificationService,
         private readonly router: Router,
