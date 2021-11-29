@@ -1,0 +1,46 @@
+.container {
+    overflow: hidden; // prevents margin breaking
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--wave-primary-color);
+}
+
+.login {
+    margin: 0 auto;
+    width: 24rem;
+}
+
+mat-card-header {
+    ::ng-deep .mat-card-header-text {
+        width: 100%;
+    }
+}
+
+mat-card-content {
+    mat-form-field {
+        width: 100%;
+    }
+
+    table {
+        width: 100%;
+
+        th {
+            text-align: left;
+            margin-right: 0.5rem;
+        }
+    }
+}
+
+mat-card-actions button {
+    width: 100%;
+}
+
+.error {
+    color: var(--wave-warn-color, red);
+}
+
+mat-spinner {
+    margin: 0 auto;
+}

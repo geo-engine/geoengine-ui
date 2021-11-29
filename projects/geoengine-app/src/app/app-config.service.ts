@@ -8,6 +8,9 @@ interface Components {
     readonly PLAYBACK: {
         readonly AVAILABLE: boolean;
     };
+    readonly REGISTRATION: {
+        readonly AVAILABLE: boolean;
+    };
 }
 
 interface AppConfigStructure extends WaveConfigStructure {
@@ -18,6 +21,9 @@ const APP_CONFIG_DEFAULTS = mergeDeep(WAVE_DEFAULT_CONFIG, {
     COMPONENTS: {
         PLAYBACK: {
             AVAILABLE: false,
+        },
+        REGISTRATION: {
+            AVAILABLE: true,
         },
     },
 }) as AppConfigStructure;
