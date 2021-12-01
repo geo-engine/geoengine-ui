@@ -334,26 +334,28 @@ export class ProjectService {
     }
 
     registerWorkflow(workflow: WorkflowDict): Observable<UUID> {
-        return this.userService.getSessionStream().pipe(
-            mergeMap((session) => this.backend.registerWorkflow(workflow, session.sessionToken)),
+        return this.userService.getSessionTokenForRequest().pipe(
+            mergeMap((sessionToken) => this.backend.registerWorkflow(workflow, sessionToken)),
             map((response) => response.id),
         );
     }
 
     getWorkflow(workflowId: UUID): Observable<WorkflowDict> {
-        return this.userService.getSessionStream().pipe(mergeMap((session) => this.backend.getWorkflow(workflowId, session.sessionToken)));
+        return this.userService
+            .getSessionTokenForRequest()
+            .pipe(mergeMap((sessionToken) => this.backend.getWorkflow(workflowId, sessionToken)));
     }
 
     getWorkflowMetaData(workflowId: UUID): Observable<ResultDescriptorDict> {
         return this.userService
-            .getSessionStream()
-            .pipe(mergeMap((session) => this.backend.getWorkflowMetadata(workflowId, session.sessionToken)));
+            .getSessionTokenForRequest()
+            .pipe(mergeMap((sessionToken) => this.backend.getWorkflowMetadata(workflowId, sessionToken)));
     }
 
     getWorkflowProvenance(workflowId: UUID): Observable<Array<ProvenanceOutputDict>> {
         return this.userService
-            .getSessionStream()
-            .pipe(mergeMap((session) => this.backend.getWorkflowProvenance(workflowId, session.sessionToken)));
+            .getSessionTokenForRequest()
+            .pipe(mergeMap((sessionToken) => this.backend.getWorkflowProvenance(workflowId, sessionToken)));
     }
 
     /**
