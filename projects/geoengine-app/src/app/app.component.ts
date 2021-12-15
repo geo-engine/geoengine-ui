@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ViewContainerRef} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {Router} from '@angular/router';
@@ -16,6 +16,7 @@ export class AppComponent {
         private readonly sanitizer: DomSanitizer,
         private readonly userService: UserService,
         private readonly router: Router,
+        public vcRef: ViewContainerRef,
     ) {
         this.registerIcons();
 
