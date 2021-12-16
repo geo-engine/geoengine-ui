@@ -16,7 +16,7 @@ export class AppComponent {
         private readonly sanitizer: DomSanitizer,
         private readonly userService: UserService,
         private readonly router: Router,
-        public vcRef: ViewContainerRef,
+        private readonly vcRef: ViewContainerRef,
     ) {
         this.registerIcons();
 
