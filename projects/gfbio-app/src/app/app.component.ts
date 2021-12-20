@@ -6,6 +6,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     HostListener,
     Inject,
     OnInit,
@@ -57,6 +58,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MatSidenav, {static: true}) rightSidenav!: MatSidenav;
     @ViewChild(SidenavContainerComponent, {static: true}) rightSidenavContainer!: SidenavContainerComponent;
 
+    @ViewChild('topToolbar', {static: true, read: ElementRef}) topToolbar!: ElementRef;
+
     readonly layersReverse$: Observable<Array<Layer>>;
     readonly layerListVisible$: Observable<boolean>;
     readonly layerDetailViewVisible$: Observable<boolean>;
@@ -76,15 +79,15 @@ export class AppComponent implements OnInit, AfterViewInit {
         readonly projectService: ProjectService,
         readonly vcRef: ViewContainerRef, // reference used by color picker
         readonly userService: UserService,
-        private changeDetectorRef: ChangeDetectorRef,
-        private dialog: MatDialog,
-        private iconRegistry: MatIconRegistry,
-        private randomColorService: RandomColorService,
-        private activatedRoute: ActivatedRoute,
-        private notificationService: NotificationService,
-        private mapService: MapService,
-        private spatialReferenceService: SpatialReferenceService,
-        private sanitizer: DomSanitizer,
+        private readonly changeDetectorRef: ChangeDetectorRef,
+        private readonly dialog: MatDialog,
+        private readonly iconRegistry: MatIconRegistry,
+        private readonly randomColorService: RandomColorService,
+        private readonly activatedRoute: ActivatedRoute,
+        private readonly notificationService: NotificationService,
+        private readonly mapService: MapService,
+        private readonly spatialReferenceService: SpatialReferenceService,
+        private readonly sanitizer: DomSanitizer,
     ) {
         this.registerIcons();
 
@@ -97,8 +100,10 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         this.mapIsGrid$ = this.mapService.isGrid$;
 
-        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(this.windowHeight$).pipe(tap(() => this.mapComponent.resize()));
-        this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(this.windowHeight$);
+        const totalHeight$ = this.windowHeight$.pipe(map((height) => height - this.topToolbar.nativeElement.offsetHeight));
+
+        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(totalHeight$).pipe(tap(() => this.mapComponent.resize()));
+        this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(totalHeight$);
     }
 
     ngOnInit(): void {
@@ -120,6 +125,9 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.projectService
             .getNewPlotStream()
             .subscribe(() => this.layoutService.setSidenavContentComponent({component: PlotListComponent}));
+
+        // emit window height once to resize components if necessary
+        this.windowHeight();
 
         // TODO: don't show this message if the user has clicked the checkbox
         setTimeout(() => {
