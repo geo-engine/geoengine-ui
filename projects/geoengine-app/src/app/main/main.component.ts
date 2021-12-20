@@ -6,6 +6,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     HostListener,
     Inject,
     OnInit,
@@ -54,6 +55,8 @@ export class MainComponent implements OnInit, AfterViewInit {
     @ViewChild(MatSidenav, {static: true}) rightSidenav!: MatSidenav;
     @ViewChild(SidenavContainerComponent, {static: true}) rightSidenavContainer!: SidenavContainerComponent;
 
+    @ViewChild('topToolbar', {static: true, read: ElementRef}) topToolbar!: ElementRef;
+
     readonly layersReverse$: Observable<Array<Layer>>;
     readonly layerListVisible$: Observable<boolean>;
     readonly layerDetailViewVisible$: Observable<boolean>;
@@ -73,13 +76,13 @@ export class MainComponent implements OnInit, AfterViewInit {
         readonly projectService: ProjectService,
         readonly vcRef: ViewContainerRef, // reference used by color picker
         readonly userService: UserService,
-        private changeDetectorRef: ChangeDetectorRef,
-        private dialog: MatDialog,
-        private randomColorService: RandomColorService,
-        private activatedRoute: ActivatedRoute,
-        private notificationService: NotificationService,
-        private mapService: MapService,
-        private spatialReferenceService: SpatialReferenceService,
+        private readonly changeDetectorRef: ChangeDetectorRef,
+        private readonly dialog: MatDialog,
+        private readonly randomColorService: RandomColorService,
+        private readonly activatedRoute: ActivatedRoute,
+        private readonly notificationService: NotificationService,
+        private readonly mapService: MapService,
+        private readonly spatialReferenceService: SpatialReferenceService,
     ) {
         vcRef.length; // eslint-disable-line @typescript-eslint/no-unused-expressions
 
@@ -90,8 +93,10 @@ export class MainComponent implements OnInit, AfterViewInit {
 
         this.mapIsGrid$ = this.mapService.isGrid$;
 
-        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(this.windowHeight$).pipe(tap(() => this.mapComponent.resize()));
-        this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(this.windowHeight$);
+        const totalHeight$ = this.windowHeight$.pipe(map((height) => height - this.topToolbar.nativeElement.offsetHeight));
+
+        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(totalHeight$).pipe(tap(() => this.mapComponent.resize()));
+        this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(totalHeight$);
     }
 
     ngOnInit(): void {
@@ -113,6 +118,9 @@ export class MainComponent implements OnInit, AfterViewInit {
         this.projectService
             .getNewPlotStream()
             .subscribe(() => this.layoutService.setSidenavContentComponent({component: PlotListComponent}));
+
+        // emit window height once to resize components if necessary
+        this.windowHeight();
 
         // set the stored tab index
         // this.layoutService.getLayerDetailViewTabIndexStream().subscribe(tabIndex => {
