@@ -1,4 +1,4 @@
-[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fumr-dbs%2Fwave%2Fbadge&style=flat)](https://actions-badge.atrox.dev/umr-dbs/wave/goto)
+[![CI](https://github.com/geo-engine/geoengine-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/geo-engine/geoengine-ui/actions/workflows/ci.yml)
 
 # Geo Engine UI
 
@@ -26,7 +26,7 @@ sudo apt-get install -y nodejs
 ```
 rm -rf node_modules package-lock.json
 npm install
-npm run build-prod:core && npm run build-prod:wave
+npm run build-prod:core && npm run build-prod:geoengine
 ```
 
 You can find the output in the `dist` directory.
