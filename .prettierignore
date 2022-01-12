@@ -16,3 +16,6 @@ scripts
 
 # Data
 *.geojson
+
+# Angular
+.angular/cache/
