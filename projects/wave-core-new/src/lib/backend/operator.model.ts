@@ -20,6 +20,22 @@ export interface ExpressionDict extends OperatorDict {
     };
 }
 
+export interface NewExpressionDict extends OperatorDict {
+    type: 'NewExpression';
+    params: {
+        expression: string;
+        outputType: string;
+        outputNoDataValue: number | 'nan';
+        outputMeasurement?: MeasurementDict;
+        mapNoData: boolean;
+    };
+    sources: {
+        a: OperatorDict | SourceOperatorDict;
+        b?: OperatorDict | SourceOperatorDict;
+        c?: OperatorDict | SourceOperatorDict;
+    };
+}
+
 export interface FeatureAttributeOverTimeDict extends OperatorDict {
     type: 'FeatureAttributeValuesOverTime';
     params: {
