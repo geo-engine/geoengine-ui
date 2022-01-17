@@ -7,6 +7,7 @@ import {
     forwardRef,
     OnChanges,
     SimpleChanges,
+    ViewEncapsulation,
 } from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
@@ -23,6 +24,7 @@ export interface ColorAttributeInput {
     styleUrls: ['./color-attribute-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorAttributeInputComponent), multi: true}],
+    encapsulation: ViewEncapsulation.Emulated,
 })
 export class ColorAttributeInputComponent implements ControlValueAccessor, AfterViewInit, OnChanges {
     @Input() readonlyAttribute = false;

@@ -126,11 +126,11 @@ export class AppComponent implements OnInit, AfterViewInit {
             .getNewPlotStream()
             .subscribe(() => this.layoutService.setSidenavContentComponent({component: PlotListComponent}));
 
-        // emit window height once to resize components if necessary
-        this.windowHeight();
-
-        // TODO: don't show this message if the user has clicked the checkbox
         setTimeout(() => {
+            // emit window height once to resize components if necessary
+            this.windowHeight();
+
+            // TODO: don't show this message if the user has clicked the checkbox
             this.dialog.open(SplashDialogComponent, {});
         });
 

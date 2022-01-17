@@ -2,7 +2,7 @@
     font-size: 0.8rem;
 }
 
-mat-form-field >>> .color_cell {
+mat-form-field ::ng-deep .color_cell {
     color: black !important;
     text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff !important;
 }
