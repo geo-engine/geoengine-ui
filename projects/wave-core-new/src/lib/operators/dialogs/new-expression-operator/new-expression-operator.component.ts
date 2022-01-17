@@ -198,6 +198,7 @@ export class NewExpressionOperatorComponent implements AfterViewInit, OnDestroy 
                             sources: {
                                 a: operators[0],
                                 b: operators.length >= 2 ? operators[1] : undefined,
+                                c: operators.length >= 3 ? operators[2] : undefined,
                             },
                         } as NewExpressionDict,
                     };
