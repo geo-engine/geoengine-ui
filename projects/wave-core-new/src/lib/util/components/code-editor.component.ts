@@ -149,7 +149,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
     /** Implemented as part of ControlValueAccessor. */
     writeValue(value: string): void {
         const prefix = this.prefixLine ? `${this.prefixLine}\n` : '';
-        const suffix = this.suffixLine ? `\n${this.suffixLine}` : '';
+        const suffix = this.suffixLine ? ` \n${this.suffixLine}` : '';
 
         const code = prefix + value + suffix;
 
@@ -167,10 +167,11 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
 
         if (this.suffixLine) {
             const lastLine = this.editor.lineCount() - 1;
+            const secondLastLine = lastLine - 1;
             this.editor.markText(
-                {line: lastLine - 1, ch: this.editor.getLine(lastLine - 1).length},
+                {line: secondLastLine, ch: this.editor.getLine(secondLastLine).length},
                 {line: lastLine, ch: suffix.length},
-                {readOnly: true, inclusiveLeft: true, inclusiveRight: true},
+                {readOnly: true, inclusiveLeft: false, inclusiveRight: true},
             );
         }
     }
