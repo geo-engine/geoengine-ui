@@ -32,3 +32,7 @@ wave-code-editor {
 mat-form-field {
     width: 100%;
 }
+
+.error {
+    color: var(--wave-warn-color, red);
+}

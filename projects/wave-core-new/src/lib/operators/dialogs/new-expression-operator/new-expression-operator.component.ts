@@ -1,5 +1,5 @@
 import {map, mergeMap, tap} from 'rxjs/operators';
-import {combineLatest, Observable} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
@@ -7,7 +7,7 @@ import {RasterDataType, RasterDataTypes} from '../../datatype.model';
 import {RasterLayer} from '../../../layers/layer.model';
 import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
-import {OperatorDict, SourceOperatorDict, WorkflowDict} from '../../../backend/backend.model';
+import {OperatorDict, SourceOperatorDict, UUID, WorkflowDict} from '../../../backend/backend.model';
 import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 import {RasterLayerMetadata} from '../../../layers/layer-metadata.model';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
@@ -31,6 +31,8 @@ export class NewExpressionOperatorComponent implements AfterViewInit, OnDestroy 
     readonly rasterVariables$: Observable<Array<string>>;
 
     readonly fnSignature: Observable<string>;
+
+    readonly lastError$ = new BehaviorSubject<string | undefined>(undefined);
 
     /**
      * DI of services and setup of observables for the template
@@ -182,7 +184,7 @@ export class NewExpressionOperatorComponent implements AfterViewInit, OnDestroy 
 
         sourceOperators
             .pipe(
-                map((operators: Array<OperatorDict | SourceOperatorDict>) => {
+                mergeMap((operators: Array<OperatorDict | SourceOperatorDict>) => {
                     const workflow: WorkflowDict = {
                         type: 'Raster',
                         operator: {
@@ -203,40 +205,43 @@ export class NewExpressionOperatorComponent implements AfterViewInit, OnDestroy 
                         } as NewExpressionDict,
                     };
 
-                    this.projectService
-                        .registerWorkflow(workflow)
-                        .pipe(
-                            mergeMap((workflowId) =>
-                                this.projectService.addLayer(
-                                    new RasterLayer({
-                                        workflowId,
-                                        name,
-                                        symbology: RasterSymbology.fromRasterSymbologyDict({
-                                            type: 'raster',
-                                            opacity: 1.0,
-                                            colorizer: {
-                                                type: 'linearGradient',
-                                                breakpoints: [
-                                                    {value: 0, color: [0, 0, 0, 255]},
-                                                    {value: 255, color: [255, 255, 255, 255]},
-                                                ],
-                                                defaultColor: [0, 0, 0, 255],
-                                                noDataColor: [0, 0, 0, 255],
-                                            },
-                                        }),
-                                        isLegendVisible: false,
-                                        isVisible: true,
-                                    }),
-                                ),
-                            ),
-                        )
-                        .subscribe(() => {
-                            // it worked, do nothing
-                        });
+                    return this.projectService.registerWorkflow(workflow);
                 }),
+                mergeMap((workflowId: UUID) =>
+                    this.projectService.addLayer(
+                        new RasterLayer({
+                            workflowId,
+                            name,
+                            symbology: RasterSymbology.fromRasterSymbologyDict({
+                                type: 'raster',
+                                opacity: 1.0,
+                                colorizer: {
+                                    type: 'linearGradient',
+                                    breakpoints: [
+                                        {value: 0, color: [0, 0, 0, 255]},
+                                        {value: 255, color: [255, 255, 255, 255]},
+                                    ],
+                                    defaultColor: [0, 0, 0, 255],
+                                    noDataColor: [0, 0, 0, 255],
+                                },
+                            }),
+                            isLegendVisible: false,
+                            isVisible: true,
+                        }),
+                    ),
+                ),
             )
-            .subscribe(() => {
-                // nothing to do
-            });
+            .subscribe(
+                () => {
+                    // everything worked well
+
+                    this.lastError$.next(undefined);
+                },
+                (error) => {
+                    const errorMsg = error.error.message;
+
+                    this.lastError$.next(errorMsg);
+                },
+            );
     }
 }

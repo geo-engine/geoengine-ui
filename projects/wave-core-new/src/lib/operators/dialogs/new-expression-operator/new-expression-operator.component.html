@@ -37,6 +37,8 @@
             suffixLine="}"
         ></wave-code-editor>
 
+        <p *ngIf="lastError$ | async as lastError" class="error">{{ lastError }}</p>
+
         <mat-form-field appearance="fill">
             <mat-label>Output Data Type</mat-label>
             <mat-select formControlName="dataType">
