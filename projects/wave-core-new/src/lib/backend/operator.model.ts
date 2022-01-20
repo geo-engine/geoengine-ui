@@ -33,6 +33,11 @@ export interface NewExpressionDict extends OperatorDict {
         a: OperatorDict | SourceOperatorDict;
         b?: OperatorDict | SourceOperatorDict;
         c?: OperatorDict | SourceOperatorDict;
+        d?: OperatorDict | SourceOperatorDict;
+        e?: OperatorDict | SourceOperatorDict;
+        f?: OperatorDict | SourceOperatorDict;
+        g?: OperatorDict | SourceOperatorDict;
+        h?: OperatorDict | SourceOperatorDict;
     };
 }
 

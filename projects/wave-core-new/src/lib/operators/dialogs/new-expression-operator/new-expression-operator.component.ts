@@ -96,18 +96,7 @@ export class NewExpressionOperatorComponent implements AfterViewInit, OnDestroy 
             map((rasterLayers: Array<RasterLayer>) => rasterLayers.map((_, index) => LetterNumberConverter.toLetters(index + 1))),
         );
 
-        this.fnSignature = this.rasterVariables$.pipe(
-            map((vars: string[]) => {
-                const variables = [];
-                for (const varName of vars) {
-                    variables.push(varName);
-                    variables.push(`is_${varName}_nodata`);
-                }
-                variables.push('out_nodata');
-
-                return `fn(${variables.join(', ')}) {`;
-            }),
-        );
+        this.fnSignature = this.rasterVariables$.pipe(map((vars: string[]) => `fn(${vars.join(', ')}, out_nodata) {`));
     }
 
     ngAfterViewInit(): void {
@@ -201,6 +190,11 @@ export class NewExpressionOperatorComponent implements AfterViewInit, OnDestroy 
                                 a: operators[0],
                                 b: operators.length >= 2 ? operators[1] : undefined,
                                 c: operators.length >= 3 ? operators[2] : undefined,
+                                d: operators.length >= 4 ? operators[3] : undefined,
+                                e: operators.length >= 5 ? operators[4] : undefined,
+                                f: operators.length >= 6 ? operators[5] : undefined,
+                                g: operators.length >= 7 ? operators[6] : undefined,
+                                h: operators.length >= 8 ? operators[7] : undefined,
                             },
                         } as NewExpressionDict,
                     };

@@ -27,7 +27,7 @@
 
 <form [formGroup]="form" (ngSubmit)="add()" fxLayout="column">
     <div fxFlex class="container">
-        <wave-multi-layer-selection [types]="RASTER_TYPE" formControlName="rasterLayers" [min]="1" [max]="3"></wave-multi-layer-selection>
+        <wave-multi-layer-selection [types]="RASTER_TYPE" formControlName="rasterLayers" [min]="1" [max]="8"></wave-multi-layer-selection>
         <wave-dialog-section-heading title="Configuration" subtitle="Specify the operator"></wave-dialog-section-heading>
         <p>Use A to reference the existing pixel of the first raster, B for the second one, etc.</p>
 
