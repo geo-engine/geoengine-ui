@@ -74,6 +74,7 @@ import {SaveProjectAsComponent} from './project/save-project-as/save-project-as.
 import {MultiLayerSelectionComponent} from './operators/dialogs/helpers/multi-layer-selection/multi-layer-selection.component';
 import {OperatorListComponent} from './operators/dialogs/operator-list/operator-list.component';
 import {ExpressionOperatorComponent} from './operators/dialogs/expression-operator/expression-operator.component';
+import {NewExpressionOperatorComponent} from './operators/dialogs/new-expression-operator/new-expression-operator.component';
 import {OperatorOutputNameComponent} from './operators/dialogs/helpers/operator-output-name/operator-output-name.component';
 import {AddDataComponent} from './datasets/add-data/add-data.component';
 import {DatasetListComponent} from './datasets/dataset-list/dataset-list.component';
@@ -115,6 +116,7 @@ import {ProvenanceTableComponent} from './provenance/table/provenance-table.comp
 import {ScrollingModule} from '@angular/cdk/scrolling';
 import {LayerListMenuComponent} from './layers/layer-list/layer-list-menu/layer-list-menu.component';
 import {ModalLoginComponent} from './users/modal-login/modal-login.component';
+import {CodeEditorComponent} from './util/components/code-editor.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -169,6 +171,7 @@ const WAVE_COMPONENTS = [
     AddDataComponent,
     AddWorkflowComponent,
     ChangeSpatialReferenceComponent,
+    CodeEditorComponent,
     ColorAttributeInputComponent,
     ColorBreakpointInputComponent,
     ColorMapSelectorComponent,
@@ -240,6 +243,7 @@ const WAVE_COMPONENTS = [
     VegaViewerComponent,
     WorkspaceSettingsComponent,
     ZoomHandlesComponent,
+    NewExpressionOperatorComponent,
 ];
 
 @NgModule({

@@ -44,6 +44,7 @@ import {RasterVectorJoinComponent} from '../raster-vector-join/raster-vector-joi
 import {FeatureAttributeOvertimeComponent} from '../feature-attribute-over-time/feature-attribute-over-time.component';
 import {TemporalRasterAggregationComponent} from '../temporal-raster-aggregation/temporal-raster-aggregation.component';
 import {ScatterplotOperatorComponent} from '../scatterplot-operator/scatterplot-operator.component';
+import {NewExpressionOperatorComponent} from '../new-expression-operator/new-expression-operator.component';
 // import {RgbCompositeComponent} from '../rgb-composite/rgb-composite.component';
 // import {RgbaCompositeType} from '../../types/rgba-composite-type.model';
 // import {RasterMaskComponent} from '../raster-mask/raster-mask.component';
@@ -165,6 +166,14 @@ export class OperatorListComponent implements OnInit {
             component: ExpressionOperatorComponent,
             type: {
                 NAME: 'Expression',
+                ICON_URL: 'assets/operator-type-icons/expression.png',
+            },
+            description: 'Calculate an expression on a raster',
+        },
+        {
+            component: NewExpressionOperatorComponent,
+            type: {
+                NAME: 'New Expression',
                 ICON_URL: 'assets/operator-type-icons/expression.png',
             },
             description: 'Calculate an expression on a raster',

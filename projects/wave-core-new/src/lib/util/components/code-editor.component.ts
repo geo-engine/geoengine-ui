@@ -16,9 +16,9 @@ import {BehaviorSubject, Subscription} from 'rxjs';
 import * as CodeMirror from 'codemirror';
 
 // import all possible modes
-import 'codemirror/mode/r/r';
+import 'codemirror/mode/rust/rust';
 
-const LANGUAGES = ['r'];
+const LANGUAGES = ['Rust'];
 
 /**
  * A wrapper for the code editor.
@@ -50,7 +50,9 @@ const LANGUAGES = ['r'];
 export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy {
     @ViewChild('editor', {static: true}) editorRef!: ElementRef;
 
-    @Input() language = 'r';
+    @Input() language = 'Rust';
+    @Input() prefixLine?: string;
+    @Input() suffixLine?: string;
 
     private code$ = new BehaviorSubject('');
 
@@ -60,17 +62,16 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
     private changeSubscription?: Subscription;
 
     ngOnChanges(changes: {[propKey: string]: SimpleChange}): void {
-        if (this.editor) {
-            // eslint-disable-next-line guard-for-in
-            for (const attribute in changes) {
-                switch (attribute) {
-                    case 'language':
-                        this.editor.setOption('mode', this.language);
-                        break;
-                    default:
-                    // do nothing
-                }
-            }
+        if (!this.editor) {
+            return;
+        }
+
+        if (changes.language) {
+            this.editor.setOption('mode', changes.language.currentValue);
+        }
+
+        if (changes.prefixLine || changes.suffixLine) {
+            this.writeValue(this.getCode(changes.prefixLine?.previousValue, changes.suffixLine?.previousValue));
         }
     }
 
@@ -84,16 +85,11 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
             tabSize: 4,
             indentWithTabs: false,
             lineWrapping: true,
+            lineSeparator: '\n',
             mode: this.language,
+            smartIndent: true,
         });
 
-        // subscribe to data
-        // this.code$.subscribe(code => {
-        //     if (code !== this.getCode()) {
-        //         this.editor.setValue(code);
-        //         this.editor.scrollIntoView({ line: 0, ch: 0 });
-        //     }
-        // });
         this.editor.setValue(this.code$.value);
         this.editor.scrollIntoView({line: 0, ch: 0});
 
@@ -123,19 +119,24 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
         if (this.changeSubscription) {
             this.changeSubscription.unsubscribe();
         }
-        this.code$.unsubscribe();
     }
 
     /**
      * @return the current editor content
      */
-    getCode(): string {
+    getCode(prefixLine = this.prefixLine, suffixLine = this.suffixLine): string {
         if (!this.editor) {
             return '';
         }
 
         const code = this.editor.getValue();
-        return code.replace('\r\n', '\n');
+
+        // +1 for the `\n`
+        const startIndex = prefixLine && code.startsWith(prefixLine) ? prefixLine.length + 1 : 0;
+        const endLength = suffixLine && code.endsWith(suffixLine) ? suffixLine.length + 1 : 0;
+        const endIndex = code.length - endLength;
+
+        return code.substring(startIndex, endIndex);
     }
 
     /**
@@ -147,11 +148,31 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
 
     /** Implemented as part of ControlValueAccessor. */
     writeValue(value: string): void {
-        if (this.editor) {
-            this.editor.setValue(value);
-            this.editor.scrollIntoView({line: 0, ch: 0});
-        } else {
+        const prefix = this.prefixLine ? `${this.prefixLine}\n` : '';
+        const suffix = this.suffixLine ? ` \n${this.suffixLine}` : '';
+
+        const code = prefix + value + suffix;
+
+        if (!this.editor) {
             this.code$.next(value);
+            return;
+        }
+
+        this.editor.setValue(code);
+        this.editor.scrollIntoView({line: 0, ch: 0});
+
+        if (this.prefixLine) {
+            this.editor.markText({line: 0, ch: 0}, {line: 1, ch: 0}, {readOnly: true, inclusiveLeft: true, inclusiveRight: false});
+        }
+
+        if (this.suffixLine) {
+            const lastLine = this.editor.lineCount() - 1;
+            const secondLastLine = lastLine - 1;
+            this.editor.markText(
+                {line: secondLastLine, ch: this.editor.getLine(secondLastLine).length},
+                {line: lastLine, ch: suffix.length},
+                {readOnly: true, inclusiveLeft: false, inclusiveRight: true},
+            );
         }
     }
 
