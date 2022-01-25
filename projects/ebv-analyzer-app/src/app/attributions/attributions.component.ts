@@ -9,10 +9,7 @@ import {Component, OnInit, ChangeDetectionStrategy, HostBinding} from '@angular/
 export class AttributionsComponent implements OnInit {
     @HostBinding('className') componentClass = 'mat-typography';
 
-    constructor() {
-    }
+    constructor() {}
 
-    ngOnInit(): void {
-    }
-
+    ngOnInit(): void {}
 }

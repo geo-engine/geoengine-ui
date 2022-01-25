@@ -1,15 +1,15 @@
 <div class="container">
-  <p>
-    <mat-form-field>
-      <mat-select [formControl]="countryCtrl" placeholder="Country" #countrySelect>
-        <mat-option>
-          <ngx-mat-select-search [formControl]="countryFilterCtrl"></ngx-mat-select-search>
-        </mat-option>
-  
-        <mat-option *ngFor="let country of filteredCountries | async" [value]="country">
-          {{country.name}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-  </p>
+    <p>
+        <mat-form-field>
+            <mat-select [formControl]="countryCtrl" placeholder="Country" #countrySelect>
+                <mat-option>
+                    <ngx-mat-select-search [formControl]="countryFilterCtrl"></ngx-mat-select-search>
+                </mat-option>
+
+                <mat-option *ngFor="let country of filteredCountries | async" [value]="country">
+                    {{ country.name }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </p>
 </div>

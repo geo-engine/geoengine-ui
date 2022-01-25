@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {Config, ProjectService, RasterLayer, UserService} from 'wave-core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {AppConfig} from '../app-config.service';
-import {filter, map} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 import {CountryProviderService} from '../country-provider.service';
 import {DataSelectionService} from '../data-selection.service';
 
