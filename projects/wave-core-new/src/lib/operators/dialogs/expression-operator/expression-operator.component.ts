@@ -1,5 +1,5 @@
 import {map, mergeMap, tap} from 'rxjs/operators';
-import {combineLatest, Observable} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
@@ -7,7 +7,7 @@ import {RasterDataType, RasterDataTypes} from '../../datatype.model';
 import {RasterLayer} from '../../../layers/layer.model';
 import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
-import {OperatorDict, SourceOperatorDict, WorkflowDict} from '../../../backend/backend.model';
+import {OperatorDict, SourceOperatorDict, UUID, WorkflowDict} from '../../../backend/backend.model';
 import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 import {RasterLayerMetadata} from '../../../layers/layer-metadata.model';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
@@ -24,76 +24,29 @@ import {ExpressionDict} from '../../../backend/operator.model';
 })
 export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
     readonly RASTER_TYPE = [ResultTypes.RASTER];
-    form: FormGroup;
+    readonly form: FormGroup;
 
-    outputDataTypes$: Observable<Array<[RasterDataType, string]>>;
+    readonly outputDataTypes$: Observable<Array<[RasterDataType, string]>>;
+
+    readonly rasterVariables$: Observable<Array<string>>;
+
+    readonly fnSignature: Observable<string>;
+
+    readonly lastError$ = new BehaviorSubject<string | undefined>(undefined);
 
     /**
      * DI of services and setup of observables for the template
      */
     constructor(private projectService: ProjectService) {
-        this.form = new FormGroup(
-            {
-                rasterLayers: new FormControl(undefined, [Validators.required]),
-                expression: new FormControl('1 * A', Validators.compose([Validators.required, Validators.pattern('.*A.*')])),
-                dataType: new FormControl(undefined, [Validators.required]),
-                // TODO: add unit related inputs
-                // minValue: new FormControl(0, Validators.compose([WaveValidators.isNumber])),
-                // maxValue: new FormControl(0, Validators.compose([WaveValidators.isNumber])),
-                // unit: new FormControl(undefined, [Validators.required]),
-                // customUnit: new FormGroup({
-                //     measurement: new FormControl(undefined, [Validators.required]),
-                //     unit: new FormControl(undefined, [Validators.required]),
-                // }),
-                // projection: new FormControl(undefined, [Validators.required]),
-                name: new FormControl('Expression', [Validators.required, WaveValidators.notOnlyWhitespace]),
-                noDataValue: new FormControl('0', this.validateNoData),
-            },
-            [this.validateNoDataType],
-            // [unitOrCustomUnit]);
-        );
-
-        // TODO: add unit related inputs
-        // this.outputUnits$ = this.form.controls.rasterLayers.valueChanges.pipe(
-        //     map((rasterLayers: Array<RasterLayer<MappingRasterSymbology>>) => {
-        //         return rasterLayers
-        //             .map(layer => layer.operator.getUnit(ExpressionOperatorComponent.RASTER_VALUE))
-        //             .filter(unit => unit !== this.UNITLESS_UNIT);
-        //     }),
-        //     tap(outputUnits => {
-        //         const unitControl = this.form.controls['unit'];
-        //         const currentUnit: Unit = unitControl.value;
-        //         if (outputUnits.length > 0 && outputUnits.indexOf(currentUnit) === -1) {
-        //             setTimeout(() => {
-        //                 unitControl.setValue(outputUnits[0]);
-        //             });
-        //         }
-        //
-        //         return outputUnits;
-        //     }),
-        // );
-
-        // this.outputUnitIsCustom$ = this.form.controls.unit.valueChanges.pipe(
-        //     map(unit => unit === this.CUSTOM_UNIT_ID),
-        //     tap(isCustomUnit => {
-        //         if (isCustomUnit) {
-        //             this.form.controls.customUnit.enable({onlySelf: true});
-        //         } else {
-        //             this.form.controls.customUnit.disable({onlySelf: true});
-        //         }
-        //     }),
-        // );
-        //
-        // this.unitSubscription = this.form.controls.unit.valueChanges.pipe(
-        //     filter(unit => unit instanceof Unit)
-        // ).subscribe((unit: Unit) => {
-        //     if (unit.min) {
-        //         this.form.controls.minValue.setValue(unit.min);
-        //     }
-        //     if (unit.max) {
-        //         this.form.controls.maxValue.setValue(unit.max);
-        //     }
-        // });
+        this.form = new FormGroup({
+            rasterLayers: new FormControl(undefined, [Validators.required]),
+            expression: new FormControl('    1 * A', Validators.compose([Validators.required])),
+            dataType: new FormControl(undefined, [Validators.required]),
+            name: new FormControl('Expression', [Validators.required, WaveValidators.notOnlyWhitespace]),
+            noDataValue: new FormControl('0', this.validateNoData),
+            mapNoData: new FormControl(false, Validators.required),
+            // TODO: add unit related inputs
+        });
 
         this.outputDataTypes$ = this.form.controls.rasterLayers.valueChanges.pipe(
             mergeMap((rasterLayers: Array<RasterLayer>) => {
@@ -138,6 +91,12 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
             }),
             map(([_rasterLayers, outputDataTypes]: [Array<RasterLayerMetadata>, Array<[RasterDataType, string]>]) => outputDataTypes),
         );
+
+        this.rasterVariables$ = this.form.controls.rasterLayers.valueChanges.pipe(
+            map((rasterLayers: Array<RasterLayer>) => rasterLayers.map((_, index) => LetterNumberConverter.toLetters(index + 1))),
+        );
+
+        this.fnSignature = this.rasterVariables$.pipe(map((vars: string[]) => `fn(${vars.join(', ')}, out_nodata) {`));
     }
 
     ngAfterViewInit(): void {
@@ -201,47 +160,20 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         const expression: string = this.form.controls['expression'].value;
         const rasterLayers: Array<RasterLayer> = this.form.controls['rasterLayers'].value;
         const noDataValueString: string = this.form.controls['noDataValue'].value;
+        const mapNoData: boolean = this.form.controls['mapNoData'].value;
 
-        let noDataValue: number | 'nan';
+        let outputNoDataValue: number | 'nan';
         if (isNaN(parseFloat(noDataValueString))) {
-            noDataValue = 'nan';
+            outputNoDataValue = 'nan';
         } else {
-            noDataValue = parseFloat(noDataValueString);
+            outputNoDataValue = parseFloat(noDataValueString);
         }
-
-        // TODO: incoroprate unit related info
-        // const projection = this.form.controls['projection'].value;
-        // const minValue =  this.form.controls['minValue'].value;
-        // const maxValue =  this.form.controls['maxValue'].value;
-
-        // const selectedUnit: Unit | string = this.form.controls['unit'].value;
-        // let unit: Unit;
-        // if (selectedUnit instanceof Unit) {
-        //     unit = new Unit({
-        //         measurement: selectedUnit.measurement,
-        //         unit: selectedUnit.unit,
-        //         interpolation: selectedUnit.interpolation,
-        //         classes: selectedUnit.classes,
-        //         min: minValue,
-        //         max: maxValue,
-        //     });
-        // } else { // custom unit from strings
-        //     unit = new Unit({
-        //         measurement: this.form.controls.customUnit.value.measurement,
-        //         unit: this.form.controls.customUnit.value.unit,
-        //         interpolation: Interpolation.Continuous,
-        //         min: minValue,
-        //         max: maxValue,
-        //     });
-        // }
-
-        // console.log(rasterLayers);
 
         const sourceOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers(rasterLayers);
 
         sourceOperators
             .pipe(
-                map((operators: Array<OperatorDict | SourceOperatorDict>) => {
+                mergeMap((operators: Array<OperatorDict | SourceOperatorDict>) => {
                     const workflow: WorkflowDict = {
                         type: 'Raster',
                         operator: {
@@ -249,73 +181,61 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                             params: {
                                 expression,
                                 outputType: dataType.getCode(),
-                                outputNoDataValue: noDataValue,
+                                outputNoDataValue,
                                 // TODO: make this configurable once units exist again
                                 // outputMeasurement: undefined,
+                                mapNoData,
                             },
                             sources: {
                                 a: operators[0],
-                                b: operators[1],
+                                b: operators.length >= 2 ? operators[1] : undefined,
+                                c: operators.length >= 3 ? operators[2] : undefined,
+                                d: operators.length >= 4 ? operators[3] : undefined,
+                                e: operators.length >= 5 ? operators[4] : undefined,
+                                f: operators.length >= 6 ? operators[5] : undefined,
+                                g: operators.length >= 7 ? operators[6] : undefined,
+                                h: operators.length >= 8 ? operators[7] : undefined,
                             },
                         } as ExpressionDict,
                     };
 
-                    this.projectService
-                        .registerWorkflow(workflow)
-                        .pipe(
-                            mergeMap((workflowId) =>
-                                this.projectService.addLayer(
-                                    new RasterLayer({
-                                        workflowId,
-                                        name,
-                                        symbology: RasterSymbology.fromRasterSymbologyDict({
-                                            type: 'raster',
-                                            opacity: 1.0,
-                                            colorizer: {
-                                                type: 'linearGradient',
-                                                breakpoints: [
-                                                    {value: 0, color: [0, 0, 0, 255]},
-                                                    {value: 255, color: [255, 255, 255, 255]},
-                                                ],
-                                                defaultColor: [0, 0, 0, 255],
-                                                noDataColor: [0, 0, 0, 255],
-                                            },
-                                        }),
-                                        isLegendVisible: false,
-                                        isVisible: true,
-                                    }),
-                                ),
-                            ),
-                        )
-                        .subscribe(() => {
-                            // it worked, do nothing
-                        });
+                    return this.projectService.registerWorkflow(workflow);
                 }),
+                mergeMap((workflowId: UUID) =>
+                    this.projectService.addLayer(
+                        new RasterLayer({
+                            workflowId,
+                            name,
+                            symbology: RasterSymbology.fromRasterSymbologyDict({
+                                type: 'raster',
+                                opacity: 1.0,
+                                colorizer: {
+                                    type: 'linearGradient',
+                                    breakpoints: [
+                                        {value: 0, color: [0, 0, 0, 255]},
+                                        {value: 255, color: [255, 255, 255, 255]},
+                                    ],
+                                    defaultColor: [0, 0, 0, 255],
+                                    noDataColor: [0, 0, 0, 255],
+                                },
+                            }),
+                            isLegendVisible: false,
+                            isVisible: true,
+                        }),
+                    ),
+                ),
             )
-            .subscribe(() => {
-                // nothing to do
-            });
+            .subscribe(
+                () => {
+                    // everything worked well
+
+                    this.lastError$.next(undefined);
+                },
+                (error) => {
+                    const errorMsg = error.error.message;
+
+                    this.lastError$.next(errorMsg);
+                },
+            );
     }
 }
-
-// TODO: validate units once its integrated again
-// /**
-//  * This is a validator function that checks whether a fields contains either a valid existing unit
-//  * or a new (custom) unit.
-//  */
-// function unitOrCustomUnit(group: FormGroup): ValidationErrors | null {
-//     const unit: Unit = group.controls.unit.value;
-//     if (unit instanceof Unit) {
-//         return null;
-//     }
-//
-//     const customUnit: { measurement: string, unit: string } = group.controls.customUnit.value;
-//
-//     if (customUnit.measurement && customUnit.unit) {
-//         return null;
-//     }
-//
-//     return {
-//         unitOrCustomUnit: true,
-//     };
-// }
