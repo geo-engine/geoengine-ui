@@ -2,37 +2,7 @@ import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {ChangeDetectionStrategy, Component, Input, OnInit, Type} from '@angular/core';
-// import {RasterValueExtractionType} from '../../types/raster-value-extraction-type.model';
-//
-// import {NumericAttributeFilterType} from '../../types/numeric-attribute-filter-type.model';
-// import {NumericAttributeFilterOperatorComponent} from '../numeric-attribute-filter/numeric-attribute-filter.component';
-//
-// import {PointInPolygonFilterType} from '../../types/point-in-polygon-filter-type.model';
-// import {PointInPolygonFilterOperatorComponent} from '../point-in-polygon-filter/point-in-polygon-filter.component';
-//
-import {ExpressionOperatorComponent} from '../expression-operator/expression-operator.component';
-//
-// import {HistogramType} from '../../types/histogram-type.model';
-// import {RasterValueExtractionOperatorComponent} from '../raster-value-extraction/raster-value-extraction.component';
-// import {HistogramOperatorComponent} from '../histogram-operator/histogram-operator.component';
 import {LayoutService} from '../../../layout.service';
-// import {ROperatorComponent} from '../r/r-operator/r-operator.component';
-// import {RScriptType} from '../../types/r-script-type.model';
-// import {PieChartComponent} from '../pie-chart-operator/pie-chart-operator.component';
-// import {PieChartType} from '../../types/piechart-type.model';
-// import {ScatterPlotComponent} from '../scatter-plot-operator/scatter-plot-operator.component';
-// import {ScatterPlotType} from '../../types/scatterplot-type.model';
-// import {TextualAttributeFilterOperatorComponent} from '../textual-attribute-filter/textual-attribute-filter.component';
-// import {TextualAttributeFilterType} from '../../types/textual-attribute-filter-type.model';
-// import {BoxPlotComponent} from '../box-plot-operator/box-plot-operator.component';
-// import {BoxPlotType} from '../../types/boxplot-type.model';
-// import {RasterPolygonClipOperatorComponent} from '../raster-polygon-clip/raster-polygon-clip.component';
-// import {OperatorType} from '../../operator-type.model';
-// import {HeatmapOperatorComponent} from '../heatmap/heatmap.component';
-// import {HeatmapType} from '../../types/heatmap-type.model';
-// import {TimePlotType} from '../../types/timeplot-type.model';
-// import {TimePlotComponent} from '../time-plot-operator/time-plot-operator.component';
-// import {StatisticsType} from '../../types/statistics-type.model';
 import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
 import {createIconDataUrl} from '../../../util/icons';
 import {HistogramOperatorComponent} from '../histogram-operator/histogram-operator.component';
@@ -44,10 +14,7 @@ import {RasterVectorJoinComponent} from '../raster-vector-join/raster-vector-joi
 import {FeatureAttributeOvertimeComponent} from '../feature-attribute-over-time/feature-attribute-over-time.component';
 import {TemporalRasterAggregationComponent} from '../temporal-raster-aggregation/temporal-raster-aggregation.component';
 import {ScatterplotOperatorComponent} from '../scatterplot-operator/scatterplot-operator.component';
-import {NewExpressionOperatorComponent} from '../new-expression-operator/new-expression-operator.component';
-// import {RgbCompositeComponent} from '../rgb-composite/rgb-composite.component';
-// import {RgbaCompositeType} from '../../types/rgba-composite-type.model';
-// import {RasterMaskComponent} from '../raster-mask/raster-mask.component';
+import {ExpressionOperatorComponent} from '../expression-operator/expression-operator.component';
 
 /**
  * This type encapsulates…
@@ -166,14 +133,6 @@ export class OperatorListComponent implements OnInit {
             component: ExpressionOperatorComponent,
             type: {
                 NAME: 'Expression',
-                ICON_URL: 'assets/operator-type-icons/expression.png',
-            },
-            description: 'Calculate an expression on a raster',
-        },
-        {
-            component: NewExpressionOperatorComponent,
-            type: {
-                NAME: 'New Expression',
                 ICON_URL: 'assets/operator-type-icons/expression.png',
             },
             description: 'Calculate an expression on a raster',

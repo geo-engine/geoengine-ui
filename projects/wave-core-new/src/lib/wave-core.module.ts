@@ -74,7 +74,6 @@ import {SaveProjectAsComponent} from './project/save-project-as/save-project-as.
 import {MultiLayerSelectionComponent} from './operators/dialogs/helpers/multi-layer-selection/multi-layer-selection.component';
 import {OperatorListComponent} from './operators/dialogs/operator-list/operator-list.component';
 import {ExpressionOperatorComponent} from './operators/dialogs/expression-operator/expression-operator.component';
-import {NewExpressionOperatorComponent} from './operators/dialogs/new-expression-operator/new-expression-operator.component';
 import {OperatorOutputNameComponent} from './operators/dialogs/helpers/operator-output-name/operator-output-name.component';
 import {AddDataComponent} from './datasets/add-data/add-data.component';
 import {DatasetListComponent} from './datasets/dataset-list/dataset-list.component';
@@ -243,7 +242,6 @@ const WAVE_COMPONENTS = [
     VegaViewerComponent,
     WorkspaceSettingsComponent,
     ZoomHandlesComponent,
-    NewExpressionOperatorComponent,
 ];
 
 @NgModule({
