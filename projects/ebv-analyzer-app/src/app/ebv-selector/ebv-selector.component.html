@@ -1,0 +1,79 @@
+<div class="container mat-typography" #container>
+    <mat-form-field *ngIf="ebvClasses">
+        <mat-label>EBV Class</mat-label>
+        <mat-select [(value)]="ebvClass" (selectionChange)="setEbvClass($event.value)">
+            <mat-option *ngFor="let ebvClass of ebvClasses" [value]="ebvClass">{{ ebvClass.name }}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field *ngIf="ebvNames">
+        <mat-label>EBV Name</mat-label>
+        <mat-select [(value)]="ebvName" (selectionChange)="setEbvName($event.value)">
+            <mat-option *ngFor="let ebvName of ebvNames" [value]="ebvName">{{ ebvName }}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field *ngIf="ebvDatasets">
+        <mat-label>EBV Dataset</mat-label>
+        <mat-select [(value)]="ebvDataset" (selectionChange)="setEbvDataset($event.value)">
+            <mat-option *ngFor="let ebvDataset of ebvDatasets" [value]="ebvDataset">{{ ebvDataset.name }}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <div *ngIf="ebvDataset">
+        <p>
+            <em><span class="label">by</span> {{ ebvDataset.author }}</em>
+        </p>
+        <p>
+            <em><span class="label">with license</span> {{ ebvDataset.license }}</em>
+        </p>
+        <p class="justify">{{ ebvDataset.description }}</p>
+    </div>
+    <ng-container *ngIf="ebvSubgroups && ebvSubgroupValueOptions$.length > 0">
+        <ng-container *ngFor="let ebvSubgroupValues of ebvSubgroupValueOptions$; index as i">
+            <mat-form-field>
+                <mat-label>{{ ebvSubgroups[i].name }}</mat-label>
+                <mat-select [value]="ebvSubgroupValues[i]" (selectionChange)="setEbvSubgroupValue(i, $event.value)" #selectedEbvValue>
+                    <mat-option *ngIf="ebvSubgroupValueOptions[i].length >= SUBGROUP_SEARCH_THRESHOLD">
+                        <ngx-mat-select-search
+                            placeholderLabel="Filter"
+                            noEntriesFoundLabel="No entries found"
+                            ngModel
+                            (ngModelChange)="filterEbvSubgroupValueOptions(i, $any($event))"
+                        ></ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let ebvSubgroupValue of ebvSubgroupValues" [value]="ebvSubgroupValue">{{
+                        ebvSubgroupValue.label
+                    }}</mat-option>
+                </mat-select>
+                <mat-hint>{{ ebvSubgroups[i].description }}</mat-hint>
+            </mat-form-field>
+            <p *ngIf="selectedEbvValue.value">{{ selectedEbvValue.value.description }}</p>
+        </ng-container>
+    </ng-container>
+
+    <button mat-raised-button class="show" color="primary" *ngIf="isAddButtonVisible()" (click)="showEbv()">Show</button>
+
+    <mat-spinner *ngIf="loading$ | async"></mat-spinner>
+
+    <div *ngIf="ebvLayer">
+        <mat-divider></mat-divider>
+
+        <!-- <div fxLayout="row" fxLayoutAlign="space-between start">
+            <wave-ebv-country-selector fxFlex=""></wave-ebv-country-selector>
+            <span fxFlex="1rem"></span>
+            <button mat-raised-button color="primary" [disabled]="isPlotButtonDisabled$ | async" (click)="plot()">Calculate</button>
+        </div> -->
+
+        <!-- TODO: implement -->
+        <!-- <wave-ebv-indicator-plot *ngIf="plotSettings"
+                                 [data]="plotSettings.data$"
+                                 [xLimits]="plotSettings.xLimits"
+                                 [yLabel]="plotSettings.yLabel"
+                                 [yLimits]="plotSettings.yLimits"></wave-ebv-indicator-plot> -->
+    </div>
+
+    <div class="spacer"></div>
+    <mat-divider></mat-divider>
+
+    <wave-ebv-attributions></wave-ebv-attributions>
+
+    <div class="spacer"></div>
+</div>

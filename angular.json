@@ -327,6 +327,144 @@
                 }
             }
         },
+        "ebv-analyzer-app": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:component": {
+                    "changeDetection": "OnPush",
+                    "inlineStyle": false,
+                    "inlineTemplate": false,
+                    "prefix": "wave-app",
+                    "style": "scss"
+                },
+                "@schematics/angular:directive": {
+                    "prefix": "wave-app"
+                }
+            },
+            "root": "projects/ebv-analyzer-app",
+            "sourceRoot": "projects/ebv-analyzer-app/src",
+            "prefix": "wave-app",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:browser",
+                    "options": {
+                        "allowedCommonJsDependencies": ["dagre-d3", "pbf", "lru-cache", "xml-utils"],
+                        "outputPath": "dist/ebv-analyzer-app",
+                        "index": "projects/ebv-analyzer-app/src/index.html",
+                        "main": "projects/ebv-analyzer-app/src/main.ts",
+                        "polyfills": "projects/ebv-analyzer-app/src/polyfills.ts",
+                        "tsConfig": "projects/ebv-analyzer-app/tsconfig.app.json",
+                        "assets": [
+                            "projects/ebv-analyzer-app/src/favicon.ico",
+                            "projects/ebv-analyzer-app/src/assets",
+                            {
+                                "glob": "**/*",
+                                "input": "dist/wave-core/assets",
+                                "output": "assets"
+                            }
+                        ],
+                        "styles": [
+                            "projects/ebv-analyzer-app/src/styles.scss",
+                            "dist/wave-core/assets/fonts/roboto/roboto.css",
+                            "dist/wave-core/assets/fonts/pacifico/pacifico.css",
+                            "dist/wave-core/assets/fonts/material-design-icons/material-icons.css",
+                            "node_modules/codemirror/lib/codemirror.css",
+                            "node_modules/ol/ol.css"
+                        ],
+                        "scripts": [],
+                        "vendorChunk": true,
+                        "extractLicenses": false,
+                        "buildOptimizer": false,
+                        "sourceMap": true,
+                        "optimization": false,
+                        "namedChunks": true
+                    },
+                    "configurations": {
+                        "production": {
+                            "fileReplacements": [
+                                {
+                                    "replace": "projects/ebv-analyzer-app/src/environments/environment.ts",
+                                    "with": "projects/ebv-analyzer-app/src/environments/environment.prod.ts"
+                                }
+                            ],
+                            "optimization": true,
+                            "outputHashing": "all",
+                            "sourceMap": false,
+                            "namedChunks": false,
+                            "extractLicenses": true,
+                            "vendorChunk": false,
+                            "buildOptimizer": true,
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "5mb",
+                                    "maximumError": "10mb"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "6kb",
+                                    "maximumError": "10kb"
+                                }
+                            ]
+                        },
+                        "development": {}
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "serve": {
+                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "options": {},
+                    "configurations": {
+                        "production": {
+                            "browserTarget": "ebv-analyzer-app:build:production"
+                        },
+                        "development": {
+                            "browserTarget": "ebv-analyzer-app:build:development"
+                        }
+                    },
+                    "defaultConfiguration": "development"
+                },
+                "extract-i18n": {
+                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "options": {
+                        "browserTarget": "ebv-analyzer-app:build"
+                    }
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "main": "projects/ebv-analyzer-app/src/test.ts",
+                        "polyfills": "projects/ebv-analyzer-app/src/polyfills.ts",
+                        "tsConfig": "projects/ebv-analyzer-app/tsconfig.spec.json",
+                        "karmaConfig": "projects/ebv-analyzer-app/karma.conf.js",
+                        "assets": ["projects/ebv-analyzer-app/src/favicon.ico", "projects/ebv-analyzer-app/src/assets"],
+                        "styles": ["projects/ebv-analyzer-app/src/styles.scss"],
+                        "scripts": []
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-eslint/builder:lint",
+                    "options": {
+                        "lintFilePatterns": ["projects/ebv-analyzer-app/**/*.ts", "projects/ebv-analyzer-app/**/*.html"]
+                    }
+                },
+                "e2e": {
+                    "builder": "@angular-devkit/build-angular:protractor",
+                    "options": {
+                        "protractorConfig": "projects/ebv-analyzer-app/e2e/protractor.conf.js"
+                    },
+                    "configurations": {
+                        "production": {
+                            "devServerTarget": "ebv-analyzer-app:serve:production"
+                        },
+                        "development": {
+                            "devServerTarget": "ebv-analyzer-app:serve:development"
+                        }
+                    },
+                    "defaultConfiguration": "development"
+                }
+            }
+        },
         "gfbio-app": {
             "projectType": "application",
             "schematics": {
