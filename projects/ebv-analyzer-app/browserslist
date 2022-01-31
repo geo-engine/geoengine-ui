@@ -10,3 +10,8 @@ last 2 versions
 Firefox ESR
 not dead
 not IE 9-11 # For IE 9-11 support, remove 'not'.
+
+# TODO: remove / waiting for "@angular/cli": "~13.2.0"
+# cf. https://github.com/angular/angular-cli/issues/22606
+# cf. https://github.com/angular/angular-cli/pull/22610
+not safari 15.2-15.3
