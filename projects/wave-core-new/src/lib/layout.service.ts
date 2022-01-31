@@ -52,7 +52,7 @@ export class LayoutService {
     /**
      *  Sidenav content
      */
-    private sidenavContentComponent$: Subject<SidenavConfig> = new ReplaySubject(1);
+    private sidenavContentComponent$: Subject<SidenavConfig | undefined> = new ReplaySubject(1);
 
     private sidenavContentMaxWidth$: Subject<number> = new ReplaySubject(1);
 
@@ -129,7 +129,7 @@ export class LayoutService {
     /**
      * Which component to show in the sidenav?
      */
-    getSidenavContentComponentStream(): Observable<SidenavConfig> {
+    getSidenavContentComponentStream(): Observable<SidenavConfig | undefined> {
         return this.sidenavContentComponent$.pipe(distinctUntilChanged());
     }
 
