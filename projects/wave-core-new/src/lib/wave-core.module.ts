@@ -116,6 +116,7 @@ import {ScrollingModule} from '@angular/cdk/scrolling';
 import {LayerListMenuComponent} from './layers/layer-list/layer-list-menu/layer-list-menu.component';
 import {ModalLoginComponent} from './users/modal-login/modal-login.component';
 import {CodeEditorComponent} from './util/components/code-editor.component';
+import {TimelineComponent} from './time/timeline/timeline.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -235,6 +236,7 @@ const WAVE_COMPONENTS = [
     TemporalRasterAggregationComponent,
     TimeConfigComponent,
     TimeInputComponent,
+    TimelineComponent,
     UploadComponent,
     VatLogoComponent,
     VectorLegendComponent,

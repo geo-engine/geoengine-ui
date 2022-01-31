@@ -88,6 +88,7 @@ export * from './lib/users/login/login.component';
 export * from './lib/layers/layer-list/layer-list-menu/layer-list-menu.component';
 export * from './lib/users/modal-login/modal-login.component';
 export * from './lib/util/components/code-editor.component';
+export * from './lib/time/timeline/timeline.component';
 
 // Pipes
 export * from './lib/util/pipes/async-converters.pipe';
