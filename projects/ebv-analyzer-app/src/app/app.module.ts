@@ -19,21 +19,13 @@ import {
 import {AppConfig} from './app-config.service';
 import {PortalModule} from '@angular/cdk/portal';
 import {LegendComponent} from './legend/legend.component';
-import {TimeStepSelectorComponent} from './time-step-selector/time-step-selector.component';
 import {AttributionsComponent} from './attributions/attributions.component';
 import {CountrySelectorComponent} from './country-selector/country-selector.component';
 import {EbvSelectorComponent} from './ebv-selector/ebv-selector.component';
 import {DataSelectionService} from './data-selection.service';
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        AttributionsComponent,
-        LegendComponent,
-        CountrySelectorComponent,
-        TimeStepSelectorComponent,
-        EbvSelectorComponent,
-    ],
+    declarations: [AppComponent, AttributionsComponent, LegendComponent, CountrySelectorComponent, EbvSelectorComponent],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,
