@@ -103,7 +103,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
             tooltipObservable: userService.isGuestUserStream().pipe(map((isGuest) => (isGuest ? 'Login' : 'User Account'))),
             colorObservable: combineLatest([userService.isGuestUserStream(), layoutService.getSidenavContentComponentStream()]).pipe(
                 distinctUntilChanged(),
-                mergeScan<[boolean, SidenavConfig], [boolean, string | undefined]>(
+                mergeScan<[boolean, SidenavConfig | undefined], [boolean, string | undefined]>(
                     // abort inner observable when new source event arises
                     ([wasGuest, _state], [isGuest, sidenavConfig], _index) => {
                         if (sidenavConfig && loginSidenavConfig && sidenavConfig.component === loginSidenavConfig.component) {

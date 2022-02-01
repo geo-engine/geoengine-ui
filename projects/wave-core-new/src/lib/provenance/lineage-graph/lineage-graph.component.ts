@@ -117,7 +117,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
             const svgGroup = d3.select(this.g.nativeElement);
 
             // Run the renderer. This is what draws the final graph.
-            render(svgGroup, graph as any);
+            render(svgGroup as any, graph as any);
 
             LineageGraphComponent.fixLabelPosition(svg);
 

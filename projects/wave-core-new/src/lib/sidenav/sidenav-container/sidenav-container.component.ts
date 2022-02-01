@@ -97,7 +97,7 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
      * and sets up functionality, for instance, the back button
      * and the search config
      */
-    load(sidenavConfig: SidenavConfig): void {
+    load(sidenavConfig?: SidenavConfig): void {
         if (this.componentRef) {
             this.target.clear();
             this.componentRef.destroy();

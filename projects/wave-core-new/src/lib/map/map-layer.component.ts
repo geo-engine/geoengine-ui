@@ -35,7 +35,7 @@ type VectorData = any; // TODO: use correct type
  */
 @Directive()
 // eslint-disable-next-line @angular-eslint/directive-class-suffix
-export abstract class MapLayerComponent<OL extends OlLayer<OS>, OS extends OlSource> {
+export abstract class MapLayerComponent<OL extends OlLayer<OS, any>, OS extends OlSource> {
     @Input() layerId!: number;
     @Input() isVisible = true;
     @Input() workflow?: UUID;
