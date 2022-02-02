@@ -1,13 +1,13 @@
 <div class="container mat-typography" #container>
     <mat-form-field *ngIf="ebvClasses">
         <mat-label>EBV Class</mat-label>
-        <mat-select [(value)]="ebvClass" (selectionChange)="setEbvClass($event.value)">
+        <mat-select [value]="ebvClass" (selectionChange)="setEbvClass($event.value)">
             <mat-option *ngFor="let ebvClass of ebvClasses" [value]="ebvClass">{{ ebvClass.name }}</mat-option>
         </mat-select>
     </mat-form-field>
     <mat-form-field *ngIf="ebvNames">
         <mat-label>EBV Name</mat-label>
-        <mat-select [(value)]="ebvName" (selectionChange)="setEbvName($event.value)">
+        <mat-select [value]="ebvName" (selectionChange)="setEbvName($event.value)">
             <mat-option *ngFor="let ebvName of ebvNames" [value]="ebvName">{{ ebvName }}</mat-option>
         </mat-select>
     </mat-form-field>
