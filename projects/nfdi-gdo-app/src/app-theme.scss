@@ -1,0 +1,82 @@
+@use '@angular/material' as mat;
+
+// Material Base Styles
+@include mat.core();
+
+// Define Colors
+$gdo-red: (
+    50: #f7e5e2,
+    100: #ebbfb6,
+    200: #de9585,
+    300: #d16a54,
+    400: #c74a30,
+    500: #bd2a0b,
+    600: #b7250a,
+    700: #ae1f08,
+    800: #a61906,
+    900: #980f03,
+    A100: #ffc6c3,
+    A200: #ff9590,
+    A400: #ff645d,
+    A700: #ff4c44,
+    contrast: (
+        50: #000000,
+        100: #000000,
+        200: #000000,
+        300: #000000,
+        400: #ffffff,
+        500: #ffffff,
+        600: #ffffff,
+        700: #ffffff,
+        800: #ffffff,
+        900: #ffffff,
+        A100: #000000,
+        A200: #000000,
+        A400: #000000,
+        A700: #000000,
+    ),
+);
+
+$gdo-black: (
+    50: #e6e6e7,
+    100: #c1c2c2,
+    200: #989999,
+    300: #6f7070,
+    400: #505152,
+    500: #313233,
+    600: #2c2d2e,
+    700: #252627,
+    800: #1f1f20,
+    900: #131314,
+    A100: #6969f3,
+    A200: #3939ef,
+    A400: #0000f6,
+    A700: #0000dc,
+    contrast: (
+        50: #000000,
+        100: #000000,
+        200: #000000,
+        300: #ffffff,
+        400: #ffffff,
+        500: #ffffff,
+        600: #ffffff,
+        700: #ffffff,
+        800: #ffffff,
+        900: #ffffff,
+        A100: #ffffff,
+        A200: #ffffff,
+        A400: #ffffff,
+        A700: #ffffff,
+    ),
+);
+
+// Define App Theme
+$wave-app-primary: mat.define-palette($gdo-red);
+$wave-app-accent: mat.define-palette($gdo-black, A200, A100, A400);
+$wave-app-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object (a Sass map containing all of the palettes).
+$wave-app-theme: mat.define-light-theme($wave-app-primary, $wave-app-accent, $wave-app-warn);
+
+// Apply Angular Material Mixin to Color Theme
+@include mat.all-component-themes($wave-app-theme);
