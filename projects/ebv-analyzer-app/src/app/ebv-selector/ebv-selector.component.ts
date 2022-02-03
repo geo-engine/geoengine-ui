@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Config, ProjectService, RasterLayer, UserService} from 'wave-core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {AppConfig} from '../app-config.service';
-import {map} from 'rxjs/operators';
+import {map, mergeMap} from 'rxjs/operators';
 import {CountryProviderService} from '../country-provider.service';
 import {DataSelectionService} from '../data-selection.service';
 
@@ -60,9 +60,9 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.userService.getSessionTokenForRequest().subscribe(() => {
-            // this.request<EbvClassesResponse>('classes', undefined, (data) => {
-            //     this.ebvClasses = data.classes;
-            // });
+            this.request<Array<EbvClass>>('ebv/classes', undefined, (data) => {
+                this.ebvClasses = data;
+            });
         });
     }
 
@@ -89,9 +89,9 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
         this.clearAfter('ebvName');
 
-        // this.request<EbvDatasetsResponse>('datasets', {ebvName}, (data) => {
-        //     this.ebvDatasets = data.datasets;
-        // });
+        this.request<Array<EbvDataset>>(`ebv/datasets/${encodeURIComponent(ebvName)}`, undefined, (data) => {
+            this.ebvDatasets = data;
+        });
     }
 
     setEbvDataset(ebvDataset: EbvDataset): void {
@@ -101,6 +101,8 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         this.ebvDataset = ebvDataset;
 
         this.clearAfter('ebvDataset');
+
+        // TODO: query subgroups
 
         // const ebvPath = this.ebvDataset.dataset_path;
 
@@ -303,26 +305,30 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
     // }
 
     // TODO: implement
-    // private request<T>(_request, _parameters: ParametersType, _dataCallback: (T) => void): void {
-    //     this.loading$.next(true);
-    //
-    //
-    // const ebvDatasetsRequest = new MappingRequestParameters({
-    //     service: 'geo_bon_catalog',
-    //     request,
-    //     parameters,
-    //     sessionToken: this.userService.getSession().sessionToken,
-    // });
-    // this.http.get<T>(`${this.config.API_URL}?${ebvDatasetsRequest.toMessageBody()}`).subscribe((data) => {
-    //     dataCallback(data);
-    //     // console.log('dataMAPPING', data);
-    //
-    //     this.changeDetectorRef.markForCheck();
-    //     this.loading$.next(false);
-    //
-    //     this.scrollToBottom();
-    // });
-    // }
+    private request<T>(request: string, parameters: string | undefined, dataCallback: (data: T) => void): void {
+        this.loading$.next(true);
+
+        const parametersOpt = parameters ? `?${parameters}` : '';
+
+        this.userService
+            .getSessionTokenForRequest()
+            .pipe(
+                mergeMap((sessionToken) =>
+                    this.http.get<T>(`${this.config.API_URL}/${request}${parametersOpt}`, {
+                        headers: new HttpHeaders().set('Authorization', `Bearer ${sessionToken}`),
+                    }),
+                ),
+            )
+            .subscribe((data) => {
+                dataCallback(data);
+                // console.log('dataMAPPING', data);
+
+                this.changeDetectorRef.markForCheck();
+                this.loading$.next(false);
+
+                this.scrollToBottom();
+            });
+    }
 
     private clearAfter(field: string, subgroupIndex?: number): void {
         switch (field) {
@@ -529,7 +535,8 @@ interface EbvClass {
 interface EbvDataset {
     id: string;
     name: string;
-    author: string;
+    authorName: string;
+    authorInstitution: string;
     description: string;
     license: string;
     datasetPath: string;
