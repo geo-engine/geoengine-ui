@@ -9,7 +9,11 @@
         EBV Data Portal
         <img src="assets/geo-bon-white-round.png" />
     </a>
-    <wave-app-time-step-selector class="mat-elevation-z4"></wave-app-time-step-selector>
+    <wave-time-step-selector
+        class="mat-elevation-z4"
+        [timeSteps]="dataSelectionService.timeSteps | async | valueDefault: undefined"
+        [timeFormat]="dataSelectionService.timeFormat | async | stringSanitizer"
+    ></wave-time-step-selector>
     <wave-zoom-handles (zoomIn)="map.zoomIn()" (zoomOut)="map.zoomOut()" class="mat-elevation-z4"></wave-zoom-handles>
 </div>
 
