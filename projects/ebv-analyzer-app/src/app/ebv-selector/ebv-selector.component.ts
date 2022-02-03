@@ -535,7 +535,8 @@ interface EbvClass {
 interface EbvDataset {
     id: string;
     name: string;
-    author: string;
+    authorName: string;
+    authorInstitution: string;
     description: string;
     license: string;
     datasetPath: string;
