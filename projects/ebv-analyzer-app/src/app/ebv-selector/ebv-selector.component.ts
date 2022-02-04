@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Config, ProjectService, RasterLayer, UserService} from 'wave-core';
+import {Config, ProjectService, UserService, UUID, TimeIntervalDict, TimeStepDict} from 'wave-core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {AppConfig} from '../app-config.service';
 import {map, mergeMap} from 'rxjs/operators';
@@ -28,14 +28,12 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
     ebvName?: string = undefined;
     ebvDatasets?: Array<EbvDataset> = undefined;
     ebvDataset?: EbvDataset = undefined;
-    ebvDatasetName?: string = undefined;
-    ebvSubgroups: Array<EbvSubgroup> = [];
-    ebvSubgroupValueOptions: Array<Array<EbvSubgroupValue>> = [];
-    ebvSubgroupValueOptions$: Array<Array<EbvSubgroupValue>> = [];
 
-    ebvSubgroupValues: Array<EbvSubgroupValue> = [];
+    ebvTree?: EbvHierarchy;
 
-    ebvLayer?: RasterLayer;
+    ebvPath: Array<EbvTreeSubgroup> = [];
+
+    // ebvLayer?: RasterLayer;
     // TODO: implement
     // plotSettings?: {
     //     data$: Observable<DataPoint>;
@@ -44,7 +42,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
     //     yLabel: string;
     // } = undefined;
 
-    private ebvDataLoadingInfo?: EbvDataLoadingInfo = undefined;
+    private ebvDatasetId?: EbvDatasetId = undefined;
 
     constructor(
         private readonly userService: UserService,
@@ -102,87 +100,36 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
         this.clearAfter('ebvDataset');
 
-        // TODO: query subgroups
+        const ebvPath = this.ebvDataset.datasetPath;
 
-        // const ebvPath = this.ebvDataset.dataset_path;
-
-        // this.request<EbvSubgroupsResponse>('subgroups', {ebvPath}, (data) => {
-        //     this.ebvSubgroups = data.subgroups;
-        //     this.request<EbvSubgroupValuesResponse>(
-        //         'subgroup_values',
-        //         {
-        //             ebvPath,
-        //             ebvSubgroup: data.subgroups[0].name,
-        //             ebvGroupPath: '',
-        //         },
-        //         (valueData) => {
-        //             this.ebvSubgroupValueOptions = [valueData.values];
-        //             this.ebvSubgroupValueOptions$ = [valueData.values.slice()];
-        //         },
-        //     );
-        // });
+        this.request<EbvHierarchy>(`ebv/subdatasets${ebvPath}`, undefined, (data) => {
+            this.ebvTree = data;
+        });
     }
 
-    setEbvSubgroupValue(subgroupIndex: number, subgroupValue: EbvSubgroupValue): void {
-        this.ebvSubgroupValues[subgroupIndex] = subgroupValue;
-
-        // const ebvPath = this.ebvDataset?.dataset_path;
-
-        if (subgroupIndex === this.ebvSubgroups.length - 1) {
-            // entity is selected
-            this.clearAfter('ebvEntity');
-
-            // this.request<EbvDataLoadingInfo>(
-            //     'data_loading_info',
-            //     {
-            //         ebvPath,
-            //         ebvEntityPath: this.ebvSubgroupValues.map((value) => value.name).join('/'),
-            //     },
-            //     (data) => {
-            //         this.ebvDataLoadingInfo = data;
-            //     },
-            // );
-
+    setEbvEntity(ebvEntity: EbvTreeEntity): void {
+        if (!this.ebvTree) {
             return;
         }
 
-        this.clearAfter('', subgroupIndex);
-
-        // this.request<EbvSubgroupValuesResponse>(
-        //     'subgroup_values',
-        //     {
-        //         ebvPath,
-        //         ebvSubgroup: this.ebvSubgroups[subgroupIndex + 1].name,
-        //         ebvGroupPath: this.ebvSubgroupValues.map((value) => value.name).join('/'),
-        //     },
-        //     (valueData) => {
-        //         this.ebvSubgroupValueOptions.push(valueData.values);
-        //         this.ebvSubgroupValueOptions$.push(valueData.values.slice());
-        //     },
-        // );
+        this.ebvDatasetId = {
+            fileName: this.ebvTree.tree.fileName,
+            groupNames: this.ebvPath.map((subgroup) => subgroup.name),
+            entity: ebvEntity.id,
+        };
     }
 
-    filterEbvSubgroupValueOptions(i: number, filterValue: string): void {
-        filterValue = filterValue.toLowerCase();
-
-        this.ebvSubgroupValueOptions$[i].length = 0;
-        for (const valueOption of this.ebvSubgroupValueOptions[i]) {
-            if (valueOption.label.toLowerCase().indexOf(filterValue) < 0) {
-                continue;
-            }
-            this.ebvSubgroupValueOptions$[i].push(valueOption);
-        }
+    setEbvPath(ebvSubgroup: EbvTreeSubgroup, position: number): void {
+        this.ebvPath.length = position;
+        this.ebvPath.push(ebvSubgroup);
     }
 
     isAddButtonVisible(): boolean {
-        if (!this.ebvSubgroups.length || !this.ebvSubgroupValues || !this.ebvDataLoadingInfo) {
-            return false;
-        }
-        return this.ebvSubgroups.length === this.ebvSubgroupValues.length; // all groups have a selected value
+        return !!this.ebvDatasetId;
     }
 
     showEbv(): void {
-        if (!this.ebvDataLoadingInfo) {
+        if (!this.ebvDatasetId) {
             return;
         }
 
@@ -330,64 +277,49 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
             });
     }
 
+    private clearAfterEbvClass(): void {
+        this.ebvNames = undefined;
+        this.ebvName = undefined;
+    }
+
+    private clearAfterEbvName(): void {
+        this.ebvDatasets = undefined;
+        this.ebvDataset = undefined;
+    }
+
+    private clearAfterEbvDataset(): void {
+        this.ebvTree = undefined;
+        this.ebvPath.length = 0;
+        this.ebvDatasetId = undefined;
+    }
+
     private clearAfter(field: string, subgroupIndex?: number): void {
         switch (field) {
             case 'ebvClass':
-                this.ebvNames = undefined;
-                this.ebvName = undefined;
-
-                this.ebvDatasets = undefined;
-                this.ebvDataset = undefined;
-
-                this.ebvSubgroups = [];
-                this.ebvSubgroupValues.length = 0;
-                this.ebvSubgroupValueOptions.length = 0;
-                this.ebvSubgroupValueOptions$.length = 0;
-                this.ebvDataLoadingInfo = undefined;
-
-                this.ebvLayer = undefined;
+                this.clearAfterEbvClass();
+                this.clearAfterEbvName();
+                this.clearAfterEbvDataset();
 
                 break;
 
             case 'ebvName':
-                this.ebvDatasets = undefined;
-                this.ebvDataset = undefined;
-
-                this.ebvSubgroups = [];
-                this.ebvSubgroupValues.length = 0;
-                this.ebvSubgroupValueOptions.length = 0;
-                this.ebvSubgroupValueOptions$.length = 0;
-                this.ebvDataLoadingInfo = undefined;
-
-                this.ebvLayer = undefined;
+                this.clearAfterEbvName();
+                this.clearAfterEbvDataset();
 
                 break;
 
             case 'ebvDataset':
-                this.ebvSubgroups = [];
-                this.ebvSubgroupValues.length = 0;
-                this.ebvSubgroupValueOptions.length = 0;
-                this.ebvSubgroupValueOptions$.length = 0;
-                this.ebvDataLoadingInfo = undefined;
-
-                this.ebvLayer = undefined;
-                // this.plotSettings = undefined;
+                this.clearAfterEbvDataset();
 
                 break;
             case 'ebvEntity':
-                this.ebvLayer = undefined;
-                // this.plotSettings = undefined;
+                // TODO: do we need this?
+
                 break;
             default:
                 // subgroup
                 if (subgroupIndex !== undefined) {
-                    this.ebvSubgroupValues.length = subgroupIndex + 1;
-                    this.ebvSubgroupValueOptions.length = subgroupIndex + 1;
-                    this.ebvSubgroupValueOptions$.length = subgroupIndex + 1;
-                    this.ebvDataLoadingInfo = undefined;
-
-                    this.ebvLayer = undefined;
-                    // this.plotSettings = undefined;
+                    // TODO: do we need this?
                 }
         }
     }
@@ -553,34 +485,34 @@ interface EbvDataset {
 //     dataset: {};
 // }
 
-interface EbvSubgroup {
-    name: string;
-    description: string;
-}
+// interface EbvSubgroup {
+//     name: string;
+//     description: string;
+// }
 
 // interface EbvSubgroupsResponse {
 //     result: true;
 //     subgroups: Array<EbvSubgroup>;
 // }
 
-interface EbvSubgroupValue {
-    name: string;
-    label: string;
-    description: string;
-}
+// interface EbvSubgroupValue {
+//     name: string;
+//     label: string;
+//     description: string;
+// }
 
 // interface EbvSubgroupValuesResponse {
 //     result: true;
 //     values: Array<EbvSubgroupValue>;
 // }
 
-interface EbvDataLoadingInfo {
-    result: true;
-    timePoints: Array<number>;
-    deltaUnit: string;
-    crsCode: string;
-    unitRange: [number, number];
-}
+// interface EbvDataLoadingInfo {
+//     result: true;
+//     timePoints: Array<number>;
+//     deltaUnit: string;
+//     crsCode: string;
+//     unitRange: [number, number];
+// }
 
 // TODO: implement
 // interface PlotResult {
@@ -595,3 +527,38 @@ interface EbvDataLoadingInfo {
 //         }>;
 //     };
 // }
+
+interface EbvHierarchy {
+    providerId: UUID;
+    tree: EbvTree;
+}
+
+interface EbvTree {
+    fileName: string;
+    title: string;
+    spatialReference: string;
+    subgroups: Array<EbvTreeSubgroup>;
+    entities: Array<EbvTreeEntity>;
+    time: TimeIntervalDict;
+    timeStep: TimeStepDict;
+}
+
+interface EbvTreeSubgroup {
+    name: string;
+    title: string;
+    description: string;
+    dataType?: 'U8' | 'U16' | 'U32' | 'U64' | 'I8' | 'I16' | 'I32' | 'I64' | 'F32' | 'F64';
+    subgroups: Array<EbvTreeSubgroup>;
+}
+
+interface EbvTreeEntity {
+    id: number;
+    name: string;
+    description: string;
+}
+
+interface EbvDatasetId {
+    fileName: string;
+    groupNames: Array<string>;
+    entity: number;
+}
