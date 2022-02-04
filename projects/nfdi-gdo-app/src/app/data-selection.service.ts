@@ -16,7 +16,7 @@ export class DataSelectionService {
     readonly layers: Observable<Array<Layer>>;
 
     readonly rasterLayer = new BehaviorSubject<RasterLayer | undefined>(undefined);
-    readonly polygonLayer = new BehaviorSubject<VectorLayer | undefined>(undefined);
+    readonly speciesLayer = new BehaviorSubject<VectorLayer | undefined>(undefined);
 
     readonly timeSteps = new BehaviorSubject<Array<Time>>([new Time(moment.utc())]);
     readonly timeFormat = new BehaviorSubject<string>('YYYY'); // TODO: make configurable
@@ -24,7 +24,7 @@ export class DataSelectionService {
     readonly dataRange = new BehaviorSubject<DataRange>({min: 0, max: 1});
 
     constructor(private readonly projectService: ProjectService) {
-        this.layers = combineLatest([this.rasterLayer, this.polygonLayer]).pipe(
+        this.layers = combineLatest([this.rasterLayer, this.speciesLayer]).pipe(
             map(([rasterLayer, polygonLayer]) => {
                 const layers = [];
                 if (rasterLayer) {
@@ -63,8 +63,8 @@ export class DataSelectionService {
         );
     }
 
-    setPolygonLayer(layer: VectorLayer): Observable<void> {
-        return this.polygonLayer.pipe(
+    setSpeciesLayer(layer: VectorLayer): Observable<void> {
+        return this.speciesLayer.pipe(
             first(),
             mergeMap((currentLayer) => {
                 if (currentLayer) {
@@ -73,9 +73,9 @@ export class DataSelectionService {
                     return of(undefined);
                 }
             }),
-            tap(() => this.polygonLayer.next(undefined)),
+            tap(() => this.speciesLayer.next(undefined)),
             mergeMap(() => this.projectService.addLayer(layer)),
-            tap(() => this.polygonLayer.next(layer)),
+            tap(() => this.speciesLayer.next(layer)),
         );
     }
 }
