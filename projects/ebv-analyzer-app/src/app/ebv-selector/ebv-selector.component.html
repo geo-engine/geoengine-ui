@@ -31,7 +31,7 @@
             <mat-label>MISSING LABEL</mat-label>
             <!-- TODO: use `<ngx-mat-select-search>` where suitable -->
             <mat-select (valueChange)="setEbvPath($event, 0)" #selectedRootSubgroup>
-                <mat-option *ngFor="let ebvSubgroupValue of ebvTree.tree.subgroups" [value]="ebvSubgroupValue">{{
+                <mat-option *ngFor="let ebvSubgroupValue of ebvTree.tree.groups" [value]="ebvSubgroupValue">{{
                     ebvSubgroupValue.title
                 }}</mat-option>
             </mat-select>
@@ -39,18 +39,18 @@
         </mat-form-field>
     </ng-container>
     <ng-container *ngFor="let ebvSubgroup of ebvPath; index as i">
-        <mat-form-field *ngIf="ebvSubgroup.subgroups.length">
+        <mat-form-field *ngIf="ebvSubgroup.groups.length">
             <mat-label>MISSING LABEL</mat-label>
             <!-- TODO: use `<ngx-mat-select-search>` where suitable -->
             <mat-select (valueChange)="setEbvPath($event, i + 1)" #selectedSubgroup>
-                <mat-option *ngFor="let ebvSubgroupValue of ebvSubgroup.subgroups" [value]="ebvSubgroupValue">{{
+                <mat-option *ngFor="let ebvSubgroupValue of ebvSubgroup.groups" [value]="ebvSubgroupValue">{{
                     ebvSubgroupValue.title
                 }}</mat-option>
             </mat-select>
             <mat-hint>{{ selectedSubgroup.value?.description }}</mat-hint>
         </mat-form-field>
     </ng-container>
-    <ng-container *ngIf="ebvTree && ebvPath.length && !ebvPath[ebvPath.length - 1].subgroups.length">
+    <ng-container *ngIf="ebvTree && ebvPath.length && !ebvPath[ebvPath.length - 1].groups.length">
         <mat-form-field>
             <mat-label>Entity</mat-label>
             <!-- TODO: use `<ngx-mat-select-search>` where suitable -->

@@ -100,9 +100,9 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
         this.clearAfter('ebvDataset');
 
-        const ebvPath = this.ebvDataset.datasetPath;
+        const datasetId = this.ebvDataset.id;
 
-        this.request<EbvHierarchy>(`ebv/subdatasets${ebvPath}`, undefined, (data) => {
+        this.request<EbvHierarchy>(`ebv/dataset/${datasetId}/subdatasets`, undefined, (data) => {
             this.ebvTree = data;
         });
     }
@@ -537,7 +537,7 @@ interface EbvTree {
     fileName: string;
     title: string;
     spatialReference: string;
-    subgroups: Array<EbvTreeSubgroup>;
+    groups: Array<EbvTreeSubgroup>;
     entities: Array<EbvTreeEntity>;
     time: TimeIntervalDict;
     timeStep: TimeStepDict;
@@ -548,7 +548,7 @@ interface EbvTreeSubgroup {
     title: string;
     description: string;
     dataType?: 'U8' | 'U16' | 'U32' | 'U64' | 'I8' | 'I16' | 'I32' | 'I64' | 'F32' | 'F64';
-    subgroups: Array<EbvTreeSubgroup>;
+    groups: Array<EbvTreeSubgroup>;
 }
 
 interface EbvTreeEntity {
