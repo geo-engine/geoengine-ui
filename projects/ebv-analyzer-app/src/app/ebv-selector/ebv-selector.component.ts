@@ -273,7 +273,8 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                 this.changeDetectorRef.markForCheck();
                 this.loading$.next(false);
 
-                this.scrollToBottom();
+                // TODO: reactivate scrolling to some element if necessary
+                // this.scrollToBottom();
             });
     }
 
