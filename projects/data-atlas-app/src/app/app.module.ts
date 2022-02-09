@@ -6,6 +6,7 @@ import {RouterModule} from '@angular/router';
 import {AppComponent} from './app.component';
 import {
     Config,
+    DatasetService,
     LayoutService,
     MapService,
     NotificationService,
@@ -22,6 +23,7 @@ import {PortalModule} from '@angular/cdk/portal';
 import {LegendComponent} from './legend/legend.component';
 import {AnalysisComponent} from './analysis/analysis.component';
 import {AboutComponent} from './about/about.component';
+import {AppDatasetService} from './app-dataset.service';
 
 @NgModule({
     declarations: [AppComponent, SelectLayersComponent, LegendComponent, AnalysisComponent, AboutComponent],
@@ -41,6 +43,7 @@ import {AboutComponent} from './about/about.component';
             deps: [Config],
             multi: true,
         },
+        {provide: DatasetService, useClass: AppDatasetService},
         LayoutService,
         MapService,
         NotificationService,

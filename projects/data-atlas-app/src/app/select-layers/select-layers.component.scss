@@ -1,6 +1,6 @@
 :host {
     display: block;
-    padding: 1rem;
+    // padding: 1rem;
 }
 
 mat-selection-list ::ng-deep {
@@ -15,4 +15,11 @@ mat-divider {
 
 h2 {
     color: var(--wave-foreground-secondary-text-color);
+}
+
+wave-dataset-list {
+    display: block;
+    height: 50vh;
+    width: calc(100% + 2 * 24px);
+    margin-left: -24px;
 }
