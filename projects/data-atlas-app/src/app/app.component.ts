@@ -13,6 +13,7 @@ import {
     MapContainerComponent,
     Time,
     SpatialReferenceService,
+    DatasetService,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AppConfig} from './app-config.service';
@@ -20,6 +21,7 @@ import {SelectLayersComponent} from './select-layers/select-layers.component';
 import {ComponentPortal} from '@angular/cdk/portal';
 import moment from 'moment';
 import {DataSelectionService} from './data-selection.service';
+import {AppDatasetService} from './app-dataset.service';
 
 @Component({
     selector: 'wave-app-root',
@@ -40,8 +42,10 @@ export class AppComponent implements OnInit, AfterViewInit {
         @Inject(Config) readonly config: AppConfig,
         readonly layoutService: LayoutService,
         readonly projectService: ProjectService,
+        readonly userService: UserService,
         readonly dataSelectionService: DataSelectionService,
         readonly _vcRef: ViewContainerRef, // reference used by color picker
+        @Inject(DatasetService) readonly datasetService: AppDatasetService,
         private _userService: UserService,
         private iconRegistry: MatIconRegistry,
         private _randomColorService: RandomColorService,

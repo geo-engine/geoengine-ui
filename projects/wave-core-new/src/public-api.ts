@@ -105,7 +105,9 @@ export * from './lib/util/pipes/trim.pipe';
 // Models
 export * from './lib/backend/backend.model';
 export * from './lib/backend/operator.model';
+export * from './lib/colors/color';
 export * from './lib/colors/color-breakpoint.model';
+export * from './lib/datasets/dataset.model';
 export * from './lib/layers/layer-metadata.model';
 export * from './lib/layers/layer.model';
 export * from './lib/layers/symbology/symbology.model';
