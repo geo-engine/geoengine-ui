@@ -10,8 +10,6 @@ import {DataSelectionService} from '../data-selection.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SpeciesSelectorComponent implements OnInit, OnDestroy {
-    datasetId: UUID = 'd9dd4530-7a57-44da-a650-ce7d81dcc216';
-
     species: string[] = [
         'Aeshna affinis',
         'Aeshna caerulea',
@@ -94,25 +92,22 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
         'Sympetrum vulgatum',
     ];
 
-    constructor(private projectService: ProjectService, private dataSelectionService: DataSelectionService) {}
+    private datasetId: UUID = 'd9dd4530-7a57-44da-a650-ce7d81dcc216';
+
+    constructor(private readonly projectService: ProjectService, private readonly dataSelectionService: DataSelectionService) {}
 
     ngOnInit(): void {}
 
     ngOnDestroy(): void {}
 
     selectSpecies(species: string): void {
-        this.projectService.clearLayers();
-
-        const rangeStart = species;
-        const rangeStop = species + 'z';
-
         const workflow: WorkflowDict = {
             type: 'Vector',
             operator: {
                 type: 'ColumnRangeFilter',
                 params: {
                     column: 'Species',
-                    ranges: [[rangeStart, rangeStop]],
+                    ranges: [[species, species]],
                     keepNulls: false,
                 },
                 sources: {
