@@ -6,9 +6,11 @@
     <mat-divider></mat-divider>
 
     <mat-form-field>
-        <mat-label>Spezies</mat-label>
-        <mat-select>
-            <mat-option>Libelle</mat-option>
+        <mat-label>Species</mat-label>
+        <mat-select (valueChange)="selectSpecies($event)">
+            <mat-option *ngFor="let species of species" [value]="species">
+                {{ species }}
+            </mat-option>
         </mat-select>
     </mat-form-field>
 
