@@ -8,6 +8,7 @@ export * from './lib/wave-core.module';
 // Services
 export * from './lib/backend/backend.service';
 export * from './lib/config.service';
+export * from './lib/datasets/dataset.service';
 export * from './lib/layout.service';
 export * from './lib/map/map.service';
 export * from './lib/notification.service';
