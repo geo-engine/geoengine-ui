@@ -102,7 +102,7 @@ export class AnalysisComponent implements OnInit {
                                 },
                                 fillColor: {
                                     type: 'static',
-                                    color: [0, 0, 128, 255],
+                                    color: [0, 0, 128, 150],
                                 },
                             }),
                             isLegendVisible: false,
@@ -169,11 +169,12 @@ export class AnalysisComponent implements OnInit {
                         operator: {
                             type: 'Expression',
                             params: {
-                                expression: '(B != 0) ? A : NAN',
+                                expression: 'if B != 0 { A } else { out_nodata }',
                                 // TODO: get data type from data
                                 outputType: RasterDataTypes.Float64.getCode(),
                                 // TODO: get no data value from data
                                 outputNoDataValue: 'nan',
+                                mapNoData: false,
                             },
                             sources: {
                                 a: rasterWorkflow.operator,
