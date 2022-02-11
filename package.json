@@ -17,7 +17,7 @@
         "serve:gfbio:local": "ng serve --configuration development gfbio-app --proxy-config proxy-local.conf.json",
         "serve:gfbio:nightly": "ng serve --configuration development gfbio-app --proxy-config proxy-gfbio.conf.json",
         "serve:nfdi-gdo:local": "ng serve --configuration development nfdi-gdo-app --proxy-config proxy-local.conf.json",
-        "serve:nfdi-gdo:nightly": "ng serve --configuration development nfdi-gdo-app --proxy-config proxy.conf.json",
+        "serve:nfdi-gdo:nightly": "ng serve --configuration development nfdi-gdo-app --proxy-config proxy-nfdi-gdo.conf.json",
         "build-prod:data-atlas": "ng build --configuration production data-atlas-app",
         "build-prod:ebv-analyzer": "ng build --configuration production ebv-analyzer-app",
         "build-prod:geoengine": "ng build --configuration production geoengine-app",

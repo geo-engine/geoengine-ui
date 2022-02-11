@@ -382,9 +382,11 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
 
     private datasetId: UUID = 'd9dd4530-7a57-44da-a650-ce7d81dcc216';
 
-    constructor(private readonly projectService: ProjectService, private readonly dataSelectionService: DataSelectionService) {}
+    constructor(private readonly projectService: ProjectService, public readonly dataSelectionService: DataSelectionService) {}
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.dataSelectionService.setTimeSteps([...generateMonthlyTimeSteps(2018, 1, 12)]);
+    }
 
     ngOnDestroy(): void {}
 
@@ -480,7 +482,6 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                             isLegendVisible: false,
                             isVisible: true,
                         }),
-                        [new Time(moment.utc('2014-01-01T00:00:00.000Z'))],
                         {
                             min: 1,
                             max: 20,
@@ -489,5 +490,24 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                 ),
             )
             .subscribe();
+    }
+}
+
+function* generateMonthlyTimeSteps(year: number, start: number, end: number): IterableIterator<Time> {
+    if (start < 1 || end > 12) {
+        throw Error('start and end must be between 1 and 12');
+    }
+
+    for (let i = start; i <= end; i++) {
+        const month = i.toString().padStart(2, '0');
+
+        const nextI = 1 + (i % 12);
+        const nextMonth = nextI.toString().padStart(2, '0');
+        const nextYear = nextI > i ? year : year + 1;
+
+        const dateStart = `${year}-${month}-01T00:00:00.000Z`;
+        const dateEnd = `${nextYear}-${nextMonth}-01T00:00:00.000Z`;
+
+        yield new Time(moment.utc(dateStart), moment.utc(dateEnd));
     }
 }

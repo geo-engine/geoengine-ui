@@ -46,14 +46,14 @@ export class TimeStepSelectorComponent implements OnInit, OnChanges, OnDestroy {
                 this.max = 0;
             }
 
-            setTimeout(() => this.changeDetectorRef.detectChanges());
-
             this.projectService.getTimeOnce().subscribe((time) => {
                 if (!this.timeSteps) {
                     return;
                 }
 
                 this.currentTimeIndex = this.timeSteps.indexOf(time);
+
+                setTimeout(() => this.changeDetectorRef.detectChanges());
             });
         }
 

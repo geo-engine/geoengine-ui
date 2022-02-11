@@ -11,13 +11,11 @@ import {
     ProjectService,
     MapService,
     MapContainerComponent,
-    Time,
     SpatialReferenceService,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AppConfig} from './app-config.service';
 import {ComponentPortal} from '@angular/cdk/portal';
-import moment from 'moment';
 import {DataSelectionService} from './data-selection.service';
 import {SpeciesSelectorComponent} from './species-selector/species-selector.component';
 
@@ -56,10 +54,11 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     ngOnInit(): void {
         this.mapService.registerMapComponent(this.mapComponent);
+        this.reset();
     }
 
     ngAfterViewInit(): void {
-        this.reset();
+        // this.reset();
         this.mapComponent.resize();
     }
 
@@ -70,7 +69,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private reset(): void {
         this.projectService.clearLayers();
         this.projectService.clearPlots();
-        this.projectService.setTime(new Time(moment.utc()));
+        // this.projectService.setTime(new Time(moment.utc()));
     }
 
     private registerIcons(): void {
