@@ -8,7 +8,7 @@
 
     <mat-divider></mat-divider>
 
-    <mat-form-field>
+    <mat-form-field color="accent">
         <mat-label>Artauswahl</mat-label>
         <mat-select (valueChange)="selectSpecies($event)">
             <mat-option *ngFor="let species of species" [value]="species">
@@ -20,9 +20,10 @@
     <mat-progress-bar
         [mode]="dataSelectionService.speciesLoadingState$ | async | valueDefault: 'determinate'"
         [value]="100"
+        color="accent"
     ></mat-progress-bar>
 
-    <mat-form-field>
+    <mat-form-field color="accent">
         <mat-label>Klima-/Wasser-Datenauswahl</mat-label>
         <mat-select (valueChange)="selectEnvironmentLayer($event)">
             <mat-option *ngFor="let layer of environmentLayers" [value]="layer">
