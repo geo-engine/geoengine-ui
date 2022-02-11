@@ -32,6 +32,12 @@
         </mat-select>
     </mat-form-field>
 
+    <button mat-stroked-button id="compute-plot" (click)="computePlot()">Compute Plot</button>
+
+    <wave-vega-viewer *ngIf="(plotData | async) !== undefined" [chartData]="plotData | async"></wave-vega-viewer>
+
+    <mat-spinner *ngIf="plotLoading | async"></mat-spinner>
+
     <div class="spacer"></div>
     <mat-divider></mat-divider>
 
