@@ -8,6 +8,7 @@ export * from './lib/wave-core.module';
 // Services
 export * from './lib/backend/backend.service';
 export * from './lib/config.service';
+export * from './lib/datasets/dataset.service';
 export * from './lib/layout.service';
 export * from './lib/map/map.service';
 export * from './lib/notification.service';
@@ -104,7 +105,9 @@ export * from './lib/util/pipes/trim.pipe';
 // Models
 export * from './lib/backend/backend.model';
 export * from './lib/backend/operator.model';
+export * from './lib/colors/color';
 export * from './lib/colors/color-breakpoint.model';
+export * from './lib/datasets/dataset.model';
 export * from './lib/layers/layer-metadata.model';
 export * from './lib/layers/layer.model';
 export * from './lib/layers/symbology/symbology.model';
