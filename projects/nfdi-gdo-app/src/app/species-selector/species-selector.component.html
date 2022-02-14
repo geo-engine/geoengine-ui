@@ -35,7 +35,6 @@
             </mat-option>
         </mat-select>
     </mat-form-field>
-    
 
     <div class="spacer"></div>
 
@@ -43,7 +42,9 @@
 
     <div class="spacer"></div>
 
-    <button [disabled]="!selectSpecies || !selectedEnvironmentLayer" mat-stroked-button id="compute-plot" (click)="computePlot()">Berechne Plot</button>
+    <button [disabled]="!selectSpecies || !selectedEnvironmentLayer" mat-stroked-button id="compute-plot" (click)="computePlot()">
+        Berechne Plot
+    </button>
 
     <div class="spacer"></div>
 
