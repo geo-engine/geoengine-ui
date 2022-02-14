@@ -23,6 +23,10 @@
         color="accent"
     ></mat-progress-bar>
 
+    <mat-divider></mat-divider>
+
+    <div class="spacer"></div>
+
     <mat-form-field color="accent">
         <mat-label>Klima-/Wasser-Datenauswahl</mat-label>
         <mat-select (valueChange)="selectEnvironmentLayer($event)">
@@ -31,14 +35,27 @@
             </mat-option>
         </mat-select>
     </mat-form-field>
+    
 
-    <button mat-stroked-button id="compute-plot" (click)="computePlot()">Compute Plot</button>
+    <div class="spacer"></div>
+
+    <mat-divider></mat-divider>
+
+    <div class="spacer"></div>
+
+    <button [disabled]="!selectSpecies || !selectedEnvironmentLayer" mat-stroked-button id="compute-plot" (click)="computePlot()">Berechne Plot</button>
+
+    <div class="spacer"></div>
+
+    <h3 *ngIf="(plotData | async) !== undefined">Plot von {{ selectedSpecies }} und {{ selectedEnvironmentLayer?.name }}</h3>
 
     <wave-vega-viewer *ngIf="(plotData | async) !== undefined" [chartData]="plotData | async"></wave-vega-viewer>
 
-    <mat-spinner *ngIf="plotLoading | async"></mat-spinner>
+    <mat-spinner color="accent" *ngIf="plotLoading | async"></mat-spinner>
 
     <div class="spacer"></div>
+    <div class="spacer"></div>
+
     <mat-divider></mat-divider>
 
     <wave-app-attributions></wave-app-attributions>

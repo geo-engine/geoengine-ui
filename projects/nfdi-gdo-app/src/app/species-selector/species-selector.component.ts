@@ -26,6 +26,7 @@ import moment from 'moment';
 interface EnvironmentLayer {
     id: UUID;
     name: string;
+    dataRange: [number, number];
 }
 
 @Component({
@@ -119,18 +120,25 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
 
     readonly environmentLayers: EnvironmentLayer[] = [
         {
-            id: '36574dc3-560a-4b09-9d22-d5945f2b8093',
+            id: '36574dc3-560a-4b09-9d22-d5945f2b8111',
             name: 'NDVI',
+            dataRange: [-2000, 10000],
+        },
+        {
+            id: '36574dc3-560a-4b09-9d22-d5945f2b8666',
+            name: 'Water Bodies 333m',
+            dataRange: [70, 71],
         },
     ];
 
     plotData = new BehaviorSubject<any>(undefined);
     plotLoading = new BehaviorSubject(false);
 
-    private datasetId: UUID = 'd9dd4530-7a57-44da-a650-ce7d81dcc216';
+    selectedSpecies?: string = undefined;
+    selectedEnvironmentLayer?: EnvironmentLayer = undefined;
 
-    private selectedSpecies?: string = undefined;
-    private selectedEnvironmentLayer?: EnvironmentLayer = undefined;
+    private datasetId: UUID = 'd9dd4530-7a57-44da-a650-ce7d81dcc217';
+
     private selectedEnvironmentDataset?: Dataset = undefined;
 
     constructor(
@@ -244,8 +252,8 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                                 isVisible: true,
                             }),
                             {
-                                min: 1,
-                                max: 20,
+                                min: layer.dataRange[0],
+                                max: layer.dataRange[1],
                             },
                         );
                     }
