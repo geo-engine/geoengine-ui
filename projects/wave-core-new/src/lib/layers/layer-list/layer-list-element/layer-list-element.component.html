@@ -1,0 +1,192 @@
+<div class="container">
+    <div class="layer-list-element" [class.list-item-extended]="layer.isLegendVisible">
+        <mat-menu #layerMenu="matMenu">
+            <button mat-menu-item *ngIf="layer.isVisible" (click)="projectService.changeLayer(layer, {isVisible: false})">
+                <mat-icon>visibility_off</mat-icon>
+                <span>Hide Layer</span>
+            </button>
+            <button mat-menu-item *ngIf="!layer.isVisible" (click)="projectService.changeLayer(layer, {isVisible: true})">
+                <mat-icon>visibility</mat-icon>
+                <span>Show Layer</span>
+            </button>
+
+            <button mat-menu-item *ngIf="!layer.isLegendVisible" (click)="toggleLegend(layer)">
+                <mat-icon>expand_more</mat-icon>
+                <span>Show Legend</span>
+            </button>
+            <button mat-menu-item *ngIf="layer.isLegendVisible" (click)="toggleLegend(layer)">
+                <mat-icon>expand_less</mat-icon>
+                <span>Hide Legend</span>
+            </button>
+
+            <button mat-menu-item (click)="dialog.open(LineageGraphComponent, {data: {layer: layer}})">
+                <mat-icon>merge_type</mat-icon>
+                <span>Lineage</span>
+            </button>
+            <button mat-menu-item (click)="projectService.removeLayer(layer)">
+                <mat-icon>delete</mat-icon>
+                <span>Remove</span>
+            </button>
+            <button mat-menu-item (click)="dialog.open(RenameLayerComponent, {data: {layer: layer}})">
+                <mat-icon>mode_edit</mat-icon>
+                <span>Rename</span>
+            </button>
+            <button mat-menu-item (click)="showSymbologyEditor(layer)">
+                <mat-icon>color_lens</mat-icon>
+                <span>Edit Symbology</span>
+            </button>
+            <button mat-menu-item (click)="showProvenance(layer)">
+                <mat-icon>description</mat-icon>
+                <span>Show Provenance</span>
+            </button>
+            <button mat-menu-item (click)="showDatatable(layer)">
+                <mat-icon>table</mat-icon>
+                <span>Show Datatable</span>
+            </button>
+            <button mat-menu-item (click)="copyWorkflowIdToClipboard(layer)">
+                <mat-icon>content_copy</mat-icon>
+                <span>Copy Workflow Id to Clipboard</span>
+            </button>
+            <!--                                    <button mat-menu-item (click)="dialog.open(LayerExportComponent, {data: {layer: layer}})">-->
+            <!--                                        <mat-icon>file_download</mat-icon>-->
+            <!--                                        <span>Export</span>-->
+            <!--                                    </button>-->
+            <!--                                    <button mat-menu-item (click)="dialog.open(LayerShareComponent, {data: {layer: layer}})">-->
+            <!--                                        <mat-icon>cloud</mat-icon>-->
+            <!--                                        <span>Share</span>-->
+            <!--                                    </button>-->
+        </mat-menu>
+
+        <div class="list-element-inner-container layer-list-element" fxLayout="column" fxLayoutAlign="space-between none">
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+                <button
+                    mat-icon-button
+                    class="mat-warn error-button"
+                    aria-label="Reload"
+                    *ngIf="(projectService.getLayerStatusStream(layer) | async) === LoadingState.ERROR"
+                    (click)="projectService.reloadLayer(layer)"
+                >
+                    <mat-icon>replay</mat-icon>
+                </button>
+
+                <button
+                    mat-icon-button
+                    *ngIf="(projectService.getLayerStatusStream(layer) | async) !== LoadingState.ERROR"
+                    (click)="toggleLegend(layer)"
+                    matTooltip="{{ layer.isLegendVisible ? 'Hide' : 'Show' }} Legend"
+                    matTooltipPosition="after"
+                    [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
+                >
+                    <ng-template [ngIf]="!layer.isVisible">
+                        <mat-icon mat-list-icon>visibility_off</mat-icon>
+                    </ng-template>
+                    <ng-template [ngIf]="layer.isVisible">
+                        <ng-container [ngSwitch]="layer.symbology.symbologyType">
+                            <mat-icon *ngSwitchCase="ST.POINT">
+                                <wave-point-icon [iconStyle]="$any(getIconStyleStream(layer) | async)"> </wave-point-icon>
+                            </mat-icon>
+                            <mat-icon *ngSwitchCase="ST.LINE">
+                                <wave-line-icon [iconStyle]="$any(getIconStyleStream(layer) | async)"> </wave-line-icon>
+                            </mat-icon>
+                            <mat-icon *ngSwitchCase="ST.POLYGON">
+                                <wave-polygon-icon [iconStyle]="$any(getIconStyleStream(layer) | async)"> </wave-polygon-icon>
+                            </mat-icon>
+                            <ng-template [ngSwitchCase]="ST.RASTER">
+                                <mat-icon mat-list-icon [ngSwitch]="projectService.getLayerDataStatusStream(layer) | async">
+                                    <ng-template [ngSwitchCase]="LoadingState.NODATAFORGIVENTIME">
+                                        <span class="lineThrough">access_time</span>
+                                    </ng-template>
+                                    <ng-template ngSwitchDefault>
+                                        <wave-raster-icon [colorizer]="$any(layer.symbology).colorizer" [xCells]="6" [yCells]="6">
+                                        </wave-raster-icon>
+                                    </ng-template>
+                                </mat-icon>
+                            </ng-template>
+                            <mat-icon *ngSwitchDefault mat-list-icon>error_outline</mat-icon>
+                        </ng-container>
+                    </ng-template>
+                </button>
+
+                <!--                                                                        <div cdkDragHandle class="layer-list-item-text grabbable"-->
+                <!--                                                                             fxFlex="grow"-->
+                <!--                                                                             (click)="layerService.setSelectedLayer(layer)"-->
+                <!--                                                                             [matTooltip]="layer.name" matTooltipPosition="after"-->
+                <!--                                                                             [matTooltipShowDelay]="config.DELAYS.TOOLTIP">-->
+                <!--                                                                            {{layer.name}}-->
+                <!--                                                                        </div>-->
+
+                <div
+                    cdkDragHandle
+                    class="layer-list-item-text grabbable"
+                    fxFlex="grow"
+                    [matTooltip]="layer.name"
+                    matTooltipPosition="after"
+                    [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
+                >
+                    {{ layer.name }}
+                </div>
+
+                <button
+                    mat-icon-button
+                    class="secondary_action"
+                    [matMenuTriggerFor]="layerMenu"
+                    matTooltip="Layer Actions"
+                    matTooltipPosition="after"
+                    [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
+                >
+                    <mat-icon>more_vert</mat-icon>
+                </button>
+            </div>
+
+            <div
+                *ngIf="layer.isLegendVisible"
+                [ngSwitch]="layer.symbology.getSymbologyType()"
+                fxLayoutAlign="space-between stretch"
+                fxLayout="row"
+                class="legend no-drag"
+            >
+                <ng-template [ngSwitchCase]="ST.POINT">
+                    <wave-vector-legend fxFlex="grow" [layer]="$any(layer)"> </wave-vector-legend>
+                </ng-template>
+
+                <ng-template [ngSwitchCase]="ST.LINE">
+                    <wave-vector-legend fxFlex="grow" [layer]="$any(layer)"> </wave-vector-legend>
+                </ng-template>
+
+                <ng-template [ngSwitchCase]="ST.POLYGON">
+                    <wave-vector-legend fxFlex="grow" [layer]="$any(layer)"> </wave-vector-legend>
+                </ng-template>
+
+                <ng-template [ngSwitchCase]="ST.RASTER">
+                    <wave-raster-legend fxFlex="grow" [layer]="$any(layer)"></wave-raster-legend>
+                </ng-template>
+
+                <button mat-icon-button (click)="toggleLegend(layer)">
+                    <mat-icon>expand_less</mat-icon>
+                </button>
+            </div>
+
+            <!-- TODO: re-implement -->
+            <!--                    <div class="legend no-drag"-->
+            <!--                         *ngIf="showChannelParameterSlider(layer)">-->
+            <!--                        <wave-layer-list-workflow-parameter-slider-->
+            <!--                            [layer]="layer"-->
+            <!--                            parameterName="channelConfig"-->
+            <!--                            parameterDisplayName="channel"-->
+            <!--                        >-->
+
+            <!--                        </wave-layer-list-workflow-parameter-slider>-->
+            <!--                    </div>-->
+
+            <mat-progress-bar
+                [mode]="(projectService.getLayerStatusStream(layer) | async) === LoadingState.LOADING ? 'query' : 'determinate'"
+                [value]="100"
+            ></mat-progress-bar>
+            <!--                    <mat-progress-bar-->
+            <!--                        [mode]="(projectService.getLayerDataStatusStream(layer) | async) === LoadingState.LOADING ? 'query' : 'determinate'"-->
+            <!--                        [value]="100"-->
+            <!--                        [color]="(layerService.getSelectedLayerStream() | async) === layer ? 'accent' : 'primary'"-->
+            <!--                    ></mat-progress-bar>-->
+        </div>
+    </div>
+</div>
