@@ -3,9 +3,10 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Config, ProjectService, UserService, UUID, TimeIntervalDict, TimeStepDict} from 'wave-core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {AppConfig} from '../app-config.service';
-import {map, mergeMap} from 'rxjs/operators';
+import {filter, map, mergeMap, zipWith} from 'rxjs/operators';
 import {CountryProviderService} from '../country-provider.service';
 import {DataSelectionService} from '../data-selection.service';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
     selector: 'wave-ebv-ebv-selector',
@@ -52,6 +53,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         private readonly projectService: ProjectService,
         private readonly countryProviderService: CountryProviderService,
         private readonly dataSelectionService: DataSelectionService,
+        private readonly route: ActivatedRoute,
     ) {
         this.isPlotButtonDisabled$ = this.countryProviderService.getSelectedCountryStream().pipe(map((country) => !country));
     }
@@ -60,6 +62,8 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         this.userService.getSessionTokenForRequest().subscribe(() => {
             this.request<Array<EbvClass>>('ebv/classes', undefined, (data) => {
                 this.ebvClasses = data;
+
+                this.handleQueryParams();
             });
         });
     }
@@ -150,6 +154,39 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         this.countryProviderService.replaceVectorLayerOnMap();
 
         this.scrollToBottom();
+    }
+
+    private handleQueryParams(): void {
+        this.route.queryParams
+            .pipe(
+                filter((params) => params.id),
+                zipWith(this.userService.getSessionTokenForRequest()),
+                mergeMap(([params, sessionToken]) =>
+                    this.http.get<EbvDataset>(`${this.config.API_URL}/ebv/dataset/${params.id}`, {
+                        headers: new HttpHeaders().set('Authorization', `Bearer ${sessionToken}`),
+                    }),
+                ),
+            )
+            .subscribe((dataset) => {
+                const ebvClass = this.ebvClasses.find((c) => c.name === dataset.ebvClass);
+
+                if (!!ebvClass) {
+                    this.ebvClass = ebvClass;
+                    this.ebvNames = ebvClass.ebvNames;
+
+                    this.ebvName = dataset.ebvName;
+
+                    this.request<Array<EbvDataset>>(`ebv/datasets/${encodeURIComponent(dataset.ebvName)}`, undefined, (data) => {
+                        this.ebvDatasets = data;
+
+                        const selected = data.find((d) => d.id === dataset.id);
+
+                        if (!!selected) {
+                            this.setEbvDataset(selected);
+                        }
+                    });
+                }
+            });
     }
 
     // private generateGdalSourceNetCdfLayer(): RasterLayer {
@@ -474,6 +511,7 @@ interface EbvDataset {
     license: string;
     datasetPath: string;
     ebvClass: string;
+    ebvName: string;
 }
 
 // interface EbvDatasetsResponse {
