@@ -7,6 +7,7 @@ import {
     DatasetService,
     HistogramDict,
     HistogramParams,
+    Layer,
     MapService,
     PointSymbology,
     ProjectService,
@@ -19,7 +20,7 @@ import {
     VectorLayer,
     WorkflowDict,
 } from 'wave-core';
-import {BehaviorSubject, combineLatest, combineLatestWith, first, mergeMap, Observable, of, tap} from 'rxjs';
+import {BehaviorSubject, combineLatest, combineLatestWith, first, mergeMap, Observable, of, Subscription, tap} from 'rxjs';
 import {DataSelectionService} from '../data-selection.service';
 import moment from 'moment';
 
@@ -137,9 +138,13 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     selectedSpecies?: string = undefined;
     selectedEnvironmentLayer?: EnvironmentLayer = undefined;
 
+    speciesLayer?: Layer = undefined;
+
     private datasetId: UUID = 'd9dd4530-7a57-44da-a650-ce7d81dcc217';
 
     private selectedEnvironmentDataset?: Dataset = undefined;
+
+    private subscriptions: Array<Subscription> = [];
 
     constructor(
         public readonly dataSelectionService: DataSelectionService,
@@ -152,9 +157,17 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.dataSelectionService.setTimeSteps([...generateMonthlyTimeSteps(2018, 1, 12)]);
+
+        const sub = this.dataSelectionService.speciesLayer.subscribe((speciesLayer) => (this.speciesLayer = speciesLayer));
+
+        this.subscriptions.push(sub);
     }
 
-    ngOnDestroy(): void {}
+    ngOnDestroy(): void {
+        for (const sub of this.subscriptions) {
+            sub.unsubscribe();
+        }
+    }
 
     selectSpecies(species: string): void {
         this.selectedSpecies = species;
@@ -189,7 +202,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                     this.dataSelectionService.setSpeciesLayer(
                         new VectorLayer({
                             workflowId,
-                            name: species,
+                            name: 'Beobachtungen',
                             symbology: ClusteredPointSymbology.fromPointSymbologyDict({
                                 type: 'point',
                                 radius: {

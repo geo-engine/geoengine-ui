@@ -23,6 +23,10 @@
         color="accent"
     ></mat-progress-bar>
 
+    <div *ngIf="speciesLayer">
+        <wave-layer-list-element [layer]="speciesLayer" [menu]="false"></wave-layer-list-element>
+    </div>
+
     <mat-divider></mat-divider>
 
     <div class="spacer"></div>

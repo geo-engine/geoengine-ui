@@ -32,6 +32,9 @@ export class LayerListElementComponent implements OnDestroy, OnChanges {
     @Input()
     layer!: Layer;
 
+    @Input()
+    menu = true;
+
     readonly LayoutService = LayoutService;
     readonly ST = SymbologyType;
     readonly LoadingState = LoadingState;
