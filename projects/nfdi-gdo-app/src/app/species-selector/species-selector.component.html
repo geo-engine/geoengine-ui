@@ -24,6 +24,7 @@
     ></mat-progress-bar>
 
     <div *ngIf="speciesLayer">
+        <div class="spacer"></div>
         <wave-layer-list-element [layer]="speciesLayer" [menu]="false"></wave-layer-list-element>
     </div>
 
@@ -39,6 +40,10 @@
             </mat-option>
         </mat-select>
     </mat-form-field>
+
+    <div *ngIf="environmentLayer">
+        <wave-layer-list-element [layer]="environmentLayer" [menu]="false"></wave-layer-list-element>
+    </div>
 
     <div class="spacer"></div>
 

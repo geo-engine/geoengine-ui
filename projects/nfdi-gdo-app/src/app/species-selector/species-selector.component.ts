@@ -139,6 +139,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     selectedEnvironmentLayer?: EnvironmentLayer = undefined;
 
     speciesLayer?: Layer = undefined;
+    environmentLayer?: Layer = undefined;
 
     private datasetId: UUID = 'd9dd4530-7a57-44da-a650-ce7d81dcc217';
 
@@ -158,9 +159,15 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.dataSelectionService.setTimeSteps([...generateMonthlyTimeSteps(2018, 1, 12)]);
 
-        const sub = this.dataSelectionService.speciesLayer.subscribe((speciesLayer) => (this.speciesLayer = speciesLayer));
+        const speciesLayerSubscription = this.dataSelectionService.speciesLayer.subscribe(
+            (speciesLayer) => (this.speciesLayer = speciesLayer),
+        );
+        this.subscriptions.push(speciesLayerSubscription);
 
-        this.subscriptions.push(sub);
+        const environmentLayerSubscription = this.dataSelectionService.rasterLayer.subscribe(
+            (environmentLayer) => (this.environmentLayer = environmentLayer),
+        );
+        this.subscriptions.push(environmentLayerSubscription);
     }
 
     ngOnDestroy(): void {
