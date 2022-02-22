@@ -152,6 +152,26 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         this.scrollToBottom();
     }
 
+    ebvClassPredicate(filter: string, element: EbvClass): boolean {
+        return element.name.toLowerCase().includes(filter);
+    }
+
+    ebvNamePredicate(filter: string, element: string): boolean {
+        return element.toLowerCase().includes(filter);
+    }
+
+    ebvDatasetPredicate(filter: string, element: EbvDataset): boolean {
+        return element.name.toLowerCase().includes(filter);
+    }
+
+    ebvSubgroupPredicate(filter: string, element: EbvTreeSubgroup): boolean {
+        return element.title.toLowerCase().includes(filter);
+    }
+
+    ebvEntityPredicate(filter: string, element: EbvTreeEntity): boolean {
+        return element.name.toLowerCase().includes(filter);
+    }
+
     // private generateGdalSourceNetCdfLayer(): RasterLayer {
     //     if (!this.ebvDataset || !this.ebvDataLoadingInfo) {
     //         throw Error('Missing dataset and loading info');

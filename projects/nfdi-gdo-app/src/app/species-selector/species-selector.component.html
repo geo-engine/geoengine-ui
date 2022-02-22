@@ -11,7 +11,16 @@
     <mat-form-field color="accent">
         <mat-label>Artauswahl</mat-label>
         <mat-select (valueChange)="selectSpecies($event)">
-            <mat-option *ngFor="let species of species" [value]="species">
+            <mat-option>
+                <ngx-mat-select-search
+                    [formControl]="waveAutocompleteSelect.filterFormControl"
+                    waveAutocompleteSelect
+                    [waveAutocompleteSelectAllValues]="species"
+                    [waveAutocompleteSelectSearchPredicate]="speciesPredicate"
+                    #waveAutocompleteSelect="waveAutocompleteSelect"
+                ></ngx-mat-select-search>
+            </mat-option>
+            <mat-option *ngFor="let species of waveAutocompleteSelect.filteredValues | async" [value]="species">
                 {{ species }}
             </mat-option>
         </mat-select>
