@@ -215,6 +215,8 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
         const entity = this.ebvTree.tree.entities[0];
         this.setEbvEntity(entity);
+
+        this.showEbv();
     }
 
     // private generateGdalSourceNetCdfLayer(): RasterLayer {
