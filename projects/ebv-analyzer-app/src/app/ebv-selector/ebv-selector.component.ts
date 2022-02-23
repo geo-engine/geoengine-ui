@@ -10,14 +10,11 @@ import {
     Time,
     RasterLayer,
     RasterSymbology,
-    LinearGradient,
-    TRANSPARENT,
-    BLACK,
-    WHITE,
-    ColorBreakpoint,
     WorkflowDict,
     ExternalDatasetIdDict,
     timeStepDictTotimeStepDuration,
+    Colorizer,
+    ColorizerDict,
 } from 'wave-core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {AppConfig} from '../app-config.service';
@@ -181,8 +178,10 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
         this.generateGdalSourceNetCdfLayer().subscribe((ebvLayer) => {
             this.ebvLayer = ebvLayer;
-            // TODO: data range
-            this.dataSelectionService.setRasterLayer(this.ebvLayer, timeSteps, {min: 0, max: 255}).subscribe(() => {
+
+            const dataRange = guessDataRange(ebvLayer.symbology.colorizer);
+
+            this.dataSelectionService.setRasterLayer(this.ebvLayer, timeSteps, dataRange).subscribe(() => {
                 this.countryProviderService.replaceVectorLayerOnMap();
             });
         });
@@ -278,15 +277,10 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
             },
         };
 
+        const colorizer = Colorizer.fromDict(this.ebvTree.tree.colorizer);
+
         return this.projectService.registerWorkflow(workflow).pipe(
             map((workflowId) => {
-                // TODO: get from metadata
-                const colorizer = new LinearGradient(
-                    [new ColorBreakpoint(0, BLACK), new ColorBreakpoint(255, WHITE)],
-                    TRANSPARENT,
-                    TRANSPARENT,
-                );
-
                 const rasterLayer = new RasterLayer({
                     name: 'EBV',
                     workflowId,
@@ -536,6 +530,7 @@ interface EbvTree {
     entities: Array<EbvTreeEntity>;
     time: TimeIntervalDict;
     timeStep: TimeStepDict;
+    colorizer: ColorizerDict;
 }
 
 interface EbvTreeSubgroup {
@@ -556,4 +551,16 @@ interface EbvDatasetId {
     fileName: string;
     groupNames: Array<string>;
     entity: number;
+}
+
+function guessDataRange(colorizer: Colorizer): {min: number; max: number} {
+    let min = Number.MAX_VALUE;
+    let max = -Number.MAX_VALUE;
+
+    for (const breakpoint of colorizer.getBreakpoints()) {
+        min = Math.min(min, breakpoint.value);
+        max = Math.max(max, breakpoint.value);
+    }
+
+    return {min, max};
 }
