@@ -2,7 +2,6 @@ import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserModule} from '@angular/platform-browser';
 import {HttpClientModule} from '@angular/common/http';
-import {RouterModule} from '@angular/router';
 import {AppComponent} from './app.component';
 import {
     Config,
@@ -23,17 +22,21 @@ import {TimeStepSelectorComponent} from './time-step-selector/time-step-selector
 import {AttributionsComponent} from './attributions/attributions.component';
 import {SpeciesSelectorComponent} from './species-selector/species-selector.component';
 import {DataSelectionService} from './data-selection.service';
+import {MainComponent} from './main/main.component';
+import {LoginComponent} from './login/login.component';
+import {AppRoutingModule} from './app-routing.module';
 
 @NgModule({
-    declarations: [AppComponent, AttributionsComponent, LegendComponent, TimeStepSelectorComponent, SpeciesSelectorComponent],
-    imports: [
-        BrowserAnimationsModule,
-        BrowserModule,
-        HttpClientModule,
-        RouterModule.forRoot([{path: '**', component: AppComponent}], {useHash: true}),
-        WaveCoreModule,
-        PortalModule,
+    declarations: [
+        AppComponent,
+        AttributionsComponent,
+        LegendComponent,
+        TimeStepSelectorComponent,
+        SpeciesSelectorComponent,
+        MainComponent,
+        LoginComponent,
     ],
+    imports: [BrowserAnimationsModule, BrowserModule, HttpClientModule, AppRoutingModule, WaveCoreModule, PortalModule],
     providers: [
         {provide: Config, useClass: AppConfig},
         {
