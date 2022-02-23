@@ -1,11 +1,31 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Config, ProjectService, UserService, UUID, TimeIntervalDict, TimeStepDict} from 'wave-core';
+import {
+    Config,
+    ProjectService,
+    UserService,
+    UUID,
+    TimeIntervalDict,
+    TimeStepDict,
+    Time,
+    RasterLayer,
+    RasterSymbology,
+    LinearGradient,
+    TRANSPARENT,
+    BLACK,
+    WHITE,
+    ColorBreakpoint,
+    WorkflowDict,
+    ExternalDatasetIdDict,
+    timeStepDictTotimeStepDuration,
+} from 'wave-core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {AppConfig} from '../app-config.service';
-import {map, mergeMap} from 'rxjs/operators';
+import {filter, map, mergeMap, zipWith} from 'rxjs/operators';
 import {CountryProviderService} from '../country-provider.service';
 import {DataSelectionService} from '../data-selection.service';
+import {ActivatedRoute} from '@angular/router';
+import moment from 'moment';
 
 @Component({
     selector: 'wave-ebv-ebv-selector',
@@ -33,6 +53,8 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
     ebvPath: Array<EbvTreeSubgroup> = [];
 
+    ebvEntity?: EbvTreeEntity;
+
     // ebvLayer?: RasterLayer;
     // TODO: implement
     // plotSettings?: {
@@ -43,6 +65,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
     // } = undefined;
 
     private ebvDatasetId?: EbvDatasetId = undefined;
+    private ebvLayer?: RasterLayer;
 
     constructor(
         private readonly userService: UserService,
@@ -52,6 +75,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         private readonly projectService: ProjectService,
         private readonly countryProviderService: CountryProviderService,
         private readonly dataSelectionService: DataSelectionService,
+        private readonly route: ActivatedRoute,
     ) {
         this.isPlotButtonDisabled$ = this.countryProviderService.getSelectedCountryStream().pipe(map((country) => !country));
     }
@@ -60,6 +84,8 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         this.userService.getSessionTokenForRequest().subscribe(() => {
             this.request<Array<EbvClass>>('ebv/classes', undefined, (data) => {
                 this.ebvClasses = data;
+
+                this.handleQueryParams();
             });
         });
     }
@@ -92,7 +118,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         });
     }
 
-    setEbvDataset(ebvDataset: EbvDataset): void {
+    setEbvDataset(ebvDataset: EbvDataset, callback?: () => void): void {
         if (this.ebvDataset === ebvDataset) {
             return;
         }
@@ -104,6 +130,10 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
         this.request<EbvHierarchy>(`ebv/dataset/${datasetId}/subdatasets`, undefined, (data) => {
             this.ebvTree = data;
+
+            if (callback) {
+                callback();
+            }
         });
     }
 
@@ -111,6 +141,8 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         if (!this.ebvTree) {
             return;
         }
+
+        this.ebvEntity = ebvEntity;
 
         this.ebvDatasetId = {
             fileName: this.ebvTree.tree.fileName,
@@ -129,27 +161,86 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
     }
 
     showEbv(): void {
-        if (!this.ebvDatasetId) {
+        if (!this.ebvDatasetId || !this.ebvTree) {
             return;
         }
 
-        // const timePoints = this.ebvDataLoadingInfo.time_points;
+        const timeSteps: Array<Time> = [];
 
-        // const timeSteps = timePoints.map((t) => {
-        //     const time = moment.unix(t).utc();
-        //     const timePoint = new Time(time);
-        //     return timePoint;
-        // });
+        const timeStep = timeStepDictTotimeStepDuration(this.ebvTree.tree.timeStep);
+
+        let time = new Time(moment.unix(this.ebvTree.tree.time.start / 1_000).utc());
+        const timeEnd = new Time(moment.unix(this.ebvTree.tree.time.end / 1_000).utc());
+
+        while (time < timeEnd) {
+            timeSteps.push(time);
+            time = time.addDuration(timeStep);
+        }
 
         this.projectService.clearLayers();
 
-        // this.ebvLayer = this.generateGdalSourceNetCdfLayer();
-        // TODO: data range
-        // this.dataSelectionService.setRasterLayer(this.ebvLayer, timeSteps, {min: 0, max: 255});
+        this.generateGdalSourceNetCdfLayer().subscribe((ebvLayer) => {
+            this.ebvLayer = ebvLayer;
+            // TODO: data range
+            this.dataSelectionService.setRasterLayer(this.ebvLayer, timeSteps, {min: 0, max: 255}).subscribe(() => {
+                this.countryProviderService.replaceVectorLayerOnMap();
+            });
+        });
+    }
 
-        this.countryProviderService.replaceVectorLayerOnMap();
+    private handleQueryParams(): void {
+        this.route.queryParams
+            .pipe(
+                filter((params) => params.id),
+                zipWith(this.userService.getSessionTokenForRequest()),
+                mergeMap(([params, sessionToken]) =>
+                    this.http.get<EbvDataset>(`${this.config.API_URL}/ebv/dataset/${params.id}`, {
+                        headers: new HttpHeaders().set('Authorization', `Bearer ${sessionToken}`),
+                    }),
+                ),
+            )
+            .subscribe((dataset) => {
+                const ebvClass = this.ebvClasses.find((c) => c.name === dataset.ebvClass);
 
-        this.scrollToBottom();
+                if (!ebvClass) {
+                    return;
+                }
+
+                this.ebvClass = ebvClass;
+                this.ebvNames = ebvClass.ebvNames;
+
+                this.ebvName = dataset.ebvName;
+
+                this.request<Array<EbvDataset>>(`ebv/datasets/${encodeURIComponent(dataset.ebvName)}`, undefined, (data) => {
+                    this.ebvDatasets = data;
+
+                    const selected = data.find((d) => d.id === dataset.id);
+
+                    if (selected) {
+                        this.setEbvDataset(selected, this.selectDefaultGroupEntity.bind(this));
+                        this.changeDetectorRef.markForCheck();
+                    }
+                });
+            });
+    }
+
+    private selectDefaultGroupEntity(): void {
+        if (!this.ebvTree) {
+            return;
+        }
+
+        let groups = this.ebvTree.tree.groups;
+        let index = 0;
+
+        while (groups.length > 0) {
+            this.setEbvPath(groups[0], index++);
+            groups = groups[0].groups;
+        }
+
+        const entity = this.ebvTree.tree.entities[0];
+        this.setEbvEntity(entity);
+
+        this.showEbv();
     }
 
     ebvClassPredicate(filter: string, element: EbvClass): boolean {
@@ -188,90 +279,47 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
     //     const ebvDataTypeCode = 'Float64';
     //     const ebvProjectionCode = crsCode ? crsCode : 'EPSG:4326';
+    private generateGdalSourceNetCdfLayer(): Observable<RasterLayer> {
+        if (!this.ebvDataset || !this.ebvTree || !this.ebvDatasetId) {
+            throw Error('Missing dataset and loading info');
+        }
 
-    //     const metricSubgroupIndex = this.ebvSubgroups.findIndex((subgroup) => subgroup.name.toLowerCase() === 'metric');
-    //     if (metricSubgroupIndex >= 0) {
-    //         const metricValue = this.ebvSubgroupValues[metricSubgroupIndex];
-    //     }
+        const workflow: WorkflowDict = {
+            type: 'Raster',
+            operator: {
+                type: 'GdalSource',
+                params: {
+                    dataset: {
+                        type: 'external',
+                        providerId: '1690c483-b17f-4d98-95c8-00a64849cd0b',
+                        datasetId: JSON.stringify(this.ebvDatasetId),
+                    } as ExternalDatasetIdDict,
+                },
+            },
+        };
 
-    //     const minValue = this.ebvDataLoadingInfo.unit_range[0];
-    //     const maxValue = this.ebvDataLoadingInfo.unit_range[1];
+        return this.projectService.registerWorkflow(workflow).pipe(
+            map((workflowId) => {
+                // TODO: get from metadata
+                const colorizer = new LinearGradient(
+                    [new ColorBreakpoint(0, BLACK), new ColorBreakpoint(255, WHITE)],
+                    TRANSPARENT,
+                    TRANSPARENT,
+                );
 
-    //     // const ebvUnit = new Unit({
-    //     //     interpolation: Interpolation.Continuous,
-    //     //     measurement,
-    //     //     unit: Unit.defaultUnit.unit,
-    //     //     min: +minValue.toPrecision(2), // use only two decimals
-    //     //     max: +maxValue.toPrecision(2),
-    //     // });
+                const rasterLayer = new RasterLayer({
+                    name: 'EBV',
+                    workflowId,
+                    isVisible: true,
+                    isLegendVisible: false,
+                    symbology: new RasterSymbology(1.0, colorizer),
+                });
 
-    //     const operatorType = new GdalSourceType({
-    //         channelConfig: {
-    //             // TODO: make channel config optional
-    //             channelNumber: 0,
-    //             displayValue: readableTimePoints.length > 0 ? readableTimePoints[0] : 'no time avaliable',
-    //         },
-    //         sourcename: this.ebvDataset.name,
-    //         transform: false,
-    //         gdal_params: {
-    //             channels: timePoints.map((t, i) => {
-    //                 return {
-    //                     channel: i + 1,
-    //                     datatype: ebvDataTypeCode,
-    //                     unit: ebvUnit,
-    //                     file_name: path,
-    //                     netcdf_subdataset: netCdfSubdataset,
-    //                 };
-    //             }),
-    //             time_start: readableTimePoints[0],
-    //             time_end: endBound.format(),
-    //             channel_start_time_list: readableTimePoints,
-    //             file_name: path,
-    //             coords: {
-    //                 crs: ebvProjectionCode,
-    //             },
-    //             provenance: {
-    //                 citation: this.ebvDataset.name,
-    //                 license: this.ebvDataset.license,
-    //                 uri: '',
-    //             },
-    //         },
-    //     });
+                return rasterLayer;
+            }),
+        );
+    }
 
-    //     const operatorParameterOptions = new GdalSourceParameterOptions({
-    //         operatorType: operatorType.toString(),
-    //         channelConfig: {
-    //             kind: ParameterOptionType.DICT_ARRAY,
-    //             options: readableTimePoints.map((c, i) => {
-    //                 return {
-    //                     channelNumber: i,
-    //                     displayValue: c,
-    //                 };
-    //             }),
-    //         },
-    //     });
-
-    //     const sourceOperator = new Operator({
-    //         operatorType,
-    //         operatorTypeParameterOptions: operatorParameterOptions,
-    //         resultType: ResultTypes.RASTER,
-    //         projection: Projections.fromCode(ebvProjectionCode),
-    //         attributes: [Operator.RASTER_ATTRIBTE_NAME],
-    //         dataTypes: new Map<string, DataType>().set(Operator.RASTER_ATTRIBTE_NAME, DataTypes.fromCode(ebvDataTypeCode)),
-    //         units: new Map<string, Unit>().set(Operator.RASTER_ATTRIBTE_NAME, ebvUnit),
-    //     });
-
-    //     return new RasterLayer<MappingRasterSymbology>({
-    //         name: this.ebvName,
-    //         operator: sourceOperator,
-    //         symbology: MappingRasterSymbology.createSymbology({
-    //             unit: ebvUnit,
-    //             colorizer: Colormap.createColorizerDataWithName('COOLWARM', ebvUnit.min, ebvUnit.max, 16, 'linear', true),
-    //         }),
-    //     });
-    // }
-
-    // TODO: implement
     private request<T>(request: string, parameters: string | undefined, dataCallback: (data: T) => void): void {
         this.loading$.next(true);
 
@@ -288,13 +336,9 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
             )
             .subscribe((data) => {
                 dataCallback(data);
-                // console.log('dataMAPPING', data);
 
                 this.changeDetectorRef.markForCheck();
                 this.loading$.next(false);
-
-                // TODO: reactivate scrolling to some element if necessary
-                // this.scrollToBottom();
             });
     }
 
@@ -466,24 +510,12 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
     //             }),
     //         );
     //     }
-
-    private scrollToBottom(): void {
-        setTimeout(() => {
-            const div = this.containerDiv.nativeElement;
-            div.scrollTop = div.scrollHeight;
-        });
-    }
 }
 
 interface EbvClass {
     name: string;
     ebvNames: Array<string>;
 }
-
-// interface EbvClassesResponse {
-//     result: true;
-//     classes: Array<EbvClass>;
-// }
 
 interface EbvDataset {
     id: string;
@@ -494,46 +526,8 @@ interface EbvDataset {
     license: string;
     datasetPath: string;
     ebvClass: string;
+    ebvName: string;
 }
-
-// interface EbvDatasetsResponse {
-//     result: true;
-//     datasets: Array<EbvDataset>;
-// }
-
-// interface EbvDatasetResponse {
-//     result: true;
-//     dataset: {};
-// }
-
-// interface EbvSubgroup {
-//     name: string;
-//     description: string;
-// }
-
-// interface EbvSubgroupsResponse {
-//     result: true;
-//     subgroups: Array<EbvSubgroup>;
-// }
-
-// interface EbvSubgroupValue {
-//     name: string;
-//     label: string;
-//     description: string;
-// }
-
-// interface EbvSubgroupValuesResponse {
-//     result: true;
-//     values: Array<EbvSubgroupValue>;
-// }
-
-// interface EbvDataLoadingInfo {
-//     result: true;
-//     timePoints: Array<number>;
-//     deltaUnit: string;
-//     crsCode: string;
-//     unitRange: [number, number];
-// }
 
 // TODO: implement
 // interface PlotResult {

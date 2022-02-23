@@ -57,6 +57,32 @@ export const timeStepDurationToTimeStepDict = (duration: TimeStepDuration): Time
     };
 };
 
+export const timeStepDurationToDurationInputArg2 = (durationUnit: TimeStepDurationType): DurationInputArg2 => {
+    switch (durationUnit) {
+        case 'millisecond':
+        case 'milliseconds':
+            return 'millisecond';
+        case 'second':
+        case 'seconds':
+            return 'second';
+        case 'minute':
+        case 'minutes':
+            return 'minute';
+        case 'hour':
+        case 'hours':
+            return 'hour';
+        case 'day':
+        case 'days':
+            return 'day';
+        case 'month':
+        case 'months':
+            return 'month';
+        case 'year':
+        case 'years':
+            return 'year';
+    }
+};
+
 export const timeStepDictTotimeStepDuration = (timeStepDict: TimeStepDict): TimeStepDuration => {
     const mapGranularity = (granularity: TimeStepGranularityDict, plural: boolean): TimeStepDurationType => {
         switch (granularity) {
@@ -117,6 +143,10 @@ export class Time implements ToDict<TimeIntervalDict> {
 
     add(durationAmount: DurationInputArg1, durationUnit?: DurationInputArg2): Time {
         return new Time(this.start.clone().add(durationAmount, durationUnit), this.end.clone().add(durationAmount, durationUnit));
+    }
+
+    addDuration(timeStepDuration: TimeStepDuration): Time {
+        return this.add(timeStepDuration.durationAmount, timeStepDurationToDurationInputArg2(timeStepDuration.durationUnit));
     }
 
     subtract(durationAmount: DurationInputArg1, durationUnit?: DurationInputArg2): Time {

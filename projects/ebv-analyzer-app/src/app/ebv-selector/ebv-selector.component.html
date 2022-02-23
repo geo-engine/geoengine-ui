@@ -60,7 +60,7 @@
     <ng-container *ngIf="ebvTree">
         <mat-form-field>
             <mat-label>MISSING LABEL</mat-label>
-            <mat-select (valueChange)="setEbvPath($event, 0)" #selectedRootSubgroup>
+            <mat-select [value]="ebvPath[0]" (valueChange)="setEbvPath($event, 0)" #selectedRootSubgroup>
                 <mat-option>
                     <ngx-mat-select-search
                         [formControl]="waveAutocompleteSelect.filterFormControl"
@@ -80,7 +80,7 @@
     <ng-container *ngFor="let ebvSubgroup of ebvPath; index as i">
         <mat-form-field *ngIf="ebvSubgroup.groups.length">
             <mat-label>MISSING LABEL</mat-label>
-            <mat-select (valueChange)="setEbvPath($event, i + 1)" #selectedSubgroup>
+            <mat-select [value]="ebvPath[i + 1]" (valueChange)="setEbvPath($event, i + 1)" #selectedSubgroup>
                 <mat-option>
                     <ngx-mat-select-search
                         [formControl]="waveAutocompleteSelect.filterFormControl"
@@ -100,7 +100,7 @@
     <ng-container *ngIf="ebvTree && ebvPath.length && !ebvPath[ebvPath.length - 1].groups.length">
         <mat-form-field>
             <mat-label>Entity</mat-label>
-            <mat-select (valueChange)="setEbvEntity($event)" #selectedEntity>
+            <mat-select [value]="ebvEntity" (valueChange)="setEbvEntity($event)" #selectedEntity>
                 <mat-option>
                     <ngx-mat-select-search
                         [formControl]="waveAutocompleteSelect.filterFormControl"
