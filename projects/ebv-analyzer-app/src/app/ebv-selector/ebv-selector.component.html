@@ -59,7 +59,7 @@
     </div>
     <ng-container *ngIf="ebvTree">
         <mat-form-field>
-            <mat-label>MISSING LABEL</mat-label>
+            <mat-label>{{ categoryLabels[0] }}</mat-label>
             <mat-select [value]="ebvPath[0]" (valueChange)="setEbvPath($event, 0)" #selectedRootSubgroup>
                 <mat-option>
                     <ngx-mat-select-search
@@ -79,7 +79,7 @@
     </ng-container>
     <ng-container *ngFor="let ebvSubgroup of ebvPath; index as i">
         <mat-form-field *ngIf="ebvSubgroup.groups.length">
-            <mat-label>MISSING LABEL</mat-label>
+            <mat-label>{{ categoryLabels[i + 1] }}</mat-label>
             <mat-select [value]="ebvPath[i + 1]" (valueChange)="setEbvPath($event, i + 1)" #selectedSubgroup>
                 <mat-option>
                     <ngx-mat-select-search
