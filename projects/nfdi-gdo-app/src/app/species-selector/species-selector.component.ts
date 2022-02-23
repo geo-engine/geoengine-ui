@@ -162,22 +162,19 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
         const workflow: WorkflowDict = {
             type: 'Vector',
             operator: {
-                type: 'ColumnRangeFilter',
+                type: 'OgrSource',
                 params: {
-                    column: 'Species',
-                    ranges: [[species, species]],
-                    keepNulls: false,
-                },
-                sources: {
-                    vector: {
-                        type: 'OgrSource',
-                        params: {
-                            dataset: {
-                                type: 'internal',
-                                datasetId: this.datasetId,
-                            },
-                        },
+                    dataset: {
+                        type: 'internal',
+                        datasetId: this.datasetId,
                     },
+                    attributeFilters: [
+                        {
+                            attribute: 'Species',
+                            ranges: [[species, species]],
+                            keepNulls: false,
+                        },
+                    ],
                 },
             },
         };
