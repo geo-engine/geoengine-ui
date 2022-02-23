@@ -21,9 +21,10 @@ import {
 } from 'wave-core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {AppConfig} from '../app-config.service';
-import {map, mergeMap} from 'rxjs/operators';
+import {filter, map, mergeMap, zipWith} from 'rxjs/operators';
 import {CountryProviderService} from '../country-provider.service';
 import {DataSelectionService} from '../data-selection.service';
+import {ActivatedRoute} from '@angular/router';
 import moment from 'moment';
 
 @Component({
@@ -52,6 +53,8 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
     ebvPath: Array<EbvTreeSubgroup> = [];
 
+    ebvEntity?: EbvTreeEntity;
+
     // ebvLayer?: RasterLayer;
     // TODO: implement
     // plotSettings?: {
@@ -72,6 +75,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         private readonly projectService: ProjectService,
         private readonly countryProviderService: CountryProviderService,
         private readonly dataSelectionService: DataSelectionService,
+        private readonly route: ActivatedRoute,
     ) {
         this.isPlotButtonDisabled$ = this.countryProviderService.getSelectedCountryStream().pipe(map((country) => !country));
     }
@@ -80,6 +84,8 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         this.userService.getSessionTokenForRequest().subscribe(() => {
             this.request<Array<EbvClass>>('ebv/classes', undefined, (data) => {
                 this.ebvClasses = data;
+
+                this.handleQueryParams();
             });
         });
     }
@@ -112,7 +118,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         });
     }
 
-    setEbvDataset(ebvDataset: EbvDataset): void {
+    setEbvDataset(ebvDataset: EbvDataset, callback?: () => void): void {
         if (this.ebvDataset === ebvDataset) {
             return;
         }
@@ -124,6 +130,10 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
         this.request<EbvHierarchy>(`ebv/dataset/${datasetId}/subdatasets`, undefined, (data) => {
             this.ebvTree = data;
+
+            if (callback) {
+                callback();
+            }
         });
     }
 
@@ -131,6 +141,8 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         if (!this.ebvTree) {
             return;
         }
+
+        this.ebvEntity = ebvEntity;
 
         this.ebvDatasetId = {
             fileName: this.ebvTree.tree.fileName,
@@ -176,6 +188,77 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         });
     }
 
+    private handleQueryParams(): void {
+        this.route.queryParams
+            .pipe(
+                filter((params) => params.id),
+                zipWith(this.userService.getSessionTokenForRequest()),
+                mergeMap(([params, sessionToken]) =>
+                    this.http.get<EbvDataset>(`${this.config.API_URL}/ebv/dataset/${params.id}`, {
+                        headers: new HttpHeaders().set('Authorization', `Bearer ${sessionToken}`),
+                    }),
+                ),
+            )
+            .subscribe((dataset) => {
+                const ebvClass = this.ebvClasses.find((c) => c.name === dataset.ebvClass);
+
+                if (!ebvClass) {
+                    return;
+                }
+
+                this.ebvClass = ebvClass;
+                this.ebvNames = ebvClass.ebvNames;
+
+                this.ebvName = dataset.ebvName;
+
+                this.request<Array<EbvDataset>>(`ebv/datasets/${encodeURIComponent(dataset.ebvName)}`, undefined, (data) => {
+                    this.ebvDatasets = data;
+
+                    const selected = data.find((d) => d.id === dataset.id);
+
+                    if (selected) {
+                        this.setEbvDataset(selected, this.selectDefaultGroupEntity.bind(this));
+                        this.changeDetectorRef.markForCheck();
+                    }
+                });
+            });
+    }
+
+    private selectDefaultGroupEntity(): void {
+        if (!this.ebvTree) {
+            return;
+        }
+
+        let groups = this.ebvTree.tree.groups;
+        let index = 0;
+
+        while (groups.length > 0) {
+            this.setEbvPath(groups[0], index++);
+            groups = groups[0].groups;
+        }
+
+        const entity = this.ebvTree.tree.entities[0];
+        this.setEbvEntity(entity);
+
+        this.showEbv();
+    }
+
+    // private generateGdalSourceNetCdfLayer(): RasterLayer {
+    //     if (!this.ebvDataset || !this.ebvDataLoadingInfo) {
+    //         throw Error('Missing dataset and loading info');
+    //     }
+
+    //     const path = this.ebvDataset.dataset_path;
+    //     const netCdfSubdataset = '/' + this.ebvSubgroupValues.map((value) => value.name).join('/');
+
+    //     const timePoints = this.ebvDataLoadingInfo.time_points;
+    //     const readableTimePoints = timePoints.map((t) => moment.unix(t).utc().format());
+    //     const endBound = moment.unix(timePoints[timePoints.length - 1]).add(1, 'days');
+
+    //     const crsCode = this.ebvDataLoadingInfo.crs_code;
+
+    //     const ebvDataTypeCode = 'Float64';
+    //     const ebvProjectionCode = crsCode ? crsCode : 'EPSG:4326';
     private generateGdalSourceNetCdfLayer(): Observable<RasterLayer> {
         if (!this.ebvDataset || !this.ebvTree || !this.ebvDatasetId) {
             throw Error('Missing dataset and loading info');
@@ -423,6 +506,7 @@ interface EbvDataset {
     license: string;
     datasetPath: string;
     ebvClass: string;
+    ebvName: string;
 }
 
 // TODO: implement
