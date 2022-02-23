@@ -1,12 +1,15 @@
 <div class="container mat-typography" #container>
-    <p>Time</p>
-    <!-- TODO: change to backend version -->
-    <wave-app-time-step-selector class="mat-elevation-z4"></wave-app-time-step-selector>
+    <p>Zeitauswahl</p>
+    <wave-time-step-selector
+        class="mat-elevation-z4"
+        timeFormat="MM-YYYY"
+        [timeSteps]="dataSelectionService.timeSteps | async | valueDefault: []"
+    ></wave-time-step-selector>
 
     <mat-divider></mat-divider>
 
-    <mat-form-field>
-        <mat-label>Species</mat-label>
+    <mat-form-field color="accent">
+        <mat-label>Artauswahl</mat-label>
         <mat-select (valueChange)="selectSpecies($event)">
             <mat-option *ngFor="let species of species" [value]="species">
                 {{ species }}
@@ -14,7 +17,46 @@
         </mat-select>
     </mat-form-field>
 
+    <mat-progress-bar
+        [mode]="dataSelectionService.speciesLoadingState$ | async | valueDefault: 'determinate'"
+        [value]="100"
+        color="accent"
+    ></mat-progress-bar>
+
+    <mat-divider></mat-divider>
+
     <div class="spacer"></div>
+
+    <mat-form-field color="accent">
+        <mat-label>Klima-/Wasser-Datenauswahl</mat-label>
+        <mat-select (valueChange)="selectEnvironmentLayer($event)">
+            <mat-option *ngFor="let layer of environmentLayers" [value]="layer">
+                {{ layer.name }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <div class="spacer"></div>
+
+    <mat-divider></mat-divider>
+
+    <div class="spacer"></div>
+
+    <button [disabled]="!selectSpecies || !selectedEnvironmentLayer" mat-stroked-button id="compute-plot" (click)="computePlot()">
+        Berechne Plot
+    </button>
+
+    <div class="spacer"></div>
+
+    <h3 *ngIf="(plotData | async) !== undefined">Plot von {{ selectedSpecies }} und {{ selectedEnvironmentLayer?.name }}</h3>
+
+    <wave-vega-viewer *ngIf="(plotData | async) !== undefined" [chartData]="plotData | async"></wave-vega-viewer>
+
+    <mat-spinner color="accent" *ngIf="plotLoading | async"></mat-spinner>
+
+    <div class="spacer"></div>
+    <div class="spacer"></div>
+
     <mat-divider></mat-divider>
 
     <wave-app-attributions></wave-app-attributions>

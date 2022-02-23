@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Layer, ProjectService, RasterLayer, Time, VectorLayer} from 'wave-core';
+import {Layer, ProjectService, RasterLayer, Time, VectorLayer, LoadingState} from 'wave-core';
 import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import moment from 'moment';
@@ -17,6 +17,8 @@ export class DataSelectionService {
 
     readonly rasterLayer = new BehaviorSubject<RasterLayer | undefined>(undefined);
     readonly speciesLayer = new BehaviorSubject<VectorLayer | undefined>(undefined);
+
+    readonly speciesLoadingState$: Observable<'query' | 'determinate'>;
 
     readonly timeSteps = new BehaviorSubject<Array<Time>>([new Time(moment.utc())]);
     readonly timeFormat = new BehaviorSubject<string>('YYYY'); // TODO: make configurable
@@ -36,13 +38,29 @@ export class DataSelectionService {
                 return layers;
             }),
         );
+
+        this.speciesLoadingState$ = this.speciesLayer.pipe(
+            mergeMap((layer) => {
+                if (layer) {
+                    return this.projectService.getLayerStatusStream(layer);
+                } else {
+                    return of(LoadingState.OK);
+                }
+            }),
+            map((status) => (status === LoadingState.LOADING ? 'query' : 'determinate')),
+        );
     }
 
-    setRasterLayer(layer: RasterLayer, timeSteps: Array<Time>, dataRange: DataRange): Observable<void> {
+    setTimeSteps(timeSteps: Array<Time>): void {
         if (!timeSteps.length) {
-            throw Error('`timeSteps` are required when setting a raster');
+            throw Error('`timeSteps` must not be empty');
         }
 
+        this.timeSteps.next(timeSteps);
+        this.projectService.setTime(timeSteps[0]);
+    }
+
+    setRasterLayer(layer: RasterLayer, dataRange: DataRange): Observable<void> {
         return this.rasterLayer.pipe(
             first(),
             mergeMap((currentLayer) => {
@@ -56,8 +74,6 @@ export class DataSelectionService {
             mergeMap(() => this.projectService.addLayer(layer)),
             tap(() => {
                 this.rasterLayer.next(layer);
-                this.timeSteps.next(timeSteps);
-                this.projectService.setTime(timeSteps[0]);
                 this.dataRange.next(dataRange);
             }),
         );
