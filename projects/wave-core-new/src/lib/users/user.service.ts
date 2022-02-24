@@ -1,5 +1,5 @@
 import {Observable, ReplaySubject, of, Subject} from 'rxjs';
-import {catchError, filter, first, map, mergeMap} from 'rxjs/operators';
+import {catchError, filter, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
 
@@ -134,6 +134,13 @@ export class UserService {
             );
         });
         return result.asObservable();
+    }
+
+    createSessionWithToken(sessionToken: UUID): Observable<Session> {
+        return this.backend.getSession(sessionToken).pipe(
+            mergeMap((response) => this.createSession(response)),
+            tap((session) => this.session$.next(session)),
+        );
     }
 
     getSessionOnce(): Observable<Session> {
