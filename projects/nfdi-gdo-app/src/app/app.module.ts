@@ -36,9 +36,16 @@ import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
         SpeciesSelectorComponent,
         MainComponent,
         LoginComponent,
+    ],
+    imports: [
+        BrowserAnimationsModule,
+        BrowserModule,
+        HttpClientModule,
+        AppRoutingModule,
+        WaveCoreModule,
+        PortalModule,
         NgxMatSelectSearchModule,
     ],
-    imports: [BrowserAnimationsModule, BrowserModule, HttpClientModule, AppRoutingModule, WaveCoreModule, PortalModule],
     providers: [
         {provide: Config, useClass: AppConfig},
         {
