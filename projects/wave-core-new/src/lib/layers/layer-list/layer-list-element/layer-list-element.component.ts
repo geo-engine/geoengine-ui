@@ -66,6 +66,7 @@ export class LayerListElementComponent implements OnDestroy, OnChanges {
      * select a layer
      */
     toggleLegend(layer: Layer): void {
+        this.layer = this.layer.updateFields({isLegendVisible: !this.layer.isLegendVisible});
         this.projectService.toggleLegend(layer);
     }
 
