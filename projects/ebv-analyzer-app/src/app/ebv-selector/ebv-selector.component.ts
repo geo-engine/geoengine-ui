@@ -50,6 +50,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
     ebvDataset?: EbvDataset = undefined;
 
     ebvTree?: EbvHierarchy;
+    categoryLabels: Array<string> = this.createCategoryLabels();
 
     ebvPath: Array<EbvTreeSubgroup> = [];
 
@@ -130,6 +131,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
         this.request<EbvHierarchy>(`ebv/dataset/${datasetId}/subdatasets`, undefined, (data) => {
             this.ebvTree = data;
+            this.categoryLabels = this.createCategoryLabels();
 
             if (callback) {
                 callback();
@@ -186,6 +188,52 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                 this.countryProviderService.replaceVectorLayerOnMap();
             });
         });
+    }
+
+    ebvClassPredicate(filterString: string, element: EbvClass): boolean {
+        return element.name.toLowerCase().includes(filterString);
+    }
+
+    ebvNamePredicate(filterString: string, element: string): boolean {
+        return element.toLowerCase().includes(filterString);
+    }
+
+    ebvDatasetPredicate(filterString: string, element: EbvDataset): boolean {
+        return element.name.toLowerCase().includes(filterString);
+    }
+
+    ebvSubgroupPredicate(filterString: string, element: EbvTreeSubgroup): boolean {
+        return element.title.toLowerCase().includes(filterString);
+    }
+
+    ebvEntityPredicate(filterString: string, element: EbvTreeEntity): boolean {
+        return element.name.toLowerCase().includes(filterString);
+    }
+
+    private createCategoryLabels(): Array<string> {
+        if (!this.ebvTree || this.ebvTree.tree.groups.length === 0) {
+            return [];
+        }
+
+        let hierarchyDepth = 1;
+        let group = this.ebvTree.tree.groups[0];
+
+        while (group.groups.length > 0) {
+            hierarchyDepth++;
+            group = group.groups[0];
+        }
+
+        if (hierarchyDepth === 1) {
+            return ['Metric'];
+        }
+
+        const labels = ['Scenario', 'Metric'];
+
+        for (let i = 2; i < hierarchyDepth; i++) {
+            labels.push('');
+        }
+
+        return labels;
     }
 
     private handleQueryParams(): void {

@@ -131,8 +131,8 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
         },
     ];
 
-    plotData = new BehaviorSubject<any>(undefined);
-    plotLoading = new BehaviorSubject(false);
+    readonly plotData = new BehaviorSubject<any>(undefined);
+    readonly plotLoading = new BehaviorSubject(false);
 
     selectedSpecies?: string = undefined;
     selectedEnvironmentLayer?: EnvironmentLayer = undefined;
@@ -155,6 +155,10 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {}
+
+    speciesPredicate(filter: string, element: string): boolean {
+        return element.toLowerCase().includes(filter);
+    }
 
     selectSpecies(species: string): void {
         this.selectedSpecies = species;

@@ -23,6 +23,7 @@ import {TimeStepSelectorComponent} from './time-step-selector/time-step-selector
 import {AttributionsComponent} from './attributions/attributions.component';
 import {SpeciesSelectorComponent} from './species-selector/species-selector.component';
 import {DataSelectionService} from './data-selection.service';
+import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 
 @NgModule({
     declarations: [AppComponent, AttributionsComponent, LegendComponent, TimeStepSelectorComponent, SpeciesSelectorComponent],
@@ -33,6 +34,7 @@ import {DataSelectionService} from './data-selection.service';
         RouterModule.forRoot([{path: '**', component: AppComponent}], {useHash: true}),
         WaveCoreModule,
         PortalModule,
+        NgxMatSelectSearchModule,
     ],
     providers: [
         {provide: Config, useClass: AppConfig},
