@@ -25,6 +25,7 @@ import {DataSelectionService} from './data-selection.service';
 import {MainComponent} from './main/main.component';
 import {LoginComponent} from './login/login.component';
 import {AppRoutingModule} from './app-routing.module';
+import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 
 @NgModule({
     declarations: [
@@ -35,6 +36,7 @@ import {AppRoutingModule} from './app-routing.module';
         SpeciesSelectorComponent,
         MainComponent,
         LoginComponent,
+        NgxMatSelectSearchModule,
     ],
     imports: [BrowserAnimationsModule, BrowserModule, HttpClientModule, AppRoutingModule, WaveCoreModule, PortalModule],
     providers: [
