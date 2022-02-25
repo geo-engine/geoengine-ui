@@ -18,6 +18,8 @@ import {
     UUID,
     VectorLayer,
     WorkflowDict,
+    TimeProjectionDict,
+    OgrSourceDict,
 } from 'wave-core';
 import {BehaviorSubject, combineLatest, combineLatestWith, first, mergeMap, Observable, of, tap} from 'rxjs';
 import {DataSelectionService} from '../data-selection.service';
@@ -133,6 +135,21 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             name: 'Water Bodies 333m',
             dataRange: [70, 71],
         },
+        {
+            id: 'cbe3364b-4864-4c6f-8f65-e1edb62d4c2f',
+            name: 'ECMWF ERA 5 land 2m temperature',
+            dataRange: [0, 360],
+        },
+        {
+            id: 'eb17f865-108d-4839-a3cf-a5cc742650c5',
+            name: 'ECMWF ERA 5 land Total precipitation',
+            dataRange: [0, 1],
+        },
+        {
+            id: '36574dc3-560a-4b09-9d22-d5945ffb8093',
+            name: 'Landcover classification map of Germany 2020 based on Sentinel-2 data 2019 & 2020',
+            dataRange: [0, 60],
+        },
     ];
 
     plotSpecies = '';
@@ -171,25 +188,36 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     selectSpecies(species: string): void {
         this.selectedSpecies = species;
 
-        // TODO: Span whole year with `TimeProjection`
         const workflow: WorkflowDict = {
             type: 'Vector',
             operator: {
-                type: 'OgrSource',
+                type: 'TimeProjection',
                 params: {
-                    dataset: {
-                        type: 'internal',
-                        datasetId: this.datasetId,
+                    step: {
+                        granularity: 'Years',
+                        step: 1,
                     },
-                    attributeFilters: [
-                        {
-                            attribute: 'Species',
-                            ranges: [[species, species]],
-                            keepNulls: false,
-                        },
-                    ],
                 },
-            },
+                sources: {
+                    vector: {
+                        type: 'OgrSource',
+                        params: {
+                            dataset: {
+                                type: 'internal',
+                                datasetId: this.datasetId,
+                            },
+                            attributeProjection: [],
+                            attributeFilters: [
+                                {
+                                    attribute: 'Species',
+                                    ranges: [[species, species]],
+                                    keepNulls: false,
+                                },
+                            ],
+                        },
+                    } as OgrSourceDict,
+                },
+            } as TimeProjectionDict,
         };
 
         this.projectService
