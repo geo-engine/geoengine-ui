@@ -136,12 +136,12 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             dataRange: [70, 71],
         },
         {
-            id: 'cbe3364b-4864-4c6f-8f65-e1edb62d4c2f',
+            id: '6c9270ad-e87c-404b-aa1f-4bfb8a1b3cd7',
             name: 'ECMWF ERA 5 land 2m temperature',
             dataRange: [0, 360],
         },
         {
-            id: 'eb17f865-108d-4839-a3cf-a5cc742650c5',
+            id: 'fedad2aa-00db-44b5-be38-e8637932aa0a',
             name: 'ECMWF ERA 5 land Total precipitation',
             dataRange: [0, 1],
         },
@@ -161,8 +161,9 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
 
     selectedSpecies?: string = undefined;
     selectedEnvironmentLayer?: EnvironmentLayer = undefined;
+    selectedEnvironmentCitation = new BehaviorSubject<string>('');
 
-    private datasetId: UUID = 'd9dd4530-7a57-44da-a650-ce7d81dcc217';
+    private datasetId: UUID = 'd9dd4530-7a57-44da-a650-ce7d81dcc216';
 
     private selectedEnvironmentDataset?: Dataset = undefined;
 
@@ -274,10 +275,20 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             },
         };
 
+        this.selectedEnvironmentCitation.next('');
+
         this.projectService
             .registerWorkflow(workflow)
             .pipe(
                 combineLatestWith(this.datasetService.getDataset({type: 'internal', datasetId: layer.id})),
+                tap(([workflowId, _dataset]) => {
+                    this.userService
+                        .getSessionTokenForRequest()
+                        .pipe(mergeMap((token) => this.backend.getWorkflowProvenance(workflowId, token)))
+                        .subscribe((provenance) => {
+                            this.selectedEnvironmentCitation.next(provenance.map((p) => p.provenance.citation).join(','));
+                        });
+                }),
                 mergeMap(([workflowId, dataset]) => {
                     this.selectedEnvironmentDataset = dataset;
                     if (!!dataset.symbology && dataset.symbology instanceof RasterSymbology) {

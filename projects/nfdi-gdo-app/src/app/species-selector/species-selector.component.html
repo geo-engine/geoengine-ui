@@ -49,6 +49,12 @@
 
     <div class="spacer"></div>
 
+    <p>
+        Hier können zusätzlich Umweltdaten, z.B. Klima- oder Landnutzungsdaten, der Karte als Hintegrund hinzugefügt werden. Die Daten
+        werden für das gleiche Jahr dargestellt, das in der obigen Zeitauswahl ausgewählt wurde. Die folgende Auswahl erlaubt die Wahl eines
+        Monats für die Darstellung des Umweltlayers.
+    </p>
+
     <mat-form-field color="accent">
         <mat-label>Klima-/Wasser-Datenauswahl</mat-label>
         <mat-select (valueChange)="selectEnvironmentLayer($event)">
@@ -58,11 +64,7 @@
         </mat-select>
     </mat-form-field>
 
-    <p>
-        Hier können zusätzlich Umweltdaten, z.B. Klima- oder Landnutzungsdaten, der Karte als Hintegrund hinzugefügt werden. Die Daten
-        werden für das gleiche Jahr dargestellt, das in der obigen Zeitauswahl ausgewählt wurde. Die folgende Auswahl erlaubt die Wahl eines
-        Monats für die Darstellung des Umweltlayers.
-    </p>
+    <p [innerText]="selectedEnvironmentCitation | async" class="mat-caption"></p>
 
     <div class="container mat-typography" fxLayout="row" fxLayoutAlign="space-between center">
         <mat-slider
