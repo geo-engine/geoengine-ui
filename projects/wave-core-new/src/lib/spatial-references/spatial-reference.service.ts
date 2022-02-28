@@ -53,7 +53,13 @@ export class SpatialReferenceService {
     }
 
     getOlProjection(spatialReference: SpatialReference): OlProjection {
-        return olGetProjection(spatialReference.srsString);
+        const projection = olGetProjection(spatialReference.srsString);
+
+        if (projection) {
+            return projection;
+        } else {
+            throw new Error(`Projection ${spatialReference.srsString} not found`);
+        }
     }
 
     private registerDefaults(): void {
