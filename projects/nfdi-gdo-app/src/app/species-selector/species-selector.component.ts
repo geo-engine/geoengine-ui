@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {
     BackendService,
     BBoxDict,
@@ -180,17 +180,20 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
         private readonly userService: UserService,
         private readonly backend: BackendService,
         private readonly mapService: MapService,
+        private readonly changeDetectorRef: ChangeDetectorRef,
     ) {}
 
     ngOnInit(): void {
-        const speciesLayerSubscription = this.dataSelectionService.speciesLayer.subscribe(
-            (speciesLayer) => (this.speciesLayer = speciesLayer),
-        );
+        const speciesLayerSubscription = this.dataSelectionService.speciesLayer.subscribe((speciesLayer) => {
+            this.speciesLayer = speciesLayer;
+            this.changeDetectorRef.markForCheck();
+        });
         this.subscriptions.push(speciesLayerSubscription);
 
-        const environmentLayerSubscription = this.dataSelectionService.rasterLayer.subscribe(
-            (environmentLayer) => (this.environmentLayer = environmentLayer),
-        );
+        const environmentLayerSubscription = this.dataSelectionService.rasterLayer.subscribe((environmentLayer) => {
+            this.environmentLayer = environmentLayer;
+            this.changeDetectorRef.markForCheck();
+        });
         this.subscriptions.push(environmentLayerSubscription);
 
         this.dataSelectionService.setTimeSteps([...generateYearlyTimeSteps(START_YEAR, END_YEAR, this.currentMonth)]);
