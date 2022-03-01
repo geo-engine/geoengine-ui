@@ -346,7 +346,9 @@ export class LayoutService {
             const sidenavStyle = window.getComputedStyle(sidenavComponent);
             const widthString = sidenavStyle.width;
 
-            if (widthString.indexOf('px') === widthString.length - 2) {
+            if (widthString === 'auto') {
+                return 0;
+            } else if (widthString.indexOf('px') === widthString.length - 2) {
                 return parseFloat(widthString.substr(0, widthString.length - 2)) - 4 * LayoutService.remInPx;
             } else {
                 throw new Error('sidenav width must be a `px` value');

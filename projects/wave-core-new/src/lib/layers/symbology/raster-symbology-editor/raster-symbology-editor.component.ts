@@ -41,6 +41,9 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     protected histogramWorkflowId = new ReplaySubject<UUID>(1);
     protected histogramSubscription?: Subscription;
 
+    protected defaultColor?: ColorAttributeInput;
+    protected noDataColor?: ColorAttributeInput;
+
     constructor(
         protected readonly projectService: ProjectService,
         protected readonly backend: BackendService,
@@ -53,6 +56,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
 
     ngOnInit(): void {
         this.symbology = this.layer.symbology.clone();
+        this.updateNodataAndDefaultColor();
 
         this.updateSymbologyFromLayer();
         this.updateLayerMinMaxFromColorizer();
@@ -135,15 +139,11 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     }
 
     getDefaultColor(): ColorAttributeInput {
-        const key = 'Overflow Color';
-        if (this.symbology.colorizer instanceof LinearGradient || this.symbology.colorizer instanceof PaletteColorizer) {
-            return {
-                key,
-                value: this.symbology.colorizer.defaultColor,
-            };
-        } else {
-            throw new Error('unsupported colorizer type');
+        if (!this.defaultColor) {
+            throw new Error('uninitialized defaultColor');
         }
+
+        return this.defaultColor;
     }
 
     updateDefaultColor(defaultColorInput: ColorAttributeInput): void {
@@ -163,15 +163,11 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     }
 
     getNoDataColor(): ColorAttributeInput {
-        const key = 'No Data Color';
-        if (this.symbology.colorizer instanceof LinearGradient || this.symbology.colorizer instanceof PaletteColorizer) {
-            return {
-                key,
-                value: this.symbology.colorizer.noDataColor,
-            };
-        } else {
-            throw new Error('unsupported colorizer type');
+        if (!this.noDataColor) {
+            throw new Error('uninitialized noDataColor');
         }
+
+        return this.noDataColor;
     }
 
     /**
@@ -235,6 +231,8 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
             return;
         }
         this.symbology = this.layer.symbology;
+
+        this.updateNodataAndDefaultColor();
     }
 
     /**
@@ -244,6 +242,21 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         const breakpoints = this.symbology.colorizer.getBreakpoints();
         this.updateLayerMinValue(breakpoints[0].value);
         this.updateLayerMaxValue(breakpoints[breakpoints.length - 1].value);
+    }
+
+    private updateNodataAndDefaultColor(): void {
+        this.defaultColor = {
+            key: 'Overflow Color',
+            value: this.symbology.colorizer.defaultColor,
+        };
+        if (this.symbology.colorizer instanceof LinearGradient || this.symbology.colorizer instanceof PaletteColorizer) {
+            this.noDataColor = {
+                key: 'No Data Color',
+                value: this.symbology.colorizer.noDataColor,
+            };
+        } else {
+            this.noDataColor = undefined;
+        }
     }
 
     private update(): void {
