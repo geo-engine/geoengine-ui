@@ -7,6 +7,7 @@ import {RouterModule} from '@angular/router';
 import {AppComponent} from './app.component';
 import {
     Config,
+    DatasetService,
     LayoutService,
     MapService,
     NotificationService,
@@ -21,9 +22,11 @@ import {
 import {AppConfig} from './app-config.service';
 import {HelpComponent} from './help/help.component';
 import {SplashDialogComponent} from './splash-dialog/splash-dialog.component';
+import {BasketDialogComponent} from './basket/basket-dialog/basket-dialog.component';
+import {BasketService} from './basket/basket.service';
 
 @NgModule({
-    declarations: [AppComponent, HelpComponent, SplashDialogComponent],
+    declarations: [AppComponent, HelpComponent, SplashDialogComponent, BasketDialogComponent],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,
@@ -39,6 +42,8 @@ import {SplashDialogComponent} from './splash-dialog/splash-dialog.component';
             deps: [Config],
             multi: true,
         },
+        BasketService,
+        DatasetService,
         LayoutService,
         MapService,
         NotificationService,

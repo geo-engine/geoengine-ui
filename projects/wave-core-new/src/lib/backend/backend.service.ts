@@ -337,7 +337,7 @@ export class BackendService {
         });
     }
 
-    private static authorizationHeader(sessionId: UUID): HttpHeaders {
+    public static authorizationHeader(sessionId: UUID): HttpHeaders {
         return new HttpHeaders().set('Authorization', `Bearer ${sessionId}`);
     }
 }

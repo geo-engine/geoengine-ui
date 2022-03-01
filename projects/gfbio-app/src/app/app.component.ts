@@ -1,4 +1,4 @@
-import {Observable, BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 
 import {
@@ -18,32 +18,34 @@ import {MatIconRegistry} from '@angular/material/icon';
 import {MatSidenav} from '@angular/material/sidenav';
 import {MatTabGroup} from '@angular/material/tabs';
 import {
-    AddDataComponent,
     AddDataButton,
-    Layer,
-    SidenavContainerComponent,
-    LayoutService,
-    UserService,
-    RandomColorService,
-    NotificationService,
+    AddDataComponent,
     Config,
-    ProjectService,
-    NavigationButton,
-    MapService,
+    Layer,
+    LayoutService,
     MapContainerComponent,
-    WorkspaceSettingsComponent,
-    OperatorListComponent,
+    MapService,
+    NavigationButton,
+    NotificationService,
     OperatorListButtonGroups,
-    TimeConfigComponent,
+    OperatorListComponent,
     PlotListComponent,
+    ProjectService,
+    RandomColorService,
     SidenavConfig,
+    SidenavContainerComponent,
     SpatialReferenceService,
+    TimeConfigComponent,
+    UserService,
+    WorkspaceSettingsComponent,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from './app-config.service';
 import {HelpComponent} from './help/help.component';
 import {SplashDialogComponent} from './splash-dialog/splash-dialog.component';
+import {BasketService} from './basket/basket.service';
+import {BasketDialogComponent} from './basket/basket-dialog/basket-dialog.component';
 
 @Component({
     selector: 'wave-app-root',
@@ -64,7 +66,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     readonly layerListVisible$: Observable<boolean>;
     readonly layerDetailViewVisible$: Observable<boolean>;
 
-    readonly navigationButtons = this.setupNavigation();
+    readonly navigationButtons = AppComponent.setupNavigation();
     readonly addAFirstLayerConfig = AppComponent.setupAddDataConfig();
 
     middleContainerHeight$: Observable<number>;
@@ -87,6 +89,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         private readonly notificationService: NotificationService,
         private readonly mapService: MapService,
         private readonly spatialReferenceService: SpatialReferenceService,
+        private readonly basketService: BasketService,
         private readonly sanitizer: DomSanitizer,
     ) {
         this.registerIcons();
@@ -129,12 +132,8 @@ export class AppComponent implements OnInit, AfterViewInit {
         setTimeout(() => {
             // emit window height once to resize components if necessary
             this.windowHeight();
-
-            // TODO: don't show this message if the user has clicked the checkbox
-            this.dialog.open(SplashDialogComponent, {});
         });
-
-        // this.handleQueryParameters();
+        this.handleQueryParameters();
     }
 
     setTabIndex(index: number): void {
@@ -153,7 +152,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.iconRegistry.addSvgIcon('cogs', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/cogs.svg'));
     }
 
-    private setupNavigation(): Array<NavigationButton> {
+    private static setupNavigation(): Array<NavigationButton> {
         return [
             {
                 sidenavConfig: AppComponent.setupAddDataConfig(),
@@ -226,39 +225,25 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.windowHeight$.next(window.innerHeight);
     }
 
-    // private handleQueryParameters() {
-    //     this.activatedRoute.queryParams.subscribe(p => {
-    //         for (const parameter of Object.keys(p)) {
-    //             const value = p[parameter];
-    //             switch (parameter) {
-    //                 case 'workflow':
-    //                     try {
-    //                         const newLayer = Layer.fromDict(JSON.parse(value));
-    //                         this.projectService.getProjectStream().pipe(first()).subscribe(project => {
-    //                             if (project.layers.length > 0) {
-    //                                 // show popup
-    //                                 this.dialog.open(WorkflowParameterChoiceDialogComponent, {
-    //                                     data: {
-    //                                         dialogTitle: 'Workflow URL Parameter',
-    //                                         sourceName: 'URL parameter',
-    //                                         layers: [newLayer],
-    //                                         nonAvailableNames: [],
-    //                                         numberOfLayersInProject: project.layers.length,
-    //                                     }
-    //                                 });
-    //                             } else {
-    //                                 // just add the layer if the layer array is empty
-    //                                 this.projectService.addLayer(newLayer);
-    //                             }
-    //                         });
-    //                     } catch (error) {
-    //                         this.notificationService.error(`Invalid Workflow: »${error}«`);
-    //                     }
-    //                     break;
-    //                 default:
-    //                     this.notificationService.error(`Unknown URL Parameter »${parameter}«`);
-    //             }
-    //         }
-    //     });
-    // }
+    /**
+     * @private
+     * @return true, if the splash dialog should be skipped, false otherwise
+     */
+    private handleQueryParameters() : void {
+        this.activatedRoute.queryParamMap.subscribe( p => {
+            console.log("Handling query parameters: " + JSON.stringify(p));
+            const basket_id = p.get("basket_id");
+            if ( basket_id != null ) {
+                this.basketService.handleBasket(basket_id).subscribe(
+                    basket => {
+                        this.dialog.open(BasketDialogComponent, {data: {basket: basket}});
+                        console.log("Successfully processed basket: " + JSON.stringify(basket))
+                    }
+                );
+            }
+            else {
+                this.dialog.open(SplashDialogComponent, {});
+            }
+        });
+    }
 }

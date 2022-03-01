@@ -1,0 +1,25 @@
+.entry-container {
+    display: flex;
+    flex-direction: column;
+    min-width: 600px;
+}
+
+.mat-table {
+    overflow: auto;
+    max-height: 500px;
+}
+
+span.ok {
+    font-weight: bold;
+    color: green;
+}
+
+span.unavailable {
+    font-weight: bold;
+    color: purple;
+}
+
+span.error {
+    font-weight: bold;
+    color: red;
+}
