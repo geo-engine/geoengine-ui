@@ -23,6 +23,7 @@ import {AttributionsComponent} from './attributions/attributions.component';
 import {CountrySelectorComponent} from './country-selector/country-selector.component';
 import {EbvSelectorComponent} from './ebv-selector/ebv-selector.component';
 import {DataSelectionService} from './data-selection.service';
+import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 
 @NgModule({
     declarations: [AppComponent, AttributionsComponent, LegendComponent, CountrySelectorComponent, EbvSelectorComponent],
@@ -33,6 +34,7 @@ import {DataSelectionService} from './data-selection.service';
         RouterModule.forRoot([{path: '**', component: AppComponent}], {useHash: true}),
         WaveCoreModule,
         PortalModule,
+        NgxMatSelectSearchModule,
     ],
     providers: [
         {provide: Config, useClass: AppConfig},

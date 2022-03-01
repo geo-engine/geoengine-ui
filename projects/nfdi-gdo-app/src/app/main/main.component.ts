@@ -11,30 +11,27 @@ import {
     ProjectService,
     MapService,
     MapContainerComponent,
-    Time,
     SpatialReferenceService,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
-import {AppConfig} from './app-config.service';
+import {AppConfig} from './../app-config.service';
 import {ComponentPortal} from '@angular/cdk/portal';
-import moment from 'moment';
-import {DataSelectionService} from './data-selection.service';
-import {EbvSelectorComponent} from './ebv-selector/ebv-selector.component';
+import {DataSelectionService} from './../data-selection.service';
+import {SpeciesSelectorComponent} from './../species-selector/species-selector.component';
 
 @Component({
-    selector: 'wave-app-root',
-    templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss'],
+    selector: 'wave-app-main',
+    templateUrl: './main.component.html',
+    styleUrls: ['./main.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class MainComponent implements OnInit, AfterViewInit {
     @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
 
     readonly layersReverse$: Observable<Array<Layer>>;
-    readonly analysisVisible$ = new BehaviorSubject(false);
     readonly windowHeight$ = new BehaviorSubject<number>(window.innerHeight);
 
-    datasetPortal = new ComponentPortal(EbvSelectorComponent);
+    datasetPortal = new ComponentPortal(SpeciesSelectorComponent);
 
     constructor(
         @Inject(Config) readonly config: AppConfig,
@@ -50,17 +47,16 @@ export class AppComponent implements OnInit, AfterViewInit {
         private _spatialReferenceService: SpatialReferenceService,
         private sanitizer: DomSanitizer,
     ) {
-        this.registerIcons();
-
         this.layersReverse$ = this.dataSelectionService.layers;
     }
 
     ngOnInit(): void {
         this.mapService.registerMapComponent(this.mapComponent);
+        this.reset();
     }
 
     ngAfterViewInit(): void {
-        this.reset();
+        // this.reset();
         this.mapComponent.resize();
     }
 
@@ -68,25 +64,10 @@ export class AppComponent implements OnInit, AfterViewInit {
         return layer.id;
     }
 
-    showAnalysis(): void {
-        this.analysisVisible$.next(true);
-    }
-
     private reset(): void {
         this.projectService.clearLayers();
         this.projectService.clearPlots();
-        this.projectService.setTime(new Time(moment.utc()));
-    }
-
-    private registerIcons(): void {
-        this.iconRegistry.addSvgIconInNamespace(
-            'geoengine',
-            'logo',
-            this.sanitizer.bypassSecurityTrustResourceUrl('assets/geoengine-white.svg'),
-        );
-
-        // used for navigation
-        this.iconRegistry.addSvgIcon('cogs', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/cogs.svg'));
+        // this.projectService.setTime(new Time(moment.utc()));
     }
 
     @HostListener('window:resize')

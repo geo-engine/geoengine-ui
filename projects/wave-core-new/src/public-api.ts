@@ -39,6 +39,7 @@ export * from './lib/layers/layer-icons/line-icon/line-icon.component';
 export * from './lib/layers/layer-icons/point-icon/point-icon.component';
 export * from './lib/layers/layer-icons/polygon-icon/polygon-icon.component';
 export * from './lib/layers/layer-icons/raster-icon/raster-icon.component';
+export * from './lib/layers/layer-list/layer-list-menu/layer-list-menu.component';
 export * from './lib/layers/layer-list/layer-list.component';
 export * from './lib/layers/layer-list/layer-list-element/layer-list-element.component';
 export * from './lib/layers/legend/legend-raster/raster-legend.component';
@@ -88,9 +89,9 @@ export * from './lib/time/time-config/time-config.component';
 export * from './lib/time/time-input/time-input.component';
 export * from './lib/time/time-step-selector/time-step-selector.component';
 export * from './lib/users/login/login.component';
-export * from './lib/layers/layer-list/layer-list-menu/layer-list-menu.component';
 export * from './lib/users/modal-login/modal-login.component';
 export * from './lib/util/components/code-editor.component';
+export * from './lib/util/directives/autocomplete-select.directive';
 
 // Pipes
 export * from './lib/util/pipes/async-converters.pipe';
@@ -106,8 +107,9 @@ export * from './lib/util/pipes/trim.pipe';
 // Models
 export * from './lib/backend/backend.model';
 export * from './lib/backend/operator.model';
-export * from './lib/colors/color';
 export * from './lib/colors/color-breakpoint.model';
+export * from './lib/colors/color';
+export * from './lib/colors/colorizer.model';
 export * from './lib/datasets/dataset.model';
 export * from './lib/layers/layer-metadata.model';
 export * from './lib/layers/layer.model';

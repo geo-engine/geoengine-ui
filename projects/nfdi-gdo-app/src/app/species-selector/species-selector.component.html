@@ -2,16 +2,31 @@
     <p>Zeitauswahl</p>
     <wave-time-step-selector
         class="mat-elevation-z4"
-        timeFormat="MM-YYYY"
+        timeFormat="YYYY"
         [timeSteps]="dataSelectionService.timeSteps | async | valueDefault: []"
     ></wave-time-step-selector>
+    <p>
+        Es wird ein Jahr ausgewählt, für den sämtliche Libellenbeobachtungen angezeigt werden. Die Beobachtungen werden auf dei Karte
+        räumlich zusammengefasst als Kreise dargestellt, wobei größere Kreise mehr Beobachtungspunkte (als Zahl im Kreis erkenntlich)
+        repräsentieren. Wird hineingezoomt, zerfallen einzelne Kreise in mehrere genauere Kreise, die weniger Beobachtungspunkte
+        repräsentieren.
+    </p>
 
     <mat-divider></mat-divider>
 
     <mat-form-field color="accent">
         <mat-label>Artauswahl</mat-label>
         <mat-select (valueChange)="selectSpecies($event)">
-            <mat-option *ngFor="let species of species" [value]="species">
+            <mat-option>
+                <ngx-mat-select-search
+                    [formControl]="waveAutocompleteSelect.filterFormControl"
+                    waveAutocompleteSelect
+                    [waveAutocompleteSelectAllValues]="species"
+                    [waveAutocompleteSelectSearchPredicate]="speciesPredicate"
+                    #waveAutocompleteSelect="waveAutocompleteSelect"
+                ></ngx-mat-select-search>
+            </mat-option>
+            <mat-option *ngFor="let species of waveAutocompleteSelect.filteredValues | async" [value]="species">
                 {{ species }}
             </mat-option>
         </mat-select>
@@ -27,10 +42,22 @@
         <div class="spacer"></div>
         <wave-layer-list-element [layer]="speciesLayer" [menu]="false"></wave-layer-list-element>
     </div>
+    <div class="spacer"></div>
+
+    <p>
+        Hier kann eine Spezies nach Artnamen ausgewählt werden. Für diese werden dann die Beobachtungen in der Karte angezeigt. Über eine
+        Suche kann diese Liste nach bestimmten Arten durchsucht werden.
+    </p>
 
     <mat-divider></mat-divider>
 
     <div class="spacer"></div>
+
+    <p>
+        Hier können zusätzlich Umweltdaten, z.B. Klima- oder Landnutzungsdaten, der Karte als Hintegrund hinzugefügt werden. Die Daten
+        werden für das gleiche Jahr dargestellt, das in der obigen Zeitauswahl ausgewählt wurde. Die folgende Auswahl erlaubt die Wahl eines
+        Monats für die Darstellung des Umweltlayers.
+    </p>
 
     <mat-form-field color="accent">
         <mat-label>Klima-/Wasser-Datenauswahl</mat-label>
@@ -45,11 +72,32 @@
         <wave-layer-list-element [layer]="environmentLayer" [menu]="false"></wave-layer-list-element>
     </div>
 
+    <p [innerText]="selectedEnvironmentCitation | async" class="mat-caption"></p>
+
+    <div class="container mat-typography" fxLayout="row" fxLayoutAlign="space-between center">
+        <mat-slider
+            thumbLabel="true"
+            [min]="1"
+            [max]="12"
+            [step]="1"
+            [tickInterval]="1"
+            (change)="setMonth($event.value)"
+            fxFlex
+        ></mat-slider>
+        <span fxFlex="1rem"></span>
+        <span fxFlex="4rem">{{ thumbLabelMonthDisplay(currentMonth) }}</span>
+    </div>
+
     <div class="spacer"></div>
 
     <mat-divider></mat-divider>
 
     <div class="spacer"></div>
+
+    <p>
+        Im Folgenden kann ein Histogramm berechnet werden, welches den Umweltlayer mit den Beobachtungsdaten räumlich und zeitlich verknüpft
+        und die Werteverteilung darstellt. Maßgeblich ist der ausgewählte Monat und das Jahr.
+    </p>
 
     <button [disabled]="!selectSpecies || !selectedEnvironmentLayer" mat-stroked-button id="compute-plot" (click)="computePlot()">
         Berechne Plot
@@ -57,7 +105,7 @@
 
     <div class="spacer"></div>
 
-    <h3 *ngIf="(plotData | async) !== undefined">Plot von {{ selectedSpecies }} und {{ selectedEnvironmentLayer?.name }}</h3>
+    <h3 *ngIf="(plotData | async) !== undefined">Plot von {{ plotSpecies }} und {{ plotEnvironmentLayer }}</h3>
 
     <wave-vega-viewer *ngIf="(plotData | async) !== undefined" [chartData]="plotData | async"></wave-vega-viewer>
 
