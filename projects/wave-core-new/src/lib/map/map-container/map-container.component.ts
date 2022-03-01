@@ -60,7 +60,7 @@ import {SpatialReferenceService, WEB_MERCATOR} from '../../spatial-references/sp
 import {containsCoordinate, getCenter} from 'ol/extent';
 import {olExtentToTuple} from '../../util/conversions';
 
-type MapLayer = MapLayerComponent<OlLayer<OlSource>, OlSource>;
+type MapLayer = MapLayerComponent<OlLayer<OlSource, any>, OlSource>;
 
 const DEFAULT_ZOOM_LEVEL = 2;
 const MIN_ZOOM_LEVEL = 0;
@@ -103,9 +103,9 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     private maps: Array<OlMap>;
     private view: OlView;
     private backgroundLayerSource?: OlSource;
-    private backgroundLayers: Array<OlLayer<OlSource>> = [];
+    private backgroundLayers: Array<OlLayer<OlSource, any>> = [];
 
-    private selectedOlLayer?: OlLayer<OlSource> = undefined;
+    private selectedOlLayer?: OlLayer<OlSource, any> = undefined;
     private userSelect?: OlInteractionSelect;
 
     private selectedFeature?: OlFeature<OlGeometry> = undefined;
@@ -555,7 +555,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         });
     }
 
-    private createBackgroundLayer(projection: SpatialReference): OlLayer<OlSource> {
+    private createBackgroundLayer(projection: SpatialReference): OlLayer<OlSource, any> {
         switch (this.config.MAP.BACKGROUND_LAYER) {
             case 'OSM':
                 if (projection === WEB_MERCATOR.spatialReference) {

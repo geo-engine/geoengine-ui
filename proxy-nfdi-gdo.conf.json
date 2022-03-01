@@ -1,0 +1,15 @@
+{
+    "/api/*": {
+        "target": "https://internal-demo.peter.geoengine.io/api",
+        "changeOrigin": true,
+        "pathRewrite": {
+            "^/api": ""
+        },
+        "secure": false,
+        "logLevel": "debug"
+    },
+    "/mapcache/*": {
+        "target": "http://sng107.sng.uni-frankfurt.de/mapcache/",
+        "logLevel": "debug"
+    }
+}

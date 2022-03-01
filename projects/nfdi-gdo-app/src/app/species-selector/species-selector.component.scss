@@ -1,0 +1,30 @@
+:host {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: calc(100% - 64px);
+    display: block;
+}
+.container {
+    display: block;
+    margin: 1rem;
+}
+
+mat-toolbar {
+    height: 64px !important;
+}
+
+mat-form-field {
+    width: 100%;
+}
+
+mat-spinner {
+    margin: 0 auto;
+}
+
+mat-divider {
+    margin: 1rem 0;
+}
+
+.spacer {
+    margin-top: 1rem;
+}

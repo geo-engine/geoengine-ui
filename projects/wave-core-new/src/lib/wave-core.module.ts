@@ -116,6 +116,8 @@ import {ScrollingModule} from '@angular/cdk/scrolling';
 import {LayerListMenuComponent} from './layers/layer-list/layer-list-menu/layer-list-menu.component';
 import {ModalLoginComponent} from './users/modal-login/modal-login.component';
 import {CodeEditorComponent} from './util/components/code-editor.component';
+import {TimeStepSelectorComponent} from './time/time-step-selector/time-step-selector.component';
+import {AutocompleteSelectDirective} from './util/directives/autocomplete-select.directive';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -169,6 +171,8 @@ const WAVE_PIPES = [
 const WAVE_COMPONENTS = [
     AddDataComponent,
     AddWorkflowComponent,
+    AutocompleteSelectDirective,
+    BoxPlotOperatorComponent,
     ChangeSpatialReferenceComponent,
     CodeEditorComponent,
     ColorAttributeInputComponent,
@@ -186,8 +190,6 @@ const WAVE_COMPONENTS = [
     ExpressionOperatorComponent,
     FeatureAttributeOvertimeComponent,
     HistogramOperatorComponent,
-    BoxPlotOperatorComponent,
-    ScatterplotOperatorComponent,
     IfGuestDirective,
     IfLoggedInDirective,
     LayerListComponent,
@@ -225,6 +227,7 @@ const WAVE_COMPONENTS = [
     RasterVectorJoinComponent,
     RenameLayerComponent,
     SaveProjectAsComponent,
+    ScatterplotOperatorComponent,
     SidenavContainerComponent,
     SidenavHeaderComponent,
     SidenavSearchComponent,
@@ -235,6 +238,7 @@ const WAVE_COMPONENTS = [
     TemporalRasterAggregationComponent,
     TimeConfigComponent,
     TimeInputComponent,
+    TimeStepSelectorComponent,
     UploadComponent,
     VatLogoComponent,
     VectorLegendComponent,

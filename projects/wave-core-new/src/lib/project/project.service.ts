@@ -61,7 +61,7 @@ export class ProjectService {
     private readonly layerMetadata$ = new Map<number, ReplaySubject<LayerMetadata>>();
     private readonly layerMetadataState$ = new Map<number, ReplaySubject<LoadingState>>();
 
-    private readonly layerData$ = new Map<number, ReplaySubject<LayerData>>();
+    private readonly layerData$ = new Map<number, ReplaySubject<LayerData | undefined>>();
     private readonly layerDataState$ = new Map<number, ReplaySubject<LoadingState>>();
     private readonly layerDataSubscriptions = new Map<number, Subscription>();
 
@@ -1048,7 +1048,7 @@ export class ProjectService {
     private createLayerDataStreams(layer: Layer): void {
         // each layer has data. The type depends on the layer type
         const layerDataLoadingState$ = new ReplaySubject<LoadingState>(1);
-        const layerData$ = new ReplaySubject<LayerData>(1);
+        const layerData$ = new ReplaySubject<LayerData | undefined>(1);
         let layerDataSub: Subscription;
         switch (layer.layerType) {
             case 'raster':
