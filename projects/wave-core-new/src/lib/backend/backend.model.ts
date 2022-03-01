@@ -38,7 +38,16 @@ export interface BBoxDict {
 }
 
 /**
+ * UNIX timestamp in milliseconds.
+ *
+ * TODO: For input, allow ISO 8601 string
+ */
+export type TimeInstanceDict = string;
+
+/**
  * UNIX time in Milliseconds
+ *
+ * TODO: For input, allow ISO 8601 strings
  */
 export interface TimeIntervalDict {
     start: number;

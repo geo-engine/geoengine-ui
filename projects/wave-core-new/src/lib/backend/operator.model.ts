@@ -1,4 +1,13 @@
-import {MeasurementDict, OperatorDict, OperatorParams, SourceOperatorDict, SrsString} from './backend.model';
+import {
+    DatasetIdDict,
+    MeasurementDict,
+    OperatorDict,
+    OperatorParams,
+    SourceOperatorDict,
+    SrsString,
+    TimeInstanceDict,
+    TimeStepDict,
+} from './backend.model';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface EmptyParams extends OperatorParams {
@@ -162,5 +171,26 @@ export interface VisualPointClusteringParams extends OperatorParams {
             columnName: string;
             aggregateType: 'meanNumber' | 'stringSample' | 'null';
         };
+    };
+}
+
+export interface OgrSourceDict extends SourceOperatorDict {
+    type: 'OgrSource';
+    params: {
+        dataset: DatasetIdDict;
+        attributeProjection?: Array<string>;
+        attributeFilters?: Array<{
+            attribute: string;
+            ranges: Array<[number, number] | [string, string]>;
+            keepNulls?: boolean;
+        }>;
+    };
+}
+
+export interface TimeProjectionDict extends OperatorDict {
+    type: 'TimeProjection';
+    params: {
+        step: TimeStepDict;
+        stepReference?: TimeInstanceDict;
     };
 }
