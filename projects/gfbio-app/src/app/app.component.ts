@@ -15,7 +15,7 @@ import {
 } from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatIconRegistry} from '@angular/material/icon';
-import {MatSidenav} from '@angular/material/sidenav';
+import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
 import {MatTabGroup} from '@angular/material/tabs';
 import {
     AddDataButton,
@@ -119,11 +119,15 @@ export class AppComponent implements OnInit, AfterViewInit {
     ngAfterViewInit(): void {
         this.layoutService.getSidenavContentComponentStream().subscribe((sidenavConfig) => {
             this.rightSidenavContainer.load(sidenavConfig);
+
+            let openClosePromise: Promise<MatDrawerToggleResult>;
             if (sidenavConfig) {
-                this.rightSidenav.open();
+                openClosePromise = this.rightSidenav.open();
             } else {
-                this.rightSidenav.close();
+                openClosePromise = this.rightSidenav.close();
             }
+
+            openClosePromise.then(() => this.mapComponent.resize());
         });
         this.projectService
             .getNewPlotStream()

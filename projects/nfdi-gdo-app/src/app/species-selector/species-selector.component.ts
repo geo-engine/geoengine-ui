@@ -18,6 +18,8 @@ import {
     UUID,
     VectorLayer,
     WorkflowDict,
+    TimeProjectionDict,
+    OgrSourceDict,
 } from 'wave-core';
 import {BehaviorSubject, combineLatest, combineLatestWith, first, mergeMap, Observable, of, tap} from 'rxjs';
 import {DataSelectionService} from '../data-selection.service';
@@ -29,6 +31,90 @@ interface EnvironmentLayer {
     dataRange: [number, number];
 }
 
+const START_YEAR = 2000;
+const END_YEAR = 2020;
+const SPECIES = [
+    'Aeshna affinis',
+    'Aeshna caerulea',
+    'Aeshna cyanea',
+    'Aeshna grandis',
+    'Aeshna isoceles',
+    'Aeshna juncea',
+    'Aeshna mixta',
+    'Aeshna subarctica',
+    'Aeshna viridis',
+    'Anax ephippiger',
+    'Anax imperator',
+    'Anax parthenope',
+    'Boyeria irene',
+    'Brachytron pratense',
+    'Calopteryx splendens',
+    'Calopteryx virgo',
+    'Ceriagrion tenellum',
+    'Chalcolestes viridis',
+    'Coenagrion armatum',
+    'Coenagrion hastulatum',
+    'Coenagrion lunulatum',
+    'Coenagrion mercuriale',
+    'Coenagrion ornatum',
+    'Coenagrion puella',
+    'Coenagrion pulchellum',
+    'Coenagrion scitulum',
+    'Cordulegaster bidentata',
+    'Cordulegaster boltonii',
+    'Cordulia aenea',
+    'Crocothemis erythraea',
+    'Enallagma cyathigerum',
+    'Epitheca bimaculata',
+    'Erythromma lindenii',
+    'Erythromma najas',
+    'Erythromma viridulum',
+    'Gomphus flavipes',
+    'Gomphus pulchellus',
+    'Gomphus simillimus',
+    'Gomphus vulgatissimus',
+    'Ischnura elegans',
+    'Ischnura pumilio',
+    'Lestes barbarus',
+    'Lestes dryas',
+    'Lestes sponsa',
+    'Lestes virens',
+    'Leucorrhinia albifrons',
+    'Leucorrhinia caudalis',
+    'Leucorrhinia dubia',
+    'Leucorrhinia pectoralis',
+    'Leucorrhinia rubicunda',
+    'Libellula depressa',
+    'Libellula fulva',
+    'Libellula quadrimaculata',
+    'Nehalennia speciosa',
+    'Onychogomphus forcipatus',
+    'Onychogomphus uncatus',
+    'Ophiogomphus cecilia',
+    'Orthetrum albistylum',
+    'Orthetrum brunneum',
+    'Orthetrum cancellatum',
+    'Orthetrum coerulescens',
+    'Oxygastra curtisii',
+    'Platycnemis pennipes',
+    'Pyrrhosoma nymphula',
+    'Somatochlora alpestris',
+    'Somatochlora arctica',
+    'Somatochlora flavomaculata',
+    'Somatochlora metallica',
+    'Sympecma fusca',
+    'Sympecma paedisca',
+    'Sympetrum danae',
+    'Sympetrum depressiusculum',
+    'Sympetrum flaveolum',
+    'Sympetrum fonscolombii',
+    'Sympetrum meridionale',
+    'Sympetrum pedemontanum',
+    'Sympetrum sanguineum',
+    'Sympetrum striolatum',
+    'Sympetrum vulgatum',
+];
+
 @Component({
     selector: 'wave-species-selector',
     templateUrl: './species-selector.component.html',
@@ -36,87 +122,7 @@ interface EnvironmentLayer {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SpeciesSelectorComponent implements OnInit, OnDestroy {
-    readonly species: string[] = [
-        'Aeshna affinis',
-        'Aeshna caerulea',
-        'Aeshna cyanea',
-        'Aeshna grandis',
-        'Aeshna isoceles',
-        'Aeshna juncea',
-        'Aeshna mixta',
-        'Aeshna subarctica',
-        'Aeshna viridis',
-        'Anax ephippiger',
-        'Anax imperator',
-        'Anax parthenope',
-        'Boyeria irene',
-        'Brachytron pratense',
-        'Calopteryx splendens',
-        'Calopteryx virgo',
-        'Ceriagrion tenellum',
-        'Chalcolestes viridis',
-        'Coenagrion armatum',
-        'Coenagrion hastulatum',
-        'Coenagrion lunulatum',
-        'Coenagrion mercuriale',
-        'Coenagrion ornatum',
-        'Coenagrion puella',
-        'Coenagrion pulchellum',
-        'Coenagrion scitulum',
-        'Cordulegaster bidentata',
-        'Cordulegaster boltonii',
-        'Cordulia aenea',
-        'Crocothemis erythraea',
-        'Enallagma cyathigerum',
-        'Epitheca bimaculata',
-        'Erythromma lindenii',
-        'Erythromma najas',
-        'Erythromma viridulum',
-        'Gomphus flavipes',
-        'Gomphus pulchellus',
-        'Gomphus simillimus',
-        'Gomphus vulgatissimus',
-        'Ischnura elegans',
-        'Ischnura pumilio',
-        'Lestes barbarus',
-        'Lestes dryas',
-        'Lestes sponsa',
-        'Lestes virens',
-        'Leucorrhinia albifrons',
-        'Leucorrhinia caudalis',
-        'Leucorrhinia dubia',
-        'Leucorrhinia pectoralis',
-        'Leucorrhinia rubicunda',
-        'Libellula depressa',
-        'Libellula fulva',
-        'Libellula quadrimaculata',
-        'Nehalennia speciosa',
-        'Onychogomphus forcipatus',
-        'Onychogomphus uncatus',
-        'Ophiogomphus cecilia',
-        'Orthetrum albistylum',
-        'Orthetrum brunneum',
-        'Orthetrum cancellatum',
-        'Orthetrum coerulescens',
-        'Oxygastra curtisii',
-        'Platycnemis pennipes',
-        'Pyrrhosoma nymphula',
-        'Somatochlora alpestris',
-        'Somatochlora arctica',
-        'Somatochlora flavomaculata',
-        'Somatochlora metallica',
-        'Sympecma fusca',
-        'Sympecma paedisca',
-        'Sympetrum danae',
-        'Sympetrum depressiusculum',
-        'Sympetrum flaveolum',
-        'Sympetrum fonscolombii',
-        'Sympetrum meridionale',
-        'Sympetrum pedemontanum',
-        'Sympetrum sanguineum',
-        'Sympetrum striolatum',
-        'Sympetrum vulgatum',
-    ];
+    readonly species: string[] = SPECIES;
 
     readonly environmentLayers: EnvironmentLayer[] = [
         {
@@ -129,15 +135,35 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             name: 'Water Bodies 333m',
             dataRange: [70, 71],
         },
+        {
+            id: '6c9270ad-e87c-404b-aa1f-4bfb8a1b3cd7',
+            name: 'ECMWF ERA 5 land 2m temperature',
+            dataRange: [0, 360],
+        },
+        {
+            id: 'fedad2aa-00db-44b5-be38-e8637932aa0a',
+            name: 'ECMWF ERA 5 land Total precipitation',
+            dataRange: [0, 1],
+        },
+        {
+            id: '36574dc3-560a-4b09-9d22-d5945ffb8093',
+            name: 'Landcover classification map of Germany 2020 based on Sentinel-2 data 2019 & 2020',
+            dataRange: [0, 60],
+        },
     ];
 
+    plotSpecies = '';
+    plotEnvironmentLayer = '';
     readonly plotData = new BehaviorSubject<any>(undefined);
     readonly plotLoading = new BehaviorSubject(false);
 
+    currentMonth = 1;
+
     selectedSpecies?: string = undefined;
     selectedEnvironmentLayer?: EnvironmentLayer = undefined;
+    selectedEnvironmentCitation = new BehaviorSubject<string>('');
 
-    private datasetId: UUID = 'd9dd4530-7a57-44da-a650-ce7d81dcc217';
+    private datasetId: UUID = 'd9dd4530-7a57-44da-a650-ce7d81dcc216';
 
     private selectedEnvironmentDataset?: Dataset = undefined;
 
@@ -151,7 +177,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        this.dataSelectionService.setTimeSteps([...generateMonthlyTimeSteps(2018, 1, 12)]);
+        this.dataSelectionService.setTimeSteps([...generateYearlyTimeSteps(START_YEAR, END_YEAR, this.currentMonth)]);
     }
 
     ngOnDestroy(): void {}
@@ -166,21 +192,33 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
         const workflow: WorkflowDict = {
             type: 'Vector',
             operator: {
-                type: 'OgrSource',
+                type: 'TimeProjection',
                 params: {
-                    dataset: {
-                        type: 'internal',
-                        datasetId: this.datasetId,
+                    step: {
+                        granularity: 'Years',
+                        step: 1,
                     },
-                    attributeFilters: [
-                        {
-                            attribute: 'Species',
-                            ranges: [[species, species]],
-                            keepNulls: false,
-                        },
-                    ],
                 },
-            },
+                sources: {
+                    vector: {
+                        type: 'OgrSource',
+                        params: {
+                            dataset: {
+                                type: 'internal',
+                                datasetId: this.datasetId,
+                            },
+                            attributeProjection: [],
+                            attributeFilters: [
+                                {
+                                    attribute: 'Species',
+                                    ranges: [[species, species]],
+                                    keepNulls: false,
+                                },
+                            ],
+                        },
+                    } as OgrSourceDict,
+                },
+            } as TimeProjectionDict,
         };
 
         this.projectService
@@ -237,10 +275,20 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             },
         };
 
+        this.selectedEnvironmentCitation.next('');
+
         this.projectService
             .registerWorkflow(workflow)
             .pipe(
                 combineLatestWith(this.datasetService.getDataset({type: 'internal', datasetId: layer.id})),
+                tap(([workflowId, _dataset]) => {
+                    this.userService
+                        .getSessionTokenForRequest()
+                        .pipe(mergeMap((token) => this.backend.getWorkflowProvenance(workflowId, token)))
+                        .subscribe((provenance) => {
+                            this.selectedEnvironmentCitation.next(provenance.map((p) => p.provenance.citation).join(','));
+                        });
+                }),
                 mergeMap(([workflowId, dataset]) => {
                     this.selectedEnvironmentDataset = dataset;
                     if (!!dataset.symbology && dataset.symbology instanceof RasterSymbology) {
@@ -283,6 +331,9 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                 tap(() => {
                     this.plotLoading.next(true);
                     this.plotData.next(undefined);
+
+                    this.plotSpecies = this.selectedSpecies ? this.selectedSpecies : '';
+                    this.plotEnvironmentLayer = this.selectedEnvironmentLayer ? this.selectedEnvironmentLayer.name : '';
                 }),
                 mergeMap(([rasterLayer, speciesLayer]) =>
                     combineLatest([
@@ -347,17 +398,62 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                         sessionToken,
                     ),
                 ),
+                first(),
             )
-            .subscribe(
-                (plotData) => {
+            .subscribe({
+                next: (plotData) => {
                     this.plotData.next(plotData.data);
                     this.plotLoading.next(false);
                 },
-                () => {
+                error: () => {
                     // TODO: react on error?
                     this.plotLoading.next(false);
                 },
-            );
+            });
+    }
+
+    thumbLabelMonthDisplay(value: number): string | number {
+        switch (value) {
+            case 1:
+                return 'Januar';
+            case 2:
+                return 'Februar';
+            case 3:
+                return 'März';
+            case 4:
+                return 'April';
+            case 5:
+                return 'Mai';
+            case 6:
+                return 'Juni';
+            case 7:
+                return 'Juli';
+            case 8:
+                return 'August';
+            case 9:
+                return 'September';
+            case 10:
+                return 'Oktober';
+            case 11:
+                return 'November';
+            case 12:
+                return 'Dezember';
+            default:
+                return '';
+        }
+    }
+
+    setMonth(value: number | null): void {
+        if (!value) {
+            return;
+        }
+
+        this.currentMonth = value;
+
+        this.dataSelectionService.setTimeSteps(
+            [...generateYearlyTimeSteps(START_YEAR, END_YEAR, this.currentMonth)],
+            (currentTime: Time, timeStep: Time): boolean => currentTime.start.year() === timeStep.start.year(),
+        );
     }
 }
 
@@ -373,17 +469,19 @@ const extentToBboxDict = ([minx, miny, maxx, maxy]: [number, number, number, num
     },
 });
 
-function* generateMonthlyTimeSteps(year: number, start: number, end: number): IterableIterator<Time> {
-    if (start < 1 || end > 12) {
-        throw Error('start and end must be between 1 and 12');
+function* generateYearlyTimeSteps(yearStart: number, yearEnd: number, fixedMonth: number): IterableIterator<Time> {
+    if (yearStart > yearEnd) {
+        throw Error('start must be before end');
+    }
+    if (fixedMonth < 1 || fixedMonth > 12) {
+        throw Error('month must be between 1 and 12');
     }
 
-    for (let i = start; i <= end; i++) {
-        const month = i.toString().padStart(2, '0');
+    const month = fixedMonth.toString().padStart(2, '0');
+    const nextMonth = fixedMonth === 12 ? '01' : (fixedMonth + 1).toString().padStart(2, '0');
 
-        const nextI = 1 + (i % 12);
-        const nextMonth = nextI.toString().padStart(2, '0');
-        const nextYear = nextI > i ? year : year + 1;
+    for (let year = yearStart; year <= yearEnd; ++year) {
+        const nextYear = fixedMonth === 12 ? year + 1 : year;
 
         const dateStart = `${year}-${month}-01T00:00:00.000Z`;
         const dateEnd = `${nextYear}-${nextMonth}-01T00:00:00.000Z`;

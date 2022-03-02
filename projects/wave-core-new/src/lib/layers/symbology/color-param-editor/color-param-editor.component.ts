@@ -39,8 +39,11 @@ export class ColorParamEditorComponent implements OnChanges, OnDestroy, AfterVie
 
     protected defaultColorParam: ColorParam = new StaticColor(BLACK);
 
+    protected _defaultColorAttribute: ColorAttributeInput;
+
     constructor() {
         this.colorParam = this.defaultColorParam;
+        this._defaultColorAttribute = {key: '', value: this.colorParam.getDefault()};
     }
 
     @HostListener('blur') onBlur(): void {
@@ -110,7 +113,7 @@ export class ColorParamEditorComponent implements OnChanges, OnDestroy, AfterVie
     }
 
     get defaultColorAttribute(): ColorAttributeInput {
-        return {key: '', value: this.colorParam.getDefault()};
+        return this._defaultColorAttribute;
     }
 
     set defaultColorAttribute(colorAttribute: ColorAttributeInput) {
@@ -211,6 +214,8 @@ export class ColorParamEditorComponent implements OnChanges, OnDestroy, AfterVie
         } else {
             this.colorParam = new StaticColor(defaultColor);
         }
+
+        this._defaultColorAttribute = {key: '', value: this.colorParam.getDefault()};
 
         if (emit) {
             this.onChange(this.colorParam);
