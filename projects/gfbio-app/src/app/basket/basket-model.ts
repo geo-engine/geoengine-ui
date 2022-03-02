@@ -1,19 +1,20 @@
 import {DatasetIdDict, TypedResultDescriptorDict} from 'wave-core';
+import {AttributeFilterDict} from '../../../../wave-core-new/src/lib/backend/backend.model';
 
 export interface BasketEntry {
-    title: string,
-    status: "ok" | "unavailable" | "error",
-    message: String | null,
-    datasetId: DatasetIdDict,
-    sourceOperator: string,
-    resultDescriptor: TypedResultDescriptorDict,
+    title: string;
+    status: 'ok' | 'unavailable' | 'error';
+    message: string | null;
+    datasetId: DatasetIdDict;
+    sourceOperator: string;
+    resultDescriptor: TypedResultDescriptorDict;
+    attributeFilters: Array<AttributeFilterDict> | undefined;
 }
 
-
 export interface Basket {
-    basket_id: number;
+    basketId: number;
     content: Array<BasketEntry>;
-    user_id: String | null;
+    userId: string | null;
     created: Date;
     updated: Date;
 }

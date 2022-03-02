@@ -229,19 +229,14 @@ export class AppComponent implements OnInit, AfterViewInit {
      * @private
      * @return true, if the splash dialog should be skipped, false otherwise
      */
-    private handleQueryParameters() : void {
-        this.activatedRoute.queryParamMap.subscribe( p => {
-            console.log("Handling query parameters: " + JSON.stringify(p));
-            const basket_id = p.get("basket_id");
-            if ( basket_id != null ) {
-                this.basketService.handleBasket(basket_id).subscribe(
-                    basket => {
-                        this.dialog.open(BasketDialogComponent, {data: {basket: basket}});
-                        console.log("Successfully processed basket: " + JSON.stringify(basket))
-                    }
-                );
-            }
-            else {
+    private handleQueryParameters(): void {
+        this.activatedRoute.queryParamMap.subscribe((p) => {
+            const basketId = p.get('basket_id');
+            if (basketId != null) {
+                this.basketService.handleBasket(basketId).subscribe((basket) => {
+                    this.dialog.open(BasketDialogComponent, {data: {basket}});
+                });
+            } else {
                 this.dialog.open(SplashDialogComponent, {});
             }
         });
