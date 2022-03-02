@@ -8,8 +8,7 @@ import {
     ExternalDatasetIdDict,
     RasterResultDescriptorDict,
     VectorResultDescriptorDict,
-    AttributeFilterDict,
-    AttributeRangeDict,
+    SourceOperatorDict,
 } from '../backend/backend.model';
 import {Symbology} from '../layers/symbology/symbology.model';
 import {
@@ -28,7 +27,6 @@ export class Dataset {
     readonly resultDescriptor: ResultDescriptor;
     readonly sourceOperator: string;
     readonly symbology?: Symbology;
-    readonly attributeFilters?: Array<AttributeFilter>;
 
     constructor(config: DatasetDict) {
         this.id = DatasetId.fromDict(config.id);
@@ -37,7 +35,6 @@ export class Dataset {
         this.resultDescriptor = ResultDescriptor.fromDict(config.resultDescriptor);
         this.sourceOperator = config.sourceOperator;
         this.symbology = config.symbology ? Symbology.fromDict(config.symbology) : undefined;
-        this.attributeFilters = config.attributeFilters ? config.attributeFilters.map((dict) => new AttributeFilter(dict)) : undefined;
     }
 
     static fromDict(dict: DatasetDict): Dataset {
@@ -45,49 +42,18 @@ export class Dataset {
     }
 
     createSourceWorkflow(): WorkflowDict {
+        return this.createSourceWorkflowWithOperator({
+            type: this.sourceOperator,
+            params: {
+                dataset: this.id.toDict(),
+            },
+        });
+    }
+
+    createSourceWorkflowWithOperator(operator: SourceOperatorDict): WorkflowDict {
         return {
             type: this.resultDescriptor.getTypeString(),
-            operator: {
-                type: this.sourceOperator,
-                params: {
-                    dataset: this.id.toDict(),
-                    attributeFilters: this.attributeFilters ? this.attributeFilters.map((af) => af.toDict()) : undefined,
-                },
-            },
-        };
-    }
-}
-
-export class AttributeFilterRange {
-    readonly lower: string | number;
-    readonly upper: string | number;
-
-    constructor(config: AttributeRangeDict) {
-        this.lower = config[0];
-        this.upper = config[1];
-    }
-
-    toDict(): AttributeRangeDict {
-        return [this.lower, this.upper];
-    }
-}
-
-export class AttributeFilter {
-    readonly attribute: string;
-    readonly ranges: Array<AttributeFilterRange>;
-    readonly keepNulls: boolean;
-
-    constructor(config: AttributeFilterDict) {
-        this.attribute = config.attribute;
-        this.ranges = config.ranges.map((fd) => new AttributeFilterRange(fd));
-        this.keepNulls = config.keepNulls;
-    }
-
-    toDict(): AttributeFilterDict {
-        return {
-            attribute: this.attribute,
-            keepNulls: this.keepNulls,
-            ranges: this.ranges.map((ar) => ar.toDict()),
+            operator,
         };
     }
 }

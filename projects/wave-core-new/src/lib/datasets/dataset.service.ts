@@ -15,6 +15,7 @@ import {
     SuggestMetaDataDict,
     UploadResponseDict,
     UUID,
+    WorkflowDict,
 } from '../backend/backend.model';
 import {RandomColorService} from '../util/services/random-color.service';
 import {RasterLayer, VectorLayer} from '../layers/layer.model';
@@ -81,9 +82,7 @@ export class DatasetService {
         return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.suggestMetaData(token, suggest)));
     }
 
-    addDatasetToMap(dataset: Dataset): Observable<void> {
-        const workflow = dataset.createSourceWorkflow();
-
+    addDatasetToMapWithSourceWorkflow(dataset: Dataset, workflow: WorkflowDict): Observable<void> {
         return this.projectService.registerWorkflow(workflow).pipe(
             mergeMap((workflowId) => {
                 if (dataset.resultDescriptor.getTypeString() === 'Raster') {
@@ -194,5 +193,10 @@ export class DatasetService {
                 }
             }),
         );
+    }
+
+    addDatasetToMap(dataset: Dataset): Observable<void> {
+        const workflow = dataset.createSourceWorkflow();
+        return this.addDatasetToMapWithSourceWorkflow(dataset, workflow);
     }
 }

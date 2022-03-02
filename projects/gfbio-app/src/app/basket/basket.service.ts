@@ -5,6 +5,8 @@ import {BackendService, Config, Dataset, DatasetDict, DatasetService, ProjectSer
 import {from, Observable, of} from 'rxjs';
 import {filter, mergeMap, toArray} from 'rxjs/operators';
 import {Basket, BasketEntry} from './basket-model';
+import {OgrSourceDict} from '../../../../wave-core-new/src/lib/backend/operator.model';
+import {SourceOperatorDict, WorkflowDict} from '../../../../wave-core-new/src/lib/backend/backend.model';
 
 @Injectable()
 export class BasketService {
@@ -48,8 +50,26 @@ export class BasketService {
             description: 'Description',
             sourceOperator: entry.sourceOperator,
             resultDescriptor: entry.resultDescriptor,
-            attributeFilters: entry.attributeFilters,
         };
-        return this.datasetService.addDatasetToMap(Dataset.fromDict(dict));
+
+        const source =
+            entry.sourceOperator === 'OgrSource'
+                ? ({
+                      type: 'OgrSource',
+                      params: {
+                          dataset: entry.datasetId,
+                          attributeFilters: entry.attributeFilters,
+                      },
+                  } as OgrSourceDict)
+                : ({
+                      type: entry.sourceOperator,
+                      params: {
+                          dataset: entry.datasetId,
+                      },
+                  } as SourceOperatorDict);
+
+        const dataset: Dataset = Dataset.fromDict(dict);
+        const workflow: WorkflowDict = dataset.createSourceWorkflowWithOperator(source);
+        return this.datasetService.addDatasetToMapWithSourceWorkflow(dataset, workflow);
     }
 }

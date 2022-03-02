@@ -253,16 +253,7 @@ export interface SourceOperatorDict {
     type: string;
     params: {
         dataset: DatasetIdDict;
-        attributeFilters?: Array<AttributeFilterDict>;
     };
-}
-
-export type AttributeRangeDict = [string | number, string | number];
-
-export interface AttributeFilterDict {
-    attribute: string;
-    ranges: Array<AttributeRangeDict>;
-    keepNulls: boolean;
 }
 
 export interface TimeStepDict {
@@ -279,7 +270,6 @@ export interface DatasetDict {
     resultDescriptor: TypedResultDescriptorDict;
     sourceOperator: string;
     symbology?: SymbologyDict;
-    attributeFilters?: Array<AttributeFilterDict>;
 }
 
 export type DatasetIdDict = InternalDatasetIdDict | ExternalDatasetIdDict;

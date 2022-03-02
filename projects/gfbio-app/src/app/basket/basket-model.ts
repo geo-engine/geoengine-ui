@@ -1,5 +1,4 @@
-import {DatasetIdDict, TypedResultDescriptorDict} from 'wave-core';
-import {AttributeFilterDict} from '../../../../wave-core-new/src/lib/backend/backend.model';
+import {AttributeFilterDict, DatasetIdDict, TypedResultDescriptorDict} from 'wave-core';
 
 export interface BasketEntry {
     title: string;
