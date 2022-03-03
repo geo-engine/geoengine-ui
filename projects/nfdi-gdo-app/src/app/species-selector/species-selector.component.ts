@@ -139,12 +139,12 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
         {
             id: '6c9270ad-e87c-404b-aa1f-4bfb8a1b3cd7',
             name: 'ECMWF ERA 5 land 2m temperature',
-            dataRange: [0, 360],
+            dataRange: [200, 320],
         },
         {
             id: 'fedad2aa-00db-44b5-be38-e8637932aa0a',
             name: 'ECMWF ERA 5 land Total precipitation',
-            dataRange: [0, 1],
+            dataRange: [0, 0.05],
         },
         {
             id: '36574dc3-560a-4b09-9d22-d5945ffb8093',
