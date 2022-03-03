@@ -23,6 +23,7 @@ enum FormStatus {
 export class TokenLoginComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() routeTo?: Array<string>;
     @Input() invalidTokenText = 'Invalid token';
+    @Input() color: 'primary' | 'accent' = 'primary';
 
     readonly FormStatus = FormStatus;
 

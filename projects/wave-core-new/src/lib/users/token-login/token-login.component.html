@@ -1,5 +1,5 @@
 <form [formGroup]="loginForm" (ngSubmit)="login()">
-    <div class="container" fxLayout="column" fxLayoutAlign="space-around">
+    <div class="container" [ngClass]="{'accent-color': color === 'accent'}" fxLayout="column" fxLayoutAlign="space-around">
         <mat-card class="login">
             <ng-content select="mat-card-header"></ng-content>
 
