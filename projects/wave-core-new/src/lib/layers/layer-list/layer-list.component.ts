@@ -4,25 +4,14 @@ import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {MatDialog} from '@angular/material/dialog';
 import {LayoutService, SidenavConfig} from '../../layout.service';
-import {IconStyle, Symbology, SymbologyType} from '../symbology/symbology.model';
-import {RenameLayerComponent} from '../rename-layer/rename-layer.component';
-import {LoadingState} from '../../project/loading-state.model';
 import {MapService} from '../../map/map.service';
-import {Layer, RasterLayer, VectorLayer} from '../layer.model';
+import {Layer} from '../layer.model';
 import {ProjectService} from '../../project/project.service';
 import {Config} from '../../config.service';
-import {last, map, startWith} from 'rxjs/operators';
 import {AddDataComponent} from '../../datasets/add-data/add-data.component';
-import {LineageGraphComponent} from '../../provenance/lineage-graph/lineage-graph.component';
 import {TabsService} from '../../tabs/tabs.service';
-import {DataTableComponent} from '../../datatable/table/table.component';
-import {Measurement} from '../measurement';
-import {RasterLayerMetadata} from '../layer-metadata.model';
-import {RasterSymbologyEditorComponent} from '../symbology/raster-symbology-editor/raster-symbology-editor.component';
 import {SimpleChanges} from '@angular/core';
-import {VectorSymbologyEditorComponent} from '../symbology/vector-symbology-editor/vector-symbology-editor.component';
 import {NotificationService} from '../../notification.service';
-import {ProvenanceTableComponent} from '../../provenance/table/provenance-table.component';
 
 /**
  * The layer list component displays active layers, legends and other controlls.
@@ -61,17 +50,6 @@ export class LayerListComponent implements OnDestroy, OnChanges {
      * The list of layers displayed in the layer list
      */
     layerList: Array<Layer> = [];
-
-    // make ENUMS and classes visible in the template
-    readonly LayoutService = LayoutService;
-    readonly ST = SymbologyType;
-    readonly LoadingState = LoadingState;
-    readonly RenameLayerComponent = RenameLayerComponent;
-    readonly LineageGraphComponent = LineageGraphComponent;
-    // readonly LayerExportComponent = LayerExportComponent;
-    // readonly LayerShareComponent = LayerShareComponent;
-    // readonly SourceOperatorListComponent = SourceOperatorListComponent;
-    // readonly SymbologyEditorComponent = SymbologyEditorComponent;
 
     // inventory of used subscriptions
     private subscriptions: Array<Subscription> = [];
@@ -126,91 +104,9 @@ export class LayerListComponent implements OnDestroy, OnChanges {
     }
 
     /**
-     * select a layer
-     */
-    toggleLegend(layer: Layer): void {
-        this.projectService.toggleLegend(layer);
-    }
-
-    /**
-     * method to get the symbology stream of a layer. This is used by the icons and legend components.
-     */
-    getLayerSymbologyStream(layer: Layer): Observable<Symbology> {
-        return this.projectService.getLayerChangesStream(layer).pipe(map(() => layer.symbology));
-    }
-
-    getIconStyleStream(layer: Layer): Observable<IconStyle> {
-        return this.projectService.getLayerChangesStream(layer).pipe(
-            startWith(layer),
-            map((l) => l.symbology.getIconStyle()),
-        );
-    }
-
-    /**
      * helper method to cast AbstractSymbology to VectorSymbology
      */
     vectorLayerCast(layer: Layer): Layer {
         return layer as Layer;
-    }
-
-    showChannelParameterSlider(_layer: Layer): boolean {
-        // return layer.operator.operatorType.toString() === 'GDAL Source'
-        //     && !!layer.operator.operatorTypeParameterOptions
-        //     && layer.operator.operatorTypeParameterOptions.getParameterOption('channelConfig').hasTicks();
-
-        // TODO: re-implement
-        return false;
-    }
-
-    showProvenance(layer: Layer): void {
-        const name = this.projectService.getLayerChangesStream(layer).pipe(map((l) => 'Provenance of ' + l.name));
-        const removeTrigger = this.projectService.getLayerChangesStream(layer).pipe(
-            last(),
-            map(() => {}),
-        );
-        this.tabsService.addComponent({
-            name,
-            component: ProvenanceTableComponent,
-            inputs: {layer},
-            equals: (a, b): boolean => a.layer.id === b.layer.id,
-            removeTrigger,
-        });
-    }
-
-    showDatatable(layer: Layer): void {
-        const name = this.projectService.getLayerChangesStream(layer).pipe(map((l) => l.name));
-        const removeTrigger = this.projectService.getLayerChangesStream(layer).pipe(
-            last(),
-            map(() => {}),
-        );
-        this.tabsService.addComponent({
-            name,
-            component: DataTableComponent,
-            inputs: {layer},
-            equals: (a, b): boolean => a.layer.id === b.layer.id,
-            removeTrigger,
-        });
-    }
-
-    showSymbologyEditor(layer: Layer): void {
-        if (layer instanceof RasterLayer) {
-            this.layoutService.setSidenavContentComponent({component: RasterSymbologyEditorComponent, config: {layer}});
-        } else if (layer instanceof VectorLayer) {
-            this.layoutService.setSidenavContentComponent({component: VectorSymbologyEditorComponent, config: {layer}});
-        } else {
-            throw Error(`unknown layer type: ${layer.layerType}`);
-        }
-    }
-
-    getMeasurement(layer: Layer): Observable<Measurement> {
-        return this.projectService.getLayerMetadata(layer).pipe(
-            map((metaData) => metaData as RasterLayerMetadata),
-            map((metaData) => metaData.measurement),
-        );
-    }
-
-    copyWorkflowIdToClipboard(layer: Layer): void {
-        this.clipboard.copy(layer.workflowId);
-        this.notificationService.info('Copied workflow id to clipboard');
     }
 }

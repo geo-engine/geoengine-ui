@@ -55,6 +55,7 @@ import {OlRasterLayerComponent, OlVectorLayerComponent} from './map/map-layer.co
 import {RenameLayerComponent} from './layers/rename-layer/rename-layer.component';
 import {VectorLegendComponent} from './layers/legend/legend-vector/vector-legend.component';
 import {LayerListComponent} from './layers/layer-list/layer-list.component';
+import {LayerListElementComponent} from './layers/layer-list/layer-list-element/layer-list-element.component';
 import {PointIconComponent} from './layers/layer-icons/point-icon/point-icon.component';
 import {LineIconComponent} from './layers/layer-icons/line-icon/line-icon.component';
 import {RasterIconComponent} from './layers/layer-icons/raster-icon/raster-icon.component';
@@ -193,6 +194,7 @@ const WAVE_COMPONENTS = [
     IfGuestDirective,
     IfLoggedInDirective,
     LayerListComponent,
+    LayerListElementComponent,
     LayerListMenuComponent,
     LayerSelectionComponent,
     LineageGraphComponent,

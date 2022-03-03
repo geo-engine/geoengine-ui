@@ -41,6 +41,7 @@ export * from './lib/layers/layer-icons/polygon-icon/polygon-icon.component';
 export * from './lib/layers/layer-icons/raster-icon/raster-icon.component';
 export * from './lib/layers/layer-list/layer-list-menu/layer-list-menu.component';
 export * from './lib/layers/layer-list/layer-list.component';
+export * from './lib/layers/layer-list/layer-list-element/layer-list-element.component';
 export * from './lib/layers/legend/legend-raster/raster-legend.component';
 export * from './lib/layers/legend/legend-vector/vector-legend.component';
 export * from './lib/layers/rename-layer/rename-layer.component';
