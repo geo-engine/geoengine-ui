@@ -176,17 +176,26 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
             time = time.addDuration(timeStep);
         }
 
+        if (timeSteps.length === 0) {
+            // only one time step
+            timeSteps.push(time);
+        }
+
         this.projectService.clearLayers();
 
-        this.generateGdalSourceNetCdfLayer().subscribe((ebvLayer) => {
-            this.ebvLayer = ebvLayer;
+        this.generateGdalSourceNetCdfLayer()
+            .pipe(
+                mergeMap((ebvLayer) => {
+                    this.ebvLayer = ebvLayer;
 
-            const dataRange = guessDataRange(ebvLayer.symbology.colorizer);
+                    const dataRange = guessDataRange(ebvLayer.symbology.colorizer);
 
-            this.dataSelectionService.setRasterLayer(this.ebvLayer, timeSteps, dataRange).subscribe(() => {
+                    return this.dataSelectionService.setRasterLayer(this.ebvLayer, timeSteps, dataRange);
+                }),
+            )
+            .subscribe(() => {
                 this.countryProviderService.replaceVectorLayerOnMap();
             });
-        });
     }
 
     ebvClassPredicate(filterString: string, element: EbvClass): boolean {
