@@ -1,12 +1,23 @@
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {AppConfig} from '../app-config.service';
-import {BackendService, Config, Dataset, DatasetDict, DatasetService, ProjectService, UserService, UUID} from 'wave-core';
+import {
+    BackendService,
+    Config,
+    Dataset,
+    DatasetDict,
+    DatasetService,
+    Layer,
+    OgrSourceDict,
+    ProjectService,
+    SourceOperatorDict,
+    UserService,
+    UUID,
+    WorkflowDict,
+} from 'wave-core';
 import {from, Observable, of} from 'rxjs';
 import {filter, mergeMap, toArray} from 'rxjs/operators';
 import {Basket, BasketEntry} from './basket-model';
-import {OgrSourceDict} from '../../../../wave-core-new/src/lib/backend/operator.model';
-import {SourceOperatorDict, WorkflowDict} from '../../../../wave-core-new/src/lib/backend/backend.model';
 
 @Injectable()
 export class BasketService {
@@ -39,11 +50,12 @@ export class BasketService {
             filter((entry) => entry.status === 'ok'),
             mergeMap((entry) => this.addLayer(entry)),
             toArray(),
+            mergeMap((layers: Array<Layer>) => this.projectService.addLayers(layers)),
             mergeMap(() => of(basket)),
         );
     }
 
-    private addLayer(entry: BasketEntry): Observable<void> {
+    private addLayer(entry: BasketEntry): Observable<Layer> {
         const dict: DatasetDict = {
             id: entry.datasetId,
             name: entry.title,
@@ -70,6 +82,6 @@ export class BasketService {
 
         const dataset: Dataset = Dataset.fromDict(dict);
         const workflow: WorkflowDict = dataset.createSourceWorkflowWithOperator(source);
-        return this.datasetService.addDatasetToMapWithSourceWorkflow(dataset, workflow);
+        return this.datasetService.createLayerFromDatasetWithWorkflow(dataset, workflow);
     }
 }
