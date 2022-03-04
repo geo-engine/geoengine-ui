@@ -1,5 +1,5 @@
 import {BehaviorSubject, combineLatest, Observable, Observer, of, ReplaySubject, Subject, Subscription} from 'rxjs';
-import {debounceTime, distinctUntilChanged, first, map, mergeMap, switchMap, tap} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, first, map, mapTo, mergeMap, switchMap, tap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
 
@@ -255,24 +255,18 @@ export class ProjectService {
      * Set the time of the current project.
      */
     setTime(time: Time): Observable<void> {
-        const subject = new Subject<void>();
-        this.getProjectOnce()
-            .pipe(
-                map((project) => project.time),
-                mergeMap((oldTime) => {
-                    if (time && time.isValid() && !time.isSame(oldTime)) {
-                        return this.changeProjectConfig({time});
-                    } else {
-                        return of<void>();
-                    }
-                }),
-            )
-            .subscribe(
-                () => subject.next(),
-                (error) => subject.error(error),
-                () => subject.complete(),
-            );
-        return subject.asObservable();
+        const result = this.getProjectOnce().pipe(
+            map((project) => project.time),
+            mergeMap((oldTime) => {
+                if (time && time.isValid() && !time.isSame(oldTime)) {
+                    return this.changeProjectConfig({time});
+                } else {
+                    return of(undefined);
+                }
+            }),
+        );
+
+        return ProjectService.subscribeAndProvide(result);
     }
 
     /**
@@ -676,69 +670,53 @@ export class ProjectService {
      * Removes a layer from the current project.
      */
     removeLayer(layer: Layer): Observable<void> {
-        const subject = new Subject<void>();
-
         // TODO: un-select selected layer
 
-        this.getProjectOnce()
-            .pipe(
-                mergeMap((project) => {
-                    const layers = project.layers.filter((l) => l.id !== layer.id);
+        const result = this.getProjectOnce().pipe(
+            mergeMap((project) => {
+                const layers = project.layers.filter((l) => l.id !== layer.id);
 
-                    if (project.layers.length === layers.length) {
-                        // nothing filtered, so no request
-                        return of();
-                    }
+                if (project.layers.length === layers.length) {
+                    // nothing filtered, so no request
+                    return of(undefined);
+                }
 
-                    return this.changeProjectConfig({layers});
-                }),
-            )
-            .subscribe(
-                () => {
-                    this.removeLayerSubscriptions(layer);
-                    this.removeMetadataObservables(layer);
-                    this.layerState$.delete(layer.id);
-                    subject.next();
-                },
-                (error) => subject.error(error),
-                () => subject.complete(),
-            );
+                return this.changeProjectConfig({layers});
+            }),
+            tap(() => {
+                this.removeLayerSubscriptions(layer);
+                this.removeMetadataObservables(layer);
+                this.layerState$.delete(layer.id);
+            }),
+        );
 
-        return subject.asObservable();
+        return ProjectService.subscribeAndProvide(result);
     }
 
     /**
      * Remove all layers from the current project.
      */
     clearLayers(): Observable<void> {
-        const subject = new Subject<void>();
+        const result = this.getProjectOnce().pipe(
+            mergeMap((project) => {
+                const removedLayers: Array<Layer> = project.layers;
 
-        let removedLayers: Array<Layer>;
+                return this.changeProjectConfig({
+                    layers: [],
+                }).pipe(map(() => removedLayers));
+            }),
+            map((removedLayers) => {
+                removedLayers.forEach((layer) => {
+                    this.removeLayerSubscriptions(layer);
+                    this.removeMetadataObservables(layer);
+                    this.layerState$.delete(layer.id);
+                });
 
-        this.getProjectOnce()
-            .pipe(
-                mergeMap((project) => {
-                    removedLayers = project.layers;
+                return undefined;
+            }),
+        );
 
-                    return this.changeProjectConfig({
-                        layers: [],
-                    });
-                }),
-            )
-            .subscribe(
-                () => {
-                    removedLayers.forEach((layer) => {
-                        this.removeLayerSubscriptions(layer);
-                        this.removeMetadataObservables(layer);
-                        this.layerState$.delete(layer.id);
-                    });
-                    subject.next();
-                },
-                (error) => subject.error(error),
-                () => subject.complete(),
-            );
-
-        return subject.asObservable();
+        return ProjectService.subscribeAndProvide(result);
     }
 
     /**
@@ -782,32 +760,22 @@ export class ProjectService {
             isLegendVisible?: boolean;
         },
     ): Observable<void> {
-        const subject = new Subject<void>();
-
         if (Object.keys(changes).length === 0) {
-            subject.next();
-            subject.complete();
-            return subject;
+            return ProjectService.subscribeAndProvide(of(undefined));
         }
 
         layer = layer.updateFields(changes);
 
-        this.getProjectOnce()
-            .pipe(
-                map((project) => project.layers.map((l) => (l.id === layer.id ? layer : l))),
-                mergeMap((layers) => this.changeProjectConfig({layers})),
-                tap(() => {
-                    // propagate layer changes
-                    this.layers.get(layer.id)?.next(layer);
-                }),
-            )
-            .subscribe(
-                () => subject.next(),
-                (error) => subject.error(error),
-                () => subject.complete(),
-            );
+        const result = this.getProjectOnce().pipe(
+            map((project) => project.layers.map((l) => (l.id === layer.id ? layer : l))),
+            mergeMap((layers) => this.changeProjectConfig({layers})),
+            tap(() => {
+                // propagate layer changes
+                this.layers.get(layer.id)?.next(layer);
+            }),
+        );
 
-        return subject;
+        return ProjectService.subscribeAndProvide(result);
     }
 
     /**
@@ -868,12 +836,14 @@ export class ProjectService {
      * Returns a new observable to listen to the values.
      */
     protected static subscribeAndProvide<T>(observable: Observable<T>): Observable<T> {
-        const subject = new Subject<T>();
-        observable.subscribe(
-            (value) => subject.next(value),
-            (error) => subject.error(error),
-            () => subject.complete(),
-        );
+        const subject = new ReplaySubject<T>();
+
+        observable.subscribe({
+            next: (value) => subject.next(value),
+            error: (error) => subject.error(error),
+            complete: () => subject.complete(),
+        });
+
         return subject.asObservable();
     }
 
@@ -972,22 +942,17 @@ export class ProjectService {
         layers?: Array<Layer>;
         timeStepDuration?: TimeStepDuration;
     }): Observable<void> {
-        const subject = new Subject<void>();
-
         // don't request the server if there are no changes
         if (Object.keys(changes).length === 0) {
-            subject.next();
-            subject.complete();
-            return subject.asObservable();
+            return ProjectService.subscribeAndProvide(of(undefined));
         }
 
-        let project: Project;
-        combineLatest([this.getProjectOnce(), this.userService.getSessionTokenForRequest()])
-            .pipe(
-                mergeMap(([oldProject, sessionToken]) => {
-                    project = oldProject.updateFields(changes);
+        const result = combineLatest([this.getProjectOnce(), this.userService.getSessionTokenForRequest()]).pipe(
+            mergeMap(([oldProject, sessionToken]) => {
+                const project: Project = oldProject.updateFields(changes);
 
-                    return this.backend.updateProject(
+                return this.backend
+                    .updateProject(
                         {
                             id: project.id,
                             name: changes.name,
@@ -1002,19 +967,17 @@ export class ProjectService {
                             timeStep: changes.timeStepDuration ? timeStepDurationToTimeStepDict(changes.timeStepDuration) : undefined,
                         },
                         sessionToken,
-                    );
-                }),
-            )
-            .subscribe(
-                () => {
-                    this.project$.next(project);
-                    subject.next();
-                },
-                (error) => subject.error(error),
-                () => subject.complete(),
-            );
+                    )
+                    .pipe(mapTo(project));
+            }),
+            map((project) => {
+                this.project$.next(project);
 
-        return subject.asObservable();
+                return undefined;
+            }),
+        );
+
+        return ProjectService.subscribeAndProvide(result);
     }
 
     private createCombinedLoadingState(layer: HasLayerId): void {
