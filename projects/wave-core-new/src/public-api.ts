@@ -91,6 +91,7 @@ export * from './lib/users/login/login.component';
 export * from './lib/users/modal-login/modal-login.component';
 export * from './lib/util/components/code-editor.component';
 export * from './lib/util/directives/autocomplete-select.directive';
+export * from './lib/time/time-slider/time-slider.component';
 
 // Pipes
 export * from './lib/util/pipes/async-converters.pipe';
