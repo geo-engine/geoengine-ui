@@ -21,7 +21,7 @@ export class DataSelectionService {
     readonly speciesLoadingState$: Observable<'query' | 'determinate'>;
 
     readonly timeSteps = new BehaviorSubject<Array<Time>>([new Time(moment.utc())]);
-    readonly timeFormat = new BehaviorSubject<string>('YYYY'); // TODO: make configurable
+    readonly timeFormat = new BehaviorSubject<string>('YYYY');
 
     readonly dataRange = new BehaviorSubject<DataRange>({min: 0, max: 1});
 
@@ -51,13 +51,32 @@ export class DataSelectionService {
         );
     }
 
-    setTimeSteps(timeSteps: Array<Time>): void {
+    setTimeSteps(timeSteps: Array<Time>, preselectComparator?: (currentTime: Time, timeStep: Time) => boolean): void {
         if (!timeSteps.length) {
             throw Error('`timeSteps` must not be empty');
         }
 
-        this.timeSteps.next(timeSteps);
-        this.projectService.setTime(timeSteps[0]);
+        this.projectService
+            .getTimeOnce()
+            .pipe(
+                map((currentTime) => {
+                    if (!preselectComparator) {
+                        return timeSteps[0];
+                    }
+
+                    for (const timeStep of timeSteps) {
+                        if (preselectComparator(currentTime, timeStep)) {
+                            return timeStep;
+                        }
+                    }
+
+                    return timeSteps[0];
+                }),
+                mergeMap((newTime) => this.projectService.setTime(newTime)),
+            )
+            .subscribe(() => {
+                this.timeSteps.next(timeSteps);
+            });
     }
 
     setRasterLayer(layer: RasterLayer, dataRange: DataRange): Observable<void> {

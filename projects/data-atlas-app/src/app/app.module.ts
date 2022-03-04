@@ -24,9 +24,12 @@ import {LegendComponent} from './legend/legend.component';
 import {AnalysisComponent} from './analysis/analysis.component';
 import {AboutComponent} from './about/about.component';
 import {AppDatasetService} from './app-dataset.service';
+import {LoginComponent} from './login/login.component';
+import {MainComponent} from './main/main.component';
+import {AppRoutingModule} from './app-routing.module';
 
 @NgModule({
-    declarations: [AppComponent, SelectLayersComponent, LegendComponent, AnalysisComponent, AboutComponent],
+    declarations: [AppComponent, SelectLayersComponent, LegendComponent, AnalysisComponent, AboutComponent, LoginComponent, MainComponent],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,
@@ -34,6 +37,7 @@ import {AppDatasetService} from './app-dataset.service';
         RouterModule.forRoot([{path: '**', component: AppComponent}], {useHash: true}),
         WaveCoreModule,
         PortalModule,
+        AppRoutingModule,
     ],
     providers: [
         {provide: Config, useClass: AppConfig},
