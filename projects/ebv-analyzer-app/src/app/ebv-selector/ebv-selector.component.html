@@ -124,7 +124,7 @@
 
     <mat-divider></mat-divider>
 
-    <div fxLayout="row" fxLayoutAlign="space-between start">
+    <div *ngIf="ebvEntity" fxLayout="row" fxLayoutAlign="space-between start">
         <wave-ebv-country-selector fxFlex=""></wave-ebv-country-selector>
         <span fxFlex="1rem"></span>
         <button mat-raised-button color="primary" [disabled]="isPlotButtonDisabled$ | async" (click)="plot()">Calculate</button>
