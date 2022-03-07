@@ -13,4 +13,8 @@ export class BasketDialogComponent {
     constructor(private dialogRef: MatDialogRef<BasketDialogComponent>, @Inject(MAT_DIALOG_DATA) private config: {basket: Basket}) {
         this.basket = config.basket;
     }
+
+    close() {
+        this.dialogRef.close();
+    }
 }

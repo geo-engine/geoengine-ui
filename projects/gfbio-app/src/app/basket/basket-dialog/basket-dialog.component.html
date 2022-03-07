@@ -5,15 +5,15 @@
 
     <div class="entry-container">
         <mat-table #table [dataSource]="basket.content">
-            <!-- Position Column -->
+            <!-- Name Column -->
             <ng-container matColumnDef="title">
                 <mat-header-cell *matHeaderCellDef>Dataset</mat-header-cell>
                 <mat-cell *matCellDef="let element"> {{ element.title }} </mat-cell>
             </ng-container>
 
-            <!-- Name Column -->
+            <!-- Statius Column -->
             <ng-container matColumnDef="status">
-                <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+                <mat-header-cell *matHeaderCellDef>Status </mat-header-cell>
                 <mat-cell *matCellDef="let element"
                     ><span class="{{ element.status }}">{{ element.status }}</span></mat-cell
                 >
@@ -22,5 +22,8 @@
             <mat-header-row *matHeaderRowDef="['title', 'status']"></mat-header-row>
             <mat-row *matRowDef="let row; columns: ['title', 'status']"></mat-row>
         </mat-table>
+    </div>
+    <div class="actions">
+        <button mat-raised-button color="primary" (click)='close()'>OK</button>
     </div>
 </mat-dialog-content>
