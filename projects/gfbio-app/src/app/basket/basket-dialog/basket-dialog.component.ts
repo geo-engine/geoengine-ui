@@ -14,7 +14,7 @@ export class BasketDialogComponent {
         this.basket = config.basket;
     }
 
-    close() {
+    close(): void {
         this.dialogRef.close();
     }
 }

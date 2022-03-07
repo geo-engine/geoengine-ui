@@ -2,6 +2,8 @@ import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserModule} from '@angular/platform-browser';
 import {HttpClientModule} from '@angular/common/http';
+import {MatTableModule} from '@angular/material/table';
+import {MatButtonModule} from '@angular/material/button';
 import {RouterModule} from '@angular/router';
 
 import {AppComponent} from './app.component';
@@ -31,6 +33,8 @@ import {BasketService} from './basket/basket.service';
         BrowserAnimationsModule,
         BrowserModule,
         HttpClientModule,
+        MatTableModule,
+        MatButtonModule,
         RouterModule.forRoot([{path: '**', component: AppComponent}], {useHash: true}),
         WaveCoreModule,
     ],
