@@ -9,15 +9,12 @@
 .layer-list {
     max-height: inherit;
     overflow-y: auto;
+    overflow-x: hidden;
     max-width: 100%;
     border: solid 1px #ccc;
     min-height: 0;
     display: block;
     border-radius: 4px;
-}
-
-.layer-list-element {
-    width: 100%;
 }
 
 .layer-list-box {
@@ -58,16 +55,6 @@
 
 .layer-list.cdk-drop-list-dragging .layer-list-box:not(.cdk-drag-placeholder) {
     transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-}
-
-.layer-list-item-text {
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-}
-
-.list-element-inner-container {
-    width: 100%;
 }
 
 .no-layer {
@@ -151,21 +138,6 @@ button {
 
 mat-toolbar ::ng-deep mat-toolbar-row:first-child {
     display: none !important;
-}
-
-mat-progress-bar {
-    width: 100% !important;
-    height: 1px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
-mat-progress-bar {
-    height: 2px;
-}
-
-.active-layer {
-    background-color: var(--wave-faded-accent-color, grey);
 }
 
 .lineThrough {

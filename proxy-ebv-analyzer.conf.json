@@ -1,6 +1,6 @@
 {
     "/api/*": {
-        "target": "https://gdo.app.geoengine.io/api",
+        "target": "https://ebv.app.geoengine.io/api",
         "changeOrigin": true,
         "pathRewrite": {
             "^/api": ""

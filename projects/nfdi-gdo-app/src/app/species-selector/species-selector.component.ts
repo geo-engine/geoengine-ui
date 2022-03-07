@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {
     BackendService,
     BBoxDict,
@@ -7,6 +7,7 @@ import {
     DatasetService,
     HistogramDict,
     HistogramParams,
+    Layer,
     MapService,
     PointSymbology,
     ProjectService,
@@ -21,7 +22,7 @@ import {
     TimeProjectionDict,
     OgrSourceDict,
 } from 'wave-core';
-import {BehaviorSubject, combineLatest, combineLatestWith, first, mergeMap, Observable, of, tap} from 'rxjs';
+import {BehaviorSubject, combineLatest, combineLatestWith, first, mergeMap, Observable, of, Subscription, tap} from 'rxjs';
 import {DataSelectionService} from '../data-selection.service';
 import moment from 'moment';
 
@@ -138,12 +139,12 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
         {
             id: '6c9270ad-e87c-404b-aa1f-4bfb8a1b3cd7',
             name: 'ECMWF ERA 5 land 2m temperature',
-            dataRange: [0, 360],
+            dataRange: [200, 320],
         },
         {
             id: 'fedad2aa-00db-44b5-be38-e8637932aa0a',
             name: 'ECMWF ERA 5 land Total precipitation',
-            dataRange: [0, 1],
+            dataRange: [0, 0.05],
         },
         {
             id: '36574dc3-560a-4b09-9d22-d5945ffb8093',
@@ -163,9 +164,14 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     selectedEnvironmentLayer?: EnvironmentLayer = undefined;
     selectedEnvironmentCitation = new BehaviorSubject<string>('');
 
+    speciesLayer?: Layer = undefined;
+    environmentLayer?: Layer = undefined;
+
     private datasetId: UUID = 'd9dd4530-7a57-44da-a650-ce7d81dcc216';
 
     private selectedEnvironmentDataset?: Dataset = undefined;
+
+    private subscriptions: Array<Subscription> = [];
 
     constructor(
         public readonly dataSelectionService: DataSelectionService,
@@ -174,13 +180,30 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
         private readonly userService: UserService,
         private readonly backend: BackendService,
         private readonly mapService: MapService,
+        private readonly changeDetectorRef: ChangeDetectorRef,
     ) {}
 
     ngOnInit(): void {
+        const speciesLayerSubscription = this.dataSelectionService.speciesLayer.subscribe((speciesLayer) => {
+            this.speciesLayer = speciesLayer;
+            this.changeDetectorRef.markForCheck();
+        });
+        this.subscriptions.push(speciesLayerSubscription);
+
+        const environmentLayerSubscription = this.dataSelectionService.rasterLayer.subscribe((environmentLayer) => {
+            this.environmentLayer = environmentLayer;
+            this.changeDetectorRef.markForCheck();
+        });
+        this.subscriptions.push(environmentLayerSubscription);
+
         this.dataSelectionService.setTimeSteps([...generateYearlyTimeSteps(START_YEAR, END_YEAR, this.currentMonth)]);
     }
 
-    ngOnDestroy(): void {}
+    ngOnDestroy(): void {
+        for (const sub of this.subscriptions) {
+            sub.unsubscribe();
+        }
+    }
 
     speciesPredicate(filter: string, element: string): boolean {
         return element.toLowerCase().includes(filter);
@@ -228,7 +251,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                     this.dataSelectionService.setSpeciesLayer(
                         new VectorLayer({
                             workflowId,
-                            name: species,
+                            name: 'Beobachtungen',
                             symbology: ClusteredPointSymbology.fromPointSymbologyDict({
                                 type: 'point',
                                 radius: {

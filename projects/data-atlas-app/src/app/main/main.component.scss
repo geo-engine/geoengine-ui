@@ -1,8 +1,8 @@
-$sidenav-width: 33vw;
+$sidenav-width: 24rem;
 
 .sidenav {
     position: absolute;
-    right: 0;
+    left: 0;
     top: 0;
     bottom: 0;
     width: $sidenav-width;
@@ -14,7 +14,7 @@ $sidenav-width: 33vw;
     overflow: auto;
 
     mat-toolbar img {
-        height: 50%;
+        width: 60%;
         margin: 0 auto;
     }
 
@@ -29,11 +29,11 @@ $sidenav-width: 33vw;
     }
 }
 
-#top-float-buttons {
+#bottom-float-buttons {
     position: fixed;
     z-index: 3;
-    left: 0;
-    right: $sidenav-width;
+    left: $sidenav-width;
+    right: 0;
     top: 1rem;
     text-align: center;
 }
@@ -50,41 +50,40 @@ wave-zoom-handles {
     right: 1rem;
 }
 
-#back-button {
-    position: absolute;
-    left: 1rem;
+button#analysisButton {
+    z-index: 3;
+    position: fixed;
+    bottom: 1rem;
+    left: $sidenav-width + 1rem;
 
-    img {
-        height: 1rem;
-        vertical-align: text-top;
-        margin-left: 0.25rem;
+    mat-icon {
+        margin-right: 1rem;
+        height: 2.5rem;
     }
+}
+
+mat-card#analysisCard {
+    z-index: 3;
+    position: fixed;
+    bottom: 1rem;
+    left: $sidenav-width + 1rem;
 }
 
 wave-legend {
     z-index: 4;
     position: absolute;
     bottom: 1rem;
-    right: calc($sidenav-width + 1rem);
+    right: 1rem;
     background-color: rgba(255, 255, 255, 0.87);
 }
 
 .mid-container {
     z-index: 0;
-    position: absolute;
-    right: $sidenav-width;
-    width: calc(100% - $sidenav-width);
+    position: relative;
+    left: $sidenav-width;
+    width: calc(100% - 24rem);
 }
 
 mat-sidenav {
     width: $sidenav-width;
-}
-
-.loading-indicator {
-    position: absolute;
-    left: 0;
-    right: $sidenav-width;
-    bottom: 0;
-    z-index: 2;
-    height: 0.5rem;
 }

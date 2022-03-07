@@ -12,6 +12,7 @@
         "serve:data-atlas:local": "ng serve --configuration development data-atlas-app --proxy-config proxy-local.conf.json",
         "serve:data-atlas:nightly": "ng serve --configuration development data-atlas-app --proxy-config proxy-data-atlas.conf.json",
         "serve:ebv-analyzer:local": "ng serve --configuration development ebv-analyzer-app --proxy-config proxy-local.conf.json",
+        "serve:ebv-analyzer:nightly": "ng serve --configuration development ebv-analyzer-app --proxy-config proxy-ebv-analyzer.conf.json",
         "serve:geoengine:local": "ng serve --configuration development geoengine-app --proxy-config proxy-local.conf.json",
         "serve:geoengine:nightly": "ng serve --configuration development geoengine-app --proxy-config proxy-geoengine.conf.json",
         "serve:gfbio:local": "ng serve --configuration development gfbio-app --proxy-config proxy-local.conf.json",
