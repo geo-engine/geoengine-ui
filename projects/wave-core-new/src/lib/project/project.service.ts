@@ -416,7 +416,7 @@ export class ProjectService {
         const result = this.getProjectOnce().pipe(
             mergeMap((project) =>
                 this.changeProjectConfig({
-                    layers: project.layers.concat(layers),
+                    layers: [...layers].reverse().concat(project.layers),
                 }),
             ),
             tap(() => {
