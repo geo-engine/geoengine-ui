@@ -17,7 +17,7 @@ import {
 import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {DataSelectionService} from '../data-selection.service';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {Country, COUNTRY_LIST, COUNTRY_METADATA} from './country-data.model';
+import {CountryData, COUNTRY_DATA_LIST, COUNTRY_METADATA} from './country-data.model';
 
 interface HistogramParams extends OperatorParams {
     columnName?: string;
@@ -45,7 +45,7 @@ export class AnalysisComponent implements OnInit {
     plotLoading = new BehaviorSubject(false);
 
     private selectedCountryName?: string = undefined;
-    private selectedCountry?: Country = undefined;
+    private selectedCountry?: CountryData = undefined;
 
     constructor(
         private readonly projectService: ProjectService,
@@ -58,7 +58,7 @@ export class AnalysisComponent implements OnInit {
             map(([rasterLayer, polygonLayer]) => !rasterLayer || !polygonLayer),
         );
 
-        for (const countryName of Object.keys(COUNTRY_LIST)) {
+        for (const countryName of Object.keys(COUNTRY_DATA_LIST)) {
             this.countries.push(countryName);
         }
         this.countries.sort();
@@ -68,7 +68,7 @@ export class AnalysisComponent implements OnInit {
 
     selectCountry(country: string): void {
         this.selectedCountryName = country;
-        this.selectedCountry = COUNTRY_LIST[country];
+        this.selectedCountry = COUNTRY_DATA_LIST[country];
 
         const workflow: WorkflowDict = {
             type: 'Vector',

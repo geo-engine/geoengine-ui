@@ -56,14 +56,23 @@ export class AppDatasetService extends DatasetService {
                         isVisible: true,
                     });
 
+                    // TODO: get from metadata
+                    let time: Time;
+                    if (dataset.name.includes('Pre-Industrial')) {
+                        time = new Time(moment.utc('1750-01-01 00:00:00'));
+                    } else if (dataset.name.includes('Early Holocene')) {
+                        time = new Time(moment.utc('0001-01-01 00:00:00'));
+                    } else {
+                        time = new Time(moment.utc('2000-01-01 00:00:00'));
+                    }
+
                     return this.dataSelectionService.setRasterLayer(
                         rasterLayer,
-                        // TODO: get from metadata
-                        [new Time(moment.utc('2000-01-01 00:00:00')), new Time(moment.utc('2001-01-01 00:00:00'))],
+                        [time, time],
                         // TODO: get from metadata
                         {
-                            min: 0,
-                            max: 255,
+                            min: -10,
+                            max: 25,
                         },
                     );
                 } else {
