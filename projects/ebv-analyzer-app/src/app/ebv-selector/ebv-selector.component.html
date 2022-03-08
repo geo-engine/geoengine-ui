@@ -130,7 +130,7 @@
         <button mat-raised-button color="primary" [disabled]="isPlotButtonDisabled$ | async" (click)="plot()">Calculate</button>
     </div>
 
-    <wave-vega-viewer *ngIf="(plotData | async) !== undefined" [chartData]="plotData | async"></wave-vega-viewer>
+    <wave-vega-viewer *ngIf="plotData | async as plot" [chartData]="plot"></wave-vega-viewer>
 
     <mat-spinner color="accent" *ngIf="plotLoading | async"></mat-spinner>
 
