@@ -237,8 +237,8 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.activatedRoute.queryParamMap.subscribe((p) => {
             const basketId = p.get('basket_id');
             if (basketId != null) {
-                this.basketService.handleBasket(basketId).subscribe((basket) => {
-                    this.dialog.open(BasketDialogComponent, {data: {basket}});
+                this.basketService.handleBasket(basketId).subscribe((result) => {
+                    this.dialog.open(BasketDialogComponent, {data: {result}});
                 });
             } else {
                 this.dialog.open(SplashDialogComponent, {});
