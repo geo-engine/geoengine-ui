@@ -55,6 +55,7 @@ import {OlRasterLayerComponent, OlVectorLayerComponent} from './map/map-layer.co
 import {RenameLayerComponent} from './layers/rename-layer/rename-layer.component';
 import {VectorLegendComponent} from './layers/legend/legend-vector/vector-legend.component';
 import {LayerListComponent} from './layers/layer-list/layer-list.component';
+import {LayerListElementComponent} from './layers/layer-list/layer-list-element/layer-list-element.component';
 import {PointIconComponent} from './layers/layer-icons/point-icon/point-icon.component';
 import {LineIconComponent} from './layers/layer-icons/line-icon/line-icon.component';
 import {RasterIconComponent} from './layers/layer-icons/raster-icon/raster-icon.component';
@@ -118,6 +119,7 @@ import {ModalLoginComponent} from './users/modal-login/modal-login.component';
 import {CodeEditorComponent} from './util/components/code-editor.component';
 import {TimeStepSelectorComponent} from './time/time-step-selector/time-step-selector.component';
 import {AutocompleteSelectDirective} from './util/directives/autocomplete-select.directive';
+import {TokenLoginComponent} from './users/token-login/token-login.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -193,6 +195,7 @@ const WAVE_COMPONENTS = [
     IfGuestDirective,
     IfLoggedInDirective,
     LayerListComponent,
+    LayerListElementComponent,
     LayerListMenuComponent,
     LayerSelectionComponent,
     LineageGraphComponent,
@@ -239,6 +242,7 @@ const WAVE_COMPONENTS = [
     TimeConfigComponent,
     TimeInputComponent,
     TimeStepSelectorComponent,
+    TokenLoginComponent,
     UploadComponent,
     VatLogoComponent,
     VectorLegendComponent,

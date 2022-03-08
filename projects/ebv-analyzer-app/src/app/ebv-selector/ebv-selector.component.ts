@@ -179,6 +179,11 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
             time = time.addDuration(timeStep);
         }
 
+        if (timeSteps.length === 0) {
+            // only one time step
+            timeSteps.push(time);
+        }
+
         this.projectService.clearLayers();
 
         this.generateGdalSourceNetCdfLayer().subscribe((ebvLayer) => {
