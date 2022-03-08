@@ -1,4 +1,4 @@
-import {AttributeFilterDict, DatasetIdDict, TypedResultDescriptorDict} from 'wave-core';
+import {AttributeFilterDict, DatasetIdDict, Layer, TypedResultDescriptorDict} from 'wave-core';
 
 export interface BasketEntry {
     title: string;
@@ -16,4 +16,9 @@ export interface Basket {
     userId: string | null;
     created: Date;
     updated: Date;
+}
+
+export interface BasketResult {
+    basket: Basket;
+    layers: Array<Layer>;
 }

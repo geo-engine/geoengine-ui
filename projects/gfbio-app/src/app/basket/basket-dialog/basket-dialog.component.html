@@ -4,7 +4,7 @@
     <p>Here is a summary of the imported datasets from your basket!</p>
 
     <div class="entry-container">
-        <mat-table #table [dataSource]="basket.content">
+        <mat-table #table [dataSource]="result.basket.content">
             <!-- Name Column -->
             <ng-container matColumnDef="title">
                 <mat-header-cell *matHeaderCellDef>Dataset</mat-header-cell>
@@ -24,6 +24,7 @@
         </mat-table>
     </div>
     <div class="actions">
-        <button mat-raised-button color="primary" (click)="close()">OK</button>
+        <button *ngIf="hasLayers$ | async" mat-raised-button color="primary" (click)="replaceLayers()">Replace Layers</button>
+        <button mat-raised-button color="primary" (click)="appendLayers()">Add Layers</button>
     </div>
 </mat-dialog-content>

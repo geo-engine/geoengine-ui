@@ -17,7 +17,7 @@ import {
 } from 'wave-core';
 import {from, Observable, of} from 'rxjs';
 import {filter, mergeMap, toArray} from 'rxjs/operators';
-import {Basket, BasketEntry} from './basket-model';
+import {Basket, BasketEntry, BasketResult} from './basket-model';
 
 @Injectable()
 export class BasketService {
@@ -31,7 +31,7 @@ export class BasketService {
         private readonly http: HttpClient,
     ) {}
 
-    handleBasket(id: UUID): Observable<Basket> {
+    handleBasket(id: UUID): Observable<BasketResult> {
         return this.userService.getSessionTokenForRequest().pipe(
             mergeMap((sessionId) => this.loadBasket(id, sessionId)),
             mergeMap((basket) => this.processBasketEntries(basket)),
@@ -44,14 +44,18 @@ export class BasketService {
         });
     }
 
-    private processBasketEntries(basket: Basket): Observable<Basket> {
+    private processBasketEntries(basket: Basket): Observable<BasketResult> {
         const src: Observable<BasketEntry> = from(basket.content);
         return src.pipe(
             filter((entry) => entry.status === 'ok'),
             mergeMap((entry) => this.addLayer(entry)),
             toArray(),
-            mergeMap((layers: Array<Layer>) => this.projectService.addLayers(layers)),
-            mergeMap(() => of(basket)),
+            mergeMap((layers: Array<Layer>) =>
+                of({
+                    basket,
+                    layers,
+                } as BasketResult),
+            ),
         );
     }
 

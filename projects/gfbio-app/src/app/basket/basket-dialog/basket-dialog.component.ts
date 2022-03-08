@@ -1,6 +1,9 @@
 import {Component, Inject} from '@angular/core';
-import {Basket} from '../basket-model';
+import {BasketResult} from '../basket-model';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {ProjectService} from 'wave-core';
+import {map, mergeMap} from 'rxjs/operators';
+import {Observable} from 'rxjs';
 
 @Component({
     selector: 'wave-gfbio-basket-dialog',
@@ -8,13 +11,28 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
     styleUrls: ['./basket-dialog.component.scss'],
 })
 export class BasketDialogComponent {
-    basket: Basket;
+    result: BasketResult;
+    hasLayers$: Observable<boolean>;
 
-    constructor(private dialogRef: MatDialogRef<BasketDialogComponent>, @Inject(MAT_DIALOG_DATA) private config: {basket: Basket}) {
-        this.basket = config.basket;
+    constructor(
+        private readonly projectService: ProjectService,
+        private dialogRef: MatDialogRef<BasketDialogComponent>,
+        @Inject(MAT_DIALOG_DATA) private config: {result: BasketResult},
+    ) {
+        this.result = config.result;
+        this.hasLayers$ = this.projectService.getLayerStream().pipe(map((layers) => layers.length > 0));
     }
 
-    close(): void {
+    appendLayers(): void {
+        this.projectService.addLayers(this.result.layers).subscribe();
+        this.dialogRef.close();
+    }
+
+    replaceLayers(): void {
+        this.projectService
+            .clearLayers()
+            .pipe(mergeMap(() => this.projectService.addLayers(this.result.layers)))
+            .subscribe();
         this.dialogRef.close();
     }
 }
