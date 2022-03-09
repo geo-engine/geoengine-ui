@@ -122,22 +122,17 @@
 
     <mat-spinner *ngIf="loading$ | async"></mat-spinner>
 
-    <div *ngIf="false">
-        <mat-divider></mat-divider>
+    <mat-divider></mat-divider>
 
-        <!-- <div fxLayout="row" fxLayoutAlign="space-between start">
-            <wave-ebv-country-selector fxFlex=""></wave-ebv-country-selector>
-            <span fxFlex="1rem"></span>
-            <button mat-raised-button color="primary" [disabled]="isPlotButtonDisabled$ | async" (click)="plot()">Calculate</button>
-        </div> -->
-
-        <!-- TODO: implement -->
-        <!-- <wave-ebv-indicator-plot *ngIf="plotSettings"
-                                 [data]="plotSettings.data$"
-                                 [xLimits]="plotSettings.xLimits"
-                                 [yLabel]="plotSettings.yLabel"
-                                 [yLimits]="plotSettings.yLimits"></wave-ebv-indicator-plot> -->
+    <div *ngIf="ebvEntity" fxLayout="row" fxLayoutAlign="space-between start">
+        <wave-ebv-country-selector fxFlex=""></wave-ebv-country-selector>
+        <span fxFlex="1rem"></span>
+        <button mat-raised-button color="primary" [disabled]="isPlotButtonDisabled$ | async" (click)="plot()">Calculate</button>
     </div>
+
+    <wave-vega-viewer *ngIf="plotData | async as plot" [chartData]="plot"></wave-vega-viewer>
+
+    <mat-spinner color="accent" *ngIf="plotLoading | async"></mat-spinner>
 
     <div class="spacer"></div>
     <mat-divider></mat-divider>

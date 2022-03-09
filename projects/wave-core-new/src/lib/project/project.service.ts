@@ -396,18 +396,27 @@ export class ProjectService {
     }
 
     /**
-     * Add a a new layer to the project.
+     * Add a new layer to the project.
      */
     addLayer(layer: Layer, notify = true): Observable<void> {
-        this.createLayerChangesStream(layer);
-        this.createLayerMetadataStreams(layer);
-        this.createLayerDataStreams(layer);
-        this.createCombinedLoadingState(layer);
+        return this.addLayers([layer], notify);
+    }
+
+    /**
+     * Add a set of new layers to the project.
+     */
+    addLayers(layers: Array<Layer>, notify = true): Observable<void> {
+        layers.forEach((layer) => {
+            this.createLayerChangesStream(layer);
+            this.createLayerMetadataStreams(layer);
+            this.createLayerDataStreams(layer);
+            this.createCombinedLoadingState(layer);
+        });
 
         const result = this.getProjectOnce().pipe(
             mergeMap((project) =>
                 this.changeProjectConfig({
-                    layers: [layer, ...project.layers],
+                    layers: [...layers].reverse().concat(project.layers),
                 }),
             ),
             tap(() => {

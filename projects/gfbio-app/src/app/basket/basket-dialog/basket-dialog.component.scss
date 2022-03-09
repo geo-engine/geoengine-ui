@@ -1,0 +1,42 @@
+.entry-container {
+    display: flex;
+    flex-direction: column;
+    min-width: 600px;
+    max-height: 500px;
+}
+
+.mat-table {
+    overflow: auto;
+    max-height: 500px;
+}
+
+.mat-column-status {
+    flex: 0 0 100px !important;
+    width: 100px !important;
+    alignment: center;
+    padding-left: 10px;
+}
+
+span.ok {
+    font-weight: bold;
+    color: green;
+}
+
+span.unavailable {
+    font-weight: bold;
+    color: purple;
+}
+
+span.error {
+    font-weight: bold;
+    color: red;
+}
+
+.actions {
+    float: right;
+    padding-top: 15px;
+}
+
+.actions button {
+    margin-left: 10px;
+}

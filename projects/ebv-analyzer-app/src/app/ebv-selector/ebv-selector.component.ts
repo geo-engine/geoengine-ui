@@ -15,14 +15,21 @@ import {
     timeStepDictTotimeStepDuration,
     Colorizer,
     ColorizerDict,
+    MeanRasterPixelValuesOverTimeDict,
+    ExpressionDict,
+    RasterDataTypes,
+    MapService,
+    BackendService,
+    extentToBboxDict,
 } from 'wave-core';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {AppConfig} from '../app-config.service';
-import {filter, map, mergeMap, zipWith} from 'rxjs/operators';
-import {CountryProviderService} from '../country-provider.service';
+import {filter, first, map, mergeMap, tap, zipWith} from 'rxjs/operators';
+import {Country, CountryProviderService} from '../country-provider.service';
 import {DataSelectionService} from '../data-selection.service';
 import {ActivatedRoute} from '@angular/router';
 import moment from 'moment';
+import {COUNTRY_DATA_LIST} from '../country-selector/country-data.model';
 
 @Component({
     selector: 'wave-ebv-ebv-selector',
@@ -53,14 +60,8 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
     ebvEntity?: EbvTreeEntity;
 
-    // ebvLayer?: RasterLayer;
-    // TODO: implement
-    // plotSettings?: {
-    //     data$: Observable<DataPoint>;
-    //     xLimits: [number, number];
-    //     yLimits: [number, number];
-    //     yLabel: string;
-    // } = undefined;
+    readonly plotData = new BehaviorSubject<any>(undefined);
+    readonly plotLoading = new BehaviorSubject(false);
 
     private ebvDatasetId?: EbvDatasetId = undefined;
     private ebvLayer?: RasterLayer;
@@ -74,6 +75,8 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         private readonly countryProviderService: CountryProviderService,
         private readonly dataSelectionService: DataSelectionService,
         private readonly route: ActivatedRoute,
+        private readonly mapService: MapService,
+        private readonly backend: BackendService,
     ) {
         this.isPlotButtonDisabled$ = this.countryProviderService.getSelectedCountryStream().pipe(map((country) => !country));
     }
@@ -183,19 +186,16 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
         this.projectService.clearLayers();
 
-        this.generateGdalSourceNetCdfLayer()
-            .pipe(
-                mergeMap((ebvLayer) => {
-                    this.ebvLayer = ebvLayer;
+        this.generateGdalSourceNetCdfLayer().subscribe((ebvLayer) => {
+            this.ebvLayer = ebvLayer;
 
-                    const dataRange = guessDataRange(ebvLayer.symbology.colorizer);
+            const dataRange = guessDataRange(ebvLayer.symbology.colorizer);
 
-                    return this.dataSelectionService.setRasterLayer(this.ebvLayer, timeSteps, dataRange);
-                }),
-            )
-            .subscribe(() => {
-                this.countryProviderService.replaceVectorLayerOnMap();
-            });
+            combineLatest([
+                this.dataSelectionService.setRasterLayer(this.ebvLayer, timeSteps, dataRange),
+                this.dataSelectionService.clearPolygonLayer(),
+            ]).subscribe();
+        });
     }
 
     ebvClassPredicate(filterString: string, element: EbvClass): boolean {
@@ -216,6 +216,92 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
     ebvEntityPredicate(filterString: string, element: EbvTreeEntity): boolean {
         return element.name.toLowerCase().includes(filterString);
+    }
+
+    plot(): void {
+        combineLatest([
+            this.dataSelectionService.rasterLayer.pipe(
+                mergeMap<RasterLayer | undefined, Observable<RasterLayer>>((layer) => (layer ? of(layer) : of())),
+                mergeMap((rasterLayer) => this.projectService.getWorkflow(rasterLayer.workflowId)),
+            ),
+            this.countryProviderService
+                .getSelectedCountryStream()
+                .pipe(mergeMap<Country | undefined, Observable<Country>>((country) => (country ? of(country) : of()))),
+        ])
+            .pipe(
+                first(),
+                tap(() => {
+                    this.plotLoading.next(true);
+                    this.plotData.next(undefined);
+                }),
+                mergeMap(([rasterWorkflow, selectedCountry]) =>
+                    this.projectService.registerWorkflow({
+                        type: 'Plot',
+                        operator: {
+                            type: 'MeanRasterPixelValuesOverTime',
+                            params: {
+                                timePosition: 'start',
+                                area: false,
+                            },
+                            sources: {
+                                raster: {
+                                    type: 'Expression',
+                                    params: {
+                                        expression: 'if B IS NODATA { out_nodata } else { A }',
+                                        outputType: RasterDataTypes.Float64.getCode(),
+                                        outputNoDataValue: 'nan',
+                                        mapNoData: false,
+                                    },
+                                    sources: {
+                                        a: rasterWorkflow.operator,
+                                        b: {
+                                            type: 'GdalSource',
+                                            params: {
+                                                dataset: COUNTRY_DATA_LIST[selectedCountry.name].raster,
+                                            },
+                                        },
+                                    },
+                                } as ExpressionDict,
+                            },
+                        } as MeanRasterPixelValuesOverTimeDict,
+                    }),
+                ),
+                mergeMap((workflowId) =>
+                    combineLatest([
+                        of(workflowId),
+                        this.userService.getSessionTokenForRequest(),
+                        this.projectService.getSpatialReferenceStream(),
+                        this.mapService.getViewportSizeStream(),
+                    ]),
+                ),
+                mergeMap(([workflowId, sessionToken, crs, viewport]) =>
+                    this.backend.getPlot(
+                        workflowId,
+                        {
+                            time: {
+                                start: (this.ebvTree as EbvHierarchy).tree.time.start,
+                                end: (this.ebvTree as EbvHierarchy).tree.time.end,
+                            },
+                            bbox: extentToBboxDict(viewport.extent),
+                            crs: crs.srsString,
+                            // TODO: set reasonable size
+                            spatialResolution: [0.1, 0.1],
+                        },
+                        sessionToken,
+                    ),
+                ),
+                first(),
+            )
+            .subscribe({
+                next: (plotData) => {
+                    this.plotData.next(plotData.data);
+                    this.plotLoading.next(false);
+                },
+                error: () => {
+                    // TODO: react on error?
+                    this.plotLoading.next(false);
+                },
+            });
     }
 
     private createCategoryLabels(): Array<string> {
@@ -419,128 +505,6 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                 }
         }
     }
-
-    // TODO: implement
-    // plot(): void {
-    //     combineLatest([this.timeService.availableTimeSteps, this.countryProviderService.getSelectedCountryStream()])
-    //         .pipe(first())
-    //         .subscribe(([timeSteps, country]) => {
-    //             if (!timeSteps || !country) {
-    //                 return;
-    //             }
-
-    //             const layer = this.ebvLayer;
-    //             const unit = layer.operator.getUnit(Operator.RASTER_ATTRIBTE_NAME);
-
-    //             let yLabel = '';
-    //             if (unit.measurement !== Unit.defaultUnit.measurement) {
-    //                 yLabel = `Mean value of »${unit.measurement}«`;
-    //             }
-
-    //             this.plotSettings = {
-    //                 data$: this.createPlotQueries(layer, timeSteps, country),
-    //                 xLimits: [0, timeSteps.length - 1],
-    //                 yLimits: [unit.min, unit.max],
-    //                 yLabel,
-    //             };
-
-    //             this.changeDetectorRef.markForCheck();
-
-    //             this.scrollToBottom();
-    //         });
-    // }
-
-    // TODO: implement
-    //     private createPlotQueries(
-    //         layer: RasterLayer<AbstractRasterSymbology>,
-    //         timeSteps: Array<TimeStep>,
-    //         country: Country,
-    //     ): Observable<DataPoint> {
-    //         const plotRequests: Array<Observable<PlotData>> = [];
-
-    //         let requestWidth = 1024;
-    //         let requestHeight = 1024;
-
-    //         const xCoordWidth = Math.abs(country.maxx - country.minx);
-    //         const yCoordWidth = Math.abs(country.maxy - country.miny);
-
-    //         if (xCoordWidth > yCoordWidth) {
-    //             requestHeight = Math.ceil(requestHeight * (yCoordWidth / xCoordWidth));
-    //         } else if (yCoordWidth > xCoordWidth) {
-    //             requestWidth = Math.ceil(requestWidth * (xCoordWidth / yCoordWidth));
-    //         }
-
-    //         // the gdal source for the country raster
-    //         const countryOperatorType = new GdalSourceType({
-    //             channelConfig: {
-    //                 channelNumber: country.tif_channel_id, // map to gdal source logic
-    //                 displayValue: country.name,
-    //             },
-    //             sourcename: 'ne_10m_admin_0_countries_as_raster',
-    //             transform: false,
-    //         });
-
-    //         const countrySourceOperator = new Operator({
-    //             operatorType: countryOperatorType,
-    //             resultType: ResultTypes.RASTER,
-    //             projection: Projections.WGS_84,
-    //             attributes: [Operator.RASTER_ATTRIBTE_NAME],
-    //             dataTypes: new Map<string, DataType>().set(Operator.RASTER_ATTRIBTE_NAME, DataTypes.Byte),
-    //             units: new Map<string, Unit>().set(Operator.RASTER_ATTRIBTE_NAME, Unit.defaultUnit),
-    //         });
-
-    //         const clipOperator = new Operator({
-    //             attributes: layer.operator.attributes,
-    //             dataTypes: layer.operator.dataTypes,
-    //             operatorType: new ExpressionType({
-    //                 datatype: layer.operator.dataTypes.get(Operator.RASTER_ATTRIBTE_NAME),
-    //                 expression: 'B != 0 ? A : NAN',
-    //                 unit: layer.operator.units.get(Operator.RASTER_ATTRIBTE_NAME),
-    //             }),
-    //             projection: countrySourceOperator.projection,
-    //             rasterSources: [
-    //                 layer.operator.getProjectedOperator(countrySourceOperator.projection),
-    //                 countrySourceOperator, // the mask layer
-    //             ],
-    //             resultType: layer.operator.resultType,
-    //             units: layer.operator.units,
-    //         });
-
-    //         const statisticsOperatorType = new StatisticsType({
-    //             raster_width: requestWidth,
-    //             raster_height: requestHeight,
-    //         });
-
-    //         const operator = new Operator({
-    //             operatorType: statisticsOperatorType,
-    //             projection: clipOperator.projection,
-    //             rasterSources: [clipOperator],
-    //             resultType: ResultTypes.PLOT,
-    //         });
-
-    //         for (const timeStep of timeSteps) {
-    //             plotRequests.push(
-    //                 this.mappingQueryService.getPlotData({
-    //                     extent: [country.minx, country.miny, country.maxx, country.maxy],
-    //                     operator,
-    //                     projection: Projections.WGS_84,
-    //                     time: timeStep.time,
-    //                 }),
-    //             );
-    //         }
-
-    //         return concat(...plotRequests).pipe(
-    //             map((_plotData, timeIndex) => {
-    //                 const plotData = _plotData as any as PlotResult;
-
-    //                 return {
-    //                     time: timeIndex,
-    //                     time_label: timeSteps[timeIndex].displayValue,
-    //                     value: plotData.data.rasters[0].mean,
-    //                 };
-    //             }),
-    //         );
-    //     }
 }
 
 interface EbvClass {
@@ -559,20 +523,6 @@ interface EbvDataset {
     ebvClass: string;
     ebvName: string;
 }
-
-// TODO: implement
-// interface PlotResult {
-//     type: 'LayerStatistics';
-//     data: {
-//         rasters: Array<{
-//             count: number;
-//             max: number;
-//             mean: number;
-//             min: number;
-//             nan_count: number;
-//         }>;
-//     };
-// }
 
 interface EbvHierarchy {
     providerId: UUID;
