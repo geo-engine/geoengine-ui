@@ -1,10 +1,10 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {
     BackendService,
-    BBoxDict,
     ClusteredPointSymbology,
     Dataset,
     DatasetService,
+    extentToBboxDict,
     HistogramDict,
     HistogramParams,
     Layer,
@@ -479,18 +479,6 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
         );
     }
 }
-
-// TODO: use method from core
-const extentToBboxDict = ([minx, miny, maxx, maxy]: [number, number, number, number]): BBoxDict => ({
-    lowerLeftCoordinate: {
-        x: minx,
-        y: miny,
-    },
-    upperRightCoordinate: {
-        x: maxx,
-        y: maxy,
-    },
-});
 
 function* generateYearlyTimeSteps(yearStart: number, yearEnd: number, fixedMonth: number): IterableIterator<Time> {
     if (yearStart > yearEnd) {

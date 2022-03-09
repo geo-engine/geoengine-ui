@@ -131,5 +131,6 @@ export * from './lib/util/guards/is-logged-in.guard';
 // Misc
 export * from './lib/util/directives/if-guest.directive';
 export * from './lib/util/directives/if-logged-in.directive';
+export * from './lib/util/conversions';
 export * from './lib/util/errors';
 export * from './lib/util/form.validators';

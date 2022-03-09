@@ -77,6 +77,19 @@ export class DataSelectionService {
         );
     }
 
+    clearPolygonLayer(): Observable<void> {
+        return this.polygonLayer.pipe(
+            first(),
+            mergeMap((currentLayer) => {
+                if (currentLayer) {
+                    return this.projectService.removeLayer(currentLayer);
+                } else {
+                    return of(undefined);
+                }
+            }),
+        );
+    }
+
     setPolygonLayer(layer: VectorLayer): Observable<void> {
         return this.polygonLayer.pipe(
             first(),
