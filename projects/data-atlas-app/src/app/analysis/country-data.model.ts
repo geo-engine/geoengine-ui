@@ -1,6 +1,6 @@
 import {UUID} from 'wave-core';
 
-export interface Country {
+export interface CountryData {
     polygon: {
         type: 'internal';
         datasetId: UUID;
@@ -11,7 +11,7 @@ export interface Country {
     };
 }
 
-export const COUNTRY_LIST: {[name: string]: Country} = {
+export const COUNTRY_DATA_LIST: {[name: string]: CountryData} = {
     Indonesia: {
         polygon: {
             type: 'internal',
