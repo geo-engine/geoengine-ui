@@ -20,7 +20,7 @@ import {
     RasterDataTypes,
     MapService,
     BackendService,
-    BBoxDict,
+    extentToBboxDict,
 } from 'wave-core';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {AppConfig} from '../app-config.service';
@@ -571,15 +571,3 @@ function guessDataRange(colorizer: Colorizer): {min: number; max: number} {
 
     return {min, max};
 }
-
-// TODO: use method from core
-const extentToBboxDict = ([minx, miny, maxx, maxy]: [number, number, number, number]): BBoxDict => ({
-    lowerLeftCoordinate: {
-        x: minx,
-        y: miny,
-    },
-    upperRightCoordinate: {
-        x: maxx,
-        y: maxy,
-    },
-});
