@@ -14,6 +14,7 @@ import {
     HistogramParams,
     ExpressionDict,
     SourceOperatorDict,
+    RasterResultDescriptorDict,
 } from 'wave-core';
 import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {DataSelectionService} from '../data-selection.service';
@@ -147,6 +148,15 @@ export class AnalysisComponent implements OnInit {
                     return this.projectService.getWorkflow(layer.workflowId);
                 }),
             ),
+            this.dataSelectionService.rasterLayer.pipe(
+                mergeMap<RasterLayer | undefined, Observable<RasterResultDescriptorDict>>((layer) => {
+                    if (!layer) {
+                        return of(); // no next, just complete
+                    }
+
+                    return this.projectService.getWorkflowMetaData(layer.workflowId) as Observable<RasterResultDescriptorDict>;
+                }),
+            ),
             this.dataSelectionService.dataRange,
         ])
             .pipe(
@@ -155,7 +165,7 @@ export class AnalysisComponent implements OnInit {
                     this.plotLoading.next(true);
                     this.plotData.next(undefined);
                 }),
-                mergeMap(([rasterWorkflow, dataRange]) =>
+                mergeMap(([rasterWorkflow, rasterResultDescriptor, dataRange]) =>
                     this.projectService.registerWorkflow({
                         type: 'Plot',
                         operator: {
@@ -174,6 +184,7 @@ export class AnalysisComponent implements OnInit {
                                         outputType: RasterDataTypes.Float64.getCode(),
                                         // TODO: get no data value from data
                                         outputNoDataValue: 'nan',
+                                        outputMeasurement: rasterResultDescriptor.measurement,
                                         mapNoData: false,
                                     },
                                     sources: {
