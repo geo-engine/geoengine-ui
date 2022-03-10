@@ -1,4 +1,4 @@
-import {Observable, BehaviorSubject, mergeMap} from 'rxjs';
+import {Observable, BehaviorSubject, mergeMap, ReplaySubject} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {
@@ -28,7 +28,6 @@ import moment from 'moment';
 import {DataSelectionService} from '../data-selection.service';
 import {AppDatasetService} from '../app-dataset.service';
 import {
-    LAYERS,
     TerraNovaGroup,
     EbvHierarchy,
     EbvTreeSubgroup,
@@ -37,6 +36,7 @@ import {
     guessDataRange,
     computeTimeSteps,
 } from '../select-layers/available-layers';
+import {HttpClient} from '@angular/common/http';
 
 @Component({
     selector: 'wave-app-main',
@@ -50,6 +50,8 @@ export class MainComponent implements OnInit, AfterViewInit {
     readonly layersReverse$: Observable<Array<Layer>>;
     readonly analysisVisible$ = new BehaviorSubject(false);
     readonly windowHeight$ = new BehaviorSubject<number>(window.innerHeight);
+
+    readonly layerGroups: ReplaySubject<Map<TerraNovaGroup, Array<EbvHierarchy>>> = new ReplaySubject(1);
 
     datasetPortal = new ComponentPortal(SelectLayersComponent);
 
@@ -69,10 +71,15 @@ export class MainComponent implements OnInit, AfterViewInit {
         private _spatialReferenceService: SpatialReferenceService,
         private sanitizer: DomSanitizer,
         private readonly backend: BackendService,
+        private readonly http: HttpClient,
     ) {
         this.registerIcons();
 
         this.layersReverse$ = this.dataSelectionService.layers;
+
+        this.http.get<Array<[TerraNovaGroup, Array<EbvHierarchy>]>>('assets/datasets.json').subscribe((datasets) => {
+            this.layerGroups.next(new Map<TerraNovaGroup, Array<EbvHierarchy>>(datasets));
+        });
     }
 
     ngOnInit(): void {
@@ -136,10 +143,6 @@ export class MainComponent implements OnInit, AfterViewInit {
                 }),
             )
             .subscribe();
-    }
-
-    get layerGroups(): Map<TerraNovaGroup, Array<EbvHierarchy>> {
-        return LAYERS;
     }
 
     private reset(): void {

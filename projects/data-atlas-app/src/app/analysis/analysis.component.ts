@@ -83,16 +83,16 @@ export class AnalysisComponent implements OnInit {
                                 stroke: {
                                     width: {
                                         type: 'static',
-                                        value: 1,
+                                        value: 2,
                                     },
                                     color: {
                                         type: 'static',
-                                        color: [0, 0, 0, 255],
+                                        color: [54, 154, 203, 255],
                                     },
                                 },
                                 fillColor: {
                                     type: 'static',
-                                    color: [54, 154, 203, 150],
+                                    color: [54, 154, 203, 50],
                                 },
                             }),
                             isLegendVisible: false,
