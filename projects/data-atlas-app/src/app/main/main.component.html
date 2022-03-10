@@ -1,37 +1,56 @@
 <div class="sidenav mat-elevation-z4">
     <mat-toolbar color="primary"><img src="assets/logos/terra-nova-white.png" alt="TerraNova" /></mat-toolbar>
     <mat-accordion displayMode="flat">
-        <mat-expansion-panel>
+        <mat-expansion-panel *ngFor="let group of layerGroups | keyvalue" class="mat-elevation-z0">
             <mat-expansion-panel-header>
-                <mat-panel-title>Land use and cover</mat-panel-title>
+                <mat-panel-title>{{ group.key.name }}</mat-panel-title>
                 <mat-panel-description>
-                    <mat-icon>terrain</mat-icon>
+                    <mat-icon>{{ group.key.icon }}</mat-icon>
                 </mat-panel-description>
             </mat-expansion-panel-header>
 
-            <ng-template matExpansionPanelContent><ng-template [cdkPortalOutlet]="datasetPortal"></ng-template></ng-template>
-        </mat-expansion-panel>
-        <mat-expansion-panel>
-            <mat-expansion-panel-header>
-                <mat-panel-title>Climate</mat-panel-title>
-                <mat-panel-description>
-                    <mat-icon>public</mat-icon>
-                </mat-panel-description>
-            </mat-expansion-panel-header>
+            <mat-card *ngFor="let layer of group.value" class="dataset">
+                <mat-card-header>
+                    <mat-icon mat-card-avatar>{{ group.key.icon }}</mat-icon>
+                    <mat-card-title>{{ layer.tree.title }}</mat-card-title>
+                    <mat-card-subtitle
+                        >{{ layer.tree.creator.name }}, {{ layer.tree.creator.institution }},
+                        {{ layer.tree.creator.email }}</mat-card-subtitle
+                    >
+                </mat-card-header>
 
-            <ng-template matExpansionPanelContent><ng-template [cdkPortalOutlet]="datasetPortal"></ng-template></ng-template>
-        </mat-expansion-panel>
-        <mat-expansion-panel>
-            <mat-expansion-panel-header>
-                <mat-panel-title>Biodiversity</mat-panel-title>
-                <mat-panel-description>
-                    <mat-icon>pets</mat-icon>
-                </mat-panel-description>
-            </mat-expansion-panel-header>
+                <mat-card-content>
+                    <p>{{ layer.tree.summary }}</p>
 
-            <ng-template matExpansionPanelContent><ng-template [cdkPortalOutlet]="datasetPortal"></ng-template></ng-template>
+                    <div class="striped">
+                        <p *ngFor="let subgroup of layer.tree.groups">
+                            {{ subgroup.title }}<br />
+                            <span class="mat-caption">{{ subgroup.description }}</span>
+
+                            <button
+                                mat-stroked-button
+                                *ngFor="let entity of layer.tree.entities"
+                                (click)="loadData(layer, subgroup, entity)"
+                                color="primary"
+                            >
+                                {{ entity.name }}
+                                {{ entity.description }}
+                            </button>
+                        </p>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card *ngIf="group.value.length === 0">
+                <mat-card-content>
+                    <p class="empty"><em>no datasets available</em></p>
+                </mat-card-content>
+            </mat-card>
+
+            <!-- <ng-template matExpansionPanelContent><ng-template [cdkPortalOutlet]="datasetPortal"></ng-template></ng-template> -->
         </mat-expansion-panel>
-        <mat-expansion-panel expanded="true">
+
+        <mat-expansion-panel expanded="true" class="mat-elevation-z0">
             <mat-expansion-panel-header>
                 <mat-panel-title>About</mat-panel-title>
                 <mat-panel-description>

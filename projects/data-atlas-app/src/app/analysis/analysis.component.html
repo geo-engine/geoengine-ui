@@ -1,9 +1,14 @@
 <mat-form-field appearance="fill">
     <mat-label>Country</mat-label>
     <mat-select (valueChange)="selectCountry($event)">
-        <mat-option *ngFor="let country of countries" [value]="country">
-            {{ country }}
-        </mat-option>
+        <ngx-mat-select-search
+            [formControl]="waveAutocompleteSelect.filterFormControl"
+            waveAutocompleteSelect
+            [waveAutocompleteSelectAllValues]="countries"
+            [waveAutocompleteSelectSearchPredicate]="countryPredicate"
+            #waveAutocompleteSelect="waveAutocompleteSelect"
+        ></ngx-mat-select-search>
+        <mat-option *ngFor="let country of waveAutocompleteSelect.filteredValues | async" [value]="country">{{ country }}</mat-option>
     </mat-select>
 </mat-form-field>
 <button mat-stroked-button id="compute-plot" [disabled]="cannotComputePlot$ | async" (click)="computePlot()">Compute Plot</button>

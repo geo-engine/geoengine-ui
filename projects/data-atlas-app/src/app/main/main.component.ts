@@ -1,4 +1,4 @@
-import {Observable, BehaviorSubject} from 'rxjs';
+import {Observable, BehaviorSubject, mergeMap} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {
@@ -14,6 +14,11 @@ import {
     Time,
     SpatialReferenceService,
     DatasetService,
+    RasterLayer,
+    WorkflowDict,
+    BackendService,
+    RasterSymbology,
+    Colorizer,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AppConfig} from '../app-config.service';
@@ -22,6 +27,16 @@ import {ComponentPortal} from '@angular/cdk/portal';
 import moment from 'moment';
 import {DataSelectionService} from '../data-selection.service';
 import {AppDatasetService} from '../app-dataset.service';
+import {
+    LAYERS,
+    TerraNovaGroup,
+    EbvHierarchy,
+    EbvTreeSubgroup,
+    EbvTreeEntity,
+    EbvDatasetId,
+    guessDataRange,
+    computeTimeSteps,
+} from '../select-layers/available-layers';
 
 @Component({
     selector: 'wave-app-main',
@@ -53,6 +68,7 @@ export class MainComponent implements OnInit, AfterViewInit {
         private mapService: MapService,
         private _spatialReferenceService: SpatialReferenceService,
         private sanitizer: DomSanitizer,
+        private readonly backend: BackendService,
     ) {
         this.registerIcons();
 
@@ -74,6 +90,56 @@ export class MainComponent implements OnInit, AfterViewInit {
 
     showAnalysis(): void {
         this.analysisVisible$.next(true);
+    }
+
+    loadData(layer: EbvHierarchy, subgroup: EbvTreeSubgroup, entity: EbvTreeEntity): void {
+        const datasetId: EbvDatasetId = {
+            fileName: layer.tree.fileName,
+            groupNames: [subgroup.name],
+            entity: entity.id,
+        };
+
+        const workflow: WorkflowDict = {
+            type: 'Raster',
+            operator: {
+                type: 'GdalSource',
+                params: {
+                    dataset: {
+                        type: 'external',
+                        providerId: layer.providerId,
+                        datasetId: JSON.stringify(datasetId),
+                    },
+                },
+            },
+        };
+
+        const symbology = new RasterSymbology(1.0, Colorizer.fromDict(layer.tree.colorizer));
+
+        this.userService
+            .getSessionTokenForRequest()
+            .pipe(
+                mergeMap((sessionToken) => this.backend.registerWorkflow(workflow, sessionToken)),
+                mergeMap(({id: workflowId}) => {
+                    const rasterLayer = new RasterLayer({
+                        workflowId,
+                        name: entity.name,
+                        symbology,
+                        isLegendVisible: false,
+                        isVisible: true,
+                    });
+
+                    return this.dataSelectionService.setRasterLayer(
+                        rasterLayer,
+                        computeTimeSteps(layer.tree.time, layer.tree.timeStep),
+                        guessDataRange(symbology.colorizer),
+                    );
+                }),
+            )
+            .subscribe();
+    }
+
+    get layerGroups(): Map<TerraNovaGroup, Array<EbvHierarchy>> {
+        return LAYERS;
     }
 
     private reset(): void {

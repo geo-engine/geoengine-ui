@@ -2,7 +2,6 @@ import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {
     BackendService,
     BBoxDict,
-    OperatorParams,
     ProjectService,
     RandomColorService,
     UserService,
@@ -12,24 +11,14 @@ import {
     PolygonSymbology,
     RasterLayer,
     HistogramDict,
+    HistogramParams,
     ExpressionDict,
+    SourceOperatorDict,
 } from 'wave-core';
 import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {DataSelectionService} from '../data-selection.service';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {CountryData, COUNTRY_DATA_LIST, COUNTRY_METADATA} from './country-data.model';
-
-interface HistogramParams extends OperatorParams {
-    columnName?: string;
-    bounds:
-        | {
-              min: number;
-              max: number;
-          }
-        | 'data';
-    buckets?: number;
-    interactive?: boolean;
-}
 
 @Component({
     selector: 'wave-app-analysis',
@@ -102,7 +91,7 @@ export class AnalysisComponent implements OnInit {
                                 },
                                 fillColor: {
                                     type: 'static',
-                                    color: [0, 0, 128, 150],
+                                    color: [54, 154, 203, 150],
                                 },
                             }),
                             isLegendVisible: false,
@@ -114,6 +103,10 @@ export class AnalysisComponent implements OnInit {
             .subscribe(() => {
                 // success
             });
+    }
+
+    countryPredicate(filterString: string, element: string): boolean {
+        return element.toLowerCase().includes(filterString);
     }
 
     computePlot(): void {
@@ -137,19 +130,24 @@ export class AnalysisComponent implements OnInit {
             },
         };
 
+        const countryRasterWorkflow: SourceOperatorDict = {
+            type: 'GdalSource',
+            params: {
+                dataset: this.selectedCountry.raster,
+            },
+        };
+
         combineLatest([
             this.dataSelectionService.rasterLayer.pipe(
-                mergeMap<RasterLayer | undefined, Observable<RasterLayer>>((layer) => (layer ? of(layer) : of())),
+                mergeMap<RasterLayer | undefined, Observable<WorkflowDict>>((layer) => {
+                    if (!layer) {
+                        return of(); // no next, just complete
+                    }
+
+                    return this.projectService.getWorkflow(layer.workflowId);
+                }),
             ),
-            this.projectService.registerWorkflow({
-                type: 'Raster',
-                operator: {
-                    type: 'GdalSource',
-                    params: {
-                        dataset: this.selectedCountry.raster,
-                    },
-                },
-            }),
+            this.dataSelectionService.dataRange,
         ])
             .pipe(
                 first(),
@@ -157,35 +155,6 @@ export class AnalysisComponent implements OnInit {
                     this.plotLoading.next(true);
                     this.plotData.next(undefined);
                 }),
-                mergeMap(([rasterLayer, polygonWorkflowId]) =>
-                    combineLatest([
-                        this.projectService.getWorkflow(rasterLayer.workflowId),
-                        this.projectService.getWorkflow(polygonWorkflowId),
-                    ]),
-                ),
-                mergeMap(([rasterWorkflow, polygonWorkflow]) =>
-                    this.projectService.registerWorkflow({
-                        type: 'Raster',
-                        operator: {
-                            type: 'Expression',
-                            params: {
-                                expression: 'if B != 0 { A } else { out_nodata }',
-                                // TODO: get data type from data
-                                outputType: RasterDataTypes.Float64.getCode(),
-                                // TODO: get no data value from data
-                                outputNoDataValue: 'nan',
-                                mapNoData: false,
-                            },
-                            sources: {
-                                a: rasterWorkflow.operator,
-                                b: polygonWorkflow.operator,
-                            },
-                        } as ExpressionDict,
-                    }),
-                ),
-                mergeMap((expressionWorkflowId) =>
-                    combineLatest([this.projectService.getWorkflow(expressionWorkflowId), this.dataSelectionService.dataRange]),
-                ),
                 mergeMap(([rasterWorkflow, dataRange]) =>
                     this.projectService.registerWorkflow({
                         type: 'Plot',
@@ -197,7 +166,21 @@ export class AnalysisComponent implements OnInit {
                                 bounds: dataRange,
                             } as HistogramParams,
                             sources: {
-                                source: rasterWorkflow.operator,
+                                source: {
+                                    type: 'Expression',
+                                    params: {
+                                        expression: 'if B != 0 { A } else { out_nodata }',
+                                        // TODO: get data type from data
+                                        outputType: RasterDataTypes.Float64.getCode(),
+                                        // TODO: get no data value from data
+                                        outputNoDataValue: 'nan',
+                                        mapNoData: false,
+                                    },
+                                    sources: {
+                                        a: rasterWorkflow.operator,
+                                        b: countryRasterWorkflow,
+                                    },
+                                } as ExpressionDict,
                             },
                         } as HistogramDict,
                     }),
@@ -224,15 +207,15 @@ export class AnalysisComponent implements OnInit {
                     ),
                 ),
             )
-            .subscribe(
-                (plotData) => {
+            .subscribe({
+                next: (plotData) => {
                     this.plotData.next(plotData.data);
                     this.plotLoading.next(false);
                 },
-                () => {
+                complete: () => {
                     // TODO: react on error?
                     this.plotLoading.next(false);
                 },
-            );
+            });
     }
 }

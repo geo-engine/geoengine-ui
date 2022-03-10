@@ -27,6 +27,7 @@ import {AppDatasetService} from './app-dataset.service';
 import {LoginComponent} from './login/login.component';
 import {MainComponent} from './main/main.component';
 import {AppRoutingModule} from './app-routing.module';
+import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 
 @NgModule({
     declarations: [AppComponent, SelectLayersComponent, LegendComponent, AnalysisComponent, AboutComponent, LoginComponent, MainComponent],
@@ -38,6 +39,7 @@ import {AppRoutingModule} from './app-routing.module';
         WaveCoreModule,
         PortalModule,
         AppRoutingModule,
+        NgxMatSelectSearchModule,
     ],
     providers: [
         {provide: Config, useClass: AppConfig},
