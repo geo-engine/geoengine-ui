@@ -8,7 +8,14 @@
                 [style.background]="layer.symbology.colorizer | waveColorizerCssGradient"
             ></td>
             <td>{{ breakpoint.value | number: numberPipeParameters }}</td>
-            <td *ngIf="isFirst">{{ (measurement$ | async)?.measurement }}</td>
+            <td *ngIf="isFirst">
+                <ng-container *ngIf="measurement$ | async | continuousMeasurement as measurement">
+                    {{ measurement.measurement }} <span *ngIf="measurement.unit">in {{ measurement.unit }}</span>
+                </ng-container>
+                <ng-container *ngIf="measurement$ | async | classificationMeasurement as measurement">
+                    {{ measurement.measurement }}
+                </ng-container>
+            </td>
         </tr>
     </ng-template>
 
