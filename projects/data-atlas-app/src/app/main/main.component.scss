@@ -16,7 +16,10 @@ $sidenav-width: max($sidenav-default-width, $sidenav-min-width);
     overflow: auto;
 
     mat-toolbar img {
-        width: 60%;
+        max-width: 60%;
+        max-height: 90%;
+        height: auto;
+        width: auto;
         margin: 0 auto;
     }
 
