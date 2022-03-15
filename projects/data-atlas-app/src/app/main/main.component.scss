@@ -1,4 +1,6 @@
-$sidenav-width: 24rem;
+$sidenav-default-width: 25vw;
+$sidenav-min-width: 24rem;
+$sidenav-width: max($sidenav-default-width, $sidenav-min-width);
 
 .sidenav {
     position: absolute;
@@ -14,7 +16,10 @@ $sidenav-width: 24rem;
     overflow: auto;
 
     mat-toolbar img {
-        width: 60%;
+        max-width: 60%;
+        max-height: 90%;
+        height: auto;
+        width: auto;
         margin: 0 auto;
     }
 
@@ -26,6 +31,10 @@ $sidenav-width: 24rem;
         mat-panel-description {
             flex: 0;
         }
+    }
+
+    mat-expansion-panel {
+        border-bottom: 2px solid var(--wave-background-hover-color);
     }
 }
 
@@ -54,7 +63,7 @@ button#analysisButton {
     z-index: 3;
     position: fixed;
     bottom: 1rem;
-    left: $sidenav-width + 1rem;
+    left: calc($sidenav-width + 1rem);
 
     mat-icon {
         margin-right: 1rem;
@@ -66,7 +75,7 @@ mat-card#analysisCard {
     z-index: 3;
     position: fixed;
     bottom: 1rem;
-    left: $sidenav-width + 1rem;
+    left: calc($sidenav-width + 1rem);
 }
 
 wave-legend {
@@ -81,9 +90,33 @@ wave-legend {
     z-index: 0;
     position: relative;
     left: $sidenav-width;
-    width: calc(100% - 24rem);
+    width: calc(100% - $sidenav-width);
 }
 
 mat-sidenav {
     width: $sidenav-width;
+}
+
+mat-card.dataset {
+    margin-bottom: 1rem;
+}
+
+mat-card-content .striped {
+    &:nth-of-type(odd) {
+        background-color: var(--wave-background-hover-color);
+    }
+
+    p {
+        padding: 1rem;
+
+        span {
+            display: block;
+            color: var(--wave-foreground-secondary-text-color);
+            margin-bottom: 0.5rem;
+        }
+    }
+}
+
+p.empty {
+    color: var(--wave-foreground-secondary-text-color);
 }

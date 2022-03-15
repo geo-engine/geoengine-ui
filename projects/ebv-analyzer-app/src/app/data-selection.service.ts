@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Layer, ProjectService, RasterLayer, Time, VectorLayer} from 'wave-core';
+import {Layer, LoadingState, ProjectService, RasterLayer, Time, VectorLayer} from 'wave-core';
 import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import moment from 'moment';
@@ -18,6 +18,8 @@ export class DataSelectionService {
     readonly rasterLayer = new BehaviorSubject<RasterLayer | undefined>(undefined);
     readonly polygonLayer = new BehaviorSubject<VectorLayer | undefined>(undefined);
 
+    readonly rasterLayerLoading: Observable<boolean>;
+
     readonly timeSteps = new BehaviorSubject<Array<Time>>([new Time(moment.utc())]);
     readonly timeFormat = new BehaviorSubject<string>('YYYY'); // TODO: make configurable
 
@@ -33,8 +35,20 @@ export class DataSelectionService {
                 if (polygonLayer) {
                     layers.push(polygonLayer);
                 }
+
                 return layers;
             }),
+        );
+
+        this.rasterLayerLoading = this.rasterLayer.pipe(
+            mergeMap((layer) => {
+                if (!layer) {
+                    return of(LoadingState.OK);
+                }
+
+                return projectService.getLayerStatusStream(layer);
+            }),
+            map((loadingState) => loadingState === LoadingState.LOADING),
         );
     }
 
@@ -59,6 +73,19 @@ export class DataSelectionService {
                 this.timeSteps.next(timeSteps);
                 this.projectService.setTime(timeSteps[0]);
                 this.dataRange.next(dataRange);
+            }),
+        );
+    }
+
+    clearPolygonLayer(): Observable<void> {
+        return this.polygonLayer.pipe(
+            first(),
+            mergeMap((currentLayer) => {
+                if (currentLayer) {
+                    return this.projectService.removeLayer(currentLayer);
+                } else {
+                    return of(undefined);
+                }
             }),
         );
     }

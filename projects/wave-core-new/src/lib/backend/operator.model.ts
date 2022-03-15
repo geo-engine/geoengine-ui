@@ -179,12 +179,14 @@ export interface OgrSourceDict extends SourceOperatorDict {
     params: {
         dataset: DatasetIdDict;
         attributeProjection?: Array<string>;
-        attributeFilters?: Array<{
-            attribute: string;
-            ranges: Array<[number, number] | [string, string]>;
-            keepNulls?: boolean;
-        }>;
+        attributeFilters?: Array<AttributeFilterDict>;
     };
+}
+
+export interface AttributeFilterDict {
+    attribute: string;
+    ranges: Array<[number, number] | [string, string]>;
+    keepNulls?: boolean;
 }
 
 export interface TimeProjectionDict extends OperatorDict {

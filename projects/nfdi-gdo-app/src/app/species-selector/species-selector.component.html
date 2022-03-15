@@ -14,6 +14,11 @@
 
     <mat-divider></mat-divider>
 
+    <p>
+        Hier kann eine Spezies nach Artnamen ausgewählt werden. Für diese werden dann die Beobachtungen in der Karte angezeigt. Über eine
+        Suche kann diese Liste nach bestimmten Arten durchsucht werden.
+    </p>
+
     <mat-form-field color="accent">
         <mat-label>Artauswahl</mat-label>
         <mat-select (valueChange)="selectSpecies($event)">
@@ -44,10 +49,16 @@
     </div>
     <div class="spacer"></div>
 
-    <p>
-        Hier kann eine Spezies nach Artnamen ausgewählt werden. Für diese werden dann die Beobachtungen in der Karte angezeigt. Über eine
-        Suche kann diese Liste nach bestimmten Arten durchsucht werden.
-    </p>
+    <div class="spacer"></div>
+
+    <mat-expansion-panel class="species-info" *ngIf="getSpeciesInfo(selectedSpecies) as speciesInfo">
+        <mat-expansion-panel-header>Spezies-Info</mat-expansion-panel-header>
+
+        <img [src]="speciesInfo.imageSrc" [alt]="selectedSpecies" />
+        <p class="mat-caption" *ngIf="speciesInfo.imageRef">({{ speciesInfo.imageRef }})</p>
+
+        <p class="info-text" [innerHtml]="speciesInfo.text"></p>
+    </mat-expansion-panel>
 
     <mat-divider></mat-divider>
 

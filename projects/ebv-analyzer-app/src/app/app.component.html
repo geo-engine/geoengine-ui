@@ -49,3 +49,5 @@
 
 <!-- TODO: fix layout service to work without sidenav -->
 <mat-sidenav></mat-sidenav>
+
+<mat-progress-bar class="loading-indicator" mode="query" *ngIf="dataSelectionService.rasterLayerLoading | async"></mat-progress-bar>

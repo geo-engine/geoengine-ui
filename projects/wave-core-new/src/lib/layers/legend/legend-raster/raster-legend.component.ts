@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, Pipe, PipeTransform, SimpleChanges} from '@angular/core';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
-import {ClassificationMeasurement, Measurement} from '../../measurement';
+import {ClassificationMeasurement, ContinuousMeasurement, Measurement} from '../../measurement';
 import {ProjectService} from '../../../project/project.service';
 import {map} from 'rxjs/operators';
 import {RasterLayerMetadata} from '../../layer-metadata.model';
@@ -35,6 +35,20 @@ export function calculateNumberPipeParameters(breakpoints: Array<ColorBreakpoint
 export class CastMeasurementToClassificationPipe implements PipeTransform {
     transform(value: any, _args?: any): ClassificationMeasurement | null {
         if (value instanceof ClassificationMeasurement) {
+            return value;
+        } else {
+            return null;
+        }
+    }
+}
+
+@Pipe({
+    name: 'continuousMeasurement',
+    pure: true,
+})
+export class CastMeasurementToContinuousPipe implements PipeTransform {
+    transform(value: any, _args?: any): ContinuousMeasurement | null {
+        if (value instanceof ContinuousMeasurement) {
             return value;
         } else {
             return null;

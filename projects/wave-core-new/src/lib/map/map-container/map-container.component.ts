@@ -616,9 +616,9 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 }
             case 'eumetview':
                 return new OlTileWmsSource({
-                    url: 'https://eumetview.eumetsat.int/geoserver/ows',
+                    url: 'https://view.eumetsat.int/geoserver/ows',
                     params: {
-                        layers: 'bkg-raster:bkg-raster',
+                        layers: 'backgrounds:ne_background',
                         projection: projection.srsString,
                         version: '1.3.0',
                     },

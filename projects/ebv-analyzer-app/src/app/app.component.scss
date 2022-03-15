@@ -79,3 +79,12 @@ wave-legend {
 mat-sidenav {
     width: $sidenav-width;
 }
+
+.loading-indicator {
+    position: absolute;
+    left: 0;
+    right: $sidenav-width;
+    bottom: 0;
+    z-index: 2;
+    height: 0.5rem;
+}

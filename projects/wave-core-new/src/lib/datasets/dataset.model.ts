@@ -8,6 +8,7 @@ import {
     ExternalDatasetIdDict,
     RasterResultDescriptorDict,
     VectorResultDescriptorDict,
+    SourceOperatorDict,
 } from '../backend/backend.model';
 import {Symbology} from '../layers/symbology/symbology.model';
 import {
@@ -41,14 +42,18 @@ export class Dataset {
     }
 
     createSourceWorkflow(): WorkflowDict {
+        return this.createSourceWorkflowWithOperator({
+            type: this.sourceOperator,
+            params: {
+                dataset: this.id.toDict(),
+            },
+        });
+    }
+
+    createSourceWorkflowWithOperator(operator: SourceOperatorDict): WorkflowDict {
         return {
             type: this.resultDescriptor.getTypeString(),
-            operator: {
-                type: this.sourceOperator,
-                params: {
-                    dataset: this.id.toDict(),
-                },
-            },
+            operator,
         };
     }
 }

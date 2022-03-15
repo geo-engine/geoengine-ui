@@ -2,7 +2,6 @@ import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {
     BackendService,
     BBoxDict,
-    OperatorParams,
     ProjectService,
     RandomColorService,
     UserService,
@@ -12,24 +11,15 @@ import {
     PolygonSymbology,
     RasterLayer,
     HistogramDict,
+    HistogramParams,
     ExpressionDict,
+    SourceOperatorDict,
+    RasterResultDescriptorDict,
 } from 'wave-core';
 import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {DataSelectionService} from '../data-selection.service';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {Country, COUNTRY_LIST, COUNTRY_METADATA} from './country-data.model';
-
-interface HistogramParams extends OperatorParams {
-    columnName?: string;
-    bounds:
-        | {
-              min: number;
-              max: number;
-          }
-        | 'data';
-    buckets?: number;
-    interactive?: boolean;
-}
+import {CountryData, COUNTRY_DATA_LIST, COUNTRY_METADATA} from './country-data.model';
 
 @Component({
     selector: 'wave-app-analysis',
@@ -45,7 +35,7 @@ export class AnalysisComponent implements OnInit {
     plotLoading = new BehaviorSubject(false);
 
     private selectedCountryName?: string = undefined;
-    private selectedCountry?: Country = undefined;
+    private selectedCountry?: CountryData = undefined;
 
     constructor(
         private readonly projectService: ProjectService,
@@ -58,7 +48,7 @@ export class AnalysisComponent implements OnInit {
             map(([rasterLayer, polygonLayer]) => !rasterLayer || !polygonLayer),
         );
 
-        for (const countryName of Object.keys(COUNTRY_LIST)) {
+        for (const countryName of Object.keys(COUNTRY_DATA_LIST)) {
             this.countries.push(countryName);
         }
         this.countries.sort();
@@ -68,7 +58,7 @@ export class AnalysisComponent implements OnInit {
 
     selectCountry(country: string): void {
         this.selectedCountryName = country;
-        this.selectedCountry = COUNTRY_LIST[country];
+        this.selectedCountry = COUNTRY_DATA_LIST[country];
 
         const workflow: WorkflowDict = {
             type: 'Vector',
@@ -93,16 +83,16 @@ export class AnalysisComponent implements OnInit {
                                 stroke: {
                                     width: {
                                         type: 'static',
-                                        value: 1,
+                                        value: 2,
                                     },
                                     color: {
                                         type: 'static',
-                                        color: [0, 0, 0, 255],
+                                        color: [54, 154, 203, 255],
                                     },
                                 },
                                 fillColor: {
                                     type: 'static',
-                                    color: [0, 0, 128, 150],
+                                    color: [54, 154, 203, 0],
                                 },
                             }),
                             isLegendVisible: false,
@@ -114,6 +104,10 @@ export class AnalysisComponent implements OnInit {
             .subscribe(() => {
                 // success
             });
+    }
+
+    countryPredicate(filterString: string, element: string): boolean {
+        return element.toLowerCase().includes(filterString);
     }
 
     computePlot(): void {
@@ -137,19 +131,33 @@ export class AnalysisComponent implements OnInit {
             },
         };
 
+        const countryRasterWorkflow: SourceOperatorDict = {
+            type: 'GdalSource',
+            params: {
+                dataset: this.selectedCountry.raster,
+            },
+        };
+
         combineLatest([
             this.dataSelectionService.rasterLayer.pipe(
-                mergeMap<RasterLayer | undefined, Observable<RasterLayer>>((layer) => (layer ? of(layer) : of())),
+                mergeMap<RasterLayer | undefined, Observable<WorkflowDict>>((layer) => {
+                    if (!layer) {
+                        return of(); // no next, just complete
+                    }
+
+                    return this.projectService.getWorkflow(layer.workflowId);
+                }),
             ),
-            this.projectService.registerWorkflow({
-                type: 'Raster',
-                operator: {
-                    type: 'GdalSource',
-                    params: {
-                        dataset: this.selectedCountry.raster,
-                    },
-                },
-            }),
+            this.dataSelectionService.rasterLayer.pipe(
+                mergeMap<RasterLayer | undefined, Observable<RasterResultDescriptorDict>>((layer) => {
+                    if (!layer) {
+                        return of(); // no next, just complete
+                    }
+
+                    return this.projectService.getWorkflowMetaData(layer.workflowId) as Observable<RasterResultDescriptorDict>;
+                }),
+            ),
+            this.dataSelectionService.dataRange,
         ])
             .pipe(
                 first(),
@@ -157,36 +165,7 @@ export class AnalysisComponent implements OnInit {
                     this.plotLoading.next(true);
                     this.plotData.next(undefined);
                 }),
-                mergeMap(([rasterLayer, polygonWorkflowId]) =>
-                    combineLatest([
-                        this.projectService.getWorkflow(rasterLayer.workflowId),
-                        this.projectService.getWorkflow(polygonWorkflowId),
-                    ]),
-                ),
-                mergeMap(([rasterWorkflow, polygonWorkflow]) =>
-                    this.projectService.registerWorkflow({
-                        type: 'Raster',
-                        operator: {
-                            type: 'Expression',
-                            params: {
-                                expression: 'if B != 0 { A } else { out_nodata }',
-                                // TODO: get data type from data
-                                outputType: RasterDataTypes.Float64.getCode(),
-                                // TODO: get no data value from data
-                                outputNoDataValue: 'nan',
-                                mapNoData: false,
-                            },
-                            sources: {
-                                a: rasterWorkflow.operator,
-                                b: polygonWorkflow.operator,
-                            },
-                        } as ExpressionDict,
-                    }),
-                ),
-                mergeMap((expressionWorkflowId) =>
-                    combineLatest([this.projectService.getWorkflow(expressionWorkflowId), this.dataSelectionService.dataRange]),
-                ),
-                mergeMap(([rasterWorkflow, dataRange]) =>
+                mergeMap(([rasterWorkflow, rasterResultDescriptor, dataRange]) =>
                     this.projectService.registerWorkflow({
                         type: 'Plot',
                         operator: {
@@ -197,7 +176,22 @@ export class AnalysisComponent implements OnInit {
                                 bounds: dataRange,
                             } as HistogramParams,
                             sources: {
-                                source: rasterWorkflow.operator,
+                                source: {
+                                    type: 'Expression',
+                                    params: {
+                                        expression: 'if B != 0 { A } else { out_nodata }',
+                                        // TODO: get data type from data
+                                        outputType: RasterDataTypes.Float64.getCode(),
+                                        // TODO: get no data value from data
+                                        outputNoDataValue: 'nan',
+                                        outputMeasurement: rasterResultDescriptor.measurement,
+                                        mapNoData: false,
+                                    },
+                                    sources: {
+                                        a: rasterWorkflow.operator,
+                                        b: countryRasterWorkflow,
+                                    },
+                                } as ExpressionDict,
                             },
                         } as HistogramDict,
                     }),
@@ -224,15 +218,15 @@ export class AnalysisComponent implements OnInit {
                     ),
                 ),
             )
-            .subscribe(
-                (plotData) => {
+            .subscribe({
+                next: (plotData) => {
                     this.plotData.next(plotData.data);
                     this.plotLoading.next(false);
                 },
-                () => {
+                complete: () => {
                     // TODO: react on error?
                     this.plotLoading.next(false);
                 },
-            );
+            });
     }
 }
