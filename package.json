@@ -1,6 +1,6 @@
 {
-    "name": "wave",
-    "version": "3.0.2",
+    "name": "geoengine-ui",
+    "version": "0.7.0",
     "license": "MIT",
     "scripts": {
         "ng": "ng",
@@ -89,7 +89,7 @@
         "eslint": "^8.10.0",
         "eslint-config-prettier": "^8.4.0",
         "eslint-plugin-import": "2.25.4",
-        "eslint-plugin-jsdoc": "37.9.4",
+        "eslint-plugin-jsdoc": "38.0.4",
         "eslint-plugin-prefer-arrow": "1.2.3",
         "eslint-plugin-prettier": "^4.0.0",
         "jasmine-core": "~4.0.0",
