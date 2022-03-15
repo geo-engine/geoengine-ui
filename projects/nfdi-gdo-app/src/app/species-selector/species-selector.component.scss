@@ -28,3 +28,17 @@ mat-divider {
 .spacer {
     margin-top: 1rem;
 }
+
+.species-info {
+    p.mat-caption {
+        color: var(--wave-foreground-secondary-text-color);
+    }
+
+    img {
+        width: 100%;
+    }
+
+    p.info-text {
+        text-align: justify;
+    }
+}

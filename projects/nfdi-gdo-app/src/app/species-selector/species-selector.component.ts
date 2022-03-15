@@ -115,6 +115,39 @@ const SPECIES = [
     'Sympetrum striolatum',
     'Sympetrum vulgatum',
 ];
+const SPECIES_INFO: {[key: string]: SpeciesInfo} = {
+    'Anax imperator': {
+        text: `Die Große Königslibelle erreicht Flügelspannweiten von 9,5 bis 11 Zentimetern. Der Brustabschnitt (Thorax) der Tiere ist grün gefärbt,
+        der Hinterleib (Abdomen) der Männchen ist hellblau mit einem durchgehenden schwarzen Längsband am Rücken, das an jedem Segment eine zahnartige
+        Ausbuchtung besitzt. Der Hinterleib der Weibchen ist blaugrün, das Längsband am Rücken ist braun und breit. Im Gegensatz dazu hat die etwas
+        kleinere Kleine Königslibelle (Anax parthenope) eine braune Brust und der Hinterleib ist nur im vorderen Bereich blau. `,
+        imageSrc: 'https://upload.wikimedia.org/wikipedia/commons/0/06/Anax_imperator_qtl2.jpg',
+        imageRef: 'Quartl',
+    },
+    'Coenagrion puella': {
+        text: `Die Hufeisen-Azurjungfer (Coenagrion puella) erreicht Körperlängen von 35 bis 40 Millimetern und ist in der Regel sehr schlank, fast nadelförmig
+        gebaut. Den Namen hat die Hufeisen-Azurjungfer dem hufeisenförmigen schwarzen Mal, das auf dem zweiten Hinterleibssegment des
+        Männchens zu finden ist (Bild 7), zu verdanken. Dies existiert jedoch auch bei ähnlichen Arten wie etwa der
+        Fledermaus-Azurjungfer (C. pulchellum) in ähnlicher Ausprägung, bei der die schwarze Zeichnung der folgenden Hinterleibssegmente
+        jedoch umfassender ist. Außerdem wird zur einwandfreien Identifizierung der Männchen die Form der Zange am letzten
+        Hinterleibssegment (Bild 10) herangezogen. Die Männchen sind blau mit schwarzer Zeichnung. Bei den ausgefärbten Weibchen
+        überwiegt die schwarze Zeichnung, in der Grundfarbe sind sie meist grün (heterochrome Weibchen, Bild 3), manchmal hellblau
+        (homoeochrome Weibchen, Bild 4). Junge Exemplare sind bei Männchen und Weibchen milchig blass (Bild 5, 6). Die Weibchen tragen
+        auf dem ersten Abdominalsegment kein „Hufeisen“, sondern eine Zeichnung, die an einen Pokal erinnert (Bild 8). Die Zeichnung
+        variiert jedoch ebenfalls beträchtlich und es gibt Überschneidungen zu mehreren anderen Arten. Deswegen zieht man zur Bestimmung
+        der Art die Linie heran, in der das Pronotum nach hinten abschließt. Bei der Hufeisen-Azurjungfer ist diese doppelt geschwungen
+        und meist blau (Bild 9). Die Zangenform des Männchens und die Form des Halsschildes beim Weibchen sind konstante Merkmale, da
+        sie für das Paarungsrad (Bild 14) genau „passen“ müssen.`,
+        imageSrc: 'https://upload.wikimedia.org/wikipedia/commons/4/4e/Coenagrion_puella_3%28loz%29.jpg',
+        imageRef: 'L. B. Tettenborn',
+    },
+};
+
+interface SpeciesInfo {
+    text: string;
+    imageSrc: string;
+    imageRef?: string;
+}
 
 @Component({
     selector: 'wave-species-selector',
@@ -334,6 +367,13 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                 }),
             )
             .subscribe();
+    }
+
+    getSpeciesInfo(species?: string): SpeciesInfo | undefined {
+        if (!species) {
+            return undefined;
+        }
+        return SPECIES_INFO[species];
     }
 
     computePlot(): void {
