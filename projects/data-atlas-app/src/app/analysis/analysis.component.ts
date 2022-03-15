@@ -92,7 +92,7 @@ export class AnalysisComponent implements OnInit {
                                 },
                                 fillColor: {
                                     type: 'static',
-                                    color: [54, 154, 203, 50],
+                                    color: [54, 154, 203, 0],
                                 },
                             }),
                             isLegendVisible: false,
