@@ -1,6 +1,6 @@
 {
-    "name": "wave",
-    "version": "3.0.2",
+    "name": "geoengine-ui",
+    "version": "0.7.0",
     "license": "MIT",
     "scripts": {
         "ng": "ng",
