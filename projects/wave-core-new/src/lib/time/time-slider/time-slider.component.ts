@@ -4,7 +4,7 @@ import {DateType, Timeline} from 'vis-timeline/standalone';
 import {ElementRef} from '@angular/core';
 import {LayoutService} from '../../layout.service';
 import {ProjectService} from '../../project/project.service';
-import moment, {DurationInputArg2} from 'moment';
+import moment, {DurationInputArg2, Moment} from 'moment';
 import {Subscription} from 'rxjs';
 import {Time} from '../time.model';
 import {Layer} from '../../layers/layer.model';
@@ -147,6 +147,89 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
         });
     }
 
+    //original snap-function from vis-timeline https://github.com/visjs/vis-timeline/blob/master/lib/timeline/TimeStep.js
+    //only change: clone is in utc
+    snapFunction(date: Date, scale: string, step: number): Moment {
+        const clone = moment(date).utc();
+
+        if (scale === 'year') {
+            const year = clone.year() + Math.round(clone.month() / 12);
+            clone.year(Math.round(year / step) * step);
+            clone.month(0);
+            clone.date(0);
+            clone.hours(0);
+            clone.minutes(0);
+            clone.seconds(0);
+            clone.milliseconds(0);
+        } else if (scale === 'month') {
+            if (clone.date() > 15) {
+                clone.date(1);
+                clone.add(1, 'month');
+                // important: first set Date to 1, after that change the month.
+            } else {
+                clone.date(1);
+            }
+
+            clone.hours(0);
+            clone.minutes(0);
+            clone.seconds(0);
+            clone.milliseconds(0);
+        } else if (scale === 'week') {
+            if (clone.weekday() > 2) {
+                // doing it the momentjs locale aware way
+                clone.weekday(0);
+                clone.add(1, 'week');
+            } else {
+                clone.weekday(0);
+            }
+
+            clone.hours(0);
+            clone.minutes(0);
+            clone.seconds(0);
+            clone.milliseconds(0);
+        } else if (scale === 'day') {
+            //noinspection FallthroughInSwitchStatementJS
+            switch (step) {
+                case 5:
+                case 2:
+                    clone.hours(Math.round(clone.hours() / 24) * 24);
+                    break;
+                default:
+                    clone.hours(Math.round(clone.hours() / 12) * 12);
+                    break;
+            }
+            clone.minutes(0);
+            clone.seconds(0);
+            clone.milliseconds(0);
+        } else if (scale === 'weekday') {
+            //noinspection FallthroughInSwitchStatementJS
+            switch (step) {
+                case 5:
+                case 2:
+                    clone.hours(Math.round(clone.hours() / 12) * 12);
+                    break;
+                default:
+                    clone.hours(Math.round(clone.hours() / 6) * 6);
+                    break;
+            }
+            clone.minutes(0);
+            clone.seconds(0);
+            clone.milliseconds(0);
+        } else if (scale === 'hour') {
+            switch (step) {
+                case 4:
+                    clone.minutes(Math.round(clone.minutes() / 60) * 60);
+                    break;
+                default:
+                    clone.minutes(Math.round(clone.minutes() / 30) * 30);
+                    break;
+            }
+            clone.seconds(0);
+            clone.milliseconds(0);
+        }
+        return clone;
+    }
+
     //every group represents one layer
     getTimelineGroups(): void {
         this.groups = new DataSet([]);
@@ -178,6 +261,7 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
     getOptions(): void {
         this.options = {
             moment: (date: Date) => moment(date).utc(), //use utc
+            snap: (date: Date, scale: string, step: number): Moment => this.snapFunction(date, scale, step),
             start: '2012-01',
             end: '2020-01',
             orientation: 'top',
