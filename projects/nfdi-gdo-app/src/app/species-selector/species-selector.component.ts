@@ -198,13 +198,15 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     selectedEnvironmentCitation = new BehaviorSubject<string>('');
 
     speciesLayer?: Layer = undefined;
+    intensityLayer?: RasterLayer = undefined;
     environmentLayer?: Layer = undefined;
 
-    private datasetId: UUID = 'd9dd4530-7a57-44da-a650-ce7d81dcc216';
+    private readonly datasetId: UUID = 'd9dd4530-7a57-44da-a650-ce7d81dcc216';
+    private readonly intensityDatasetId: UUID = '1a7584e6-0c94-4d92-bbcd-223626d64d9c';
 
     private selectedEnvironmentDataset?: Dataset = undefined;
 
-    private subscriptions: Array<Subscription> = [];
+    private readonly subscriptions: Array<Subscription> = [];
 
     constructor(
         public readonly dataSelectionService: DataSelectionService,
@@ -374,6 +376,60 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             return undefined;
         }
         return SPECIES_INFO[species];
+    }
+
+    showIntensities(show: boolean): void {
+        this.intensityLayer = undefined;
+
+        if (!show) {
+            this.dataSelectionService.setIntensityLayer(undefined).subscribe();
+            return;
+        }
+
+        const workflow: WorkflowDict = {
+            type: 'Raster',
+            operator: {
+                type: 'GdalSource',
+                params: {
+                    dataset: {
+                        type: 'internal',
+                        datasetId: this.intensityDatasetId,
+                    },
+                },
+            },
+        };
+
+        this.projectService
+            .registerWorkflow(workflow)
+            .pipe(
+                combineLatestWith(this.datasetService.getDataset({type: 'internal', datasetId: this.intensityDatasetId})),
+                tap(([workflowId, _dataset]) => {
+                    this.userService
+                        .getSessionTokenForRequest()
+                        .pipe(mergeMap((token) => this.backend.getWorkflowProvenance(workflowId, token)))
+                        .subscribe((_provenance) => {
+                            // TODO: citation
+                            // this.selectedEnvironmentCitation.next(provenance.map((p) => p.provenance.citation).join(','));
+                        });
+                }),
+                mergeMap(([workflowId, dataset]) => {
+                    this.selectedEnvironmentDataset = dataset;
+                    if (!!dataset.symbology && dataset.symbology instanceof RasterSymbology) {
+                        this.intensityLayer = new RasterLayer({
+                            workflowId,
+                            name: 'Beprobungshäufigkeit',
+                            symbology: dataset.symbology,
+                            isLegendVisible: false,
+                            isVisible: true,
+                        });
+                        this.changeDetectorRef.markForCheck();
+                        return this.dataSelectionService.setIntensityLayer(this.intensityLayer);
+                    }
+
+                    return of(undefined);
+                }),
+            )
+            .subscribe();
     }
 
     computePlot(): void {

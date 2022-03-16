@@ -26,7 +26,7 @@ mat-divider {
 }
 
 .spacer {
-    margin-top: 1rem;
+    padding-top: 1rem;
 }
 
 .species-info {
@@ -41,4 +41,16 @@ mat-divider {
     p.info-text {
         text-align: justify;
     }
+}
+
+.intensityToggle {
+    margin-top: 0.5rem;
+
+    p {
+        width: 100%;
+    }
+}
+
+.intensityLabel {
+    margin-top: 0.7rem;
 }
