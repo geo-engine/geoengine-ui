@@ -558,17 +558,10 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     private createBackgroundLayer(projection: SpatialReference): OlLayer<OlSource, any> {
         switch (this.config.MAP.BACKGROUND_LAYER) {
             case 'OSM':
-                if (projection === WEB_MERCATOR.spatialReference) {
-                    return new OlLayerTile({
-                        source: this.backgroundLayerSource as any,
-                        // wrapX: false,
-                    });
-                } else {
-                    return new OlLayerImage({
-                        // placeholder image
-                        source: this.backgroundLayerSource as any,
-                    });
-                }
+                return new OlLayerTile({
+                    source: this.backgroundLayerSource as any,
+                    // wrapX: false,
+                });
             case 'countries': // eslint-disable-line no-fallthrough, ,
                 return new OlLayerVector({
                     source: this.backgroundLayerSource as any,
@@ -606,14 +599,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     private createBackgroundLayerSource(projection: SpatialReference): OlSource {
         switch (this.config.MAP.BACKGROUND_LAYER) {
             case 'OSM':
-                if (projection === WEB_MERCATOR.spatialReference) {
-                    return new OlSourceOSM();
-                } else {
-                    return new OlImageStatic({
-                        imageExtent: [0, 0, 0, 0],
-                        url: '',
-                    });
-                }
+                return new OlSourceOSM();
             case 'eumetview':
                 return new OlTileWmsSource({
                     url: 'https://view.eumetsat.int/geoserver/ows',
