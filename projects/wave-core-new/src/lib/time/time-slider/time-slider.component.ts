@@ -111,9 +111,14 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
     }
 
     changeSelectedScale(windowSize: number): void {
-        if (windowSize > 1000 * 60 * 60 * 24 * 31 * 22) this.selectedScale = 'year';
-        else if (windowSize > 1000 * 60 * 60 * 24 * 15) this.selectedScale = 'month';
-        else if (windowSize > 1000 * 60 * 60 * 31) this.selectedScale = 'day';
+        this.changeDetectorRef.detectChanges();
+        //these scales have to be adjusted, when the component is moved somewhere else with a higher width
+        const yearScale = 1000 * 60 * 60 * 24 * 31 * 22; //22 months in milliseconds
+        const monthScale = 1000 * 60 * 60 * 24 * 15; //15 days in milliseconds
+        const dayScale = 1000 * 60 * 60 * 31; //31 hours in milliseconds
+        if (windowSize > yearScale) this.selectedScale = 'year';
+        else if (windowSize > monthScale) this.selectedScale = 'month';
+        else if (windowSize > dayScale) this.selectedScale = 'day';
         else this.selectedScale = 'hour';
     }
 
