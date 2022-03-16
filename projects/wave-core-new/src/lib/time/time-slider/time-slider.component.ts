@@ -1,6 +1,6 @@
 import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef, OnDestroy} from '@angular/core';
-import {DataSet} from 'vis-data/esnext';
-import {DateType, Timeline} from 'vis-timeline/esnext';
+import {DataSet} from 'vis-data/standalone';
+import {DateType, Timeline} from 'vis-timeline/standalone';
 import {ElementRef} from '@angular/core';
 import {LayoutService} from '../../layout.service';
 import {ProjectService} from '../../project/project.service';
