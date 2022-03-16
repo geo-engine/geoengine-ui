@@ -1,6 +1,5 @@
 import {combineLatest, Observable, Subscription} from 'rxjs';
 import {first, map as rxMap, mergeMap, startWith} from 'rxjs/operators';
-
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -16,39 +15,31 @@ import {
     ViewChild,
     ViewChildren,
 } from '@angular/core';
-
 import OlMap from 'ol/Map';
 import OlView from 'ol/View';
 import {FeatureLike as OlFeatureLike} from 'ol/Feature';
 import OlFeature from 'ol/Feature';
-
 import OlLayerImage from 'ol/layer/Image';
 import OlLayer from 'ol/layer/Layer';
 import OlLayerTile from 'ol/layer/Tile';
 import OlLayerVector from 'ol/layer/Vector';
-
 import OlSource from 'ol/source/Source';
 import OlSourceOSM from 'ol/source/OSM';
 import OlTileWmsSource from 'ol/source/TileWMS';
 import OlSourceVector from 'ol/source/Vector';
 import XYZ from 'ol/source/XYZ';
 import OlImageStatic from 'ol/source/ImageStatic';
-
 import OlGeometryType from 'ol/geom/GeometryType';
 import OlGeomPoint from 'ol/geom/Point';
 import OlFormatGeoJSON from 'ol/format/GeoJSON';
-
 import OlStyleFill from 'ol/style/Fill';
 import OlStyleStroke from 'ol/style/Stroke';
 import OlStyleStyle, {StyleLike as OlStyleLike} from 'ol/style/Style';
-
 import OlInteractionDraw from 'ol/interaction/Draw';
 import OlInteractionSelect from 'ol/interaction/Select';
 import {SelectEvent as OlSelectEvent} from 'ol/interaction/Select';
 import OlGeometry from 'ol/geom/Geometry';
-
 import {MapLayerComponent} from '../map-layer.component';
-
 import {SpatialReference} from '../../spatial-references/spatial-reference.model';
 import {FeatureSelection, ProjectService} from '../../project/project.service';
 import {Extent, MapService} from '../map.service';
@@ -59,6 +50,16 @@ import {VectorSymbology} from '../../layers/symbology/symbology.model';
 import {SpatialReferenceService, WEB_MERCATOR} from '../../spatial-references/spatial-reference.service';
 import {containsCoordinate, getCenter} from 'ol/extent';
 import {olExtentToTuple} from '../../util/conversions';
+import VectorTileLayer from 'ol/layer/VectorTile';
+import VectorTileSource from 'ol/source/VectorTile';
+import MVT from 'ol/format/MVT';
+import {applyStyle, applyBackground} from 'ol-mapbox-style';
+import WMTSTileGrid from 'ol/tilegrid/WMTS';
+import {getTopLeft, getWidth} from 'ol/extent';
+import {get as getProjection} from 'ol/proj';
+import WMTS, {optionsFromCapabilities as wmtsOptionsFromCapabilities} from 'ol/source/WMTS';
+import TileLayer from 'ol/layer/Tile';
+import WMTSCapabilities from 'ol/format/WMTSCapabilities';
 
 type MapLayer = MapLayerComponent<OlLayer<OlSource, any>, OlSource>;
 
@@ -557,6 +558,59 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
 
     private createBackgroundLayer(projection: SpatialReference): OlLayer<OlSource, any> {
         switch (this.config.MAP.BACKGROUND_LAYER) {
+            case 'WMTS': {
+                const layer = new TileLayer({
+                    source: undefined, // TODO: implement async source creation
+                });
+
+                const parser = new WMTSCapabilities();
+
+                fetch(this.config.MAP.BACKGROUND_LAYER_URL)
+                    .then((response) => response.text())
+                    .then((text) => parser.read(text))
+                    .then((capabilities) => {
+                        if (!this.config.MAP.WMTS || !this.config.MAP.WMTS.LAYER_NAME) {
+                            throw new Error('missing WMTS config, e.g., layer name');
+                        }
+
+                        const options = wmtsOptionsFromCapabilities(capabilities, {
+                            layer: this.config.MAP.WMTS.LAYER_NAME,
+                            projection: projection.srsString,
+                        });
+
+                        if (!options) {
+                            throw Error('WMTS options not found');
+                        }
+
+                        const source = new WMTS(options);
+
+                        layer.setSource(source);
+                    });
+
+                return layer;
+            }
+            case 'vector-tiles': {
+                const layer = new VectorTileLayer({
+                    declutter: true,
+                    source: this.backgroundLayerSource as any,
+                    updateWhileAnimating: true,
+                    background: 'hsl(47, 26%, 88%)', // TODO: make `applyBackground` work
+                });
+
+                if (!this.config.MAP.VECTOR_TILES || !this.config.MAP.VECTOR_TILES.STYLE_URL) {
+                    throw new Error("'VECTOR_TILES' field in config is required");
+                }
+
+                fetch(this.config.MAP.VECTOR_TILES.STYLE_URL).then((response) => {
+                    response.json().then((glStyle: {layers: Array<{id: string; paint: {'background-color'?: string}}>}) => {
+                        applyBackground(layer, glStyle);
+
+                        applyStyle(layer, glStyle, 'openmaptiles');
+                    });
+                });
+
+                return layer;
+            }
             case 'OSM':
                 if (projection === WEB_MERCATOR.spatialReference) {
                     return new OlLayerTile({
@@ -605,6 +659,26 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
 
     private createBackgroundLayerSource(projection: SpatialReference): OlSource {
         switch (this.config.MAP.BACKGROUND_LAYER) {
+            case 'WMTS': {
+                // TODO: async source creation
+                return new WMTS({
+                    tileGrid: new WMTSTileGrid({
+                        resolutions: [],
+                        matrixIds: [],
+                        origin: [0, 0],
+                    }),
+                    layer: '',
+                    style: '',
+                    matrixSet: '',
+                });
+            }
+            case 'vector-tiles':
+                return new VectorTileSource({
+                    format: new MVT(),
+                    projection: 'EPSG:3857', // TODO: from config
+                    url: this.config.MAP.BACKGROUND_LAYER_URL,
+                    maxZoom: this.config.MAP.VECTOR_TILES?.MAX_ZOOM,
+                });
             case 'OSM':
                 if (projection === WEB_MERCATOR.spatialReference) {
                     return new OlSourceOSM();

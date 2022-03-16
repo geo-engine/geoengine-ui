@@ -50,12 +50,23 @@ interface Defaults {
 }
 
 interface Map {
-    readonly BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted' | 'XYZ' | 'eumetview';
+    readonly BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted' | 'XYZ' | 'eumetview' | 'vector-tiles' | 'WMTS';
     readonly BACKGROUND_LAYER_URL: string;
     readonly HOSTED_BACKGROUND_SERVICE: string;
     readonly HOSTED_BACKGROUND_LAYER_NAME: string;
     readonly HOSTED_BACKGROUND_SERVICE_VERSION: string;
     readonly REFRESH_LAYERS_ON_CHANGE: boolean;
+    readonly VECTOR_TILES?: VectorTileConfig;
+    readonly WMTS?: WMTSConfig;
+}
+
+interface VectorTileConfig {
+    readonly MAX_ZOOM: number;
+    readonly STYLE_URL: string;
+}
+
+interface WMTSConfig {
+    readonly LAYER_NAME: string;
 }
 
 interface Time {
