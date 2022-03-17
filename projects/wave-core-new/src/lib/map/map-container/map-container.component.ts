@@ -22,7 +22,6 @@ import OlView from 'ol/View';
 import {FeatureLike as OlFeatureLike} from 'ol/Feature';
 import OlFeature from 'ol/Feature';
 
-import OlLayerImage from 'ol/layer/Image';
 import OlLayer from 'ol/layer/Layer';
 import OlLayerTile from 'ol/layer/Tile';
 import OlLayerVector from 'ol/layer/Vector';
@@ -32,7 +31,6 @@ import OlSourceOSM from 'ol/source/OSM';
 import OlTileWmsSource from 'ol/source/TileWMS';
 import OlSourceVector from 'ol/source/Vector';
 import XYZ from 'ol/source/XYZ';
-import OlImageStatic from 'ol/source/ImageStatic';
 
 import OlGeometryType from 'ol/geom/GeometryType';
 import OlGeomPoint from 'ol/geom/Point';
@@ -56,7 +54,7 @@ import {Config} from '../../config.service';
 import {LayoutService} from '../../layout.service';
 import {MatGridList, MatGridTile} from '@angular/material/grid-list';
 import {VectorSymbology} from '../../layers/symbology/symbology.model';
-import {SpatialReferenceService, WEB_MERCATOR} from '../../spatial-references/spatial-reference.service';
+import {SpatialReferenceService} from '../../spatial-references/spatial-reference.service';
 import {containsCoordinate, getCenter} from 'ol/extent';
 import {olExtentToTuple} from '../../util/conversions';
 
@@ -555,20 +553,13 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         });
     }
 
-    private createBackgroundLayer(projection: SpatialReference): OlLayer<OlSource, any> {
+    private createBackgroundLayer(_projection: SpatialReference): OlLayer<OlSource, any> {
         switch (this.config.MAP.BACKGROUND_LAYER) {
             case 'OSM':
-                if (projection === WEB_MERCATOR.spatialReference) {
-                    return new OlLayerTile({
-                        source: this.backgroundLayerSource as any,
-                        // wrapX: false,
-                    });
-                } else {
-                    return new OlLayerImage({
-                        // placeholder image
-                        source: this.backgroundLayerSource as any,
-                    });
-                }
+                return new OlLayerTile({
+                    source: this.backgroundLayerSource as any,
+                    // wrapX: false,
+                });
             case 'countries': // eslint-disable-line no-fallthrough, ,
                 return new OlLayerVector({
                     source: this.backgroundLayerSource as any,
@@ -606,14 +597,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     private createBackgroundLayerSource(projection: SpatialReference): OlSource {
         switch (this.config.MAP.BACKGROUND_LAYER) {
             case 'OSM':
-                if (projection === WEB_MERCATOR.spatialReference) {
-                    return new OlSourceOSM();
-                } else {
-                    return new OlImageStatic({
-                        imageExtent: [0, 0, 0, 0],
-                        url: '',
-                    });
-                }
+                return new OlSourceOSM();
             case 'eumetview':
                 return new OlTileWmsSource({
                     url: 'https://view.eumetsat.int/geoserver/ows',

@@ -47,7 +47,6 @@
         <div class="spacer"></div>
         <wave-layer-list-element [layer]="speciesLayer" [menu]="false"></wave-layer-list-element>
     </div>
-    <div class="spacer"></div>
 
     <div class="spacer"></div>
 
@@ -59,6 +58,22 @@
 
         <p class="info-text" [innerHtml]="speciesInfo.text"></p>
     </mat-expansion-panel>
+
+    <mat-divider></mat-divider>
+
+    <div class="spacer"></div>
+
+    <p>Im Folgenden kann die Beprobungshäufigkeit optional mit eingeblendet werden.</p>
+
+    <div fxLayout="row" fxLayoutGap="1rem" fxLayoutAlign="space-between start">
+        <div fxFlex>
+            <p class="intensityLabel" *ngIf="!intensityLayer">Beprobungshäufigkeit</p>
+            <wave-layer-list-element *ngIf="intensityLayer" [layer]="intensityLayer" [menu]="false"></wave-layer-list-element>
+        </div>
+        <mat-slide-toggle class="intensityToggle" (change)="showIntensities($event.checked)"></mat-slide-toggle>
+    </div>
+
+    <div class="spacer"></div>
 
     <mat-divider></mat-divider>
 
@@ -99,8 +114,6 @@
         <span fxFlex="4rem">{{ thumbLabelMonthDisplay(currentMonth) }}</span>
     </div>
 
-    <div class="spacer"></div>
-
     <mat-divider></mat-divider>
 
     <div class="spacer"></div>
@@ -110,7 +123,7 @@
         und die Werteverteilung darstellt. Maßgeblich ist der ausgewählte Monat und das Jahr.
     </p>
 
-    <button [disabled]="!selectSpecies || !selectedEnvironmentLayer" mat-stroked-button id="compute-plot" (click)="computePlot()">
+    <button [disabled]="!selectedSpecies || !selectedEnvironmentLayer" mat-stroked-button id="compute-plot" (click)="computePlot()">
         Berechne Plot
     </button>
 
@@ -122,7 +135,6 @@
 
     <mat-spinner color="accent" *ngIf="plotLoading | async"></mat-spinner>
 
-    <div class="spacer"></div>
     <div class="spacer"></div>
 
     <mat-divider></mat-divider>
