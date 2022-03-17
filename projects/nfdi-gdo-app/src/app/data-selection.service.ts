@@ -103,7 +103,7 @@ export class DataSelectionService {
     }
 
     setIntensityLayer(layer?: RasterLayer): Observable<void> {
-        const removeOperation = this.rasterLayer.pipe(
+        const removeOperation = this.intensityLayer.pipe(
             first(),
             mergeMap((currentLayer) => {
                 if (currentLayer) {
