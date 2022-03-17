@@ -553,7 +553,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         });
     }
 
-    private createBackgroundLayer(projection: SpatialReference): OlLayer<OlSource, any> {
+    private createBackgroundLayer(_projection: SpatialReference): OlLayer<OlSource, any> {
         switch (this.config.MAP.BACKGROUND_LAYER) {
             case 'OSM':
                 return new OlLayerTile({
