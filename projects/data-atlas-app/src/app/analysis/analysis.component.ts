@@ -15,6 +15,7 @@ import {
     ExpressionDict,
     SourceOperatorDict,
     RasterResultDescriptorDict,
+    ReprojectionDict,
 } from 'wave-core';
 import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {DataSelectionService} from '../data-selection.service';
@@ -188,7 +189,16 @@ export class AnalysisComponent implements OnInit {
                                         mapNoData: false,
                                     },
                                     sources: {
-                                        a: rasterWorkflow.operator,
+                                        a: {
+                                            type: 'Reprojection',
+                                            params: {
+                                                // country rasters are in 4326
+                                                targetSpatialReference: 'EPSG:4326',
+                                            },
+                                            sources: {
+                                                source: rasterWorkflow.operator,
+                                            },
+                                        } as ReprojectionDict,
                                         b: countryRasterWorkflow,
                                     },
                                 } as ExpressionDict,

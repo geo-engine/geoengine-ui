@@ -32,6 +32,7 @@
                                 *ngFor="let entity of layer.tree.entities"
                                 (click)="loadData(layer, subgroup, entity)"
                                 color="primary"
+                                matTooltip="{{ entity.name }}"
                             >
                                 {{ entity.name }}
                                 {{ entity.description }}
@@ -46,8 +47,6 @@
                     <p class="empty"><em>no datasets available</em></p>
                 </mat-card-content>
             </mat-card>
-
-            <!-- <ng-template matExpansionPanelContent><ng-template [cdkPortalOutlet]="datasetPortal"></ng-template></ng-template> -->
         </mat-expansion-panel>
 
         <mat-expansion-panel expanded="true" class="mat-elevation-z0">
