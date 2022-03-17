@@ -78,7 +78,15 @@ export class MainComponent implements OnInit, AfterViewInit {
         this.layersReverse$ = this.dataSelectionService.layers;
 
         this.http.get<Array<[TerraNovaGroup, Array<EbvHierarchy>]>>('assets/datasets.json').subscribe((datasets) => {
-            this.layerGroups.next(new Map<TerraNovaGroup, Array<EbvHierarchy>>(datasets));
+            const datasetMap = new Map<TerraNovaGroup, Array<EbvHierarchy>>(datasets);
+
+            for (const ebvHierarchies of datasetMap.values()) {
+                for (const ebvHierarchy of ebvHierarchies) {
+                    ebvHierarchy.tree.entities.sort((a, b) => a.name.localeCompare(b.name));
+                }
+            }
+
+            this.layerGroups.next(datasetMap);
         });
     }
 
