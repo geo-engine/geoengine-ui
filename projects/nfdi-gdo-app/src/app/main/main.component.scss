@@ -24,6 +24,11 @@ $sidenav-width: 33vw;
             height: 100%;
             margin: 0 auto;
         }
+        p {
+            background: white;
+            margin: 0 auto;
+            color: rgba(0, 0, 0, 0.73);
+        }
     }
 
     mat-expansion-panel-header {

@@ -32,7 +32,7 @@ interface EnvironmentLayer {
     dataRange: [number, number];
 }
 
-const START_YEAR = 2000;
+const START_YEAR = 1991;
 const END_YEAR = 2020;
 const SPECIES = [
     'Aeshna affinis',

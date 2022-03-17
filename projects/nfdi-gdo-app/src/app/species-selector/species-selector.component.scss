@@ -1,7 +1,7 @@
 :host {
     overflow-y: auto;
     overflow-x: hidden;
-    height: calc(100% - 64px);
+    height: calc(100% - 128px);
     display: block;
 }
 .container {
@@ -10,7 +10,7 @@
 }
 
 mat-toolbar {
-    height: 64px !important;
+    height: 128px !important;
 }
 
 mat-form-field {
