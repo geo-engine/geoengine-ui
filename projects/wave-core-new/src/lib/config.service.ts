@@ -61,8 +61,9 @@ interface Map {
 }
 
 interface VectorTileConfig {
-    readonly MAX_ZOOM: number;
     readonly STYLE_URL: string;
+    readonly LAYER: string;
+    readonly MAX_ZOOM: number;
 }
 
 interface WMTSConfig {

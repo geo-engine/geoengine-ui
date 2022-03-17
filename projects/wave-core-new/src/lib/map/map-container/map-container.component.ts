@@ -55,8 +55,6 @@ import VectorTileSource from 'ol/source/VectorTile';
 import MVT from 'ol/format/MVT';
 import {applyStyle, applyBackground} from 'ol-mapbox-style';
 import WMTSTileGrid from 'ol/tilegrid/WMTS';
-import {getTopLeft, getWidth} from 'ol/extent';
-import {get as getProjection} from 'ol/proj';
 import WMTS, {optionsFromCapabilities as wmtsOptionsFromCapabilities} from 'ol/source/WMTS';
 import TileLayer from 'ol/layer/Tile';
 import WMTSCapabilities from 'ol/format/WMTSCapabilities';
@@ -597,7 +595,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     background: 'hsl(47, 26%, 88%)', // TODO: make `applyBackground` work
                 });
 
-                if (!this.config.MAP.VECTOR_TILES || !this.config.MAP.VECTOR_TILES.STYLE_URL) {
+                if (!this.config.MAP.VECTOR_TILES) {
                     throw new Error("'VECTOR_TILES' field in config is required");
                 }
 
@@ -605,7 +603,9 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     response.json().then((glStyle: {layers: Array<{id: string; paint: {'background-color'?: string}}>}) => {
                         applyBackground(layer, glStyle);
 
-                        applyStyle(layer, glStyle, 'openmaptiles');
+                        if (this.config.MAP.VECTOR_TILES?.LAYER) {
+                            applyStyle(layer, glStyle, this.config.MAP.VECTOR_TILES.LAYER);
+                        }
                     });
                 });
 
