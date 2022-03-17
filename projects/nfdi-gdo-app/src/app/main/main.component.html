@@ -1,7 +1,12 @@
 <div class="sidenav mat-elevation-z4">
     <mat-toolbar color="primary" class="mat-elevation-z1">
-        <a href="https://www.libellula.org"><img src="assets/logos/gdo-cropped.gif" alt="GdO-Libellenportal" /></a
-    ></mat-toolbar>
+        <mat-toolbar-row>
+            <a href="https://www.libellula.org"><img src="assets/logos/gdo-cropped.gif" alt="GdO-Libellenportal" /></a>
+        </mat-toolbar-row>
+        <mat-toolbar-row>
+            <p class="mat-subheading-2">Portaldemonstrator</p>
+        </mat-toolbar-row>
+    </mat-toolbar>
     <ng-template [cdkPortalOutlet]="datasetPortal"></ng-template>
 </div>
 

@@ -8,6 +8,15 @@ interface Components {
     };
 }
 
+interface Map {
+    readonly BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted' | 'XYZ' | 'eumetview';
+    readonly BACKGROUND_LAYER_URL: string;
+    readonly HOSTED_BACKGROUND_SERVICE: string;
+    readonly HOSTED_BACKGROUND_LAYER_NAME: string;
+    readonly HOSTED_BACKGROUND_SERVICE_VERSION: string;
+    readonly REFRESH_LAYERS_ON_CHANGE: boolean;
+}
+
 interface AppConfigStructure extends WaveConfigStructure {
     readonly COMPONENTS: Components;
 }
@@ -26,6 +35,17 @@ export class AppConfig extends Config {
 
     get COMPONENTS(): Components {
         return this.config.COMPONENTS;
+    }
+
+    get MAP(): Map {
+        return {
+            BACKGROUND_LAYER: 'OSM',
+            BACKGROUND_LAYER_URL: '',
+            HOSTED_BACKGROUND_SERVICE: '',
+            HOSTED_BACKGROUND_LAYER_NAME: '',
+            HOSTED_BACKGROUND_SERVICE_VERSION: '',
+            REFRESH_LAYERS_ON_CHANGE: false,
+        };
     }
 
     load(): Promise<void> {

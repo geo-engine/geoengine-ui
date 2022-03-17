@@ -32,7 +32,7 @@ interface EnvironmentLayer {
     dataRange: [number, number];
 }
 
-const START_YEAR = 2000;
+const START_YEAR = 1991;
 const END_YEAR = 2020;
 const SPECIES = [
     'Aeshna affinis',
@@ -159,29 +159,29 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     readonly species: string[] = SPECIES;
 
     readonly environmentLayers: EnvironmentLayer[] = [
-        {
-            id: '36574dc3-560a-4b09-9d22-d5945f2b8111',
-            name: 'NDVI',
-            dataRange: [-2000, 10000],
-        },
-        {
-            id: '36574dc3-560a-4b09-9d22-d5945f2b8666',
-            name: 'Water Bodies 333m',
-            dataRange: [70, 71],
-        },
+        // {
+        //     id: '36574dc3-560a-4b09-9d22-d5945f2b8111',
+        //     name: 'NDVI',
+        //     dataRange: [-2000, 10000],
+        // },
+        // {
+        //     id: '36574dc3-560a-4b09-9d22-d5945f2b8666',
+        //     name: 'Water Bodies 333m',
+        //     dataRange: [70, 71],
+        // },
         {
             id: '6c9270ad-e87c-404b-aa1f-4bfb8a1b3cd7',
-            name: 'ECMWF ERA 5 land 2m temperature',
-            dataRange: [200, 320],
+            name: 'Mittlere monatliche Temperatur in C° (2000 - 2020)',
+            dataRange: [-20, 40],
         },
         {
             id: 'fedad2aa-00db-44b5-be38-e8637932aa0a',
-            name: 'ECMWF ERA 5 land Total precipitation',
-            dataRange: [0, 0.05],
+            name: 'Mittlerer monatlicher Niederschlag in mm (2000 - 2020)',
+            dataRange: [0, 20],
         },
         {
             id: '36574dc3-560a-4b09-9d22-d5945ffb8093',
-            name: 'Landcover classification map of Germany 2020 based on Sentinel-2 data 2019 & 2020',
+            name: 'Landnutzungstypen (2019 & 2020)',
             dataRange: [0, 60],
         },
     ];
