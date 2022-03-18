@@ -172,7 +172,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
         {
             id: '6c9270ad-e87c-404b-aa1f-4bfb8a1b3cd7',
             name: 'Mittlere monatliche Temperatur in C° (2000 - 2020)',
-            dataRange: [-20, 40],
+            dataRange: [-5, 30],
         },
         {
             id: 'fedad2aa-00db-44b5-be38-e8637932aa0a',
