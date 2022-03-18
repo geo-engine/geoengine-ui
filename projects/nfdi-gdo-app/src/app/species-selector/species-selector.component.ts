@@ -511,7 +511,11 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                     this.backend.getPlot(
                         workflowId,
                         {
-                            time: time.toDict(),
+                            // time: time.toDict(),
+                            time: {
+                                start: time.start.valueOf(),
+                                end: time.end.valueOf() - 1,
+                            },
                             bbox: extentToBboxDict(viewport.extent),
                             crs: crs.srsString,
                             // TODO: set reasonable size
