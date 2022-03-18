@@ -201,6 +201,9 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     intensityLayer?: RasterLayer = undefined;
     environmentLayer?: Layer = undefined;
 
+    readonly startYear = START_YEAR;
+    readonly endYear = END_YEAR;
+
     private readonly datasetId: UUID = 'd9dd4530-7a57-44da-a650-ce7d81dcc216';
     private readonly intensityDatasetId: UUID = '1a7584e6-0c94-4d92-bbcd-223626d64d9c';
 

@@ -5,6 +5,11 @@
         timeFormat="YYYY"
         [timeSteps]="dataSelectionService.timeSteps | async | valueDefault: []"
     ></wave-time-step-selector>
+    <div fxLayout="row" class="startEndYears mat-caption">
+        <span>{{ startYear }}</span>
+        <span fxFlex></span>
+        <span>{{ endYear }}</span>
+    </div>
     <p>
         Es wird ein Jahr ausgewählt, für den sämtliche Libellenbeobachtungen angezeigt werden. Die Beobachtungen werden auf dei Karte
         räumlich zusammengefasst als Kreise dargestellt, wobei größere Kreise mehr Beobachtungspunkte (als Zahl im Kreis erkenntlich)
