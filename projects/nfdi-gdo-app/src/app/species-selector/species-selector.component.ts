@@ -172,7 +172,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
         {
             id: '6c9270ad-e87c-404b-aa1f-4bfb8a1b3cd7',
             name: 'Mittlere monatliche Temperatur in C° (2000 - 2020)',
-            dataRange: [-20, 40],
+            dataRange: [-5, 30],
         },
         {
             id: 'fedad2aa-00db-44b5-be38-e8637932aa0a',
@@ -200,6 +200,9 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     speciesLayer?: Layer = undefined;
     intensityLayer?: RasterLayer = undefined;
     environmentLayer?: Layer = undefined;
+
+    readonly startYear = START_YEAR;
+    readonly endYear = END_YEAR;
 
     private readonly datasetId: UUID = 'd9dd4530-7a57-44da-a650-ce7d81dcc216';
     private readonly intensityDatasetId: UUID = '1a7584e6-0c94-4d92-bbcd-223626d64d9c';
