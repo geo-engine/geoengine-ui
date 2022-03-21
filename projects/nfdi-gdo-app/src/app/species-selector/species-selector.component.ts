@@ -115,6 +115,7 @@ const SPECIES = [
     'Sympetrum striolatum',
     'Sympetrum vulgatum',
 ];
+/* eslint-disable @typescript-eslint/naming-convention */
 const SPECIES_INFO: {[key: string]: SpeciesInfo} = {
     'Anax imperator': {
         text: `Die Große Königslibelle erreicht Flügelspannweiten von 9,5 bis 11 Zentimetern. Der Brustabschnitt (Thorax) der Tiere ist grün gefärbt,
