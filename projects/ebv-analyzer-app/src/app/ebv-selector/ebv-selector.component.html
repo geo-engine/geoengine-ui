@@ -74,8 +74,8 @@
                     ebvSubgroupValue.title
                 }}</mat-option>
             </mat-select>
-            <mat-hint>{{ selectedRootSubgroup.value?.description }}</mat-hint>
         </mat-form-field>
+        <p class="mat-caption label justify">{{ ebvPath[0]?.description }}</p>
     </ng-container>
     <ng-container *ngFor="let ebvSubgroup of ebvPath; index as i">
         <mat-form-field *ngIf="ebvSubgroup.groups.length">
@@ -94,8 +94,8 @@
                     ebvSubgroupValue.title
                 }}</mat-option>
             </mat-select>
-            <mat-hint>{{ selectedSubgroup.value?.description }}</mat-hint>
         </mat-form-field>
+        <p class="mat-caption label justify">{{ ebvPath[i + 1]?.description }}</p>
     </ng-container>
     <ng-container *ngIf="ebvTree && ebvPath.length && !ebvPath[ebvPath.length - 1].groups.length">
         <mat-form-field>
@@ -114,8 +114,8 @@
                     entity.name
                 }}</mat-option>
             </mat-select>
-            <mat-hint>{{ selectedEntity.value?.description }}</mat-hint>
         </mat-form-field>
+        <p class="mat-caption label justify">{{ ebvEntity?.description }}</p>
     </ng-container>
 
     <button mat-raised-button class="show" color="primary" *ngIf="isAddButtonVisible()" (click)="showEbv()">Show</button>
