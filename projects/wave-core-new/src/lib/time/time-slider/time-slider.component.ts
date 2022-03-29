@@ -48,7 +48,9 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
         protected readonly projectService: ProjectService,
         protected readonly layoutService: LayoutService,
         private changeDetectorRef: ChangeDetectorRef,
-    ) {
+    ) { }
+
+    ngOnInit(): void {
         this.subscriptions.push(
             this.projectService.getLayerStream().subscribe((layerList) => {
                 if (layerList !== this.layerList) {
@@ -56,9 +58,7 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
                 }
             }),
         );
-    }
 
-    ngOnInit(): void {
         this.getTimelineData();
         this.getTimelineGroups();
         this.getOptions();
