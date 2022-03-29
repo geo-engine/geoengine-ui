@@ -54,7 +54,6 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
                 if (layerList !== this.layerList) {
                     this.layerList = layerList;
                 }
-                this.changeDetectorRef.markForCheck();
             }),
         );
     }
