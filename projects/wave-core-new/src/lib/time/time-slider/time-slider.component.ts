@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef, OnDestroy} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef, OnDestroy, Input} from '@angular/core';
 import {DataSet} from 'vis-data/standalone';
 import {DateType, Timeline} from 'vis-timeline/standalone';
 import {ElementRef} from '@angular/core';
@@ -33,6 +33,8 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
     ];
     selectedScale: DurationInputArg2 = 'year';
     isRange = true;
+
+    @Input() height = 150;
 
     //Layer Data
     layerList: Array<Layer> = [];
@@ -265,7 +267,7 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
             start: '2012-01',
             end: '2020-01',
             orientation: 'top',
-            height: 150,
+            height: this.height,
             itemsAlwaysDraggable: false,
             editable: true,
             selectable: false,
