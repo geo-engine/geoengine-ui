@@ -142,8 +142,9 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
 
     changeScale(selectedScale: DurationInputArg2): void {
         this.projectService.getTimeOnce().subscribe((t) => {
-            const startWindow = t.start.clone().subtract(4, selectedScale);
-            const endWindow = t.start.clone().add(4, selectedScale);
+            const steps = 8;
+            const startWindow = t.start.clone().subtract(steps/2, selectedScale);
+            const endWindow = t.start.clone().add(steps/2, selectedScale);
             this.timeline?.setWindow(startWindow, endWindow);
         });
     }
