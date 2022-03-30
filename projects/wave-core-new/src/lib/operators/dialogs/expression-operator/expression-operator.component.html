@@ -26,7 +26,7 @@
     </p>
 </wave-dialog-help>
 
-<form [formGroup]="form" (ngSubmit)="add()" fxLayout="column">
+<form [formGroup]="form" (ngSubmit)="add()" fxLayout="column" *ngIf="projectHasRasterLayers$ | async; else noDataInfo">
     <div fxFlex class="container">
         <wave-multi-layer-selection [types]="RASTER_TYPE" formControlName="rasterLayers" [min]="1" [max]="8"></wave-multi-layer-selection>
         <wave-dialog-section-heading title="Configuration" subtitle="Specify the operator"></wave-dialog-section-heading>
@@ -64,3 +64,11 @@
         <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid">Create</button>
     </div>
 </form>
+
+<ng-template #noDataInfo>
+    <p class="no-rasters">
+        no raster input available
+        <br />
+        <button mat-button (click)="goToAddDataTab()">⇢ add some data ⇢</button>
+    </p>
+</ng-template>
