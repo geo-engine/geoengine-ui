@@ -12,8 +12,7 @@ import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 import {RasterLayerMetadata} from '../../../layers/layer-metadata.model';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {ExpressionDict} from '../../../backend/operator.model';
-import {LayoutService} from '../../../layout.service';
-import {DatasetListComponent} from '../../../datasets/dataset-list/dataset-list.component';
+import {LayoutService, SidenavConfig} from '../../../layout.service';
 
 /**
  * This dialog allows calculations on (one or more) raster layers.
@@ -28,7 +27,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
     /**
      * If the list is empty, show the following button.
      */
-    @Input() dataListConfig = {component: DatasetListComponent};
+    @Input() dataListConfig?: SidenavConfig;
 
     readonly RASTER_TYPE = [ResultTypes.RASTER];
     readonly form: FormGroup;
@@ -238,21 +237,25 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                     ),
                 ),
             )
-            .subscribe(
-                () => {
+            .subscribe({
+                next: () => {
                     // everything worked well
 
                     this.lastError$.next(undefined);
                 },
-                (error) => {
+                error: (error) => {
                     const errorMsg = error.error.message;
 
                     this.lastError$.next(errorMsg);
                 },
-            );
+            });
     }
 
     goToAddDataTab(): void {
+        if (!this.dataListConfig) {
+            return;
+        }
+
         this.layoutService.setSidenavContentComponent(this.dataListConfig);
     }
 }

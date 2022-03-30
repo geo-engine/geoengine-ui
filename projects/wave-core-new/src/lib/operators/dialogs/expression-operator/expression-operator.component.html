@@ -69,6 +69,6 @@
     <p class="no-rasters">
         no raster input available
         <br />
-        <button mat-button (click)="goToAddDataTab()">⇢ add some data ⇢</button>
+        <button mat-button *ngIf="dataListConfig" (click)="goToAddDataTab()">⇢ add some data ⇢</button>
     </p>
 </ng-template>

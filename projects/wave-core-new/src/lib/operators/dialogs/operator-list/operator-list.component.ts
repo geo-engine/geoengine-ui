@@ -1,7 +1,7 @@
-import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, ReplaySubject} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {ChangeDetectionStrategy, Component, Input, OnInit, Type} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges, Type} from '@angular/core';
 import {LayoutService} from '../../../layout.service';
 import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
 import {createIconDataUrl} from '../../../util/icons';
@@ -24,6 +24,7 @@ import {ExpressionOperatorComponent} from '../expression-operator/expression-ope
  */
 export interface OperatorListType {
     component: Type<any>;
+    config?: {[key: string]: any};
     type: {NAME: string; ICON_URL: string};
     description: string;
 }
@@ -47,7 +48,7 @@ export type OperatorListButtonGroups = Array<{
     styleUrls: ['./operator-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OperatorListComponent implements OnInit {
+export class OperatorListComponent implements OnInit, OnChanges {
     static readonly DEFAULT_MIXED_OPERATOR_DIALOGS: Array<OperatorListType> = [
         {
             component: RasterVectorJoinComponent,
@@ -197,14 +198,15 @@ export class OperatorListComponent implements OnInit {
         {name: 'Vector', list: OperatorListComponent.DEFAULT_VECTOR_OPERATOR_DIALOGS},
     ];
 
-    operatorGroups$: Observable<Array<{name: string; list: Array<OperatorListType>}>>;
-    searchString$ = new BehaviorSubject<string>('');
+    readonly operators$ = new ReplaySubject<OperatorListButtonGroups>(1);
+    readonly operatorGroups$: Observable<Array<{name: string; list: Array<OperatorListType>}>>;
+    readonly searchString$ = new BehaviorSubject<string>('');
 
     /**
      * DI of services
      */
     constructor(private layoutService: LayoutService) {
-        this.operatorGroups$ = combineLatest([of(this.operators), this.searchString$.pipe(map((s) => s.toLowerCase()))]).pipe(
+        this.operatorGroups$ = combineLatest([this.operators$, this.searchString$.pipe(map((s) => s.toLowerCase()))]).pipe(
             map(([operatorGroups, searchString]) => {
                 const nameComparator = (a: string, b: string): number => {
                     const stripped = (s: string): string => s.replace(' ', '');
@@ -237,12 +239,20 @@ export class OperatorListComponent implements OnInit {
         );
     }
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.operators$.next(this.operators);
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.operators) {
+            this.operators$.next(this.operators);
+        }
+    }
 
     /**
      * Load a selected dialog into the sidenav
      */
-    load(component: Type<any>): void {
-        this.layoutService.setSidenavContentComponent({component, keepParent: true});
+    load(component: Type<any>, config?: {[key: string]: any}): void {
+        this.layoutService.setSidenavContentComponent({component, config, keepParent: true});
     }
 }
