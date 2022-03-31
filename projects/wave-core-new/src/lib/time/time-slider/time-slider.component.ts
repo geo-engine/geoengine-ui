@@ -48,7 +48,7 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
         protected readonly projectService: ProjectService,
         protected readonly layoutService: LayoutService,
         private changeDetectorRef: ChangeDetectorRef,
-    ) { }
+    ) {}
 
     ngOnInit(): void {
         this.subscriptions.push(
@@ -143,8 +143,8 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
     changeScale(selectedScale: DurationInputArg2): void {
         this.projectService.getTimeOnce().subscribe((t) => {
             const steps = 8;
-            const startWindow = t.start.clone().subtract(steps/2, selectedScale);
-            const endWindow = t.start.clone().add(steps/2, selectedScale);
+            const startWindow = t.start.clone().subtract(steps / 2, selectedScale);
+            const endWindow = t.start.clone().add(steps / 2, selectedScale);
             this.timeline?.setWindow(startWindow, endWindow);
         });
     }

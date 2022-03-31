@@ -96,9 +96,7 @@
                             "node_modules/ol/ol.css",
                             "./node_modules/vis-timeline/dist/vis-timeline-graph2d.min.css"
                         ],
-                        "scripts": [
-                            "node_modules/vis-timeline/dist/vis-timeline-graph2d.min.js"
-                        ],
+                        "scripts": ["node_modules/vis-timeline/dist/vis-timeline-graph2d.min.js"],
                         "vendorChunk": true,
                         "extractLicenses": false,
                         "buildOptimizer": false,
