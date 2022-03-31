@@ -32,7 +32,7 @@ interface EnvironmentLayer {
     dataRange: [number, number];
 }
 
-const START_YEAR = 2000;
+const START_YEAR = 1991;
 const END_YEAR = 2020;
 const SPECIES = [
     'Aeshna affinis',
@@ -115,6 +115,7 @@ const SPECIES = [
     'Sympetrum striolatum',
     'Sympetrum vulgatum',
 ];
+/* eslint-disable @typescript-eslint/naming-convention */
 const SPECIES_INFO: {[key: string]: SpeciesInfo} = {
     'Anax imperator': {
         text: `Die Große Königslibelle erreicht Flügelspannweiten von 9,5 bis 11 Zentimetern. Der Brustabschnitt (Thorax) der Tiere ist grün gefärbt,
@@ -159,29 +160,29 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     readonly species: string[] = SPECIES;
 
     readonly environmentLayers: EnvironmentLayer[] = [
-        {
-            id: '36574dc3-560a-4b09-9d22-d5945f2b8111',
-            name: 'NDVI',
-            dataRange: [-2000, 10000],
-        },
-        {
-            id: '36574dc3-560a-4b09-9d22-d5945f2b8666',
-            name: 'Water Bodies 333m',
-            dataRange: [70, 71],
-        },
+        // {
+        //     id: '36574dc3-560a-4b09-9d22-d5945f2b8111',
+        //     name: 'NDVI',
+        //     dataRange: [-2000, 10000],
+        // },
+        // {
+        //     id: '36574dc3-560a-4b09-9d22-d5945f2b8666',
+        //     name: 'Water Bodies 333m',
+        //     dataRange: [70, 71],
+        // },
         {
             id: '6c9270ad-e87c-404b-aa1f-4bfb8a1b3cd7',
-            name: 'ECMWF ERA 5 land 2m temperature',
-            dataRange: [200, 320],
+            name: 'Mittlere monatliche Temperatur in C° (2000 - 2020)',
+            dataRange: [-5, 30],
         },
         {
             id: 'fedad2aa-00db-44b5-be38-e8637932aa0a',
-            name: 'ECMWF ERA 5 land Total precipitation',
-            dataRange: [0, 0.05],
+            name: 'Mittlerer monatlicher Niederschlag in mm (2000 - 2020)',
+            dataRange: [0, 20],
         },
         {
             id: '36574dc3-560a-4b09-9d22-d5945ffb8093',
-            name: 'Landcover classification map of Germany 2020 based on Sentinel-2 data 2019 & 2020',
+            name: 'Landnutzungstypen (2019 & 2020)',
             dataRange: [0, 60],
         },
     ];
@@ -198,13 +199,18 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     selectedEnvironmentCitation = new BehaviorSubject<string>('');
 
     speciesLayer?: Layer = undefined;
+    intensityLayer?: RasterLayer = undefined;
     environmentLayer?: Layer = undefined;
 
-    private datasetId: UUID = 'd9dd4530-7a57-44da-a650-ce7d81dcc216';
+    readonly startYear = START_YEAR;
+    readonly endYear = END_YEAR;
+
+    private readonly datasetId: UUID = 'd9dd4530-7a57-44da-a650-ce7d81dcc216';
+    private readonly intensityDatasetId: UUID = '1a7584e6-0c94-4d92-bbcd-223626d64d9c';
 
     private selectedEnvironmentDataset?: Dataset = undefined;
 
-    private subscriptions: Array<Subscription> = [];
+    private readonly subscriptions: Array<Subscription> = [];
 
     constructor(
         public readonly dataSelectionService: DataSelectionService,
@@ -374,6 +380,60 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             return undefined;
         }
         return SPECIES_INFO[species];
+    }
+
+    showIntensities(show: boolean): void {
+        this.intensityLayer = undefined;
+
+        if (!show) {
+            this.dataSelectionService.setIntensityLayer(undefined).subscribe();
+            return;
+        }
+
+        const workflow: WorkflowDict = {
+            type: 'Raster',
+            operator: {
+                type: 'GdalSource',
+                params: {
+                    dataset: {
+                        type: 'internal',
+                        datasetId: this.intensityDatasetId,
+                    },
+                },
+            },
+        };
+
+        this.projectService
+            .registerWorkflow(workflow)
+            .pipe(
+                combineLatestWith(this.datasetService.getDataset({type: 'internal', datasetId: this.intensityDatasetId})),
+                tap(([workflowId, _dataset]) => {
+                    this.userService
+                        .getSessionTokenForRequest()
+                        .pipe(mergeMap((token) => this.backend.getWorkflowProvenance(workflowId, token)))
+                        .subscribe((_provenance) => {
+                            // TODO: citation
+                            // this.selectedEnvironmentCitation.next(provenance.map((p) => p.provenance.citation).join(','));
+                        });
+                }),
+                mergeMap(([workflowId, dataset]) => {
+                    this.selectedEnvironmentDataset = dataset;
+                    if (!!dataset.symbology && dataset.symbology instanceof RasterSymbology) {
+                        this.intensityLayer = new RasterLayer({
+                            workflowId,
+                            name: 'Beprobungshäufigkeit',
+                            symbology: dataset.symbology,
+                            isLegendVisible: false,
+                            isVisible: true,
+                        });
+                        this.changeDetectorRef.markForCheck();
+                        return this.dataSelectionService.setIntensityLayer(this.intensityLayer);
+                    }
+
+                    return of(undefined);
+                }),
+            )
+            .subscribe();
     }
 
     computePlot(): void {

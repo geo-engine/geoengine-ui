@@ -1,7 +1,7 @@
 :host {
     overflow-y: auto;
     overflow-x: hidden;
-    height: calc(100% - 64px);
+    height: calc(100% - 128px);
     display: block;
 }
 .container {
@@ -10,7 +10,7 @@
 }
 
 mat-toolbar {
-    height: 64px !important;
+    height: 128px !important;
 }
 
 mat-form-field {
@@ -26,7 +26,7 @@ mat-divider {
 }
 
 .spacer {
-    margin-top: 1rem;
+    padding-top: 1rem;
 }
 
 .species-info {
@@ -41,4 +41,23 @@ mat-divider {
     p.info-text {
         text-align: justify;
     }
+}
+
+.intensityToggle {
+    margin-top: 0.5rem;
+
+    p {
+        width: 100%;
+    }
+}
+
+.intensityLabel {
+    margin-top: 0.7rem;
+}
+
+.startEndYears {
+    color: var(--wave-foreground-secondary-text-color);
+    margin-top: -0.25rem;
+    margin-bottom: 0.5rem;
+    margin-right: 3rem;
 }

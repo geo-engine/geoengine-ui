@@ -16,6 +16,7 @@ export class DataSelectionService {
     readonly layers: Observable<Array<Layer>>;
 
     readonly rasterLayer = new BehaviorSubject<RasterLayer | undefined>(undefined);
+    readonly intensityLayer = new BehaviorSubject<RasterLayer | undefined>(undefined);
     readonly speciesLayer = new BehaviorSubject<VectorLayer | undefined>(undefined);
 
     readonly speciesLoadingState$: Observable<'query' | 'determinate'>;
@@ -26,14 +27,17 @@ export class DataSelectionService {
     readonly dataRange = new BehaviorSubject<DataRange>({min: 0, max: 1});
 
     constructor(private readonly projectService: ProjectService) {
-        this.layers = combineLatest([this.rasterLayer, this.speciesLayer]).pipe(
-            map(([rasterLayer, polygonLayer]) => {
+        this.layers = combineLatest([this.rasterLayer, this.intensityLayer, this.speciesLayer]).pipe(
+            map(([rasterLayer, intensityLayer, speciesLayer]) => {
                 const layers = [];
                 if (rasterLayer) {
                     layers.push(rasterLayer);
                 }
-                if (polygonLayer) {
-                    layers.push(polygonLayer);
+                if (intensityLayer) {
+                    layers.push(intensityLayer);
+                }
+                if (speciesLayer) {
+                    layers.push(speciesLayer);
                 }
                 return layers;
             }),
@@ -94,6 +98,31 @@ export class DataSelectionService {
             tap(() => {
                 this.rasterLayer.next(layer);
                 this.dataRange.next(dataRange);
+            }),
+        );
+    }
+
+    setIntensityLayer(layer?: RasterLayer): Observable<void> {
+        const removeOperation = this.intensityLayer.pipe(
+            first(),
+            mergeMap((currentLayer) => {
+                if (currentLayer) {
+                    return this.projectService.removeLayer(currentLayer);
+                } else {
+                    return of(undefined);
+                }
+            }),
+            tap(() => this.intensityLayer.next(undefined)),
+        );
+
+        if (!layer) {
+            return removeOperation;
+        }
+
+        return removeOperation.pipe(
+            mergeMap(() => this.projectService.addLayer(layer)),
+            tap(() => {
+                this.intensityLayer.next(layer);
             }),
         );
     }

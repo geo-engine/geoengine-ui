@@ -30,6 +30,7 @@ export class SelectLayersComponent implements OnInit {
             },
         };
 
+        /* eslint-disable @typescript-eslint/naming-convention */
         const classes: {[index: number]: string} = {
             1: 'Permanent ice or polar desert',
             2: 'Desert',

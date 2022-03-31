@@ -11,6 +11,7 @@ export interface CountryData {
     };
 }
 
+/* eslint-disable @typescript-eslint/naming-convention */
 export const COUNTRY_DATA_LIST: {[name: string]: CountryData} = {
     Indonesia: {
         polygon: {

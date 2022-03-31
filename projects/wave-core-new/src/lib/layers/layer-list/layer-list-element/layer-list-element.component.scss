@@ -1,8 +1,11 @@
+:host {
+    min-width: 200px;
+    width: 100%;
+}
+
 .container {
     max-height: inherit;
     height: inherit;
-    width: 16vw;
-    min-width: 200px;
 }
 
 .layer-list-item-text {
