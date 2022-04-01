@@ -1,10 +1,10 @@
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
 import {RasterDataType, RasterDataTypes} from '../../datatype.model';
-import {RasterLayer} from '../../../layers/layer.model';
+import {Layer, RasterLayer} from '../../../layers/layer.model';
 import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
 import {OperatorDict, SourceOperatorDict, UUID, WorkflowDict} from '../../../backend/backend.model';
@@ -12,6 +12,7 @@ import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 import {RasterLayerMetadata} from '../../../layers/layer-metadata.model';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {ExpressionDict} from '../../../backend/operator.model';
+import {LayoutService, SidenavConfig} from '../../../layout.service';
 
 /**
  * This dialog allows calculations on (one or more) raster layers.
@@ -23,6 +24,11 @@ import {ExpressionDict} from '../../../backend/operator.model';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
+    /**
+     * If the list is empty, show the following button.
+     */
+    @Input() dataListConfig?: SidenavConfig;
+
     readonly RASTER_TYPE = [ResultTypes.RASTER];
     readonly form: FormGroup;
 
@@ -34,10 +40,12 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
 
     readonly lastError$ = new BehaviorSubject<string | undefined>(undefined);
 
+    readonly projectHasRasterLayers$: Observable<boolean>;
+
     /**
      * DI of services and setup of observables for the template
      */
-    constructor(private projectService: ProjectService) {
+    constructor(protected readonly projectService: ProjectService, protected readonly layoutService: LayoutService) {
         this.form = new FormGroup({
             rasterLayers: new FormControl(undefined, [Validators.required]),
             expression: new FormControl('    1 * A', Validators.compose([Validators.required])),
@@ -97,6 +105,10 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         );
 
         this.fnSignature = this.rasterVariables$.pipe(map((vars: string[]) => `fn(${vars.join(', ')}, out_nodata) {`));
+
+        this.projectHasRasterLayers$ = this.projectService
+            .getLayerStream()
+            .pipe(map((layers: Array<Layer>) => layers.filter((layer) => layer.layerType === 'raster').length > 0));
     }
 
     ngAfterViewInit(): void {
@@ -225,17 +237,25 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                     ),
                 ),
             )
-            .subscribe(
-                () => {
+            .subscribe({
+                next: () => {
                     // everything worked well
 
                     this.lastError$.next(undefined);
                 },
-                (error) => {
+                error: (error) => {
                     const errorMsg = error.error.message;
 
                     this.lastError$.next(errorMsg);
                 },
-            );
+            });
+    }
+
+    goToAddDataTab(): void {
+        if (!this.dataListConfig) {
+            return;
+        }
+
+        this.layoutService.setSidenavContentComponent(this.dataListConfig);
     }
 }

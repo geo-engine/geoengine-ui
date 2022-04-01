@@ -38,6 +38,9 @@ import {
     PlotListComponent,
     SidenavConfig,
     SpatialReferenceService,
+    ExpressionOperatorComponent,
+    TemporalRasterAggregationComponent,
+    createIconDataUrl,
 } from 'wave-core';
 import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from '../app-config.service';
@@ -210,7 +213,30 @@ export class MainComponent implements OnInit, AfterViewInit {
         return [
             {name: 'Mixed', list: OperatorListComponent.DEFAULT_MIXED_OPERATOR_DIALOGS},
             {name: 'Plots', list: OperatorListComponent.DEFAULT_PLOT_OPERATOR_DIALOGS},
-            {name: 'Raster', list: OperatorListComponent.DEFAULT_RASTER_OPERATOR_DIALOGS},
+            {
+                name: 'Raster',
+                list: [
+                    {
+                        component: ExpressionOperatorComponent,
+                        config: {
+                            dataListConfig: MainComponent.setupAddDataConfig(),
+                        },
+                        type: {
+                            NAME: 'Expression',
+                            ICON_URL: 'assets/operator-type-icons/expression.png',
+                        },
+                        description: 'Calculate an expression on a raster',
+                    },
+                    {
+                        component: TemporalRasterAggregationComponent,
+                        type: {
+                            NAME: 'Temporal Raster Aggregation',
+                            ICON_URL: createIconDataUrl('Temporal Raster Aggregation'),
+                        },
+                        description: 'Aggregate raster time series',
+                    },
+                ],
+            },
             {name: 'Vector', list: OperatorListComponent.DEFAULT_VECTOR_OPERATOR_DIALOGS},
         ];
     }

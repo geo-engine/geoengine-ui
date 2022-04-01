@@ -36,3 +36,9 @@ mat-form-field {
 .error {
     color: var(--wave-warn-color, red);
 }
+
+.no-rasters {
+    color: var(--wave-foreground-secondary-text-color, grey);
+    margin-top: 50%;
+    text-align: center;
+}
