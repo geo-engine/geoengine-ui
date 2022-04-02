@@ -36,6 +36,8 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
 
     @Input() height = 150;
 
+    screenWidth = 0;
+
     //Layer Data
     layerList: Array<Layer> = [];
 
@@ -51,6 +53,8 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
+        this.screenWidth = window.innerWidth;
+
         this.subscriptions.push(
             this.projectService.getLayerStream().subscribe((layerList) => {
                 if (layerList !== this.layerList) {
@@ -113,13 +117,13 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
 
     changeSelectedScale(windowSize: number): void {
         this.changeDetectorRef.detectChanges();
-        //these scales have to be adjusted, when the component is moved somewhere else with a higher width
-        const yearScale = 1000 * 60 * 60 * 24 * 31 * 22; //22 months in milliseconds
-        const monthScale = 1000 * 60 * 60 * 24 * 15; //15 days in milliseconds
-        const dayScale = 1000 * 60 * 60 * 31; //31 hours in milliseconds
-        if (windowSize > yearScale) this.selectedScale = 'year';
-        else if (windowSize > monthScale) this.selectedScale = 'month';
-        else if (windowSize > dayScale) this.selectedScale = 'day';
+        //these scales are fit to a screen size of 1280 pixels and then resized with the screenwidth
+        const yearScale = 1000 * 60 * 60 * 24 * 31 * 17; //17 months in milliseconds
+        const monthScale = 1000 * 60 * 60 * 24 * 12; //12 days in milliseconds
+        const dayScale = 1000 * 60 * 60 * 23; //23 hours in milliseconds
+        if (windowSize > (yearScale * this.screenWidth) / 1280) this.selectedScale = 'year';
+        else if (windowSize > (monthScale * this.screenWidth) / 1280) this.selectedScale = 'month';
+        else if (windowSize > (dayScale * this.screenWidth) / 1280) this.selectedScale = 'day';
         else this.selectedScale = 'hour';
     }
 
