@@ -135,3 +135,4 @@ export * from './lib/util/directives/if-logged-in.directive';
 export * from './lib/util/conversions';
 export * from './lib/util/errors';
 export * from './lib/util/form.validators';
+export * from './lib/util/icons';
