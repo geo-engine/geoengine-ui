@@ -21,6 +21,7 @@ import {
     MapService,
     BackendService,
     extentToBboxDict,
+    WGS_84,
 } from 'wave-core';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {AppConfig} from '../app-config.service';
@@ -227,6 +228,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
             this.countryProviderService
                 .getSelectedCountryStream()
                 .pipe(mergeMap<Country | undefined, Observable<Country>>((country) => (country ? of(country) : of()))),
+            this.userService.getSessionTokenForRequest(),
         ])
             .pipe(
                 first(),
@@ -234,47 +236,44 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                     this.plotLoading.next(true);
                     this.plotData.next(undefined);
                 }),
-                mergeMap(([rasterWorkflow, selectedCountry]) =>
-                    this.projectService.registerWorkflow({
-                        type: 'Plot',
-                        operator: {
-                            type: 'MeanRasterPixelValuesOverTime',
-                            params: {
-                                timePosition: 'start',
-                                area: false,
-                            },
-                            sources: {
-                                raster: {
-                                    type: 'Expression',
-                                    params: {
-                                        expression: 'if B IS NODATA { out_nodata } else { A }',
-                                        outputType: RasterDataTypes.Float64.getCode(),
-                                        outputNoDataValue: 'nan',
-                                        mapNoData: false,
-                                    },
-                                    sources: {
-                                        a: rasterWorkflow.operator,
-                                        b: {
-                                            type: 'GdalSource',
-                                            params: {
-                                                dataset: COUNTRY_DATA_LIST[selectedCountry.name].raster,
+                mergeMap(([rasterWorkflow, selectedCountry, sessionToken]) =>
+                    combineLatest([
+                        this.projectService.registerWorkflow({
+                            type: 'Plot',
+                            operator: {
+                                type: 'MeanRasterPixelValuesOverTime',
+                                params: {
+                                    timePosition: 'start',
+                                    area: false,
+                                },
+                                sources: {
+                                    raster: {
+                                        type: 'Expression',
+                                        params: {
+                                            expression: 'if B IS NODATA { out_nodata } else { A }',
+                                            outputType: RasterDataTypes.Float64.getCode(),
+                                            outputNoDataValue: 'nan',
+                                            mapNoData: false,
+                                        },
+                                        sources: {
+                                            a: rasterWorkflow.operator,
+                                            b: {
+                                                type: 'GdalSource',
+                                                params: {
+                                                    dataset: COUNTRY_DATA_LIST[selectedCountry.name].raster,
+                                                },
                                             },
                                         },
-                                    },
-                                } as ExpressionDict,
-                            },
-                        } as MeanRasterPixelValuesOverTimeDict,
-                    }),
-                ),
-                mergeMap((workflowId) =>
-                    combineLatest([
-                        of(workflowId),
-                        this.userService.getSessionTokenForRequest(),
-                        this.projectService.getSpatialReferenceStream(),
-                        this.mapService.getViewportSizeStream(),
+                                    } as ExpressionDict,
+                                },
+                            } as MeanRasterPixelValuesOverTimeDict,
+                        }),
+                        of(selectedCountry),
+                        of(sessionToken),
                     ]),
                 ),
-                mergeMap(([workflowId, sessionToken, crs, viewport]) =>
+                first(),
+                mergeMap(([workflowId, selectedCountry, sessionToken]) =>
                     this.backend.getPlot(
                         workflowId,
                         {
@@ -282,8 +281,14 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                                 start: (this.ebvTree as EbvHierarchy).tree.time.start,
                                 end: (this.ebvTree as EbvHierarchy).tree.time.end,
                             },
-                            bbox: extentToBboxDict(viewport.extent),
-                            crs: crs.srsString,
+                            bbox: extentToBboxDict([
+                                selectedCountry.minx,
+                                selectedCountry.miny,
+                                selectedCountry.maxx,
+                                selectedCountry.maxy,
+                            ]),
+                            // always use WGS 84 for computing the plot
+                            crs: WGS_84.spatialReference.srsString,
                             // TODO: set reasonable size
                             spatialResolution: [0.1, 0.1],
                         },

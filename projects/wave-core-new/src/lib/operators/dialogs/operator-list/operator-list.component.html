@@ -4,7 +4,7 @@
     <ng-template ngFor let-group [ngForOf]="operatorGroups$ | async">
         <h3 mat-subheader>{{ group.name }}</h3>
         <ng-template ngFor let-operator [ngForOf]="group.list">
-            <mat-list-item (click)="load(operator.component)">
+            <mat-list-item (click)="load(operator.component, operator.config)">
                 <img mat-list-icon [src]="operator.type.ICON_URL" [alt]="operator.type.NAME" />
                 <h4 mat-line bind-innerHtml="operator.type.NAME | waveHighlightPipe: (searchString$ | async) | waveSafeHtml"></h4>
                 <p mat-line bind-innerHtml="operator.description | waveHighlightPipe: (searchString$ | async) | waveSafeHtml"></p>
