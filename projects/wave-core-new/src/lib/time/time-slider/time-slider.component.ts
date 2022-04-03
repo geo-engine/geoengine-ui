@@ -56,6 +56,7 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
                 if (layerList !== this.layerList) {
                     this.layerList = layerList;
                 }
+                this.updateTimeline();
             }),
         );
     }
@@ -113,6 +114,15 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
                 this.timeline?.setCustomTime(t.start.toDate(), 'start');
             }),
         );
+    }
+
+    updateTimeline(): void {
+        if (this.timeline) {
+            this.getTimelineData();
+            this.getTimelineGroups();
+            this.timeline.setGroups(this.groups);
+            this.timeline.setItems(this.data);
+        }
     }
 
     changeSelectedScale(windowSize: number): void {
@@ -239,11 +249,13 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
     //every group represents one layer
     getTimelineGroups(): void {
         this.groups = new DataSet([]);
-        for (const layer of this.layerList) {
-            this.groups.add({
-                id: layer.id,
-                content: layer.name,
-            });
+        if (this.layerList.length > 0) {
+            for (const layer of this.layerList) {
+                this.groups.add({
+                    id: layer.id,
+                    content: layer.name,
+                });
+            }
         }
     }
 
