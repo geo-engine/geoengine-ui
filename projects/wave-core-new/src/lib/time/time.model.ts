@@ -162,7 +162,7 @@ export class Time implements ToDict<TimeIntervalDict> {
     }
 
     isValid(): boolean {
-        return !!this.start && !!this.end && this.start.isValid() && this.end.isValid();
+        return !!this.start && !!this.end && this.start.isValid() && this.end.isValid() && this.start <= this.end;
     }
 
     asRequestString(): string {
