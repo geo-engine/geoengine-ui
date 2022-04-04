@@ -124,6 +124,7 @@ import {CodeEditorComponent} from './util/components/code-editor.component';
 import {TimeStepSelectorComponent} from './time/time-step-selector/time-step-selector.component';
 import {AutocompleteSelectDirective} from './util/directives/autocomplete-select.directive';
 import {TokenLoginComponent} from './users/token-login/token-login.component';
+import {TimeSliderComponent} from './time/time-slider/time-slider.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -246,6 +247,7 @@ const WAVE_COMPONENTS = [
     TemporalRasterAggregationComponent,
     TimeConfigComponent,
     TimeInputComponent,
+    TimeSliderComponent,
     TimeStepSelectorComponent,
     TokenLoginComponent,
     UploadComponent,

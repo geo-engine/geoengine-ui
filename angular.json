@@ -93,9 +93,10 @@
                             "dist/wave-core/assets/fonts/pacifico/pacifico.css",
                             "dist/wave-core/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/codemirror/lib/codemirror.css",
-                            "node_modules/ol/ol.css"
+                            "node_modules/ol/ol.css",
+                            "./node_modules/vis-timeline/dist/vis-timeline-graph2d.min.css"
                         ],
-                        "scripts": [],
+                        "scripts": ["node_modules/vis-timeline/peer/esm/vis-timeline-graph2d.min.js"],
                         "vendorChunk": true,
                         "extractLicenses": false,
                         "buildOptimizer": false,
