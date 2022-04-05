@@ -8,6 +8,12 @@
             </td>
         </ng-container>
 
+        <!-- Coordinates Column -->
+        <ng-container matColumnDef="coordinates">
+            <th mat-header-cell *matHeaderCellDef>Coordinates </th>
+            <td mat-cell *matCellDef="let element">{{ coordinateFromGeometry(element) }}</td> 
+        </ng-container>
+
         <!-- Data Columns -->
         <ng-container *ngFor="let columnName of featureColumns" [matColumnDef]="columnName">
             <th mat-header-cell *matHeaderCellDef>{{ columnName }}</th>

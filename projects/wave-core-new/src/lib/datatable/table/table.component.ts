@@ -117,7 +117,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
 
     processVectorLayer(_layer: VectorLayer, metadata: VectorLayerMetadata, data: VectorData): void {
         this.featureColumns = metadata.columns.keySeq().toArray();
-        this.displayedColumns = ['_____select'].concat(this.featureColumns);
+        this.displayedColumns = ['_____select', 'coordinates'].concat(this.featureColumns);
         this.dataSource.data = data.data;
         setTimeout(() => this.navigatePage(this.projectService.getSelectedFeature()));
     }
@@ -141,6 +141,13 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     isSelected(feature: OlFeature<OlGeometry>): boolean {
         return feature.getId() === this.projectService.getSelectedFeature().feature;
     }
+
+    coordinateFromGeometry(geometry: OlFeature<OlGeometry>): string {
+        let xCoord: string = geometry['values_']['geometry']['flatCoordinates'][0];
+        let yCoord: string = geometry['values_']['geometry']['flatCoordinates'][1];
+        return ` ${xCoord} , ${yCoord} `
+    }
+
 
     select(feature: OlFeature<OlGeometry>, select: boolean): void {
         if (select) {
