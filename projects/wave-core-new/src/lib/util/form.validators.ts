@@ -130,16 +130,6 @@ const isNumber = (control: AbstractControl): {isNoNumber: true} | null => {
     return isFiniteNumber(value) ? null : {isNoNumber: true};
 };
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export const WaveValidators = {
-    conditionalValidator,
-    isNumber,
-    keyword: keywordValidator,
-    minAndMax,
-    notOnlyWhitespace,
-    uniqueProjectName: uniqueProjectNameValidator,
-};
-
 /**
  * checks if a value is undefined or null
  */
@@ -205,3 +195,33 @@ export function valueRelation(
 }
 
 export const isValidUuid = Validators.pattern(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+
+/**
+ * A validator that checks if values are larger than the given value.
+ */
+const largerThan =
+    (lowerBound: number): ((_: AbstractControl) => ValidationErrors | null) =>
+    (control: AbstractControl): ValidationErrors | null => {
+        const value = control.value;
+
+        const errors: {
+            valueNotLarger?: boolean;
+        } = {};
+
+        if (isFiniteNumber(value) && value <= lowerBound) {
+            errors.valueNotLarger = true;
+        }
+
+        return Object.keys(errors).length > 0 ? errors : null;
+    };
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const WaveValidators = {
+    conditionalValidator,
+    isNumber,
+    keyword: keywordValidator,
+    minAndMax,
+    notOnlyWhitespace,
+    uniqueProjectName: uniqueProjectNameValidator,
+    largerThan,
+};

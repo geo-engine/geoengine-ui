@@ -52,6 +52,8 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
      */
     @Input() maxValue? = 1;
 
+    @Input() scale: 'linear' | 'logarithmic' = 'linear';
+
     /**
      * Sends the min value selected in the ui.
      */
@@ -76,7 +78,9 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
 
     protected subscriptions: Array<Subscription> = [];
 
-    constructor(private changeDetectorRef: ChangeDetectorRef, private formBuilder: FormBuilder) {
+    protected readonly largerThanZeroValidator = WaveValidators.largerThan(0);
+
+    constructor(protected readonly changeDetectorRef: ChangeDetectorRef, protected readonly formBuilder: FormBuilder) {
         const initialColorMapName = Object.keys(this.colorMaps)[0];
 
         this.form = formBuilder.group({
@@ -95,6 +99,8 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
         });
 
         this.breakpoints = this.createBreakpoints();
+
+        this.updateOnScaleChange();
     }
 
     ngOnInit(): void {
@@ -129,6 +135,10 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
         if (changes.minValue || changes.maxValue) {
             this.patchMinMaxValues(this.minValue, this.maxValue);
         }
+
+        if (changes.scale) {
+            this.updateOnScaleChange();
+        }
     }
 
     /**
@@ -148,6 +158,22 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
         this.form.controls.bounds.setValue({min, max});
 
         this.updateColorizerData();
+    }
+
+    updateOnScaleChange(): void {
+        const minControl = this.form.controls['bounds'].get('min');
+
+        if (!minControl) {
+            return;
+        }
+
+        if (this.scale === 'linear') {
+            minControl.removeValidators(this.largerThanZeroValidator);
+        } else if (this.scale === 'logarithmic') {
+            minControl.setValidators(this.largerThanZeroValidator);
+        }
+
+        minControl.updateValueAndValidity();
     }
 
     /**
@@ -195,6 +221,10 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
             return false;
         }
 
+        if (this.scale === 'logarithmic' && boundsMin <= 0) {
+            return false;
+        }
+
         return true;
     }
 
@@ -204,13 +234,57 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
         const colorMapReverseColors: boolean = this.form.controls['colorMapReverseColors'].value;
         const bounds: {min: number; max: number} = this.form.controls['bounds'].value;
 
-        // TODO: allow different gradient types
+        if (this.scale === 'logarithmic') {
+            return this.createLogarithmicBreakpoints(colorMap, colorMapSteps, colorMapReverseColors, bounds);
+        } else {
+            // `this.scale === 'linear'`
+            return this.createLinearBreakpoints(colorMap, colorMapSteps, colorMapReverseColors, bounds);
+        }
+    }
 
+    protected createLinearBreakpoints(
+        colorMap: Array<RgbaTuple>,
+        colorMapSteps: number,
+        colorMapReverseColors: boolean,
+        bounds: {min: number; max: number},
+    ): Array<ColorBreakpoint> {
         const breakpoints = new Array<ColorBreakpoint>();
 
         const stepSize = 1 / (colorMapSteps - 1);
         for (let frac = 0; frac <= 1; frac += stepSize) {
             const value = bounds.min + frac * (bounds.max - bounds.min);
+
+            let colorMapIndex = Math.round(frac * (colorMap.length - 1));
+            if (colorMapReverseColors) {
+                colorMapIndex = colorMap.length - colorMapIndex - 1;
+            }
+            const color = Color.fromRgbaLike(colorMap[colorMapIndex]);
+
+            breakpoints.push(new ColorBreakpoint(value, color));
+        }
+
+        // override last because of rounding errors
+        breakpoints[breakpoints.length - 1] = breakpoints[breakpoints.length - 1].cloneWithValue(bounds.max);
+
+        return breakpoints;
+    }
+
+    protected createLogarithmicBreakpoints(
+        colorMap: Array<RgbaTuple>,
+        colorMapSteps: number,
+        colorMapReverseColors: boolean,
+        bounds: {min: number; max: number},
+    ): Array<ColorBreakpoint> {
+        if (bounds.min <= 0) {
+            // TODO: handle
+            throw new Error('logarithmic scale requires min > 0');
+        }
+
+        const breakpoints = new Array<ColorBreakpoint>();
+
+        const stepSize = 1 / (colorMapSteps - 1);
+        for (let frac = 0; frac <= 1; frac += stepSize) {
+            const value = Math.exp(Math.log(bounds.min) + frac * (Math.log(bounds.max) - Math.log(bounds.min)));
 
             let colorMapIndex = Math.round(frac * (colorMap.length - 1));
             if (colorMapReverseColors) {

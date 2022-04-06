@@ -62,13 +62,13 @@
                 <mat-button-toggle-group
                     fxFlex
                     [multiple]="false"
-                    [disabled]="true"
                     [ngModel]="getColorizerType()"
                     (ngModelChange)="updateColorizerType($event)"
+                    [disabled]="getColorizerType() === 'palette'"
                 >
                     <mat-button-toggle fxFlex value="linearGradient">Linear Gradient</mat-button-toggle>
                     <mat-button-toggle fxFlex value="logarithmicGradient">Logarithmic Gradient</mat-button-toggle>
-                    <mat-button-toggle fxFlex value="palette">Palette</mat-button-toggle>
+                    <mat-button-toggle fxFlex value="palette" [disabled]="true">Palette</mat-button-toggle>
                 </mat-button-toggle-group>
             </p>
             <div
@@ -101,7 +101,12 @@
             </div>
             <mat-divider></mat-divider>
 
-            <wave-color-map-selector (breakpointsChange)="updateBreakpoints($event)" [minValue]="layerMinValue" [maxValue]="layerMaxValue">
+            <wave-color-map-selector
+                (breakpointsChange)="updateBreakpoints($event)"
+                [minValue]="layerMinValue"
+                [maxValue]="layerMaxValue"
+                [scale]="scale"
+            >
             </wave-color-map-selector>
         </ng-template>
     </mat-expansion-panel>
