@@ -21,6 +21,7 @@ import {FeatureSelection, ProjectService} from '../../project/project.service';
 import {VectorData} from '../../layers/layer-data.model';
 import {DataSource} from '@angular/cdk/collections';
 import OlGeometry from 'ol/geom/Geometry';
+import OlPoint from 'ol/geom/Point';
 
 @Component({
     selector: 'wave-datatable',
@@ -142,9 +143,10 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         return feature.getId() === this.projectService.getSelectedFeature().feature;
     }
 
-    coordinateFromGeometry(geometry: OlFeature<OlGeometry>): string {
-        let xCoord: string = geometry['values_']['geometry']['flatCoordinates'][0];
-        let yCoord: string = geometry['values_']['geometry']['flatCoordinates'][1];
+    coordinateFromGeometry(geometry: OlFeature): string {
+        let p: OlPoint = <OlPoint>geometry.getGeometry();
+        let xCoord: string = p.getCoordinates()[0].toString();
+        let yCoord: string = p.getCoordinates()[1].toString();
         return ` ${xCoord} , ${yCoord} `
     }
 
