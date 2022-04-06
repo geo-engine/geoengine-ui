@@ -77,7 +77,7 @@ export class MainComponent implements OnInit, AfterViewInit {
         @Inject(Config) readonly config: AppConfig,
         readonly layoutService: LayoutService,
         readonly projectService: ProjectService,
-        readonly vcRef: ViewContainerRef, // reference used by color picker
+        readonly vcRef: ViewContainerRef, // reference used by color picker, MUST BE EXACTLY THIS NAME
         readonly userService: UserService,
         private readonly changeDetectorRef: ChangeDetectorRef,
         private readonly dialog: MatDialog,
