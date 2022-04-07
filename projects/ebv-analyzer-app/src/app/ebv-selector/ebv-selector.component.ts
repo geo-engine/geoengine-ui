@@ -22,6 +22,8 @@ import {
     BackendService,
     extentToBboxDict,
     WGS_84,
+    LayoutService,
+    RasterSymbologyEditorComponent,
 } from 'wave-core';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {AppConfig} from '../app-config.service';
@@ -64,6 +66,12 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
     readonly plotData = new BehaviorSubject<any>(undefined);
     readonly plotLoading = new BehaviorSubject(false);
 
+    readonly isEbvLayerSet = new BehaviorSubject<boolean>(false);
+    readonly isAddButtonVisible = new BehaviorSubject<boolean>(false);
+    readonly isSymbologyButtonVisible: Observable<boolean> = combineLatest([this.isEbvLayerSet, this.isAddButtonVisible]).pipe(
+        map(([a, b]) => a && b),
+    );
+
     private ebvDatasetId?: EbvDatasetId = undefined;
     private ebvLayer?: RasterLayer;
 
@@ -78,6 +86,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         private readonly route: ActivatedRoute,
         private readonly mapService: MapService,
         private readonly backend: BackendService,
+        private readonly layoutService: LayoutService,
     ) {
         this.isPlotButtonDisabled$ = this.countryProviderService.getSelectedCountryStream().pipe(map((country) => !country));
     }
@@ -152,6 +161,8 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
             groupNames: this.ebvPath.map((subgroup) => subgroup.name),
             entity: ebvEntity.id,
         };
+
+        this.isAddButtonVisible.next(true);
     }
 
     setEbvPath(ebvSubgroup: EbvTreeSubgroup, position: number): void {
@@ -159,8 +170,14 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         this.ebvPath.push(ebvSubgroup);
     }
 
-    isAddButtonVisible(): boolean {
-        return !!this.ebvDatasetId;
+    editSymbology(): void {
+        this.layoutService.setSidenavContentComponent({
+            component: RasterSymbologyEditorComponent,
+            keepParent: false,
+            config: {
+                layer: this.ebvLayer,
+            },
+        });
     }
 
     showEbv(): void {
@@ -189,6 +206,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
         this.generateGdalSourceNetCdfLayer().subscribe((ebvLayer) => {
             this.ebvLayer = ebvLayer;
+            this.isEbvLayerSet.next(true);
 
             const dataRange = guessDataRange(ebvLayer.symbology.colorizer);
 
@@ -478,6 +496,11 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         this.ebvTree = undefined;
         this.ebvPath.length = 0;
         this.ebvDatasetId = undefined;
+
+        this.ebvLayer = undefined;
+
+        this.isEbvLayerSet.next(false);
+        this.isAddButtonVisible.next(false);
     }
 
     private clearAfter(field: string, subgroupIndex?: number): void {

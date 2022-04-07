@@ -88,3 +88,11 @@ mat-sidenav {
     z-index: 2;
     height: 0.5rem;
 }
+
+:host ::ng-deep .mat-sidenav-content {
+    overflow: hidden;
+}
+
+.mat-sidenav {
+    border: none;
+}
