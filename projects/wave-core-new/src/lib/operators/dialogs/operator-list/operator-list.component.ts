@@ -15,6 +15,7 @@ import {FeatureAttributeOvertimeComponent} from '../feature-attribute-over-time/
 import {TemporalRasterAggregationComponent} from '../temporal-raster-aggregation/temporal-raster-aggregation.component';
 import {ScatterplotOperatorComponent} from '../scatterplot-operator/scatterplot-operator.component';
 import {ExpressionOperatorComponent} from '../expression-operator/expression-operator.component';
+import {ColumnRangeFilterComponent} from '../column-range-filter/column-range-filter.component';
 
 /**
  * This type encapsulates…
@@ -172,6 +173,14 @@ export class OperatorListComponent implements OnInit, OnChanges {
         //     type: HeatmapType,
         //     description: 'Create a heatmap for points',
         // },
+        {
+            component: ColumnRangeFilterComponent,
+            type: {
+                NAME: 'Column Range Filter',
+                ICON_URL: createIconDataUrl('Column Range Filter'),
+            },
+            description: 'Filter irgendwas',
+        },
         {
             component: PointInPolygonFilterOperatorComponent,
             type: {
