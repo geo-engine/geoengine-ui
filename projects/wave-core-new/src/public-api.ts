@@ -98,6 +98,7 @@ export * from './lib/users/token-login/token-login.component';
 export * from './lib/util/components/code-editor.component';
 export * from './lib/util/directives/autocomplete-select.directive';
 export * from './lib/time/time-slider/time-slider.component';
+export * from './lib/operators/dialogs/column-range-filter/column-range-filter.component';
 
 // Pipes
 export * from './lib/util/pipes/async-converters.pipe';
