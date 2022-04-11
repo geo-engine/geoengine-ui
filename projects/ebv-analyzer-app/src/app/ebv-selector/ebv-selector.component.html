@@ -118,7 +118,12 @@
         <p class="mat-caption label justify">{{ ebvEntity?.description }}</p>
     </ng-container>
 
-    <button mat-raised-button class="show" color="primary" *ngIf="isAddButtonVisible()" (click)="showEbv()">Show</button>
+    <div fxLayout="row" fxLayoutGap="1rem">
+        <button mat-raised-button class="show" color="primary" *ngIf="isAddButtonVisible | async" (click)="showEbv()">Show</button>
+        <button mat-raised-button class="show" color="primary" *ngIf="isSymbologyButtonVisible | async" (click)="editSymbology()" fxFlex>
+            <mat-icon>palette</mat-icon>
+        </button>
+    </div>
 
     <mat-spinner *ngIf="loading$ | async"></mat-spinner>
 

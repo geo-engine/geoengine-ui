@@ -13,6 +13,7 @@ import {
     MapContainerComponent,
     Time,
     SpatialReferenceService,
+    SidenavContainerComponent,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AppConfig} from './app-config.service';
@@ -20,6 +21,7 @@ import {ComponentPortal} from '@angular/cdk/portal';
 import moment from 'moment';
 import {DataSelectionService} from './data-selection.service';
 import {EbvSelectorComponent} from './ebv-selector/ebv-selector.component';
+import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
 
 @Component({
     selector: 'wave-app-root',
@@ -29,6 +31,9 @@ import {EbvSelectorComponent} from './ebv-selector/ebv-selector.component';
 })
 export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
+
+    @ViewChild(MatSidenav, {static: true}) rightSidenav!: MatSidenav;
+    @ViewChild(SidenavContainerComponent, {static: true}) rightSidenavContainer!: SidenavContainerComponent;
 
     readonly layersReverse$: Observable<Array<Layer>>;
     readonly analysisVisible$ = new BehaviorSubject(false);
@@ -41,7 +46,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         readonly layoutService: LayoutService,
         readonly projectService: ProjectService,
         readonly dataSelectionService: DataSelectionService,
-        readonly _vcRef: ViewContainerRef, // reference used by color picker
+        readonly vcRef: ViewContainerRef, // reference used by color picker, MUST BE EXACTLY THIS NAME
         readonly userService: UserService,
         private iconRegistry: MatIconRegistry,
         private _randomColorService: RandomColorService,
@@ -57,6 +62,19 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     ngOnInit(): void {
         this.mapService.registerMapComponent(this.mapComponent);
+
+        this.layoutService.getSidenavContentComponentStream().subscribe((sidenavConfig) => {
+            this.rightSidenavContainer.load(sidenavConfig);
+
+            let openClosePromise: Promise<MatDrawerToggleResult>;
+            if (sidenavConfig) {
+                openClosePromise = this.rightSidenav.open();
+            } else {
+                openClosePromise = this.rightSidenav.close();
+            }
+
+            openClosePromise.then(() => this.mapComponent.resize());
+        });
     }
 
     ngAfterViewInit(): void {

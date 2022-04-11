@@ -1,4 +1,4 @@
-import {ColorizerDict, LinearGradientDict, PaletteDict, RgbaColorDict} from '../backend/backend.model';
+import {ColorizerDict, LinearGradientDict, LogarithmitGradientDict, PaletteDict, RgbaColorDict} from '../backend/backend.model';
 import {Color, colorToDict, rgbaColorFromDict} from './color';
 import {ColorBreakpoint} from './color-breakpoint.model';
 
@@ -8,6 +8,8 @@ export abstract class Colorizer {
     static fromDict(dict: ColorizerDict): Colorizer {
         if (dict.type === 'linearGradient') {
             return LinearGradient.fromLinearGradientDict(dict);
+        } else if (dict.type === 'logarithmicGradient') {
+            return LogarithmicGradient.fromLogarithmicGradientDict(dict);
         } else if (dict.type === 'palette') {
             return PaletteColorizer.fromPaletteDict(dict);
         }
@@ -121,6 +123,117 @@ export class LinearGradient extends Colorizer {
     toDict(): ColorizerDict {
         return {
             type: 'linearGradient',
+            breakpoints: this.breakpoints.map((b) => b.toDict()),
+            noDataColor: colorToDict(this.noDataColor),
+            defaultColor: colorToDict(this.defaultColor),
+        };
+    }
+
+    isGradient(): boolean {
+        return true;
+    }
+
+    isDiscrete(): boolean {
+        return false;
+    }
+
+    getColorAtIndex(index: number): Color {
+        return this.breakpoints[index].color;
+    }
+
+    getNumberOfColors(): number {
+        return this.breakpoints.length;
+    }
+
+    getDefaultColor(): Color {
+        return this.defaultColor;
+    }
+}
+
+export class LogarithmicGradient extends Colorizer {
+    readonly breakpoints: Array<ColorBreakpoint>;
+    readonly noDataColor: Color;
+    readonly defaultColor: Color;
+
+    constructor(breakpoints: Array<ColorBreakpoint>, noDataColor: Color, defaultColor: Color) {
+        super();
+        this.defaultColor = defaultColor;
+        this.noDataColor = noDataColor;
+        this.breakpoints = breakpoints;
+    }
+
+    static fromLogarithmicGradientDict(dict: LogarithmitGradientDict): LogarithmicGradient {
+        return new LogarithmicGradient(
+            dict.breakpoints.map((b) => ColorBreakpoint.fromDict(b)),
+            Color.fromRgbaLike(rgbaColorFromDict(dict.noDataColor)),
+            Color.fromRgbaLike(rgbaColorFromDict(dict.defaultColor)),
+        );
+    }
+
+    getColor(value: number | undefined): Color {
+        if (value === undefined || value === null) {
+            return this.noDataColor;
+        }
+
+        if (!this.breakpoints.length || value < this.breakpoints[0].value || value > this.breakpoints[this.breakpoints.length - 1].value) {
+            return this.defaultColor;
+        }
+
+        const index = this.breakpoints.findIndex((b) => value >= b.value);
+
+        const brk = this.breakpoints[index];
+        const nextBrk = this.breakpoints[Math.min(index + 1, this.breakpoints.length - 1)];
+
+        const diff = value - brk.value;
+        const fracDiff = diff / (nextBrk.value - brk.value);
+        return Color.interpolate(brk.color, nextBrk.color, fracDiff);
+    }
+
+    getBreakpoints(): Array<ColorBreakpoint> {
+        return this.breakpoints;
+    }
+
+    equals(other: Colorizer): boolean {
+        if (!(other instanceof LogarithmicGradient)) {
+            return false;
+        }
+
+        if (this.breakpoints.length !== other.breakpoints.length) {
+            return false;
+        }
+
+        for (let i = 0; i < this.breakpoints.length; i++) {
+            if (this.breakpoints[i].equals(other.breakpoints[i])) {
+                return false;
+            }
+        }
+
+        return this.defaultColor.equals(other.defaultColor) && this.noDataColor.equals(other.noDataColor);
+    }
+
+    clone(): Colorizer {
+        return new LogarithmicGradient(
+            this.breakpoints.map((b) => b.clone()),
+            this.noDataColor.clone(),
+            this.defaultColor.clone(),
+        );
+    }
+
+    cloneWith(updates: {
+        readonly breakpoints?: Array<ColorBreakpoint>;
+        readonly noDataColor?: Color;
+        readonly defaultColor?: Color;
+    }): LogarithmicGradient {
+        return new LogarithmicGradient(
+            updates.breakpoints ?? this.breakpoints.map((b) => b.clone()),
+            updates.noDataColor ?? this.noDataColor.clone(),
+            updates.defaultColor ?? this.defaultColor.clone(),
+        );
+    }
+
+    toDict(): ColorizerDict {
+        return {
+            type: 'logarithmicGradient',
             breakpoints: this.breakpoints.map((b) => b.toDict()),
             noDataColor: colorToDict(this.noDataColor),
             defaultColor: colorToDict(this.defaultColor),
