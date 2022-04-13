@@ -349,7 +349,7 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "allowedCommonJsDependencies": ["dagre-d3", "pbf", "lru-cache", "xml-utils"],
+                        "allowedCommonJsDependencies": ["codemirror", "dagre-d3", "pbf", "lru-cache", "xml-utils"],
                         "outputPath": "dist/ebv-analyzer-app",
                         "index": "projects/ebv-analyzer-app/src/index.html",
                         "main": "projects/ebv-analyzer-app/src/main.ts",
