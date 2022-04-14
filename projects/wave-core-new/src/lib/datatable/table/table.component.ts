@@ -118,7 +118,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
 
     processVectorLayer(_layer: VectorLayer, metadata: VectorLayerMetadata, data: VectorData): void {
         this.featureColumns = metadata.columns.keySeq().toArray();
-        this.displayedColumns = ['_____select', 'coordinates'].concat(this.featureColumns);
+        this.displayedColumns = ['_____select', 'coordinates', 'start_end'].concat(this.featureColumns);
         this.dataSource.data = data.data;
         setTimeout(() => this.navigatePage(this.projectService.getSelectedFeature()));
     }
@@ -148,6 +148,12 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         let xCoord: string = p.getCoordinates()[0].toString();
         let yCoord: string = p.getCoordinates()[1].toString();
         return ` ${xCoord} , ${yCoord} `
+    }
+
+    readTimeProperty(geometry: OlFeature): string {
+        let end: string = geometry['values_']['end'];
+        let start: string = geometry['values_']['start'];
+        return `From ${start} to ${end}`;
     }
 
 
