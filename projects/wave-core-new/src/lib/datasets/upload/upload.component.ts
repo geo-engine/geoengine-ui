@@ -31,7 +31,8 @@ export class UploadComponent {
     vectorDataTypes = ['Data', 'MultiPoint', 'MultiLineString', 'MultiPolygon'];
     timeDurationValueTypes = ['infinite', 'value', 'zero'];
     timeTypes = ['None', 'Start', 'Start/End', 'Start/Duration'];
-    timeFormats = ['auto', 'seconds', 'custom'];
+    timeFormats = ['auto', 'unixTimeStamp', 'custom'];
+    timestampTypes = ['epochSeconds', 'epochMilliseconds'];
     errorHandlings = ['ignore', 'abort'];
     readonly timeGranularityOptions = ['Millis', 'Seconds', 'Minutes', 'Hours', 'Days', 'Months', 'Years'];
 
@@ -62,6 +63,7 @@ export class UploadComponent {
             timeStartColumn: new FormControl(''),
             timeStartFormat: new FormControl(''),
             timeStartFormatCustom: new FormControl(''), // TODO: validate format
+            timeStartFormatUnix: new FormControl(''),
             timeDurationColumn: new FormControl(''),
             timeDurationValue: new FormControl(1), // TODO: validate is positive integer
             timeDurationValueType: new FormControl('infinite'),
@@ -69,6 +71,7 @@ export class UploadComponent {
             timeEndColumn: new FormControl(''),
             timeEndFormat: new FormControl(''),
             timeEndFormatCustom: new FormControl(''), // TODO: validate format
+            timeEndFormatUnix: new FormControl(''),
             columnsX: new FormControl(''),
             columnsY: new FormControl(''),
             columnsText: new FormControl(''),
@@ -91,6 +94,7 @@ export class UploadComponent {
         form.timeStartColumn.clearValidators();
         form.timeStartFormat.clearValidators();
         form.timeStartFormatCustom.clearValidators();
+        form.timeStartFormatUnix.clearValidators();
         form.timeDurationColumn.clearValidators();
         form.timeDurationValue.clearValidators();
         form.timeDurationValueType.clearValidators();
@@ -98,6 +102,7 @@ export class UploadComponent {
         form.timeEndColumn.clearValidators();
         form.timeEndFormat.clearValidators();
         form.timeEndFormatCustom.clearValidators();
+        form.timeEndFormatUnix.clearValidators();
 
         if (timeType === 'Start') {
             form.timeStartColumn.setValidators(Validators.required);
@@ -117,6 +122,7 @@ export class UploadComponent {
         form.timeStartColumn.updateValueAndValidity();
         form.timeStartFormat.updateValueAndValidity();
         form.timeStartFormatCustom.updateValueAndValidity();
+        form.timeStartFormatUnix.updateValueAndValidity();
         form.timeDurationColumn.updateValueAndValidity();
         form.timeDurationValueType.updateValueAndValidity();
         form.timeDurationGranularity.updateValueAndValidity();
@@ -124,26 +130,43 @@ export class UploadComponent {
         form.timeEndColumn.updateValueAndValidity();
         form.timeEndFormat.updateValueAndValidity();
         form.timeEndFormatCustom.updateValueAndValidity();
+        form.timeEndFormatUnix.updateValueAndValidity();
     }
 
     changeTimeStartFormat(): void {
         const form = this.formMetaData.controls;
+
         if (form.timeStartFormat.value === 'custom') {
             form.timeStartFormatCustom.setValidators(Validators.required);
         } else {
             form.timeStartFormatCustom.clearValidators();
         }
         form.timeStartFormatCustom.updateValueAndValidity();
+
+        if (form.timeStartFormat.value === 'unixTimeStamp') {
+            form.timeStartFormatUnix.setValidators(Validators.required);
+        } else {
+            form.timeStartFormatUnix.clearValidators();
+        }
+        form.timeStartFormatUnix.updateValueAndValidity();
     }
 
     changeTimeEndFormat(): void {
         const form = this.formMetaData.controls;
+
         if (form.timeEndFormat.value === 'custom') {
             form.timeEndFormatCustom.setValidators(Validators.required);
         } else {
             form.timeEndFormatCustom.clearValidators();
         }
         form.timeEndFormatCustom.updateValueAndValidity();
+
+        if (form.timeEndFormat.value === 'unixTimeStamp') {
+            form.timeEndFormatUnix.setValidators(Validators.required);
+        } else {
+            form.timeEndFormatUnix.clearValidators();
+        }
+        form.timeEndFormatUnix.updateValueAndValidity();
     }
 
     changeTimeDurationValueType(): void {
@@ -367,12 +390,14 @@ export class UploadComponent {
                     timeStartColumn: start ? start.startField : '',
                     timeStartFormat: start ? start.startFormat.format : '',
                     timeStartFormatCustom: start ? start.startFormat.customFormat : '',
+                    timeStartFormatUnix: start ? start.startFormat.timestampType : '',
                     timeDurationColumn: info?.time.type === 'start+duration' ? info?.time.durationField : '',
                     timeDurationValue: info?.time.type === 'start' ? info?.time.duration : 1,
                     timeDurationValueType: info?.time.type === 'start' ? info?.time.duration.type : 'infinite',
                     timeEndColumn: end ? end.endField : '',
                     timeEndFormat: end ? end.endFormat.format : '',
                     timeEndFormatCustom: end ? end.endFormat.customFormat : '',
+                    timeEndFormatUnix: end ? end.endFormat.timestampType : '',
                     columnsX: info?.columns?.x,
                     columnsY: info?.columns?.y,
                     columnsText: info?.columns?.text,
@@ -459,11 +484,13 @@ export class UploadComponent {
 
         if (formMeta.timeType.value === 'Start') {
             const format: OgrSourceTimeFormatDict = {
-                format: formMeta.timeStartFormat.value.toLowerCase(),
+                format: formMeta.timeStartFormat.value,
             };
 
             if (format.format === 'custom') {
                 format.customFormat = formMeta.timeStartFormatCustom.value;
+            } else if (format.format === 'unixTimeStamp') {
+                format.timestampType = formMeta.timeStartFormatUnix.value;
             }
 
             time = {
@@ -474,19 +501,23 @@ export class UploadComponent {
             };
         } else if (formMeta.timeType.value === 'Start/End') {
             const startFormat: OgrSourceTimeFormatDict = {
-                format: formMeta.timeStartFormat.value.toLowerCase(),
+                format: formMeta.timeStartFormat.value,
             };
 
             if (startFormat.format === 'custom') {
                 startFormat.customFormat = formMeta.timeStartFormatCustom.value;
+            } else if (startFormat.format === 'unixTimeStamp') {
+                startFormat.timestampType = formMeta.timeStartFormatUnix.value;
             }
 
             const endFormat: OgrSourceTimeFormatDict = {
-                format: formMeta.timeStartFormat.value.toLowerCase(),
+                format: formMeta.timeStartFormat.value,
             };
 
             if (endFormat.format === 'custom') {
-                endFormat.customFormat = formMeta.timeStartFormatCustom.value;
+                endFormat.customFormat = formMeta.timeEndFormatCustom.value;
+            } else if (endFormat.format === 'unixTimeStamp') {
+                endFormat.timestampType = formMeta.timeEndFormatUnix.value;
             }
 
             time = {
@@ -498,11 +529,13 @@ export class UploadComponent {
             };
         } else if (formMeta.timeType.value === 'Start/Duration') {
             const format: OgrSourceTimeFormatDict = {
-                format: formMeta.timeStartFormat.value.toLowerCase(),
+                format: formMeta.timeStartFormat.value,
             };
 
             if (format.format === 'custom') {
                 format.customFormat = formMeta.timeStartFormatCustom.value;
+            } else if (format.format === 'unixTimeStamp') {
+                format.timestampType = formMeta.timeStartFormatUnix.value;
             }
 
             time = {
