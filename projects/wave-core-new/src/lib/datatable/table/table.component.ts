@@ -118,7 +118,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
 
     processVectorLayer(_layer: VectorLayer, metadata: VectorLayerMetadata, data: VectorData): void {
         this.featureColumns = metadata.columns.keySeq().toArray();
-        this.displayedColumns = ['_____select', 'coordinates', 'start_end'].concat(this.featureColumns);
+        this.displayedColumns = ['_____select', 'coordinates', 'start', 'end'].concat(this.featureColumns);
         this.dataSource.data = data.data;
         setTimeout(() => this.navigatePage(this.projectService.getSelectedFeature()));
     }
@@ -144,16 +144,26 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     }
 
     coordinateFromGeometry(geometry: OlFeature): string {
+        let maxLength: number = 30; // The maximum displayed of a coordinate (is 30 appropriate?)
         let p: OlPoint = <OlPoint>geometry.getGeometry();
         let xCoord: string = p.getCoordinates()[0].toString();
         let yCoord: string = p.getCoordinates()[1].toString();
-        return ` ${xCoord} , ${yCoord} `
+        xCoord = (xCoord.length > maxLength ? xCoord.substring(0,maxLength) + " ... " : xCoord); // Truncating displayed digits
+        yCoord = (yCoord.length > maxLength ? yCoord.substring(0, maxLength) + " ... " : yCoord);
+        let result: string = ` ${xCoord}, ${yCoord} `
+        return result;
     }
 
-    readTimeProperty(geometry: OlFeature): string {
-        let end: string = geometry['values_']['end'];
-        let start: string = geometry['values_']['start'];
-        return `From ${start} to ${end}`;
+    readTimePropertyStart(geometry: OlFeature): string {
+        let minimum: string = '-262144-01-01T00:00:00+00:00';
+        let result: string = geometry['values_']['start'];
+        return (result == minimum ? "-∞" : result);
+    }
+
+    readTimePropertyEnd(geometry: OlFeature): string {
+        let maximum: string = '-262144-01-01T00:00:00+00:00';
+        let result: string = geometry['values_']['start'];
+        return (result == maximum ? "∞" : result);
     }
 
 
