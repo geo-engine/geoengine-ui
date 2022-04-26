@@ -73,6 +73,15 @@
                         <mat-label>Custom format of columns containing start</mat-label>
                         <input matInput type="text" formControlName="timeStartFormatCustom" />
                     </mat-form-field>
+
+                    <mat-form-field appearance="fill" *ngIf="formMetaData.controls.timeStartFormat.value === 'unixTimeStamp'">
+                        <mat-label>Type of Unix Timestamp</mat-label>
+                        <mat-select formControlName="timeStartFormatUnix">
+                            <mat-option *ngFor="let timestampType of timestampTypes" [value]="timestampType">
+                                {{ timestampType }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
                 </ng-container>
 
                 <mat-form-field appearance="fill" *ngIf="formMetaData.controls.timeType.value === 'Start/Duration'">
@@ -123,6 +132,15 @@
                     <mat-form-field appearance="fill" *ngIf="formMetaData.controls.timeEndFormat.value === 'custom'">
                         <mat-label>Custom format of columns containing end</mat-label>
                         <input matInput type="text" formControlName="timeEndFormatCustom" />
+                    </mat-form-field>
+
+                    <mat-form-field appearance="fill" *ngIf="formMetaData.controls.timeEndFormat.value === 'unixTimeStamp'">
+                        <mat-label>Type of Unix Timestamp</mat-label>
+                        <mat-select formControlName="timeEndFormatUnix">
+                            <mat-option *ngFor="let timestampType of timestampTypes" [value]="timestampType">
+                                {{ timestampType }}
+                            </mat-option>
+                        </mat-select>
                     </mat-form-field>
                 </ng-container>
             </ng-container>

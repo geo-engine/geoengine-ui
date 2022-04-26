@@ -430,8 +430,9 @@ export interface StartDurationOgrSourceDatasetTimeTypeDict {
 }
 
 export interface OgrSourceTimeFormatDict {
-    format: 'seconds' | 'auto' | 'custom';
+    format: 'unixTimeStamp' | 'auto' | 'custom';
     customFormat?: string;
+    timestampType?: 'epochSeconds' | 'epochMilliseconds';
 }
 
 export interface OgrSourceColumnSpecDict {
