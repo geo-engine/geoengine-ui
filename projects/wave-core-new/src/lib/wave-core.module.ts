@@ -125,6 +125,7 @@ import {TimeStepSelectorComponent} from './time/time-step-selector/time-step-sel
 import {AutocompleteSelectDirective} from './util/directives/autocomplete-select.directive';
 import {TokenLoginComponent} from './users/token-login/token-login.component';
 import {TimeSliderComponent} from './time/time-slider/time-slider.component';
+import {LayerCollectionListComponent} from './layer-collections/layer-collection-list/layer-collection-list.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -200,6 +201,7 @@ const WAVE_COMPONENTS = [
     HistogramOperatorComponent,
     IfGuestDirective,
     IfLoggedInDirective,
+    LayerCollectionListComponent,
     LayerListComponent,
     LayerListElementComponent,
     LayerListMenuComponent,
