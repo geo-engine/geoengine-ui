@@ -1,0 +1,17 @@
+<wave-dialog-header>Full coordinates</wave-dialog-header>
+<mat-dialog-content>
+    <table>
+        <thead>
+            <th>X</th>
+            <th>Y</th>
+        </thead>
+    <tr *ngFor="let x of xCoords, index as i">
+        <td>{{x}}</td>
+        <td>{{yCoords[i]}}</td>
+    </tr>   
+    </table>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button mat-dialog-close>Close</button>
+    <button mat-button (click)="copyToClipboard()">Copy to Clipboard</button>
+  </mat-dialog-actions>

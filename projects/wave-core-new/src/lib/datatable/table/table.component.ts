@@ -22,6 +22,8 @@ import {VectorData} from '../../layers/layer-data.model';
 import {DataSource} from '@angular/cdk/collections';
 import OlGeometry from 'ol/geom/Geometry';
 import OlPoint from 'ol/geom/Point';
+import { MatDialog } from '@angular/material/dialog';
+import { FullDisplayComponent } from './full-display/full-display.component';
 
 @Component({
     selector: 'wave-datatable',
@@ -46,6 +48,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     protected selectedFeatureSubscription?: Subscription = undefined;
 
     constructor(
+        public dialog: MatDialog,
         protected readonly projectService: ProjectService,
         protected readonly hostElement: ElementRef<HTMLElement>,
         protected readonly changeDetectorRef: ChangeDetectorRef,
@@ -164,6 +167,10 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         let maximum: string = '-262144-01-01T00:00:00+00:00';
         let result: string = geometry['values_']['start'];
         return (result == maximum ? "∞" : result);
+    }
+
+    onCellClick(output: OlFeature): void {
+        this.dialog.open(FullDisplayComponent, {data: {coordDisplay: output}})
     }
 
 

@@ -125,6 +125,7 @@ import {TimeStepSelectorComponent} from './time/time-step-selector/time-step-sel
 import {AutocompleteSelectDirective} from './util/directives/autocomplete-select.directive';
 import {TokenLoginComponent} from './users/token-login/token-login.component';
 import {TimeSliderComponent} from './time/time-slider/time-slider.component';
+import { FullDisplayComponent } from './datatable/table/full-display/full-display.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -260,7 +261,7 @@ const WAVE_COMPONENTS = [
 ];
 
 @NgModule({
-    declarations: [...WAVE_PIPES, ...WAVE_COMPONENTS],
+    declarations: [...WAVE_PIPES, ...WAVE_COMPONENTS, FullDisplayComponent],
     imports: [
         ...MATERIAL_MODULES,
         ColorPickerModule,
