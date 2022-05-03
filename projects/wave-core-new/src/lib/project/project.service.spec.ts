@@ -13,7 +13,7 @@ import {BackendService} from '../backend/backend.service';
 import {UserService} from '../users/user.service';
 import {SpatialReferenceService, WGS_84} from '../spatial-references/spatial-reference.service';
 import {SpatialReferenceSpecification} from '../spatial-references/spatial-reference.model';
-import {first} from 'rxjs/operators';
+import {first, mergeMap, tap} from 'rxjs/operators';
 
 describe('test project methods in projectService', () => {
     let notificationServiceSpy: {get: jasmine.Spy};
@@ -214,13 +214,12 @@ describe('test project methods in projectService', () => {
     });
 
     it('#getProjectStream should return project stream', (done) => {
-        projectService.createDefaultProject().subscribe((project) => projectService.setProject(project));
-
         projectService
-            .getProjectStream()
-            .pipe(first())
-            .subscribe(
-                (project) => {
+            .createDefaultProject()
+            .pipe(
+                tap((project) => projectService.setProject(project)),
+                mergeMap(() => projectService.getProjectStream().pipe(first())),
+                tap((project) => {
                     expect(project.toDict()).toEqual(
                         new Project({
                             id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
@@ -237,32 +236,25 @@ describe('test project methods in projectService', () => {
                             },
                         }).toDict(),
                     );
-                },
-                (error) => fail(error),
-                () => {
-                    done();
-                },
-            );
-
-        projectService
-            .createProject({
-                name: 'testProject',
-                description: 'testDescription',
-                spatialReference: WGS_84.spatialReference,
-                time: new Time(moment.utc('2021-07-04 11:00:00')),
-                bounds: {lowerLeftCoordinate: {x: -180, y: -90}, upperRightCoordinate: {x: 180, y: 90}},
-                timeStepDuration: {
-                    durationAmount: 1,
-                    durationUnit: 'month',
-                },
-            })
-            .subscribe((project) => projectService.setProject(project));
-
-        projectService
-            .getProjectStream()
-            .pipe(first())
-            .subscribe(
-                (project) => {
+                }),
+                mergeMap(() =>
+                    projectService.createProject({
+                        name: 'testProject',
+                        description: 'testDescription',
+                        spatialReference: WGS_84.spatialReference,
+                        time: new Time(moment.utc('2021-07-04 11:00:00')),
+                        bounds: {lowerLeftCoordinate: {x: -180, y: -90}, upperRightCoordinate: {x: 180, y: 90}},
+                        timeStepDuration: {
+                            durationAmount: 1,
+                            durationUnit: 'month',
+                        },
+                    }),
+                ),
+                tap((project) => projectService.setProject(project)),
+                mergeMap(() => projectService.getProjectOnce()),
+            )
+            .subscribe({
+                next: (project) => {
                     expect(project.toDict()).toEqual(
                         new Project({
                             id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
@@ -280,78 +272,76 @@ describe('test project methods in projectService', () => {
                         }).toDict(),
                     );
                 },
-                (error) => fail(error),
-                () => {
+                error: (error) => fail(error),
+                complete: () => {
                     done();
                 },
-            );
+            });
     });
 
     it('#getProjectOnce should return current project and #setProject should set a project', (done) => {
-        projectService.createDefaultProject().subscribe((project) => projectService.setProject(project));
-
-        projectService.getProjectOnce().subscribe(
-            (project) => {
-                expect(project.toDict()).toEqual(
-                    new Project({
-                        id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
-                        name: 'Default',
-                        description: 'Default project',
-                        spatialReference: WGS_84.spatialReference,
-                        time: new Time(moment.utc('2014-04-01 12:00:00')),
-                        bbox: {lowerLeftCoordinate: {x: -180, y: -90}, upperRightCoordinate: {x: 180, y: 90}},
-                        plots: [],
-                        layers: [],
-                        timeStepDuration: {
-                            durationAmount: 1,
-                            durationUnit: 'month',
-                        },
-                    }).toDict(),
-                );
-            },
-            (error) => fail(error),
-            () => {
-                done();
-            },
-        );
-
         projectService
-            .createProject({
-                name: 'testProject',
-                description: 'testDescription',
-                spatialReference: WGS_84.spatialReference,
-                time: new Time(moment.utc('2021-07-04 11:00:00')),
-                bounds: {lowerLeftCoordinate: {x: -180, y: -90}, upperRightCoordinate: {x: 180, y: 90}},
-                timeStepDuration: {
-                    durationAmount: 1,
-                    durationUnit: 'month',
-                },
-            })
-            .subscribe((project) => projectService.setProject(project));
-
-        projectService.getProjectOnce().subscribe(
-            (project) => {
-                expect(project.toDict()).toEqual(
-                    new Project({
-                        id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
+            .createDefaultProject()
+            .pipe(
+                tap((project) => projectService.setProject(project)),
+                mergeMap(() => projectService.getProjectOnce()),
+                tap((project) => {
+                    expect(project.toDict()).toEqual(
+                        new Project({
+                            id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
+                            name: 'Default',
+                            description: 'Default project',
+                            spatialReference: WGS_84.spatialReference,
+                            time: new Time(moment.utc('2014-04-01 12:00:00')),
+                            bbox: {lowerLeftCoordinate: {x: -180, y: -90}, upperRightCoordinate: {x: 180, y: 90}},
+                            plots: [],
+                            layers: [],
+                            timeStepDuration: {
+                                durationAmount: 1,
+                                durationUnit: 'month',
+                            },
+                        }).toDict(),
+                    );
+                }),
+                mergeMap(() =>
+                    projectService.createProject({
                         name: 'testProject',
                         description: 'testDescription',
                         spatialReference: WGS_84.spatialReference,
                         time: new Time(moment.utc('2021-07-04 11:00:00')),
-                        bbox: {lowerLeftCoordinate: {x: -180, y: -90}, upperRightCoordinate: {x: 180, y: 90}},
-                        plots: [],
-                        layers: [],
+                        bounds: {lowerLeftCoordinate: {x: -180, y: -90}, upperRightCoordinate: {x: 180, y: 90}},
                         timeStepDuration: {
                             durationAmount: 1,
                             durationUnit: 'month',
                         },
-                    }).toDict(),
-                );
-            },
-            (error) => fail(error),
-            () => {
-                done();
-            },
-        );
+                    }),
+                ),
+                tap((project) => projectService.setProject(project)),
+                mergeMap(() => projectService.getProjectOnce()),
+            )
+            .subscribe({
+                next: (project) => {
+                    expect(project.toDict()).toEqual(
+                        new Project({
+                            id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
+                            name: 'testProject',
+                            description: 'testDescription',
+                            spatialReference: WGS_84.spatialReference,
+                            time: new Time(moment.utc('2021-07-04 11:00:00')),
+                            bbox: {lowerLeftCoordinate: {x: -180, y: -90}, upperRightCoordinate: {x: 180, y: 90}},
+                            plots: [],
+                            layers: [],
+                            timeStepDuration: {
+                                durationAmount: 1,
+                                durationUnit: 'month',
+                            },
+                        }).toDict(),
+                    );
+                },
+                error: (error) => fail(error),
+                complete: () => {
+                    done();
+                },
+            });
     });
 });
