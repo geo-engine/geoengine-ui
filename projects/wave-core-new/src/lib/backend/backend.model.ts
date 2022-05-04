@@ -520,7 +520,15 @@ export interface LayerCollection extends LayerCollectionItem {
     type: 'collection';
 }
 
-export interface LayerCollectionLayer extends LayerCollectionItem {
+export interface LayerCollectionItemLayer extends LayerCollectionItem {
     type: 'layer';
     workflow: UUID;
+}
+
+export interface LayerCollectionLayer {
+    id: UUID;
+    name: string;
+    description: string;
+    workflow: UUID;
+    symbology: SymbologyDict;
 }

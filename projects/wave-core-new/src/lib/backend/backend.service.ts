@@ -37,6 +37,7 @@ import {
     ProvenanceOutputDict,
     DatasetOrderByDict,
     LayerCollectionItem,
+    LayerCollectionLayer,
 } from './backend.model';
 
 @Injectable({
@@ -361,6 +362,12 @@ export class BackendService {
 
         return this.http.get<Array<LayerCollectionItem>>(this.config.API_URL + '/layers', {
             params: params.httpParams,
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    getLayerCollectionLayer(sessionId: UUID, layer: UUID): Observable<LayerCollectionLayer> {
+        return this.http.get<LayerCollectionLayer>(this.config.API_URL + `/layer/${layer}`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }

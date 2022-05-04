@@ -3,7 +3,7 @@ import {BackendService} from '../backend/backend.service';
 import {Observable} from 'rxjs';
 import {UserService} from '../users/user.service';
 import {mergeMap} from 'rxjs/operators';
-import {LayerCollectionItem, UUID} from '../backend/backend.model';
+import {LayerCollectionItem, LayerCollectionLayer, UUID} from '../backend/backend.model';
 
 @Injectable({
     providedIn: 'root',
@@ -21,5 +21,11 @@ export class LayerCollectionService {
         return this.userService
             .getSessionStream()
             .pipe(mergeMap((session) => this.backend.getRootLayerCollectionItems(session.sessionToken, offset, limit)));
+    }
+
+    getLayer(layer: UUID): Observable<LayerCollectionLayer> {
+        return this.userService
+            .getSessionStream()
+            .pipe(mergeMap((session) => this.backend.getLayerCollectionLayer(session.sessionToken, layer)));
     }
 }

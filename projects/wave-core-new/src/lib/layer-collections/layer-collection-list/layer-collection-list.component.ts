@@ -1,16 +1,19 @@
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, ViewChild, Input} from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
-import {BehaviorSubject, EMPTY, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, EMPTY, Observable, Subject} from 'rxjs';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {filter, mergeMap, scan, tap} from 'rxjs/operators';
 import {LayoutService} from '../../layout.service';
 import {
     GeoEngineError,
     LayerCollectionItem,
-    LayerCollectionLayer,
+    LayerCollectionItemLayer,
     RasterResultDescriptorDict,
+    RasterSymbologyDict,
+    SymbologyDict,
     UUID,
     VectorResultDescriptorDict,
+    VectorSymbologyDict,
 } from '../../backend/backend.model';
 import {LayerCollectionService} from '../layer-collection.service';
 import {createIconDataUrl} from '../../util/icons';
@@ -87,36 +90,51 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
                 keepParent: true,
             });
         } else if (item.type === 'layer') {
-            const layer = item as LayerCollectionLayer;
-            this.addLayer(layer.name, layer.workflow);
+            const layer = item as LayerCollectionItemLayer;
+            this.addLayer(layer);
         }
     }
 
-    private addLayer(layerName: string, workflowId: UUID): void {
-        this.projectService.getWorkflowMetaData(workflowId).subscribe(
-            (resultDescriptorDict) => {
+    private addLayer(layerListing: LayerCollectionItemLayer): void {
+        combineLatest([
+            this.layerService.getLayer(layerListing.id),
+            this.projectService.getWorkflowMetaData(layerListing.workflow),
+        ]).subscribe(
+            ([layer, resultDescriptorDict]) => {
                 const keys = Object.keys(resultDescriptorDict);
 
                 if (keys.includes('columns')) {
-                    this.addVectorLayer(layerName, workflowId, resultDescriptorDict as VectorResultDescriptorDict);
+                    this.addVectorLayer(layer.name, layer.workflow, resultDescriptorDict as VectorResultDescriptorDict, layer.symbology);
                 } else if (keys.includes('measurement')) {
-                    this.addRasterLayer(layerName, workflowId, resultDescriptorDict as RasterResultDescriptorDict);
+                    this.addRasterLayer(layer.name, layer.workflow, resultDescriptorDict as RasterResultDescriptorDict, layer.symbology);
                 } else {
                     // TODO: implement plots, etc.
                     this.notificationService.error('Adding this workflow type is unimplemented, yet');
                 }
             },
-            (requestError) => this.handleError(requestError.error, workflowId),
+            (requestError) => this.handleError(requestError.error, layerListing.workflow),
         );
     }
 
-    private addVectorLayer(layerName: string, workflowId: UUID, resultDescriptor: VectorResultDescriptorDict): void {
+    private addVectorLayer(
+        layerName: string,
+        workflowId: UUID,
+        resultDescriptor: VectorResultDescriptorDict,
+        symbology?: SymbologyDict,
+    ): void {
+        let vectorSymbology: VectorSymbology;
+        if (symbology && symbology.type !== 'raster') {
+            vectorSymbology = VectorSymbology.fromVectorSymbologyDict(symbology as VectorSymbologyDict);
+        } else {
+            vectorSymbology = this.createVectorSymbology(resultDescriptor.dataType);
+        }
+
         const layer = new VectorLayer({
             name: layerName,
             workflowId,
             isVisible: true,
             isLegendVisible: false,
-            symbology: this.createVectorSymbology(resultDescriptor.dataType),
+            symbology: vectorSymbology,
         });
 
         this.projectService.addLayer(layer);
@@ -157,13 +175,17 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
         }
     }
 
-    private addRasterLayer(layerName: string, workflowId: UUID, _resultDescriptor: RasterResultDescriptorDict): void {
-        const layer = new RasterLayer({
-            name: layerName,
-            workflowId,
-            isVisible: true,
-            isLegendVisible: false,
-            symbology: RasterSymbology.fromRasterSymbologyDict({
+    private addRasterLayer(
+        layerName: string,
+        workflowId: UUID,
+        _resultDescriptor: RasterResultDescriptorDict,
+        symbology?: SymbologyDict,
+    ): void {
+        let rasterSymbologyDict: RasterSymbologyDict;
+        if (symbology && symbology.type === 'raster') {
+            rasterSymbologyDict = symbology as RasterSymbologyDict;
+        } else {
+            rasterSymbologyDict = {
                 type: 'raster',
                 opacity: 1.0,
                 colorizer: {
@@ -175,7 +197,15 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
                     defaultColor: [0, 0, 0, 0],
                     noDataColor: [0, 0, 0, 0],
                 },
-            }),
+            };
+        }
+
+        const layer = new RasterLayer({
+            name: layerName,
+            workflowId,
+            isVisible: true,
+            isLegendVisible: false,
+            symbology: RasterSymbology.fromRasterSymbologyDict(rasterSymbologyDict),
         });
 
         this.projectService.addLayer(layer);
