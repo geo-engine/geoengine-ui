@@ -64,7 +64,7 @@ export class AddDataComponent implements OnInit {
 
     static createLayerCollectionButton(): AddDataButton {
         return {
-            name: 'Existing Layers',
+            name: 'Layers',
             description: 'Collection of existing layers',
             iconSrc: createIconDataUrl('Layer Collection'),
             sidenavConfig: {component: LayerCollectionListComponent, keepParent: true},

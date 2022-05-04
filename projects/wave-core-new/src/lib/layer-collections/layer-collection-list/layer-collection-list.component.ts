@@ -6,8 +6,8 @@ import {filter, mergeMap, scan, tap} from 'rxjs/operators';
 import {LayoutService} from '../../layout.service';
 import {
     GeoEngineError,
-    LayerCollectionItem,
-    LayerCollectionItemLayer,
+    LayerCollectionItemDict,
+    LayerCollectionItemLayerDict,
     RasterResultDescriptorDict,
     RasterSymbologyDict,
     SymbologyDict,
@@ -74,15 +74,15 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
         }
     }
 
-    trackById(_index: number, item: LayerCollectionItem): UUID {
+    trackById(_index: number, item: LayerCollectionItemDict): UUID {
         return item.id;
     }
 
-    icon(item: LayerCollectionItem): string {
+    icon(item: LayerCollectionItemDict): string {
         return createIconDataUrl(item.type);
     }
 
-    select(item: LayerCollectionItem): void {
+    select(item: LayerCollectionItemDict): void {
         if (item.type === 'collection') {
             this.layoutService.setSidenavContentComponent({
                 component: LayerCollectionListComponent,
@@ -90,12 +90,12 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
                 keepParent: true,
             });
         } else if (item.type === 'layer') {
-            const layer = item as LayerCollectionItemLayer;
+            const layer = item as LayerCollectionItemLayerDict;
             this.addLayer(layer);
         }
     }
 
-    private addLayer(layerListing: LayerCollectionItemLayer): void {
+    private addLayer(layerListing: LayerCollectionItemLayerDict): void {
         combineLatest([
             this.layerService.getLayer(layerListing.id),
             this.projectService.getWorkflowMetaData(layerListing.workflow),
@@ -225,7 +225,7 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
 /**
  * A custom data source that allows fetching datasets for a virtual scroll source.
  */
-class LayerCollectionItemDataSource extends DataSource<LayerCollectionItem> {
+class LayerCollectionItemDataSource extends DataSource<LayerCollectionItemDict> {
     readonly scrollFetchSize = 20;
 
     readonly loading$ = new BehaviorSubject(false);
@@ -234,23 +234,23 @@ class LayerCollectionItemDataSource extends DataSource<LayerCollectionItem> {
     protected noMoreData = false;
     protected offset = 0;
 
-    protected getCollectionItems: (offset: number, limit: number) => Observable<Array<LayerCollectionItem>>;
+    protected getCollectionItems: (offset: number, limit: number) => Observable<Array<LayerCollectionItemDict>>;
 
     constructor(protected layerCollectionService: LayerCollectionService, protected collection?: UUID) {
         super();
 
         if (collection) {
-            this.getCollectionItems = (offset, limit): Observable<Array<LayerCollectionItem>> =>
+            this.getCollectionItems = (offset, limit): Observable<Array<LayerCollectionItemDict>> =>
                 layerCollectionService.getLayerCollectionItems(collection, offset, limit);
         } else {
-            this.getCollectionItems = (offset, limit): Observable<Array<LayerCollectionItem>> =>
+            this.getCollectionItems = (offset, limit): Observable<Array<LayerCollectionItemDict>> =>
                 layerCollectionService.getRootLayerCollectionItems(offset, limit);
         }
 
         this.fetchMoreData(); // initially populate source
     }
 
-    connect(): Observable<Array<LayerCollectionItem>> {
+    connect(): Observable<Array<LayerCollectionItemDict>> {
         return this.nextBatch$.pipe(
             filter(() => !this.loading$.value),
             mergeMap(() => this.getMoreDataFromServer()),
@@ -267,7 +267,7 @@ class LayerCollectionItemDataSource extends DataSource<LayerCollectionItem> {
         this.nextBatch$.next();
     }
 
-    protected getMoreDataFromServer(): Observable<Array<LayerCollectionItem>> {
+    protected getMoreDataFromServer(): Observable<Array<LayerCollectionItemDict>> {
         if (this.noMoreData) {
             return EMPTY;
         }

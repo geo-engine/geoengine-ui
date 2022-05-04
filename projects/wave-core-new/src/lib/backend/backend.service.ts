@@ -36,8 +36,8 @@ import {
     DataSetProviderListingDict,
     ProvenanceOutputDict,
     DatasetOrderByDict,
-    LayerCollectionItem,
-    LayerCollectionLayer,
+    LayerCollectionItemDict,
+    LayerCollectionLayerDict,
 } from './backend.model';
 
 @Injectable({
@@ -344,30 +344,30 @@ export class BackendService {
         collection: UUID,
         offset: number = 0,
         limit: number = 20,
-    ): Observable<Array<LayerCollectionItem>> {
+    ): Observable<Array<LayerCollectionItemDict>> {
         const params = new NullDiscardingHttpParams();
         params.setMapped('offset', offset, (r) => r.toString());
         params.setMapped('limit', limit, (r) => r.toString());
 
-        return this.http.get<Array<LayerCollectionItem>>(this.config.API_URL + `/layers/${collection}`, {
+        return this.http.get<Array<LayerCollectionItemDict>>(this.config.API_URL + `/layers/${collection}`, {
             params: params.httpParams,
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
 
-    getRootLayerCollectionItems(sessionId: UUID, offset: number = 0, limit: number = 20): Observable<Array<LayerCollectionItem>> {
+    getRootLayerCollectionItems(sessionId: UUID, offset: number = 0, limit: number = 20): Observable<Array<LayerCollectionItemDict>> {
         const params = new NullDiscardingHttpParams();
         params.setMapped('offset', offset, (r) => r.toString());
         params.setMapped('limit', limit, (r) => r.toString());
 
-        return this.http.get<Array<LayerCollectionItem>>(this.config.API_URL + '/layers', {
+        return this.http.get<Array<LayerCollectionItemDict>>(this.config.API_URL + '/layers', {
             params: params.httpParams,
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
 
-    getLayerCollectionLayer(sessionId: UUID, layer: UUID): Observable<LayerCollectionLayer> {
-        return this.http.get<LayerCollectionLayer>(this.config.API_URL + `/layer/${layer}`, {
+    getLayerCollectionLayer(sessionId: UUID, layer: UUID): Observable<LayerCollectionLayerDict> {
+        return this.http.get<LayerCollectionLayerDict>(this.config.API_URL + `/layer/${layer}`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }

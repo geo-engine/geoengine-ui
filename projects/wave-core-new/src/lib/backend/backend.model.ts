@@ -509,23 +509,23 @@ export interface GeoEngineError {
     readonly message: string;
 }
 
-export interface LayerCollectionItem {
+export interface LayerCollectionItemDict {
     type: 'collection' | 'layer';
     id: UUID;
     name: string;
     description: string;
 }
 
-export interface LayerCollection extends LayerCollectionItem {
+export interface LayerCollectionDict extends LayerCollectionItemDict {
     type: 'collection';
 }
 
-export interface LayerCollectionItemLayer extends LayerCollectionItem {
+export interface LayerCollectionItemLayerDict extends LayerCollectionItemDict {
     type: 'layer';
     workflow: UUID;
 }
 
-export interface LayerCollectionLayer {
+export interface LayerCollectionLayerDict {
     id: UUID;
     name: string;
     description: string;
