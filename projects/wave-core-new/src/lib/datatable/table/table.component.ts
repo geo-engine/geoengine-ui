@@ -172,27 +172,6 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         }
     }
 
-    // coordinateFromGeometry(geometry: OlFeature): string {
-    //     const type: string = geometry.getGeometry()?.getType();
-    //     if(type == "Polygon") {
-    //         const p: OlPolygon = <OlPolygon>geometry.getGeometry();
-    //         const x: string = p.getCoordinates()[0][0][0].toString();
-    //         const y: string = p.getCoordinates()[0][0][1].toString();
-    //         return `${x}, ${y} ...`
-    //     } 
-    //     if (type != "Point" && type != "MultiPolygon") return "N/A"
-    //     let maxLength: number = 30; // The maximum displayed of a coordinate (is 30 appropriate?)
-    //     let p: OlPoint = <OlPoint>geometry.getGeometry();
-    //     let xCoord: string = p.getCoordinates()[0].toString();
-    //     let yCoord: string = p.getCoordinates()[1].toString();
-    //     xCoord = (xCoord.length > maxLength ? xCoord.substring(0,maxLength) + " ... " : xCoord); // Truncating displayed digits
-    //     yCoord = (yCoord.length > maxLength ? yCoord.substring(0, maxLength) + " ... " : yCoord);
-    //     let result: string = ` ${xCoord}, ${yCoord} `
-    //     return result;
-    // }
-
-
-
     readTimePropertyStart(geometry: OlFeature): string {
         let minimum: string = '-262144-01-01T00:00:00+00:00';
         let result: string = geometry['values_']['start'];
