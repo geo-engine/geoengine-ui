@@ -22,6 +22,7 @@ import {VectorData} from '../../layers/layer-data.model';
 import {DataSource} from '@angular/cdk/collections';
 import OlGeometry from 'ol/geom/Geometry';
 import OlPoint from 'ol/geom/Point';
+import OlPolygon from 'ol/geom/Polygon';
 import { MatDialog } from '@angular/material/dialog';
 import { FullDisplayComponent } from './full-display/full-display.component';
 
@@ -149,15 +150,48 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     }
 
     coordinateFromGeometry(geometry: OlFeature): string {
-        let maxLength: number = 30; // The maximum displayed of a coordinate (is 30 appropriate?)
-        let p: OlPoint = <OlPoint>geometry.getGeometry();
-        let xCoord: string = p.getCoordinates()[0].toString();
-        let yCoord: string = p.getCoordinates()[1].toString();
-        xCoord = (xCoord.length > maxLength ? xCoord.substring(0,maxLength) + " ... " : xCoord); // Truncating displayed digits
-        yCoord = (yCoord.length > maxLength ? yCoord.substring(0, maxLength) + " ... " : yCoord);
-        let result: string = ` ${xCoord}, ${yCoord} `
-        return result;
+        const type: string = geometry.getGeometry()?.getType();
+        switch (type) {
+            case "Polygon":
+                const po: OlPolygon = <OlPolygon>geometry.getGeometry();
+                const x: string = po.getCoordinates()[0][0][0].toString();
+                const y: string = po.getCoordinates()[0][0][1].toString();
+                return `${x}, ${y} ...`;
+            case "Point":
+            case "MultiPolygon":
+                let maxLength: number = 30; // The maximum displayed of a coordinate (is 30 appropriate?)
+                let p: OlPoint = <OlPoint>geometry.getGeometry();
+                let xCoord: string = p.getCoordinates()[0].toString();
+                let yCoord: string = p.getCoordinates()[1].toString();
+                xCoord = (xCoord.length > maxLength ? xCoord.substring(0,maxLength) + " ... " : xCoord); // Truncating displayed digits
+                yCoord = (yCoord.length > maxLength ? yCoord.substring(0, maxLength) + " ... " : yCoord);
+                let result: string = ` ${xCoord}, ${yCoord} `
+                return result;
+            default:
+                return "N/A";
+        }
     }
+
+    // coordinateFromGeometry(geometry: OlFeature): string {
+    //     const type: string = geometry.getGeometry()?.getType();
+    //     if(type == "Polygon") {
+    //         const p: OlPolygon = <OlPolygon>geometry.getGeometry();
+    //         const x: string = p.getCoordinates()[0][0][0].toString();
+    //         const y: string = p.getCoordinates()[0][0][1].toString();
+    //         return `${x}, ${y} ...`
+    //     } 
+    //     if (type != "Point" && type != "MultiPolygon") return "N/A"
+    //     let maxLength: number = 30; // The maximum displayed of a coordinate (is 30 appropriate?)
+    //     let p: OlPoint = <OlPoint>geometry.getGeometry();
+    //     let xCoord: string = p.getCoordinates()[0].toString();
+    //     let yCoord: string = p.getCoordinates()[1].toString();
+    //     xCoord = (xCoord.length > maxLength ? xCoord.substring(0,maxLength) + " ... " : xCoord); // Truncating displayed digits
+    //     yCoord = (yCoord.length > maxLength ? yCoord.substring(0, maxLength) + " ... " : yCoord);
+    //     let result: string = ` ${xCoord}, ${yCoord} `
+    //     return result;
+    // }
+
+
 
     readTimePropertyStart(geometry: OlFeature): string {
         let minimum: string = '-262144-01-01T00:00:00+00:00';
