@@ -43,6 +43,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     dataSource = new FeatureDataSource();
     displayedColumns: Array<string> = [];
     featureColumns: Array<string> = [];
+    displayType: String = ''; // points, polygons, etc...
 
     protected layerDataSubscription?: Subscription = undefined;
     protected selectedFeatureSubscription?: Subscription = undefined;
@@ -120,6 +121,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     }
 
     processVectorLayer(_layer: VectorLayer, metadata: VectorLayerMetadata, data: VectorData): void {
+        this.displayType = metadata.dataType.resultType.code.toString();
         this.featureColumns = metadata.columns.keySeq().toArray();
         this.displayedColumns = ['_____select', 'coordinates', 'start', 'end'].concat(this.featureColumns);
         this.dataSource.data = data.data;
@@ -170,7 +172,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     }
 
     onCellClick(output: OlFeature): void {
-        this.dialog.open(FullDisplayComponent, {data: {coordDisplay: output}})
+        this.dialog.open(FullDisplayComponent, {data: {coordDisplay: output, type: this.displayType}})
     }
 
 
