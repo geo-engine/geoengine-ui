@@ -1,4 +1,14 @@
-import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, ViewChild, Input} from '@angular/core';
+import {
+    Component,
+    OnInit,
+    ChangeDetectionStrategy,
+    AfterViewInit,
+    ViewChild,
+    Input,
+    Output,
+    EventEmitter,
+    ChangeDetectorRef,
+} from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, combineLatest, EMPTY, Observable, Subject} from 'rxjs';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
@@ -47,12 +57,15 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
 
     source?: LayerCollectionItemDataSource;
 
+    @Output() childCollectionSelection = new EventEmitter<UUID>();
+
     constructor(
         private readonly layerService: LayerCollectionService,
         private readonly layoutService: LayoutService,
         private readonly projectService: ProjectService,
         private readonly notificationService: NotificationService,
         private readonly randomColorService: RandomColorService,
+        private readonly changeDetectorRef: ChangeDetectorRef,
     ) {}
 
     ngOnInit(): void {
@@ -84,11 +97,7 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
 
     select(item: LayerCollectionItemDict): void {
         if (item.type === 'collection') {
-            this.layoutService.setSidenavContentComponent({
-                component: LayerCollectionListComponent,
-                config: {collection: item.id},
-                keepParent: true,
-            });
+            this.childCollectionSelection.emit(item.id);
         } else if (item.type === 'layer') {
             const layer = item as LayerCollectionItemLayerDict;
             this.addLayer(layer);

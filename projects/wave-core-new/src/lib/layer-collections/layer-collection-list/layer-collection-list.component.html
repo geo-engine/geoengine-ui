@@ -1,5 +1,3 @@
-<wave-sidenav-header>Layer Collection</wave-sidenav-header>
-
 <cdk-virtual-scroll-viewport itemSize="72" (scrolledIndexChange)="onScrolledIndexChange($event)">
     <mat-nav-list>
         <div *cdkVirtualFor="let item of source; trackBy: trackById">

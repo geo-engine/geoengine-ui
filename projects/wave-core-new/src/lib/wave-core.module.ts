@@ -126,6 +126,7 @@ import {AutocompleteSelectDirective} from './util/directives/autocomplete-select
 import {TokenLoginComponent} from './users/token-login/token-login.component';
 import {TimeSliderComponent} from './time/time-slider/time-slider.component';
 import {LayerCollectionListComponent} from './layer-collections/layer-collection-list/layer-collection-list.component';
+import {LayerCollectionNavigationComponent} from './layer-collections/layer-collection-navigation/layer-collection-navigation.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -202,6 +203,7 @@ const WAVE_COMPONENTS = [
     IfGuestDirective,
     IfLoggedInDirective,
     LayerCollectionListComponent,
+    LayerCollectionNavigationComponent,
     LayerListComponent,
     LayerListElementComponent,
     LayerListMenuComponent,

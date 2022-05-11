@@ -51,6 +51,7 @@ export * from './lib/layers/symbology/number-param-editor/number-param-editor.co
 export * from './lib/layers/symbology/raster-symbology-editor/raster-symbology-editor.component';
 export * from './lib/layers/symbology/vector-symbology-editor/vector-symbology-editor.component';
 export * from './lib/layer-collections/layer-collection-list/layer-collection-list.component';
+export * from './lib/layer-collections/layer-collection-navigation/layer-collection-navigation.component';
 export * from './lib/logo.component';
 export * from './lib/map/map-container/map-container.component';
 export * from './lib/map/map-layer.component';

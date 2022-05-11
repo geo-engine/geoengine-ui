@@ -1,5 +1,5 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
-import {LayerCollectionListComponent} from '../../layer-collections/layer-collection-list/layer-collection-list.component';
+import {LayerCollectionNavigationComponent} from '../../layer-collections/layer-collection-navigation/layer-collection-navigation.component';
 import {LayoutService, SidenavConfig} from '../../layout.service';
 import {createIconDataUrl} from '../../util/icons';
 import {AddWorkflowComponent} from '../add-workflow/add-workflow.component';
@@ -67,7 +67,7 @@ export class AddDataComponent implements OnInit {
             name: 'Layers',
             description: 'Collection of existing layers',
             iconSrc: createIconDataUrl('Layer Collection'),
-            sidenavConfig: {component: LayerCollectionListComponent, keepParent: true},
+            sidenavConfig: {component: LayerCollectionNavigationComponent, keepParent: true},
         };
     }
 
