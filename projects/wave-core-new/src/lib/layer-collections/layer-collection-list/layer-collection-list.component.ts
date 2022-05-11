@@ -4,10 +4,9 @@ import {
     ChangeDetectionStrategy,
     AfterViewInit,
     ViewChild,
-    Input,
-    Output,
-    EventEmitter,
     ChangeDetectorRef,
+    Inject,
+    InjectionToken,
 } from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, combineLatest, EMPTY, Observable, Subject} from 'rxjs';
@@ -41,6 +40,13 @@ import {
 import {colorToDict} from '../../colors/color';
 import {RandomColorService} from '../../util/services/random-color.service';
 
+export interface LayerCollectionListConfig {
+    uuid: UUID;
+    selectListener: (uuid: UUID) => void;
+}
+
+export const CONTEXT_TOKEN = new InjectionToken<LayerCollectionListConfig>('CONTEXT_TOKEN');
+
 @Component({
     selector: 'wave-layer-collection-list',
     templateUrl: './layer-collection-list.component.html',
@@ -51,22 +57,26 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
     @ViewChild(CdkVirtualScrollViewport)
     viewport!: CdkVirtualScrollViewport;
 
-    @Input() collection?: UUID = undefined;
+    collection?: UUID = undefined;
+
+    selectListener!: (uuid: UUID) => void;
 
     readonly loadingSpinnerDiameterPx: number = 3 * LayoutService.remInPx;
 
     source?: LayerCollectionItemDataSource;
 
-    @Output() childCollectionSelection = new EventEmitter<UUID>();
-
     constructor(
+        @Inject(CONTEXT_TOKEN) private data: LayerCollectionListConfig,
         private readonly layerService: LayerCollectionService,
         private readonly layoutService: LayoutService,
         private readonly projectService: ProjectService,
         private readonly notificationService: NotificationService,
         private readonly randomColorService: RandomColorService,
         private readonly changeDetectorRef: ChangeDetectorRef,
-    ) {}
+    ) {
+        this.collection = data.uuid;
+        this.selectListener = data.selectListener;
+    }
 
     ngOnInit(): void {
         this.source = new LayerCollectionItemDataSource(this.layerService, this.collection);
@@ -97,7 +107,7 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
 
     select(item: LayerCollectionItemDict): void {
         if (item.type === 'collection') {
-            this.childCollectionSelection.emit(item.id);
+            this.selectListener(item.id);
         } else if (item.type === 'layer') {
             const layer = item as LayerCollectionItemLayerDict;
             this.addLayer(layer);

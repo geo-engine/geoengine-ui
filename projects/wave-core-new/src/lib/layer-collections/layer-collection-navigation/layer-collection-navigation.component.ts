@@ -1,6 +1,7 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
-import {BehaviorSubject} from 'rxjs';
+import {ComponentPortal, Portal} from '@angular/cdk/portal';
+import {Component, ChangeDetectionStrategy, Injector} from '@angular/core';
 import {UUID} from '../../backend/backend.model';
+import {CONTEXT_TOKEN, LayerCollectionListComponent} from '../layer-collection-list/layer-collection-list.component';
 
 @Component({
     selector: 'wave-layer-collection-navigation',
@@ -9,36 +10,54 @@ import {UUID} from '../../backend/backend.model';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerCollectionNavigationComponent {
-    collections$ = new BehaviorSubject<Array<UUID | undefined>>([undefined]);
-    activeCollection$ = new BehaviorSubject(0);
+    collections: Array<UUID | undefined> = [undefined];
 
-    constructor() {}
+    selectedCollection = 0;
 
-    selectCollection(index: number, collectionId: UUID): void {
-        let collections = this.collections$.getValue();
-        collections = collections.splice(0, index + 1);
-        collections.push(collectionId);
+    selectedPortal!: Portal<any>;
 
-        this.activeCollection$.next(index + 1);
-        this.collections$.next(collections);
+    constructor() {
+        this.setPortal(undefined);
+    }
+
+    selectCollection(collectionId: UUID): void {
+        this.collections = this.collections.splice(0, this.selectedCollection + 1);
+        this.collections.push(collectionId);
+        this.selectedCollection += 1;
+
+        this.setPortal(collectionId);
     }
 
     back(): void {
-        const current = this.activeCollection$.getValue();
-        if (current > 0) {
-            this.activeCollection$.next(current - 1);
+        if (this.selectedCollection > 0) {
+            this.selectedCollection -= 1;
+            const id = this.collections[this.selectedCollection];
+
+            this.setPortal(id);
         }
     }
 
     forward(): void {
-        const current = this.activeCollection$.getValue();
-        const collections = this.collections$.getValue();
-        if (current < collections.length - 1) {
-            this.activeCollection$.next(current + 1);
+        if (this.selectedCollection < this.collections.length - 1) {
+            this.selectedCollection += 1;
+            const id = this.collections[this.selectedCollection];
+
+            this.setPortal(id);
         }
     }
 
-    getCollectionCount(): number {
-        return this.collections$.getValue().length;
+    private setPortal(uuid?: UUID): void {
+        this.selectedPortal = new ComponentPortal(LayerCollectionListComponent, null, this.createInjector(uuid));
+    }
+
+    private createInjector(uuid?: UUID): Injector {
+        return Injector.create({
+            providers: [
+                {
+                    provide: CONTEXT_TOKEN,
+                    useValue: {uuid, selectListener: (selection: UUID) => this.selectCollection(selection)},
+                },
+            ],
+        });
     }
 }

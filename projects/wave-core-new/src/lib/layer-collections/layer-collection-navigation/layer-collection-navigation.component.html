@@ -1,5 +1,5 @@
 <wave-sidenav-header>Layer Collection</wave-sidenav-header>
-<button mat-button (click)="back()" matTooltip="Navigate Back" matTooltipPosition="after" [disabled]="(activeCollection$ | async) === 0">
+<button mat-button (click)="back()" matTooltip="Navigate Back" matTooltipPosition="after" [disabled]="selectedCollection === 0">
     <mat-icon>arrow_back</mat-icon>
 </button>
 
@@ -8,17 +8,11 @@
     (click)="forward()"
     matTooltip="Navigate Forward"
     matTooltipPosition="after"
-    [disabled]="(activeCollection$ | async) === getCollectionCount() - 1"
+    [disabled]="selectedCollection === collections.length - 1"
 >
     <mat-icon>arrow_forward</mat-icon>
 </button>
 
-<div *ngFor="let collection of collections$ | async; index as i">
-    <div *ngIf="i === (activeCollection$ | async)" style="height: 400px">
-        <wave-layer-collection-list
-            *ngIf="i === (activeCollection$ | async)"
-            [collection]="collection"
-            (childCollectionSelection)="selectCollection(i, $event)"
-        ></wave-layer-collection-list>
-    </div>
+<div class="portal-outlet">
+    <ng-template [cdkPortalOutlet]="selectedPortal"></ng-template>
 </div>
