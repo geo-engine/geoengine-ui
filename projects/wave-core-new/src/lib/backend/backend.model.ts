@@ -508,3 +508,27 @@ export interface GeoEngineError {
     readonly error: string;
     readonly message: string;
 }
+
+export interface LayerCollectionItemDict {
+    type: 'collection' | 'layer';
+    id: UUID;
+    name: string;
+    description: string;
+}
+
+export interface LayerCollectionDict extends LayerCollectionItemDict {
+    type: 'collection';
+}
+
+export interface LayerCollectionItemLayerDict extends LayerCollectionItemDict {
+    type: 'layer';
+    workflow: UUID;
+}
+
+export interface LayerCollectionLayerDict {
+    id: UUID;
+    name: string;
+    description: string;
+    workflow: UUID;
+    symbology: SymbologyDict;
+}

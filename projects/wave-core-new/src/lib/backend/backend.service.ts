@@ -36,6 +36,8 @@ import {
     DataSetProviderListingDict,
     ProvenanceOutputDict,
     DatasetOrderByDict,
+    LayerCollectionItemDict,
+    LayerCollectionLayerDict,
 } from './backend.model';
 
 @Injectable({
@@ -333,6 +335,39 @@ export class BackendService {
 
         return this.http.get<Array<DataSetProviderListingDict>>(this.config.API_URL + '/providers', {
             params: params.httpParams,
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    getLayerCollectionItems(
+        sessionId: UUID,
+        collection: UUID,
+        offset: number = 0,
+        limit: number = 20,
+    ): Observable<Array<LayerCollectionItemDict>> {
+        const params = new NullDiscardingHttpParams();
+        params.setMapped('offset', offset, (r) => r.toString());
+        params.setMapped('limit', limit, (r) => r.toString());
+
+        return this.http.get<Array<LayerCollectionItemDict>>(this.config.API_URL + `/layers/${collection}`, {
+            params: params.httpParams,
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    getRootLayerCollectionItems(sessionId: UUID, offset: number = 0, limit: number = 20): Observable<Array<LayerCollectionItemDict>> {
+        const params = new NullDiscardingHttpParams();
+        params.setMapped('offset', offset, (r) => r.toString());
+        params.setMapped('limit', limit, (r) => r.toString());
+
+        return this.http.get<Array<LayerCollectionItemDict>>(this.config.API_URL + '/layers', {
+            params: params.httpParams,
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    getLayerCollectionLayer(sessionId: UUID, layer: UUID): Observable<LayerCollectionLayerDict> {
+        return this.http.get<LayerCollectionLayerDict>(this.config.API_URL + `/layer/${layer}`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
