@@ -44,7 +44,6 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     dataSource = new FeatureDataSource();
     displayedColumns: Array<string> = [];
     featureColumns: Array<string> = [];
-    displayType: String = ''; // points, polygons, etc...
 
     protected layerDataSubscription?: Subscription = undefined;
     protected selectedFeatureSubscription?: Subscription = undefined;
@@ -122,7 +121,6 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     }
 
     processVectorLayer(_layer: VectorLayer, metadata: VectorLayerMetadata, data: VectorData): void {
-        this.displayType = metadata.dataType.resultType.code.toString();
         this.featureColumns = metadata.columns.keySeq().toArray();
         this.displayedColumns = ['_____select', 'coordinates', 'start', 'end'].concat(this.featureColumns);
         this.dataSource.data = data.data;
@@ -172,6 +170,42 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         }
     }
 
+    xCoords: string[] = [];
+    yCoords: string[] = [];
+    readCoordinates(geometry: OlFeature): void { 
+        const type: String = geometry.getGeometry()?.getType();
+        console.log(type);
+        switch (type) {
+        case "Polygon":
+        case "MultiPolygon":
+            const po: OlPoint = <OlPoint>geometry.getGeometry();
+            const l = po.getCoordinates().length;
+            let allCoords: string[] = [];
+            for (let i = 0; i < l; i++) {
+            const coord = po.getCoordinates()[i].toString().split(',');
+            allCoords = allCoords.concat(coord);
+            }
+            for (let i = 0; i < allCoords.length - 1; i += 2) {
+            this.xCoords.push(allCoords[i]);
+            this.yCoords.push(allCoords[i + 1]);
+            }
+            break;
+        case "Point":
+            const p: OlPoint = <OlPoint>geometry.getGeometry();
+            this.xCoords = p.getCoordinates()[0].toString().split(',');
+            this.yCoords = p.getCoordinates()[1].toString().split(',');
+            console.log("Lengths: " + this.xCoords.length + ', ' + this.yCoords.length);
+            break;
+        default:
+            break;
+        }
+    }
+
+    onCellClick(output: OlFeature): void {
+        this.readCoordinates(output);
+        this.dialog.open(FullDisplayComponent, {data: {xStrings: this.xCoords, yStrings: this.yCoords}})
+    }
+
     readTimePropertyStart(geometry: OlFeature): string {
         let minimum: string = '-262144-01-01T00:00:00+00:00';
         let result: string = geometry['values_']['start'];
@@ -183,11 +217,6 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         let result: string = geometry['values_']['start'];
         return (result == maximum ? "∞" : result);
     }
-
-    onCellClick(output: OlFeature): void {
-        this.dialog.open(FullDisplayComponent, {data: {coordDisplay: output, type: this.displayType}})
-    }
-
 
     select(feature: OlFeature<OlGeometry>, select: boolean): void {
         if (select) {
