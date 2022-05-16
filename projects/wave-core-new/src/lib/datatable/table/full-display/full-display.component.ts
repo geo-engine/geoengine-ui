@@ -26,7 +26,7 @@ export class FullDisplayComponent implements OnInit {
     this.yCoords = this.data.yStrings;
   }
 
-  copyToClipboard(): void {
+  copyToClipboard(): void { // TODO copy as alternating between x and y coordinates
     const xString: string = this.xCoords.toString();
     const yString: string = this.yCoords.toString();
     const toCopy: string = `X: ${xString}, Y: ${yString}`;

@@ -11,15 +11,15 @@ import {
     SimpleChanges,
     ChangeDetectorRef,
 } from '@angular/core';
-import {MatPaginator} from '@angular/material/paginator';
-import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
-import {RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metadata.model';
-import {Layer, RasterLayer, VectorLayer} from '../../layers/layer.model';
-import {ResultTypes} from '../../operators/result-type.model';
-import {Feature as OlFeature} from 'ol';
-import {FeatureSelection, ProjectService} from '../../project/project.service';
-import {VectorData} from '../../layers/layer-data.model';
-import {DataSource} from '@angular/cdk/collections';
+import { MatPaginator } from '@angular/material/paginator';
+import { combineLatest, Observable, Subject, Subscription } from 'rxjs';
+import { RasterLayerMetadata, VectorLayerMetadata } from '../../layers/layer-metadata.model';
+import { Layer, RasterLayer, VectorLayer } from '../../layers/layer.model';
+import { ResultTypes } from '../../operators/result-type.model';
+import { Feature as OlFeature } from 'ol';
+import { FeatureSelection, ProjectService } from '../../project/project.service';
+import { VectorData } from '../../layers/layer-data.model';
+import { DataSource } from '@angular/cdk/collections';
 import OlGeometry from 'ol/geom/Geometry';
 import OlPoint from 'ol/geom/Point';
 import OlPolygon from 'ol/geom/Polygon';
@@ -53,7 +53,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         protected readonly projectService: ProjectService,
         protected readonly hostElement: ElementRef<HTMLElement>,
         protected readonly changeDetectorRef: ChangeDetectorRef,
-    ) {}
+    ) { }
 
     ngOnInit(): void {
         if (this.layer) {
@@ -148,62 +148,48 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     }
 
     coordinateFromGeometry(geometry: OlFeature): string {
-        const type: string = geometry.getGeometry()?.getType();
-        switch (type) {
-            case "Polygon":
-                const po: OlPolygon = <OlPolygon>geometry.getGeometry();
-                const x: string = po.getCoordinates()[0][0][0].toString();
-                const y: string = po.getCoordinates()[0][0][1].toString();
-                return `${x}, ${y} ...`;
-            case "Point":
-            case "MultiPolygon":
-                const maxLength: number = 30; // The maximum displayed of a coordinate (is 30 appropriate?)
-                const p: OlPoint = <OlPoint>geometry.getGeometry();
-                let xCoord: string = p.getCoordinates()[0].toString();
-                let yCoord: string = p.getCoordinates()[1].toString();
-                xCoord = (xCoord.length > maxLength ? xCoord.substring(0,maxLength) + " ... " : xCoord); // Truncating displayed digits
-                yCoord = (yCoord.length > maxLength ? yCoord.substring(0, maxLength) + " ... " : yCoord);
-                let result: string = ` ${xCoord}, ${yCoord} `
-                return result;
-            default:
-                return "N/A";
-        }
+        const coords: string[][] = this.readCoordinates(geometry);
+        const contd: string = (coords[0].length > 1 ? '...' : '');
+        const output: string = ` ${coords[0][0]}, ${coords[1][0]} ${contd}`;
+        return output;
     }
 
-    xCoords: string[] = [];
-    yCoords: string[] = [];
-    readCoordinates(geometry: OlFeature): void { 
+    readCoordinates(geometry: OlFeature): string[][] {
+        let coords: string[][] = [];
+        let xCoords:string[] = [];
+        let yCoords:string[] = [];
         const type: String = geometry.getGeometry()?.getType();
-        console.log(type);
         switch (type) {
-        case "Polygon":
-        case "MultiPolygon":
-            const po: OlPoint = <OlPoint>geometry.getGeometry();
-            const l = po.getCoordinates().length;
-            let allCoords: string[] = [];
-            for (let i = 0; i < l; i++) {
-            const coord = po.getCoordinates()[i].toString().split(',');
-            allCoords = allCoords.concat(coord);
-            }
-            for (let i = 0; i < allCoords.length - 1; i += 2) {
-            this.xCoords.push(allCoords[i]);
-            this.yCoords.push(allCoords[i + 1]);
-            }
-            break;
-        case "Point":
-            const p: OlPoint = <OlPoint>geometry.getGeometry();
-            this.xCoords = p.getCoordinates()[0].toString().split(',');
-            this.yCoords = p.getCoordinates()[1].toString().split(',');
-            console.log("Lengths: " + this.xCoords.length + ', ' + this.yCoords.length);
-            break;
-        default:
-            break;
+            case "Polygon":
+            case "MultiPolygon":
+                const poly: OlPolygon = <OlPolygon>geometry.getGeometry();
+                const l = poly.getCoordinates().length;
+                let allCoords: string[] = [];
+                for (let i = 0; i < l; i++) {
+                    const coord = poly.getCoordinates()[i].toString().split(',');
+                    allCoords = allCoords.concat(coord);
+                }
+                for (let i = 0; i < allCoords.length - 1; i += 2) {
+                    xCoords.push(allCoords[i]);
+                    yCoords.push(allCoords[i + 1]);
+                }
+                break;
+            case "Point":
+                const p: OlPoint = <OlPoint>geometry.getGeometry();
+                xCoords = p.getCoordinates()[0].toString().split(',');
+                yCoords = p.getCoordinates()[1].toString().split(',');
+                break;
+            default:
+                break;
         }
+        coords[0] = xCoords;
+        coords[1] = yCoords;
+        return coords;
     }
 
     onCellClick(output: OlFeature): void {
-        this.readCoordinates(output);
-        this.dialog.open(FullDisplayComponent, {data: {xStrings: this.xCoords, yStrings: this.yCoords}})
+        const coords: string[][] = this.readCoordinates(output);
+        this.dialog.open(FullDisplayComponent, { data: { xStrings: coords[0], yStrings: coords[1] } })
     }
 
     readTimePropertyStart(geometry: OlFeature): string {
