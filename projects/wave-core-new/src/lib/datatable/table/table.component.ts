@@ -159,8 +159,8 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
                 return `${x}, ${y} ...`;
             case "Point":
             case "MultiPolygon":
-                let maxLength: number = 30; // The maximum displayed of a coordinate (is 30 appropriate?)
-                let p: OlPoint = <OlPoint>geometry.getGeometry();
+                const maxLength: number = 30; // The maximum displayed of a coordinate (is 30 appropriate?)
+                const p: OlPoint = <OlPoint>geometry.getGeometry();
                 let xCoord: string = p.getCoordinates()[0].toString();
                 let yCoord: string = p.getCoordinates()[1].toString();
                 xCoord = (xCoord.length > maxLength ? xCoord.substring(0,maxLength) + " ... " : xCoord); // Truncating displayed digits

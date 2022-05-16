@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy, Inject } from '@angular/cor
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Feature as OlFeature } from 'ol';
 import OlPoint from 'ol/geom/Point';
+import OlPolygon from 'ol/geom/Polygon';
 import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
@@ -24,7 +25,9 @@ export class FullDisplayComponent implements OnInit {
     this.readCoordinates(this.data.coordDisplay);
   }
 
-  readCoordinates(geometry: OlFeature): void {
+  readCoordinates(geometry: OlFeature): void { // TODO refactor to getType() and switch
+    const type: String = geometry.getGeometry()?.getType();
+    console.log(type);
     const p: OlPoint = <OlPoint>geometry.getGeometry();
     if (this.data.type == 'points') {
       this.xCoords = p.getCoordinates()[0].toString().split(',');
