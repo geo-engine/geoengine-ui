@@ -251,6 +251,12 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     selectSpecies(species: string): void {
         this.selectedSpecies = species;
 
+        if (!this.selectedSpecies) {
+            this.dataSelectionService.resetSpeciesLayer().subscribe();
+
+            return;
+        }
+
         const workflow: WorkflowDict = {
             type: 'Vector',
             operator: {

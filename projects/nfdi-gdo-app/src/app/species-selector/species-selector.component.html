@@ -36,6 +36,7 @@
                     #waveAutocompleteSelect="waveAutocompleteSelect"
                 ></ngx-mat-select-search>
             </mat-option>
+            <mat-option>– Keine Auswahl –</mat-option>
             <mat-option *ngFor="let species of waveAutocompleteSelect.filteredValues | async" [value]="species">
                 {{ species }}
             </mat-option>

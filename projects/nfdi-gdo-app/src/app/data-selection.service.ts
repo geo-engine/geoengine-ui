@@ -142,4 +142,18 @@ export class DataSelectionService {
             tap(() => this.speciesLayer.next(layer)),
         );
     }
+
+    resetSpeciesLayer(): Observable<void> {
+        return this.speciesLayer.pipe(
+            first(),
+            mergeMap((currentLayer) => {
+                if (currentLayer) {
+                    return this.projectService.removeLayer(currentLayer);
+                } else {
+                    return of(undefined);
+                }
+            }),
+            tap(() => this.speciesLayer.next(undefined)),
+        );
+    }
 }
