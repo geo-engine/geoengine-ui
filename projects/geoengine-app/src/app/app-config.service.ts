@@ -13,8 +13,16 @@ interface Components {
     };
 }
 
+interface Branding {
+    readonly LOGO_URL: string;
+    readonly LOGO_ICON_URL: string;
+    readonly LOGO_ALT_URL: string;
+    readonly PAGE_TITLE: string;
+}
+
 interface AppConfigStructure extends WaveConfigStructure {
     readonly COMPONENTS: Components;
+    readonly BRANDING: Branding;
 }
 
 const APP_CONFIG_DEFAULTS = mergeDeep(WAVE_DEFAULT_CONFIG, {
@@ -26,6 +34,12 @@ const APP_CONFIG_DEFAULTS = mergeDeep(WAVE_DEFAULT_CONFIG, {
             AVAILABLE: true,
         },
     },
+    BRANDING: {
+        LOGO_URL: 'assets/geoengine-white.svg',
+        LOGO_ICON_URL: 'assets/geoengine-favicon-white.svg',
+        LOGO_ALT_URL: 'assets/geoengine.svg',
+        PAGE_TITLE: 'Geo Engine',
+    },
 }) as AppConfigStructure;
 
 @Injectable()
@@ -34,6 +48,10 @@ export class AppConfig extends Config {
 
     get COMPONENTS(): Components {
         return this.config.COMPONENTS;
+    }
+
+    get BRANDING(): Branding {
+        return this.config.BRANDING;
     }
 
     load(): Promise<void> {

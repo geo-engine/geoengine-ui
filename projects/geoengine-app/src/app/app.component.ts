@@ -1,8 +1,9 @@
-import {ChangeDetectionStrategy, Component, ViewContainerRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject, ViewContainerRef} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
-import {DomSanitizer} from '@angular/platform-browser';
+import {DomSanitizer, Title} from '@angular/platform-browser';
 import {Router} from '@angular/router';
-import {UserService} from 'wave-core';
+import {Config, UserService} from 'wave-core';
+import {AppConfig} from './app-config.service';
 
 @Component({
     selector: 'wave-app-root',
@@ -16,30 +17,34 @@ export class AppComponent {
         private readonly sanitizer: DomSanitizer,
         private readonly userService: UserService,
         private readonly router: Router,
+        @Inject(Config) readonly config: AppConfig,
+        private readonly titleService: Title,
         private readonly vcRef: ViewContainerRef,
     ) {
         this.registerIcons();
 
         this.setupLogoutCallback();
+
+        this.titleService.setTitle(this.config.BRANDING.PAGE_TITLE);
     }
 
     private registerIcons(): void {
         this.iconRegistry.addSvgIconInNamespace(
             'geoengine',
             'logo',
-            this.sanitizer.bypassSecurityTrustResourceUrl('assets/geoengine-white.svg'),
+            this.sanitizer.bypassSecurityTrustResourceUrl(this.config.BRANDING.LOGO_URL),
         );
 
         this.iconRegistry.addSvgIconInNamespace(
             'geoengine',
             'favicon-white',
-            this.sanitizer.bypassSecurityTrustResourceUrl('assets/geoengine-favicon-white.svg'),
+            this.sanitizer.bypassSecurityTrustResourceUrl(this.config.BRANDING.LOGO_ICON_URL),
         );
 
         this.iconRegistry.addSvgIconInNamespace(
             'geoengine',
-            'logo-green',
-            this.sanitizer.bypassSecurityTrustResourceUrl('assets/geoengine.svg'),
+            'logo-alt',
+            this.sanitizer.bypassSecurityTrustResourceUrl(this.config.BRANDING.LOGO_ALT_URL),
         );
 
         // used for navigation
