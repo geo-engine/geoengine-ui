@@ -17,9 +17,11 @@ export class DataSelectionService {
 
     readonly rasterLayer = new BehaviorSubject<RasterLayer | undefined>(undefined);
     readonly intensityLayer = new BehaviorSubject<RasterLayer | undefined>(undefined);
-    readonly speciesLayer = new BehaviorSubject<VectorLayer | undefined>(undefined);
+    readonly speciesLayer1 = new BehaviorSubject<VectorLayer | undefined>(undefined);
+    readonly speciesLayer2 = new BehaviorSubject<VectorLayer | undefined>(undefined);
 
-    readonly speciesLoadingState$: Observable<'query' | 'determinate'>;
+    readonly species1LoadingState$: Observable<'query' | 'determinate'>;
+    readonly species2LoadingState$: Observable<'query' | 'determinate'>;
 
     readonly timeSteps = new BehaviorSubject<Array<Time>>([new Time(moment.utc())]);
     readonly timeFormat = new BehaviorSubject<string>('YYYY');
@@ -27,8 +29,8 @@ export class DataSelectionService {
     readonly dataRange = new BehaviorSubject<DataRange>({min: 0, max: 1});
 
     constructor(private readonly projectService: ProjectService) {
-        this.layers = combineLatest([this.rasterLayer, this.intensityLayer, this.speciesLayer]).pipe(
-            map(([rasterLayer, intensityLayer, speciesLayer]) => {
+        this.layers = combineLatest([this.rasterLayer, this.intensityLayer, this.speciesLayer2, this.speciesLayer1]).pipe(
+            map(([rasterLayer, intensityLayer, speciesLayer2, speciesLayer1]) => {
                 const layers = [];
                 if (rasterLayer) {
                     layers.push(rasterLayer);
@@ -36,14 +38,28 @@ export class DataSelectionService {
                 if (intensityLayer) {
                     layers.push(intensityLayer);
                 }
-                if (speciesLayer) {
-                    layers.push(speciesLayer);
+                if (speciesLayer2) {
+                    layers.push(speciesLayer2);
+                }
+                if (speciesLayer1) {
+                    layers.push(speciesLayer1);
                 }
                 return layers;
             }),
         );
 
-        this.speciesLoadingState$ = this.speciesLayer.pipe(
+        this.species1LoadingState$ = this.speciesLayer1.pipe(
+            mergeMap((layer) => {
+                if (layer) {
+                    return this.projectService.getLayerStatusStream(layer);
+                } else {
+                    return of(LoadingState.OK);
+                }
+            }),
+            map((status) => (status === LoadingState.LOADING ? 'query' : 'determinate')),
+        );
+
+        this.species2LoadingState$ = this.speciesLayer2.pipe(
             mergeMap((layer) => {
                 if (layer) {
                     return this.projectService.getLayerStatusStream(layer);
@@ -127,8 +143,8 @@ export class DataSelectionService {
         );
     }
 
-    setSpeciesLayer(layer: VectorLayer): Observable<void> {
-        return this.speciesLayer.pipe(
+    setSpecies1Layer(layer: VectorLayer): Observable<void> {
+        return this.speciesLayer1.pipe(
             first(),
             mergeMap((currentLayer) => {
                 if (currentLayer) {
@@ -137,9 +153,53 @@ export class DataSelectionService {
                     return of(undefined);
                 }
             }),
-            tap(() => this.speciesLayer.next(undefined)),
+            tap(() => this.speciesLayer1.next(undefined)),
             mergeMap(() => this.projectService.addLayer(layer)),
-            tap(() => this.speciesLayer.next(layer)),
+            tap(() => this.speciesLayer1.next(layer)),
+        );
+    }
+
+    resetSpecies1Layer(): Observable<void> {
+        return this.speciesLayer1.pipe(
+            first(),
+            mergeMap((currentLayer) => {
+                if (currentLayer) {
+                    return this.projectService.removeLayer(currentLayer);
+                } else {
+                    return of(undefined);
+                }
+            }),
+            tap(() => this.speciesLayer1.next(undefined)),
+        );
+    }
+
+    setSpecies2Layer(layer: VectorLayer): Observable<void> {
+        return this.speciesLayer2.pipe(
+            first(),
+            mergeMap((currentLayer) => {
+                if (currentLayer) {
+                    return this.projectService.removeLayer(currentLayer);
+                } else {
+                    return of(undefined);
+                }
+            }),
+            tap(() => this.speciesLayer2.next(undefined)),
+            mergeMap(() => this.projectService.addLayer(layer)),
+            tap(() => this.speciesLayer2.next(layer)),
+        );
+    }
+
+    resetSpecies2Layer(): Observable<void> {
+        return this.speciesLayer2.pipe(
+            first(),
+            mergeMap((currentLayer) => {
+                if (currentLayer) {
+                    return this.projectService.removeLayer(currentLayer);
+                } else {
+                    return of(undefined);
+                }
+            }),
+            tap(() => this.speciesLayer2.next(undefined)),
         );
     }
 }
