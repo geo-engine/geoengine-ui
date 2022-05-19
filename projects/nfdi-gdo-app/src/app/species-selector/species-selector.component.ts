@@ -185,6 +185,11 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             name: 'Landnutzungstypen (2019 & 2020)',
             dataRange: [0, 60],
         },
+        {
+            id: 'bde4f21f-b935-4cd3-b7ed-1675aedfa026',
+            name: 'Anteil Gebiete „Natur- und Artenschutz“ an Gebietsfläche',
+            dataRange: [0, 100],
+        },
     ];
 
     plotSpecies = '';
