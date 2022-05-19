@@ -363,7 +363,8 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
 
     currentMonth = 1;
 
-    selectedSpecies?: string = undefined;
+    selectedDragonflySpecies?: string = undefined;
+    selectedFishSpecies?: string = undefined;
     selectedEnvironmentLayer?: EnvironmentLayer = undefined;
     selectedEnvironmentCitation = new BehaviorSubject<string>('');
 
@@ -371,6 +372,8 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     fishSpeciesLayer?: Layer = undefined;
     intensityLayer?: RasterLayer = undefined;
     environmentLayer?: Layer = undefined;
+
+    plotLayerSelection: 'dragonfly' | 'fish' = 'dragonfly';
 
     readonly startYear = START_YEAR;
     readonly endYear = END_YEAR;
@@ -426,9 +429,9 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     }
 
     selectDragonflySpecies(species: string): void {
-        this.selectedSpecies = species;
+        this.selectedDragonflySpecies = species;
 
-        if (!this.selectedSpecies) {
+        if (!this.selectedDragonflySpecies) {
             this.dataSelectionService.resetSpecies1Layer().subscribe();
 
             return;
@@ -505,9 +508,9 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     }
 
     selectFishSpecies(species: string): void {
-        this.selectedSpecies = species;
+        this.selectedFishSpecies = species;
 
-        if (!this.selectedSpecies) {
+        if (!this.selectedFishSpecies) {
             this.dataSelectionService.resetSpecies2Layer().subscribe();
 
             return;
@@ -699,17 +702,36 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     }
 
     computePlot(): void {
-        if (!this.selectedSpecies || !this.selectedEnvironmentLayer || !this.selectedEnvironmentDataset) {
+        if (
+            (!this.selectedFishSpecies && !this.selectDragonflySpecies) ||
+            !this.selectedEnvironmentLayer ||
+            !this.selectedEnvironmentDataset
+        ) {
             return;
+        }
+
+        let speciesLayer$: Observable<VectorLayer | undefined>;
+        let selectedSpecies: string | undefined;
+
+        if (!this.selectedDragonflySpecies) {
+            speciesLayer$ = this.dataSelectionService.speciesLayer2;
+            selectedSpecies = this.selectedFishSpecies;
+        } else if (!this.selectFishSpecies) {
+            speciesLayer$ = this.dataSelectionService.speciesLayer1;
+            selectedSpecies = this.selectedDragonflySpecies;
+        } else if (this.plotLayerSelection === 'dragonfly') {
+            speciesLayer$ = this.dataSelectionService.speciesLayer1;
+            selectedSpecies = this.selectedDragonflySpecies;
+        } /* if (this.plotLayerSelection === 'fish') */ else {
+            speciesLayer$ = this.dataSelectionService.speciesLayer2;
+            selectedSpecies = this.selectedFishSpecies;
         }
 
         combineLatest([
             this.dataSelectionService.rasterLayer.pipe(
                 mergeMap<RasterLayer | undefined, Observable<RasterLayer>>((layer) => (layer ? of(layer) : of())),
             ),
-            this.dataSelectionService.speciesLayer1.pipe(
-                mergeMap<VectorLayer | undefined, Observable<VectorLayer>>((layer) => (layer ? of(layer) : of())),
-            ),
+            speciesLayer$.pipe(mergeMap<VectorLayer | undefined, Observable<VectorLayer>>((layer) => (layer ? of(layer) : of()))),
         ])
             .pipe(
                 first(),
@@ -717,7 +739,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                     this.plotLoading.next(true);
                     this.plotData.next(undefined);
 
-                    this.plotSpecies = this.selectedSpecies ? this.selectedSpecies : '';
+                    this.plotSpecies = selectedSpecies ?? '';
                     this.plotEnvironmentLayer = this.selectedEnvironmentLayer ? this.selectedEnvironmentLayer.name : '';
                 }),
                 mergeMap(([rasterLayer, speciesLayer]) =>

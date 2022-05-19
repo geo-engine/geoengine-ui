@@ -58,10 +58,10 @@
 
     <div class="spacer"></div>
 
-    <mat-expansion-panel class="species-info" *ngIf="getSpeciesInfo(selectedSpecies) as speciesInfo">
+    <mat-expansion-panel class="species-info" *ngIf="getSpeciesInfo(selectedDragonflySpecies) as speciesInfo">
         <mat-expansion-panel-header>Spezies-Info</mat-expansion-panel-header>
 
-        <img [src]="speciesInfo.imageSrc" [alt]="selectedSpecies" />
+        <img [src]="speciesInfo.imageSrc" [alt]="selectedDragonflySpecies" />
         <p class="mat-caption" *ngIf="speciesInfo.imageRef">({{ speciesInfo.imageRef }})</p>
 
         <p class="info-text" [innerHtml]="speciesInfo.text"></p>
@@ -167,7 +167,20 @@
         und die Werteverteilung darstellt. Maßgeblich ist der ausgewählte Monat und das Jahr.
     </p>
 
-    <button [disabled]="!selectedSpecies || !selectedEnvironmentLayer" mat-stroked-button id="compute-plot" (click)="computePlot()">
+    <mat-form-field *ngIf="dragonflySpeciesLayer && fishSpeciesLayer">
+        <mat-label>Welcher Beobachtungslayer?</mat-label>
+        <mat-select [(value)]="plotLayerSelection">
+            <mat-option [value]="'dragonfly'">Libellen</mat-option>
+            <mat-option [value]="'fish'">Fische</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <button
+        [disabled]="(!selectedDragonflySpecies && !selectedFishSpecies) || !selectedEnvironmentLayer"
+        mat-stroked-button
+        id="compute-plot"
+        (click)="computePlot()"
+    >
         Berechne Plot
     </button>
 
