@@ -448,7 +448,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                 type: 'TimeProjection',
                 params: {
                     step: {
-                        granularity: 'Years',
+                        granularity: 'years',
                         step: 1,
                     },
                 },
@@ -527,7 +527,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                 type: 'TimeProjection',
                 params: {
                     step: {
-                        granularity: 'Years',
+                        granularity: 'years',
                         step: 1,
                     },
                 },
