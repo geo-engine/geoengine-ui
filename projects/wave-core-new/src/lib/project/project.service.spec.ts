@@ -131,7 +131,7 @@ describe('test project methods in projectService', () => {
                         } as STRectangleDict,
                         timeStep: {
                             step: 1,
-                            granularity: 'Months',
+                            granularity: 'months',
                         } as TimeStepDict,
                     },
                     'ffffffff-ffff-4fff-afff-ffffffffffff',

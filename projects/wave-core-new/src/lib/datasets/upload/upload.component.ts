@@ -15,6 +15,7 @@ import {
     OgrSourceDatasetTimeTypeDict,
     OgrSourceDurationSpecDict,
     OgrSourceTimeFormatDict,
+    TimeStepGranularityDict,
     UUID,
 } from '../../backend/backend.model';
 import {NotificationService} from '../../notification.service';
@@ -34,7 +35,8 @@ export class UploadComponent {
     timeFormats = ['auto', 'unixTimeStamp', 'custom'];
     timestampTypes = ['epochSeconds', 'epochMilliseconds'];
     errorHandlings = ['ignore', 'abort'];
-    readonly timeGranularityOptions = ['Millis', 'Seconds', 'Minutes', 'Hours', 'Days', 'Months', 'Years'];
+    readonly timeGranularityOptions: Array<TimeStepGranularityDict> = ['millis', 'seconds', 'minutes', 'hours', 'days', 'months', 'years'];
+    readonly defaultTimeGranularity: TimeStepGranularityDict = 'seconds';
 
     @ViewChild(MatStepper) stepper!: MatStepper;
 
@@ -67,7 +69,7 @@ export class UploadComponent {
             timeDurationColumn: new FormControl(''),
             timeDurationValue: new FormControl(1), // TODO: validate is positive integer
             timeDurationValueType: new FormControl('infinite'),
-            timeDurationGranularity: new FormControl('Seconds'),
+            timeDurationGranularity: new FormControl(this.defaultTimeGranularity),
             timeEndColumn: new FormControl(''),
             timeEndFormat: new FormControl(''),
             timeEndFormatCustom: new FormControl(''), // TODO: validate format

@@ -6,7 +6,7 @@ import {ProjectService} from '../../../project/project.service';
 import {WaveValidators} from '../../../util/form.validators';
 import {map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
-import {WorkflowDict} from '../../../backend/backend.model';
+import {TimeStepGranularityDict, WorkflowDict} from '../../../backend/backend.model';
 import {Observable} from 'rxjs';
 import {TemporalRasterAggregationDict} from '../../../backend/operator.model';
 
@@ -19,7 +19,8 @@ import {TemporalRasterAggregationDict} from '../../../backend/operator.model';
 export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly inputTypes = [ResultTypes.RASTER];
 
-    readonly timeGranularityOptions = ['Millis', 'Seconds', 'Minutes', 'Hours', 'Days', 'Months', 'Years'];
+    readonly timeGranularityOptions: Array<TimeStepGranularityDict> = ['millis', 'seconds', 'minutes', 'hours', 'days', 'months', 'years'];
+    readonly defaultTimeGranularity: TimeStepGranularityDict = 'months';
     readonly aggregations = ['Min', 'Max', 'First', 'Last', 'Mean'];
 
     form: FormGroup;
@@ -33,7 +34,7 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
         this.form = this.formBuilder.group({
             name: ['', [Validators.required, WaveValidators.notOnlyWhitespace]],
             layer: [undefined, Validators.required],
-            granularity: ['Months', Validators.required],
+            granularity: [this.defaultTimeGranularity, Validators.required],
             windowSize: [1, Validators.required], // TODO: check > 0
             aggregation: [this.aggregations[0], Validators.required],
             ignoreNoData: [false],
