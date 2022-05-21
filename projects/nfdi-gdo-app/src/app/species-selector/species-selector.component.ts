@@ -21,6 +21,7 @@ import {
     WorkflowDict,
     TimeProjectionDict,
     OgrSourceDict,
+    ReprojectionDict,
 } from 'wave-core';
 import {BehaviorSubject, combineLatest, combineLatestWith, first, mergeMap, Observable, of, Subscription, tap} from 'rxjs';
 import {DataSelectionService} from '../data-selection.service';
@@ -751,10 +752,39 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                     combineLatest([
                         this.projectService.getWorkflow(rasterLayer.workflowId),
                         this.projectService.getWorkflow(speciesLayer.workflowId),
+                        this.projectService.getLayerMetadata(rasterLayer),
+                        this.projectService.getLayerMetadata(speciesLayer),
+                        this.projectService.getSpatialReferenceStream(),
                     ]),
                 ),
-                mergeMap(([rasterWorkflow, speciesWorkflow]) =>
-                    this.projectService.registerWorkflow({
+                mergeMap(([rasterWorkflow, speciesWorkflow, rasterMetadata, vectorMetadata, crs]) => {
+                    let rasterOperator = rasterWorkflow.operator;
+                    if (!rasterMetadata.spatialReference.equals(crs)) {
+                        rasterOperator = {
+                            type: 'Reprojection',
+                            params: {
+                                targetSpatialReference: crs.srsString,
+                            },
+                            sources: {
+                                source: rasterOperator,
+                            },
+                        } as ReprojectionDict;
+                    }
+
+                    let vectorOperator = speciesWorkflow.operator;
+                    if (!vectorMetadata.spatialReference.equals(crs)) {
+                        vectorOperator = {
+                            type: 'Reprojection',
+                            params: {
+                                targetSpatialReference: crs.srsString,
+                            },
+                            sources: {
+                                source: vectorOperator,
+                            },
+                        } as ReprojectionDict;
+                    }
+
+                    return this.projectService.registerWorkflow({
                         type: 'Vector',
                         operator: {
                             type: 'RasterVectorJoin',
@@ -764,12 +794,12 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                                 featureAggregation: 'first',
                             },
                             sources: {
-                                rasters: [rasterWorkflow.operator],
-                                vector: speciesWorkflow.operator,
+                                rasters: [rasterOperator],
+                                vector: vectorOperator,
                             },
                         } as RasterVectorJoinDict,
-                    }),
-                ),
+                    });
+                }),
                 mergeMap((workflowId) => combineLatest([this.projectService.getWorkflow(workflowId), this.dataSelectionService.dataRange])),
                 mergeMap(([workflow, dataRange]) =>
                     this.projectService.registerWorkflow({
