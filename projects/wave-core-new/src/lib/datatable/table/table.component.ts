@@ -22,6 +22,7 @@ import { VectorData } from '../../layers/layer-data.model';
 import { DataSource } from '@angular/cdk/collections';
 import OlGeometry from 'ol/geom/Geometry';
 import OlPoint from 'ol/geom/Point';
+import OlLines from 'ol/geom/LineString';
 import OlPolygon from 'ol/geom/Polygon';
 import { MatDialog } from '@angular/material/dialog';
 import { FullDisplayComponent } from './full-display/full-display.component';
@@ -160,13 +161,14 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
      * @returns A nested string[][] where index 0 of the outer array are x-Coordinates, index 1 are y-Coordinates
      */
     readCoordinates(geometry: OlFeature): string[][] {
-        let xCoords:string[] = [];
-        let yCoords:string[] = [];
+        let xCoords: string[] = [];
+        let yCoords: string[] = [];
         const type: String = geometry.getGeometry()?.getType();
-        // Treating each type separately is necessary because open layers stores data differently depending on type
         switch (type) {
             case "Polygon":
             case "MultiPolygon":
+            case "LineString":
+            case "MultiLineString":
                 const poly: OlPolygon = <OlPolygon>geometry.getGeometry();
                 const l = poly.getCoordinates().length;
                 let allCoords: string[] = [];
@@ -179,7 +181,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
                     yCoords.push(allCoords[i + 1]);
                 }
                 break;
-            case "Point":
+            case "Point": // Works with above (more complicated) method as well ... refactor?
                 const p: OlPoint = <OlPoint>geometry.getGeometry();
                 xCoords = p.getCoordinates()[0].toString().split(',');
                 yCoords = p.getCoordinates()[1].toString().split(',');
@@ -189,13 +191,10 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
                 yCoords.push('N/A')
                 break;
         }
-        let coords: string[][] = [];
-        coords[0] = xCoords;
-        coords[1] = yCoords;
-        return coords;
+        return new Array(xCoords, yCoords);
     }
 
-    onFullDisplayClick(output: OlFeature): void { 
+    onFullDisplayClick(output: OlFeature): void {
         const coords: string[][] = this.readCoordinates(output);
         this.dialog.open(FullDisplayComponent, { data: { xStrings: coords[0], yStrings: coords[1] } })
     }
