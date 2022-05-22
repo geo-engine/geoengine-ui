@@ -11,10 +11,9 @@
         <span>{{ endYear }}</span>
     </div>
     <p>
-        Es wird ein Jahr ausgewählt, für den sämtliche Libellenbeobachtungen angezeigt werden. Die Beobachtungen werden auf dei Karte
-        räumlich zusammengefasst als Kreise dargestellt, wobei größere Kreise mehr Beobachtungspunkte (als Zahl im Kreis erkenntlich)
-        repräsentieren. Wird hineingezoomt, zerfallen einzelne Kreise in mehrere genauere Kreise, die weniger Beobachtungspunkte
-        repräsentieren.
+        Es wird ein Jahr ausgewählt, für den sämtliche Beobachtungen angezeigt werden. Die Beobachtungen werden auf dei Karte räumlich
+        zusammengefasst als Kreise dargestellt, wobei größere Kreise mehr Beobachtungspunkte (als Zahl im Kreis erkenntlich) repräsentieren.
+        Wird hineingezoomt, zerfallen einzelne Kreise in mehrere genauere Kreise, die weniger Beobachtungspunkte repräsentieren.
     </p>
 
     <mat-divider></mat-divider>
@@ -24,18 +23,21 @@
         Suche kann diese Liste nach bestimmten Arten durchsucht werden.
     </p>
 
+    <!-- Dragonfly -->
+
     <mat-form-field color="accent">
-        <mat-label>Artauswahl</mat-label>
-        <mat-select (valueChange)="selectSpecies($event)">
+        <mat-label>Artauswahl Libellen</mat-label>
+        <mat-select (valueChange)="selectDragonflySpecies($event)">
             <mat-option>
                 <ngx-mat-select-search
                     [formControl]="waveAutocompleteSelect.filterFormControl"
                     waveAutocompleteSelect
-                    [waveAutocompleteSelectAllValues]="species"
+                    [waveAutocompleteSelectAllValues]="dragonflySpecies"
                     [waveAutocompleteSelectSearchPredicate]="speciesPredicate"
                     #waveAutocompleteSelect="waveAutocompleteSelect"
                 ></ngx-mat-select-search>
             </mat-option>
+            <mat-option>– Keine Auswahl –</mat-option>
             <mat-option *ngFor="let species of waveAutocompleteSelect.filteredValues | async" [value]="species">
                 {{ species }}
             </mat-option>
@@ -43,33 +45,69 @@
     </mat-form-field>
 
     <mat-progress-bar
-        [mode]="dataSelectionService.speciesLoadingState$ | async | valueDefault: 'determinate'"
+        [mode]="dataSelectionService.species1LoadingState$ | async | valueDefault: 'determinate'"
         [value]="100"
         color="accent"
     ></mat-progress-bar>
 
-    <div *ngIf="speciesLayer">
+    <div *ngIf="dragonflySpeciesLayer">
         <div class="spacer"></div>
-        <wave-layer-list-element [layer]="speciesLayer" [menu]="false"></wave-layer-list-element>
+        <wave-layer-list-element [layer]="dragonflySpeciesLayer" [menu]="false"></wave-layer-list-element>
         <p class="mat-caption">AK Libellen NRW (Datenstand 2020)</p>
     </div>
 
     <div class="spacer"></div>
 
-    <mat-expansion-panel class="species-info" *ngIf="getSpeciesInfo(selectedSpecies) as speciesInfo">
+    <mat-expansion-panel class="species-info" *ngIf="getSpeciesInfo(selectedDragonflySpecies) as speciesInfo">
         <mat-expansion-panel-header>Spezies-Info</mat-expansion-panel-header>
 
-        <img [src]="speciesInfo.imageSrc" [alt]="selectedSpecies" />
+        <img [src]="speciesInfo.imageSrc" [alt]="selectedDragonflySpecies" />
         <p class="mat-caption" *ngIf="speciesInfo.imageRef">({{ speciesInfo.imageRef }})</p>
 
         <p class="info-text" [innerHtml]="speciesInfo.text"></p>
     </mat-expansion-panel>
 
+    <div class="spacer"></div>
+
+    <!-- Fish -->
+    <mat-form-field color="accent">
+        <mat-label>Artauswahl Fische</mat-label>
+        <mat-select (valueChange)="selectFishSpecies($event)">
+            <mat-option>
+                <ngx-mat-select-search
+                    [formControl]="waveAutocompleteSelect2.filterFormControl"
+                    waveAutocompleteSelect
+                    [waveAutocompleteSelectAllValues]="fishSpecies"
+                    [waveAutocompleteSelectSearchPredicate]="speciesPredicate"
+                    #waveAutocompleteSelect2="waveAutocompleteSelect"
+                ></ngx-mat-select-search>
+            </mat-option>
+            <mat-option>– Keine Auswahl –</mat-option>
+            <mat-option *ngFor="let species of waveAutocompleteSelect2.filteredValues | async" [value]="species">
+                {{ species }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-progress-bar
+        [mode]="dataSelectionService.species2LoadingState$ | async | valueDefault: 'determinate'"
+        [value]="100"
+        color="accent"
+    ></mat-progress-bar>
+
+    <div *ngIf="fishSpeciesLayer">
+        <div class="spacer"></div>
+        <wave-layer-list-element [layer]="fishSpeciesLayer" [menu]="false"></wave-layer-list-element>
+        <p class="mat-caption">Brunken, H. & Vatterrott, H.-R. (2020): Fischartenatlas von Deutschland und Österreich</p>
+    </div>
+
+    <div class="spacer"></div>
+
     <mat-divider></mat-divider>
 
     <div class="spacer"></div>
 
-    <p>Im Folgenden kann die Beprobungshäufigkeit optional mit eingeblendet werden.</p>
+    <p>Im Folgenden kann die Beprobungshäufigkeit der Libellen optional mit eingeblendet werden.</p>
 
     <div fxLayout="row" fxLayoutGap="1rem" fxLayoutAlign="space-between start">
         <div fxFlex>
@@ -129,7 +167,20 @@
         und die Werteverteilung darstellt. Maßgeblich ist der ausgewählte Monat und das Jahr.
     </p>
 
-    <button [disabled]="!selectedSpecies || !selectedEnvironmentLayer" mat-stroked-button id="compute-plot" (click)="computePlot()">
+    <mat-form-field *ngIf="dragonflySpeciesLayer && fishSpeciesLayer">
+        <mat-label>Welcher Beobachtungslayer?</mat-label>
+        <mat-select [(value)]="plotLayerSelection">
+            <mat-option [value]="'dragonfly'">Libellen</mat-option>
+            <mat-option [value]="'fish'">Fische</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <button
+        [disabled]="(!selectedDragonflySpecies && !selectedFishSpecies) || !selectedEnvironmentLayer"
+        mat-stroked-button
+        id="compute-plot"
+        (click)="computePlot()"
+    >
         Berechne Plot
     </button>
 

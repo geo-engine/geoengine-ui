@@ -261,7 +261,7 @@ export interface TimeStepDict {
     granularity: TimeStepGranularityDict;
 }
 
-export type TimeStepGranularityDict = 'Millis' | 'Seconds' | 'Minutes' | 'Hours' | 'Days' | 'Months' | 'Years';
+export type TimeStepGranularityDict = 'millis' | 'seconds' | 'minutes' | 'hours' | 'days' | 'months' | 'years';
 
 export interface DatasetDict {
     id: DatasetIdDict;
