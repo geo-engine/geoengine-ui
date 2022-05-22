@@ -13,7 +13,7 @@
             <th mat-header-cell *matHeaderCellDef>Coordinates </th>
             <td mat-cell id="coordCell" *matCellDef="let element" >
                 {{ coordinateFromGeometry(element) }}
-                <button mat-icon-button color="primary" aria-label="Display full coordinates" matTooltip="Display full coordinates" (click)="onCellClick(element)"><mat-icon>explore</mat-icon></button>
+                <button mat-icon-button color="primary" aria-label="Display full coordinates" matTooltip="Display full coordinates" (click)="onFullDisplayClick(element)"><mat-icon>explore</mat-icon></button>
             </td> 
         </ng-container>
 

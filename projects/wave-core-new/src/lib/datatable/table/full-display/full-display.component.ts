@@ -5,6 +5,9 @@ import OlPoint from 'ol/geom/Point';
 import OlPolygon from 'ol/geom/Polygon';
 import { Clipboard } from '@angular/cdk/clipboard';
 
+/**
+ * Opened as modal dialog to display a full set of coordinates and allow copying to clipboard
+ */
 @Component({
   selector: 'wave-full-display',
   templateUrl: './full-display.component.html',

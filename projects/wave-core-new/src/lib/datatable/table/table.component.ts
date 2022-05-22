@@ -147,18 +147,23 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         return feature.getId() === this.projectService.getSelectedFeature().feature;
     }
 
-    coordinateFromGeometry(geometry: OlFeature): string {
+    coordinateFromGeometry(geometry: OlFeature): string { // For truncated coordinate view in table
         const coords: string[][] = this.readCoordinates(geometry);
         const contd: string = (coords[0].length > 1 ? '...' : '');
         const output: string = ` ${coords[0][0]}, ${coords[1][0]} ${contd}`;
         return output;
     }
 
+    /**
+     * Extracts the coordinates of an open layers feature as strings
+     * @param geometry The feature to extract coordinates from
+     * @returns A nested string[][] where index 0 of the outer array are x-Coordinates, index 1 are y-Coordinates
+     */
     readCoordinates(geometry: OlFeature): string[][] {
-        let coords: string[][] = [];
         let xCoords:string[] = [];
         let yCoords:string[] = [];
         const type: String = geometry.getGeometry()?.getType();
+        // Treating each type separately is necessary because open layers stores data differently depending on type
         switch (type) {
             case "Polygon":
             case "MultiPolygon":
@@ -180,14 +185,17 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
                 yCoords = p.getCoordinates()[1].toString().split(',');
                 break;
             default:
+                xCoords.push('N/A')
+                yCoords.push('N/A')
                 break;
         }
+        let coords: string[][] = [];
         coords[0] = xCoords;
         coords[1] = yCoords;
         return coords;
     }
 
-    onCellClick(output: OlFeature): void {
+    onFullDisplayClick(output: OlFeature): void { 
         const coords: string[][] = this.readCoordinates(output);
         this.dialog.open(FullDisplayComponent, { data: { xStrings: coords[0], yStrings: coords[1] } })
     }
@@ -199,8 +207,9 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     }
 
     readTimePropertyEnd(geometry: OlFeature): string {
-        let maximum: string = '-262144-01-01T00:00:00+00:00';
-        let result: string = geometry['values_']['start'];
+        // let maximum: string = '-262144-01-01T00:00:00+00:00';
+        let maximum: string = '+262143-12-31T23:59:59.999+00:00';
+        let result: string = geometry['values_']['end'];
         return (result == maximum ? "∞" : result);
     }
 
