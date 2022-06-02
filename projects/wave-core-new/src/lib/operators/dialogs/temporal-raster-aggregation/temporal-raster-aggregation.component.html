@@ -25,6 +25,14 @@
             <input matInput type="number" placeholder="Window Size" formControlName="windowSize" />
         </mat-form-field>
 
+        <div>
+            <mat-checkbox formControlName="windowReferenceChecked">Specify a custom point in time for the aggregation window</mat-checkbox>
+            <wave-time-input
+                *ngIf="(form.controls.windowReferenceChecked.valueChanges | async) === true"
+                formControlName="windowReference"
+            ></wave-time-input>
+        </div>
+
         <mat-checkbox formControlName="ignoreNoData">Ignore No Data</mat-checkbox>
 
         <wave-operator-output-name

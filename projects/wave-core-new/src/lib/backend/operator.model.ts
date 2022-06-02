@@ -155,6 +155,7 @@ export interface TemporalRasterAggregationDict extends OperatorDict {
             ignoreNoData?: boolean;
         };
         window: TimeStepDict;
+        windowReference?: TimeInstanceDict;
     };
 }
 
