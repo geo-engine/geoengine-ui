@@ -7,6 +7,10 @@ import {map, mergeMap} from 'rxjs/operators';
 import {Layer, VectorLayer} from '../../../layers/layer.model';
 import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
 import {VectorColumnDataTypes} from '../../datatype.model';
+import { WorkflowDict } from '../../../backend/backend.model';
+import { ClusteredPointSymbology, PointSymbology } from '../../../layers/symbology/symbology.model';
+import { colorToDict } from '../../../colors/color';
+import { RandomColorService } from '../../../util/services/random-color.service';
 
 @Component({
     selector: 'wave-column-range-filter',
@@ -23,7 +27,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
 
     private subscriptions: Array<Subscription> = [];
 
-    constructor(private readonly projectService: ProjectService, private readonly formBuilder: FormBuilder) {
+    constructor(private readonly projectService: ProjectService, private readonly formBuilder: FormBuilder, private randomColorService: RandomColorService) {
         this.form = this.formBuilder.group({
             layer: [undefined, Validators.required],
             filters: this.formBuilder.array([]),
@@ -111,6 +115,14 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
      * creates a new layer with the filtered values
      */
     add(): void {
+
+        const inputLayer = this.form.controls['layer'].value as Layer
+
+        this.projectService
+            .getWorkflow(inputLayer.workflowId)
+            .pipe(
+
+            ).subscribe();
         //ToDo
     }
 }
