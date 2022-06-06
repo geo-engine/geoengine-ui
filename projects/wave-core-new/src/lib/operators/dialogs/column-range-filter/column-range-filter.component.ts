@@ -7,10 +7,11 @@ import {map, mergeMap} from 'rxjs/operators';
 import {Layer, VectorLayer} from '../../../layers/layer.model';
 import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
 import {VectorColumnDataTypes} from '../../datatype.model';
-import { WorkflowDict } from '../../../backend/backend.model';
+import { OperatorDict, SourceOperatorDict, WorkflowDict } from '../../../backend/backend.model';
 import { ClusteredPointSymbology, PointSymbology } from '../../../layers/symbology/symbology.model';
 import { colorToDict } from '../../../colors/color';
 import { RandomColorService } from '../../../util/services/random-color.service';
+import { ColumnRangeFilterDict } from '../../../backend/operator.model';
 
 @Component({
     selector: 'wave-column-range-filter',
@@ -115,14 +116,85 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
      * creates a new layer with the filtered values
      */
     add(): void {
+        // prepare a first filter: attribute, ranges, name
+        const attributeName = this.filters.value[0]['attribute'] as string;
+        const newLayerName = this.form.get('name')?.value || 'newlayer';
+
+        console.log(this.filters.value[0]['attribute']);
+        console.log(this.filters.value[0]['ranges']);
+        console.log(newLayerName);
+    }
+
+
+    _add(): void { // moved temporarily
+        const newLayerName = this.form.get('name')?.value as string || 'newlayer' as string;
+        const attributeName = this.filters.value[0]['attribute'] as string;
 
         const inputLayer = this.form.controls['layer'].value as Layer
+        const workflowdict = this.projectService.getWorkflow(inputLayer.workflowId);
+        // have: WorkflowDict
+        // need: OperatorDict or SourceOperatorDict for 'points'
+        const layerPoints: OperatorDict | SourceOperatorDict = workflowdict.operator;
+        /*
+          compare the above to: 
+          - project.service.ts line 375
+          - histogram-operator.component.ts line 152
+          -> these are not obvervables!
+          might try:
+          this.projectService.getWorkflow(inputLayer.workflowId).pipe(mergeMap((inputWorkflow: WorkflowDict) => ... etc))
+          see histogram-operator.component.ts line 146 onwards
+        */
+
+        const workflow = {
+            type: 'Vector',
+            operator: {
+                type: 'ColumnRangeFilter',
+                params: {
+                    column: attributeName,
+                    ranges = [1, 2], // Placeholder
+                    keepnulls = false,
+                },
+                sources: {
+                    points = layerPoints // Need to convert layer to fit here? Or change Interface??
+                }
+            } as ColumnRangeFilterDict,
+        } as WorkflowDict;
 
         this.projectService
-            .getWorkflow(inputLayer.workflowId)
+            .registerWorkflow(workflow)
             .pipe(
-
+                mergeMap((workflowId) =>
+                    this.projectService.addLayer(
+                        new VectorLayer({
+                            workflowId,
+                            name, // 
+                            symbology: ClusteredPointSymbology.fromPointSymbologyDict({
+                                type: 'point',
+                                radius: {
+                                    type: 'static',
+                                    value: PointSymbology.DEFAULT_POINT_RADIUS,
+                                },
+                                stroke: {
+                                    width: {
+                                        type: 'static',
+                                        value: 1,
+                                    },
+                                    color: {
+                                        type: 'static',
+                                        color: [0, 0, 0, 255],
+                                    },
+                                },
+                                fillColor: {
+                                    type: 'static',
+                                    color: colorToDict(this.randomColorService.getRandomColorRgba()),
+                                },
+                            }),
+                            isLegendVisible: false,
+                            isVisible: true,
+                        }),
+                    ),
+                ),
             ).subscribe();
         //ToDo
-    }
+    // }
 }
