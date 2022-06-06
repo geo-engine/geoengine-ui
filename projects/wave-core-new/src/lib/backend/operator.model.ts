@@ -126,6 +126,17 @@ export interface PointInPolygonFilterDict extends OperatorDict {
     };
 }
 
+export interface ColumnRangeFilterDict extends OperatorDict {
+    type: 'ColumnRangeFilter',
+    params: {
+        column: string,
+        ranges: number[],
+    }
+    sources: {
+        points: SourceOperatorDict | OperatorDict; // ok ... ?
+    }
+}
+
 export interface RasterVectorJoinParams extends OperatorParams {
     names: Array<string>;
     temporalAggregation: 'none' | 'first' | 'mean';
