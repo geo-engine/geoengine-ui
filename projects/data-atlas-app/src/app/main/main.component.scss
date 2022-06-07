@@ -1,4 +1,4 @@
-$sidenav-default-width: 25vw;
+$sidenav-default-width: 33vw;
 $sidenav-min-width: 24rem;
 $sidenav-width: max($sidenav-default-width, $sidenav-min-width);
 
@@ -45,6 +45,11 @@ $sidenav-width: max($sidenav-default-width, $sidenav-min-width);
     right: 0;
     top: 1rem;
     text-align: center;
+}
+
+.symbology-btn {
+    position: absolute;
+    left: 1rem;
 }
 
 wave-zoom-handles,
@@ -131,4 +136,13 @@ mat-card-content .striped {
 
 p.empty {
     color: var(--wave-foreground-secondary-text-color);
+}
+
+.loading-indicator {
+    position: absolute;
+    left: 0;
+    right: $sidenav-width;
+    bottom: 0;
+    z-index: 2;
+    height: 0.5rem;
 }
