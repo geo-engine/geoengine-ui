@@ -1,12 +1,12 @@
-import {Component, OnInit, ChangeDetectionStrategy, OnDestroy} from '@angular/core';
-import {ResultTypes} from '../../result-type.model';
-import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {of, ReplaySubject, Subscription} from 'rxjs';
-import {ProjectService} from '../../../project/project.service';
-import {map, mergeMap} from 'rxjs/operators';
-import {Layer, VectorLayer} from '../../../layers/layer.model';
-import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
-import {VectorColumnDataTypes} from '../../datatype.model';
+import { Component, OnInit, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import { ResultTypes } from '../../result-type.model';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { of, ReplaySubject, Subscription } from 'rxjs';
+import { ProjectService } from '../../../project/project.service';
+import { map, mergeMap } from 'rxjs/operators';
+import { Layer, VectorLayer } from '../../../layers/layer.model';
+import { VectorLayerMetadata } from '../../../layers/layer-metadata.model';
+import { VectorColumnDataTypes } from '../../datatype.model';
 import { OperatorDict, SourceOperatorDict, WorkflowDict } from '../../../backend/backend.model';
 import { ClusteredPointSymbology, PointSymbology } from '../../../layers/symbology/symbology.model';
 import { colorToDict } from '../../../colors/color';
@@ -105,7 +105,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         this.ranges(filterIndex).removeAt(rangeIndex);
     }
 
-    ngOnInit(): void {}
+    ngOnInit(): void { }
 
     ngOnDestroy(): void {
         this.subscriptions.forEach((subscription) => subscription.unsubscribe());
@@ -116,7 +116,6 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
      * creates a new layer with the filtered values
      */
     add(): void {
-        // prepare a first filter: attribute, ranges, name
         const attributeName = this.filters.value[0]['attribute'] as string;
         const newLayerName = this.form.get('name')?.value || 'newlayer';
 
@@ -125,7 +124,66 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         console.log(newLayerName);
     }
 
+    _add2(): void { // moved temporarily
+        const name = this.form.get('name')?.value as string || 'newlayer' as string;
+        const attributeName = this.filters.value[0]['attribute'] as string;
 
+        const inputLayer = this.form.controls['layer'].value as Layer
+
+        this.projectService
+            .getWorkflow(inputLayer.workflowId)
+            .pipe(
+                mergeMap((inputWorkflow: WorkflowDict) =>
+                    this.projectService.registerWorkflow({
+                        type: 'Vector',
+                        operator: {
+                            type: 'ColumnRangeFilter',
+                            params: {
+                                column: attributeName,
+                                ranges: [1, 2], // Placeholder
+                                keepnulls: false,
+                            },
+                            sources: {
+                                points: inputWorkflow.operator
+                            }
+                        } as ColumnRangeFilterDict,
+                    }), // 'as WorkflowDict' (yes or no?)
+                ),
+                mergeMap((workflowId) =>
+                    this.projectService.addLayer(
+                        new VectorLayer({
+                            workflowId,
+                            name,
+                            symbology: ClusteredPointSymbology.fromPointSymbologyDict({
+                                type: 'point',
+                                radius: {
+                                    type: 'static',
+                                    value: PointSymbology.DEFAULT_POINT_RADIUS,
+                                },
+                                stroke: {
+                                    width: {
+                                        type: 'static',
+                                        value: 1,
+                                    },
+                                    color: {
+                                        type: 'static',
+                                        color: [0, 0, 0, 255],
+                                    },
+                                },
+                                fillColor: {
+                                    type: 'static',
+                                    color: colorToDict(this.randomColorService.getRandomColorRgba()),
+                                },
+                            }),
+                            isLegendVisible: false,
+                            isVisible: true,
+                        }),
+                    ),
+                )
+            ).subscribe();
+    }
+
+    /*
     _add(): void { // moved temporarily
         const newLayerName = this.form.get('name')?.value as string || 'newlayer' as string;
         const attributeName = this.filters.value[0]['attribute'] as string;
@@ -135,15 +193,14 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         // have: WorkflowDict
         // need: OperatorDict or SourceOperatorDict for 'points'
         const layerPoints: OperatorDict | SourceOperatorDict = workflowdict.operator;
-        /*
-          compare the above to: 
-          - project.service.ts line 375
-          - histogram-operator.component.ts line 152
-          -> these are not obvervables!
-          might try:
-          this.projectService.getWorkflow(inputLayer.workflowId).pipe(mergeMap((inputWorkflow: WorkflowDict) => ... etc))
-          see histogram-operator.component.ts line 146 onwards
-        */
+
+        //   compare the above to: 
+        //   - project.service.ts line 375
+        //   - histogram-operator.component.ts line 152
+        //   -> these are not obvervables!
+        //   might try:
+        //   this.projectService.getWorkflow(inputLayer.workflowId).pipe(mergeMap((inputWorkflow: WorkflowDict) => ... etc))
+        //   see histogram-operator.component.ts line 146 onwards (everything into the pipe / mergeMap)
 
         const workflow = {
             type: 'Vector',
@@ -151,11 +208,11 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                 type: 'ColumnRangeFilter',
                 params: {
                     column: attributeName,
-                    ranges = [1, 2], // Placeholder
-                    keepnulls = false,
+                    ranges: [1, 2], // Placeholder
+                    keepnulls: false,
                 },
                 sources: {
-                    points = layerPoints // Need to convert layer to fit here? Or change Interface??
+                    points: layerPoints // Need to convert layer to fit here? Or change Interface??
                 }
             } as ColumnRangeFilterDict,
         } as WorkflowDict;
@@ -195,6 +252,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                     ),
                 ),
             ).subscribe();
-        //ToDo
-    // }
+    }
+    */
+
 }
