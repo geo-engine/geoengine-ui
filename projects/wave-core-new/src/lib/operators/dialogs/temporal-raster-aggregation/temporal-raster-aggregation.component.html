@@ -1,7 +1,11 @@
 <wave-sidenav-header>Temporal Raster Aggregation</wave-sidenav-header>
 
 <wave-dialog-help>
-    <p>This operator aggregates the input raster time series over a specified tumbling window.</p>
+    <p>
+        This operator aggregates the input raster time series over a specified tumbling window. You can specify an optional window reference
+        as an anchor point for the aggregation windows. You can find more information at
+        <a href="https://docs.geoengine.io/operators/temporalrasteraggregation.html">docs.geoengine.io</a>.
+    </p>
 </wave-dialog-help>
 
 <form [formGroup]="form" (ngSubmit)="add()" fxLayout="column">
