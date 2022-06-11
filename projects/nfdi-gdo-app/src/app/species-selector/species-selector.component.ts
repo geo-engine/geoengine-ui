@@ -34,7 +34,7 @@ interface EnvironmentLayer {
 
 const START_YEAR = 1991;
 const END_YEAR = 2020;
-const SPECIES = [
+const DRAGONFLY_SPECIES = [
     'Aeshna affinis',
     'Aeshna caerulea',
     'Aeshna cyanea',
@@ -115,6 +115,174 @@ const SPECIES = [
     'Sympetrum striolatum',
     'Sympetrum vulgatum',
 ];
+const FISH_SPECIES = [
+    'Coregonus sp. "Kärnten"',
+    'Pomatoschistus pictus',
+    'Acipenser nudiventris',
+    'Coregonus arenicolus',
+    'Leuciscus leuciscus',
+    'Tinca tinca',
+    'Pungitius pungitius',
+    'Perccottus glenii',
+    'Coregonus hoferi',
+    'Lampetra planeri',
+    'Ballerus sapa',
+    'Cobitis taenia',
+    'Gasterosteus aculeatus',
+    'Misgurnus anguillicaudatus',
+    'Zingel zingel',
+    'Coregonus widegreni',
+    'Gobio gobio',
+    'Silurus glanis',
+    'Coregonus bavaricus',
+    'Cetorhinus maximus',
+    'Myoxocephalus scorpius',
+    'Acipenser spec.',
+    'Salvelinus evasus',
+    'Gobio albipinnatus',
+    'Barbus barbus',
+    'Gobiosoma bosc',
+    'Mola mola',
+    'Paramisgurnus dabryanus',
+    'Tachysurus fulvidraco',
+    'Coregonus maraenoides',
+    'Ammodytes marinus',
+    'Carassius langsdorfii',
+    'Clupea harengus',
+    'Romanogobio belingi',
+    'Morone saxatilis',
+    'Belone belone',
+    'Blicca bjoerkna',
+    'Ctenopharyngodon idella',
+    'Ameiurus melas',
+    'Perca fluviatilis',
+    'Hypophthalmichthys molitrix',
+    'Salvelinus fontinalis',
+    'Ponticola kessleri',
+    'Ballerus ballerus',
+    'Enchelyopus cimbrius',
+    'Amatitlania nigrofasciata',
+    'Cottus poecilopus',
+    'Pimephales promelas',
+    'Gobiusculus flavescens',
+    'Alburnoides bipunctatus',
+    'Leuciscus aspius',
+    'Rutilus meidingeri',
+    'Petromyzon marinus',
+    'Leucaspius delineatus',
+    'Thymallus thymallus',
+    'Pomatoschistus microps',
+    'Sabanejewia baltica',
+    'Huso huso',
+    'Xiphias gladius',
+    'Carassius gibelio',
+    'Babka gymnotrachelus',
+    'Scyliorhinus canicula',
+    'Aphia minuta',
+    'Coregonus wartmanni',
+    'Raniceps raninus',
+    'Rhodeus amarus',
+    'Agonus cataphractus',
+    'Umbra krameri',
+    'Spinachia spinachia',
+    'Salvelinus umbla',
+    'Misgurnus fossilis',
+    'Salmo trutta',
+    'Carassius auratus',
+    'Gadus morhua',
+    'Merlangius merlangus',
+    'Liparis liparis',
+    'Alopias vulpinus',
+    'Rutilus virgo',
+    'Alosa fallax',
+    'Rutilus rutilus',
+    'Platichthys flesus',
+    'Gobius niger',
+    'Ciliata mustela',
+    'Pleuronectes platessa',
+    'Cyprinus carpio',
+    'Sprattus sprattus',
+    'Acipenser gueldenstaedtii',
+    'Coregonus macrophthalmus',
+    'Lepomis gibbosus',
+    'Coregonus fontanae',
+    'Hucho hucho',
+    'Barbatula barbatula',
+    'Sander lucioperca',
+    'Limanda limanda',
+    'Pelecus cultratus',
+    'Misgurnus bipartitus',
+    'Hyperoplus lanceolatus',
+    'Abramis brama',
+    'Chelon labrosus',
+    'Taurulus bubalis',
+    'Trachurus trachurus',
+    'Lipophrys pholis',
+    'Phoxinus phoxinus',
+    'Oncorhynchus mykiss',
+    'Acipenser ruthenus',
+    'Gymnocephalus schraetser',
+    'Salvelinus namaycush',
+    'Coregonus maraena',
+    'Pholis gunnellus',
+    'Salmo salar',
+    'Syngnathus typhle',
+    'Lampetra fluviatilis',
+    'Cottus gobio',
+    'Molva molva',
+    'Gymnocephalus baloni',
+    'Ctenolabrus rupestris',
+    'Alburnus mento',
+    'Sander volgensis',
+    'Carassius carassius',
+    'Squalius cephalus',
+    'Romanogobio uranoscopus',
+    'Nerophis ophidion',
+    'Romanogobio vladykovi',
+    'Acipenser stellatus',
+    'Coregonus lavaretus',
+    'Anguilla anguilla',
+    'Scardinius erythrophthalmus',
+    'Romanogobio kesslerii',
+    'Leuciscus idus',
+    'Lota lota',
+    'Coregonus oxyrinchus',
+    'Cyclopterus lumpus',
+    'Gobio obtusirostris',
+    'Acipenser baerii',
+    'Zingel streber',
+    'Amblyraja radiata',
+    'Ameiurus nebulosus',
+    'Pomatoschistus minutus',
+    'Proterorhinus semilunaris',
+    'Gasterosteus gymnurus',
+    'Chondrostoma nasus',
+    'Osmerus eperlanus',
+    'Coregonus lucinensis',
+    'Cobitis elongatoides',
+    'Eudontomyzon mariae',
+    'Vimba vimba',
+    'Gymnocephalus cernua',
+    'Poecilia reticulata',
+    'Coregonus albula',
+    'Syngnathus rostellatus',
+    'Sabanejewia balcanica',
+    'Psetta maxima',
+    'Alburnus alburnus',
+    'Solea solea',
+    'Dicentrarchus labrax',
+    'Cottus perifretum',
+    'Raja clavata',
+    'Hippocampus hippocampus',
+    'Pseudorasbora parva',
+    'Esox lucius',
+    'Neogobius melanostomus',
+    'Neogobius fluviatilis',
+    'Zoarces viviparus',
+    'Acipenser sturio',
+    'Ammodytes tobianus',
+    'Cottus microstomus',
+];
 /* eslint-disable @typescript-eslint/naming-convention */
 const SPECIES_INFO: {[key: string]: SpeciesInfo} = {
     'Anax imperator': {
@@ -157,7 +325,8 @@ interface SpeciesInfo {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SpeciesSelectorComponent implements OnInit, OnDestroy {
-    readonly species: string[] = SPECIES;
+    readonly dragonflySpecies: string[] = DRAGONFLY_SPECIES;
+    readonly fishSpecies: string[] = FISH_SPECIES;
 
     readonly environmentLayers: EnvironmentLayer[] = [
         // {
@@ -185,6 +354,11 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             name: 'Landnutzungstypen (2019 & 2020)',
             dataRange: [0, 60],
         },
+        {
+            id: 'bde4f21f-b935-4cd3-b7ed-1675aedfa026',
+            name: 'Anteil Gebiete „Natur- und Artenschutz“ an Gebietsfläche',
+            dataRange: [0, 100],
+        },
     ];
 
     plotSpecies = '';
@@ -194,18 +368,23 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
 
     currentMonth = 1;
 
-    selectedSpecies?: string = undefined;
+    selectedDragonflySpecies?: string = undefined;
+    selectedFishSpecies?: string = undefined;
     selectedEnvironmentLayer?: EnvironmentLayer = undefined;
     selectedEnvironmentCitation = new BehaviorSubject<string>('');
 
-    speciesLayer?: Layer = undefined;
+    dragonflySpeciesLayer?: Layer = undefined;
+    fishSpeciesLayer?: Layer = undefined;
     intensityLayer?: RasterLayer = undefined;
     environmentLayer?: Layer = undefined;
+
+    plotLayerSelection: 'dragonfly' | 'fish' = 'dragonfly';
 
     readonly startYear = START_YEAR;
     readonly endYear = END_YEAR;
 
-    private readonly datasetId: UUID = 'd9dd4530-7a57-44da-a650-ce7d81dcc216';
+    private readonly dragonflyDatasetId: UUID = 'd9dd4530-7a57-44da-a650-ce7d81dcc216';
+    private readonly fishDatasetId: UUID = '40c0756f-ecfc-4460-ac6d-ca67190e0436';
     private readonly intensityDatasetId: UUID = '1a7584e6-0c94-4d92-bbcd-223626d64d9c';
 
     private selectedEnvironmentDataset?: Dataset = undefined;
@@ -223,11 +402,17 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        const speciesLayerSubscription = this.dataSelectionService.speciesLayer.subscribe((speciesLayer) => {
-            this.speciesLayer = speciesLayer;
+        const species1LayerSubscription = this.dataSelectionService.speciesLayer1.subscribe((speciesLayer) => {
+            this.dragonflySpeciesLayer = speciesLayer;
             this.changeDetectorRef.markForCheck();
         });
-        this.subscriptions.push(speciesLayerSubscription);
+        this.subscriptions.push(species1LayerSubscription);
+
+        const species2LayerSubscription = this.dataSelectionService.speciesLayer2.subscribe((speciesLayer) => {
+            this.fishSpeciesLayer = speciesLayer;
+            this.changeDetectorRef.markForCheck();
+        });
+        this.subscriptions.push(species2LayerSubscription);
 
         const environmentLayerSubscription = this.dataSelectionService.rasterLayer.subscribe((environmentLayer) => {
             this.environmentLayer = environmentLayer;
@@ -248,8 +433,14 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
         return element.toLowerCase().includes(filter);
     }
 
-    selectSpecies(species: string): void {
-        this.selectedSpecies = species;
+    selectDragonflySpecies(species: string): void {
+        this.selectedDragonflySpecies = species;
+
+        if (!this.selectedDragonflySpecies) {
+            this.dataSelectionService.resetSpecies1Layer().subscribe();
+
+            return;
+        }
 
         const workflow: WorkflowDict = {
             type: 'Vector',
@@ -257,7 +448,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                 type: 'TimeProjection',
                 params: {
                     step: {
-                        granularity: 'Years',
+                        granularity: 'years',
                         step: 1,
                     },
                 },
@@ -267,7 +458,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                         params: {
                             dataset: {
                                 type: 'internal',
-                                datasetId: this.datasetId,
+                                datasetId: this.dragonflyDatasetId,
                             },
                             attributeProjection: [],
                             attributeFilters: [
@@ -287,7 +478,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             .registerWorkflow(workflow)
             .pipe(
                 mergeMap((workflowId) =>
-                    this.dataSelectionService.setSpeciesLayer(
+                    this.dataSelectionService.setSpecies1Layer(
                         new VectorLayer({
                             workflowId,
                             name: 'Beobachtungen',
@@ -310,6 +501,85 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                                 fillColor: {
                                     type: 'static',
                                     color: [189, 42, 11, 255],
+                                },
+                            }),
+                            isLegendVisible: false,
+                            isVisible: true,
+                        }),
+                    ),
+                ),
+            )
+            .subscribe();
+    }
+
+    selectFishSpecies(species: string): void {
+        this.selectedFishSpecies = species;
+
+        if (!this.selectedFishSpecies) {
+            this.dataSelectionService.resetSpecies2Layer().subscribe();
+
+            return;
+        }
+
+        const workflow: WorkflowDict = {
+            type: 'Vector',
+            operator: {
+                type: 'TimeProjection',
+                params: {
+                    step: {
+                        granularity: 'years',
+                        step: 1,
+                    },
+                },
+                sources: {
+                    vector: {
+                        type: 'OgrSource',
+                        params: {
+                            dataset: {
+                                type: 'internal',
+                                datasetId: this.fishDatasetId,
+                            },
+                            attributeProjection: [],
+                            attributeFilters: [
+                                {
+                                    attribute: 'Species',
+                                    ranges: [[species, species]],
+                                    keepNulls: false,
+                                },
+                            ],
+                        },
+                    } as OgrSourceDict,
+                },
+            } as TimeProjectionDict,
+        };
+
+        this.projectService
+            .registerWorkflow(workflow)
+            .pipe(
+                mergeMap((workflowId) =>
+                    this.dataSelectionService.setSpecies2Layer(
+                        new VectorLayer({
+                            workflowId,
+                            name: 'Beobachtungen',
+                            symbology: ClusteredPointSymbology.fromPointSymbologyDict({
+                                type: 'point',
+                                radius: {
+                                    type: 'static',
+                                    value: PointSymbology.DEFAULT_POINT_RADIUS,
+                                },
+                                stroke: {
+                                    width: {
+                                        type: 'static',
+                                        value: 1,
+                                    },
+                                    color: {
+                                        type: 'static',
+                                        color: [0, 0, 0, 255],
+                                    },
+                                },
+                                fillColor: {
+                                    type: 'static',
+                                    color: [16, 83, 120, 255],
                                 },
                             }),
                             isLegendVisible: false,
@@ -437,17 +707,36 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     }
 
     computePlot(): void {
-        if (!this.selectedSpecies || !this.selectedEnvironmentLayer || !this.selectedEnvironmentDataset) {
+        if (
+            (!this.selectedFishSpecies && !this.selectDragonflySpecies) ||
+            !this.selectedEnvironmentLayer ||
+            !this.selectedEnvironmentDataset
+        ) {
             return;
+        }
+
+        let speciesLayer$: Observable<VectorLayer | undefined>;
+        let selectedSpecies: string | undefined;
+
+        if (!this.selectedDragonflySpecies) {
+            speciesLayer$ = this.dataSelectionService.speciesLayer2;
+            selectedSpecies = this.selectedFishSpecies;
+        } else if (!this.selectFishSpecies) {
+            speciesLayer$ = this.dataSelectionService.speciesLayer1;
+            selectedSpecies = this.selectedDragonflySpecies;
+        } else if (this.plotLayerSelection === 'dragonfly') {
+            speciesLayer$ = this.dataSelectionService.speciesLayer1;
+            selectedSpecies = this.selectedDragonflySpecies;
+        } /* if (this.plotLayerSelection === 'fish') */ else {
+            speciesLayer$ = this.dataSelectionService.speciesLayer2;
+            selectedSpecies = this.selectedFishSpecies;
         }
 
         combineLatest([
             this.dataSelectionService.rasterLayer.pipe(
                 mergeMap<RasterLayer | undefined, Observable<RasterLayer>>((layer) => (layer ? of(layer) : of())),
             ),
-            this.dataSelectionService.speciesLayer.pipe(
-                mergeMap<VectorLayer | undefined, Observable<VectorLayer>>((layer) => (layer ? of(layer) : of())),
-            ),
+            speciesLayer$.pipe(mergeMap<VectorLayer | undefined, Observable<VectorLayer>>((layer) => (layer ? of(layer) : of()))),
         ])
             .pipe(
                 first(),
@@ -455,7 +744,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                     this.plotLoading.next(true);
                     this.plotData.next(undefined);
 
-                    this.plotSpecies = this.selectedSpecies ? this.selectedSpecies : '';
+                    this.plotSpecies = selectedSpecies ?? '';
                     this.plotEnvironmentLayer = this.selectedEnvironmentLayer ? this.selectedEnvironmentLayer.name : '';
                 }),
                 mergeMap(([rasterLayer, speciesLayer]) =>

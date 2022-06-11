@@ -1,6 +1,7 @@
-<mat-toolbar color="primary">
+<mat-toolbar color="primary" [fxLayout]="sidenavPosition === 'start' ? 'row-reverse' : 'row'">
     <button mat-button (click)="close()" matTooltip="close sidenav" matTooltipPosition="after">
-        <mat-icon>keyboard_arrow_right</mat-icon>
+        <mat-icon *ngIf="sidenavPosition === 'end'">keyboard_arrow_right</mat-icon>
+        <mat-icon *ngIf="sidenavPosition === 'start'">keyboard_arrow_left</mat-icon>
     </button>
     <h2 fxFlex>{{ sidenavRef.getTitleStream() | async }}</h2>
     <button

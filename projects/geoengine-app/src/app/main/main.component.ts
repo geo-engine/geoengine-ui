@@ -194,6 +194,7 @@ export class MainComponent implements OnInit, AfterViewInit {
         return [
             AddDataComponent.createDatasetListButton(),
             AddDataComponent.createExternalDataButton(),
+            AddDataComponent.createLayerCollectionButton(),
             AddDataComponent.createUploadButton(),
             AddDataComponent.createDrawFeaturesButton(),
             AddDataComponent.createAddWorkflowByIdButton(),

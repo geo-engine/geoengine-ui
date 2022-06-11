@@ -6,17 +6,19 @@ import {
     ViewChild,
     ViewContainerRef,
     ComponentRef,
-    ComponentFactoryResolver,
     OnDestroy,
     ElementRef,
     ViewChildren,
     QueryList,
     AfterViewInit,
     Renderer2,
+    Injector,
+    SkipSelf,
 } from '@angular/core';
 import {SidenavRef} from '../sidenav-ref.service';
 import {LayoutService, SidenavConfig} from '../../layout.service';
 import {map} from 'rxjs/operators';
+import {MatSidenav} from '@angular/material/sidenav';
 
 /**
  * This is a container component that encapsulates sidenav components, dialogs, etc. and
@@ -42,6 +44,8 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
 
     componentRef?: ComponentRef<any>;
 
+    sidenavPosition: 'start' | 'end';
+
     private currentSidenavConfig?: SidenavConfig;
 
     private subscriptions: Array<Subscription> = [];
@@ -50,11 +54,15 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
      * DI for services
      */
     constructor(
-        private componentFactoryResolver: ComponentFactoryResolver,
-        public sidenavRef: SidenavRef,
-        public layoutService: LayoutService,
-        private renderer: Renderer2,
-    ) {}
+        public readonly sidenavRef: SidenavRef,
+        public readonly layoutService: LayoutService,
+        private readonly renderer: Renderer2,
+        @SkipSelf() parentInjector: Injector,
+    ) {
+        const sidenav: MatSidenav = parentInjector.get<MatSidenav>(MatSidenav);
+
+        this.sidenavPosition = sidenav.position;
+    }
 
     ngOnInit(): void {
         this.subscriptions.push(this.sidenavRef.getCloseStream().subscribe(() => this.close()));
@@ -123,8 +131,7 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
             this.componentRef.destroy();
         }
         if (this.target && sidenavConfig && sidenavConfig.component) {
-            const componentFactory = this.componentFactoryResolver.resolveComponentFactory(sidenavConfig.component);
-            this.componentRef = this.target.createComponent(componentFactory);
+            this.componentRef = this.target.createComponent(sidenavConfig.component);
 
             if (sidenavConfig.config) {
                 for (const key in sidenavConfig.config) {

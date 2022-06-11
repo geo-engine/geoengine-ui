@@ -261,7 +261,7 @@ export interface TimeStepDict {
     granularity: TimeStepGranularityDict;
 }
 
-export type TimeStepGranularityDict = 'Millis' | 'Seconds' | 'Minutes' | 'Hours' | 'Days' | 'Months' | 'Years';
+export type TimeStepGranularityDict = 'millis' | 'seconds' | 'minutes' | 'hours' | 'days' | 'months' | 'years';
 
 export interface DatasetDict {
     id: DatasetIdDict;
@@ -430,8 +430,9 @@ export interface StartDurationOgrSourceDatasetTimeTypeDict {
 }
 
 export interface OgrSourceTimeFormatDict {
-    format: 'seconds' | 'auto' | 'custom';
+    format: 'unixTimeStamp' | 'auto' | 'custom';
     customFormat?: string;
+    timestampType?: 'epochSeconds' | 'epochMilliseconds';
 }
 
 export interface OgrSourceColumnSpecDict {
@@ -506,4 +507,28 @@ export interface DataSetProviderListingDict {
 export interface GeoEngineError {
     readonly error: string;
     readonly message: string;
+}
+
+export interface LayerCollectionItemDict {
+    type: 'collection' | 'layer';
+    id: UUID;
+    name: string;
+    description: string;
+}
+
+export interface LayerCollectionDict extends LayerCollectionItemDict {
+    type: 'collection';
+}
+
+export interface LayerCollectionItemLayerDict extends LayerCollectionItemDict {
+    type: 'layer';
+    workflow: UUID;
+}
+
+export interface LayerCollectionLayerDict {
+    id: UUID;
+    name: string;
+    description: string;
+    workflow: UUID;
+    symbology: SymbologyDict;
 }

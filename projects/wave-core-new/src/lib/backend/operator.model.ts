@@ -154,10 +154,8 @@ export interface TemporalRasterAggregationDict extends OperatorDict {
             type: 'min' | 'max' | 'first' | 'last';
             ignoreNoData?: boolean;
         };
-        window: {
-            granularity: 'Millis' | 'Seconds' | 'Minutes' | 'Hours' | 'Days' | 'Months' | 'Years';
-            step: number;
-        };
+        window: TimeStepDict;
+        windowReference?: TimeInstanceDict;
     };
 }
 

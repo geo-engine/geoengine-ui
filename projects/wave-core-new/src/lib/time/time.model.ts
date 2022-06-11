@@ -29,25 +29,25 @@ export const timeStepDurationToTimeStepDict = (duration: TimeStepDuration): Time
         switch (durationUnit) {
             case 'millisecond':
             case 'milliseconds':
-                return 'Millis';
+                return 'millis';
             case 'second':
             case 'seconds':
-                return 'Seconds';
+                return 'seconds';
             case 'minute':
             case 'minutes':
-                return 'Minutes';
+                return 'minutes';
             case 'hour':
             case 'hours':
-                return 'Hours';
+                return 'hours';
             case 'day':
             case 'days':
-                return 'Days';
+                return 'days';
             case 'month':
             case 'months':
-                return 'Months';
+                return 'months';
             case 'year':
             case 'years':
-                return 'Years';
+                return 'years';
         }
     };
 
@@ -86,19 +86,19 @@ export const timeStepDurationToDurationInputArg2 = (durationUnit: TimeStepDurati
 export const timeStepDictTotimeStepDuration = (timeStepDict: TimeStepDict): TimeStepDuration => {
     const mapGranularity = (granularity: TimeStepGranularityDict, plural: boolean): TimeStepDurationType => {
         switch (granularity) {
-            case 'Millis':
+            case 'millis':
                 return plural ? 'milliseconds' : 'millisecond';
-            case 'Seconds':
+            case 'seconds':
                 return plural ? 'seconds' : 'second';
-            case 'Minutes':
+            case 'minutes':
                 return plural ? 'minutes' : 'minute';
-            case 'Hours':
+            case 'hours':
                 return plural ? 'hours' : 'hour';
-            case 'Days':
+            case 'days':
                 return plural ? 'days' : 'day';
-            case 'Months':
+            case 'months':
                 return plural ? 'months' : 'month';
-            case 'Years':
+            case 'years':
                 return plural ? 'years' : 'year';
         }
     };

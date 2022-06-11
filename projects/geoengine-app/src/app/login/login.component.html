@@ -2,7 +2,7 @@
     <div class="container" fxLayout="column" fxLayoutAlign="space-around">
         <mat-card class="login">
             <mat-card-header>
-                <mat-icon matCardTitle svgIcon="geoengine:logo-green" aria-label="Geo Engine" [inline]="true"></mat-icon>
+                <mat-icon matCardTitle svgIcon="geoengine:logo-alt" aria-label="Geo Engine" [inline]="true"></mat-icon>
                 <mat-card-subtitle [ngSwitch]="formStatus$ | async">
                     <ng-template [ngSwitchCase]="FormStatus.LoggedOut">Login to this Geo Engine instance</ng-template>
                     <ng-template [ngSwitchCase]="FormStatus.LoggedIn">User Info</ng-template>
