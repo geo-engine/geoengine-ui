@@ -130,10 +130,11 @@ export interface ColumnRangeFilterDict extends OperatorDict {
     type: 'ColumnRangeFilter',
     params: {
         column: string,
-        ranges: number[],
+        ranges: Array<number[]>,
+        keepNulls: boolean,
     }
     sources: {
-        points: SourceOperatorDict | OperatorDict; // ok ... ?
+        vector: SourceOperatorDict | OperatorDict; // ok ... ?
     }
 }
 
