@@ -111,23 +111,34 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
+
+    /* Excerpt from column_range_filter.rs line 193 onwards:
+        "type": "ColumnRangeFilter",
+                "params": {
+                    "column": "foobar",
+                    "ranges": [
+                        [1, 2]
+                    ],
+                    "keepNulls": false
+                },
+                "sources": {
+                    "vector": {
+                        "type": "MockFeatureCollectionSourceMultiPoint",
+                        "params": {
+                            "collections": [],
+                            "spatialReference": "EPSG:4326"
+                        }
+                    }
+                },
+    */
+
     /**
      * Uses the user input
      * creates a new layer with the filtered values
      */
     add(): void {
-        const attributeName = this.filters.value[0]['attribute'] as string;
-        const newLayerName = this.form.get('name')?.value || 'newlayer';
-
-        console.log(this.filters.value[0]['attribute']);
-        console.log(this.filters.value[0]['ranges']);
-        console.log(newLayerName);
-    }
-
-    _add2(): void { // moved temporarily
         const name = this.form.get('name')?.value as string || 'newlayer' as string;
         const attributeName = this.filters.value[0]['attribute'] as string;
-
         const inputLayer = this.form.controls['layer'].value as Layer
 
         this.projectService
@@ -140,11 +151,11 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                             type: 'ColumnRangeFilter',
                             params: {
                                 column: attributeName,
-                                ranges: [1, 2], // Placeholder
-                                keepnulls: false,
+                                ranges: [[1, 200],], // Placeholder
+                                keepNulls: false,
                             },
                             sources: {
-                                points: inputWorkflow.operator
+                                vector: inputWorkflow.operator
                             }
                         } as ColumnRangeFilterDict,
                     }), // 'as WorkflowDict' (yes or no?)
