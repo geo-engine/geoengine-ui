@@ -162,6 +162,32 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
      * @returns A nested string[][] where index 0 of the outer array are x-Coordinates, index 1 are y-Coordinates
      */
     readCoordinates(geometry: OlFeature): string[][] {
+        const type: String = geometry.getGeometry()?.getType();
+        let xCoords: string[] = [];
+        let yCoords: string[] = [];
+
+        if (!(type == "Polygon" || type == "MultiPolygon" || type == "LineString" || type == "MultiLineString" || type == "Point")) {
+            xCoords.push('N/A');
+            yCoords.push('N/A')
+            return new Array(xCoords, yCoords);
+        }
+
+        const poly: OlPolygon = <OlPolygon>geometry.getGeometry();
+        const l = poly.getCoordinates().length;
+        let allCoords: string[] = [];
+        for (let i = 0; i < l; i++) {
+            const coord = poly.getCoordinates()[i].toString().split(',');
+            allCoords = allCoords.concat(coord);
+        }
+        for (let i = 0; i < allCoords.length - 1; i += 2) {
+            xCoords.push(allCoords[i]);
+            yCoords.push(allCoords[i + 1]);
+        }
+        return new Array(xCoords, yCoords);
+    }
+
+    /*
+    _readCoordinates(geometry: OlFeature): string[][] {
         let xCoords: string[] = [];
         let yCoords: string[] = [];
         const type: String = geometry.getGeometry()?.getType();
@@ -194,6 +220,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         }
         return new Array(xCoords, yCoords);
     }
+    */
 
     onFullDisplayClick(output: OlFeature): void {
         const coords: string[][] = this.readCoordinates(output);
