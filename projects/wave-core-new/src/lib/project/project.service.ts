@@ -1261,7 +1261,7 @@ export class ProjectService {
                             },
                             sessionToken,
                         )
-                        .pipe(map((x) => this.addTimeToProperties(x)), map((x) => VectorData.olParse(time, projection, requestExtent, x)));
+                        .pipe(map((x) => this.addTimeToProperties(x)), tap((x) => console.log(x)), map((x) => VectorData.olParse(time, projection, requestExtent, x)));
                 }),
                 tap(
                     () => loadingState$.next(LoadingState.OK),
@@ -1281,8 +1281,8 @@ export class ProjectService {
         x['features'].forEach((element: any) => {
             let start: string = element['when']['start'];
             let end: string = element['when']['end'];
-            element['properties']['start'] = start;
-            element['properties']['end'] = end;
+            element['properties']['table__start'] = start;
+            element['properties']['table__end'] = end;
         });
         return x;
     }
