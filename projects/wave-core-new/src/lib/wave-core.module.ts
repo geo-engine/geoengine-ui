@@ -200,6 +200,7 @@ const WAVE_COMPONENTS = [
     DrawFeaturesComponent,
     ExpressionOperatorComponent,
     FeatureAttributeOvertimeComponent,
+    FullDisplayComponent,
     HistogramOperatorComponent,
     IfGuestDirective,
     IfLoggedInDirective,
@@ -265,7 +266,7 @@ const WAVE_COMPONENTS = [
 ];
 
 @NgModule({
-    declarations: [...WAVE_PIPES, ...WAVE_COMPONENTS, FullDisplayComponent],
+    declarations: [...WAVE_PIPES, ...WAVE_COMPONENTS],
     imports: [
         ...MATERIAL_MODULES,
         ColorPickerModule,
