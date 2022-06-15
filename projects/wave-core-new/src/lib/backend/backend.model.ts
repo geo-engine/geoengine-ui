@@ -522,13 +522,12 @@ export interface LayerCollectionDict extends LayerCollectionItemDict {
 
 export interface LayerCollectionItemLayerDict extends LayerCollectionItemDict {
     type: 'layer';
-    workflow: UUID;
 }
 
 export interface LayerCollectionLayerDict {
     id: UUID;
     name: string;
     description: string;
-    workflow: UUID;
+    workflow: WorkflowDict;
     symbology: SymbologyDict;
 }

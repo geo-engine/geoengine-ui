@@ -9,7 +9,7 @@ import {
     InjectionToken,
 } from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
-import {BehaviorSubject, combineLatest, EMPTY, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, EMPTY, Observable, of, Subject} from 'rxjs';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {filter, mergeMap, scan, tap} from 'rxjs/operators';
 import {LayoutService} from '../../layout.service';
@@ -17,8 +17,10 @@ import {
     GeoEngineError,
     LayerCollectionItemDict,
     LayerCollectionItemLayerDict,
+    LayerCollectionLayerDict,
     RasterResultDescriptorDict,
     RasterSymbologyDict,
+    ResultDescriptorDict,
     SymbologyDict,
     UUID,
     VectorResultDescriptorDict,
@@ -115,24 +117,31 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
     }
 
     private addLayer(layerListing: LayerCollectionItemLayerDict): void {
-        combineLatest([
-            this.layerService.getLayer(layerListing.id),
-            this.projectService.getWorkflowMetaData(layerListing.workflow),
-        ]).subscribe(
-            ([layer, resultDescriptorDict]) => {
-                const keys = Object.keys(resultDescriptorDict);
+        this.layerService
+            .getLayer(layerListing.id)
+            .pipe(
+                mergeMap((layer: LayerCollectionLayerDict) =>
+                    combineLatest([of(layer), this.projectService.registerWorkflow(layer.workflow)]),
+                ),
+                mergeMap(([layer, workflowId]: [LayerCollectionLayerDict, UUID]) =>
+                    combineLatest([of(layer), of(workflowId), this.projectService.getWorkflowMetaData(workflowId)]),
+                ),
+            )
+            .subscribe(
+                ([layer, workflowId, resultDescriptorDict]: [LayerCollectionLayerDict, UUID, ResultDescriptorDict]) => {
+                    const keys = Object.keys(resultDescriptorDict);
 
-                if (keys.includes('columns')) {
-                    this.addVectorLayer(layer.name, layer.workflow, resultDescriptorDict as VectorResultDescriptorDict, layer.symbology);
-                } else if (keys.includes('measurement')) {
-                    this.addRasterLayer(layer.name, layer.workflow, resultDescriptorDict as RasterResultDescriptorDict, layer.symbology);
-                } else {
-                    // TODO: implement plots, etc.
-                    this.notificationService.error('Adding this workflow type is unimplemented, yet');
-                }
-            },
-            (requestError) => this.handleError(requestError.error, layerListing.workflow),
-        );
+                    if (keys.includes('columns')) {
+                        this.addVectorLayer(layer.name, workflowId, resultDescriptorDict as VectorResultDescriptorDict, layer.symbology);
+                    } else if (keys.includes('measurement')) {
+                        this.addRasterLayer(layer.name, workflowId, resultDescriptorDict as RasterResultDescriptorDict, layer.symbology);
+                    } else {
+                        // TODO: implement plots, etc.
+                        this.notificationService.error('Adding this workflow type is unimplemented, yet');
+                    }
+                },
+                (requestError) => this.handleError(requestError.error, layerListing.id),
+            );
     }
 
     private addVectorLayer(
