@@ -455,8 +455,8 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
             .getVectorLayerMetadata(this.layer)
             .pipe(first())
             .subscribe((metadata) => {
-                const allColumnNames: Array<string> = metadata.columns.keySeq().toArray();
-                const numericColumnNames: Array<string> = metadata.columns
+                const allColumnNames: Array<string> = metadata.dataTypes.keySeq().toArray();
+                const numericColumnNames: Array<string> = metadata.dataTypes
                     .filter((column) => column.isNumeric)
                     .keySeq()
                     .toArray();
