@@ -487,7 +487,7 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "allowedCommonJsDependencies": ["dagre-d3", "pbf", "lru-cache", "xml-utils"],
+                        "allowedCommonJsDependencies": ["codemirror", "dagre-d3", "pbf", "lru-cache", "xml-utils"],
                         "outputPath": "dist/nfdi-gdo-app",
                         "index": "projects/nfdi-gdo-app/src/index.html",
                         "main": "projects/nfdi-gdo-app/src/main.ts",
