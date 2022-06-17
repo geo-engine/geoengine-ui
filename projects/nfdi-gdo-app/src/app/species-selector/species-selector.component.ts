@@ -591,7 +591,17 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             .subscribe();
     }
 
-    selectEnvironmentLayer(layer: EnvironmentLayer): void {
+    selectEnvironmentLayer(layer: EnvironmentLayer | undefined): void {
+        if (!layer) {
+            this.selectedEnvironmentLayer = undefined;
+            this.selectedEnvironmentDataset = undefined;
+            this.selectedEnvironmentCitation.next('');
+
+            this.dataSelectionService.resetRasterLayer().subscribe();
+
+            return;
+        }
+
         this.selectedEnvironmentLayer = layer;
 
         const workflow: WorkflowDict = {
