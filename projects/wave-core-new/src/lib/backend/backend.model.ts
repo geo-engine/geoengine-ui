@@ -311,8 +311,17 @@ export interface RasterResultDescriptorDict extends ResultDescriptorDict {
 export interface VectorResultDescriptorDict extends ResultDescriptorDict {
     type: 'vector';
     dataType: VectorDataType;
-    columns: {[key: string]: 'categorical' | 'int' | 'float' | 'text'};
+    columns: {
+        [key: string]: VectorColumnInfoDict;
+    };
 }
+
+export interface VectorColumnInfoDict {
+    dataType: VectorColumnType;
+    measurement: MeasurementDict;
+}
+
+export type VectorColumnType = 'categorical' | 'int' | 'float' | 'text' | 'dateTime' | 'bool';
 
 type VectorDataType = 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
 

@@ -85,7 +85,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
                         if (layer instanceof VectorLayer) {
                             return this.projectService.getVectorLayerMetadata(layer).pipe(
                                 map((metadata: VectorLayerMetadata) =>
-                                    metadata.columns
+                                    metadata.dataTypes
                                         .filter(
                                             (columnType) =>
                                                 columnType === VectorColumnDataTypes.Float || columnType === VectorColumnDataTypes.Int,

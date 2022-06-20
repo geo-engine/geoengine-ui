@@ -61,7 +61,7 @@ export class FeatureAttributeOvertimeComponent implements AfterViewInit, OnDestr
                                         id: [],
                                         value: [],
                                     };
-                                    for (const [candidate, columnType] of metadata.columns) {
+                                    for (const [candidate, columnType] of metadata.dataTypes) {
                                         if (columnType === VectorColumnDataTypes.Int) {
                                             candidates.id.push(candidate);
                                             candidates.value.push(candidate);
