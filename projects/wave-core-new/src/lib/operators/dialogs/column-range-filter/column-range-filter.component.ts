@@ -139,7 +139,21 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     add(): void {
         const name = this.form.get('name')?.value as string || 'newlayer' as string;
         const attributeName = this.filters.value[0]['attribute'] as string;
+        const ranges = this.filters.value[0].ranges;
+        const rangemin = ranges[0].min;
+        const rangemax = ranges[0].max;
         const inputLayer = this.form.controls['layer'].value as Layer
+
+
+        // Filter 0 ranges to array
+        let ranges_array: number[][] = [];
+        this.filters.value[0].ranges.forEach((range: any, index: number) => {
+            ranges_array[index] = [];
+            ranges_array[index][0] = range.min;
+            ranges_array[index][1] = range.max;
+        });
+        console.log(ranges_array);
+
 
         this.projectService
             .getWorkflow(inputLayer.workflowId)
@@ -151,7 +165,8 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                             type: 'ColumnRangeFilter',
                             params: {
                                 column: attributeName,
-                                ranges: [[1, 200],], // Placeholder
+                                // ranges: [[1, 4], [6, 12]], // Placeholder
+                                ranges: ranges_array,
                                 keepNulls: false,
                             },
                             sources: {
