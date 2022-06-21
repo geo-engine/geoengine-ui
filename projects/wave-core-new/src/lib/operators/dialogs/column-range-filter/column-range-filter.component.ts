@@ -158,6 +158,29 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         this.projectService
             .getWorkflow(inputLayer.workflowId)
             .pipe(
+                // first
+                mergeMap((inputWorkflow: WorkflowDict) =>
+                    this.projectService.registerWorkflow({ // returns string
+                        type: 'Vector',
+                        operator: {
+                            type: 'ColumnRangeFilter',
+                            params: {
+                                column: attributeName,
+                                // ranges: [[1, 4], [6, 12]], // Placeholder
+                                ranges: ranges_array,
+                                keepNulls: false,
+                            },
+                            sources: {
+                                vector: inputWorkflow.operator
+                            }
+                        } as ColumnRangeFilterDict,
+                    } as WorkflowDict )  // (yes or no?)
+                ),
+
+                // get workflow
+                mergeMap((workflowID: string) => this.projectService.getWorkflow(workflowID)),
+
+                //second
                 mergeMap((inputWorkflow: WorkflowDict) =>
                     this.projectService.registerWorkflow({
                         type: 'Vector',
@@ -173,8 +196,9 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                                 vector: inputWorkflow.operator
                             }
                         } as ColumnRangeFilterDict,
-                    }), // 'as WorkflowDict' (yes or no?)
+                    } as WorkflowDict )  // (yes or no?)
                 ),
+
                 mergeMap((workflowId) =>
                     this.projectService.addLayer(
                         new VectorLayer({
@@ -282,3 +306,5 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     */
 
 }
+
+
