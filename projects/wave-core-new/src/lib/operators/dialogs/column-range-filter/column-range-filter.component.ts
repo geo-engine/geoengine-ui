@@ -165,9 +165,10 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                         operator: {
                             type: 'ColumnRangeFilter',
                             params: {
-                                column: attributeName,
-                                // ranges: [[1, 4], [6, 12]], // Placeholder
-                                ranges: ranges_array,
+                                // column: attributeName,
+                                column: 'natlscale',
+                                ranges: [[8.9, 11.1] ], // Placeholder
+                                // ranges: ranges_array,
                                 keepNulls: false,
                             },
                             sources: {
@@ -177,7 +178,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                     } as WorkflowDict )  // (yes or no?)
                 ),
 
-                // get workflow
+                // get workflow back
                 mergeMap((workflowID: string) => this.projectService.getWorkflow(workflowID)),
 
                 //second
@@ -187,9 +188,10 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                         operator: {
                             type: 'ColumnRangeFilter',
                             params: {
-                                column: attributeName,
-                                // ranges: [[1, 4], [6, 12]], // Placeholder
-                                ranges: ranges_array,
+                                // column: attributeName,
+                                column: 'scalerank',
+                                ranges: [[6.1, 9.1]], // Placeholder
+                                // ranges: ranges_array,
                                 keepNulls: false,
                             },
                             sources: {
@@ -199,6 +201,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                     } as WorkflowDict )  // (yes or no?)
                 ),
 
+                // create layer
                 mergeMap((workflowId) =>
                     this.projectService.addLayer(
                         new VectorLayer({
