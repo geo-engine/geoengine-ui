@@ -118,6 +118,7 @@ export * from './lib/colors/colorizer.model';
 export * from './lib/datasets/dataset.model';
 export * from './lib/layers/layer-metadata.model';
 export * from './lib/layers/layer.model';
+export * from './lib/layers/measurement';
 export * from './lib/layers/symbology/symbology.model';
 export * from './lib/operators/datatype.model';
 export * from './lib/operators/operator-type.model';
