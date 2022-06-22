@@ -21,6 +21,9 @@ import {
     WorkflowDict,
     TimeProjectionDict,
     OgrSourceDict,
+    ClassHistogramDict,
+    OperatorDict,
+    VectorResultDescriptorDict,
 } from 'wave-core';
 import {BehaviorSubject, combineLatest, combineLatestWith, first, mergeMap, Observable, of, Subscription, tap} from 'rxjs';
 import {DataSelectionService} from '../data-selection.service';
@@ -742,6 +745,8 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             selectedSpecies = this.selectedFishSpecies;
         }
 
+        const environmentColumnName = 'environment';
+
         combineLatest([
             this.dataSelectionService.rasterLayer.pipe(
                 mergeMap<RasterLayer | undefined, Observable<RasterLayer>>((layer) => (layer ? of(layer) : of())),
@@ -769,7 +774,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                         operator: {
                             type: 'RasterVectorJoin',
                             params: {
-                                names: ['environment'],
+                                names: [environmentColumnName],
                                 temporalAggregation: 'none',
                                 featureAggregation: 'first',
                             },
@@ -780,24 +785,49 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                         } as RasterVectorJoinDict,
                     }),
                 ),
-                mergeMap((workflowId) => combineLatest([this.projectService.getWorkflow(workflowId), this.dataSelectionService.dataRange])),
-                mergeMap(([workflow, dataRange]) =>
-                    this.projectService.registerWorkflow({
-                        type: 'Plot',
-                        operator: {
+                mergeMap((workflowId) =>
+                    combineLatest([
+                        this.projectService.getWorkflow(workflowId),
+                        this.projectService.getWorkflowMetaData(workflowId) as Observable<VectorResultDescriptorDict>,
+                        this.dataSelectionService.dataRange,
+                    ]),
+                ),
+                mergeMap(([workflow, metadata, dataRange]) => {
+                    let plotWorkflow: OperatorDict;
+
+                    if (
+                        environmentColumnName in metadata.columns &&
+                        metadata.columns[environmentColumnName].measurement.type === 'classification'
+                    ) {
+                        plotWorkflow = {
+                            type: 'ClassHistogram',
+                            params: {
+                                columnName: environmentColumnName,
+                            } as HistogramParams,
+                            sources: {
+                                source: workflow.operator,
+                            },
+                        } as ClassHistogramDict;
+                    } else {
+                        plotWorkflow = {
                             type: 'Histogram',
                             params: {
                                 // TODO: get params from selected data
                                 buckets: 20,
                                 bounds: dataRange,
-                                columnName: 'environment',
+                                columnName: environmentColumnName,
                             } as HistogramParams,
                             sources: {
                                 source: workflow.operator,
                             },
-                        } as HistogramDict,
-                    }),
-                ),
+                        } as HistogramDict;
+                    }
+
+                    return this.projectService.registerWorkflow({
+                        type: 'Plot',
+                        operator: plotWorkflow,
+                    });
+                }),
                 mergeMap((workflowId) =>
                     combineLatest([
                         of(workflowId),
