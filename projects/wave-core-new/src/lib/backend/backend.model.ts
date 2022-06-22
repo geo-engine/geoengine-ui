@@ -511,9 +511,14 @@ export interface GeoEngineError {
 
 export interface LayerCollectionItemDict {
     type: 'collection' | 'layer';
-    id: UUID;
+    id: LayerCollectionItemIdDict;
     name: string;
     description: string;
+}
+
+export interface LayerCollectionItemIdDict {
+    provider: UUID;
+    item: string;
 }
 
 export interface LayerCollectionDict extends LayerCollectionItemDict {

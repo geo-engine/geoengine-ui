@@ -341,7 +341,8 @@ export class BackendService {
 
     getLayerCollectionItems(
         sessionId: UUID,
-        collection: UUID,
+        provider: UUID,
+        collection: string,
         offset: number = 0,
         limit: number = 20,
     ): Observable<Array<LayerCollectionItemDict>> {
@@ -349,7 +350,7 @@ export class BackendService {
         params.setMapped('offset', offset, (r) => r.toString());
         params.setMapped('limit', limit, (r) => r.toString());
 
-        return this.http.get<Array<LayerCollectionItemDict>>(this.config.API_URL + `/layers/${collection}`, {
+        return this.http.get<Array<LayerCollectionItemDict>>(this.config.API_URL + `/layers/collections/${provider}/${collection}`, {
             params: params.httpParams,
             headers: BackendService.authorizationHeader(sessionId),
         });
@@ -360,14 +361,14 @@ export class BackendService {
         params.setMapped('offset', offset, (r) => r.toString());
         params.setMapped('limit', limit, (r) => r.toString());
 
-        return this.http.get<Array<LayerCollectionItemDict>>(this.config.API_URL + '/layers', {
+        return this.http.get<Array<LayerCollectionItemDict>>(this.config.API_URL + '/layers/collections', {
             params: params.httpParams,
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
 
-    getLayerCollectionLayer(sessionId: UUID, layer: UUID): Observable<LayerCollectionLayerDict> {
-        return this.http.get<LayerCollectionLayerDict>(this.config.API_URL + `/layer/${layer}`, {
+    getLayerCollectionLayer(sessionId: UUID, provider: UUID, layer: string): Observable<LayerCollectionLayerDict> {
+        return this.http.get<LayerCollectionLayerDict>(this.config.API_URL + `/layers/${provider}/${layer}`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }

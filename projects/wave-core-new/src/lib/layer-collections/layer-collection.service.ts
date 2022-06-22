@@ -11,10 +11,10 @@ import {LayerCollectionItemDict, LayerCollectionLayerDict, UUID} from '../backen
 export class LayerCollectionService {
     constructor(protected backend: BackendService, protected userService: UserService) {}
 
-    getLayerCollectionItems(collection: UUID, offset = 0, limit = 20): Observable<Array<LayerCollectionItemDict>> {
+    getLayerCollectionItems(provider: UUID, collection: string, offset = 0, limit = 20): Observable<Array<LayerCollectionItemDict>> {
         return this.userService
             .getSessionStream()
-            .pipe(mergeMap((session) => this.backend.getLayerCollectionItems(session.sessionToken, collection, offset, limit)));
+            .pipe(mergeMap((session) => this.backend.getLayerCollectionItems(session.sessionToken, provider, collection, offset, limit)));
     }
 
     getRootLayerCollectionItems(offset = 0, limit = 20): Observable<Array<LayerCollectionItemDict>> {
@@ -23,9 +23,9 @@ export class LayerCollectionService {
             .pipe(mergeMap((session) => this.backend.getRootLayerCollectionItems(session.sessionToken, offset, limit)));
     }
 
-    getLayer(layer: UUID): Observable<LayerCollectionLayerDict> {
+    getLayer(provider: UUID, layer: string): Observable<LayerCollectionLayerDict> {
         return this.userService
             .getSessionStream()
-            .pipe(mergeMap((session) => this.backend.getLayerCollectionLayer(session.sessionToken, layer)));
+            .pipe(mergeMap((session) => this.backend.getLayerCollectionLayer(session.sessionToken, provider, layer)));
     }
 }
