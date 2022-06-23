@@ -186,42 +186,6 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         return new Array(xCoords, yCoords);
     }
 
-    /*
-    _readCoordinates(geometry: OlFeature): string[][] {
-        let xCoords: string[] = [];
-        let yCoords: string[] = [];
-        const type: String = geometry.getGeometry()?.getType();
-        switch (type) {
-            case "Polygon":
-            case "MultiPolygon":
-            case "LineString":
-            case "MultiLineString":
-                const poly: OlPolygon = <OlPolygon>geometry.getGeometry();
-                const l = poly.getCoordinates().length;
-                let allCoords: string[] = [];
-                for (let i = 0; i < l; i++) {
-                    const coord = poly.getCoordinates()[i].toString().split(',');
-                    allCoords = allCoords.concat(coord);
-                }
-                for (let i = 0; i < allCoords.length - 1; i += 2) {
-                    xCoords.push(allCoords[i]);
-                    yCoords.push(allCoords[i + 1]);
-                }
-                break;
-            case "Point": // Works with above (more complicated) method as well ... refactor?
-                const p: OlPoint = <OlPoint>geometry.getGeometry();
-                xCoords = p.getCoordinates()[0].toString().split(',');
-                yCoords = p.getCoordinates()[1].toString().split(',');
-                break;
-            default:
-                xCoords.push('N/A')
-                yCoords.push('N/A')
-                break;
-        }
-        return new Array(xCoords, yCoords);
-    }
-    */
-
     onFullDisplayClick(output: OlFeature): void {
         const coords: string[][] = this.readCoordinates(output);
         this.dialog.open(FullDisplayComponent, { data: { xStrings: coords[0], yStrings: coords[1] } })
