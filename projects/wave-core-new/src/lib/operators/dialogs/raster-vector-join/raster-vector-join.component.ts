@@ -147,7 +147,7 @@ export class RasterVectorJoinComponent implements OnDestroy {
                         throw Error('expected to get vector metadata');
                     }
 
-                    return metadata.columns.keySeq().toArray();
+                    return metadata.dataTypes.keySeq().toArray();
                 }),
             )
             .subscribe((columns) => {
