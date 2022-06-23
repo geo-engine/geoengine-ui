@@ -129,6 +129,12 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         this.emptyTable();
     }
 
+    processRasterLayer(_layer: RasterLayer, _metadata: RasterLayerMetadata, _data: any): void {
+        // TODO: implement
+
+        this.emptyTable();
+    }
+
     /**
      * Show an empty table when there is no data to display
      */
