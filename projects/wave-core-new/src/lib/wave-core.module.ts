@@ -125,12 +125,10 @@ import {TimeStepSelectorComponent} from './time/time-step-selector/time-step-sel
 import {AutocompleteSelectDirective} from './util/directives/autocomplete-select.directive';
 import {TokenLoginComponent} from './users/token-login/token-login.component';
 import {TimeSliderComponent} from './time/time-slider/time-slider.component';
-<<<<<<< HEAD
 import { FullDisplayComponent } from './datatable/table/full-display/full-display.component';
-=======
 import {LayerCollectionListComponent} from './layer-collections/layer-collection-list/layer-collection-list.component';
 import {LayerCollectionNavigationComponent} from './layer-collections/layer-collection-navigation/layer-collection-navigation.component';
->>>>>>> fcd5f2a39a3bde86692c4c73676b97d01feb87cf
+import {ClassHistogramOperatorComponent} from './operators/dialogs/class-histogram-operator/class-histogram-operator.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -188,6 +186,7 @@ const WAVE_COMPONENTS = [
     AutocompleteSelectDirective,
     BoxPlotOperatorComponent,
     ChangeSpatialReferenceComponent,
+    ClassHistogramOperatorComponent,
     CodeEditorComponent,
     ColorAttributeInputComponent,
     ColorBreakpointInputComponent,

@@ -1131,7 +1131,7 @@ export class ProjectService {
             };
         } = {};
 
-        for (const [columnName, dataType] of metadata.columns.entries()) {
+        for (const [columnName, dataType] of metadata.dataTypes.entries()) {
             let aggregateType: 'meanNumber' | 'stringSample' | 'null';
             switch (dataType) {
                 case VectorColumnDataTypes.Category:

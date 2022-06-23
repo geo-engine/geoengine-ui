@@ -53,7 +53,7 @@ export class ScatterplotOperatorComponent implements OnInit, AfterViewInit, OnDe
                     mergeMap((layer: Layer) =>
                         this.projectService.getVectorLayerMetadata(layer as VectorLayer).pipe(
                             map((metadata: VectorLayerMetadata) =>
-                                metadata.columns
+                                metadata.dataTypes
                                     .filter(
                                         (columnType) =>
                                             columnType === VectorColumnDataTypes.Float || columnType === VectorColumnDataTypes.Int,
