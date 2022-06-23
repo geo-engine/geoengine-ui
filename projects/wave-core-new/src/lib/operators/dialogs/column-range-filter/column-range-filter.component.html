@@ -14,9 +14,9 @@
                 subtitle="Please select the filters you want to use."
             ></wave-dialog-section-heading>
             <div fxFlex fxLayout="row" fxLayoutAlign="end">
-                <button type="button" (click)="addFilter(); accordion.closeAll()" mat-button color="primary">
+                <!-- <button type="button" (click)="addFilter(); accordion.closeAll()" mat-button color="primary">
                     <mat-icon>add_circle_outline</mat-icon>
-                </button>
+                </button> -->
             </div>
         </div>
 
@@ -25,9 +25,10 @@
                 <mat-expansion-panel expanded="true" [formGroupName]="filterIndex">
                     <mat-expansion-panel-header>
                         <mat-panel-title>Filter {{ filterIndex + 1 }}</mat-panel-title>
-                        <button *ngIf="filters.length > 1" type="button" (click)="removeFilter(filterIndex)" mat-button color="primary">
+                        <!-- Add/Remove Filter Buttons are commented out while only a single filter is available. -->
+                        <!-- <button *ngIf="filters.length > 1" type="button" (click)="removeFilter(filterIndex)" mat-button color="primary">
                             <mat-icon>remove_circle_outline</mat-icon>
-                        </button>
+                        </button> -->
                     </mat-expansion-panel-header>
 
                     <!--            Attribut Selection-->
