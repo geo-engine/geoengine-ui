@@ -11,7 +11,22 @@
         <!-- Coordinates Column -->
         <ng-container matColumnDef="coordinates">
             <th mat-header-cell *matHeaderCellDef>Coordinates </th>
-            <td mat-cell *matCellDef="let element">{{ coordinateFromGeometry(element) }}</td> 
+            <td mat-cell id="coordCell" *matCellDef="let element" >
+                {{ coordinateFromGeometry(element) }}
+                <button mat-icon-button color="primary" aria-label="Display full coordinates" matTooltip="Display full coordinates" (click)="onFullDisplayClick(element)"><mat-icon>explore</mat-icon></button>
+            </td> 
+        </ng-container>
+
+        <!-- Start Column -->
+        <ng-container matColumnDef="start">
+            <th mat-header-cell *matHeaderCellDef>Start </th>
+            <td mat-cell *matCellDef="let element">{{ readTimePropertyStart(element) }}</td> 
+        </ng-container>
+        
+        <!-- End Column -->
+        <ng-container matColumnDef="end">
+            <th mat-header-cell *matHeaderCellDef>End </th>
+            <td mat-cell *matCellDef="let element">{{ readTimePropertyEnd(element) }}</td> 
         </ng-container>
 
         <!-- Data Columns -->

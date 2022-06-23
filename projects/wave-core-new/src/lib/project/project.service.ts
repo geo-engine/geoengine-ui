@@ -1261,7 +1261,7 @@ export class ProjectService {
                             },
                             sessionToken,
                         )
-                        .pipe(map((x) => VectorData.olParse(time, projection, requestExtent, x)));
+                        .pipe(map((x) => this.addTimeToProperties(x)), map((x) => VectorData.olParse(time, projection, requestExtent, x)));
                 }),
                 tap(
                     () => loadingState$.next(LoadingState.OK),
@@ -1275,6 +1275,16 @@ export class ProjectService {
                 (data) => data$.next(data),
                 (error) => error, // ignore error
             );
+    }
+
+    private addTimeToProperties(x: any): any {
+        x['features'].forEach((element: any) => {
+            let start: string = element['when']['start'];
+            let end: string = element['when']['end'];
+            element['properties']['start'] = start;
+            element['properties']['end'] = end;
+        });
+        return x;
     }
 
     private createLayerChangesStream(layer: Layer): void {

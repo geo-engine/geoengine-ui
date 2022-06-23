@@ -11,17 +11,21 @@ import {
     SimpleChanges,
     ChangeDetectorRef,
 } from '@angular/core';
-import {MatPaginator} from '@angular/material/paginator';
-import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
-import {RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metadata.model';
-import {Layer, RasterLayer, VectorLayer} from '../../layers/layer.model';
-import {ResultTypes} from '../../operators/result-type.model';
-import {Feature as OlFeature} from 'ol';
-import {FeatureSelection, ProjectService} from '../../project/project.service';
-import {VectorData} from '../../layers/layer-data.model';
-import {DataSource} from '@angular/cdk/collections';
+import { MatPaginator } from '@angular/material/paginator';
+import { combineLatest, Observable, Subject, Subscription } from 'rxjs';
+import { RasterLayerMetadata, VectorLayerMetadata } from '../../layers/layer-metadata.model';
+import { Layer, RasterLayer, VectorLayer } from '../../layers/layer.model';
+import { ResultTypes } from '../../operators/result-type.model';
+import { Feature as OlFeature } from 'ol';
+import { FeatureSelection, ProjectService } from '../../project/project.service';
+import { VectorData } from '../../layers/layer-data.model';
+import { DataSource } from '@angular/cdk/collections';
 import OlGeometry from 'ol/geom/Geometry';
 import OlPoint from 'ol/geom/Point';
+import OlLines from 'ol/geom/LineString';
+import OlPolygon from 'ol/geom/Polygon';
+import { MatDialog } from '@angular/material/dialog';
+import { FullDisplayComponent } from './full-display/full-display.component';
 
 @Component({
     selector: 'wave-datatable',
@@ -46,10 +50,11 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     protected selectedFeatureSubscription?: Subscription = undefined;
 
     constructor(
+        public dialog: MatDialog,
         protected readonly projectService: ProjectService,
         protected readonly hostElement: ElementRef<HTMLElement>,
         protected readonly changeDetectorRef: ChangeDetectorRef,
-    ) {}
+    ) { }
 
     ngOnInit(): void {
         if (this.layer) {
@@ -118,7 +123,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
 
     processVectorLayer(_layer: VectorLayer, metadata: VectorLayerMetadata, data: VectorData): void {
         this.featureColumns = metadata.columns.keySeq().toArray();
-        this.displayedColumns = ['_____select', 'coordinates'].concat(this.featureColumns);
+        this.displayedColumns = ['_____select', 'coordinates', 'start', 'end'].concat(this.featureColumns);
         this.dataSource.data = data.data;
         setTimeout(() => this.navigatePage(this.projectService.getSelectedFeature()));
     }
@@ -143,13 +148,69 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         return feature.getId() === this.projectService.getSelectedFeature().feature;
     }
 
-    coordinateFromGeometry(geometry: OlFeature): string {
-        let p: OlPoint = <OlPoint>geometry.getGeometry();
-        let xCoord: string = p.getCoordinates()[0].toString();
-        let yCoord: string = p.getCoordinates()[1].toString();
-        return ` ${xCoord} , ${yCoord} `
+    coordinateFromGeometry(geometry: OlFeature): string { // For truncated coordinate view in table
+        const coords: string[][] = this.readCoordinates(geometry);
+        const contd: string = (coords[0].length > 1 ? '...' : '');
+        const output: string = ` ${coords[0][0]}, ${coords[1][0]} ${contd}`;
+        return output;
     }
 
+    /**
+     * Extracts the coordinates of an open layers feature as strings
+     * @param geometry The feature to extract coordinates from
+     * @returns A nested string[][] where index 0 of the outer array are x-Coordinates, index 1 are y-Coordinates
+     */
+    readCoordinates(geometry: OlFeature): string[][] {
+        let xCoords: string[] = [];
+        let yCoords: string[] = [];
+        const type: String = geometry.getGeometry()?.getType();
+        switch (type) {
+            case "Polygon":
+            case "MultiPolygon":
+            case "LineString":
+            case "MultiLineString":
+                const poly: OlPolygon = <OlPolygon>geometry.getGeometry();
+                const l = poly.getCoordinates().length;
+                let allCoords: string[] = [];
+                for (let i = 0; i < l; i++) {
+                    const coord = poly.getCoordinates()[i].toString().split(',');
+                    allCoords = allCoords.concat(coord);
+                }
+                for (let i = 0; i < allCoords.length - 1; i += 2) {
+                    xCoords.push(allCoords[i]);
+                    yCoords.push(allCoords[i + 1]);
+                }
+                break;
+            case "Point": // Works with above (more complicated) method as well ... refactor?
+                const p: OlPoint = <OlPoint>geometry.getGeometry();
+                xCoords = p.getCoordinates()[0].toString().split(',');
+                yCoords = p.getCoordinates()[1].toString().split(',');
+                break;
+            default:
+                xCoords.push('N/A')
+                yCoords.push('N/A')
+                break;
+        }
+        return new Array(xCoords, yCoords);
+    }
+
+    onFullDisplayClick(output: OlFeature): void {
+        const coords: string[][] = this.readCoordinates(output);
+        this.dialog.open(FullDisplayComponent, { data: { xStrings: coords[0], yStrings: coords[1] } })
+    }
+
+    readTimePropertyStart(geometry: OlFeature): string {
+        let minimum: string = '-262144-01-01T00:00:00+00:00';
+        let result: string = geometry['values_']['start'];
+        return (result == minimum ? "-∞" : result);
+    }
+
+    readTimePropertyEnd(geometry: OlFeature): string {
+        // let maximum: string = '-262144-01-01T00:00:00+00:00';
+        let maximum: string = '+262143-12-31T23:59:59.999+00:00';
+        let result: string = geometry['values_']['end'];
+        return (result == maximum ? "∞" : result);
+    }
 
     select(feature: OlFeature<OlGeometry>, select: boolean): void {
         if (select) {
