@@ -1,9 +1,9 @@
 import { Component, OnInit, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 import { ResultTypes } from '../../result-type.model';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { of, ReplaySubject, Subscription } from 'rxjs';
+import { from, of, pipe, ReplaySubject, Subscription } from 'rxjs';
 import { ProjectService } from '../../../project/project.service';
-import { map, mergeMap } from 'rxjs/operators';
+import { map, mergeMap, tap } from 'rxjs/operators';
 import { Layer, VectorLayer } from '../../../layers/layer.model';
 import { VectorLayerMetadata } from '../../../layers/layer-metadata.model';
 import { VectorColumnDataTypes } from '../../datatype.model';
@@ -12,6 +12,7 @@ import { ClusteredPointSymbology, PointSymbology } from '../../../layers/symbolo
 import { colorToDict } from '../../../colors/color';
 import { RandomColorService } from '../../../util/services/random-color.service';
 import { ColumnRangeFilterDict } from '../../../backend/operator.model';
+import { Observable } from 'ol';
 
 @Component({
     selector: 'wave-column-range-filter',
@@ -144,6 +145,8 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         const rangemax = ranges[0].max;
         const inputLayer = this.form.controls['layer'].value as Layer
 
+        // Prepare filter data for iteration
+        let filterObservable = from (this.filters.value);
 
         // Filter 0 ranges to array
         let ranges_array: number[][] = [];
@@ -152,13 +155,12 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
             ranges_array[index][0] = range.min;
             ranges_array[index][1] = range.max;
         });
-        console.log(ranges_array);
-
 
         this.projectService
             .getWorkflow(inputLayer.workflowId)
             .pipe(
-                // first
+
+                // first filter
                 mergeMap((inputWorkflow: WorkflowDict) =>
                     this.projectService.registerWorkflow({ // returns string
                         type: 'Vector',
@@ -175,13 +177,13 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                                 vector: inputWorkflow.operator
                             }
                         } as ColumnRangeFilterDict,
-                    } as WorkflowDict )  // (yes or no?)
+                    } as WorkflowDict )  
                 ),
 
                 // get workflow back
                 mergeMap((workflowID: string) => this.projectService.getWorkflow(workflowID)),
 
-                //second
+                //second filter
                 mergeMap((inputWorkflow: WorkflowDict) =>
                     this.projectService.registerWorkflow({
                         type: 'Vector',
@@ -198,12 +200,48 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                                 vector: inputWorkflow.operator
                             }
                         } as ColumnRangeFilterDict,
-                    } as WorkflowDict )  // (yes or no?)
+                    } as WorkflowDict ) 
                 ),
 
-                // create layer
+                // create layer from WorkflowDict
                 mergeMap((workflowId) =>
-                    this.projectService.addLayer(
+                        this.createLayer(workflowId, name)
+                    // this.projectService.addLayer(
+                    //     new VectorLayer({
+                    //         workflowId,
+                    //         name,
+                    //         symbology: ClusteredPointSymbology.fromPointSymbologyDict({
+                    //             type: 'point',
+                    //             radius: {
+                    //                 type: 'static',
+                    //                 value: PointSymbology.DEFAULT_POINT_RADIUS,
+                    //             },
+                    //             stroke: {
+                    //                 width: {
+                    //                     type: 'static',
+                    //                     value: 1,
+                    //                 },
+                    //                 color: {
+                    //                     type: 'static',
+                    //                     color: [0, 0, 0, 255],
+                    //                 },
+                    //             },
+                    //             fillColor: {
+                    //                 type: 'static',
+                    //                 color: colorToDict(this.randomColorService.getRandomColorRgba()),
+                    //             },
+                    //         }),
+                    //         isLegendVisible: false,
+                    //         isVisible: true,
+                    //     }),
+                    // ),
+                )
+            ).subscribe();
+    }
+
+
+    createLayer(workflowId: string, name: string) {
+                    return this.projectService.addLayer(
                         new VectorLayer({
                             workflowId,
                             name,
@@ -231,11 +269,10 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                             isLegendVisible: false,
                             isVisible: true,
                         }),
-                    ),
-                )
-            ).subscribe();
+                    );
     }
 
+    
     /*
     _add(): void { // moved temporarily
         const newLayerName = this.form.get('name')?.value as string || 'newlayer' as string;
