@@ -189,7 +189,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         if (this.ebvTree.tree.timeCoverage.type === 'regular') {
             const timeCoverage = this.ebvTree.tree.timeCoverage as TimeCoverageRegular;
 
-            const timeStep = timeStepDictTotimeStepDuration(timeCoverage.timeStep);
+            const timeStep = timeStepDictTotimeStepDuration(timeCoverage.step);
 
             let time = new Time(moment.unix(timeCoverage.start / 1_000).utc());
             const timeEnd = new Time(moment.unix(timeCoverage.end / 1_000).utc());
@@ -580,7 +580,7 @@ interface TimeCoverageRegular {
     type: 'regular';
     start: number;
     end: number;
-    timeStep: TimeStepDict;
+    step: TimeStepDict;
 }
 
 interface TimeCoverageList {
