@@ -5,7 +5,6 @@ import {
     ProjectService,
     UserService,
     UUID,
-    TimeIntervalDict,
     TimeStepDict,
     Time,
     RasterLayer,
@@ -187,19 +186,29 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
         const timeSteps: Array<Time> = [];
 
-        const timeStep = timeStepDictTotimeStepDuration(this.ebvTree.tree.timeStep);
+        if (this.ebvTree.tree.timeCoverage.type === 'regular') {
+            const timeCoverage = this.ebvTree.tree.timeCoverage as TimeCoverageRegular;
 
-        let time = new Time(moment.unix(this.ebvTree.tree.time.start / 1_000).utc());
-        const timeEnd = new Time(moment.unix(this.ebvTree.tree.time.end / 1_000).utc());
+            const timeStep = timeStepDictTotimeStepDuration(timeCoverage.step);
 
-        while (time < timeEnd) {
-            timeSteps.push(time);
-            time = time.addDuration(timeStep);
-        }
+            let time = new Time(moment.unix(timeCoverage.start / 1_000).utc());
+            const timeEnd = new Time(moment.unix(timeCoverage.end / 1_000).utc());
 
-        if (timeSteps.length === 0) {
-            // only one time step
-            timeSteps.push(time);
+            while (time < timeEnd) {
+                timeSteps.push(time);
+                time = time.addDuration(timeStep);
+            }
+
+            if (timeSteps.length === 0) {
+                // only one time step
+                timeSteps.push(time);
+            }
+        } else if (this.ebvTree.tree.timeCoverage.type === 'list') {
+            const timeCoverage = this.ebvTree.tree.timeCoverage as TimeCoverageList;
+
+            for (const time of timeCoverage.timeStamps) {
+                timeSteps.push(new Time(moment.unix(time / 1_000).utc()));
+            }
         }
 
         this.projectService.clearLayers();
@@ -296,8 +305,8 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                         workflowId,
                         {
                             time: {
-                                start: (this.ebvTree as EbvHierarchy).tree.time.start,
-                                end: (this.ebvTree as EbvHierarchy).tree.time.end,
+                                start: timeStartFromCoverage((this.ebvTree as EbvHierarchy).tree.timeCoverage),
+                                end: timeEndFromCoverage((this.ebvTree as EbvHierarchy).tree.timeCoverage),
                             },
                             bbox: extentToBboxDict([
                                 selectedCountry.minx,
@@ -563,9 +572,20 @@ interface EbvTree {
     spatialReference: string;
     groups: Array<EbvTreeSubgroup>;
     entities: Array<EbvTreeEntity>;
-    time: TimeIntervalDict;
-    timeStep: TimeStepDict;
+    timeCoverage: TimeCoverageRegular | TimeCoverageList;
     colorizer: ColorizerDict;
+}
+
+interface TimeCoverageRegular {
+    type: 'regular';
+    start: number;
+    end: number;
+    step: TimeStepDict;
+}
+
+interface TimeCoverageList {
+    type: 'regular';
+    timeStamps: [number];
 }
 
 interface EbvTreeSubgroup {
@@ -598,4 +618,28 @@ function guessDataRange(colorizer: Colorizer): {min: number; max: number} {
     }
 
     return {min, max};
+}
+
+function timeStartFromCoverage(timeCoverage: TimeCoverageRegular | TimeCoverageList): number {
+    if (timeCoverage.type === 'regular') {
+        const timeCoverageRegular = timeCoverage as TimeCoverageRegular;
+        return timeCoverageRegular.start;
+    } else if (timeCoverage.type === 'list') {
+        const timeCoverageList = timeCoverage as TimeCoverageList;
+        return timeCoverageList.timeStamps[0];
+    } else {
+        throw Error('unsupported time coverage type ' + timeCoverage.type);
+    }
+}
+
+function timeEndFromCoverage(timeCoverage: TimeCoverageRegular | TimeCoverageList): number {
+    if (timeCoverage.type === 'regular') {
+        const timeCoverageRegular = timeCoverage as TimeCoverageRegular;
+        return timeCoverageRegular.end;
+    } else if (timeCoverage.type === 'list') {
+        const timeCoverageList = timeCoverage as TimeCoverageList;
+        return timeCoverageList.timeStamps[timeCoverageList.timeStamps.length - 1];
+    } else {
+        throw Error('unsupported time coverage type ' + timeCoverage.type);
+    }
 }
