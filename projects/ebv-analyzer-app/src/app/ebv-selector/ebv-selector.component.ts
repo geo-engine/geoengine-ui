@@ -23,6 +23,8 @@ import {
     WGS_84,
     LayoutService,
     RasterSymbologyEditorComponent,
+    LinearGradient,
+    LogarithmicGradient,
 } from 'wave-core';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {AppConfig} from '../app-config.service';
@@ -167,6 +169,11 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
     setEbvPath(ebvSubgroup: EbvTreeSubgroup, position: number): void {
         this.ebvPath.length = position;
         this.ebvPath.push(ebvSubgroup);
+
+        // reset entity, since we changed the subgroup
+        this.ebvEntity = undefined;
+        this.ebvDatasetId = undefined;
+        this.isAddButtonVisible.next(false);
     }
 
     editSymbology(): void {
@@ -213,11 +220,15 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
         this.projectService.clearLayers();
 
+        const currentGroup = this.ebvPath[this.ebvPath.length - 1];
+
         this.generateGdalSourceNetCdfLayer().subscribe((ebvLayer) => {
             this.ebvLayer = ebvLayer;
             this.isEbvLayerSet.next(true);
 
-            const dataRange = guessDataRange(ebvLayer.symbology.colorizer);
+            const dataRange = currentGroup.dataRange
+                ? {min: currentGroup.dataRange[0], max: currentGroup.dataRange[1]}
+                : guessDataRange(ebvLayer.symbology.colorizer);
 
             combineLatest([
                 this.dataSelectionService.setRasterLayer(this.ebvLayer, timeSteps, dataRange),
@@ -417,22 +428,6 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         this.showEbv();
     }
 
-    // private generateGdalSourceNetCdfLayer(): RasterLayer {
-    //     if (!this.ebvDataset || !this.ebvDataLoadingInfo) {
-    //         throw Error('Missing dataset and loading info');
-    //     }
-
-    //     const path = this.ebvDataset.dataset_path;
-    //     const netCdfSubdataset = '/' + this.ebvSubgroupValues.map((value) => value.name).join('/');
-
-    //     const timePoints = this.ebvDataLoadingInfo.time_points;
-    //     const readableTimePoints = timePoints.map((t) => moment.unix(t).utc().format());
-    //     const endBound = moment.unix(timePoints[timePoints.length - 1]).add(1, 'days');
-
-    //     const crsCode = this.ebvDataLoadingInfo.crs_code;
-
-    //     const ebvDataTypeCode = 'Float64';
-    //     const ebvProjectionCode = crsCode ? crsCode : 'EPSG:4326';
     private generateGdalSourceNetCdfLayer(): Observable<RasterLayer> {
         if (!this.ebvDataset || !this.ebvTree || !this.ebvDatasetId) {
             throw Error('Missing dataset and loading info');
@@ -452,7 +447,42 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
             },
         };
 
-        const colorizer = Colorizer.fromDict(this.ebvTree.tree.colorizer);
+        let colorizer = Colorizer.fromDict(this.ebvTree.tree.colorizer);
+
+        const currentGroup = this.ebvPath[this.ebvPath.length - 1];
+        if (currentGroup.dataRange) {
+            // rescale colors in colorizer
+
+            if (colorizer instanceof LinearGradient) {
+                const step = (currentGroup.dataRange[1] - currentGroup.dataRange[0]) / (colorizer.breakpoints.length - 1);
+
+                const breakpoints = [];
+
+                let value = currentGroup.dataRange[0];
+
+                for (const breakpoint of colorizer.breakpoints) {
+                    breakpoints.push(breakpoint.cloneWithValue(value));
+
+                    value += step;
+                }
+
+                colorizer = new LinearGradient(breakpoints, colorizer.noDataColor, colorizer.defaultColor);
+            } else if (colorizer instanceof LogarithmicGradient && currentGroup.dataRange[0] > 0) {
+                const step = (currentGroup.dataRange[1] - currentGroup.dataRange[0]) / (colorizer.breakpoints.length - 1);
+
+                const breakpoints = [];
+
+                let value = currentGroup.dataRange[0];
+
+                for (const breakpoint of colorizer.breakpoints) {
+                    breakpoints.push(breakpoint.cloneWithValue(value));
+
+                    value += step;
+                }
+
+                colorizer = new LogarithmicGradient(breakpoints, colorizer.noDataColor, colorizer.defaultColor);
+            }
+        }
 
         return this.projectService.registerWorkflow(workflow).pipe(
             map((workflowId) => {
@@ -593,6 +623,7 @@ interface EbvTreeSubgroup {
     title: string;
     description: string;
     dataType?: 'U8' | 'U16' | 'U32' | 'U64' | 'I8' | 'I16' | 'I32' | 'I64' | 'F32' | 'F64';
+    dataRange?: [number, number];
     groups: Array<EbvTreeSubgroup>;
 }
 
