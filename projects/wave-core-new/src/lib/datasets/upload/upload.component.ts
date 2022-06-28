@@ -17,6 +17,7 @@ import {
     OgrSourceTimeFormatDict,
     TimeStepGranularityDict,
     UUID,
+    VectorColumnInfoDict,
 } from '../../backend/backend.model';
 import {NotificationService} from '../../notification.service';
 import {ProjectService} from '../../project/project.service';
@@ -438,20 +439,38 @@ export class UploadComponent {
         return undefined;
     }
 
-    private getColumnsAsMap(): {[key: string]: 'categorical' | 'int' | 'float' | 'text'} {
+    private getColumnsAsMap(): {[key: string]: VectorColumnInfoDict} {
         const formMeta = this.formMetaData.controls;
-        const columns: {[key: string]: 'categorical' | 'int' | 'float' | 'text'} = {};
+        const columns: {[key: string]: VectorColumnInfoDict} = {};
 
         for (const column of formMeta.columnsText.value as Array<string>) {
-            columns[column] = 'text';
+            columns[column] = {
+                dataType: 'text',
+                measurement: {
+                    // TODO: incorporate in selection
+                    type: 'unitless',
+                },
+            };
         }
 
         for (const column of formMeta.columnsInt.value as Array<string>) {
-            columns[column] = 'int';
+            columns[column] = {
+                dataType: 'int',
+                measurement: {
+                    // TODO: incorporate in selection
+                    type: 'unitless',
+                },
+            };
         }
 
         for (const column of formMeta.columnsFloat.value as Array<string>) {
-            columns[column] = 'float';
+            columns[column] = {
+                dataType: 'float',
+                measurement: {
+                    // TODO: incorporate in selection
+                    type: 'unitless',
+                },
+            };
         }
         return columns;
     }

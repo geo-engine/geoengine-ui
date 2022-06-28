@@ -5,7 +5,6 @@ import {
     ProjectService,
     UserService,
     UUID,
-    TimeIntervalDict,
     TimeStepDict,
     Time,
     RasterLayer,
@@ -24,6 +23,8 @@ import {
     WGS_84,
     LayoutService,
     RasterSymbologyEditorComponent,
+    LinearGradient,
+    LogarithmicGradient,
 } from 'wave-core';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {AppConfig} from '../app-config.service';
@@ -168,6 +169,11 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
     setEbvPath(ebvSubgroup: EbvTreeSubgroup, position: number): void {
         this.ebvPath.length = position;
         this.ebvPath.push(ebvSubgroup);
+
+        // reset entity, since we changed the subgroup
+        this.ebvEntity = undefined;
+        this.ebvDatasetId = undefined;
+        this.isAddButtonVisible.next(false);
     }
 
     editSymbology(): void {
@@ -187,28 +193,42 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
         const timeSteps: Array<Time> = [];
 
-        const timeStep = timeStepDictTotimeStepDuration(this.ebvTree.tree.timeStep);
+        if (this.ebvTree.tree.timeCoverage.type === 'regular') {
+            const timeCoverage = this.ebvTree.tree.timeCoverage as TimeCoverageRegular;
 
-        let time = new Time(moment.unix(this.ebvTree.tree.time.start / 1_000).utc());
-        const timeEnd = new Time(moment.unix(this.ebvTree.tree.time.end / 1_000).utc());
+            const timeStep = timeStepDictTotimeStepDuration(timeCoverage.step);
 
-        while (time < timeEnd) {
-            timeSteps.push(time);
-            time = time.addDuration(timeStep);
-        }
+            let time = new Time(moment.unix(timeCoverage.start / 1_000).utc());
+            const timeEnd = new Time(moment.unix(timeCoverage.end / 1_000).utc());
 
-        if (timeSteps.length === 0) {
-            // only one time step
-            timeSteps.push(time);
+            while (time < timeEnd) {
+                timeSteps.push(time);
+                time = time.addDuration(timeStep);
+            }
+
+            if (timeSteps.length === 0) {
+                // only one time step
+                timeSteps.push(time);
+            }
+        } else if (this.ebvTree.tree.timeCoverage.type === 'list') {
+            const timeCoverage = this.ebvTree.tree.timeCoverage as TimeCoverageList;
+
+            for (const time of timeCoverage.timeStamps) {
+                timeSteps.push(new Time(moment.unix(time / 1_000).utc()));
+            }
         }
 
         this.projectService.clearLayers();
+
+        const currentGroup = this.ebvPath[this.ebvPath.length - 1];
 
         this.generateGdalSourceNetCdfLayer().subscribe((ebvLayer) => {
             this.ebvLayer = ebvLayer;
             this.isEbvLayerSet.next(true);
 
-            const dataRange = guessDataRange(ebvLayer.symbology.colorizer);
+            const dataRange = currentGroup.dataRange
+                ? {min: currentGroup.dataRange[0], max: currentGroup.dataRange[1]}
+                : guessDataRange(ebvLayer.symbology.colorizer);
 
             combineLatest([
                 this.dataSelectionService.setRasterLayer(this.ebvLayer, timeSteps, dataRange),
@@ -296,8 +316,8 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                         workflowId,
                         {
                             time: {
-                                start: (this.ebvTree as EbvHierarchy).tree.time.start,
-                                end: (this.ebvTree as EbvHierarchy).tree.time.end,
+                                start: timeStartFromCoverage((this.ebvTree as EbvHierarchy).tree.timeCoverage),
+                                end: timeEndFromCoverage((this.ebvTree as EbvHierarchy).tree.timeCoverage),
                             },
                             bbox: extentToBboxDict([
                                 selectedCountry.minx,
@@ -408,22 +428,6 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         this.showEbv();
     }
 
-    // private generateGdalSourceNetCdfLayer(): RasterLayer {
-    //     if (!this.ebvDataset || !this.ebvDataLoadingInfo) {
-    //         throw Error('Missing dataset and loading info');
-    //     }
-
-    //     const path = this.ebvDataset.dataset_path;
-    //     const netCdfSubdataset = '/' + this.ebvSubgroupValues.map((value) => value.name).join('/');
-
-    //     const timePoints = this.ebvDataLoadingInfo.time_points;
-    //     const readableTimePoints = timePoints.map((t) => moment.unix(t).utc().format());
-    //     const endBound = moment.unix(timePoints[timePoints.length - 1]).add(1, 'days');
-
-    //     const crsCode = this.ebvDataLoadingInfo.crs_code;
-
-    //     const ebvDataTypeCode = 'Float64';
-    //     const ebvProjectionCode = crsCode ? crsCode : 'EPSG:4326';
     private generateGdalSourceNetCdfLayer(): Observable<RasterLayer> {
         if (!this.ebvDataset || !this.ebvTree || !this.ebvDatasetId) {
             throw Error('Missing dataset and loading info');
@@ -443,7 +447,42 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
             },
         };
 
-        const colorizer = Colorizer.fromDict(this.ebvTree.tree.colorizer);
+        let colorizer = Colorizer.fromDict(this.ebvTree.tree.colorizer);
+
+        const currentGroup = this.ebvPath[this.ebvPath.length - 1];
+        if (currentGroup.dataRange) {
+            // rescale colors in colorizer
+
+            if (colorizer instanceof LinearGradient) {
+                const step = (currentGroup.dataRange[1] - currentGroup.dataRange[0]) / (colorizer.breakpoints.length - 1);
+
+                const breakpoints = [];
+
+                let value = currentGroup.dataRange[0];
+
+                for (const breakpoint of colorizer.breakpoints) {
+                    breakpoints.push(breakpoint.cloneWithValue(value));
+
+                    value += step;
+                }
+
+                colorizer = new LinearGradient(breakpoints, colorizer.noDataColor, colorizer.defaultColor);
+            } else if (colorizer instanceof LogarithmicGradient && currentGroup.dataRange[0] > 0) {
+                const step = (currentGroup.dataRange[1] - currentGroup.dataRange[0]) / (colorizer.breakpoints.length - 1);
+
+                const breakpoints = [];
+
+                let value = currentGroup.dataRange[0];
+
+                for (const breakpoint of colorizer.breakpoints) {
+                    breakpoints.push(breakpoint.cloneWithValue(value));
+
+                    value += step;
+                }
+
+                colorizer = new LogarithmicGradient(breakpoints, colorizer.noDataColor, colorizer.defaultColor);
+            }
+        }
 
         return this.projectService.registerWorkflow(workflow).pipe(
             map((workflowId) => {
@@ -563,9 +602,20 @@ interface EbvTree {
     spatialReference: string;
     groups: Array<EbvTreeSubgroup>;
     entities: Array<EbvTreeEntity>;
-    time: TimeIntervalDict;
-    timeStep: TimeStepDict;
+    timeCoverage: TimeCoverageRegular | TimeCoverageList;
     colorizer: ColorizerDict;
+}
+
+interface TimeCoverageRegular {
+    type: 'regular';
+    start: number;
+    end: number;
+    step: TimeStepDict;
+}
+
+interface TimeCoverageList {
+    type: 'regular';
+    timeStamps: [number];
 }
 
 interface EbvTreeSubgroup {
@@ -573,6 +623,7 @@ interface EbvTreeSubgroup {
     title: string;
     description: string;
     dataType?: 'U8' | 'U16' | 'U32' | 'U64' | 'I8' | 'I16' | 'I32' | 'I64' | 'F32' | 'F64';
+    dataRange?: [number, number];
     groups: Array<EbvTreeSubgroup>;
 }
 
@@ -598,4 +649,28 @@ function guessDataRange(colorizer: Colorizer): {min: number; max: number} {
     }
 
     return {min, max};
+}
+
+function timeStartFromCoverage(timeCoverage: TimeCoverageRegular | TimeCoverageList): number {
+    if (timeCoverage.type === 'regular') {
+        const timeCoverageRegular = timeCoverage as TimeCoverageRegular;
+        return timeCoverageRegular.start;
+    } else if (timeCoverage.type === 'list') {
+        const timeCoverageList = timeCoverage as TimeCoverageList;
+        return timeCoverageList.timeStamps[0];
+    } else {
+        throw Error('unsupported time coverage type ' + timeCoverage.type);
+    }
+}
+
+function timeEndFromCoverage(timeCoverage: TimeCoverageRegular | TimeCoverageList): number {
+    if (timeCoverage.type === 'regular') {
+        const timeCoverageRegular = timeCoverage as TimeCoverageRegular;
+        return timeCoverageRegular.end;
+    } else if (timeCoverage.type === 'list') {
+        const timeCoverageList = timeCoverage as TimeCoverageList;
+        return timeCoverageList.timeStamps[timeCoverageList.timeStamps.length - 1];
+    } else {
+        throw Error('unsupported time coverage type ' + timeCoverage.type);
+    }
 }

@@ -66,6 +66,18 @@ export interface HistogramDict extends OperatorDict {
     };
 }
 
+export interface ClassHistogramParams extends OperatorParams {
+    columnName?: string;
+}
+
+export interface ClassHistogramDict extends OperatorDict {
+    type: 'ClassHistogram';
+    params: ClassHistogramParams;
+    sources: {
+        source: SourceOperatorDict | OperatorDict;
+    };
+}
+
 export interface BoxPlotParams extends OperatorParams {
     columnNames: Array<string>;
     includeNoData: boolean;
