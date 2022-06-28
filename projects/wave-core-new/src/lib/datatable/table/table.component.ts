@@ -24,6 +24,7 @@ import OlGeometry from 'ol/geom/Geometry';
 import OlPoint from 'ol/geom/Point';
 import OlLines from 'ol/geom/LineString';
 import OlPolygon from 'ol/geom/Polygon';
+import OlMultipolygon from 'ol/geom/MultiPolygon';
 import { MatDialog } from '@angular/material/dialog';
 import { FullDisplayComponent } from './full-display/full-display.component';
 
@@ -161,7 +162,6 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
      * @returns A nested string[][] where index 0 of the outer array are x-Coordinates, index 1 are y-Coordinates
      */
     readCoordinates(geometry: OlFeature): string[][] {
-        console.log(geometry);
         const type: String = geometry.getGeometry()?.getType();
         let xCoords: string[] = [];
         let yCoords: string[] = [];
@@ -188,7 +188,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
 
     onFullDisplayClick(output: OlFeature): void {
         const coords: string[][] = this.readCoordinates(output);
-        this.dialog.open(FullDisplayComponent, { data: { xStrings: coords[0], yStrings: coords[1] } })
+        this.dialog.open(FullDisplayComponent, { data: { xStrings: coords[0], yStrings: coords[1], geometry: output.getGeometry() } })
     }
 
     readTimePropertyStart(geometry: OlFeature): string {
