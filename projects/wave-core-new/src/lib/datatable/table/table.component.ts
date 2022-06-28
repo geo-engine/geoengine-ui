@@ -21,10 +21,7 @@ import { FeatureSelection, ProjectService } from '../../project/project.service'
 import { VectorData } from '../../layers/layer-data.model';
 import { DataSource } from '@angular/cdk/collections';
 import OlGeometry from 'ol/geom/Geometry';
-import OlPoint from 'ol/geom/Point';
-import OlLines from 'ol/geom/LineString';
 import OlPolygon from 'ol/geom/Polygon';
-import OlMultipolygon from 'ol/geom/MultiPolygon';
 import { MatDialog } from '@angular/material/dialog';
 import { FullDisplayComponent } from './full-display/full-display.component';
 
