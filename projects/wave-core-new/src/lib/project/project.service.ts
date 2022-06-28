@@ -1261,7 +1261,7 @@ export class ProjectService {
                             },
                             sessionToken,
                         )
-                        .pipe(map((x) => this.addTimeToProperties(x)), tap((x) => console.log(x)), map((x) => VectorData.olParse(time, projection, requestExtent, x)));
+                        .pipe(map((x) => this.addTimeToProperties(x)), map((x) => VectorData.olParse(time, projection, requestExtent, x)));
                 }),
                 tap(
                     () => loadingState$.next(LoadingState.OK),
