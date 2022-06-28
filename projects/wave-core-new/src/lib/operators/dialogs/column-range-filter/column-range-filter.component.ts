@@ -132,25 +132,45 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
             .getWorkflow(inputLayer.workflowId)
             .pipe(
                 mergeMap((inputWorkflow: WorkflowDict) =>
-                    this.projectService.registerWorkflow({
-                        type: 'Vector',
+                    this.projectService.registerWorkflow(
+                    this.createWorkflow(attributeName, filterRanges, inputWorkflow)
+                    //     {
+                    //     type: 'Vector',
+                    //     operator: {
+                    //         type: 'ColumnRangeFilter',
+                    //         params: {
+                    //             column: attributeName,
+                    //             ranges: filterRanges,
+                    //             keepNulls: false,
+                    //         },
+                    //         sources: {
+                    //             vector: inputWorkflow.operator
+                    //         }
+                    //     } as ColumnRangeFilterDict,
+                    // } as WorkflowDict
+                    )
+                ),
+                mergeMap((workflowId) =>
+                    this.createLayer(workflowId, name)
+                )
+            ).subscribe();
+    }
+
+    createWorkflow(attribute: string, ranges: number[][], inputWorkflow: WorkflowDict) {
+        return { type: 'Vector',
                         operator: {
                             type: 'ColumnRangeFilter',
                             params: {
-                                column: attributeName,
-                                ranges: filterRanges,
+                                column: attribute,
+                                ranges: ranges,
                                 keepNulls: false,
                             },
                             sources: {
                                 vector: inputWorkflow.operator
                             }
                         } as ColumnRangeFilterDict,
-                    } as WorkflowDict)
-                ),
-                mergeMap((workflowId) =>
-                    this.createLayer(workflowId, name)
-                )
-            ).subscribe();
+                    } as WorkflowDict
+
     }
 
     createLayer(workflowId: string, name: string) {
