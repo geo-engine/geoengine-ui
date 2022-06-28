@@ -50,7 +50,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     protected selectedFeatureSubscription?: Subscription = undefined;
 
     constructor(
-        public dialog: MatDialog,
+        protected readonly dialog: MatDialog,
         protected readonly projectService: ProjectService,
         protected readonly hostElement: ElementRef<HTMLElement>,
         protected readonly changeDetectorRef: ChangeDetectorRef,
