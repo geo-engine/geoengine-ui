@@ -1,8 +1,8 @@
-import {Layer, VectorLayer} from '../../../layers/layer.model';
+import {Layer, RasterLayer, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
+import {AbstractControl, AsyncValidatorFn, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {Observable, of, ReplaySubject, Subscription, first} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {WaveValidators} from '../../../util/form.validators';
 import {map, mergeMap, tap} from 'rxjs/operators';
@@ -10,8 +10,9 @@ import {Plot} from '../../../plots/plot.model';
 import {NotificationService} from '../../../notification.service';
 import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
 import {WorkflowDict} from '../../../backend/backend.model';
-import {HistogramDict, HistogramParams} from '../../../backend/operator.model';
+import {ClassHistogramDict, ClassHistogramParams} from '../../../backend/operator.model';
 import {VectorColumnDataTypes} from '../../datatype.model';
+import {ClassificationMeasurement} from '../../../layers/measurement';
 
 /**
  * Checks whether the layer is a vector layer (points, lines, polygons).
@@ -24,18 +25,66 @@ const isVectorLayer = (layer: Layer): boolean => {
 };
 
 /**
- * This dialog allows creating a histogram plot of a layer's values.
+ * Checks whether the input is categorical
+ */
+const categoricalInputValidator =
+    (projectService: ProjectService, attributeControl: FormControl): AsyncValidatorFn =>
+    (control: AbstractControl): Observable<{nonCategorical: true} | {onlyWhitespace: true} | null> => {
+        const layer: Layer | undefined = control.value;
+
+        if (!layer) {
+            return of(null);
+        }
+
+        if (layer instanceof RasterLayer) {
+            return projectService.getRasterLayerMetadata(layer).pipe(
+                first(),
+                map((metadata) => {
+                    if (metadata.measurement instanceof ClassificationMeasurement) {
+                        return null;
+                    } else {
+                        return {nonCategorical: true};
+                    }
+                }),
+            );
+        } else if (layer instanceof VectorLayer) {
+            const attributeName: string | undefined = attributeControl.value;
+
+            if (!attributeName) {
+                return of({onlyWhitespace: true});
+            }
+
+            return projectService.getVectorLayerMetadata(layer).pipe(
+                first(),
+                map((metadata) => {
+                    const measurement = metadata.measurements.get(attributeName);
+
+                    if (!measurement) {
+                        return {onlyWhitespace: true};
+                    }
+
+                    if (measurement instanceof ClassificationMeasurement) {
+                        return null;
+                    } else {
+                        return {nonCategorical: true};
+                    }
+                }),
+            );
+        } else {
+            throw Error('unexpected iput layer variant');
+        }
+    };
+
+/**
+ * This dialog allows creating a class histogram plot of a layer's values.
  */
 @Component({
-    selector: 'wave-histogram-operator',
-    templateUrl: './histogram-operator.component.html',
-    styleUrls: ['./histogram-operator.component.scss'],
+    selector: 'wave-class-histogram-operator',
+    templateUrl: './class-histogram-operator.component.html',
+    styleUrls: ['./class-histogram-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
-    minNumberOfBuckets = 1;
-    maxNumberOfBuckets = 100;
-
+export class ClassHistogramOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
     inputTypes = ResultTypes.INPUT_TYPES;
 
     form: FormGroup;
@@ -55,27 +104,15 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
         private readonly formBuilder: FormBuilder,
     ) {
         const layerControl = this.formBuilder.control(undefined, Validators.required);
-        const rangeTypeControl = this.formBuilder.control('data', Validators.required);
         this.form = this.formBuilder.group({
             name: ['Filtered Values', [Validators.required, WaveValidators.notOnlyWhitespace]],
             layer: layerControl,
             attribute: [undefined, WaveValidators.conditionalValidator(Validators.required, () => isVectorLayer(layerControl.value))],
-            rangeType: rangeTypeControl,
-            range: this.formBuilder.group(
-                {
-                    min: [undefined],
-                    max: [undefined],
-                },
-                {
-                    validator: WaveValidators.conditionalValidator(
-                        WaveValidators.minAndMax('min', 'max', {checkBothExist: true}),
-                        () => rangeTypeControl.value === 'custom',
-                    ),
-                },
-            ),
-            autoBuckets: [true, Validators.required],
-            numberOfBuckets: [20, [Validators.required, Validators.min(this.minNumberOfBuckets), Validators.max(this.maxNumberOfBuckets)]],
         });
+
+        layerControl.addAsyncValidators(categoricalInputValidator(projectService, this.form.controls['attribute'] as FormControl));
+
+        // TODO: add check if categorical
 
         this.subscriptions.push(
             this.form.controls['layer'].valueChanges
@@ -88,7 +125,9 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
                                     metadata.dataTypes
                                         .filter(
                                             (columnType) =>
-                                                columnType === VectorColumnDataTypes.Float || columnType === VectorColumnDataTypes.Int,
+                                                columnType === VectorColumnDataTypes.Float ||
+                                                columnType === VectorColumnDataTypes.Int ||
+                                                columnType === VectorColumnDataTypes.Category,
                                         )
                                         .keySeq()
                                         .toArray(),
@@ -103,7 +142,21 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
         );
 
         this.subscriptions.push(
-            this.form.controls['rangeType'].valueChanges.subscribe(() => this.form.controls['range'].updateValueAndValidity()),
+            this.form.controls['attribute'].valueChanges.subscribe({
+                next: (value) => {
+                    if (!value) {
+                        return;
+                    }
+
+                    // trigger `categoricalInputValidator`
+                    layerControl.updateValueAndValidity({
+                        // don't traverse tree
+                        onlySelf: true,
+                        // don't trigger resetting attributes on layer change
+                        emitEvent: false,
+                    });
+                },
+            }),
         );
 
         this.isVectorLayer$ = this.form.controls['layer'].valueChanges.pipe(map((layer) => isVectorLayer(layer)));
@@ -131,16 +184,6 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
 
         const attributeName = this.form.controls['attribute'].value as string;
 
-        let range: {min: number; max: number} | string = this.form.controls['rangeType'].value as string;
-        if (range === 'custom') {
-            range = this.form.controls['range'].value as {min: number; max: number};
-        }
-
-        let buckets: number;
-        if (!this.form.controls['autoBuckets'].value) {
-            buckets = this.form.controls['numberOfBuckets'].value as number;
-        }
-
         const outputName: string = this.form.controls['name'].value;
 
         this.projectService
@@ -150,16 +193,14 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
                     this.projectService.registerWorkflow({
                         type: 'Plot',
                         operator: {
-                            type: 'Histogram',
+                            type: 'ClassHistogram',
                             params: {
                                 columnName: attributeName,
-                                buckets,
-                                bounds: range,
-                            } as HistogramParams,
+                            } as ClassHistogramParams,
                             sources: {
                                 source: inputWorkflow.operator,
                             },
-                        } as HistogramDict,
+                        } as ClassHistogramDict,
                     }),
                 ),
                 mergeMap((workflowId) =>
@@ -171,11 +212,11 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
                     ),
                 ),
             )
-            .subscribe(
-                () => {
+            .subscribe({
+                next: () => {
                     // success
                 },
-                (error) => this.notificationService.error(error),
-            );
+                error: (error) => this.notificationService.error(error),
+            });
     }
 }

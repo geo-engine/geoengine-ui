@@ -10,6 +10,7 @@ import {
     VectorResultDescriptorDict,
     SourceOperatorDict,
 } from '../backend/backend.model';
+import {Measurement} from '../layers/measurement';
 import {Symbology} from '../layers/symbology/symbology.model';
 import {
     RasterDataType,
@@ -153,11 +154,13 @@ export class RasterResultDescriptor extends ResultDescriptor {
 export class VectorResultDescriptor extends ResultDescriptor {
     readonly dataType: VectorDataType;
     readonly columns: Map<string, VectorColumnDataType>;
+    readonly measurements: Map<string, Measurement>;
 
     constructor(config: VectorResultDescriptorDict) {
         super(config.spatialReference);
         this.dataType = VectorDataTypes.fromCode(config.dataType);
-        this.columns = new Map(Object.entries(config.columns).map(([key, value]) => [key, VectorColumnDataTypes.fromCode(value)]));
+        this.columns = new Map(Object.entries(config.columns).map(([key, value]) => [key, VectorColumnDataTypes.fromCode(value.dataType)]));
+        this.measurements = new Map(Object.entries(config.columns).map(([key, value]) => [key, Measurement.fromDict(value.measurement)]));
     }
 
     static fromDict(dict: VectorResultDescriptorDict): ResultDescriptor {
