@@ -28,13 +28,20 @@ export class VectorLayerMetadata extends LayerMetadata {
     readonly layerType = 'vector';
 
     readonly dataType: VectorDataType;
-    readonly columns: Immutable.Map<string, VectorColumnDataType>;
+    readonly dataTypes: Immutable.Map<string, VectorColumnDataType>;
+    readonly measurements: Immutable.Map<string, Measurement>;
 
-    constructor(dataType: VectorDataType, spatialReference: SpatialReference, columns: {[index: string]: VectorColumnDataType}) {
+    constructor(
+        dataType: VectorDataType,
+        spatialReference: SpatialReference,
+        dataTypes: {[index: string]: VectorColumnDataType},
+        measurements: {[index: string]: Measurement},
+    ) {
         super(spatialReference);
 
         this.dataType = dataType;
-        this.columns = Immutable.Map(columns);
+        this.dataTypes = Immutable.Map(dataTypes);
+        this.measurements = Immutable.Map(measurements);
     }
 
     static fromDict(dict: VectorResultDescriptorDict): VectorLayerMetadata {
@@ -42,10 +49,15 @@ export class VectorLayerMetadata extends LayerMetadata {
 
         const columns: {[index: string]: VectorColumnDataType} = {};
         for (const columnName of Object.keys(dict.columns)) {
-            columns[columnName] = VectorColumnDataTypes.fromCode(dict.columns[columnName]);
+            columns[columnName] = VectorColumnDataTypes.fromCode(dict.columns[columnName].dataType);
         }
 
-        return new VectorLayerMetadata(dataType, SpatialReference.fromSrsString(dict.spatialReference), columns);
+        const measurements: {[index: string]: Measurement} = {};
+        for (const columnName of Object.keys(dict.columns)) {
+            measurements[columnName] = Measurement.fromDict(dict.columns[columnName].measurement);
+        }
+
+        return new VectorLayerMetadata(dataType, SpatialReference.fromSrsString(dict.spatialReference), columns, measurements);
     }
 
     public get resultType(): ResultType {

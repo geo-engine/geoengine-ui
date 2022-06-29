@@ -118,6 +118,20 @@ export class DataSelectionService {
         );
     }
 
+    resetRasterLayer(): Observable<void> {
+        return this.rasterLayer.pipe(
+            first(),
+            mergeMap((currentLayer) => {
+                if (currentLayer) {
+                    return this.projectService.removeLayer(currentLayer);
+                } else {
+                    return of(undefined);
+                }
+            }),
+            tap(() => this.rasterLayer.next(undefined)),
+        );
+    }
+
     setIntensityLayer(layer?: RasterLayer): Observable<void> {
         const removeOperation = this.intensityLayer.pipe(
             first(),
