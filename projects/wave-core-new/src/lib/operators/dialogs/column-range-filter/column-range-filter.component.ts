@@ -44,9 +44,9 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                         if (layer instanceof VectorLayer) {
                             return this.projectService.getVectorLayerMetadata(layer).pipe(
                                 map((metadata: VectorLayerMetadata) =>
-                                    metadata.columns
+                                    metadata.dataTypes
                                         .filter(
-                                            (columnType) =>
+                                            (columnType: any) =>
                                                 columnType === VectorColumnDataTypes.Float ||
                                                 columnType === VectorColumnDataTypes.Int ||
                                                 columnType === VectorColumnDataTypes.Text,
@@ -117,9 +117,9 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
      */
     add(): void {
         const name = this.form.get('name')?.value as string || 'Filtered Layer' as string;
-        const attributeName = this.filters.value[0]['attribute'] as string;
         const inputLayer = this.form.controls['layer'].value as Layer;
 
+        const attributeName = this.filters.value[0]['attribute'] as string;
         let filterRanges: number[][] = [];
         this.filters.value[0].ranges.forEach((range: any) => {
             const min_max: number[] = [];
@@ -128,26 +128,15 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
             filterRanges.push(min_max);
         })
 
+        let filterValues = this.filters.value;
+        console.log(filterValues);
+
         this.projectService
             .getWorkflow(inputLayer.workflowId)
             .pipe(
                 mergeMap((inputWorkflow: WorkflowDict) =>
                     this.projectService.registerWorkflow(
-                    this.createWorkflow(attributeName, filterRanges, inputWorkflow)
-                    //     {
-                    //     type: 'Vector',
-                    //     operator: {
-                    //         type: 'ColumnRangeFilter',
-                    //         params: {
-                    //             column: attributeName,
-                    //             ranges: filterRanges,
-                    //             keepNulls: false,
-                    //         },
-                    //         sources: {
-                    //             vector: inputWorkflow.operator
-                    //         }
-                    //     } as ColumnRangeFilterDict,
-                    // } as WorkflowDict
+                        this.createWorkflow(attributeName, filterRanges, inputWorkflow)
                     )
                 ),
                 mergeMap((workflowId) =>
@@ -157,19 +146,20 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     }
 
     createWorkflow(attribute: string, ranges: number[][], inputWorkflow: WorkflowDict) {
-        return { type: 'Vector',
-                        operator: {
-                            type: 'ColumnRangeFilter',
-                            params: {
-                                column: attribute,
-                                ranges: ranges,
-                                keepNulls: false,
-                            },
-                            sources: {
-                                vector: inputWorkflow.operator
-                            }
-                        } as ColumnRangeFilterDict,
-                    } as WorkflowDict
+        return {
+            type: 'Vector',
+            operator: {
+                type: 'ColumnRangeFilter',
+                params: {
+                    column: attribute,
+                    ranges: ranges,
+                    keepNulls: false,
+                },
+                sources: {
+                    vector: inputWorkflow.operator
+                }
+            } as ColumnRangeFilterDict,
+        } as WorkflowDict
 
     }
 
