@@ -118,25 +118,14 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     add(): void {
         const name = this.form.get('name')?.value as string || 'Filtered Layer' as string;
         const inputLayer = this.form.controls['layer'].value as Layer;
-
-        const attributeName = this.filters.value[0]['attribute'] as string;
-        let filterRanges: number[][] = [];
-        this.filters.value[0].ranges.forEach((range: any) => {
-            const min_max: number[] = [];
-            min_max.push(range.min);
-            min_max.push(range.max);
-            filterRanges.push(min_max);
-        })
-
         let filterValues = this.filters.value;
-        console.log(filterValues);
 
         this.projectService
             .getWorkflow(inputLayer.workflowId)
             .pipe(
                 mergeMap((inputWorkflow: WorkflowDict) =>
                     this.projectService.registerWorkflow(
-                        this.createWorkflow(attributeName, filterRanges, inputWorkflow)
+                        this.createWorkflow(filterValues, 0, inputWorkflow)
                     )
                 ),
                 mergeMap((workflowId) =>
@@ -145,22 +134,33 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
             ).subscribe();
     }
 
-    createWorkflow(attribute: string, ranges: number[][], inputWorkflow: WorkflowDict) {
+    createWorkflow(filterValues: any, index: number, inputWorkflow: WorkflowDict): WorkflowDict {
+        if (index == filterValues.length) return inputWorkflow; 
         return {
             type: 'Vector',
             operator: {
                 type: 'ColumnRangeFilter',
                 params: {
-                    column: attribute,
-                    ranges: ranges,
+                    column: filterValues[index]['attribute'] as string,
+                    ranges: this.extractRanges(filterValues[index].ranges),
                     keepNulls: false,
                 },
                 sources: {
-                    vector: inputWorkflow.operator
+                    vector: this.createWorkflow(filterValues, ++index, inputWorkflow).operator
                 }
             } as ColumnRangeFilterDict,
         } as WorkflowDict
+    }
 
+    extractRanges(formRanges: any): number[][] {
+        let filterRanges: number[][] = [];
+        formRanges.forEach((range: any) => {
+            const min_max: number[] = [];
+            min_max.push(range.min);
+            min_max.push(range.max);
+            filterRanges.push(min_max);
+        })
+        return filterRanges;
     }
 
     createLayer(workflowId: string, name: string) {
