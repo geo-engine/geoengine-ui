@@ -44,6 +44,7 @@
                             </mat-select>
                         </mat-form-field>
                     </div>
+                    <p *ngIf="attributeError" class="errormsg">Please select an attribute!</p>
 
                     <!--            Range Selection-->
                     <div formArrayName="ranges">
@@ -81,6 +82,7 @@
                                     <mat-icon>remove_circle_outline</mat-icon>
                                 </button>
                             </div>
+                            <p *ngIf="rangeError" class="errormsg">Range minimum must be lower than maximum!</p>
                         </div>
                     </div>
                 </mat-expansion-panel>
@@ -92,7 +94,7 @@
     <wave-operator-output-name
         formControlName="name"
         [suggestion]="'Filtered ' + (form.controls.layer.valueChanges | async)?.name"
-    ></wave-operator-output-name>
+        ></wave-operator-output-name>
 
     <!--    Submit Button-->
     <div class="actions">

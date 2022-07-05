@@ -1,17 +1,17 @@
-import { Component, OnInit, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
-import { ResultTypes } from '../../result-type.model';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { of, ReplaySubject, Subscription } from 'rxjs';
-import { ProjectService } from '../../../project/project.service';
-import { map, mergeMap, } from 'rxjs/operators';
-import { Layer, VectorLayer } from '../../../layers/layer.model';
-import { VectorLayerMetadata } from '../../../layers/layer-metadata.model';
-import { VectorColumnDataTypes } from '../../datatype.model';
-import { WorkflowDict } from '../../../backend/backend.model';
-import { ClusteredPointSymbology, PointSymbology } from '../../../layers/symbology/symbology.model';
-import { colorToDict } from '../../../colors/color';
-import { RandomColorService } from '../../../util/services/random-color.service';
-import { ColumnRangeFilterDict } from '../../../backend/operator.model';
+import {Component, OnInit, ChangeDetectionStrategy, OnDestroy} from '@angular/core';
+import {ResultTypes} from '../../result-type.model';
+import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {of, ReplaySubject, Subscription} from 'rxjs';
+import {ProjectService} from '../../../project/project.service';
+import {map, mergeMap} from 'rxjs/operators';
+import {Layer, VectorLayer} from '../../../layers/layer.model';
+import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
+import {VectorColumnDataTypes} from '../../datatype.model';
+import {WorkflowDict} from '../../../backend/backend.model';
+import {ClusteredPointSymbology, PointSymbology} from '../../../layers/symbology/symbology.model';
+import {colorToDict} from '../../../colors/color';
+import {RandomColorService} from '../../../util/services/random-color.service';
+import {ColumnRangeFilterDict} from '../../../backend/operator.model';
 
 @Component({
     selector: 'wave-column-range-filter',
@@ -27,12 +27,18 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     form: FormGroup;
 
     private subscriptions: Array<Subscription> = [];
+    public rangeError: boolean = false;
+    public attributeError: boolean = false;
 
-    constructor(private readonly projectService: ProjectService, private readonly formBuilder: FormBuilder, private randomColorService: RandomColorService) {
+    constructor(
+        private readonly projectService: ProjectService,
+        private readonly formBuilder: FormBuilder,
+        private randomColorService: RandomColorService,
+    ) {
         this.form = this.formBuilder.group({
             layer: [undefined, Validators.required],
             filters: this.formBuilder.array([]),
-            name: [undefined],
+            name: ['Filtered Layer'],
         });
 
         this.addFilter();
@@ -105,7 +111,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         this.ranges(filterIndex).removeAt(rangeIndex);
     }
 
-    ngOnInit(): void { }
+    ngOnInit(): void {}
 
     ngOnDestroy(): void {
         this.subscriptions.forEach((subscription) => subscription.unsubscribe());
@@ -116,26 +122,41 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
      * creates a new layer with the filtered values
      */
     add(): void {
-        const name = this.form.get('name')?.value as string || 'Filtered Layer' as string;
+        const name = (this.form.get('name')?.value as string) || ('Filtered Layer' as string);
         const inputLayer = this.form.controls['layer'].value as Layer;
         let filterValues = this.filters.value;
+
+        if (this.checkInputErrors(filterValues)) return;
 
         this.projectService
             .getWorkflow(inputLayer.workflowId)
             .pipe(
                 mergeMap((inputWorkflow: WorkflowDict) =>
-                    this.projectService.registerWorkflow(
-                        this.createWorkflow(filterValues, 0, inputWorkflow)
-                    )
+                    this.projectService.registerWorkflow(this.createWorkflow(filterValues, 0, inputWorkflow)),
                 ),
-                mergeMap((workflowId) =>
-                    this.createLayer(workflowId, name)
-                )
-            ).subscribe();
+                mergeMap((workflowId) => this.createLayer(workflowId, name)),
+            )
+            .subscribe();
+    }
+
+    checkInputErrors(filterValues: any): boolean {
+        this.rangeError = false;
+        this.attributeError = false;
+        filterValues.forEach((value: any) => {
+            if (value.attribute == '') {
+                this.attributeError = true;
+            }
+            value.ranges.forEach((range: any) => {
+                if (range.min > range.max || range.min == '' || range.max == '') {
+                    this.rangeError = true;
+                }
+            });
+        });
+        return this.attributeError || this.rangeError;
     }
 
     createWorkflow(filterValues: any, index: number, inputWorkflow: WorkflowDict): WorkflowDict {
-        if (index == filterValues.length) return inputWorkflow; 
+        if (index == filterValues.length) return inputWorkflow;
         return {
             type: 'Vector',
             operator: {
@@ -146,10 +167,10 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                     keepNulls: false,
                 },
                 sources: {
-                    vector: this.createWorkflow(filterValues, ++index, inputWorkflow).operator
-                }
+                    vector: this.createWorkflow(filterValues, ++index, inputWorkflow).operator,
+                },
             } as ColumnRangeFilterDict,
-        } as WorkflowDict
+        } as WorkflowDict;
     }
 
     extractRanges(formRanges: any): number[][] {
@@ -159,7 +180,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
             min_max.push(range.min);
             min_max.push(range.max);
             filterRanges.push(min_max);
-        })
+        });
         return filterRanges;
     }
 
@@ -195,5 +216,3 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         );
     }
 }
-
-
