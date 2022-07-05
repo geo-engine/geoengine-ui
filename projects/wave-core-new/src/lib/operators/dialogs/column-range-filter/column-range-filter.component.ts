@@ -3,7 +3,7 @@ import {ResultTypes} from '../../result-type.model';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
-import {map, mergeMap} from 'rxjs/operators';
+import {map, tap, mergeMap} from 'rxjs/operators';
 import {Layer, VectorLayer} from '../../../layers/layer.model';
 import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
 import {VectorColumnDataTypes} from '../../datatype.model';
@@ -12,6 +12,7 @@ import {ClusteredPointSymbology, PointSymbology} from '../../../layers/symbology
 import {colorToDict} from '../../../colors/color';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {ColumnRangeFilterDict} from '../../../backend/operator.model';
+import {Vector} from 'ol/source';
 
 @Component({
     selector: 'wave-column-range-filter',
@@ -27,8 +28,9 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     form: FormGroup;
 
     private subscriptions: Array<Subscription> = [];
-    public rangeError: boolean = false;
     public attributeError: boolean = false;
+    public errorHint: string = 'default error';
+    private columnTypes = new Map<string, string | undefined>();
 
     constructor(
         private readonly projectService: ProjectService,
@@ -49,8 +51,8 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                     mergeMap((layer: Layer) => {
                         if (layer instanceof VectorLayer) {
                             return this.projectService.getVectorLayerMetadata(layer).pipe(
-                                map((metadata: VectorLayerMetadata) =>
-                                    metadata.dataTypes
+                                map((metadata: VectorLayerMetadata) => {
+                                    const attribs = metadata.dataTypes
                                         .filter(
                                             (columnType: any) =>
                                                 columnType === VectorColumnDataTypes.Float ||
@@ -58,8 +60,10 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                                                 columnType === VectorColumnDataTypes.Text,
                                         )
                                         .keySeq()
-                                        .toArray(),
-                                ),
+                                        .toArray();
+                                    attribs.forEach((a) => this.columnTypes.set(a, metadata.dataTypes.get(a)?.toString()));
+                                    return attribs;
+                                }),
                             );
                         } else {
                             return of([]);
@@ -68,6 +72,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                 )
                 .subscribe((attributes) => this.attributes$.next(attributes)),
         );
+        console.log(this.columnTypes);
     }
 
     //control over filters
@@ -140,30 +145,41 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     }
 
     checkInputErrors(filterValues: any): boolean {
-        this.rangeError = false;
         this.attributeError = false;
+        this.errorHint = "";
         filterValues.forEach((value: any) => {
-            if (value.attribute == '') {
-                this.attributeError = true;
-            }
+            this.attributeError = value.attribute == '';
             value.ranges.forEach((range: any) => {
-                if (range.min > range.max || range.min == '' || range.max == '') {
-                    this.rangeError = true;
+                if (
+                    this.columnTypes.get(value.attribute) != 'text' &&
+                    (Number(range.min) > Number(range.max) || range.min == '' || range.max == '')
+                ) {
+                    this.attributeError = true;
+                    this.errorHint = this.errorHint.concat(value.attribute + ": Minimum must be smaller than maximum!\n");
+                } else {
+                    if (range.min > range.max || range.min == '' || range.max == '') {
+                        this.attributeError = true;
+                        this.errorHint = this.errorHint.concat(value.attribute + ": Minimum must be alphabetically before maximum!\n");
+                    }
                 }
+                if (this.columnTypes.get(value.attribute) != 'text' && (isNaN(Number(range.min)) || isNaN(Number(range.max))))
+                    this.attributeError = true;
+                    this.errorHint = this.errorHint.concat(value.attribute + ": Numeric attributes can not be filtered lexicographically.\n")
             });
         });
-        return this.attributeError || this.rangeError;
+        return this.attributeError
     }
 
     createWorkflow(filterValues: any, index: number, inputWorkflow: WorkflowDict): WorkflowDict {
         if (index == filterValues.length) return inputWorkflow;
+        const attribute = filterValues[index]['attribute'] as string;
         return {
             type: 'Vector',
             operator: {
                 type: 'ColumnRangeFilter',
                 params: {
-                    column: filterValues[index]['attribute'] as string,
-                    ranges: this.extractRanges(filterValues[index].ranges),
+                    column: attribute,
+                    ranges: this.extractRanges(filterValues[index].ranges, attribute),
                     keepNulls: false,
                 },
                 sources: {
@@ -173,15 +189,25 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         } as WorkflowDict;
     }
 
-    extractRanges(formRanges: any): number[][] {
-        let filterRanges: number[][] = [];
+    extractRanges(formRanges: any, attribute: string): any[][] {
+        let filterRanges: any[][] = [];
         formRanges.forEach((range: any) => {
-            const min_max: number[] = [];
-            min_max.push(range.min);
-            min_max.push(range.max);
+            const min_max: any[] = [];
+            if (this.isAttributeText(attribute)) {
+                min_max.push(range.min);
+                min_max.push(range.max);
+            } else {
+                min_max.push(isNaN(Number(range.min)) ? range.min : Number(range.min));
+                min_max.push(isNaN(Number(range.max)) ? range.max : Number(range.max));
+            }
             filterRanges.push(min_max);
         });
+        console.log(filterRanges);
         return filterRanges;
+    }
+
+    isAttributeText(attribute: string): boolean {
+        return this.columnTypes.get(attribute) == 'text';
     }
 
     createLayer(workflowId: string, name: string) {

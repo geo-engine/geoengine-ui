@@ -44,7 +44,7 @@
                             </mat-select>
                         </mat-form-field>
                     </div>
-                    <p *ngIf="attributeError" class="errormsg">Please select an attribute!</p>
+                    <p *ngIf="attributeError" class="errormsg"> {{ errorHint }} </p>
 
                     <!--            Range Selection-->
                     <div formArrayName="ranges">
@@ -65,11 +65,11 @@
                                 <!--                                <mat-checkbox formControlName="isRange">Range</mat-checkbox>-->
                                 <!--                                <div fxFlex="1rem"></div>-->
                                 <mat-form-field fxFlex>
-                                    <input matInput type="number" placeholder="Min" formControlName="min" />
+                                    <input matInput type="text" placeholder="Min" formControlName="min" />
                                 </mat-form-field>
                                 <div fxFlex="1rem"></div>
                                 <mat-form-field fxFlex>
-                                    <input matInput type="number" placeholder="Max" formControlName="max" />
+                                    <input matInput type="text" placeholder="Max" formControlName="max" />
                                 </mat-form-field>
                                 <div fxFlex="1rem"></div>
                                 <button
@@ -82,7 +82,6 @@
                                     <mat-icon>remove_circle_outline</mat-icon>
                                 </button>
                             </div>
-                            <p *ngIf="rangeError" class="errormsg">Range minimum must be lower than maximum!</p>
                         </div>
                     </div>
                 </mat-expansion-panel>
