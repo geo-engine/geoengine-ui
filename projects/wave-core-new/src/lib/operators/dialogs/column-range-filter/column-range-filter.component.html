@@ -44,7 +44,6 @@
                             </mat-select>
                         </mat-form-field>
                     </div>
-                    <p *ngIf="attributeError" class="errormsg"> {{ errorHint }} </p>
 
                     <!--            Range Selection-->
                     <div formArrayName="ranges">
@@ -93,8 +92,9 @@
     <wave-operator-output-name
         formControlName="name"
         [suggestion]="'Filtered ' + (form.controls.layer.valueChanges | async)?.name"
-        ></wave-operator-output-name>
-
+    ></wave-operator-output-name>
+    <!-- Error Message -->
+    <p *ngIf="attributeError" class="errormsg">{{ errorHint }}</p>
     <!--    Submit Button-->
     <div class="actions">
         <button type="submit" mat-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">Create</button>

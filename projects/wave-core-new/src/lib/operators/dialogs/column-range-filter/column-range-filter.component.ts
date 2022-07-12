@@ -146,28 +146,36 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
 
     checkInputErrors(filterValues: any): boolean {
         this.attributeError = false;
-        this.errorHint = "";
-        filterValues.forEach((value: any) => {
-            this.attributeError = value.attribute == '';
+        this.errorHint = '';
+        filterValues.forEach((value: any, index: number) => {
+            if (value.attribute == '') {
+                this.appendErrorMsg(`Filter ${index+1}: Attribute can't be empty!\n`);
+                return;
+            }
             value.ranges.forEach((range: any) => {
-                if (
-                    this.columnTypes.get(value.attribute) != 'text' &&
-                    (Number(range.min) > Number(range.max) || range.min == '' || range.max == '')
-                ) {
-                    this.attributeError = true;
-                    this.errorHint = this.errorHint.concat(value.attribute + ": Minimum must be smaller than maximum!\n");
-                } else {
-                    if (range.min > range.max || range.min == '' || range.max == '') {
-                        this.attributeError = true;
-                        this.errorHint = this.errorHint.concat(value.attribute + ": Minimum must be alphabetically before maximum!\n");
-                    }
+                if (range.min == '' || range.max == '') {
+                    this.appendErrorMsg(`Filter ${index + 1} (${value.attribute}): Range can't be empty!\n`);
+                    return;
                 }
-                if (this.columnTypes.get(value.attribute) != 'text' && (isNaN(Number(range.min)) || isNaN(Number(range.max))))
-                    this.attributeError = true;
-                    this.errorHint = this.errorHint.concat(value.attribute + ": Numeric attributes can not be filtered lexicographically.\n")
+
+                if (this.columnTypes.get(value.attribute) != 'text' && (isNaN(Number(range.min)) || isNaN(Number(range.max)))) {
+                    this.appendErrorMsg(`Filter ${index+1} (${value.attribute}): Numeric attributes can't be filtered lexicographically!\n`);
+                    return;
+                }
+
+                if (this.columnTypes.get(value.attribute) != 'text' && Number(range.min) > Number(range.max)) {
+                    this.appendErrorMsg(`Filter ${index+1} (${value.attribute}): Minimum must be smaller than maximum!\n`);
+                } else if (range.min > range.max) {
+                    this.appendErrorMsg(`Filter ${index+1} (${value.attribute}): Minimum must be alphabetically before maximum!\n`);
+                }
             });
         });
-        return this.attributeError
+        return this.attributeError;
+    }
+
+    appendErrorMsg(msg: string) {
+        this.attributeError = true;
+        this.errorHint = this.errorHint.concat(msg);
     }
 
     createWorkflow(filterValues: any, index: number, inputWorkflow: WorkflowDict): WorkflowDict {
