@@ -14,7 +14,7 @@ import {HasLayerId, HasLayerType, Layer, RasterLayer, VectorLayer} from '../laye
 import {BackendService} from '../backend/backend.service';
 import {
     BBoxDict,
-    LayerDict,
+    ProjectLayerDict,
     OperatorDict,
     PlotDict,
     ProvenanceOutputDict,
@@ -966,7 +966,7 @@ export class ProjectService {
                             id: project.id,
                             name: changes.name,
                             layers: changes.layers
-                                ? ProjectService.optimizeVecUpdates<Layer, LayerDict>(oldProject.layers, project.layers)
+                                ? ProjectService.optimizeVecUpdates<Layer, ProjectLayerDict>(oldProject.layers, project.layers)
                                 : undefined,
                             plots: changes.plots
                                 ? ProjectService.optimizeVecUpdates<Plot, PlotDict>(oldProject.plots, project.plots)

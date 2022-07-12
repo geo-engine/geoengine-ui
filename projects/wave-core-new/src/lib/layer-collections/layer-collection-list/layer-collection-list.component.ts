@@ -15,10 +15,12 @@ import {filter, mergeMap, scan, tap} from 'rxjs/operators';
 import {LayoutService} from '../../layout.service';
 import {
     GeoEngineError,
+    LayerCollectionDict,
     LayerCollectionItemDict,
-    LayerCollectionItemIdDict,
-    LayerCollectionItemLayerDict,
     LayerCollectionLayerDict,
+    LayerDict,
+    ProviderLayerCollectionIdDict,
+    ProviderLayerIdDict,
     RasterResultDescriptorDict,
     RasterSymbologyDict,
     ResultDescriptorDict,
@@ -44,8 +46,8 @@ import {colorToDict} from '../../colors/color';
 import {RandomColorService} from '../../util/services/random-color.service';
 
 export interface LayerCollectionListConfig {
-    id?: LayerCollectionItemIdDict;
-    selectListener: (id: LayerCollectionItemIdDict) => void;
+    id?: ProviderLayerCollectionIdDict;
+    selectListener: (id: ProviderLayerCollectionIdDict) => void;
 }
 
 export const CONTEXT_TOKEN = new InjectionToken<LayerCollectionListConfig>('CONTEXT_TOKEN');
@@ -60,9 +62,9 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
     @ViewChild(CdkVirtualScrollViewport)
     viewport!: CdkVirtualScrollViewport;
 
-    collection?: LayerCollectionItemIdDict = undefined;
+    collection?: ProviderLayerCollectionIdDict = undefined;
 
-    selectListener!: (id: LayerCollectionItemIdDict) => void;
+    selectListener!: (id: ProviderLayerCollectionIdDict) => void;
 
     readonly loadingSpinnerDiameterPx: number = 3 * LayoutService.remInPx;
 
@@ -101,7 +103,15 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
     }
 
     trackById(_index: number, item: LayerCollectionItemDict): string {
-        return item.id.provider + item.id.item;
+        if (item.type === 'collection') {
+            const collection = item as LayerCollectionDict;
+            return collection.id.providerId + collection.id.collectionId;
+        } else if (item.type === 'layer') {
+            const layer = item as LayerCollectionLayerDict;
+            return layer.id.providerId + layer.id.layerId;
+        }
+
+        return '';
     }
 
     icon(item: LayerCollectionItemDict): string {
@@ -110,26 +120,25 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
 
     select(item: LayerCollectionItemDict): void {
         if (item.type === 'collection') {
-            this.selectListener(item.id);
+            const collection = item as LayerCollectionDict;
+            this.selectListener(collection.id);
         } else if (item.type === 'layer') {
-            const layer = item as LayerCollectionItemLayerDict;
-            this.addLayer(layer);
+            const layer = item as LayerCollectionLayerDict;
+            this.addLayer(layer.id);
         }
     }
 
-    private addLayer(layerListing: LayerCollectionItemLayerDict): void {
+    private addLayer(layerId: ProviderLayerIdDict): void {
         this.layerService
-            .getLayer(layerListing.id.provider, layerListing.id.item)
+            .getLayer(layerId.providerId, layerId.layerId)
             .pipe(
-                mergeMap((layer: LayerCollectionLayerDict) =>
-                    combineLatest([of(layer), this.projectService.registerWorkflow(layer.workflow)]),
-                ),
-                mergeMap(([layer, workflowId]: [LayerCollectionLayerDict, UUID]) =>
+                mergeMap((layer: LayerDict) => combineLatest([of(layer), this.projectService.registerWorkflow(layer.workflow)])),
+                mergeMap(([layer, workflowId]: [LayerDict, UUID]) =>
                     combineLatest([of(layer), of(workflowId), this.projectService.getWorkflowMetaData(workflowId)]),
                 ),
             )
             .subscribe(
-                ([layer, workflowId, resultDescriptorDict]: [LayerCollectionLayerDict, UUID, ResultDescriptorDict]) => {
+                ([layer, workflowId, resultDescriptorDict]: [LayerDict, UUID, ResultDescriptorDict]) => {
                     const keys = Object.keys(resultDescriptorDict);
 
                     if (keys.includes('columns')) {
@@ -141,7 +150,7 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
                         this.notificationService.error('Adding this workflow type is unimplemented, yet');
                     }
                 },
-                (requestError) => this.handleError(requestError.error, layerListing.id.item),
+                (requestError) => this.handleError(requestError.error, layerId.layerId),
             );
     }
 
@@ -265,12 +274,12 @@ class LayerCollectionItemDataSource extends DataSource<LayerCollectionItemDict> 
 
     protected getCollectionItems: (offset: number, limit: number) => Observable<Array<LayerCollectionItemDict>>;
 
-    constructor(protected layerCollectionService: LayerCollectionService, protected collection?: LayerCollectionItemIdDict) {
+    constructor(protected layerCollectionService: LayerCollectionService, protected collection?: ProviderLayerCollectionIdDict) {
         super();
 
         if (collection) {
             this.getCollectionItems = (offset, limit): Observable<Array<LayerCollectionItemDict>> =>
-                layerCollectionService.getLayerCollectionItems(collection.provider, collection.item, offset, limit);
+                layerCollectionService.getLayerCollectionItems(collection.providerId, collection.collectionId, offset, limit);
         } else {
             this.getCollectionItems = (offset, limit): Observable<Array<LayerCollectionItemDict>> =>
                 layerCollectionService.getRootLayerCollectionItems(offset, limit);

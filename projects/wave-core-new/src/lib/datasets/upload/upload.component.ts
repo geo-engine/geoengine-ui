@@ -9,7 +9,6 @@ import {
     AddDatasetDict,
     CreateDatasetDict,
     DatasetDefinitionDict,
-    DatasetIdDict,
     MetaDataDefinitionDict,
     MetaDataSuggestionDict,
     OgrSourceDatasetTimeTypeDict,
@@ -45,7 +44,7 @@ export class UploadComponent {
     metaDataSuggestion$ = new Subject<MetaDataSuggestionDict>();
 
     uploadId?: UUID;
-    datasetId?: DatasetIdDict;
+    datasetId?: UUID;
     selectedFiles?: Array<File>;
     selectedTimeType?: string;
 
