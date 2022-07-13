@@ -73,7 +73,7 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
                 [],
                 WaveValidators.conditionalValidator(Validators.required, () => isVectorLayer(layerControl.value)),
             ),
-            additionalRasterLayers: new FormControl(undefined)
+            additionalRasterLayers: new FormControl(undefined),
         });
 
         this.subscriptions.push(
