@@ -25,16 +25,19 @@ import OlFeature from 'ol/Feature';
 import OlLayer from 'ol/layer/Layer';
 import OlLayerTile from 'ol/layer/Tile';
 import OlLayerVector from 'ol/layer/Vector';
+import OlLayerVectorTile from 'ol/layer/VectorTile';
 
 import OlSource from 'ol/source/Source';
 import OlSourceOSM from 'ol/source/OSM';
 import OlTileWmsSource from 'ol/source/TileWMS';
 import OlSourceVector from 'ol/source/Vector';
+import OlSourceVectorTile from 'ol/source/VectorTile';
 import XYZ from 'ol/source/XYZ';
 
 import OlGeometryType from 'ol/geom/GeometryType';
 import OlGeomPoint from 'ol/geom/Point';
 import OlFormatGeoJSON from 'ol/format/GeoJSON';
+import OlFormatMVT from 'ol/format/MVT';
 
 import OlStyleFill from 'ol/style/Fill';
 import OlStyleStroke from 'ol/style/Stroke';
@@ -589,6 +592,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 return new OlLayerTile({
                     source: this.backgroundLayerSource as OlTileWmsSource,
                 });
+            case 'MVT':
+                return new OlLayerVectorTile({source: this.backgroundLayerSource as any});
             default:
                 throw Error('Unknown Background Layer Name');
         }
@@ -630,6 +635,14 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             case 'XYZ':
                 return new XYZ({
                     url: this.config.MAP.BACKGROUND_LAYER_URL,
+                    wrapX: false,
+                    projection: projection.srsString,
+                });
+            case 'MVT':
+                return new OlSourceVectorTile({
+                    format: new OlFormatMVT(),
+                    url: this.config.MAP.BACKGROUND_LAYER_URL,
+                    extent: this.config.MAP.MVT_BACKGROUND_LAYER_EXTENT,
                     wrapX: false,
                     projection: projection.srsString,
                 });

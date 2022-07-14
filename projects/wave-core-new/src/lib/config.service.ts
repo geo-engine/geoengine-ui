@@ -50,11 +50,12 @@ interface Defaults {
 }
 
 interface Map {
-    readonly BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted' | 'XYZ' | 'eumetview';
+    readonly BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted' | 'XYZ' | 'eumetview' | 'MVT';
     readonly BACKGROUND_LAYER_URL: string;
     readonly HOSTED_BACKGROUND_SERVICE: string;
     readonly HOSTED_BACKGROUND_LAYER_NAME: string;
     readonly HOSTED_BACKGROUND_SERVICE_VERSION: string;
+    readonly MVT_BACKGROUND_LAYER_EXTENT: [number, number, number, number];
     readonly REFRESH_LAYERS_ON_CHANGE: boolean;
 }
 
@@ -105,6 +106,7 @@ export const WAVE_DEFAULT_CONFIG: WaveConfigStructure = {
         HOSTED_BACKGROUND_SERVICE: '/mapcache/',
         HOSTED_BACKGROUND_LAYER_NAME: 'osm',
         HOSTED_BACKGROUND_SERVICE_VERSION: '1.1.1',
+        MVT_BACKGROUND_LAYER_EXTENT: [-180, -180, 180, 180],
         REFRESH_LAYERS_ON_CHANGE: false,
     },
     API_URL: '/api',
