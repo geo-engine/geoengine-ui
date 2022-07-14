@@ -97,7 +97,6 @@ class Int32 extends RasterDataType {
     getMax(): number {
         return 2147483647;
     }
-
 }
 
 class UInt32 extends RasterDataType {
