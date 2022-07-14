@@ -60,8 +60,9 @@ export class BasketService {
     }
 
     private addLayer(entry: BasketEntry): Observable<Layer> {
+        // TODO: avoid creating a dataset and instead offer proper methods for creating layers outside of the datasetService
         const dict: DatasetDict = {
-            id: entry.datasetId,
+            id: '', // hack, because the id is not used anyway
             name: entry.title,
             description: 'Description',
             sourceOperator: entry.sourceOperator,
@@ -73,14 +74,14 @@ export class BasketService {
                 ? ({
                       type: 'OgrSource',
                       params: {
-                          dataset: entry.datasetId,
+                          data: entry.datasetId,
                           attributeFilters: entry.attributeFilters,
                       },
                   } as OgrSourceDict)
                 : ({
                       type: entry.sourceOperator,
                       params: {
-                          dataset: entry.datasetId,
+                          data: entry.datasetId,
                       },
                   } as SourceOperatorDict);
 
