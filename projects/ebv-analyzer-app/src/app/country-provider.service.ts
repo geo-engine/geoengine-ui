@@ -43,7 +43,10 @@ export class CountryProviderService {
             operator: {
                 type: 'OgrSource',
                 params: {
-                    dataset: COUNTRY_DATA_LIST[country.name].polygon,
+                    data: {
+                        type: 'internal',
+                        datasetId: COUNTRY_DATA_LIST[country.name].polygon,
+                    },
                 },
             },
         };

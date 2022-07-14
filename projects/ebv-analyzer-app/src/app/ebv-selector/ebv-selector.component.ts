@@ -10,7 +10,6 @@ import {
     RasterLayer,
     RasterSymbology,
     WorkflowDict,
-    ExternalDatasetIdDict,
     timeStepDictTotimeStepDuration,
     Colorizer,
     ColorizerDict,
@@ -25,6 +24,7 @@ import {
     RasterSymbologyEditorComponent,
     LinearGradient,
     LogarithmicGradient,
+    ExternalDataIdDict,
 } from 'wave-core';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {AppConfig} from '../app-config.service';
@@ -298,7 +298,10 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                                             b: {
                                                 type: 'GdalSource',
                                                 params: {
-                                                    dataset: COUNTRY_DATA_LIST[selectedCountry.name].raster,
+                                                    data: {
+                                                        type: 'internal',
+                                                        datasetId: COUNTRY_DATA_LIST[selectedCountry.name].raster,
+                                                    },
                                                 },
                                             },
                                         },
@@ -438,11 +441,11 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
             operator: {
                 type: 'GdalSource',
                 params: {
-                    dataset: {
+                    data: {
                         type: 'external',
                         providerId: '1690c483-b17f-4d98-95c8-00a64849cd0b',
-                        datasetId: JSON.stringify(this.ebvDatasetId),
-                    } as ExternalDatasetIdDict,
+                        layerId: JSON.stringify(this.ebvDatasetId),
+                    } as ExternalDataIdDict,
                 },
             },
         };

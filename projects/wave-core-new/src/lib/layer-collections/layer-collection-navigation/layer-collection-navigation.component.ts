@@ -1,6 +1,6 @@
 import {ComponentPortal, Portal} from '@angular/cdk/portal';
 import {Component, ChangeDetectionStrategy, Injector} from '@angular/core';
-import {UUID} from '../../backend/backend.model';
+import {LayerCollectionItemDict} from '../../backend/backend.model';
 import {CONTEXT_TOKEN, LayerCollectionListComponent} from '../layer-collection-list/layer-collection-list.component';
 
 @Component({
@@ -10,7 +10,7 @@ import {CONTEXT_TOKEN, LayerCollectionListComponent} from '../layer-collection-l
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerCollectionNavigationComponent {
-    collections: Array<UUID | undefined> = [undefined];
+    collections: Array<LayerCollectionItemDict | undefined> = [undefined];
 
     selectedCollection = 0;
 
@@ -20,12 +20,12 @@ export class LayerCollectionNavigationComponent {
         this.setPortal(undefined);
     }
 
-    selectCollection(collectionId: UUID): void {
+    selectCollection(id: LayerCollectionItemDict): void {
         this.collections = this.collections.splice(0, this.selectedCollection + 1);
-        this.collections.push(collectionId);
+        this.collections.push(id);
         this.selectedCollection += 1;
 
-        this.setPortal(collectionId);
+        this.setPortal(id);
     }
 
     back(): void {
@@ -46,16 +46,16 @@ export class LayerCollectionNavigationComponent {
         }
     }
 
-    private setPortal(uuid?: UUID): void {
-        this.selectedPortal = new ComponentPortal(LayerCollectionListComponent, null, this.createInjector(uuid));
+    private setPortal(id?: LayerCollectionItemDict): void {
+        this.selectedPortal = new ComponentPortal(LayerCollectionListComponent, null, this.createInjector(id));
     }
 
-    private createInjector(uuid?: UUID): Injector {
+    private createInjector(id?: LayerCollectionItemDict): Injector {
         return Injector.create({
             providers: [
                 {
                     provide: CONTEXT_TOKEN,
-                    useValue: {uuid, selectListener: (selection: UUID) => this.selectCollection(selection)},
+                    useValue: {id, selectListener: (selection: LayerCollectionItemDict) => this.selectCollection(selection)},
                 },
             ],
         });

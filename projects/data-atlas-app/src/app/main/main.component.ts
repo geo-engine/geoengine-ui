@@ -159,10 +159,10 @@ export class MainComponent implements OnInit, AfterViewInit {
             operator: {
                 type: 'GdalSource',
                 params: {
-                    dataset: {
+                    data: {
                         type: 'external',
                         providerId: layer.providerId,
-                        datasetId: JSON.stringify(datasetId),
+                        layerId: JSON.stringify(datasetId),
                     },
                 },
             },

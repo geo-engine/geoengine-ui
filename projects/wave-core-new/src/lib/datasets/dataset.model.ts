@@ -4,8 +4,8 @@ import {
     UUID,
     WorkflowDict,
     SrsString,
-    DatasetIdDict,
-    ExternalDatasetIdDict,
+    DataIdDict,
+    ExternalDataIdDict,
     RasterResultDescriptorDict,
     VectorResultDescriptorDict,
     SourceOperatorDict,
@@ -22,7 +22,7 @@ import {
 } from '../operators/datatype.model';
 
 export class Dataset {
-    readonly id: DatasetId;
+    readonly id: UUID;
     readonly name: string;
     readonly description: string;
     readonly resultDescriptor: ResultDescriptor;
@@ -30,7 +30,7 @@ export class Dataset {
     readonly symbology?: Symbology;
 
     constructor(config: DatasetDict) {
-        this.id = DatasetId.fromDict(config.id);
+        this.id = config.id;
         this.name = config.name;
         this.description = config.description;
         this.resultDescriptor = ResultDescriptor.fromDict(config.resultDescriptor);
@@ -46,7 +46,10 @@ export class Dataset {
         return this.createSourceWorkflowWithOperator({
             type: this.sourceOperator,
             params: {
-                dataset: this.id.toDict(),
+                data: {
+                    type: 'internal',
+                    datasetId: this.id,
+                },
             },
         });
     }
@@ -60,17 +63,17 @@ export class Dataset {
 }
 
 export abstract class DatasetId {
-    static fromDict(dict: DatasetIdDict): DatasetId {
+    static fromDict(dict: DataIdDict): DatasetId {
         if (dict.type === 'internal') {
             return InternalDatasetId.fromDict(dict.datasetId);
         } else if (dict.type === 'external') {
-            return ExternalDatasetId.fromDict(dict);
+            return ExternalDataId.fromDict(dict);
         }
 
         throw Error('Unknown DatasetId type');
     }
 
-    abstract toDict(): DatasetIdDict;
+    abstract toDict(): DataIdDict;
 }
 
 export class InternalDatasetId {
@@ -84,7 +87,7 @@ export class InternalDatasetId {
         return new InternalDatasetId(config);
     }
 
-    toDict(): DatasetIdDict {
+    toDict(): DataIdDict {
         return {
             type: 'internal',
             datasetId: this.id,
@@ -92,24 +95,24 @@ export class InternalDatasetId {
     }
 }
 
-export class ExternalDatasetId {
-    provider: UUID;
-    dataset: string;
+export class ExternalDataId {
+    providerId: UUID;
+    layerId: string;
 
-    constructor(config: ExternalDatasetIdDict) {
-        this.provider = config.providerId;
-        this.dataset = config.datasetId;
+    constructor(config: ExternalDataIdDict) {
+        this.providerId = config.providerId;
+        this.layerId = config.layerId;
     }
 
-    static fromDict(config: ExternalDatasetIdDict): ExternalDatasetId {
-        return new ExternalDatasetId(config);
+    static fromDict(config: ExternalDataIdDict): ExternalDataId {
+        return new ExternalDataId(config);
     }
 
-    toDict(): DatasetIdDict {
+    toDict(): DataIdDict {
         return {
             type: 'external',
-            providerId: this.provider,
-            datasetId: this.dataset,
+            providerId: this.providerId,
+            layerId: this.layerId,
         };
     }
 }
