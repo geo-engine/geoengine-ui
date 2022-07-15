@@ -286,10 +286,6 @@ export interface ExternalDataIdDict {
 
 export type DatasetOrderByDict = 'NameAsc' | 'NameDesc';
 
-export interface NoDataDict {
-    [key: string]: number;
-}
-
 export interface PlotDataDict {
     plotType: string;
     outputFormat: 'JsonPlain' | 'JsonVega' | 'ImagePng';
