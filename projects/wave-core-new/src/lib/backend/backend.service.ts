@@ -166,6 +166,15 @@ export class BackendService {
         });
     }
 
+    downloadWorkflowMetadata(workflowId: UUID, sessionId: UUID): Observable<HttpEvent<Blob>> {
+        return this.http.get(this.config.API_URL + `/workflow/${workflowId}/all_metadata/zip`, {
+            headers: BackendService.authorizationHeader(sessionId),
+            responseType: 'blob',
+            reportProgress: true,
+            observe: 'events',
+        });
+    }
+
     setSessionProject(projectId: UUID, sessionId: UUID): Observable<void> {
         const response = new Subject<void>();
         this.http

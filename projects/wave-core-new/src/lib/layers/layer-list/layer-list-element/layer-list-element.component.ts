@@ -7,7 +7,7 @@ import {Config} from '../../../config.service';
 import {MapService} from '../../../map/map.service';
 import {ProjectService} from '../../../project/project.service';
 import {LayoutService} from '../../../layout.service';
-import {last, map, Observable, startWith} from 'rxjs';
+import {last, map, mergeMap, Observable, startWith, tap} from 'rxjs';
 import {IconStyle, Symbology, SymbologyType} from '../../symbology/symbology.model';
 import {ProvenanceTableComponent} from '../../../provenance/table/provenance-table.component';
 import {DataTableComponent} from '../../../datatable/table/table.component';
@@ -19,6 +19,10 @@ import {NotificationService} from '../../../notification.service';
 import {RenameLayerComponent} from '../../rename-layer/rename-layer.component';
 import {LineageGraphComponent} from '../../../provenance/lineage-graph/lineage-graph.component';
 import {LoadingState} from '../../../project/loading-state.model';
+import {BackendService} from '../../../backend/backend.service';
+import {UserService} from '../../../users/user.service';
+import {HttpEventType} from '@angular/common/http';
+import {filenameFromHttpHeaders} from '../../../util/http';
 /**
  * The layer list component displays active layers, legends and other controlls.
  */
@@ -45,12 +49,14 @@ export class LayerListElementComponent implements OnDestroy, OnChanges {
      * The component constructor. It injects angular and wave services.
      */
     constructor(
-        public dialog: MatDialog,
-        public layoutService: LayoutService,
-        public projectService: ProjectService,
-        public mapService: MapService,
-        public config: Config,
-        public changeDetectorRef: ChangeDetectorRef,
+        public readonly dialog: MatDialog,
+        public readonly layoutService: LayoutService,
+        public readonly projectService: ProjectService,
+        public readonly mapService: MapService,
+        public readonly config: Config,
+        public readonly changeDetectorRef: ChangeDetectorRef,
+        protected readonly backend: BackendService,
+        protected readonly userService: UserService,
         protected readonly tabsService: TabsService,
         protected readonly clipboard: Clipboard,
         protected readonly notificationService: NotificationService,
@@ -150,5 +156,43 @@ export class LayerListElementComponent implements OnDestroy, OnChanges {
     copyWorkflowIdToClipboard(layer: Layer): void {
         this.clipboard.copy(layer.workflowId);
         this.notificationService.info('Copied workflow id to clipboard');
+    }
+
+    downloadMetadata(layer: Layer): void {
+        this.notificationService.info(`Downloading metadata for layer ${layer.name}`);
+
+        this.userService
+            .getSessionTokenForRequest()
+            .pipe(
+                mergeMap((token) => this.backend.downloadWorkflowMetadata(layer.workflowId, token)),
+                tap((event) => {
+                    if (event.type !== HttpEventType.DownloadProgress) {
+                        return;
+                    }
+
+                    const fraction = event.total ? event.loaded / event.total : 1;
+                    this.notificationService.info(`Metadata download: ${100 * fraction}%`);
+                }),
+                last(),
+            )
+            .subscribe({
+                next: (event) => {
+                    if (event.type !== HttpEventType.Response || event.body === null) {
+                        return;
+                    }
+
+                    const zipArchive = new File([event.body], filenameFromHttpHeaders(event.headers) ?? 'metadata.json');
+                    const url = window.URL.createObjectURL(zipArchive);
+
+                    // trigger download
+                    const anchor = document.createElement('a');
+                    anchor.href = url;
+                    anchor.download = zipArchive.name;
+                    anchor.click();
+                },
+                error: (error) => {
+                    this.notificationService.error(`File upload failed: ${error.message}`);
+                },
+            });
     }
 }
