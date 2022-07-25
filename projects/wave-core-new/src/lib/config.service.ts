@@ -59,7 +59,7 @@ interface Map {
     readonly REFRESH_LAYERS_ON_CHANGE: boolean;
 }
 
-interface VectorTiles {
+export interface VectorTiles {
     readonly STYLE_URL: string;
     readonly SOURCE: string;
     readonly BACKGROUND_LAYER_EXTENT: [number, number, number, number];

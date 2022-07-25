@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {mergeDeep} from 'immutable';
-import {Config, WaveConfigStructure, WAVE_DEFAULT_CONFIG} from 'wave-core';
+import {Config, WaveConfigStructure, WAVE_DEFAULT_CONFIG, VectorTiles} from 'wave-core';
 
 interface Components {
     readonly PLAYBACK: {
@@ -14,6 +14,7 @@ interface Map {
     readonly HOSTED_BACKGROUND_SERVICE: string;
     readonly HOSTED_BACKGROUND_LAYER_NAME: string;
     readonly HOSTED_BACKGROUND_SERVICE_VERSION: string;
+    readonly VECTOR_TILES: VectorTiles;
     readonly REFRESH_LAYERS_ON_CHANGE: boolean;
 }
 
@@ -44,6 +45,12 @@ export class AppConfig extends Config {
             HOSTED_BACKGROUND_SERVICE: '',
             HOSTED_BACKGROUND_LAYER_NAME: '',
             HOSTED_BACKGROUND_SERVICE_VERSION: '',
+            VECTOR_TILES: {
+                STYLE_URL: 'assets/mvt/ne-ge.json',
+                SOURCE: 'ne',
+                BACKGROUND_LAYER_EXTENT: [-180, -180, 180, 180],
+                MAX_ZOOM: 22,
+            },
             REFRESH_LAYERS_ON_CHANGE: false,
         };
     }
