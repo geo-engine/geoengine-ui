@@ -60,6 +60,7 @@ import {VectorSymbology} from '../../layers/symbology/symbology.model';
 import {SpatialReferenceService} from '../../spatial-references/spatial-reference.service';
 import {containsCoordinate, getCenter} from 'ol/extent';
 import {olExtentToTuple} from '../../util/conversions';
+import {applyStyle, applyBackground, stylefunction} from 'ol-mapbox-style';
 
 type MapLayer = MapLayerComponent<OlLayer<OlSource, any>, OlSource>;
 
@@ -593,7 +594,20 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     source: this.backgroundLayerSource as OlTileWmsSource,
                 });
             case 'MVT':
-                return new OlLayerVectorTile({source: this.backgroundLayerSource as any});
+                const layer = new OlLayerVectorTile({source: this.backgroundLayerSource as any});
+
+                fetch(this.config.MAP.VECTOR_TILES.STYLE_URL).then((response) => {
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    response.json().then((glStyle: {layers: Array<{id: string; paint: {'background-color'?: string}}>}) => {
+                        applyBackground(layer, glStyle);
+
+                        if (this.config.MAP.VECTOR_TILES?.SOURCE) {
+                            stylefunction(layer, glStyle, this.config.MAP.VECTOR_TILES.SOURCE);
+                        }
+                    });
+                });
+
+                return layer;
             default:
                 throw Error('Unknown Background Layer Name');
         }
@@ -642,7 +656,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 return new OlSourceVectorTile({
                     format: new OlFormatMVT(),
                     url: this.config.MAP.BACKGROUND_LAYER_URL,
-                    extent: this.config.MAP.MVT_BACKGROUND_LAYER_EXTENT,
+                    extent: this.config.MAP.VECTOR_TILES.BACKGROUND_LAYER_EXTENT,
+                    maxZoom: this.config.MAP.VECTOR_TILES.MAX_ZOOM,
                     wrapX: false,
                     projection: projection.srsString,
                 });
