@@ -1,9 +1,9 @@
-import {LayerDict, UUID, ToDict} from '../backend/backend.model';
+import {ProjectLayerDict, UUID, ToDict} from '../backend/backend.model';
 import {RasterSymbology, Symbology, VectorSymbology} from './symbology/symbology.model';
 
 export type LayerType = 'raster' | 'vector';
 
-export abstract class Layer implements HasLayerId, HasLayerType, ToDict<LayerDict> {
+export abstract class Layer implements HasLayerId, HasLayerType, ToDict<ProjectLayerDict> {
     abstract readonly layerType: LayerType;
 
     readonly id: number;
@@ -38,7 +38,7 @@ export abstract class Layer implements HasLayerId, HasLayerType, ToDict<LayerDic
     /**
      * Create the suitable layer type
      */
-    static fromDict(dict: LayerDict): Layer {
+    static fromDict(dict: ProjectLayerDict): Layer {
         if (dict.symbology.type === 'raster') {
             return RasterLayer.fromDict(dict);
         }
@@ -62,7 +62,7 @@ export abstract class Layer implements HasLayerId, HasLayerType, ToDict<LayerDic
 
     abstract equals(other: Layer): boolean;
 
-    abstract toDict(): LayerDict;
+    abstract toDict(): ProjectLayerDict;
 }
 
 export class VectorLayer extends Layer {
@@ -82,7 +82,7 @@ export class VectorLayer extends Layer {
         this.symbology = config.symbology;
     }
 
-    static fromDict(dict: LayerDict): Layer {
+    static fromDict(dict: ProjectLayerDict): Layer {
         if (dict.symbology.type === 'point' || dict.symbology.type === 'line' || dict.symbology.type === 'polygon') {
             return new VectorLayer({
                 name: dict.name,
@@ -95,7 +95,7 @@ export class VectorLayer extends Layer {
         throw new Error('missing `Vector` to deserialize');
     }
 
-    toDict(): LayerDict {
+    toDict(): ProjectLayerDict {
         return {
             name: this.name,
             workflow: this.workflowId,
@@ -158,7 +158,7 @@ export class RasterLayer extends Layer {
         this.symbology = config.symbology;
     }
 
-    static fromDict(dict: LayerDict): Layer {
+    static fromDict(dict: ProjectLayerDict): Layer {
         if (dict.symbology.type === 'raster') {
             return new RasterLayer({
                 name: dict.name,
@@ -204,7 +204,7 @@ export class RasterLayer extends Layer {
         );
     }
 
-    toDict(): LayerDict {
+    toDict(): ProjectLayerDict {
         return {
             name: this.name,
             workflow: this.workflowId,

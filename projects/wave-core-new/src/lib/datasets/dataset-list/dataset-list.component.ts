@@ -1,5 +1,5 @@
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, ViewChild, Input} from '@angular/core';
-import {Dataset, DatasetId} from '../dataset.model';
+import {Dataset} from '../dataset.model';
 import {DatasetService} from '../dataset.service';
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, EMPTY, Observable, Subject} from 'rxjs';
@@ -18,9 +18,6 @@ export class DatasetListComponent implements OnInit, AfterViewInit {
     @ViewChild(CdkVirtualScrollViewport)
     viewport!: CdkVirtualScrollViewport;
 
-    // leave undefined for internal datasets
-    @Input() externalDatasetProviderId?: UUID = undefined;
-
     @Input() repositoryName = 'Data Repository';
 
     // TODO: dataset search
@@ -34,7 +31,7 @@ export class DatasetListComponent implements OnInit, AfterViewInit {
     constructor(public datasetService: DatasetService) {}
 
     ngOnInit(): void {
-        this.datasetSource = new DatasetDataSource(this.datasetService, this.externalDatasetProviderId);
+        this.datasetSource = new DatasetDataSource(this.datasetService);
     }
 
     ngAfterViewInit(): void {}
@@ -52,7 +49,7 @@ export class DatasetListComponent implements OnInit, AfterViewInit {
         }
     }
 
-    trackById(_index: number, dataset: Dataset): DatasetId {
+    trackById(_index: number, dataset: Dataset): UUID {
         return dataset.id;
     }
 }
@@ -71,15 +68,10 @@ class DatasetDataSource extends DataSource<Dataset> {
 
     protected getDatasets: (offset: number, limit: number) => Observable<Array<Dataset>>;
 
-    constructor(protected datasetService: DatasetService, protected externalDatasetProviderId?: UUID) {
+    constructor(protected datasetService: DatasetService) {
         super();
 
-        if (externalDatasetProviderId) {
-            this.getDatasets = (offset, limit): Observable<Array<Dataset>> =>
-                datasetService.getExternalDatasets(externalDatasetProviderId, offset, limit);
-        } else {
-            this.getDatasets = (offset, limit): Observable<Array<Dataset>> => datasetService.getDatasets(offset, limit);
-        }
+        this.getDatasets = (offset, limit): Observable<Array<Dataset>> => datasetService.getDatasets(offset, limit);
 
         this.fetchMoreData(); // initially populate source
     }

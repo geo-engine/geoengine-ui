@@ -83,13 +83,13 @@ export interface ProjectDict {
     version?: ProjectVersion;
     name: string;
     description: string;
-    layers: Array<LayerDict>;
+    layers: Array<ProjectLayerDict>;
     plots: Array<PlotDict>;
     bounds: STRectangleDict;
     timeStep: TimeStepDict;
 }
 
-export interface LayerDict {
+export interface ProjectLayerDict {
     workflow: UUID;
     name: string;
     visibility: {
@@ -252,7 +252,7 @@ export interface OperatorParams {
 export interface SourceOperatorDict {
     type: string;
     params: {
-        dataset: DatasetIdDict;
+        data: DataIdDict;
     };
 }
 
@@ -264,7 +264,7 @@ export interface TimeStepDict {
 export type TimeStepGranularityDict = 'millis' | 'seconds' | 'minutes' | 'hours' | 'days' | 'months' | 'years';
 
 export interface DatasetDict {
-    id: DatasetIdDict;
+    id: UUID;
     name: string;
     description: string;
     resultDescriptor: TypedResultDescriptorDict;
@@ -272,23 +272,19 @@ export interface DatasetDict {
     symbology?: SymbologyDict;
 }
 
-export type DatasetIdDict = InternalDatasetIdDict | ExternalDatasetIdDict;
+export type DataIdDict = InternalDataIdDict | ExternalDataIdDict;
 
-export interface InternalDatasetIdDict {
+export interface InternalDataIdDict {
     type: 'internal';
     datasetId: UUID;
 }
-export interface ExternalDatasetIdDict {
+export interface ExternalDataIdDict {
     type: 'external';
     providerId: UUID;
-    datasetId: string;
+    layerId: string;
 }
 
 export type DatasetOrderByDict = 'NameAsc' | 'NameDesc';
-
-export interface NoDataDict {
-    [key: string]: number;
-}
 
 export interface PlotDataDict {
     plotType: string;
@@ -350,7 +346,7 @@ export interface UploadResponseDict {
 }
 
 export interface DatasetIdResponseDict {
-    id: DatasetIdDict;
+    id: UUID;
 }
 
 export interface CreateDatasetDict {
@@ -364,7 +360,7 @@ export interface DatasetDefinitionDict {
 }
 
 export interface AddDatasetDict {
-    id?: DatasetIdDict;
+    id?: DataIdDict;
     name: string;
     description: string;
     sourceOperator: string;
@@ -495,7 +491,7 @@ export interface ProvenanceDict {
 }
 
 export interface ProvenanceOutputDict {
-    dataset: DatasetIdDict;
+    data: DataIdDict;
     provenance: ProvenanceDict;
 }
 
@@ -520,24 +516,36 @@ export interface GeoEngineError {
 
 export interface LayerCollectionItemDict {
     type: 'collection' | 'layer';
-    id: UUID;
+    id: ProviderLayerIdDict | ProviderLayerCollectionIdDict;
     name: string;
     description: string;
+}
+
+export interface ProviderLayerIdDict {
+    providerId: UUID;
+    layerId: string;
+}
+
+export interface ProviderLayerCollectionIdDict {
+    providerId: UUID;
+    collectionId: string;
 }
 
 export interface LayerCollectionDict extends LayerCollectionItemDict {
     type: 'collection';
+    id: ProviderLayerCollectionIdDict;
 }
 
-export interface LayerCollectionItemLayerDict extends LayerCollectionItemDict {
+export interface LayerCollectionLayerDict extends LayerCollectionItemDict {
     type: 'layer';
+    id: ProviderLayerIdDict;
     workflow: UUID;
 }
 
-export interface LayerCollectionLayerDict {
+export interface LayerDict {
     id: UUID;
     name: string;
     description: string;
-    workflow: UUID;
+    workflow: WorkflowDict;
     symbology: SymbologyDict;
 }

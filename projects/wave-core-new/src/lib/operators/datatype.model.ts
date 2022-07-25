@@ -1,4 +1,3 @@
-import {NoDataDict} from '../backend/backend.model';
 import {ResultType, ResultTypes} from './result-type.model';
 
 /**
@@ -26,8 +25,6 @@ export abstract class RasterDataType {
      * @return the smallest value.
      */
     abstract getMax(): number;
-
-    abstract noData(value: number): NoDataDict;
 }
 
 class Byte extends RasterDataType {
@@ -45,12 +42,6 @@ class Byte extends RasterDataType {
 
     getMax(): number {
         return 255;
-    }
-
-    noData(value: number): NoDataDict {
-        return {
-            U8: value,
-        };
     }
 }
 
@@ -70,12 +61,6 @@ class Int16 extends RasterDataType {
     getMax(): number {
         return 32767;
     }
-
-    noData(value: number): NoDataDict {
-        return {
-            I16: value,
-        };
-    }
 }
 
 class UInt16 extends RasterDataType {
@@ -93,12 +78,6 @@ class UInt16 extends RasterDataType {
 
     getMax(): number {
         return 65535;
-    }
-
-    noData(value: number): NoDataDict {
-        return {
-            U16: value,
-        };
     }
 }
 
@@ -118,12 +97,6 @@ class Int32 extends RasterDataType {
     getMax(): number {
         return 2147483647;
     }
-
-    noData(value: number): NoDataDict {
-        return {
-            I32: value,
-        };
-    }
 }
 
 class UInt32 extends RasterDataType {
@@ -141,12 +114,6 @@ class UInt32 extends RasterDataType {
 
     getMax(): number {
         return 4294967295;
-    }
-
-    noData(value: number): NoDataDict {
-        return {
-            U32: value,
-        };
     }
 }
 
@@ -166,19 +133,6 @@ class Float32 extends RasterDataType {
     getMax(): number {
         return Number.MAX_VALUE;
     }
-
-    noData(value: number): NoDataDict {
-        if (isNaN(value)) {
-            // TODO: hack, since we cannot serialize NAN in JSON
-            return {
-                F32: Number.MIN_VALUE,
-            };
-        }
-
-        return {
-            F32: value,
-        };
-    }
 }
 
 class Float64 extends RasterDataType {
@@ -196,19 +150,6 @@ class Float64 extends RasterDataType {
 
     getMax(): number {
         return Number.MAX_VALUE;
-    }
-
-    noData(value: number): NoDataDict {
-        if (isNaN(value)) {
-            // TODO: hack, since we cannot serialize NAN in JSON
-            return {
-                F64: Number.MIN_VALUE,
-            };
-        }
-
-        return {
-            F64: value,
-        };
     }
 }
 

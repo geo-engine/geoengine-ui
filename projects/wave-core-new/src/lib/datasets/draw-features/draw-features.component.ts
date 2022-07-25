@@ -9,7 +9,7 @@ import {SpatialReference} from '../../spatial-references/spatial-reference.model
 import {MapService} from '../../map/map.service';
 import {DatasetService} from '../dataset.service';
 import {HttpEventType, HttpResponse} from '@angular/common/http';
-import {AutoCreateDatasetDict, DatasetIdDict, UploadResponseDict, UUID} from '../../backend/backend.model';
+import {AutoCreateDatasetDict, DataIdDict, UploadResponseDict, UUID} from '../../backend/backend.model';
 import {mergeMap} from 'rxjs/operators';
 import {WGS_84} from '../../spatial-references/spatial-reference.service';
 
@@ -32,7 +32,7 @@ export class DrawFeaturesComponent implements OnDestroy, OnInit {
 
     indicateLoading$ = new Subject<boolean>();
     uploadId$ = new Subject<UUID>();
-    datasetId$ = new Subject<DatasetIdDict>();
+    datasetId$ = new Subject<DataIdDict>();
 
     state$ = new BehaviorSubject(State.Start);
 
