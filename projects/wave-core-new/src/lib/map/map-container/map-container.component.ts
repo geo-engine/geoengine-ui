@@ -60,7 +60,7 @@ import {VectorSymbology} from '../../layers/symbology/symbology.model';
 import {SpatialReferenceService} from '../../spatial-references/spatial-reference.service';
 import {containsCoordinate, getCenter} from 'ol/extent';
 import {olExtentToTuple} from '../../util/conversions';
-import {applyStyle, applyBackground, stylefunction} from 'ol-mapbox-style';
+import {applyBackground, stylefunction} from 'ol-mapbox-style';
 
 type MapLayer = MapLayerComponent<OlLayer<OlSource, any>, OlSource>;
 
