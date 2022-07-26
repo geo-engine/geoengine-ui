@@ -11,8 +11,6 @@ export function filenameFromHttpHeaders(headers: HttpHeaders): string | undefine
     }
 
     for (const [key, value] of contentDisposition.split(';').map((s) => s.trim().split('='))) {
-        console.error('DEBUG!!!!!!!!', key, value);
-
         if (key === 'filename') {
             // remove quotes from start/end if present
             return value.replace(/^"(.+(?="$))"$/, '$1');

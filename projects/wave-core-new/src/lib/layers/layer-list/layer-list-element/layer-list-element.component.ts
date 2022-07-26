@@ -181,7 +181,7 @@ export class LayerListElementComponent implements OnDestroy, OnChanges {
                         return;
                     }
 
-                    const zipArchive = new File([event.body], filenameFromHttpHeaders(event.headers) ?? 'metadata.json');
+                    const zipArchive = new File([event.body], filenameFromHttpHeaders(event.headers) ?? 'metadata.zip');
                     const url = window.URL.createObjectURL(zipArchive);
 
                     // trigger download
