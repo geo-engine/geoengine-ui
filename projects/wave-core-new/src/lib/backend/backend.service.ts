@@ -167,7 +167,7 @@ export class BackendService {
     }
 
     downloadWorkflowMetadata(workflowId: UUID, sessionId: UUID): Observable<HttpEvent<Blob>> {
-        return this.http.get(this.config.API_URL + `/workflow/${workflowId}/all_metadata/zip`, {
+        return this.http.get(this.config.API_URL + `/workflow/${workflowId}/allMetadata/zip`, {
             headers: BackendService.authorizationHeader(sessionId),
             responseType: 'blob',
             reportProgress: true,
