@@ -125,6 +125,52 @@
                 "line-color": "rgba(175, 183, 208, 1)",
                 "line-width": 0.5
             }
+        },
+        {
+            "id": "minor_islands",
+            "type": "fill",
+            "source": "ne",
+            "source-layer": "minor_islands",
+            "paint": {
+                "fill-color": "rgba(207, 207, 207, 1)"
+            }
+        },
+        {
+            "id": "playas",
+            "type": "fill",
+            "source": "ne",
+            "source-layer": "playas",
+            "min_zoom": 5,
+            "paint": {
+                "fill-color": "rgba(207, 207, 207, 1)"
+            }
+        },
+        {
+            "id": "playas_outlines",
+            "type": "line",
+            "source": "ne",
+            "source-layer": "playas",
+            "minzoom": 5,
+            "paint": {
+                "line-color": "rgba(0, 0, 0, 1)",
+                "line-dasharray": [1, 1],
+                "line-width": {
+                    "stops": [
+                        [5, 0.7],
+                        [10, 1.5]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "reefs",
+            "type": "line",
+            "source": "ne",
+            "source-layer": "reefs",
+            "paint": {
+                "line-color": "rgba(123, 182, 220, 1)",
+                "line-width": 0.5
+            }
         }
     ]
 }
