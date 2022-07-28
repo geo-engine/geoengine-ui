@@ -26,9 +26,10 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
 
     form: FormGroup;
 
+    attributeError: boolean = false;
+    errorHint: string = 'default error';
+
     private subscriptions: Array<Subscription> = [];
-    public attributeError: boolean = false;
-    public errorHint: string = 'default error';
     private columnTypes = new Map<string, string | undefined>();
 
     constructor(
@@ -127,7 +128,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     add(): void {
         const name = (this.form.get('name')?.value as string) || ('Filtered Layer' as string);
         const inputLayer = this.form.controls['layer'].value as Layer;
-        let filterValues = this.filters.value;
+        const filterValues = this.filters.value;
 
         if (this.checkInputErrors(filterValues)) return;
 
@@ -156,12 +157,12 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                     return;
                 }
 
-                if (this.columnTypes.get(value.attribute) != 'text' && (isNaN(Number(range.min)) || isNaN(Number(range.max)))) {
+                if (this.columnTypes.get(value.attribute) !== 'text' && (isNaN(Number(range.min)) || isNaN(Number(range.max)))) {
                     this.appendErrorMsg(`Filter ${index+1} (${value.attribute}): Numeric attributes can't be filtered lexicographically!\n`);
                     return;
                 }
 
-                if (this.columnTypes.get(value.attribute) != 'text' && Number(range.min) > Number(range.max)) {
+                if (this.columnTypes.get(value.attribute) !== 'text' && Number(range.min) > Number(range.max)) {
                     this.appendErrorMsg(`Filter ${index+1} (${value.attribute}): Minimum must be smaller than maximum!\n`);
                 } else if (range.min > range.max) {
                     this.appendErrorMsg(`Filter ${index+1} (${value.attribute}): Minimum must be alphabetically before maximum!\n`);
