@@ -147,12 +147,12 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         this.attributeError = false;
         this.errorHint = '';
         filterValues.forEach((value: any, index: number) => {
-            if (value.attribute == '') {
+            if (value.attribute === '') {
                 this.appendErrorMsg(`Filter ${index+1}: Attribute can't be empty!\n`);
                 return;
             }
             value.ranges.forEach((range: any) => {
-                if (range.min == '' || range.max == '') {
+                if (range.min === '' || range.max === '') {
                     this.appendErrorMsg(`Filter ${index + 1} (${value.attribute}): Range can't be empty!\n`);
                     return;
                 }
