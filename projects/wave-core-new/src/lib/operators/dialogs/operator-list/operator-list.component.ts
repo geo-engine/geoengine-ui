@@ -188,7 +188,7 @@ export class OperatorListComponent implements OnInit, OnChanges {
                 NAME: 'Column Range Filter',
                 ICON_URL: createIconDataUrl('Column Range Filter'),
             },
-            description: 'Filter irgendwas',
+            description: 'Filter columns by numbers or strings',
         },
         {
             component: PointInPolygonFilterOperatorComponent,

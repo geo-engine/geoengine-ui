@@ -61,8 +61,6 @@
 
                         <div *ngFor="let range of ranges(filterIndex).controls; let rangeIndex = index" fxLayout="column">
                             <div [formGroupName]="rangeIndex" fxLayout="row" fxFlex>
-                                <!--                                <mat-checkbox formControlName="isRange">Range</mat-checkbox>-->
-                                <!--                                <div fxFlex="1rem"></div>-->
                                 <mat-form-field fxFlex>
                                     <input matInput type="text" placeholder="Min" formControlName="min" />
                                 </mat-form-field>

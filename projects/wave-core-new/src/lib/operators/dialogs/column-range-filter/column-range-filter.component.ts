@@ -3,7 +3,7 @@ import {ResultTypes} from '../../result-type.model';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
-import {map, tap, mergeMap} from 'rxjs/operators';
+import {map, mergeMap} from 'rxjs/operators';
 import {Layer, VectorLayer} from '../../../layers/layer.model';
 import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
 import {VectorColumnDataTypes} from '../../datatype.model';
@@ -12,7 +12,6 @@ import {ClusteredPointSymbology, PointSymbology} from '../../../layers/symbology
 import {colorToDict} from '../../../colors/color';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {ColumnRangeFilterDict} from '../../../backend/operator.model';
-import {Vector} from 'ol/source';
 
 @Component({
     selector: 'wave-column-range-filter',
@@ -72,7 +71,6 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                 )
                 .subscribe((attributes) => this.attributes$.next(attributes)),
         );
-        console.log(this.columnTypes);
     }
 
     //control over filters

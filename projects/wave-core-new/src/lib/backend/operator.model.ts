@@ -134,7 +134,7 @@ export interface ColumnRangeFilterDict extends OperatorDict {
         keepNulls: boolean,
     }
     sources: {
-        vector: SourceOperatorDict | OperatorDict; // ok ... ?
+        vector: SourceOperatorDict | OperatorDict;
     }
 }
 
