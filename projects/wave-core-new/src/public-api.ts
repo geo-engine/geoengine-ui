@@ -32,7 +32,7 @@ export * from './lib/datasets/drag-and-drop/drag-and-drop.component';
 export * from './lib/datasets/draw-features/draw-features.component';
 export * from './lib/datasets/upload/upload.component';
 export * from './lib/datatable/table/table.component';
-export * from './lib/datatable/table/full-display/full-display.component'
+export * from './lib/datatable/table/full-display/full-display.component';
 export * from './lib/dialogs/dialog-header/dialog-header.component';
 export * from './lib/dialogs/dialog-help/dialog-help.component';
 export * from './lib/dialogs/dialog-section-heading/dialog-section-heading.component';

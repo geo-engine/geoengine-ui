@@ -11,19 +11,19 @@ import {
     SimpleChanges,
     ChangeDetectorRef,
 } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { combineLatest, Observable, Subject, Subscription } from 'rxjs';
-import { RasterLayerMetadata, VectorLayerMetadata } from '../../layers/layer-metadata.model';
-import { Layer, RasterLayer, VectorLayer } from '../../layers/layer.model';
-import { ResultTypes } from '../../operators/result-type.model';
-import { Feature as OlFeature } from 'ol';
-import { FeatureSelection, ProjectService } from '../../project/project.service';
-import { VectorData } from '../../layers/layer-data.model';
-import { DataSource } from '@angular/cdk/collections';
+import {MatPaginator} from '@angular/material/paginator';
+import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
+import {RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metadata.model';
+import {Layer, RasterLayer, VectorLayer} from '../../layers/layer.model';
+import {ResultTypes} from '../../operators/result-type.model';
+import {Feature as OlFeature} from 'ol';
+import {FeatureSelection, ProjectService} from '../../project/project.service';
+import {VectorData} from '../../layers/layer-data.model';
+import {DataSource} from '@angular/cdk/collections';
 import OlGeometry from 'ol/geom/Geometry';
 import OlPolygon from 'ol/geom/Polygon';
-import { MatDialog } from '@angular/material/dialog';
-import { FullDisplayComponent } from './full-display/full-display.component';
+import {MatDialog} from '@angular/material/dialog';
+import {FullDisplayComponent} from './full-display/full-display.component';
 
 @Component({
     selector: 'wave-datatable',
@@ -52,7 +52,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         protected readonly projectService: ProjectService,
         protected readonly hostElement: ElementRef<HTMLElement>,
         protected readonly changeDetectorRef: ChangeDetectorRef,
-    ) { }
+    ) {}
 
     ngOnInit(): void {
         if (this.layer) {
@@ -146,30 +146,32 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         return feature.getId() === this.projectService.getSelectedFeature().feature;
     }
 
-    coordinateFromGeometry(geometry: OlFeature): string { // For truncated coordinate view in table
+    coordinateFromGeometry(geometry: OlFeature): string {
+        // For truncated coordinate view in table
         const coords: string[][] = this.readCoordinates(geometry);
-        const contd: string = (coords[0].length > 1 ? '...' : '');
-        const output: string = ` ${coords[0][0]}, ${coords[1][0]} ${contd}`;
+        const contd: string = coords[0].length > 1 ? '...' : '';
+        const output = ` ${coords[0][0]}, ${coords[1][0]} ${contd}`;
         return output;
     }
 
     /**
      * Extracts the coordinates of an open layers feature as strings
+     *
      * @param geometry The feature to extract coordinates from
      * @returns A nested string[][] where index 0 of the outer array are x-Coordinates, index 1 are y-Coordinates
      */
     readCoordinates(geometry: OlFeature): string[][] {
-        const type: String = geometry.getGeometry()?.getType();
-        let xCoords: string[] = [];
-        let yCoords: string[] = [];
+        const type: string = geometry.getGeometry()?.getType();
+        const xCoords: string[] = [];
+        const yCoords: string[] = [];
 
-        if (!(type == "Polygon" || type == "MultiPolygon" || type == "LineString" || type == "MultiLineString" || type == "Point")) {
+        if (!(type === 'Polygon' || type === 'MultiPolygon' || type === 'LineString' || type === 'MultiLineString' || type === 'Point')) {
             xCoords.push('N/A');
-            yCoords.push('N/A')
+            yCoords.push('N/A');
             return new Array(xCoords, yCoords);
         }
 
-        const poly: OlPolygon = <OlPolygon>geometry.getGeometry();
+        const poly: OlPolygon = geometry.getGeometry() as OlPolygon;
         const l = poly.getCoordinates().length;
         let allCoords: string[] = [];
         for (let i = 0; i < l; i++) {
@@ -185,19 +187,19 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
 
     onFullDisplayClick(output: OlFeature): void {
         const coords: string[][] = this.readCoordinates(output);
-        this.dialog.open(FullDisplayComponent, { data: { xStrings: coords[0], yStrings: coords[1], geometry: output.getGeometry() } })
+        this.dialog.open(FullDisplayComponent, {data: {xStrings: coords[0], yStrings: coords[1], geometry: output.getGeometry()}});
     }
 
     readTimePropertyStart(geometry: OlFeature): string {
-        let minimum: string = '-262144-01-01T00:00:00+00:00';
-        let result: string = geometry['values_']['_____table__start'];
-        return (result == minimum ? "-∞" : result);
+        const minimum = '-262144-01-01T00:00:00+00:00';
+        const result = geometry['values_']['_____table__start'];
+        return result === minimum ? '-∞' : result;
     }
 
     readTimePropertyEnd(geometry: OlFeature): string {
-        let maximum: string = '+262143-12-31T23:59:59.999+00:00';
-        let result: string = geometry['values_']['_____table__end'];
-        return (result == maximum ? "∞" : result);
+        const maximum: string = '+262143-12-31T23:59:59.999+00:00';
+        const result: string = geometry['values_']['_____table__end'];
+        return result === maximum ? '∞' : result;
     }
 
     select(feature: OlFeature<OlGeometry>, select: boolean): void {

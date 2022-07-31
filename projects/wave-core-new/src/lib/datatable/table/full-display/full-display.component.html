@@ -1,15 +1,15 @@
 <wave-dialog-header>Full coordinates</wave-dialog-header>
 <mat-dialog-content>
     <cdk-virtual-scroll-viewport itemSize="50" class="coordinates-viewport">
-        <br>
+        <br />
         <table>
             <thead>
                 <th>X</th>
                 <th>Y</th>
             </thead>
-            <tr *cdkVirtualFor="let x of xCoords, index as i" class="coordinate-item">
-                <td>{{x}}</td>
-                <td>{{yCoords[i]}}</td>
+            <tr *cdkVirtualFor="let x of xCoords; index as i" class="coordinate-item">
+                <td>{{ x }}</td>
+                <td>{{ yCoords[i] }}</td>
             </tr>
         </table>
     </cdk-virtual-scroll-viewport>
