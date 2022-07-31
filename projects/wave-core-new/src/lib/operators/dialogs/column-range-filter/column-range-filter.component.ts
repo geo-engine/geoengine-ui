@@ -6,7 +6,7 @@ import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap} from 'rxjs/operators';
 import {Layer, VectorLayer} from '../../../layers/layer.model';
 import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
-import {VectorColumnDataTypes} from '../../datatype.model';
+import {VectorColumnDataType, VectorColumnDataTypes} from '../../datatype.model';
 import {WorkflowDict} from '../../../backend/backend.model';
 import {ClusteredPointSymbology, PointSymbology} from '../../../layers/symbology/symbology.model';
 import {colorToDict} from '../../../colors/color';
@@ -30,7 +30,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     errorHint: string = 'default error';
 
     private subscriptions: Array<Subscription> = [];
-    private columnTypes = new Map<string, string | undefined>();
+    private columnTypes = new Map<string, VectorColumnDataType | undefined>();
 
     constructor(
         private readonly projectService: ProjectService,
@@ -42,7 +42,6 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
             filters: this.formBuilder.array([]),
             name: ['Filtered Layer'],
         });
-
         this.addFilter();
 
         this.subscriptions.push(
@@ -61,7 +60,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                                         )
                                         .keySeq()
                                         .toArray();
-                                    attribs.forEach((a) => this.columnTypes.set(a, metadata.dataTypes.get(a)?.toString()));
+                                    attribs.forEach((a) => this.columnTypes.set(a, metadata.dataTypes.get(a)));
                                     return attribs;
                                 }),
                             );
@@ -157,14 +156,14 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                     return;
                 }
 
-                if (this.columnTypes.get(value.attribute) !== 'text' && (isNaN(Number(range.min)) || isNaN(Number(range.max)))) {
+                if (this.columnTypes.get(value.attribute)?.code !== 'text' && (isNaN(Number(range.min)) || isNaN(Number(range.max)))) {
                     this.appendErrorMsg(
                         `Filter ${index + 1} (${value.attribute}): Numeric attributes can't be filtered lexicographically!\n`,
                     );
                     return;
                 }
 
-                if (this.columnTypes.get(value.attribute) !== 'text' && Number(range.min) > Number(range.max)) {
+                if (this.columnTypes.get(value.attribute)?.code !== 'text' && Number(range.min) > Number(range.max)) {
                     this.appendErrorMsg(`Filter ${index + 1} (${value.attribute}): Minimum must be smaller than maximum!\n`);
                 } else if (range.min > range.max) {
                     this.appendErrorMsg(`Filter ${index + 1} (${value.attribute}): Minimum must be alphabetically before maximum!\n`);
@@ -215,7 +214,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     }
 
     isAttributeText(attribute: string): boolean {
-        return this.columnTypes.get(attribute) === 'text';
+        return this.columnTypes.get(attribute)?.code === 'text';
     }
 
     createLayer(workflowId: string, name: string): Observable<void> {
