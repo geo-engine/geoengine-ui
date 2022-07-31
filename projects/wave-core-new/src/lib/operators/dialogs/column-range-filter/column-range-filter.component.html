@@ -1,6 +1,18 @@
 <wave-sidenav-header>Column Range Filter</wave-sidenav-header>
 
-<wave-dialog-help></wave-dialog-help>
+<wave-dialog-help>
+    <p>
+    This filter allows you to create a new vector layer where selected attributes have values only inside specified ranges.
+    After selecting your input layer, choose an attribute you wish to filter. Then specify one or more ranges of values.
+    The newly created layer will contain values for that attribute only within the specified ranges.
+    </p>
+    <p>
+        It is possible to filter by numeric values as well as text. In case of text, filtering will be lexicographically.
+    </p>
+    <p>
+        See <a href="https://docs.geoengine.io/operators/columnrangefilter.html">Geo Engine Docs</a> for a more detailed description.
+    </p>
+</wave-dialog-help>
 
 <form [formGroup]="form" fxLayout="column" (ngSubmit)="$event.preventDefault(); add()">
     <!--    Layer Selection-->
