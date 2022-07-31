@@ -121,7 +121,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
 
     processVectorLayer(_layer: VectorLayer, metadata: VectorLayerMetadata, data: VectorData): void {
         this.featureColumns = metadata.dataTypes.keySeq().toArray();
-        this.displayedColumns = ['_____select', 'coordinates', 'table__start', 'table__end'].concat(this.featureColumns);
+        this.displayedColumns = ['_____select', '_____coordinates', '_____table__start', '_____table__end'].concat(this.featureColumns);
         this.dataSource.data = data.data;
         setTimeout(() => this.navigatePage(this.projectService.getSelectedFeature()));
     }
@@ -190,13 +190,13 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
 
     readTimePropertyStart(geometry: OlFeature): string {
         let minimum: string = '-262144-01-01T00:00:00+00:00';
-        let result: string = geometry['values_']['table__start'];
+        let result: string = geometry['values_']['_____table__start'];
         return (result == minimum ? "-∞" : result);
     }
 
     readTimePropertyEnd(geometry: OlFeature): string {
         let maximum: string = '+262143-12-31T23:59:59.999+00:00';
-        let result: string = geometry['values_']['table__end'];
+        let result: string = geometry['values_']['_____table__end'];
         return (result == maximum ? "∞" : result);
     }
 

@@ -1281,8 +1281,8 @@ export class ProjectService {
         x['features'].forEach((element: any) => {
             let start: string = element['when']['start'];
             let end: string = element['when']['end'];
-            element['properties']['table__start'] = start;
-            element['properties']['table__end'] = end;
+            element['properties']['_____table__start'] = start;
+            element['properties']['_____table__end'] = end;
         });
         return x;
     }
