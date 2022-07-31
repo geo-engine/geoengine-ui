@@ -8,7 +8,6 @@ import {HttpEvent} from '@angular/common/http';
 import {
     AutoCreateDatasetDict,
     CreateDatasetDict,
-    DatasetIdDict,
     DatasetIdResponseDict,
     DataSetProviderListingDict,
     MetaDataSuggestionDict,
@@ -49,18 +48,11 @@ export class DatasetService {
         );
     }
 
-    getExternalDatasets(providerId: UUID, offset = 0, limit = 20): Observable<Array<Dataset>> {
-        return this.userService.getSessionStream().pipe(
-            mergeMap((session) => this.backend.getExternalDatasets(session.sessionToken, providerId, offset, limit)),
-            map((datasetDicts) => datasetDicts.map((dict) => Dataset.fromDict(dict))),
-        );
-    }
-
     getDatasetProviders(): Observable<Array<DataSetProviderListingDict>> {
         return this.userService.getSessionStream().pipe(mergeMap((session) => this.backend.getDatasetProviders(session.sessionToken)));
     }
 
-    getDataset(id: DatasetIdDict): Observable<Dataset> {
+    getDataset(id: UUID): Observable<Dataset> {
         return this.userService.getSessionTokenForRequest().pipe(
             mergeMap((token) => this.backend.getDataset(token, id)),
             map((dict) => Dataset.fromDict(dict)),

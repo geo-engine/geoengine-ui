@@ -10,7 +10,6 @@ import {
     RasterLayer,
     RasterSymbology,
     WorkflowDict,
-    ExternalDatasetIdDict,
     timeStepDictTotimeStepDuration,
     Colorizer,
     ColorizerDict,
@@ -25,6 +24,7 @@ import {
     RasterSymbologyEditorComponent,
     LinearGradient,
     LogarithmicGradient,
+    ExternalDataIdDict,
 } from 'wave-core';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {AppConfig} from '../app-config.service';
@@ -201,7 +201,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
             let time = new Time(moment.unix(timeCoverage.start / 1_000).utc());
             const timeEnd = new Time(moment.unix(timeCoverage.end / 1_000).utc());
 
-            while (time < timeEnd) {
+            while (time < timeEnd && timeStep.durationAmount > 0) {
                 timeSteps.push(time);
                 time = time.addDuration(timeStep);
             }
@@ -298,7 +298,10 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                                             b: {
                                                 type: 'GdalSource',
                                                 params: {
-                                                    dataset: COUNTRY_DATA_LIST[selectedCountry.name].raster,
+                                                    data: {
+                                                        type: 'internal',
+                                                        datasetId: COUNTRY_DATA_LIST[selectedCountry.name].raster,
+                                                    },
                                                 },
                                             },
                                         },
@@ -376,6 +379,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
     private handleQueryParams(): void {
         this.route.queryParams
             .pipe(
+                first(),
                 filter((params) => params.id),
                 zipWith(this.userService.getSessionTokenForRequest()),
                 mergeMap(([params, sessionToken]) =>
@@ -401,10 +405,14 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
                     const selected = data.find((d) => d.id === dataset.id);
 
-                    if (selected) {
-                        this.setEbvDataset(selected, this.selectDefaultGroupEntity.bind(this));
-                        this.changeDetectorRef.markForCheck();
+                    if (!selected) {
+                        return;
                     }
+
+                    this.setEbvDataset(selected, () => {
+                        this.selectDefaultGroupEntity();
+                        this.changeDetectorRef.markForCheck();
+                    });
                 });
             });
     }
@@ -438,11 +446,11 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
             operator: {
                 type: 'GdalSource',
                 params: {
-                    dataset: {
+                    data: {
                         type: 'external',
                         providerId: '1690c483-b17f-4d98-95c8-00a64849cd0b',
-                        datasetId: JSON.stringify(this.ebvDatasetId),
-                    } as ExternalDatasetIdDict,
+                        layerId: JSON.stringify(this.ebvDatasetId),
+                    } as ExternalDataIdDict,
                 },
             },
         };

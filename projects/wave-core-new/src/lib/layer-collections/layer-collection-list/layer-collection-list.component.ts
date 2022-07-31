@@ -9,16 +9,21 @@ import {
     InjectionToken,
 } from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
-import {BehaviorSubject, combineLatest, EMPTY, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, EMPTY, Observable, of, Subject} from 'rxjs';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {filter, mergeMap, scan, tap} from 'rxjs/operators';
 import {LayoutService} from '../../layout.service';
 import {
     GeoEngineError,
+    LayerCollectionDict,
     LayerCollectionItemDict,
-    LayerCollectionItemLayerDict,
+    LayerCollectionLayerDict,
+    LayerDict,
+    ProviderLayerCollectionIdDict,
+    ProviderLayerIdDict,
     RasterResultDescriptorDict,
     RasterSymbologyDict,
+    ResultDescriptorDict,
     SymbologyDict,
     UUID,
     VectorResultDescriptorDict,
@@ -41,8 +46,8 @@ import {colorToDict} from '../../colors/color';
 import {RandomColorService} from '../../util/services/random-color.service';
 
 export interface LayerCollectionListConfig {
-    uuid: UUID;
-    selectListener: (uuid: UUID) => void;
+    id?: ProviderLayerCollectionIdDict;
+    selectListener: (id: ProviderLayerCollectionIdDict) => void;
 }
 
 export const CONTEXT_TOKEN = new InjectionToken<LayerCollectionListConfig>('CONTEXT_TOKEN');
@@ -57,9 +62,9 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
     @ViewChild(CdkVirtualScrollViewport)
     viewport!: CdkVirtualScrollViewport;
 
-    collection?: UUID = undefined;
+    collection?: ProviderLayerCollectionIdDict = undefined;
 
-    selectListener!: (uuid: UUID) => void;
+    selectListener!: (id: ProviderLayerCollectionIdDict) => void;
 
     readonly loadingSpinnerDiameterPx: number = 3 * LayoutService.remInPx;
 
@@ -74,7 +79,7 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
         private readonly randomColorService: RandomColorService,
         private readonly changeDetectorRef: ChangeDetectorRef,
     ) {
-        this.collection = data.uuid;
+        this.collection = data.id;
         this.selectListener = data.selectListener;
     }
 
@@ -97,8 +102,16 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
         }
     }
 
-    trackById(_index: number, item: LayerCollectionItemDict): UUID {
-        return item.id;
+    trackById(_index: number, item: LayerCollectionItemDict): string {
+        if (item.type === 'collection') {
+            const collection = item as LayerCollectionDict;
+            return collection.id.providerId + collection.id.collectionId;
+        } else if (item.type === 'layer') {
+            const layer = item as LayerCollectionLayerDict;
+            return layer.id.providerId + layer.id.layerId;
+        }
+
+        return '';
     }
 
     icon(item: LayerCollectionItemDict): string {
@@ -107,32 +120,38 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
 
     select(item: LayerCollectionItemDict): void {
         if (item.type === 'collection') {
-            this.selectListener(item.id);
+            const collection = item as LayerCollectionDict;
+            this.selectListener(collection.id);
         } else if (item.type === 'layer') {
-            const layer = item as LayerCollectionItemLayerDict;
-            this.addLayer(layer);
+            const layer = item as LayerCollectionLayerDict;
+            this.addLayer(layer.id);
         }
     }
 
-    private addLayer(layerListing: LayerCollectionItemLayerDict): void {
-        combineLatest([
-            this.layerService.getLayer(layerListing.id),
-            this.projectService.getWorkflowMetaData(layerListing.workflow),
-        ]).subscribe(
-            ([layer, resultDescriptorDict]) => {
-                const keys = Object.keys(resultDescriptorDict);
+    private addLayer(layerId: ProviderLayerIdDict): void {
+        this.layerService
+            .getLayer(layerId.providerId, layerId.layerId)
+            .pipe(
+                mergeMap((layer: LayerDict) => combineLatest([of(layer), this.projectService.registerWorkflow(layer.workflow)])),
+                mergeMap(([layer, workflowId]: [LayerDict, UUID]) =>
+                    combineLatest([of(layer), of(workflowId), this.projectService.getWorkflowMetaData(workflowId)]),
+                ),
+            )
+            .subscribe(
+                ([layer, workflowId, resultDescriptorDict]: [LayerDict, UUID, ResultDescriptorDict]) => {
+                    const keys = Object.keys(resultDescriptorDict);
 
-                if (keys.includes('columns')) {
-                    this.addVectorLayer(layer.name, layer.workflow, resultDescriptorDict as VectorResultDescriptorDict, layer.symbology);
-                } else if (keys.includes('measurement')) {
-                    this.addRasterLayer(layer.name, layer.workflow, resultDescriptorDict as RasterResultDescriptorDict, layer.symbology);
-                } else {
-                    // TODO: implement plots, etc.
-                    this.notificationService.error('Adding this workflow type is unimplemented, yet');
-                }
-            },
-            (requestError) => this.handleError(requestError.error, layerListing.workflow),
-        );
+                    if (keys.includes('columns')) {
+                        this.addVectorLayer(layer.name, workflowId, resultDescriptorDict as VectorResultDescriptorDict, layer.symbology);
+                    } else if (keys.includes('measurement')) {
+                        this.addRasterLayer(layer.name, workflowId, resultDescriptorDict as RasterResultDescriptorDict, layer.symbology);
+                    } else {
+                        // TODO: implement plots, etc.
+                        this.notificationService.error('Adding this workflow type is unimplemented, yet');
+                    }
+                },
+                (requestError) => this.handleError(requestError.error, layerId.layerId),
+            );
     }
 
     private addVectorLayer(
@@ -255,12 +274,12 @@ class LayerCollectionItemDataSource extends DataSource<LayerCollectionItemDict> 
 
     protected getCollectionItems: (offset: number, limit: number) => Observable<Array<LayerCollectionItemDict>>;
 
-    constructor(protected layerCollectionService: LayerCollectionService, protected collection?: UUID) {
+    constructor(protected layerCollectionService: LayerCollectionService, protected collection?: ProviderLayerCollectionIdDict) {
         super();
 
         if (collection) {
             this.getCollectionItems = (offset, limit): Observable<Array<LayerCollectionItemDict>> =>
-                layerCollectionService.getLayerCollectionItems(collection, offset, limit);
+                layerCollectionService.getLayerCollectionItems(collection.providerId, collection.collectionId, offset, limit);
         } else {
             this.getCollectionItems = (offset, limit): Observable<Array<LayerCollectionItemDict>> =>
                 layerCollectionService.getRootLayerCollectionItems(offset, limit);

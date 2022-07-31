@@ -30,7 +30,6 @@ export * from './lib/datasets/dataset-list/dataset-list.component';
 export * from './lib/datasets/dataset/dataset.component';
 export * from './lib/datasets/drag-and-drop/drag-and-drop.component';
 export * from './lib/datasets/draw-features/draw-features.component';
-export * from './lib/datasets/provider-list/provider-list.component';
 export * from './lib/datasets/upload/upload.component';
 export * from './lib/datatable/table/table.component';
 export * from './lib/datatable/table/full-display/full-display.component'

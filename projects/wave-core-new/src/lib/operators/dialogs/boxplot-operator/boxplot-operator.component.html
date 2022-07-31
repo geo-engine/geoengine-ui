@@ -23,7 +23,6 @@
                 [min]="0"
                 [max]="7"
             ></wave-multi-layer-selection>
-            <mat-checkbox formControlName="includeNoData">Include No Data</mat-checkbox>
         </div>
 
         <div *ngIf="isVectorLayer$ | async" formArrayName="columnNames">

@@ -459,7 +459,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                     vector: {
                         type: 'OgrSource',
                         params: {
-                            dataset: {
+                            data: {
                                 type: 'internal',
                                 datasetId: this.dragonflyDatasetId,
                             },
@@ -538,7 +538,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                     vector: {
                         type: 'OgrSource',
                         params: {
-                            dataset: {
+                            data: {
                                 type: 'internal',
                                 datasetId: this.fishDatasetId,
                             },
@@ -612,7 +612,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             operator: {
                 type: 'GdalSource',
                 params: {
-                    dataset: {
+                    data: {
                         type: 'internal',
                         datasetId: layer.id,
                     },
@@ -625,7 +625,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
         this.projectService
             .registerWorkflow(workflow)
             .pipe(
-                combineLatestWith(this.datasetService.getDataset({type: 'internal', datasetId: layer.id})),
+                combineLatestWith(this.datasetService.getDataset(layer.id)),
                 tap(([workflowId, _dataset]) => {
                     this.userService
                         .getSessionTokenForRequest()
@@ -678,7 +678,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             operator: {
                 type: 'GdalSource',
                 params: {
-                    dataset: {
+                    data: {
                         type: 'internal',
                         datasetId: this.intensityDatasetId,
                     },
@@ -689,7 +689,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
         this.projectService
             .registerWorkflow(workflow)
             .pipe(
-                combineLatestWith(this.datasetService.getDataset({type: 'internal', datasetId: this.intensityDatasetId})),
+                combineLatestWith(this.datasetService.getDataset(this.intensityDatasetId)),
                 tap(([workflowId, _dataset]) => {
                     this.userService
                         .getSessionTokenForRequest()

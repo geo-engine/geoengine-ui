@@ -74,7 +74,6 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
                 WaveValidators.conditionalValidator(Validators.required, () => isVectorLayer(layerControl.value)),
             ),
             additionalRasterLayers: new FormControl(undefined),
-            includeNoData: [false],
         });
 
         this.subscriptions.push(
@@ -144,10 +143,6 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
         this.columnNames.removeAt(i);
     }
 
-    get includeNoData(): boolean {
-        return this.form.controls['includeNoData'].value as boolean;
-    }
-
     /**
      * Uses the user input to create a box plot.
      * The plot is added to the plot view.
@@ -180,7 +175,6 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
                             type: 'BoxPlot',
                             params: {
                                 columnNames,
-                                includeNoData: this.includeNoData,
                             } as BoxPlotParams,
                             sources: {
                                 source: isVectorLayer(inputLayer) ? inputOperators[0] : inputOperators,

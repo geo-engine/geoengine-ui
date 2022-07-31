@@ -3,7 +3,7 @@ import {BackendService} from '../backend/backend.service';
 import {Observable} from 'rxjs';
 import {UserService} from '../users/user.service';
 import {mergeMap} from 'rxjs/operators';
-import {LayerCollectionItemDict, LayerCollectionLayerDict, UUID} from '../backend/backend.model';
+import {LayerCollectionItemDict, LayerDict, UUID} from '../backend/backend.model';
 
 @Injectable({
     providedIn: 'root',
@@ -11,10 +11,10 @@ import {LayerCollectionItemDict, LayerCollectionLayerDict, UUID} from '../backen
 export class LayerCollectionService {
     constructor(protected backend: BackendService, protected userService: UserService) {}
 
-    getLayerCollectionItems(collection: UUID, offset = 0, limit = 20): Observable<Array<LayerCollectionItemDict>> {
+    getLayerCollectionItems(provider: UUID, collection: string, offset = 0, limit = 20): Observable<Array<LayerCollectionItemDict>> {
         return this.userService
             .getSessionStream()
-            .pipe(mergeMap((session) => this.backend.getLayerCollectionItems(session.sessionToken, collection, offset, limit)));
+            .pipe(mergeMap((session) => this.backend.getLayerCollectionItems(session.sessionToken, provider, collection, offset, limit)));
     }
 
     getRootLayerCollectionItems(offset = 0, limit = 20): Observable<Array<LayerCollectionItemDict>> {
@@ -23,9 +23,9 @@ export class LayerCollectionService {
             .pipe(mergeMap((session) => this.backend.getRootLayerCollectionItems(session.sessionToken, offset, limit)));
     }
 
-    getLayer(layer: UUID): Observable<LayerCollectionLayerDict> {
+    getLayer(provider: UUID, layer: string): Observable<LayerDict> {
         return this.userService
             .getSessionStream()
-            .pipe(mergeMap((session) => this.backend.getLayerCollectionLayer(session.sessionToken, layer)));
+            .pipe(mergeMap((session) => this.backend.getLayerCollectionLayer(session.sessionToken, provider, layer)));
     }
 }
