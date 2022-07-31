@@ -1,7 +1,7 @@
 import {Component, OnInit, ChangeDetectionStrategy, OnDestroy} from '@angular/core';
 import {ResultTypes} from '../../result-type.model';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {of, ReplaySubject, Subscription} from 'rxjs';
+import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap} from 'rxjs/operators';
 import {Layer, VectorLayer} from '../../../layers/layer.model';
@@ -148,7 +148,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         this.errorHint = '';
         filterValues.forEach((value: any, index: number) => {
             if (value.attribute === '') {
-                this.appendErrorMsg(`Filter ${index+1}: Attribute can't be empty!\n`);
+                this.appendErrorMsg(`Filter ${index + 1}: Attribute can't be empty!\n`);
                 return;
             }
             value.ranges.forEach((range: any) => {
@@ -158,27 +158,29 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                 }
 
                 if (this.columnTypes.get(value.attribute) !== 'text' && (isNaN(Number(range.min)) || isNaN(Number(range.max)))) {
-                    this.appendErrorMsg(`Filter ${index+1} (${value.attribute}): Numeric attributes can't be filtered lexicographically!\n`);
+                    this.appendErrorMsg(
+                        `Filter ${index + 1} (${value.attribute}): Numeric attributes can't be filtered lexicographically!\n`,
+                    );
                     return;
                 }
 
                 if (this.columnTypes.get(value.attribute) !== 'text' && Number(range.min) > Number(range.max)) {
-                    this.appendErrorMsg(`Filter ${index+1} (${value.attribute}): Minimum must be smaller than maximum!\n`);
+                    this.appendErrorMsg(`Filter ${index + 1} (${value.attribute}): Minimum must be smaller than maximum!\n`);
                 } else if (range.min > range.max) {
-                    this.appendErrorMsg(`Filter ${index+1} (${value.attribute}): Minimum must be alphabetically before maximum!\n`);
+                    this.appendErrorMsg(`Filter ${index + 1} (${value.attribute}): Minimum must be alphabetically before maximum!\n`);
                 }
             });
         });
         return this.attributeError;
     }
 
-    appendErrorMsg(msg: string) {
+    appendErrorMsg(msg: string): void {
         this.attributeError = true;
         this.errorHint = this.errorHint.concat(msg);
     }
 
     createWorkflow(filterValues: any, index: number, inputWorkflow: WorkflowDict): WorkflowDict {
-        if (index == filterValues.length) return inputWorkflow;
+        if (index === filterValues.length) return inputWorkflow;
         const attribute = filterValues[index]['attribute'] as string;
         return {
             type: 'Vector',
@@ -197,27 +199,26 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     }
 
     extractRanges(formRanges: any, attribute: string): any[][] {
-        let filterRanges: any[][] = [];
+        const filterRanges: any[][] = [];
         formRanges.forEach((range: any) => {
-            const min_max: any[] = [];
+            const minMax: any[] = [];
             if (this.isAttributeText(attribute)) {
-                min_max.push(range.min);
-                min_max.push(range.max);
+                minMax.push(range.min);
+                minMax.push(range.max);
             } else {
-                min_max.push(isNaN(Number(range.min)) ? range.min : Number(range.min));
-                min_max.push(isNaN(Number(range.max)) ? range.max : Number(range.max));
+                minMax.push(isNaN(Number(range.min)) ? range.min : Number(range.min));
+                minMax.push(isNaN(Number(range.max)) ? range.max : Number(range.max));
             }
-            filterRanges.push(min_max);
+            filterRanges.push(minMax);
         });
-        console.log(filterRanges);
         return filterRanges;
     }
 
     isAttributeText(attribute: string): boolean {
-        return this.columnTypes.get(attribute) == 'text';
+        return this.columnTypes.get(attribute) === 'text';
     }
 
-    createLayer(workflowId: string, name: string) {
+    createLayer(workflowId: string, name: string): Observable<void> {
         return this.projectService.addLayer(
             new VectorLayer({
                 workflowId,
