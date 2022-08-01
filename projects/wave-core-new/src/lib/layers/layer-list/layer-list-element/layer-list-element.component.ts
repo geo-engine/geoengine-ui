@@ -191,7 +191,7 @@ export class LayerListElementComponent implements OnDestroy, OnChanges {
                     anchor.click();
                 },
                 error: (error) => {
-                    this.notificationService.error(`File upload failed: ${error.message}`);
+                    this.notificationService.error(`File download failed: ${error.message}`);
                 },
             });
     }
