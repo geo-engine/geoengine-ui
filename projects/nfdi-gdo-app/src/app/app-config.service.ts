@@ -16,6 +16,7 @@ interface Map {
     readonly HOSTED_BACKGROUND_SERVICE_VERSION: string;
     readonly VECTOR_TILES: VectorTiles;
     readonly REFRESH_LAYERS_ON_CHANGE: boolean;
+    readonly VALID_CRS: Array<string>;
 }
 
 interface AppConfigStructure extends WaveConfigStructure {
@@ -52,6 +53,7 @@ export class AppConfig extends Config {
                 MAX_ZOOM: 22,
             },
             REFRESH_LAYERS_ON_CHANGE: false,
+            VALID_CRS: ['EPSG:3857', 'EPSG:4326'],
         };
     }
 
