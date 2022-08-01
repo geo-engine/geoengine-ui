@@ -50,13 +50,14 @@ interface Defaults {
 }
 
 interface Map {
-    readonly BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted' | 'XYZ' | 'eumetview' | 'MVT';
+    readonly BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted' | 'XYZ' | 'eumetview' | 'MVT' | 'fallback';
     readonly BACKGROUND_LAYER_URL: string;
     readonly HOSTED_BACKGROUND_SERVICE: string;
     readonly HOSTED_BACKGROUND_LAYER_NAME: string;
     readonly HOSTED_BACKGROUND_SERVICE_VERSION: string;
     readonly VECTOR_TILES: VectorTiles;
     readonly REFRESH_LAYERS_ON_CHANGE: boolean;
+    readonly VALID_CRS: Array<string>;
 }
 
 export interface VectorTiles {
@@ -120,6 +121,7 @@ export const WAVE_DEFAULT_CONFIG: WaveConfigStructure = {
             MAX_ZOOM: 22,
         },
         REFRESH_LAYERS_ON_CHANGE: false,
+        VALID_CRS: ['EPSG:4326'],
     },
     API_URL: '/api',
     TIME: {

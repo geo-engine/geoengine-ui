@@ -36,8 +36,8 @@ import XYZ from 'ol/source/XYZ';
 
 import OlGeometryType from 'ol/geom/GeometryType';
 import OlGeomPoint from 'ol/geom/Point';
-import OlFormatGeoJSON from 'ol/format/GeoJSON';
 import OlFormatMVT from 'ol/format/MVT';
+import {ol as flatgeobuf} from 'flatgeobuf';
 
 import OlStyleFill from 'ol/style/Fill';
 import OlStyleStroke from 'ol/style/Stroke';
@@ -557,35 +557,20 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         });
     }
 
-    private createBackgroundLayer(_projection: SpatialReference): OlLayer<OlSource, any> {
-        switch (this.config.MAP.BACKGROUND_LAYER) {
+    private createBackgroundLayer(projection: SpatialReference): OlLayer<OlSource, any> {
+        // use fallback if background layer is not available for projection
+        let backgroundLayer;
+        if (this.config.MAP.VALID_CRS.includes(projection.srsString)) {
+            backgroundLayer = this.config.MAP.BACKGROUND_LAYER;
+        } else {
+            backgroundLayer = 'fallback';
+        }
+
+        switch (backgroundLayer) {
             case 'OSM':
                 return new OlLayerTile({
                     source: this.backgroundLayerSource as any,
                     // wrapX: false,
-                });
-            case 'countries': // eslint-disable-line no-fallthrough, ,
-                return new OlLayerVector({
-                    source: this.backgroundLayerSource as any,
-                    style: (feature: OlFeatureLike, _resolution: number): OlStyleStyle => {
-                        if (feature.getId() === 'BACKGROUND') {
-                            return new OlStyleStyle({
-                                fill: new OlStyleFill({
-                                    color: '#ADD8E6',
-                                }),
-                            });
-                        } else {
-                            return new OlStyleStyle({
-                                stroke: new OlStyleStroke({
-                                    color: 'rgba(0, 0, 0, 1)',
-                                    width: 1,
-                                }),
-                                fill: new OlStyleFill({
-                                    color: 'rgba(210, 180, 140, 1)',
-                                }),
-                            });
-                        }
-                    },
                 });
             case 'hosted':
             case 'eumetview':
@@ -608,13 +593,50 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 });
 
                 return layer;
+            case 'fallback':
             default:
-                throw Error('Unknown Background Layer Name');
+                if (backgroundLayer === 'fallback') {
+                    console.warn(`Using fallback background layer for ${projection.srsString}`);
+                } else {
+                    console.error(`Unknown background layer: ${this.config.MAP.BACKGROUND_LAYER}`);
+                }
+
+                return new OlLayerVector({
+                    source: this.backgroundLayerSource as any,
+                    background: 'rgba(158, 189, 255, 1)',
+                    style: (feature: OlFeatureLike, _resolution: number): OlStyleStyle => {
+                        if (feature.getId() === 'BACKGROUND') {
+                            return new OlStyleStyle({
+                                fill: new OlStyleFill({
+                                    color: 'rgba(158, 189, 255, 1)',
+                                }),
+                            });
+                        } else {
+                            return new OlStyleStyle({
+                                stroke: new OlStyleStroke({
+                                    color: 'rgba(225, 230, 240, .5)',
+                                    width: 1,
+                                }),
+                                fill: new OlStyleFill({
+                                    color: 'rgba(225, 230, 240, 1)',
+                                }),
+                            });
+                        }
+                    },
+                });
         }
     }
 
     private createBackgroundLayerSource(projection: SpatialReference): OlSource {
-        switch (this.config.MAP.BACKGROUND_LAYER) {
+        // use fallback if background layer is not available for projection
+        let backgroundLayer;
+        if (this.config.MAP.VALID_CRS.includes(projection.srsString)) {
+            backgroundLayer = this.config.MAP.BACKGROUND_LAYER;
+        } else {
+            backgroundLayer = 'fallback';
+        }
+
+        switch (backgroundLayer) {
             case 'OSM':
                 return new OlSourceOSM();
             case 'eumetview':
@@ -628,11 +650,6 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     wrapX: false,
                     projection: projection.srsString,
                     crossOrigin: 'anonymous',
-                });
-            case 'countries': // eslint-disable-line no-fallthrough
-                return new OlSourceVector({
-                    url: 'assets/countries.geo.json',
-                    format: new OlFormatGeoJSON(),
                 });
             case 'hosted':
                 return new OlTileWmsSource({
@@ -661,8 +678,34 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     wrapX: false,
                     projection: projection.srsString,
                 });
+            case 'fallback':
             default:
-                throw Error('Unknown Background Layer Name');
+                if (backgroundLayer !== 'fallback') {
+                    console.error(`Unknown background layer (source): ${this.config.MAP.BACKGROUND_LAYER}`);
+                }
+
+                const source = new OlSourceVector({
+                    wrapX: false,
+                });
+
+                source.setLoader(async (_extent, _resolution, sourceProjection): Promise<void> => {
+                    const dataProjection = 'EPSG:4326';
+                    const response = await fetch('assets/fallback-base-layer/ne_50m_land.fgb');
+
+                    if (response.body === null) {
+                        return;
+                    }
+
+                    for await (const _feature of flatgeobuf.deserialize(response.body)) {
+                        const feature = _feature as OlFeature;
+                        const geometry = feature.getGeometry() as OlGeometry;
+
+                        geometry.transform(dataProjection, sourceProjection);
+                        source.addFeature(feature);
+                    }
+                });
+
+                return source;
         }
     }
 }
