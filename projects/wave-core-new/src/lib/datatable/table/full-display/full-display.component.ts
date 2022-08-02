@@ -1,7 +1,9 @@
 import {Component, OnInit, ChangeDetectionStrategy, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {Clipboard} from '@angular/cdk/clipboard';
-import {Geometry, MultiPolygon} from 'ol/geom';
+import {Geometry} from 'ol/geom';
+import OlFormatGeoJson from 'ol/format/GeoJSON';
+import OlFormatWKT from 'ol/format/WKT';
 
 /**
  * Opened as modal dialog to display a full set of coordinates and allow copying to clipboard
@@ -26,28 +28,17 @@ export class FullDisplayComponent implements OnInit {
         this.yCoords = this.data.yStrings;
     }
 
-    copyToClipboard(): void {
-        const type = this.data.geometry.getType();
-        const prettyCoords = JSON.stringify((this.data.geometry as MultiPolygon).getCoordinates(), null, 2);
-        const result = `{ "type": "${type}",\n  "coordinates":\n    ${prettyCoords}\n}`;
-        const pending = this.clipboard.beginCopy(result);
-        let remainingAttempts = 3;
-        function attempt(): void {
-            const copied = pending.copy();
-            if (!copied && --remainingAttempts) {
-                setTimeout(attempt);
-            } else {
-                pending.destroy();
-            }
-        }
-        attempt();
+    copyAsGeoJson(): void {
+        const geometryJson = JSON.stringify(new OlFormatGeoJson().writeGeometryObject(this.data.geometry), null, 2);
+        this.stringToClipboard(geometryJson);
     }
 
-    copyToClipboardRaw(): void {
-        // Copies coordinates only
-        const xString: string = this.xCoords.toString();
-        const yString: string = this.yCoords.toString();
-        const toCopy = `X: ${xString}, Y: ${yString}`;
+    copyAsWkt(): void {
+        const geometryWkT = new OlFormatWKT().writeGeometry(this.data.geometry);
+        this.stringToClipboard(geometryWkT);
+    }
+
+    stringToClipboard(toCopy: string): void {
         const pending = this.clipboard.beginCopy(toCopy);
         let remainingAttempts = 3;
         function attempt(): void {

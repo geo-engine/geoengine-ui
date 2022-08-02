@@ -197,7 +197,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     }
 
     readTimePropertyEnd(geometry: OlFeature): string {
-        const maximum: string = '+262143-12-31T23:59:59.999+00:00';
+        const maximum = '+262143-12-31T23:59:59.999+00:00';
         const result: string = geometry['values_']['_____table__end'];
         return result === maximum ? '∞' : result;
     }
