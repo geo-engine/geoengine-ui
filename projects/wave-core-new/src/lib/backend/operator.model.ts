@@ -127,15 +127,15 @@ export interface PointInPolygonFilterDict extends OperatorDict {
 }
 
 export interface ColumnRangeFilterDict extends OperatorDict {
-    type: 'ColumnRangeFilter',
+    type: 'ColumnRangeFilter';
     params: {
-        column: string,
-        ranges: Array<number[]> | Array<string[]>,
-        keepNulls: boolean,
-    }
+        column: string;
+        ranges: Array<number[]> | Array<string[]>;
+        keepNulls: boolean;
+    };
     sources: {
         vector: SourceOperatorDict | OperatorDict;
-    }
+    };
 }
 
 export interface RasterVectorJoinParams extends OperatorParams {

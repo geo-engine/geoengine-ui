@@ -26,8 +26,8 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
 
     form: FormGroup;
 
-    attributeError: boolean = false;
-    errorHint: string = 'default error';
+    attributeError = false;
+    errorHint = 'default error';
 
     private subscriptions: Array<Subscription> = [];
     private columnTypes = new Map<string, VectorColumnDataType | undefined>();
@@ -156,14 +156,17 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                     return;
                 }
 
-                if (this.columnTypes.get(value.attribute)?.code !== 'text' && (isNaN(Number(range.min)) || isNaN(Number(range.max)))) {
+                if (
+                    this.columnTypes.get(value.attribute) !== VectorColumnDataTypes.Text &&
+                    (isNaN(Number(range.min)) || isNaN(Number(range.max)))
+                ) {
                     this.appendErrorMsg(
                         `Filter ${index + 1} (${value.attribute}): Numeric attributes can't be filtered lexicographically!\n`,
                     );
                     return;
                 }
 
-                if (this.columnTypes.get(value.attribute)?.code !== 'text' && Number(range.min) > Number(range.max)) {
+                if (this.columnTypes.get(value.attribute) !== VectorColumnDataTypes.Text && Number(range.min) > Number(range.max)) {
                     this.appendErrorMsg(`Filter ${index + 1} (${value.attribute}): Minimum must be smaller than maximum!\n`);
                 } else if (range.min > range.max) {
                     this.appendErrorMsg(`Filter ${index + 1} (${value.attribute}): Minimum must be alphabetically before maximum!\n`);
