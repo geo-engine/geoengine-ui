@@ -46,6 +46,7 @@ export * from './lib/layers/legend/legend-raster/raster-legend.component';
 export * from './lib/layers/legend/legend-vector/vector-legend.component';
 export * from './lib/layers/rename-layer/rename-layer.component';
 export * from './lib/layers/symbology/color-param-editor/color-param-editor.component';
+export * from './lib/layer-collections/layer-collection-dropdown/layer-collection-dropdown.component';
 export * from './lib/layer-collections/layer-collection-list/layer-collection-list.component';
 export * from './lib/layer-collections/layer-collection-navigation/layer-collection-navigation.component';
 export * from './lib/layers/symbology/number-param-editor/number-param-editor.component';

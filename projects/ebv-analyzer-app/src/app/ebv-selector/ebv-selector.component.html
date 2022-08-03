@@ -1,135 +1,21 @@
 <div class="container mat-typography" #container>
-    <mat-form-field *ngIf="ebvClasses">
-        <mat-label>EBV Class</mat-label>
-        <mat-select [value]="ebvClass" (selectionChange)="setEbvClass($event.value)">
-            <mat-option>
-                <ngx-mat-select-search
-                    [formControl]="waveAutocompleteSelect.filterFormControl"
-                    waveAutocompleteSelect
-                    [waveAutocompleteSelectAllValues]="ebvClasses"
-                    [waveAutocompleteSelectSearchPredicate]="ebvClassPredicate"
-                    #waveAutocompleteSelect="waveAutocompleteSelect"
-                ></ngx-mat-select-search>
-            </mat-option>
-            <mat-option *ngFor="let ebvClassOption of waveAutocompleteSelect.filteredValues | async" [value]="ebvClassOption">{{
-                ebvClassOption.name
-            }}</mat-option>
-        </mat-select>
-    </mat-form-field>
-    <mat-form-field *ngIf="ebvNames">
-        <mat-label>EBV Name</mat-label>
-        <mat-select [value]="ebvName" (selectionChange)="setEbvName($event.value)">
-            <mat-option>
-                <ngx-mat-select-search
-                    [formControl]="waveAutocompleteSelect.filterFormControl"
-                    waveAutocompleteSelect
-                    [waveAutocompleteSelectAllValues]="ebvNames"
-                    [waveAutocompleteSelectSearchPredicate]="ebvNamePredicate"
-                    #waveAutocompleteSelect="waveAutocompleteSelect"
-                ></ngx-mat-select-search>
-            </mat-option>
-            <mat-option *ngFor="let ebvName of waveAutocompleteSelect.filteredValues | async" [value]="ebvName">{{ ebvName }}</mat-option>
-        </mat-select>
-    </mat-form-field>
-    <mat-form-field *ngIf="ebvDatasets">
-        <mat-label>EBV Dataset</mat-label>
-        <mat-select [value]="ebvDataset" (selectionChange)="setEbvDataset($event.value)">
-            <mat-option>
-                <ngx-mat-select-search
-                    [formControl]="waveAutocompleteSelect.filterFormControl"
-                    waveAutocompleteSelect
-                    [waveAutocompleteSelectAllValues]="ebvDatasets"
-                    [waveAutocompleteSelectSearchPredicate]="ebvDatasetPredicate"
-                    #waveAutocompleteSelect="waveAutocompleteSelect"
-                ></ngx-mat-select-search>
-            </mat-option>
-            <mat-option *ngFor="let ebvDataset of waveAutocompleteSelect.filteredValues | async" [value]="ebvDataset">{{
-                ebvDataset.name
-            }}</mat-option>
-        </mat-select>
-    </mat-form-field>
-    <div *ngIf="ebvDataset">
-        <p>
-            <em><span class="label">by</span> {{ ebvDataset.authorName }} ({{ ebvDataset.authorInstitution }})</em>
-        </p>
-        <p>
-            <em><span class="label">with license</span> {{ ebvDataset.license }}</em>
-        </p>
-        <p class="justify">{{ ebvDataset.description }}</p>
-    </div>
-    <ng-container *ngIf="ebvTree">
-        <mat-form-field>
-            <mat-label>{{ categoryLabels[0] }}</mat-label>
-            <mat-select [value]="ebvPath[0]" (valueChange)="setEbvPath($event, 0)" #selectedRootSubgroup>
-                <mat-option>
-                    <ngx-mat-select-search
-                        [formControl]="waveAutocompleteSelect.filterFormControl"
-                        waveAutocompleteSelect
-                        [waveAutocompleteSelectAllValues]="ebvTree.tree.groups"
-                        [waveAutocompleteSelectSearchPredicate]="ebvSubgroupPredicate"
-                        #waveAutocompleteSelect="waveAutocompleteSelect"
-                    ></ngx-mat-select-search>
-                </mat-option>
-                <mat-option *ngFor="let ebvSubgroupValue of waveAutocompleteSelect.filteredValues | async" [value]="ebvSubgroupValue">{{
-                    ebvSubgroupValue.title
-                }}</mat-option>
-            </mat-select>
-        </mat-form-field>
-        <p class="mat-caption label justify">{{ ebvPath[0]?.description }}</p>
-    </ng-container>
-    <ng-container *ngFor="let ebvSubgroup of ebvPath; index as i">
-        <mat-form-field *ngIf="ebvSubgroup.groups.length">
-            <mat-label>{{ categoryLabels[i + 1] }}</mat-label>
-            <mat-select [value]="ebvPath[i + 1]" (valueChange)="setEbvPath($event, i + 1)" #selectedSubgroup>
-                <mat-option>
-                    <ngx-mat-select-search
-                        [formControl]="waveAutocompleteSelect.filterFormControl"
-                        waveAutocompleteSelect
-                        [waveAutocompleteSelectAllValues]="ebvSubgroup.groups"
-                        [waveAutocompleteSelectSearchPredicate]="ebvSubgroupPredicate"
-                        #waveAutocompleteSelect="waveAutocompleteSelect"
-                    ></ngx-mat-select-search>
-                </mat-option>
-                <mat-option *ngFor="let ebvSubgroupValue of waveAutocompleteSelect.filteredValues | async" [value]="ebvSubgroupValue">{{
-                    ebvSubgroupValue.title
-                }}</mat-option>
-            </mat-select>
-        </mat-form-field>
-        <p class="mat-caption label justify">{{ ebvPath[i + 1]?.description }}</p>
-    </ng-container>
-    <ng-container *ngIf="ebvTree && ebvPath.length && !ebvPath[ebvPath.length - 1].groups.length">
-        <mat-form-field>
-            <mat-label>Entity</mat-label>
-            <mat-select [value]="ebvEntity" (valueChange)="setEbvEntity($event)" #selectedEntity>
-                <mat-option>
-                    <ngx-mat-select-search
-                        [formControl]="waveAutocompleteSelect.filterFormControl"
-                        waveAutocompleteSelect
-                        [waveAutocompleteSelectAllValues]="ebvTree.tree.entities"
-                        [waveAutocompleteSelectSearchPredicate]="ebvEntityPredicate"
-                        #waveAutocompleteSelect="waveAutocompleteSelect"
-                    ></ngx-mat-select-search>
-                </mat-option>
-                <mat-option *ngFor="let entity of waveAutocompleteSelect.filteredValues | async" [value]="entity">{{
-                    entity.name
-                }}</mat-option>
-            </mat-select>
-        </mat-form-field>
-        <p class="mat-caption label justify">{{ ebvEntity?.description }}</p>
-    </ng-container>
+    <wave-layer-collection-dropdown
+        [root]="rootCollectionId"
+        rootLabel="EBV Class"
+        (layerSelected)="layerSelected($event)"
+        [preselectedPath]="preselectedPath"
+    ></wave-layer-collection-dropdown>
 
     <div fxLayout="row" fxLayoutGap="1rem">
-        <button mat-raised-button class="show" color="primary" *ngIf="isAddButtonVisible | async" (click)="showEbv()">Show</button>
-        <button mat-raised-button class="show" color="primary" *ngIf="isSymbologyButtonVisible | async" (click)="editSymbology()" fxFlex>
+        <button mat-raised-button class="show" color="primary" *ngIf="layerId" (click)="showEbv()">Show</button>
+        <button mat-raised-button class="show" color="primary" *ngIf="layer" (click)="editSymbology()" fxFlex>
             <mat-icon>palette</mat-icon>
         </button>
     </div>
 
-    <mat-spinner *ngIf="loading$ | async"></mat-spinner>
-
     <mat-divider></mat-divider>
 
-    <div *ngIf="ebvEntity" fxLayout="row" fxLayoutAlign="space-between start">
+    <div *ngIf="layer" fxLayout="row" fxLayoutAlign="space-between start">
         <wave-ebv-country-selector fxFlex=""></wave-ebv-country-selector>
         <span fxFlex="1rem"></span>
         <button mat-raised-button color="primary" [disabled]="isPlotButtonDisabled$ | async" (click)="plot()">Calculate</button>
