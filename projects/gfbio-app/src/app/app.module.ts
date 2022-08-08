@@ -26,9 +26,10 @@ import {HelpComponent} from './help/help.component';
 import {SplashDialogComponent} from './splash-dialog/splash-dialog.component';
 import {BasketDialogComponent} from './basket/basket-dialog/basket-dialog.component';
 import {BasketService} from './basket/basket.service';
+import {OidcComponent} from "./oidc/oidc.component";
 
 @NgModule({
-    declarations: [AppComponent, HelpComponent, SplashDialogComponent, BasketDialogComponent],
+    declarations: [AppComponent, HelpComponent, SplashDialogComponent, BasketDialogComponent, OidcComponent],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,

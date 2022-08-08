@@ -9,7 +9,7 @@ import {User} from './user.model';
 import {Config} from '../config.service';
 import {NotificationService} from '../notification.service';
 import {BackendService} from '../backend/backend.service';
-import {SessionDict, UUID} from '../backend/backend.model';
+import {AuthCodeRequestURL, SessionDict, UUID} from '../backend/backend.model';
 import {Session} from './session.model';
 import {Router} from '@angular/router';
 
@@ -206,6 +206,26 @@ export class UserService {
         };
 
         return of(session);
+    }
+
+    oidcInit() : Observable<AuthCodeRequestURL> {
+        return this.backend.oidcInit();
+    }
+
+    oidcLogin(request: {session_state: string, code: string, state: string}) : Observable<Session> {
+        const result = new Subject<Session>();
+        this.backend
+            .oidcLogin(request)
+            .pipe(mergeMap((response) => this.createSession(response)))
+            .subscribe(
+                (session) => {
+                    this.session$.next(session);
+                    result.next(session);
+                },
+                (error) => result.error(error),
+                () => result.complete(),
+            );
+        return result.asObservable();
     }
 }
 

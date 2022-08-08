@@ -27,6 +27,10 @@ export interface UserDict {
     realName?: string;
 }
 
+export interface AuthCodeRequestURL {
+    url: string,
+}
+
 export interface CoordinateDict {
     x: number;
     y: number;
