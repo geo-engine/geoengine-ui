@@ -57,6 +57,10 @@ export class LayerCollectionDropdownComponent implements OnInit {
         }
     }
 
+    layersAvailable(): boolean {
+        return this.items.length > 0 && this.items[0].length > 0;
+    }
+
     preselect(path: Array<string | number>): void {
         const selection = path.shift();
 

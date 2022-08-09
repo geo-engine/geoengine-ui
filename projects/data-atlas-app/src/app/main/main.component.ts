@@ -1,5 +1,15 @@
-import {Observable, BehaviorSubject, mergeMap, ReplaySubject, first, filter, map} from 'rxjs';
-import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
+import {Observable, BehaviorSubject, mergeMap, ReplaySubject, first, filter, map, combineLatest, of} from 'rxjs';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    HostListener,
+    Inject,
+    OnInit,
+    ViewChild,
+    ViewContainerRef,
+} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {
     Layer,
@@ -15,29 +25,22 @@ import {
     SpatialReferenceService,
     DatasetService,
     RasterLayer,
-    WorkflowDict,
     BackendService,
     RasterSymbology,
-    Colorizer,
     RasterSymbologyEditorComponent,
     SidenavContainerComponent,
+    LayerCollectionDict,
+    LayerCollectionService,
+    ProviderLayerIdDict,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AppConfig} from '../app-config.service';
 import {SelectLayersComponent} from '../select-layers/select-layers.component';
 import {ComponentPortal} from '@angular/cdk/portal';
 import moment from 'moment';
-import {DataSelectionService} from '../data-selection.service';
+import {DataRange, DataSelectionService} from '../data-selection.service';
 import {AppDatasetService} from '../app-dataset.service';
-import {
-    TerraNovaGroup,
-    EbvHierarchy,
-    EbvTreeSubgroup,
-    EbvTreeEntity,
-    EbvDatasetId,
-    guessDataRange,
-    computeTimeSteps,
-} from '../select-layers/available-layers';
+import {TerraNovaGroup, EbvHierarchy} from '../select-layers/available-layers';
 import {HttpClient} from '@angular/common/http';
 import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
 
@@ -52,6 +55,10 @@ export class MainComponent implements OnInit, AfterViewInit {
 
     @ViewChild(MatSidenav, {static: true}) leftSidenav!: MatSidenav;
     @ViewChild(SidenavContainerComponent, {static: true}) leftSidenavContainer!: SidenavContainerComponent;
+
+    readonly topLevelCollections$ = new BehaviorSubject<Array<LayerCollectionDict>>([]);
+
+    readonly selectedLayers$ = new BehaviorSubject<Array<ProviderLayerIdDict | undefined>>([]);
 
     readonly layersReverse$: Observable<Array<Layer>>;
     readonly analysisVisible$ = new BehaviorSubject(false);
@@ -82,22 +89,25 @@ export class MainComponent implements OnInit, AfterViewInit {
         private sanitizer: DomSanitizer,
         private readonly backend: BackendService,
         private readonly http: HttpClient,
+        private readonly layerCollectionService: LayerCollectionService,
+        private readonly changeDetectorRef: ChangeDetectorRef,
     ) {
         this.registerIcons();
 
         this.layersReverse$ = this.dataSelectionService.layers;
 
-        this.http.get<Array<[TerraNovaGroup, Array<EbvHierarchy>]>>('assets/datasets.json').subscribe((datasets) => {
-            const datasetMap = new Map<TerraNovaGroup, Array<EbvHierarchy>>(datasets);
-
-            for (const ebvHierarchies of datasetMap.values()) {
-                for (const ebvHierarchy of ebvHierarchies) {
-                    ebvHierarchy.tree.entities.sort((a, b) => a.name.localeCompare(b.name));
+        this.layerCollectionService
+            .getLayerCollectionItems('1690c483-b17f-4d98-95c8-00a64849cd0b', '{"Path":{"path":"."}}')
+            .subscribe((items) => {
+                const collections = [];
+                for (const item of items) {
+                    if (item.type === 'collection') {
+                        collections.push(item as LayerCollectionDict);
+                    }
                 }
-            }
-
-            this.layerGroups.next(datasetMap);
-        });
+                this.selectedLayers$.next(new Array(collections.length).fill(false));
+                this.topLevelCollections$.next(collections);
+            });
     }
 
     ngOnInit(): void {
@@ -122,8 +132,26 @@ export class MainComponent implements OnInit, AfterViewInit {
         this.mapComponent.resize();
     }
 
+    icon(name: string): string {
+        if (name === 'Anthropogenic activity') {
+            return 'terrain';
+        } else if (name === 'Biodiversity') {
+            return 'pets';
+        } else if (name === 'Climate') {
+            return 'public';
+        } else {
+            return 'class';
+        }
+    }
+
     idFromLayer(index: number, layer: Layer): number {
         return layer.id;
+    }
+
+    layerSelected(i: number, id: ProviderLayerIdDict | undefined): void {
+        const selected = this.selectedLayers$.getValue();
+        selected[i] = id;
+        this.selectedLayers$.next(selected);
     }
 
     showAnalysis(): void {
@@ -147,50 +175,53 @@ export class MainComponent implements OnInit, AfterViewInit {
             });
     }
 
-    loadData(layer: EbvHierarchy, subgroup: EbvTreeSubgroup, entity: EbvTreeEntity): void {
-        const datasetId: EbvDatasetId = {
-            fileName: layer.tree.fileName,
-            groupNames: [subgroup.name],
-            entity: entity.id,
-        };
+    loadData(i: number): void {
+        const id = this.selectedLayers$.getValue()[i];
+        if (!id) {
+            return;
+        }
 
-        const workflow: WorkflowDict = {
-            type: 'Raster',
-            operator: {
-                type: 'GdalSource',
-                params: {
-                    data: {
-                        type: 'external',
-                        providerId: layer.providerId,
-                        layerId: JSON.stringify(datasetId),
-                    },
-                },
-            },
-        };
-
-        const symbology = new RasterSymbology(1.0, Colorizer.fromDict(layer.tree.colorizer));
-
-        this.userService
-            .getSessionTokenForRequest()
+        this.layerCollectionService
+            .getLayer(id.providerId, id.layerId)
             .pipe(
-                mergeMap((sessionToken) => this.backend.registerWorkflow(workflow, sessionToken)),
-                mergeMap(({id: workflowId}) => {
+                mergeMap((layer) => combineLatest([of(layer), this.projectService.registerWorkflow(layer.workflow)])),
+                mergeMap(([layer, workflowId]) => {
+                    if (!layer.symbology) {
+                        throw new Error('Layer has no symbology');
+                    }
+
+                    if (!layer.properties) {
+                        throw new Error('Layer has no properties');
+                    }
+
+                    if (!('timeSteps' in layer.properties)) {
+                        throw new Error('Layer has no timeSteps');
+                    }
+
+                    if (!('dataRange' in layer.properties)) {
+                        throw new Error('Layer has no dataRange');
+                    }
+
+                    const timeSteps: Array<Time> = JSON.parse(layer.properties['timeSteps']).map((t: number) => new Time(t));
+
+                    const range: [number, number] = JSON.parse(layer.properties['dataRange']);
+                    const dataRange: DataRange = {
+                        min: range[0],
+                        max: range[1],
+                    };
+
                     const rasterLayer = new RasterLayer({
+                        name: 'EBV',
                         workflowId,
-                        name: entity.name,
-                        symbology,
-                        isLegendVisible: false,
                         isVisible: true,
+                        isLegendVisible: false,
+                        symbology: RasterSymbology.fromDict(layer.symbology) as RasterSymbology,
                     });
 
-                    return this.dataSelectionService.setRasterLayer(
-                        rasterLayer,
-                        computeTimeSteps(layer.tree.time, layer.tree.timeStep),
-                        guessDataRange(symbology.colorizer),
-                    );
+                    return this.dataSelectionService.setRasterLayer(rasterLayer, timeSteps, dataRange);
                 }),
             )
-            .subscribe();
+            .subscribe(() => this.changeDetectorRef.markForCheck());
     }
 
     private reset(): void {
