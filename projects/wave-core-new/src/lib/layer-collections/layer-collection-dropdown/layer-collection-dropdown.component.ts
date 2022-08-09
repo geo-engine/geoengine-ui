@@ -20,14 +20,14 @@ export class LayerCollectionDropdownComponent implements OnInit {
 
     @Output() layerSelected = new EventEmitter<ProviderLayerIdDict>();
 
-    items: Array<Array<LayerCollectionItemDict>> = [];
-    labels: Array<string> = [];
-    descriptions: Array<string> = [];
-    properties: Array<Array<[string, string]>> = [];
+    readonly items: Array<Array<LayerCollectionItemDict>> = [];
+    readonly labels: Array<string> = [];
+    readonly descriptions: Array<string> = [];
+    readonly properties: Array<Array<[string, string]>> = [];
 
     selections: Array<LayerCollectionItemDict> = [];
 
-    constructor(protected layerCollectionService: LayerCollectionService, private readonly changeDetectorRef: ChangeDetectorRef) {}
+    constructor(protected readonly layerCollectionService: LayerCollectionService, private readonly changeDetectorRef: ChangeDetectorRef) {}
 
     ngOnInit(): void {
         if (this.root) {
