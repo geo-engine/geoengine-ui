@@ -127,6 +127,7 @@ import {TimeSliderComponent} from './time/time-slider/time-slider.component';
 import {LayerCollectionListComponent} from './layer-collections/layer-collection-list/layer-collection-list.component';
 import {LayerCollectionNavigationComponent} from './layer-collections/layer-collection-navigation/layer-collection-navigation.component';
 import {ClassHistogramOperatorComponent} from './operators/dialogs/class-histogram-operator/class-histogram-operator.component';
+import {ColumnRangeFilterComponent} from './operators/dialogs/column-range-filter/column-range-filter.component';
 import {LayerCollectionDropdownComponent} from './layer-collections/layer-collection-dropdown/layer-collection-dropdown.component';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 
@@ -192,6 +193,7 @@ const WAVE_COMPONENTS = [
     ColorBreakpointInputComponent,
     ColorMapSelectorComponent,
     ColorParamEditorComponent,
+    ColumnRangeFilterComponent,
     DatasetComponent,
     DatasetListComponent,
     DataTableComponent,

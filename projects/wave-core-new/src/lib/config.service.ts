@@ -50,12 +50,21 @@ interface Defaults {
 }
 
 interface Map {
-    readonly BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted' | 'XYZ' | 'eumetview';
+    readonly BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted' | 'XYZ' | 'eumetview' | 'MVT' | 'fallback';
     readonly BACKGROUND_LAYER_URL: string;
     readonly HOSTED_BACKGROUND_SERVICE: string;
     readonly HOSTED_BACKGROUND_LAYER_NAME: string;
     readonly HOSTED_BACKGROUND_SERVICE_VERSION: string;
+    readonly VECTOR_TILES: VectorTiles;
     readonly REFRESH_LAYERS_ON_CHANGE: boolean;
+    readonly VALID_CRS: Array<string>;
+}
+
+export interface VectorTiles {
+    readonly STYLE_URL: string;
+    readonly SOURCE: string;
+    readonly BACKGROUND_LAYER_EXTENT: [number, number, number, number];
+    readonly MAX_ZOOM: number;
 }
 
 interface Time {
@@ -100,12 +109,19 @@ export const WAVE_DEFAULT_CONFIG: WaveConfigStructure = {
         GUEST_LOGIN_HINT: 5000,
     },
     MAP: {
-        BACKGROUND_LAYER: 'eumetview',
-        BACKGROUND_LAYER_URL: '',
+        BACKGROUND_LAYER: 'MVT',
+        BACKGROUND_LAYER_URL: 'https://base.geoengine.io/natural-earth/{z}/{x}/{y}.pbf',
         HOSTED_BACKGROUND_SERVICE: '/mapcache/',
         HOSTED_BACKGROUND_LAYER_NAME: 'osm',
         HOSTED_BACKGROUND_SERVICE_VERSION: '1.1.1',
+        VECTOR_TILES: {
+            STYLE_URL: 'assets/mvt/ne-ge.json',
+            SOURCE: 'ne',
+            BACKGROUND_LAYER_EXTENT: [-180, -180, 180, 180],
+            MAX_ZOOM: 22,
+        },
         REFRESH_LAYERS_ON_CHANGE: false,
+        VALID_CRS: ['EPSG:4326'],
     },
     API_URL: '/api',
     TIME: {

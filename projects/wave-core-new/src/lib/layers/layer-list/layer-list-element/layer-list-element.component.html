@@ -47,6 +47,10 @@
                 <mat-icon>content_copy</mat-icon>
                 <span>Copy Workflow Id to Clipboard</span>
             </button>
+            <button mat-menu-item (click)="downloadMetadata(layer)">
+                <mat-icon>file_download</mat-icon>
+                <span>Download Metadata</span>
+            </button>
             <!--                                    <button mat-menu-item (click)="dialog.open(LayerExportComponent, {data: {layer: layer}})">-->
             <!--                                        <mat-icon>file_download</mat-icon>-->
             <!--                                        <span>Export</span>-->
