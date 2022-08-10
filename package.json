@@ -84,7 +84,7 @@
         "@angular-eslint/template-parser": "^13.2.0",
         "@angular/cli": "~13.3.8",
         "@angular/compiler-cli": "~13.3.11",
-        "@angular/language-service": "~13.3.11",
+        "@angular/language-service": "~14.1.2",
         "@types/codemirror": "~5.60.5",
         "@types/d3": "~7.4.0",
         "@types/dagre": "^0.7.47",
