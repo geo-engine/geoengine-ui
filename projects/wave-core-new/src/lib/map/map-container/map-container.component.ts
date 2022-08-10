@@ -34,7 +34,7 @@ import OlSourceVector from 'ol/source/Vector';
 import OlSourceVectorTile from 'ol/source/VectorTile';
 import XYZ from 'ol/source/XYZ';
 
-import OlGeometryType from 'ol/geom/GeometryType';
+import {Type as OlGeometryType} from 'ol/geom/Geometry';
 import OlGeomPoint from 'ol/geom/Point';
 import OlFormatMVT from 'ol/format/MVT';
 import {ol as flatgeobuf} from 'flatgeobuf';
@@ -114,7 +114,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     private selectedFeatureOriginalStyle?: OlStyleLike = undefined;
 
     private drawInteractionSource?: OlSourceVector<OlGeometry>;
-    private drawType: string = OlGeometryType.POINT;
+    private drawType: OlGeometryType = 'Point';
     private drawInteractions: Array<OlInteractionDraw> = [];
     private drawInteractionLayers: Array<OlLayerVector<OlSourceVector<OlGeometry>>> = [];
 
@@ -225,7 +225,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     /**
      * Enable user input (hand drawn) for the map
      */
-    public startDrawInteraction(drawType: string): void {
+    public startDrawInteraction(drawType: OlGeometryType): void {
         if (this.isDrawInteractionAttached()) {
             throw new Error('only one draw interaction can be active!');
         }
