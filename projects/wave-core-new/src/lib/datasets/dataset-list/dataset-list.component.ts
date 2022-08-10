@@ -83,7 +83,10 @@ class DatasetDataSource extends DataSource<Dataset> {
     constructor(protected datasetService: DatasetService) {
         super();
 
-        this.getDatasets = (offset, limit): Observable<Array<Dataset>> => datasetService.getDatasets(offset, limit).pipe(first());
+        this.getDatasets = (offset, limit): Observable<Array<Dataset>> =>
+            datasetService.getDatasets(offset, limit).pipe(
+                first(), // first because we only want to fetch once
+            );
     }
 
     init(numberOfElements: number): void {

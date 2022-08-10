@@ -1,4 +1,4 @@
-<cdk-virtual-scroll-viewport itemSize="72" (scrolledIndexChange)="onScrolledIndexChange($event)">
+<cdk-virtual-scroll-viewport [itemSize]="itemSizePx" (scrolledIndexChange)="onScrolledIndexChange($event)">
     <mat-nav-list>
         <div *cdkVirtualFor="let item of source; trackBy: trackById">
             <mat-list-item (click)="select(item)">

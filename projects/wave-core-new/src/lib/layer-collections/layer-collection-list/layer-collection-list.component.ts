@@ -9,9 +9,9 @@ import {
     InjectionToken,
 } from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
-import {BehaviorSubject, combineLatest, EMPTY, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, EMPTY, Observable, of, range, Subject} from 'rxjs';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
-import {filter, mergeMap, scan, tap} from 'rxjs/operators';
+import {concatMap, filter, first, mergeMap, scan, tap} from 'rxjs/operators';
 import {LayoutService} from '../../layout.service';
 import {
     GeoEngineError,
@@ -62,6 +62,8 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
     @ViewChild(CdkVirtualScrollViewport)
     viewport!: CdkVirtualScrollViewport;
 
+    readonly itemSizePx = 72;
+
     collection?: ProviderLayerCollectionIdDict = undefined;
 
     selectListener!: (id: ProviderLayerCollectionIdDict) => void;
@@ -87,7 +89,9 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
         this.source = new LayerCollectionItemDataSource(this.layerService, this.collection);
     }
 
-    ngAfterViewInit(): void {}
+    ngAfterViewInit(): void {
+        this.source?.init(this.calculateInitialNumberOfElements());
+    }
 
     /**
      * Fetch new data when scrolled to the end of the list.
@@ -98,7 +102,7 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
 
         // only fetch when scrolled to the end
         if (end >= total) {
-            this.source?.fetchMoreData();
+            this.source?.fetchMoreData(1);
         }
     }
 
@@ -126,6 +130,13 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
             const layer = item as LayerCollectionLayerDict;
             this.addLayer(layer.id);
         }
+    }
+
+    protected calculateInitialNumberOfElements(): number {
+        const element = this.viewport.elementRef.nativeElement;
+        const numberOfElements = Math.ceil(element.clientHeight / this.itemSizePx);
+        // add one such that scrolling happens
+        return numberOfElements + 1;
     }
 
     private addLayer(layerId: ProviderLayerIdDict): void {
@@ -264,11 +275,12 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
  * A custom data source that allows fetching datasets for a virtual scroll source.
  */
 class LayerCollectionItemDataSource extends DataSource<LayerCollectionItemDict> {
-    readonly scrollFetchSize = 20;
+    // cannot increase this, since it is limited by the server
+    readonly scrollFetchSize = 5;
 
     readonly loading$ = new BehaviorSubject(false);
 
-    protected nextBatch$ = new Subject<void>();
+    protected nextBatch$ = new Subject<number>();
     protected noMoreData = false;
     protected offset = 0;
 
@@ -279,19 +291,26 @@ class LayerCollectionItemDataSource extends DataSource<LayerCollectionItemDict> 
 
         if (collection) {
             this.getCollectionItems = (offset, limit): Observable<Array<LayerCollectionItemDict>> =>
-                layerCollectionService.getLayerCollectionItems(collection.providerId, collection.collectionId, offset, limit);
+                layerCollectionService.getLayerCollectionItems(collection.providerId, collection.collectionId, offset, limit).pipe(
+                    first(), // first because we only want to fetch once
+                );
         } else {
             this.getCollectionItems = (offset, limit): Observable<Array<LayerCollectionItemDict>> =>
-                layerCollectionService.getRootLayerCollectionItems(offset, limit);
+                layerCollectionService.getRootLayerCollectionItems(offset, limit).pipe(
+                    first(), // first because we only want to fetch once
+                );
         }
+    }
 
-        this.fetchMoreData(); // initially populate source
+    init(numberOfElements: number): void {
+        this.fetchMoreData(Math.ceil(numberOfElements / this.scrollFetchSize)); // initially populate source
     }
 
     connect(): Observable<Array<LayerCollectionItemDict>> {
         return this.nextBatch$.pipe(
             filter(() => !this.loading$.value),
-            mergeMap(() => this.getMoreDataFromServer()),
+            concatMap((numberOfTimes) => range(0, numberOfTimes)),
+            concatMap(() => this.getMoreDataFromServer()),
             scan((acc, newValues) => [...acc, ...newValues]),
         );
     }
@@ -301,8 +320,8 @@ class LayerCollectionItemDataSource extends DataSource<LayerCollectionItemDict> 
      */
     disconnect(): void {}
 
-    fetchMoreData(): void {
-        this.nextBatch$.next();
+    fetchMoreData(numberOfTimes: number): void {
+        this.nextBatch$.next(numberOfTimes);
     }
 
     protected getMoreDataFromServer(): Observable<Array<LayerCollectionItemDict>> {
