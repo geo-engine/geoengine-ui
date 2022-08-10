@@ -98,6 +98,7 @@ export * from './lib/util/components/code-editor.component';
 export * from './lib/util/directives/autocomplete-select.directive';
 export * from './lib/time/time-slider/time-slider.component';
 export * from './lib/operators/dialogs/column-range-filter/column-range-filter.component';
+export * from './lib/dialogs/dialog-splash-checkbox/dialog-splash-checkbox.component';
 
 // Pipes
 export * from './lib/util/pipes/async-converters.pipe';

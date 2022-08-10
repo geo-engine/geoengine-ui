@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
 
 @Component({
     selector: 'wave-gfbio-splash-dialog',
@@ -6,8 +6,10 @@ import {Component, ChangeDetectionStrategy} from '@angular/core';
     styleUrls: ['./splash-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SplashDialogComponent {
-    // changeTick(event: MatCheckboxChange): void {
-    //     // TODO: remember user has clicked this
-    // }
+export class SplashDialogComponent implements OnInit {
+    splashName = 'showStartupSplashScreen';
+
+    constructor() {}
+
+    ngOnInit(): void {}
 }
