@@ -240,7 +240,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                     this.dialog.open(BasketDialogComponent, {data: {result}});
                 });
             } else {
-                const showSplash = this.userService.getSettingFromLocalStorage('showStartupSplashScreen');
+                const showSplash = this.userService.getSettingFromLocalStorage(SplashDialogComponent.SPLASH_DIALOG_NAME);
                 if (showSplash === null || JSON.parse(showSplash)) {
                     this.dialog.open(SplashDialogComponent, {});
                 }
