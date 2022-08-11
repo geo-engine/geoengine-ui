@@ -165,6 +165,13 @@ export class Time implements ToDict<TimeIntervalDict> {
         return !!this.start && !!this.end && this.start.isValid() && this.end.isValid() && this.start <= this.end;
     }
 
+    /**
+     * Checks if `this` value is smaller than `other` value on both `start` and `end` values.
+     */
+    isSmallerThan(other: Time): boolean {
+        return this.start < other.start && this.end < other.end;
+    }
+
     asRequestString(): string {
         switch (this.type) {
             case 'TimePoint':
