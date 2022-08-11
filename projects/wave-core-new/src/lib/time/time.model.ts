@@ -166,9 +166,9 @@ export class Time implements ToDict<TimeIntervalDict> {
     }
 
     /**
-     * Checks if `this` value is smaller than `other` value on both `start` and `end` values.
+     * Checks if `this` value is before the `other` value on both `start` and `end` values.
      */
-    isSmallerThan(other: Time): boolean {
+    isBefore(other: Time): boolean {
         return this.start < other.start && this.end < other.end;
     }
 
