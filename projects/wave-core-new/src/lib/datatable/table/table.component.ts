@@ -161,11 +161,19 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
      * @returns A nested string[][] where index 0 of the outer array are x-Coordinates, index 1 are y-Coordinates
      */
     readCoordinates(geometry: OlFeature): string[][] {
-        const type: string = geometry.getGeometry()?.getType();
+        const featureType: string | undefined = geometry.getGeometry()?.getType();
         const xCoords: string[] = [];
         const yCoords: string[] = [];
 
-        if (!(type === 'Polygon' || type === 'MultiPolygon' || type === 'LineString' || type === 'MultiLineString' || type === 'Point')) {
+        if (
+            !(
+                featureType === 'Polygon' ||
+                featureType === 'MultiPolygon' ||
+                featureType === 'LineString' ||
+                featureType === 'MultiLineString' ||
+                featureType === 'Point'
+            )
+        ) {
             xCoords.push('N/A');
             yCoords.push('N/A');
             return new Array(xCoords, yCoords);
