@@ -269,7 +269,8 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                     dataset.ebv.ebv_class,
                     dataset.ebv.ebv_name,
                     dataset.title,
-                    0 /*default metric*/,
+                    0 /*default scenario/metric*/,
+                    0 /*default metric/entity*/,
                     0 /*default entity*/,
                 ];
                 this.autoShowEbv = true;
