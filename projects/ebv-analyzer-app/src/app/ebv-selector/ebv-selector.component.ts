@@ -198,10 +198,11 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
             const timeStep = timeStepDictTotimeStepDuration(timeCoverage.step);
 
-            let time = new Time(moment.unix(timeCoverage.start / 1_000).utc());
+            const timeStart = new Time(moment.unix(timeCoverage.start / 1_000).utc());
             const timeEnd = new Time(moment.unix(timeCoverage.end / 1_000).utc());
 
-            while (time < timeEnd && timeStep.durationAmount > 0) {
+            let time = timeStart;
+            while (time.isBefore(timeEnd) && timeStep.durationAmount > 0) {
                 timeSteps.push(time);
                 time = time.addDuration(timeStep);
             }

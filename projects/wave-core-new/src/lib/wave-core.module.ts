@@ -128,6 +128,8 @@ import {FullDisplayComponent} from './datatable/table/full-display/full-display.
 import {LayerCollectionListComponent} from './layer-collections/layer-collection-list/layer-collection-list.component';
 import {LayerCollectionNavigationComponent} from './layer-collections/layer-collection-navigation/layer-collection-navigation.component';
 import {ClassHistogramOperatorComponent} from './operators/dialogs/class-histogram-operator/class-histogram-operator.component';
+import {ColumnRangeFilterComponent} from './operators/dialogs/column-range-filter/column-range-filter.component';
+import {DialogSplashCheckboxComponent} from './dialogs/dialog-splash-checkbox/dialog-splash-checkbox.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -191,12 +193,14 @@ const WAVE_COMPONENTS = [
     ColorBreakpointInputComponent,
     ColorMapSelectorComponent,
     ColorParamEditorComponent,
+    ColumnRangeFilterComponent,
     DatasetComponent,
     DatasetListComponent,
     DataTableComponent,
     DialogHeaderComponent,
     DialogHelpComponent,
     DialogSectionHeadingComponent,
+    DialogSplashCheckboxComponent,
     DragAndDropComponent,
     DrawFeaturesComponent,
     ExpressionOperatorComponent,
