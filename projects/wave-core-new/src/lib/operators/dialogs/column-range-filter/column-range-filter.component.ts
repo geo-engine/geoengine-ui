@@ -168,7 +168,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
 
                 if (this.columnTypes.get(value.attribute) !== VectorColumnDataTypes.Text && Number(range.min) > Number(range.max)) {
                     this.appendErrorMsg(`Filter ${index + 1} (${value.attribute}): Minimum must be smaller than maximum!\n`);
-                } else if (range.min > range.max && this.columnTypes.get(value.attribute) == VectorColumnDataTypes.Text) {
+                } else if (range.min > range.max && this.columnTypes.get(value.attribute) === VectorColumnDataTypes.Text) {
                     this.appendErrorMsg(`Filter ${index + 1} (${value.attribute}): Minimum must be alphabetically before maximum!\n`);
                 }
             });
