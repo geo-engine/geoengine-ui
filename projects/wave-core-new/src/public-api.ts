@@ -32,6 +32,7 @@ export * from './lib/datasets/drag-and-drop/drag-and-drop.component';
 export * from './lib/datasets/draw-features/draw-features.component';
 export * from './lib/datasets/upload/upload.component';
 export * from './lib/datatable/table/table.component';
+export * from './lib/datatable/table/full-display/full-display.component';
 export * from './lib/dialogs/dialog-header/dialog-header.component';
 export * from './lib/dialogs/dialog-help/dialog-help.component';
 export * from './lib/dialogs/dialog-section-heading/dialog-section-heading.component';
@@ -99,6 +100,7 @@ export * from './lib/util/components/code-editor.component';
 export * from './lib/util/directives/autocomplete-select.directive';
 export * from './lib/time/time-slider/time-slider.component';
 export * from './lib/operators/dialogs/column-range-filter/column-range-filter.component';
+export * from './lib/dialogs/dialog-splash-checkbox/dialog-splash-checkbox.component';
 
 // Pipes
 export * from './lib/util/pipes/async-converters.pipe';

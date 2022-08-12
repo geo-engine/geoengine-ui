@@ -124,12 +124,14 @@ import {TimeStepSelectorComponent} from './time/time-step-selector/time-step-sel
 import {AutocompleteSelectDirective} from './util/directives/autocomplete-select.directive';
 import {TokenLoginComponent} from './users/token-login/token-login.component';
 import {TimeSliderComponent} from './time/time-slider/time-slider.component';
+import {FullDisplayComponent} from './datatable/table/full-display/full-display.component';
 import {LayerCollectionListComponent} from './layer-collections/layer-collection-list/layer-collection-list.component';
 import {LayerCollectionNavigationComponent} from './layer-collections/layer-collection-navigation/layer-collection-navigation.component';
 import {ClassHistogramOperatorComponent} from './operators/dialogs/class-histogram-operator/class-histogram-operator.component';
 import {ColumnRangeFilterComponent} from './operators/dialogs/column-range-filter/column-range-filter.component';
 import {LayerCollectionDropdownComponent} from './layer-collections/layer-collection-dropdown/layer-collection-dropdown.component';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
+import {DialogSplashCheckboxComponent} from './dialogs/dialog-splash-checkbox/dialog-splash-checkbox.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -200,10 +202,12 @@ const WAVE_COMPONENTS = [
     DialogHeaderComponent,
     DialogHelpComponent,
     DialogSectionHeadingComponent,
+    DialogSplashCheckboxComponent,
     DragAndDropComponent,
     DrawFeaturesComponent,
     ExpressionOperatorComponent,
     FeatureAttributeOvertimeComponent,
+    FullDisplayComponent,
     HistogramOperatorComponent,
     IfGuestDirective,
     IfLoggedInDirective,
