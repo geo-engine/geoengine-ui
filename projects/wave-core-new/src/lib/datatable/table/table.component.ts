@@ -21,6 +21,9 @@ import {FeatureSelection, ProjectService} from '../../project/project.service';
 import {VectorData} from '../../layers/layer-data.model';
 import {DataSource} from '@angular/cdk/collections';
 import OlGeometry from 'ol/geom/Geometry';
+import OlPolygon from 'ol/geom/Polygon';
+import {MatDialog} from '@angular/material/dialog';
+import {FullDisplayComponent} from './full-display/full-display.component';
 
 @Component({
     selector: 'wave-datatable',
@@ -45,6 +48,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     protected selectedFeatureSubscription?: Subscription = undefined;
 
     constructor(
+        protected readonly dialog: MatDialog,
         protected readonly projectService: ProjectService,
         protected readonly hostElement: ElementRef<HTMLElement>,
         protected readonly changeDetectorRef: ChangeDetectorRef,
@@ -117,7 +121,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
 
     processVectorLayer(_layer: VectorLayer, metadata: VectorLayerMetadata, data: VectorData): void {
         this.featureColumns = metadata.dataTypes.keySeq().toArray();
-        this.displayedColumns = ['_____select'].concat(this.featureColumns);
+        this.displayedColumns = ['_____select', '_____coordinates', '_____table__start', '_____table__end'].concat(this.featureColumns);
         this.dataSource.data = data.data;
         setTimeout(() => this.navigatePage(this.projectService.getSelectedFeature()));
     }
@@ -140,6 +144,70 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
 
     isSelected(feature: OlFeature<OlGeometry>): boolean {
         return feature.getId() === this.projectService.getSelectedFeature().feature;
+    }
+
+    coordinateFromGeometry(geometry: OlFeature): string {
+        // For truncated coordinate view in table
+        const coords: string[][] = this.readCoordinates(geometry);
+        const contd: string = coords[0].length > 1 ? '...' : '';
+        const output = ` ${coords[0][0]}, ${coords[1][0]} ${contd}`;
+        return output;
+    }
+
+    /**
+     * Extracts the coordinates of an open layers feature as strings
+     *
+     * @param geometry The feature to extract coordinates from
+     * @returns A nested string[][] where index 0 of the outer array are x-Coordinates, index 1 are y-Coordinates
+     */
+    readCoordinates(geometry: OlFeature): string[][] {
+        const featureType: string | undefined = geometry.getGeometry()?.getType();
+        const xCoords: string[] = [];
+        const yCoords: string[] = [];
+
+        if (
+            !(
+                featureType === 'Polygon' ||
+                featureType === 'MultiPolygon' ||
+                featureType === 'LineString' ||
+                featureType === 'MultiLineString' ||
+                featureType === 'Point'
+            )
+        ) {
+            xCoords.push('N/A');
+            yCoords.push('N/A');
+            return new Array(xCoords, yCoords);
+        }
+
+        const poly: OlPolygon = geometry.getGeometry() as OlPolygon;
+        const l = poly.getCoordinates().length;
+        let allCoords: string[] = [];
+        for (let i = 0; i < l; i++) {
+            const coord = poly.getCoordinates()[i].toString().split(',');
+            allCoords = allCoords.concat(coord);
+        }
+        for (let i = 0; i < allCoords.length - 1; i += 2) {
+            xCoords.push(allCoords[i]);
+            yCoords.push(allCoords[i + 1]);
+        }
+        return new Array(xCoords, yCoords);
+    }
+
+    onFullDisplayClick(output: OlFeature): void {
+        const coords: string[][] = this.readCoordinates(output);
+        this.dialog.open(FullDisplayComponent, {data: {xStrings: coords[0], yStrings: coords[1], geometry: output.getGeometry()}});
+    }
+
+    readTimePropertyStart(geometry: OlFeature): string {
+        const minimum = '-262144-01-01T00:00:00+00:00';
+        const result = geometry['values_']['_____table__start'];
+        return result === minimum ? '-∞' : result;
+    }
+
+    readTimePropertyEnd(geometry: OlFeature): string {
+        const maximum = '+262143-12-31T23:59:59.999+00:00';
+        const result: string = geometry['values_']['_____table__end'];
+        return result === maximum ? '∞' : result;
     }
 
     select(feature: OlFeature<OlGeometry>, select: boolean): void {
