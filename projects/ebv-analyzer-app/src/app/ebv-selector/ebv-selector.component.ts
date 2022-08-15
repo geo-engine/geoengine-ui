@@ -115,10 +115,10 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                         throw new Error('Layer has no dataRange');
                     }
 
-                    const timeSteps: Array<Time> = JSON.parse(layer.properties['timeSteps']).map((t: number) => new Time(t));
+                    const timeSteps: Array<Time> = JSON.parse(layer.metadata['timeSteps']).map((t: number) => new Time(t));
                     this.time = new Time(timeSteps[0].start, timeSteps[timeSteps.length - 1].end);
 
-                    const range: [number, number] = JSON.parse(layer.properties['dataRange']);
+                    const range: [number, number] = JSON.parse(layer.metadata['dataRange']);
                     const dataRange: DataRange = {
                         min: range[0],
                         max: range[1],
