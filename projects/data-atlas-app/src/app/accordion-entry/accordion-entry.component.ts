@@ -67,21 +67,17 @@ export class AccordionEntryComponent implements OnInit {
                         throw new Error('Layer has no symbology');
                     }
 
-                    if (!layer.properties) {
-                        throw new Error('Layer has no properties');
-                    }
-
-                    if (!('timeSteps' in layer.properties)) {
+                    if (!('timeSteps' in layer.metadata)) {
                         throw new Error('Layer has no timeSteps');
                     }
 
-                    if (!('dataRange' in layer.properties)) {
+                    if (!('dataRange' in layer.metadata)) {
                         throw new Error('Layer has no dataRange');
                     }
 
-                    const timeSteps: Array<Time> = JSON.parse(layer.properties['timeSteps']).map((t: number) => new Time(t));
+                    const timeSteps: Array<Time> = JSON.parse(layer.metadata['timeSteps']).map((t: number) => new Time(t));
 
-                    const range: [number, number] = JSON.parse(layer.properties['dataRange']);
+                    const range: [number, number] = JSON.parse(layer.metadata['dataRange']);
                     const dataRange: DataRange = {
                         min: range[0],
                         max: range[1],

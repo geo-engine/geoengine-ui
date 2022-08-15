@@ -550,5 +550,8 @@ export interface LayerDict {
     description: string;
     workflow: WorkflowDict;
     symbology: SymbologyDict;
-    properties?: {key: string; value: string}[];
+    properties: [string, string];
+    metadata: {
+        [key: string]: string;
+    };
 }

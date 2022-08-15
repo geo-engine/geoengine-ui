@@ -107,15 +107,11 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                         throw new Error('Layer has no symbology');
                     }
 
-                    if (!layer.properties) {
-                        throw new Error('Layer has no properties');
-                    }
-
-                    if (!('timeSteps' in layer.properties)) {
+                    if (!('timeSteps' in layer.metadata)) {
                         throw new Error('Layer has no timeSteps');
                     }
 
-                    if (!('dataRange' in layer.properties)) {
+                    if (!('dataRange' in layer.metadata)) {
                         throw new Error('Layer has no dataRange');
                     }
 
