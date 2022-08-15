@@ -10,15 +10,7 @@
                     </mat-panel-description>
                 </mat-expansion-panel-header>
 
-                <wave-layer-collection-dropdown
-                    [root]="collection.id"
-                    [preselectedPath]="[0, 0, 0, 0, 0]"
-                    (layerSelected)="layerSelected(i, $event)"
-                ></wave-layer-collection-dropdown>
-
-                <div *ngIf="selectedLayers$ | async as selectedLayers">
-                    <button mat-stroked-button (click)="loadData(i)" color="primary" [disabled]="!selectedLayers[i]">Add to map</button>
-                </div>
+                <wave-accordion-entry [collection]="collection.id" [icon]="icon(collection.name)"></wave-accordion-entry>
             </mat-expansion-panel>
 
             <mat-expansion-panel expanded="true" class="mat-elevation-z0">

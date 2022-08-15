@@ -1,32 +1,16 @@
-import {Observable, BehaviorSubject, mergeMap, ReplaySubject, first, filter, map, combineLatest, of} from 'rxjs';
-import {
-    AfterViewInit,
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    HostListener,
-    Inject,
-    OnInit,
-    ViewChild,
-    ViewContainerRef,
-} from '@angular/core';
+import {Observable, BehaviorSubject, ReplaySubject, first, filter, map} from 'rxjs';
+import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {
     Layer,
     LayoutService,
     UserService,
-    RandomColorService,
-    NotificationService,
     Config,
     ProjectService,
     MapService,
     MapContainerComponent,
     Time,
-    SpatialReferenceService,
     DatasetService,
-    RasterLayer,
-    BackendService,
-    RasterSymbology,
     RasterSymbologyEditorComponent,
     SidenavContainerComponent,
     LayerCollectionDict,
@@ -38,10 +22,9 @@ import {AppConfig} from '../app-config.service';
 import {SelectLayersComponent} from '../select-layers/select-layers.component';
 import {ComponentPortal} from '@angular/cdk/portal';
 import moment from 'moment';
-import {DataRange, DataSelectionService} from '../data-selection.service';
+import {DataSelectionService} from '../data-selection.service';
 import {AppDatasetService} from '../app-dataset.service';
 import {TerraNovaGroup, EbvHierarchy} from '../select-layers/available-layers';
-import {HttpClient} from '@angular/common/http';
 import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
 
 @Component({
@@ -80,17 +63,10 @@ export class MainComponent implements OnInit, AfterViewInit {
         readonly dataSelectionService: DataSelectionService,
         readonly _vcRef: ViewContainerRef, // reference used by color picker
         @Inject(DatasetService) readonly datasetService: AppDatasetService,
-        private _userService: UserService,
         private iconRegistry: MatIconRegistry,
-        private _randomColorService: RandomColorService,
-        private _notificationService: NotificationService,
         private mapService: MapService,
-        private _spatialReferenceService: SpatialReferenceService,
         private sanitizer: DomSanitizer,
-        private readonly backend: BackendService,
-        private readonly http: HttpClient,
         private readonly layerCollectionService: LayerCollectionService,
-        private readonly changeDetectorRef: ChangeDetectorRef,
     ) {
         this.registerIcons();
 
@@ -148,12 +124,6 @@ export class MainComponent implements OnInit, AfterViewInit {
         return layer.id;
     }
 
-    layerSelected(i: number, id: ProviderLayerIdDict | undefined): void {
-        const selected = this.selectedLayers$.getValue();
-        selected[i] = id;
-        this.selectedLayers$.next(selected);
-    }
-
     showAnalysis(): void {
         this.analysisVisible$.next(true);
     }
@@ -173,55 +143,6 @@ export class MainComponent implements OnInit, AfterViewInit {
                     },
                 });
             });
-    }
-
-    loadData(i: number): void {
-        const id = this.selectedLayers$.getValue()[i];
-        if (!id) {
-            return;
-        }
-
-        this.layerCollectionService
-            .getLayer(id.providerId, id.layerId)
-            .pipe(
-                mergeMap((layer) => combineLatest([of(layer), this.projectService.registerWorkflow(layer.workflow)])),
-                mergeMap(([layer, workflowId]) => {
-                    if (!layer.symbology) {
-                        throw new Error('Layer has no symbology');
-                    }
-
-                    if (!layer.properties) {
-                        throw new Error('Layer has no properties');
-                    }
-
-                    if (!('timeSteps' in layer.properties)) {
-                        throw new Error('Layer has no timeSteps');
-                    }
-
-                    if (!('dataRange' in layer.properties)) {
-                        throw new Error('Layer has no dataRange');
-                    }
-
-                    const timeSteps: Array<Time> = JSON.parse(layer.properties['timeSteps']).map((t: number) => new Time(t));
-
-                    const range: [number, number] = JSON.parse(layer.properties['dataRange']);
-                    const dataRange: DataRange = {
-                        min: range[0],
-                        max: range[1],
-                    };
-
-                    const rasterLayer = new RasterLayer({
-                        name: 'EBV',
-                        workflowId,
-                        isVisible: true,
-                        isLegendVisible: false,
-                        symbology: RasterSymbology.fromDict(layer.symbology) as RasterSymbology,
-                    });
-
-                    return this.dataSelectionService.setRasterLayer(rasterLayer, timeSteps, dataRange);
-                }),
-            )
-            .subscribe(() => this.changeDetectorRef.markForCheck());
     }
 
     private reset(): void {

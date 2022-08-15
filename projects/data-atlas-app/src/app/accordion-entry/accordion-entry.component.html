@@ -1,0 +1,23 @@
+<mat-card *ngFor="let dataset of datasets$ | async; index as i" class="dataset">
+    <mat-card-header>
+        <mat-icon mat-card-avatar>{{ icon }}</mat-icon>
+        <mat-card-title>{{ dataset.name }}</mat-card-title>
+        <mat-card-subtitle> {{ dataset.properties[0][1] }}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+        <p>{{ dataset.description }}</p>
+
+        <wave-layer-collection-dropdown [root]="dataset.id" (layerSelected)="layerSelected(i, $event)"></wave-layer-collection-dropdown>
+
+        <div *ngIf="selectedLayers$ | async as selectedLayers">
+            <button mat-stroked-button (click)="loadData(i)" color="primary" [disabled]="!selectedLayers[i]">Add to map</button>
+        </div>
+    </mat-card-content>
+</mat-card>
+
+<mat-card *ngIf="(datasets$ | async | valueDefault: []).length === 0">
+    <mat-card-content>
+        <p class="empty"><em>no datasets available</em></p>
+    </mat-card-content>
+</mat-card>
