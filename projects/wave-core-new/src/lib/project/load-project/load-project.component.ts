@@ -2,7 +2,7 @@ import {BehaviorSubject, ReplaySubject} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
 import {ProjectService} from '../project.service';
-import {FormBuilder, FormGroup, Validators, AbstractControl, ValidatorFn, ValidationErrors} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl, ValidatorFn, ValidationErrors} from '@angular/forms';
 import {NotificationService} from '../../notification.service';
 import {BackendService} from '../../backend/backend.service';
 import {UserService} from '../../users/user.service';
@@ -35,7 +35,7 @@ interface ProjectListing {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoadProjectComponent implements OnInit, AfterViewInit {
-    form: FormGroup;
+    form: UntypedFormGroup;
 
     projects$ = new ReplaySubject<Array<ProjectListing>>(1);
     loading$ = new BehaviorSubject<boolean>(true);
@@ -47,7 +47,7 @@ export class LoadProjectComponent implements OnInit, AfterViewInit {
         protected backend: BackendService,
         protected userService: UserService,
         protected notificationService: NotificationService,
-        protected formBuilder: FormBuilder,
+        protected formBuilder: UntypedFormBuilder,
     ) {
         this.projectService.getProjectOnce().subscribe((project) => {
             this.currentProjectId = project.id;

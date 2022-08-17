@@ -3,11 +3,11 @@ import {ProjectService} from '../../project/project.service';
 import {Observable, Subscription} from 'rxjs';
 import {Time, TimeStepDuration} from '../time.model';
 import moment, {Moment} from 'moment';
-import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators} from '@angular/forms';
+import {AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {Config} from '../../config.service';
 
 const startBeforeEndValidator = (control: AbstractControl): ValidationErrors | null => {
-    if (!(control instanceof FormGroup)) {
+    if (!(control instanceof UntypedFormGroup)) {
         return null;
     }
 
@@ -29,7 +29,7 @@ const startBeforeEndValidator = (control: AbstractControl): ValidationErrors | n
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
-    timeForm: FormGroup;
+    timeForm: UntypedFormGroup;
 
     timeStepDuration$: Observable<TimeStepDuration>;
     timeStepDurations: Array<TimeStepDuration> = [
@@ -48,7 +48,7 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     constructor(
         private projectService: ProjectService,
         private changeDetectorRef: ChangeDetectorRef,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         public config: Config,
     ) {
         // initialize with the current time to have a defined value

@@ -1,7 +1,7 @@
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy} from '@angular/core';
-import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
+import {AbstractControl, UntypedFormControl, UntypedFormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
 import {RasterDataType, RasterDataTypes} from '../../datatype.model';
 import {Layer, RasterLayer} from '../../../layers/layer.model';
@@ -30,7 +30,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
     @Input() dataListConfig?: SidenavConfig;
 
     readonly RASTER_TYPE = [ResultTypes.RASTER];
-    readonly form: FormGroup;
+    readonly form: UntypedFormGroup;
 
     readonly outputDataTypes$: Observable<Array<[RasterDataType, string]>>;
 
@@ -46,13 +46,13 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
      * DI of services and setup of observables for the template
      */
     constructor(protected readonly projectService: ProjectService, protected readonly layoutService: LayoutService) {
-        this.form = new FormGroup({
-            rasterLayers: new FormControl(undefined, [Validators.required]),
-            expression: new FormControl('    1 * A', Validators.compose([Validators.required])),
-            dataType: new FormControl(undefined, [Validators.required]),
-            name: new FormControl('Expression', [Validators.required, WaveValidators.notOnlyWhitespace]),
-            noDataValue: new FormControl('0', this.validateNoData),
-            mapNoData: new FormControl(false, Validators.required),
+        this.form = new UntypedFormGroup({
+            rasterLayers: new UntypedFormControl(undefined, [Validators.required]),
+            expression: new UntypedFormControl('    1 * A', Validators.compose([Validators.required])),
+            dataType: new UntypedFormControl(undefined, [Validators.required]),
+            name: new UntypedFormControl('Expression', [Validators.required, WaveValidators.notOnlyWhitespace]),
+            noDataValue: new UntypedFormControl('0', this.validateNoData),
+            mapNoData: new UntypedFormControl(false, Validators.required),
             // TODO: add unit related inputs
         });
 

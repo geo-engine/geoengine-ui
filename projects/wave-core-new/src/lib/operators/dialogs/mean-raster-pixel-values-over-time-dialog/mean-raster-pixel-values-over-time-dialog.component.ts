@@ -1,7 +1,7 @@
 import {RasterLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {WaveValidators} from '../../../util/form.validators';
 import {map, mergeMap} from 'rxjs/operators';
@@ -45,7 +45,7 @@ export class MeanRasterPixelValuesOverTimeDialogComponent implements OnInit, Aft
         },
     ];
 
-    form: FormGroup;
+    form: UntypedFormGroup;
     disallowSubmit: Observable<boolean>;
 
     /**
@@ -54,7 +54,7 @@ export class MeanRasterPixelValuesOverTimeDialogComponent implements OnInit, Aft
     constructor(
         private readonly projectService: ProjectService,
         private readonly notificationService: NotificationService,
-        private readonly formBuilder: FormBuilder,
+        private readonly formBuilder: UntypedFormBuilder,
     ) {
         this.form = this.formBuilder.group({
             name: ['', [Validators.required, WaveValidators.notOnlyWhitespace]],

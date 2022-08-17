@@ -1,7 +1,7 @@
 import {Layer, RasterLayer, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, FormArray, Validators, FormControl} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators, UntypedFormControl} from '@angular/forms';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {WaveValidators} from '../../../util/form.validators';
@@ -47,7 +47,7 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
 
     readonly RASTER_TYPE = [ResultTypes.RASTER];
 
-    form: FormGroup;
+    form: UntypedFormGroup;
 
     attributes$ = new ReplaySubject<Array<string>>(1);
 
@@ -63,7 +63,7 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
     constructor(
         private readonly projectService: ProjectService,
         private readonly notificationService: NotificationService,
-        private readonly formBuilder: FormBuilder,
+        private readonly formBuilder: UntypedFormBuilder,
     ) {
         const layerControl = this.formBuilder.control(undefined, Validators.required);
         this.form = this.formBuilder.group({
@@ -73,7 +73,7 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
                 [],
                 WaveValidators.conditionalValidator(Validators.required, () => isVectorLayer(layerControl.value)),
             ),
-            additionalRasterLayers: new FormControl(undefined),
+            additionalRasterLayers: new UntypedFormControl(undefined),
         });
 
         this.subscriptions.push(
@@ -123,16 +123,16 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
         this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
-    get additionalRasterLayers(): FormControl {
-        return this.form.get('additionalRasterLayers') as FormControl;
+    get additionalRasterLayers(): UntypedFormControl {
+        return this.form.get('additionalRasterLayers') as UntypedFormControl;
     }
 
     rasterInputNaming(_idx: number): string {
         return 'Input';
     }
 
-    get columnNames(): FormArray {
-        return this.form.get('columnNames') as FormArray;
+    get columnNames(): UntypedFormArray {
+        return this.form.get('columnNames') as UntypedFormArray;
     }
 
     addColumn(): void {
