@@ -171,7 +171,10 @@ export class RasterVectorJoinComponent implements OnDestroy {
                 for (let i = valueNames.length; i < rasters.length; i++) {
                     const control = this.formBuilder.control(
                         rasters[i].name,
-                        Validators.compose([Validators.required, this.valueNameCollision(this.form.controls['valueNames'] as UntypedFormArray)]),
+                        Validators.compose([
+                            Validators.required,
+                            this.valueNameCollision(this.form.controls['valueNames'] as UntypedFormArray),
+                        ]),
                     );
                     valueNames.push(control);
                     this.valueNameUserChanges.push(false);

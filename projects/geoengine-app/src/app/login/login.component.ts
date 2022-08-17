@@ -41,7 +41,10 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         private readonly router: Router,
     ) {
         this.loginForm = new UntypedFormGroup({
-            email: new UntypedFormControl('', Validators.compose([Validators.required, WaveValidators.keyword([this.config.USER.GUEST.NAME])])),
+            email: new UntypedFormControl(
+                '',
+                Validators.compose([Validators.required, WaveValidators.keyword([this.config.USER.GUEST.NAME])]),
+            ),
             password: new UntypedFormControl('', Validators.required),
         });
     }

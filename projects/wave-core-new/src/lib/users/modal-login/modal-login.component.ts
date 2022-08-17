@@ -42,7 +42,10 @@ export class ModalLoginComponent implements OnDestroy {
 
     constructor(private readonly config: Config, private dialogRef: MatDialogRef<ModalLoginComponent>) {
         this.loginForm = new UntypedFormGroup({
-            email: new UntypedFormControl('', Validators.compose([Validators.required, WaveValidators.keyword([this.config.USER.GUEST.NAME])])),
+            email: new UntypedFormControl(
+                '',
+                Validators.compose([Validators.required, WaveValidators.keyword([this.config.USER.GUEST.NAME])]),
+            ),
             password: new UntypedFormControl('', Validators.required),
         });
     }

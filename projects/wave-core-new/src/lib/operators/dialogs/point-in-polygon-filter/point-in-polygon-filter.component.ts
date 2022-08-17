@@ -25,7 +25,11 @@ export class PointInPolygonFilterOperatorComponent {
 
     form: UntypedFormGroup;
 
-    constructor(private randomColorService: RandomColorService, private projectService: ProjectService, private formBuilder: UntypedFormBuilder) {
+    constructor(
+        private randomColorService: RandomColorService,
+        private projectService: ProjectService,
+        private formBuilder: UntypedFormBuilder,
+    ) {
         this.form = formBuilder.group({
             name: ['Filtered Values', [Validators.required, WaveValidators.notOnlyWhitespace]],
             pointLayer: [undefined, Validators.required],
