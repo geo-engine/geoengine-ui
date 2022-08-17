@@ -72,7 +72,18 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "allowedCommonJsDependencies": ["codemirror", "dagre-d3", "pbf", "lru-cache", "xml-utils"],
+                        "allowedCommonJsDependencies": [
+                            "codemirror",
+                            "dagre-d3",
+                            "moment",
+                            "xml-utils",
+                            "lru-cache",
+                            "web-worker",
+                            "rbush",
+                            "clone",
+                            "fast-deep-equal",
+                            "fast-json-stable-stringify"
+                        ],
                         "outputPath": "dist/geoengine-app",
                         "index": "projects/geoengine-app/src/index.html",
                         "main": "projects/geoengine-app/src/main.ts",
@@ -211,7 +222,18 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "allowedCommonJsDependencies": ["codemirror", "dagre-d3", "pbf", "lru-cache", "xml-utils"],
+                        "allowedCommonJsDependencies": [
+                            "codemirror",
+                            "dagre-d3",
+                            "moment",
+                            "xml-utils",
+                            "lru-cache",
+                            "web-worker",
+                            "rbush",
+                            "clone",
+                            "fast-deep-equal",
+                            "fast-json-stable-stringify"
+                        ],
                         "outputPath": "dist/data-atlas-app",
                         "index": "projects/data-atlas-app/src/index.html",
                         "main": "projects/data-atlas-app/src/main.ts",
@@ -349,7 +371,18 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "allowedCommonJsDependencies": ["codemirror", "dagre-d3", "pbf", "lru-cache", "xml-utils"],
+                        "allowedCommonJsDependencies": [
+                            "codemirror",
+                            "dagre-d3",
+                            "moment",
+                            "xml-utils",
+                            "lru-cache",
+                            "web-worker",
+                            "rbush",
+                            "clone",
+                            "fast-deep-equal",
+                            "fast-json-stable-stringify"
+                        ],
                         "outputPath": "dist/ebv-analyzer-app",
                         "index": "projects/ebv-analyzer-app/src/index.html",
                         "main": "projects/ebv-analyzer-app/src/main.ts",
@@ -487,7 +520,18 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "allowedCommonJsDependencies": ["codemirror", "dagre-d3", "pbf", "lru-cache", "xml-utils"],
+                        "allowedCommonJsDependencies": [
+                            "codemirror",
+                            "dagre-d3",
+                            "moment",
+                            "xml-utils",
+                            "lru-cache",
+                            "web-worker",
+                            "rbush",
+                            "clone",
+                            "fast-deep-equal",
+                            "fast-json-stable-stringify"
+                        ],
                         "outputPath": "dist/nfdi-gdo-app",
                         "index": "projects/nfdi-gdo-app/src/index.html",
                         "main": "projects/nfdi-gdo-app/src/main.ts",
@@ -625,7 +669,18 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "allowedCommonJsDependencies": ["codemirror", "dagre-d3", "pbf", "lru-cache", "xml-utils"],
+                        "allowedCommonJsDependencies": [
+                            "codemirror",
+                            "dagre-d3",
+                            "moment",
+                            "xml-utils",
+                            "lru-cache",
+                            "web-worker",
+                            "rbush",
+                            "clone",
+                            "fast-deep-equal",
+                            "fast-json-stable-stringify"
+                        ],
                         "outputPath": "dist/gfbio-app",
                         "index": "projects/gfbio-app/src/index.html",
                         "main": "projects/gfbio-app/src/main.ts",
