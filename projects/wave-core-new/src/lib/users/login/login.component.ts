@@ -1,7 +1,7 @@
 import {BehaviorSubject, Subscription} from 'rxjs';
 
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
 import {Config} from '../../config.service';
 import {WaveValidators} from '../../util/form.validators';
@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
     formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.Loading);
 
-    loginForm: FormGroup;
+    loginForm: UntypedFormGroup;
 
     user?: User;
     invalidCredentials$ = new BehaviorSubject<boolean>(false);
@@ -40,9 +40,12 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         private readonly userService: UserService,
         private readonly notificationService: NotificationService,
     ) {
-        this.loginForm = new FormGroup({
-            email: new FormControl('', Validators.compose([Validators.required, WaveValidators.keyword([this.config.USER.GUEST.NAME])])),
-            password: new FormControl('', Validators.required),
+        this.loginForm = new UntypedFormGroup({
+            email: new UntypedFormControl(
+                '',
+                Validators.compose([Validators.required, WaveValidators.keyword([this.config.USER.GUEST.NAME])]),
+            ),
+            password: new UntypedFormControl('', Validators.required),
         });
     }
 
@@ -91,7 +94,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
                 () => {
                     // on error
                     this.invalidCredentials$.next(true);
-                    (this.loginForm.controls['password'] as FormControl).setValue('');
+                    (this.loginForm.controls['password'] as UntypedFormControl).setValue('');
                     this.formStatus$.next(FormStatus.LoggedOut);
                 },
             );

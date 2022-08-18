@@ -1,7 +1,7 @@
 import {BehaviorSubject, Observable} from 'rxjs';
 
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
 import {Config, NotificationService, UserService, WaveValidators, BackendService} from 'wave-core';
 import {map, mergeMap} from 'rxjs/operators';
@@ -22,7 +22,7 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
 
     registrationError$ = new BehaviorSubject<string>('');
 
-    registrationForm: FormGroup;
+    registrationForm: UntypedFormGroup;
 
     constructor(
         private readonly config: Config,
@@ -31,13 +31,13 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
         private readonly notificationService: NotificationService,
         private readonly router: Router,
     ) {
-        this.registrationForm = new FormGroup({
-            name: new FormControl('', Validators.required),
-            email: new FormControl(
+        this.registrationForm = new UntypedFormGroup({
+            name: new UntypedFormControl('', Validators.required),
+            email: new UntypedFormControl(
                 '',
                 Validators.compose([Validators.required, Validators.email, WaveValidators.keyword([this.config.USER.GUEST.NAME])]),
             ),
-            password: new FormControl('', [Validators.required, Validators.minLength(this.PASSWORD_MIN_LENGTH)]),
+            password: new UntypedFormControl('', [Validators.required, Validators.minLength(this.PASSWORD_MIN_LENGTH)]),
         });
 
         this.formIsInvalid$ = this.registrationForm.statusChanges.pipe(map((status) => status !== 'VALID'));
