@@ -3,7 +3,7 @@ import {UserService} from '../../users/user.service';
 import {Subscription} from 'rxjs';
 
 @Directive({
-    selector: '[waveIfLoggedIn]',
+    selector: '[geIfLoggedIn]',
 })
 export class IfLoggedInDirective implements OnDestroy {
     private subscription: Subscription;

@@ -3,7 +3,7 @@ import {UserService} from '../../users/user.service';
 import {Subscription} from 'rxjs';
 
 @Directive({
-    selector: '[waveIfGuest]',
+    selector: '[geIfGuest]',
 })
 export class IfGuestDirective implements OnDestroy {
     private subscription: Subscription;

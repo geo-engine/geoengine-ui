@@ -30,15 +30,15 @@
         <mat-select (valueChange)="selectDragonflySpecies($event)">
             <mat-option>
                 <ngx-mat-select-search
-                    [formControl]="waveAutocompleteSelect.filterFormControl"
-                    waveAutocompleteSelect
-                    [waveAutocompleteSelectAllValues]="dragonflySpecies"
-                    [waveAutocompleteSelectSearchPredicate]="speciesPredicate"
-                    #waveAutocompleteSelect="waveAutocompleteSelect"
+                    [formControl]="geAutocompleteSelect.filterFormControl"
+                    geAutocompleteSelect
+                    [geAutocompleteSelectAllValues]="dragonflySpecies"
+                    [geAutocompleteSelectSearchPredicate]="speciesPredicate"
+                    #geAutocompleteSelect="geAutocompleteSelect"
                 ></ngx-mat-select-search>
             </mat-option>
             <mat-option>– Keine Auswahl –</mat-option>
-            <mat-option *ngFor="let species of waveAutocompleteSelect.filteredValues | async" [value]="species">
+            <mat-option *ngFor="let species of geAutocompleteSelect.filteredValues | async" [value]="species">
                 {{ species }}
             </mat-option>
         </mat-select>
@@ -75,15 +75,15 @@
         <mat-select (valueChange)="selectFishSpecies($event)">
             <mat-option>
                 <ngx-mat-select-search
-                    [formControl]="waveAutocompleteSelect2.filterFormControl"
-                    waveAutocompleteSelect
-                    [waveAutocompleteSelectAllValues]="fishSpecies"
-                    [waveAutocompleteSelectSearchPredicate]="speciesPredicate"
-                    #waveAutocompleteSelect2="waveAutocompleteSelect"
+                    [formControl]="geAutocompleteSelect2.filterFormControl"
+                    geAutocompleteSelect
+                    [geAutocompleteSelectAllValues]="fishSpecies"
+                    [geAutocompleteSelectSearchPredicate]="speciesPredicate"
+                    #geAutocompleteSelect2="geAutocompleteSelect"
                 ></ngx-mat-select-search>
             </mat-option>
             <mat-option>– Keine Auswahl –</mat-option>
-            <mat-option *ngFor="let species of waveAutocompleteSelect2.filteredValues | async" [value]="species">
+            <mat-option *ngFor="let species of geAutocompleteSelect2.filteredValues | async" [value]="species">
                 {{ species }}
             </mat-option>
         </mat-select>

@@ -4,14 +4,14 @@
         <mat-select [value]="ebvClass" (selectionChange)="setEbvClass($event.value)">
             <mat-option>
                 <ngx-mat-select-search
-                    [formControl]="waveAutocompleteSelect.filterFormControl"
-                    waveAutocompleteSelect
-                    [waveAutocompleteSelectAllValues]="ebvClasses"
-                    [waveAutocompleteSelectSearchPredicate]="ebvClassPredicate"
-                    #waveAutocompleteSelect="waveAutocompleteSelect"
+                    [formControl]="geAutocompleteSelect.filterFormControl"
+                    geAutocompleteSelect
+                    [geAutocompleteSelectAllValues]="ebvClasses"
+                    [geAutocompleteSelectSearchPredicate]="ebvClassPredicate"
+                    #geAutocompleteSelect="geAutocompleteSelect"
                 ></ngx-mat-select-search>
             </mat-option>
-            <mat-option *ngFor="let ebvClassOption of waveAutocompleteSelect.filteredValues | async" [value]="ebvClassOption">{{
+            <mat-option *ngFor="let ebvClassOption of geAutocompleteSelect.filteredValues | async" [value]="ebvClassOption">{{
                 ebvClassOption.name
             }}</mat-option>
         </mat-select>
@@ -21,14 +21,14 @@
         <mat-select [value]="ebvName" (selectionChange)="setEbvName($event.value)">
             <mat-option>
                 <ngx-mat-select-search
-                    [formControl]="waveAutocompleteSelect.filterFormControl"
-                    waveAutocompleteSelect
-                    [waveAutocompleteSelectAllValues]="ebvNames"
-                    [waveAutocompleteSelectSearchPredicate]="ebvNamePredicate"
-                    #waveAutocompleteSelect="waveAutocompleteSelect"
+                    [formControl]="geAutocompleteSelect.filterFormControl"
+                    geAutocompleteSelect
+                    [geAutocompleteSelectAllValues]="ebvNames"
+                    [geAutocompleteSelectSearchPredicate]="ebvNamePredicate"
+                    #geAutocompleteSelect="geAutocompleteSelect"
                 ></ngx-mat-select-search>
             </mat-option>
-            <mat-option *ngFor="let ebvName of waveAutocompleteSelect.filteredValues | async" [value]="ebvName">{{ ebvName }}</mat-option>
+            <mat-option *ngFor="let ebvName of geAutocompleteSelect.filteredValues | async" [value]="ebvName">{{ ebvName }}</mat-option>
         </mat-select>
     </mat-form-field>
     <mat-form-field *ngIf="ebvDatasets">
@@ -36,14 +36,14 @@
         <mat-select [value]="ebvDataset" (selectionChange)="setEbvDataset($event.value)">
             <mat-option>
                 <ngx-mat-select-search
-                    [formControl]="waveAutocompleteSelect.filterFormControl"
-                    waveAutocompleteSelect
-                    [waveAutocompleteSelectAllValues]="ebvDatasets"
-                    [waveAutocompleteSelectSearchPredicate]="ebvDatasetPredicate"
-                    #waveAutocompleteSelect="waveAutocompleteSelect"
+                    [formControl]="geAutocompleteSelect.filterFormControl"
+                    geAutocompleteSelect
+                    [geAutocompleteSelectAllValues]="ebvDatasets"
+                    [geAutocompleteSelectSearchPredicate]="ebvDatasetPredicate"
+                    #geAutocompleteSelect="geAutocompleteSelect"
                 ></ngx-mat-select-search>
             </mat-option>
-            <mat-option *ngFor="let ebvDataset of waveAutocompleteSelect.filteredValues | async" [value]="ebvDataset">{{
+            <mat-option *ngFor="let ebvDataset of geAutocompleteSelect.filteredValues | async" [value]="ebvDataset">{{
                 ebvDataset.name
             }}</mat-option>
         </mat-select>
@@ -63,14 +63,14 @@
             <mat-select [value]="ebvPath[0]" (valueChange)="setEbvPath($event, 0)" #selectedRootSubgroup>
                 <mat-option>
                     <ngx-mat-select-search
-                        [formControl]="waveAutocompleteSelect.filterFormControl"
-                        waveAutocompleteSelect
-                        [waveAutocompleteSelectAllValues]="ebvTree.tree.groups"
-                        [waveAutocompleteSelectSearchPredicate]="ebvSubgroupPredicate"
-                        #waveAutocompleteSelect="waveAutocompleteSelect"
+                        [formControl]="geAutocompleteSelect.filterFormControl"
+                        geAutocompleteSelect
+                        [geAutocompleteSelectAllValues]="ebvTree.tree.groups"
+                        [geAutocompleteSelectSearchPredicate]="ebvSubgroupPredicate"
+                        #geAutocompleteSelect="geAutocompleteSelect"
                     ></ngx-mat-select-search>
                 </mat-option>
-                <mat-option *ngFor="let ebvSubgroupValue of waveAutocompleteSelect.filteredValues | async" [value]="ebvSubgroupValue">{{
+                <mat-option *ngFor="let ebvSubgroupValue of geAutocompleteSelect.filteredValues | async" [value]="ebvSubgroupValue">{{
                     ebvSubgroupValue.title
                 }}</mat-option>
             </mat-select>
@@ -83,14 +83,14 @@
             <mat-select [value]="ebvPath[i + 1]" (valueChange)="setEbvPath($event, i + 1)" #selectedSubgroup>
                 <mat-option>
                     <ngx-mat-select-search
-                        [formControl]="waveAutocompleteSelect.filterFormControl"
-                        waveAutocompleteSelect
-                        [waveAutocompleteSelectAllValues]="ebvSubgroup.groups"
-                        [waveAutocompleteSelectSearchPredicate]="ebvSubgroupPredicate"
-                        #waveAutocompleteSelect="waveAutocompleteSelect"
+                        [formControl]="geAutocompleteSelect.filterFormControl"
+                        geAutocompleteSelect
+                        [geAutocompleteSelectAllValues]="ebvSubgroup.groups"
+                        [geAutocompleteSelectSearchPredicate]="ebvSubgroupPredicate"
+                        #geAutocompleteSelect="geAutocompleteSelect"
                     ></ngx-mat-select-search>
                 </mat-option>
-                <mat-option *ngFor="let ebvSubgroupValue of waveAutocompleteSelect.filteredValues | async" [value]="ebvSubgroupValue">{{
+                <mat-option *ngFor="let ebvSubgroupValue of geAutocompleteSelect.filteredValues | async" [value]="ebvSubgroupValue">{{
                     ebvSubgroupValue.title
                 }}</mat-option>
             </mat-select>
@@ -103,14 +103,14 @@
             <mat-select [value]="ebvEntity" (valueChange)="setEbvEntity($event)" #selectedEntity>
                 <mat-option>
                     <ngx-mat-select-search
-                        [formControl]="waveAutocompleteSelect.filterFormControl"
-                        waveAutocompleteSelect
-                        [waveAutocompleteSelectAllValues]="ebvTree.tree.entities"
-                        [waveAutocompleteSelectSearchPredicate]="ebvEntityPredicate"
-                        #waveAutocompleteSelect="waveAutocompleteSelect"
+                        [formControl]="geAutocompleteSelect.filterFormControl"
+                        geAutocompleteSelect
+                        [geAutocompleteSelectAllValues]="ebvTree.tree.entities"
+                        [geAutocompleteSelectSearchPredicate]="ebvEntityPredicate"
+                        #geAutocompleteSelect="geAutocompleteSelect"
                     ></ngx-mat-select-search>
                 </mat-option>
-                <mat-option *ngFor="let entity of waveAutocompleteSelect.filteredValues | async" [value]="entity">{{
+                <mat-option *ngFor="let entity of geAutocompleteSelect.filteredValues | async" [value]="entity">{{
                     entity.name
                 }}</mat-option>
             </mat-select>

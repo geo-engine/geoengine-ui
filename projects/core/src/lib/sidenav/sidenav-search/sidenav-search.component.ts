@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import {SidenavRef} from '../sidenav-ref.service';
 
-@Directive({selector: '[waveSidenavSearchRight]'})
+@Directive({selector: '[geSidenavSearchRight]'})
 export class SidenavSearchRightDirective {}
 
 @Component({

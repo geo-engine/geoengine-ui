@@ -3,12 +3,12 @@ import {UntypedFormControl} from '@angular/forms';
 import {Observable, ReplaySubject, Subscription} from 'rxjs';
 
 @Directive({
-    selector: '[waveAutocompleteSelect]',
-    exportAs: 'waveAutocompleteSelect',
+    selector: '[geAutocompleteSelect]',
+    exportAs: 'geAutocompleteSelect',
 })
 export class AutocompleteSelectDirective<T> implements OnChanges, OnDestroy {
-    @Input('waveAutocompleteSelectAllValues') allValues: Array<T> = [];
-    @Input('waveAutocompleteSelectSearchPredicate') searchPredicate: AutocompleteSelectPredicateFunction<T> = DEFAULT_PREDICATE_FN;
+    @Input('geAutocompleteSelectAllValues') allValues: Array<T> = [];
+    @Input('geAutocompleteSelectSearchPredicate') searchPredicate: AutocompleteSelectPredicateFunction<T> = DEFAULT_PREDICATE_FN;
 
     readonly filterFormControl = new UntypedFormControl();
     readonly _filteredValues = new ReplaySubject<Array<T>>();

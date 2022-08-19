@@ -39,8 +39,4 @@ jobs:
             -   name: Code Format Check with Prettier
                 run: npm run prettier -- --check .
             -   name: Check with Linter
-                run: |
-                    npm run ng -- lint core
-                    npm run ng -- lint wave
-                    npm run ng -- lint data-atlas
-                    npm run ng -- lint gfbio-vat
+                run: npm run lint
