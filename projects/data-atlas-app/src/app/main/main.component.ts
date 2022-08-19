@@ -1,4 +1,4 @@
-import {Observable, BehaviorSubject, mergeMap, ReplaySubject} from 'rxjs';
+import {Observable, BehaviorSubject, mergeMap, ReplaySubject, first, filter, map} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {
@@ -19,6 +19,8 @@ import {
     BackendService,
     RasterSymbology,
     Colorizer,
+    RasterSymbologyEditorComponent,
+    SidenavContainerComponent,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AppConfig} from '../app-config.service';
@@ -37,6 +39,7 @@ import {
     computeTimeSteps,
 } from '../select-layers/available-layers';
 import {HttpClient} from '@angular/common/http';
+import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
 
 @Component({
     selector: 'wave-app-main',
@@ -47,11 +50,18 @@ import {HttpClient} from '@angular/common/http';
 export class MainComponent implements OnInit, AfterViewInit {
     @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
 
+    @ViewChild(MatSidenav, {static: true}) leftSidenav!: MatSidenav;
+    @ViewChild(SidenavContainerComponent, {static: true}) leftSidenavContainer!: SidenavContainerComponent;
+
     readonly layersReverse$: Observable<Array<Layer>>;
     readonly analysisVisible$ = new BehaviorSubject(false);
     readonly windowHeight$ = new BehaviorSubject<number>(window.innerHeight);
 
     readonly layerGroups: ReplaySubject<Map<TerraNovaGroup, Array<EbvHierarchy>>> = new ReplaySubject(1);
+
+    readonly isSymbologyButtonVisible: Observable<boolean> = this.dataSelectionService.rasterLayer.pipe(
+        map((rasterLayer) => !!rasterLayer),
+    );
 
     datasetPortal = new ComponentPortal(SelectLayersComponent);
 
@@ -92,6 +102,19 @@ export class MainComponent implements OnInit, AfterViewInit {
 
     ngOnInit(): void {
         this.mapService.registerMapComponent(this.mapComponent);
+
+        this.layoutService.getSidenavContentComponentStream().subscribe((sidenavConfig) => {
+            this.leftSidenavContainer.load(sidenavConfig);
+
+            let openClosePromise: Promise<MatDrawerToggleResult>;
+            if (sidenavConfig) {
+                openClosePromise = this.leftSidenav.open();
+            } else {
+                openClosePromise = this.leftSidenav.close();
+            }
+
+            openClosePromise.then(() => this.mapComponent.resize());
+        });
     }
 
     ngAfterViewInit(): void {
@@ -107,6 +130,23 @@ export class MainComponent implements OnInit, AfterViewInit {
         this.analysisVisible$.next(true);
     }
 
+    editSymbology(): void {
+        this.dataSelectionService.rasterLayer
+            .pipe(
+                first(),
+                filter((rasterLayer) => !!rasterLayer),
+            )
+            .subscribe((rasterLayer) => {
+                this.layoutService.setSidenavContentComponent({
+                    component: RasterSymbologyEditorComponent,
+                    keepParent: false,
+                    config: {
+                        layer: rasterLayer,
+                    },
+                });
+            });
+    }
+
     loadData(layer: EbvHierarchy, subgroup: EbvTreeSubgroup, entity: EbvTreeEntity): void {
         const datasetId: EbvDatasetId = {
             fileName: layer.tree.fileName,
@@ -119,10 +159,10 @@ export class MainComponent implements OnInit, AfterViewInit {
             operator: {
                 type: 'GdalSource',
                 params: {
-                    dataset: {
+                    data: {
                         type: 'external',
                         providerId: layer.providerId,
-                        datasetId: JSON.stringify(datasetId),
+                        layerId: JSON.stringify(datasetId),
                     },
                 },
             },

@@ -9,16 +9,21 @@ import {
     InjectionToken,
 } from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
-import {BehaviorSubject, combineLatest, EMPTY, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, EMPTY, Observable, of, range, Subject} from 'rxjs';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
-import {filter, mergeMap, scan, tap} from 'rxjs/operators';
+import {concatMap, filter, first, mergeMap, scan, tap} from 'rxjs/operators';
 import {LayoutService} from '../../layout.service';
 import {
     GeoEngineError,
+    LayerCollectionDict,
     LayerCollectionItemDict,
-    LayerCollectionItemLayerDict,
+    LayerCollectionLayerDict,
+    LayerDict,
+    ProviderLayerCollectionIdDict,
+    ProviderLayerIdDict,
     RasterResultDescriptorDict,
     RasterSymbologyDict,
+    ResultDescriptorDict,
     SymbologyDict,
     UUID,
     VectorResultDescriptorDict,
@@ -41,8 +46,8 @@ import {colorToDict} from '../../colors/color';
 import {RandomColorService} from '../../util/services/random-color.service';
 
 export interface LayerCollectionListConfig {
-    uuid: UUID;
-    selectListener: (uuid: UUID) => void;
+    id?: ProviderLayerCollectionIdDict;
+    selectListener: (id: ProviderLayerCollectionIdDict) => void;
 }
 
 export const CONTEXT_TOKEN = new InjectionToken<LayerCollectionListConfig>('CONTEXT_TOKEN');
@@ -57,9 +62,11 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
     @ViewChild(CdkVirtualScrollViewport)
     viewport!: CdkVirtualScrollViewport;
 
-    collection?: UUID = undefined;
+    readonly itemSizePx = 72;
 
-    selectListener!: (uuid: UUID) => void;
+    collection?: ProviderLayerCollectionIdDict = undefined;
+
+    selectListener!: (id: ProviderLayerCollectionIdDict) => void;
 
     readonly loadingSpinnerDiameterPx: number = 3 * LayoutService.remInPx;
 
@@ -74,7 +81,7 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
         private readonly randomColorService: RandomColorService,
         private readonly changeDetectorRef: ChangeDetectorRef,
     ) {
-        this.collection = data.uuid;
+        this.collection = data.id;
         this.selectListener = data.selectListener;
     }
 
@@ -82,7 +89,9 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
         this.source = new LayerCollectionItemDataSource(this.layerService, this.collection);
     }
 
-    ngAfterViewInit(): void {}
+    ngAfterViewInit(): void {
+        this.source?.init(this.calculateInitialNumberOfElements());
+    }
 
     /**
      * Fetch new data when scrolled to the end of the list.
@@ -93,12 +102,20 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
 
         // only fetch when scrolled to the end
         if (end >= total) {
-            this.source?.fetchMoreData();
+            this.source?.fetchMoreData(1);
         }
     }
 
-    trackById(_index: number, item: LayerCollectionItemDict): UUID {
-        return item.id;
+    trackById(_index: number, item: LayerCollectionItemDict): string {
+        if (item.type === 'collection') {
+            const collection = item as LayerCollectionDict;
+            return collection.id.providerId + collection.id.collectionId;
+        } else if (item.type === 'layer') {
+            const layer = item as LayerCollectionLayerDict;
+            return layer.id.providerId + layer.id.layerId;
+        }
+
+        return '';
     }
 
     icon(item: LayerCollectionItemDict): string {
@@ -107,32 +124,45 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
 
     select(item: LayerCollectionItemDict): void {
         if (item.type === 'collection') {
-            this.selectListener(item.id);
+            const collection = item as LayerCollectionDict;
+            this.selectListener(collection.id);
         } else if (item.type === 'layer') {
-            const layer = item as LayerCollectionItemLayerDict;
-            this.addLayer(layer);
+            const layer = item as LayerCollectionLayerDict;
+            this.addLayer(layer.id);
         }
     }
 
-    private addLayer(layerListing: LayerCollectionItemLayerDict): void {
-        combineLatest([
-            this.layerService.getLayer(layerListing.id),
-            this.projectService.getWorkflowMetaData(layerListing.workflow),
-        ]).subscribe(
-            ([layer, resultDescriptorDict]) => {
-                const keys = Object.keys(resultDescriptorDict);
+    protected calculateInitialNumberOfElements(): number {
+        const element = this.viewport.elementRef.nativeElement;
+        const numberOfElements = Math.ceil(element.clientHeight / this.itemSizePx);
+        // add one such that scrolling happens
+        return numberOfElements + 1;
+    }
 
-                if (keys.includes('columns')) {
-                    this.addVectorLayer(layer.name, layer.workflow, resultDescriptorDict as VectorResultDescriptorDict, layer.symbology);
-                } else if (keys.includes('measurement')) {
-                    this.addRasterLayer(layer.name, layer.workflow, resultDescriptorDict as RasterResultDescriptorDict, layer.symbology);
-                } else {
-                    // TODO: implement plots, etc.
-                    this.notificationService.error('Adding this workflow type is unimplemented, yet');
-                }
-            },
-            (requestError) => this.handleError(requestError.error, layerListing.workflow),
-        );
+    private addLayer(layerId: ProviderLayerIdDict): void {
+        this.layerService
+            .getLayer(layerId.providerId, layerId.layerId)
+            .pipe(
+                mergeMap((layer: LayerDict) => combineLatest([of(layer), this.projectService.registerWorkflow(layer.workflow)])),
+                mergeMap(([layer, workflowId]: [LayerDict, UUID]) =>
+                    combineLatest([of(layer), of(workflowId), this.projectService.getWorkflowMetaData(workflowId)]),
+                ),
+            )
+            .subscribe(
+                ([layer, workflowId, resultDescriptorDict]: [LayerDict, UUID, ResultDescriptorDict]) => {
+                    const keys = Object.keys(resultDescriptorDict);
+
+                    if (keys.includes('columns')) {
+                        this.addVectorLayer(layer.name, workflowId, resultDescriptorDict as VectorResultDescriptorDict, layer.symbology);
+                    } else if (keys.includes('measurement')) {
+                        this.addRasterLayer(layer.name, workflowId, resultDescriptorDict as RasterResultDescriptorDict, layer.symbology);
+                    } else {
+                        // TODO: implement plots, etc.
+                        this.notificationService.error('Adding this workflow type is unimplemented, yet');
+                    }
+                },
+                (requestError) => this.handleError(requestError.error, layerId.layerId),
+            );
     }
 
     private addVectorLayer(
@@ -245,34 +275,42 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
  * A custom data source that allows fetching datasets for a virtual scroll source.
  */
 class LayerCollectionItemDataSource extends DataSource<LayerCollectionItemDict> {
-    readonly scrollFetchSize = 20;
+    // cannot increase this, since it is limited by the server
+    readonly scrollFetchSize = 5;
 
     readonly loading$ = new BehaviorSubject(false);
 
-    protected nextBatch$ = new Subject<void>();
+    protected nextBatch$ = new Subject<number>();
     protected noMoreData = false;
     protected offset = 0;
 
     protected getCollectionItems: (offset: number, limit: number) => Observable<Array<LayerCollectionItemDict>>;
 
-    constructor(protected layerCollectionService: LayerCollectionService, protected collection?: UUID) {
+    constructor(protected layerCollectionService: LayerCollectionService, protected collection?: ProviderLayerCollectionIdDict) {
         super();
 
         if (collection) {
             this.getCollectionItems = (offset, limit): Observable<Array<LayerCollectionItemDict>> =>
-                layerCollectionService.getLayerCollectionItems(collection, offset, limit);
+                layerCollectionService.getLayerCollectionItems(collection.providerId, collection.collectionId, offset, limit).pipe(
+                    first(), // first because we only want to fetch once
+                );
         } else {
             this.getCollectionItems = (offset, limit): Observable<Array<LayerCollectionItemDict>> =>
-                layerCollectionService.getRootLayerCollectionItems(offset, limit);
+                layerCollectionService.getRootLayerCollectionItems(offset, limit).pipe(
+                    first(), // first because we only want to fetch once
+                );
         }
+    }
 
-        this.fetchMoreData(); // initially populate source
+    init(numberOfElements: number): void {
+        this.fetchMoreData(Math.ceil(numberOfElements / this.scrollFetchSize)); // initially populate source
     }
 
     connect(): Observable<Array<LayerCollectionItemDict>> {
         return this.nextBatch$.pipe(
             filter(() => !this.loading$.value),
-            mergeMap(() => this.getMoreDataFromServer()),
+            concatMap((numberOfTimes) => range(0, numberOfTimes)),
+            concatMap(() => this.getMoreDataFromServer()),
             scan((acc, newValues) => [...acc, ...newValues]),
         );
     }
@@ -282,8 +320,8 @@ class LayerCollectionItemDataSource extends DataSource<LayerCollectionItemDict> 
      */
     disconnect(): void {}
 
-    fetchMoreData(): void {
-        this.nextBatch$.next();
+    fetchMoreData(numberOfTimes: number): void {
+        this.nextBatch$.next(numberOfTimes);
     }
 
     protected getMoreDataFromServer(): Observable<Array<LayerCollectionItemDict>> {

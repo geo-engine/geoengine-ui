@@ -21,6 +21,9 @@ import {
     WorkflowDict,
     TimeProjectionDict,
     OgrSourceDict,
+    ClassHistogramDict,
+    OperatorDict,
+    VectorResultDescriptorDict,
     ReprojectionDict,
 } from 'wave-core';
 import {BehaviorSubject, combineLatest, combineLatestWith, first, mergeMap, Observable, of, Subscription, tap} from 'rxjs';
@@ -457,7 +460,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                     vector: {
                         type: 'OgrSource',
                         params: {
-                            dataset: {
+                            data: {
                                 type: 'internal',
                                 datasetId: this.dragonflyDatasetId,
                             },
@@ -536,7 +539,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                     vector: {
                         type: 'OgrSource',
                         params: {
-                            dataset: {
+                            data: {
                                 type: 'internal',
                                 datasetId: this.fishDatasetId,
                             },
@@ -592,7 +595,17 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             .subscribe();
     }
 
-    selectEnvironmentLayer(layer: EnvironmentLayer): void {
+    selectEnvironmentLayer(layer: EnvironmentLayer | undefined): void {
+        if (!layer) {
+            this.selectedEnvironmentLayer = undefined;
+            this.selectedEnvironmentDataset = undefined;
+            this.selectedEnvironmentCitation.next('');
+
+            this.dataSelectionService.resetRasterLayer().subscribe();
+
+            return;
+        }
+
         this.selectedEnvironmentLayer = layer;
 
         const workflow: WorkflowDict = {
@@ -600,7 +613,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             operator: {
                 type: 'GdalSource',
                 params: {
-                    dataset: {
+                    data: {
                         type: 'internal',
                         datasetId: layer.id,
                     },
@@ -613,7 +626,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
         this.projectService
             .registerWorkflow(workflow)
             .pipe(
-                combineLatestWith(this.datasetService.getDataset({type: 'internal', datasetId: layer.id})),
+                combineLatestWith(this.datasetService.getDataset(layer.id)),
                 tap(([workflowId, _dataset]) => {
                     this.userService
                         .getSessionTokenForRequest()
@@ -666,7 +679,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             operator: {
                 type: 'GdalSource',
                 params: {
-                    dataset: {
+                    data: {
                         type: 'internal',
                         datasetId: this.intensityDatasetId,
                     },
@@ -677,7 +690,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
         this.projectService
             .registerWorkflow(workflow)
             .pipe(
-                combineLatestWith(this.datasetService.getDataset({type: 'internal', datasetId: this.intensityDatasetId})),
+                combineLatestWith(this.datasetService.getDataset(this.intensityDatasetId)),
                 tap(([workflowId, _dataset]) => {
                     this.userService
                         .getSessionTokenForRequest()
@@ -732,6 +745,8 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             speciesLayer$ = this.dataSelectionService.speciesLayer2;
             selectedSpecies = this.selectedFishSpecies;
         }
+
+        const environmentColumnName = 'environment';
 
         combineLatest([
             this.dataSelectionService.rasterLayer.pipe(
@@ -789,7 +804,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                         operator: {
                             type: 'RasterVectorJoin',
                             params: {
-                                names: ['environment'],
+                                names: [environmentColumnName],
                                 temporalAggregation: 'none',
                                 featureAggregation: 'first',
                             },
@@ -800,24 +815,49 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                         } as RasterVectorJoinDict,
                     });
                 }),
-                mergeMap((workflowId) => combineLatest([this.projectService.getWorkflow(workflowId), this.dataSelectionService.dataRange])),
-                mergeMap(([workflow, dataRange]) =>
-                    this.projectService.registerWorkflow({
-                        type: 'Plot',
-                        operator: {
+                mergeMap((workflowId) =>
+                    combineLatest([
+                        this.projectService.getWorkflow(workflowId),
+                        this.projectService.getWorkflowMetaData(workflowId) as Observable<VectorResultDescriptorDict>,
+                        this.dataSelectionService.dataRange,
+                    ]),
+                ),
+                mergeMap(([workflow, metadata, dataRange]) => {
+                    let plotWorkflow: OperatorDict;
+
+                    if (
+                        environmentColumnName in metadata.columns &&
+                        metadata.columns[environmentColumnName].measurement.type === 'classification'
+                    ) {
+                        plotWorkflow = {
+                            type: 'ClassHistogram',
+                            params: {
+                                columnName: environmentColumnName,
+                            } as HistogramParams,
+                            sources: {
+                                source: workflow.operator,
+                            },
+                        } as ClassHistogramDict;
+                    } else {
+                        plotWorkflow = {
                             type: 'Histogram',
                             params: {
                                 // TODO: get params from selected data
                                 buckets: 20,
                                 bounds: dataRange,
-                                columnName: 'environment',
+                                columnName: environmentColumnName,
                             } as HistogramParams,
                             sources: {
                                 source: workflow.operator,
                             },
-                        } as HistogramDict,
-                    }),
-                ),
+                        } as HistogramDict;
+                    }
+
+                    return this.projectService.registerWorkflow({
+                        type: 'Plot',
+                        operator: plotWorkflow,
+                    });
+                }),
                 mergeMap((workflowId) =>
                     combineLatest([
                         of(workflowId),

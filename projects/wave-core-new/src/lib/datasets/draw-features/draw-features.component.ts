@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import OlFormatGeoJson from 'ol/format/GeoJSON';
-import OlGeometryType from 'ol/geom/GeometryType';
+import {Type as OlGeometryType} from 'ol/geom/Geometry';
 import {BehaviorSubject, of, Subject, Subscription} from 'rxjs';
 import {ResultType, ResultTypes} from '../../operators/result-type.model';
 import {ProjectService} from '../../project/project.service';
@@ -9,7 +9,7 @@ import {SpatialReference} from '../../spatial-references/spatial-reference.model
 import {MapService} from '../../map/map.service';
 import {DatasetService} from '../dataset.service';
 import {HttpEventType, HttpResponse} from '@angular/common/http';
-import {AutoCreateDatasetDict, DatasetIdDict, UploadResponseDict, UUID} from '../../backend/backend.model';
+import {AutoCreateDatasetDict, DataIdDict, UploadResponseDict, UUID} from '../../backend/backend.model';
 import {mergeMap} from 'rxjs/operators';
 import {WGS_84} from '../../spatial-references/spatial-reference.service';
 
@@ -32,7 +32,7 @@ export class DrawFeaturesComponent implements OnDestroy, OnInit {
 
     indicateLoading$ = new Subject<boolean>();
     uploadId$ = new Subject<UUID>();
-    datasetId$ = new Subject<DatasetIdDict>();
+    datasetId$ = new Subject<DataIdDict>();
 
     state$ = new BehaviorSubject(State.Start);
 
@@ -41,7 +41,7 @@ export class DrawFeaturesComponent implements OnDestroy, OnInit {
     // the current feature type
     selectedFeatureType: ResultType = ResultTypes.POINTS;
     // the corresponding open layers geometry type
-    olGeometryType: string = OlGeometryType.POINT;
+    olGeometryType: OlGeometryType = 'Point';
 
     // the open layers feature writer - we use GeoJson
     olFeatureWriter = new OlFormatGeoJson();
@@ -78,13 +78,13 @@ export class DrawFeaturesComponent implements OnDestroy, OnInit {
 
         switch (resultType) {
             case ResultTypes.POINTS:
-                this.olGeometryType = OlGeometryType.POINT;
+                this.olGeometryType = 'Point';
                 break;
             case ResultTypes.POLYGONS:
-                this.olGeometryType = OlGeometryType.POLYGON;
+                this.olGeometryType = 'Polygon';
                 break;
             case ResultTypes.LINES:
-                this.olGeometryType = OlGeometryType.LINE_STRING;
+                this.olGeometryType = 'LineString';
                 break;
             default:
                 throw new Error('Unexpected result type');

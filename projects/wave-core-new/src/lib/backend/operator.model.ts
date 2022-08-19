@@ -1,5 +1,5 @@
 import {
-    DatasetIdDict,
+    DataIdDict,
     MeasurementDict,
     OperatorDict,
     OperatorParams,
@@ -66,6 +66,18 @@ export interface HistogramDict extends OperatorDict {
     };
 }
 
+export interface ClassHistogramParams extends OperatorParams {
+    columnName?: string;
+}
+
+export interface ClassHistogramDict extends OperatorDict {
+    type: 'ClassHistogram';
+    params: ClassHistogramParams;
+    sources: {
+        source: SourceOperatorDict | OperatorDict;
+    };
+}
+
 export interface BoxPlotParams extends OperatorParams {
     columnNames: Array<string>;
     includeNoData: boolean;
@@ -114,6 +126,18 @@ export interface PointInPolygonFilterDict extends OperatorDict {
     };
 }
 
+export interface ColumnRangeFilterDict extends OperatorDict {
+    type: 'ColumnRangeFilter';
+    params: {
+        column: string;
+        ranges: Array<number[]> | Array<string[]>;
+        keepNulls: boolean;
+    };
+    sources: {
+        vector: SourceOperatorDict | OperatorDict;
+    };
+}
+
 export interface RasterVectorJoinParams extends OperatorParams {
     names: Array<string>;
     temporalAggregation: 'none' | 'first' | 'mean';
@@ -155,6 +179,7 @@ export interface TemporalRasterAggregationDict extends OperatorDict {
             ignoreNoData?: boolean;
         };
         window: TimeStepDict;
+        windowReference?: TimeInstanceDict;
     };
 }
 
@@ -174,7 +199,7 @@ export interface VisualPointClusteringParams extends OperatorParams {
 export interface OgrSourceDict extends SourceOperatorDict {
     type: 'OgrSource';
     params: {
-        dataset: DatasetIdDict;
+        data: DataIdDict;
         attributeProjection?: Array<string>;
         attributeFilters?: Array<AttributeFilterDict>;
     };

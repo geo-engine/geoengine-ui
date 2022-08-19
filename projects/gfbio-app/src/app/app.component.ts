@@ -199,7 +199,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     private static createAddDataListButtons(): Array<AddDataButton> {
         return [
             AddDataComponent.createDatasetListButton(),
-            AddDataComponent.createExternalDataButton(),
             AddDataComponent.createUploadButton(),
             AddDataComponent.createDrawFeaturesButton(),
             AddDataComponent.createAddWorkflowByIdButton(),
@@ -241,7 +240,10 @@ export class AppComponent implements OnInit, AfterViewInit {
                     this.dialog.open(BasketDialogComponent, {data: {result}});
                 });
             } else {
-                this.dialog.open(SplashDialogComponent, {});
+                const showSplash = this.userService.getSettingFromLocalStorage(SplashDialogComponent.SPLASH_DIALOG_NAME);
+                if (showSplash === null || JSON.parse(showSplash)) {
+                    this.dialog.open(SplashDialogComponent, {});
+                }
             }
         });
     }

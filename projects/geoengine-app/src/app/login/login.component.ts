@@ -1,7 +1,7 @@
 import {BehaviorSubject, Subscription} from 'rxjs';
 
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
 import {Config, NotificationService, UserService, User, WaveValidators} from 'wave-core';
 import {first} from 'rxjs/operators';
@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.Loading);
     canRegister = this.config.COMPONENTS.REGISTRATION.AVAILABLE;
 
-    loginForm: FormGroup;
+    loginForm: UntypedFormGroup;
 
     user?: User;
     invalidCredentials$ = new BehaviorSubject<boolean>(false);
@@ -40,9 +40,12 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         private readonly notificationService: NotificationService,
         private readonly router: Router,
     ) {
-        this.loginForm = new FormGroup({
-            email: new FormControl('', Validators.compose([Validators.required, WaveValidators.keyword([this.config.USER.GUEST.NAME])])),
-            password: new FormControl('', Validators.required),
+        this.loginForm = new UntypedFormGroup({
+            email: new UntypedFormControl(
+                '',
+                Validators.compose([Validators.required, WaveValidators.keyword([this.config.USER.GUEST.NAME])]),
+            ),
+            password: new UntypedFormControl('', Validators.required),
         });
     }
 
@@ -93,7 +96,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
                 () => {
                     // on error
                     this.invalidCredentials$.next(true);
-                    (this.loginForm.controls['password'] as FormControl).setValue('');
+                    (this.loginForm.controls['password'] as UntypedFormControl).setValue('');
                     this.formStatus$.next(FormStatus.LoggedOut);
                 },
             );

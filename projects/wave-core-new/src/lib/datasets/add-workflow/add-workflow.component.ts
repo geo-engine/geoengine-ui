@@ -1,5 +1,5 @@
 import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
-import {FormGroup, FormControl, Validators} from '@angular/forms';
+import {UntypedFormGroup, UntypedFormControl, Validators} from '@angular/forms';
 import {GeoEngineError, RasterResultDescriptorDict, UUID, VectorResultDescriptorDict} from '../../backend/backend.model';
 import {colorToDict} from '../../colors/color';
 import {RasterLayer, VectorLayer} from '../../layers/layer.model';
@@ -23,16 +23,16 @@ import {RandomColorService} from '../../util/services/random-color.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddWorkflowComponent implements OnInit {
-    readonly form: FormGroup;
+    readonly form: UntypedFormGroup;
 
     constructor(
         protected readonly projectService: ProjectService,
         protected readonly notificationService: NotificationService,
         protected readonly randomColorService: RandomColorService,
     ) {
-        this.form = new FormGroup({
-            layerName: new FormControl('New Layer', Validators.required),
-            workflowId: new FormControl('', [Validators.required, isValidUuid]),
+        this.form = new UntypedFormGroup({
+            layerName: new UntypedFormControl('New Layer', Validators.required),
+            workflowId: new UntypedFormControl('', [Validators.required, isValidUuid]),
         });
     }
 

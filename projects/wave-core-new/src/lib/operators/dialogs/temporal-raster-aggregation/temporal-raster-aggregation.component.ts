@@ -1,7 +1,7 @@
 import {RasterLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {WaveValidators} from '../../../util/form.validators';
 import {map, mergeMap} from 'rxjs/operators';
@@ -9,6 +9,7 @@ import {NotificationService} from '../../../notification.service';
 import {TimeStepGranularityDict, WorkflowDict} from '../../../backend/backend.model';
 import {Observable} from 'rxjs';
 import {TemporalRasterAggregationDict} from '../../../backend/operator.model';
+import moment, {Moment} from 'moment';
 
 @Component({
     selector: 'wave-temporal-raster-aggregation',
@@ -23,19 +24,21 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
     readonly defaultTimeGranularity: TimeStepGranularityDict = 'months';
     readonly aggregations = ['Min', 'Max', 'First', 'Last', 'Mean'];
 
-    form: FormGroup;
+    form: UntypedFormGroup;
     disallowSubmit: Observable<boolean>;
 
     constructor(
         private readonly projectService: ProjectService,
         private readonly notificationService: NotificationService,
-        private readonly formBuilder: FormBuilder,
+        private readonly formBuilder: UntypedFormBuilder,
     ) {
         this.form = this.formBuilder.group({
             name: ['', [Validators.required, WaveValidators.notOnlyWhitespace]],
             layer: [undefined, Validators.required],
             granularity: [this.defaultTimeGranularity, Validators.required],
             windowSize: [1, Validators.required], // TODO: check > 0
+            windowReferenceChecked: [false],
+            windowReference: [moment.utc(0)],
             aggregation: [this.aggregations[0], Validators.required],
             ignoreNoData: [false],
         });
@@ -60,6 +63,12 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
         const aggregation: string = this.form.controls['aggregation'].value;
         const granularity: string = this.form.controls['granularity'].value;
         const step: number = this.form.controls['windowSize'].value;
+
+        let stepReference: undefined | Moment;
+        if (this.form.controls['windowReferenceChecked'].value) {
+            stepReference = this.form.get('windowReference')?.value;
+        }
+
         const ignoreNoData: boolean = this.form.controls['ignoreNoData'].value;
 
         this.projectService
@@ -79,6 +88,7 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
                                     granularity,
                                     step,
                                 },
+                                windowReference: stepReference,
                             },
                             sources: {
                                 raster: inputWorkflow.operator,

@@ -132,6 +132,7 @@
     <mat-form-field color="accent">
         <mat-label>Klima-/Wasser-Datenauswahl</mat-label>
         <mat-select (valueChange)="selectEnvironmentLayer($event)">
+            <mat-option>– Keine Auswahl –</mat-option>
             <mat-option *ngFor="let layer of environmentLayers" [value]="layer">
                 {{ layer.name }}
             </mat-option>

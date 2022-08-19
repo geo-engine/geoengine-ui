@@ -1,7 +1,7 @@
 import {Layer, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {WaveValidators} from '../../../util/form.validators';
@@ -38,7 +38,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
 
     inputTypes = ResultTypes.INPUT_TYPES;
 
-    form: FormGroup;
+    form: UntypedFormGroup;
 
     attributes$ = new ReplaySubject<Array<string>>(1);
 
@@ -52,7 +52,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
     constructor(
         private readonly projectService: ProjectService,
         private readonly notificationService: NotificationService,
-        private readonly formBuilder: FormBuilder,
+        private readonly formBuilder: UntypedFormBuilder,
     ) {
         const layerControl = this.formBuilder.control(undefined, Validators.required);
         const rangeTypeControl = this.formBuilder.control('data', Validators.required);
@@ -85,7 +85,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
                         if (layer instanceof VectorLayer) {
                             return this.projectService.getVectorLayerMetadata(layer).pipe(
                                 map((metadata: VectorLayerMetadata) =>
-                                    metadata.columns
+                                    metadata.dataTypes
                                         .filter(
                                             (columnType) =>
                                                 columnType === VectorColumnDataTypes.Float || columnType === VectorColumnDataTypes.Int,

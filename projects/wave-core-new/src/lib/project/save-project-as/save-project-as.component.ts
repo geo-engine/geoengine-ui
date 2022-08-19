@@ -1,6 +1,6 @@
 import {BehaviorSubject} from 'rxjs';
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
-import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {UntypedFormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
 import {ProjectService} from '../project.service';
 import {NotificationService} from '../../notification.service';
 import {WaveValidators} from '../../util/form.validators';
@@ -12,12 +12,12 @@ import {WaveValidators} from '../../util/form.validators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SaveProjectAsComponent implements OnInit, AfterViewInit {
-    form: FormGroup;
+    form: UntypedFormGroup;
 
     created$ = new BehaviorSubject(false);
 
     constructor(
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private projectService: ProjectService,
         private notificationService: NotificationService,
     ) {

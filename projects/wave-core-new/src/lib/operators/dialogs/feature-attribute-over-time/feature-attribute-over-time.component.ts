@@ -1,5 +1,5 @@
 import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy} from '@angular/core';
-import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {UntypedFormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
 
 import {ProjectService} from '../../../project/project.service';
 import {ResultTypes} from '../../result-type.model';
@@ -32,10 +32,10 @@ export class FeatureAttributeOvertimeComponent implements AfterViewInit, OnDestr
 
     readonly subscriptions: Array<Subscription> = [];
 
-    form: FormGroup;
+    form: UntypedFormGroup;
 
     constructor(
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private projectService: ProjectService,
         private notificationService: NotificationService,
     ) {
@@ -61,7 +61,7 @@ export class FeatureAttributeOvertimeComponent implements AfterViewInit, OnDestr
                                         id: [],
                                         value: [],
                                     };
-                                    for (const [candidate, columnType] of metadata.columns) {
+                                    for (const [candidate, columnType] of metadata.dataTypes) {
                                         if (columnType === VectorColumnDataTypes.Int) {
                                             candidates.id.push(candidate);
                                             candidates.value.push(candidate);

@@ -1,7 +1,7 @@
 import {BehaviorSubject, Subscription} from 'rxjs';
 
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
 import {first} from 'rxjs/operators';
 import {Router} from '@angular/router';
@@ -29,7 +29,7 @@ export class TokenLoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
     formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.LoggedOut);
 
-    loginForm: FormGroup;
+    loginForm: UntypedFormGroup;
 
     invalidCredentials$ = new BehaviorSubject<boolean>(false);
 
@@ -40,8 +40,8 @@ export class TokenLoginComponent implements OnInit, AfterViewInit, OnDestroy {
         private readonly userService: UserService,
         private readonly router: Router,
     ) {
-        this.loginForm = new FormGroup({
-            sessionToken: new FormControl('', Validators.required),
+        this.loginForm = new UntypedFormGroup({
+            sessionToken: new UntypedFormControl('', Validators.required),
         });
     }
 
@@ -85,7 +85,7 @@ export class TokenLoginComponent implements OnInit, AfterViewInit, OnDestroy {
             () => {
                 // on error
                 this.invalidCredentials$.next(true);
-                (this.loginForm.controls['sessionToken'] as FormControl).setValue('');
+                (this.loginForm.controls['sessionToken'] as UntypedFormControl).setValue('');
                 this.formStatus$.next(FormStatus.LoggedOut);
             },
         );

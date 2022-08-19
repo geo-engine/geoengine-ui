@@ -1,0 +1,108 @@
+<wave-sidenav-header>Column Range Filter</wave-sidenav-header>
+
+<wave-dialog-help>
+    <p>
+        This filter allows you to create a new vector layer where selected attributes have values only inside specified ranges. After
+        selecting your input layer, choose an attribute you wish to filter. Then specify one or more ranges of values. The newly created
+        layer will contain values for that attribute only within the specified ranges.
+    </p>
+    <p>It is possible to filter by numeric values as well as text. In case of text, filtering will be lexicographically.</p>
+    <p>See <a href="https://docs.geoengine.io/operators/columnrangefilter.html">Geo Engine Docs</a> for a more detailed description.</p>
+</wave-dialog-help>
+
+<form [formGroup]="form" fxLayout="column" (ngSubmit)="$event.preventDefault(); add()">
+    <!--    Layer Selection-->
+    <wave-layer-selection [types]="inputTypes" formControlName="layer"></wave-layer-selection>
+
+    <!--    Filter Selection-->
+    <div formArrayName="filters">
+        <div fxLayout="row">
+            <wave-dialog-section-heading
+                title="Filter Selection"
+                subtitle="Please select the filters you want to use."
+            ></wave-dialog-section-heading>
+            <div fxFlex fxLayout="row" fxLayoutAlign="end">
+                <button type="button" (click)="addFilter(); accordion.closeAll()" mat-button color="primary">
+                    <mat-icon>add_circle_outline</mat-icon>
+                </button>
+            </div>
+        </div>
+
+        <mat-accordion #accordion="matAccordion" multi="true">
+            <div *ngFor="let filter of filters.controls; let filterIndex = index">
+                <mat-expansion-panel expanded="true" [formGroupName]="filterIndex">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>Filter {{ filterIndex + 1 }}</mat-panel-title>
+                        <button *ngIf="filters.length > 1" type="button" (click)="removeFilter(filterIndex)" mat-button color="primary">
+                            <mat-icon>remove_circle_outline</mat-icon>
+                        </button>
+                    </mat-expansion-panel-header>
+
+                    <!--            Attribut Selection-->
+                    <div fxLayout="row">
+                        <wave-dialog-section-heading
+                            title="Attribute Selection"
+                            subtitle="Please select the attribute to filter."
+                        ></wave-dialog-section-heading>
+                    </div>
+                    <div fxLayout="row">
+                        <mat-form-field>
+                            <mat-select placeholder="Attribute" formControlName="attribute">
+                                <mat-option *ngFor="let attribute of attributes$ | async" [value]="attribute">{{ attribute }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+                    <!--            Range Selection-->
+                    <div formArrayName="ranges">
+                        <div fxLayout="row">
+                            <wave-dialog-section-heading
+                                title="Range Selection"
+                                subtitle="Please select the ranges you want to filter for."
+                            ></wave-dialog-section-heading>
+                            <div fxFlex fxLayout="row" fxLayoutAlign="end">
+                                <button type="button" (click)="addRange(filterIndex)" mat-button color="primary">
+                                    <mat-icon>add_circle_outline</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div *ngFor="let range of ranges(filterIndex).controls; let rangeIndex = index" fxLayout="column">
+                            <div [formGroupName]="rangeIndex" fxLayout="row" fxFlex>
+                                <mat-form-field fxFlex>
+                                    <input matInput type="text" placeholder="Min" formControlName="min" />
+                                </mat-form-field>
+                                <div fxFlex="1rem"></div>
+                                <mat-form-field fxFlex>
+                                    <input matInput type="text" placeholder="Max" formControlName="max" />
+                                </mat-form-field>
+                                <div fxFlex="1rem"></div>
+                                <button
+                                    *ngIf="ranges(filterIndex).length > 1"
+                                    type="button"
+                                    (click)="removeRange(filterIndex, rangeIndex)"
+                                    mat-button
+                                    color="primary"
+                                >
+                                    <mat-icon>remove_circle_outline</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </mat-expansion-panel>
+            </div>
+        </mat-accordion>
+    </div>
+
+    <!--    Output Name Selection-->
+    <wave-operator-output-name
+        formControlName="name"
+        [suggestion]="'Filtered ' + (form.controls.layer.valueChanges | async)?.name"
+    ></wave-operator-output-name>
+    <!-- Error Message -->
+    <p *ngIf="attributeError" class="errormsg">{{ errorHint }}</p>
+    <!--    Submit Button-->
+    <div class="actions">
+        <button type="submit" mat-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">Create</button>
+    </div>
+</form>

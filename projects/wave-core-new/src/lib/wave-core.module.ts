@@ -114,7 +114,6 @@ import {FeatureAttributeOvertimeComponent} from './operators/dialogs/feature-att
 import {NotificationsComponent} from './project/notifications/notifications.component';
 import {TemporalRasterAggregationComponent} from './operators/dialogs/temporal-raster-aggregation/temporal-raster-aggregation.component';
 import {DragAndDropComponent} from './datasets/drag-and-drop/drag-and-drop.component';
-import {ProviderListComponent} from './datasets/provider-list/provider-list.component';
 import {AddWorkflowComponent} from './datasets/add-workflow/add-workflow.component';
 import {ProvenanceTableComponent} from './provenance/table/provenance-table.component';
 import {ScrollingModule} from '@angular/cdk/scrolling';
@@ -125,8 +124,12 @@ import {TimeStepSelectorComponent} from './time/time-step-selector/time-step-sel
 import {AutocompleteSelectDirective} from './util/directives/autocomplete-select.directive';
 import {TokenLoginComponent} from './users/token-login/token-login.component';
 import {TimeSliderComponent} from './time/time-slider/time-slider.component';
+import {FullDisplayComponent} from './datatable/table/full-display/full-display.component';
 import {LayerCollectionListComponent} from './layer-collections/layer-collection-list/layer-collection-list.component';
 import {LayerCollectionNavigationComponent} from './layer-collections/layer-collection-navigation/layer-collection-navigation.component';
+import {ClassHistogramOperatorComponent} from './operators/dialogs/class-histogram-operator/class-histogram-operator.component';
+import {ColumnRangeFilterComponent} from './operators/dialogs/column-range-filter/column-range-filter.component';
+import {DialogSplashCheckboxComponent} from './dialogs/dialog-splash-checkbox/dialog-splash-checkbox.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -184,21 +187,25 @@ const WAVE_COMPONENTS = [
     AutocompleteSelectDirective,
     BoxPlotOperatorComponent,
     ChangeSpatialReferenceComponent,
+    ClassHistogramOperatorComponent,
     CodeEditorComponent,
     ColorAttributeInputComponent,
     ColorBreakpointInputComponent,
     ColorMapSelectorComponent,
     ColorParamEditorComponent,
+    ColumnRangeFilterComponent,
     DatasetComponent,
     DatasetListComponent,
     DataTableComponent,
     DialogHeaderComponent,
     DialogHelpComponent,
     DialogSectionHeadingComponent,
+    DialogSplashCheckboxComponent,
     DragAndDropComponent,
     DrawFeaturesComponent,
     ExpressionOperatorComponent,
     FeatureAttributeOvertimeComponent,
+    FullDisplayComponent,
     HistogramOperatorComponent,
     IfGuestDirective,
     IfLoggedInDirective,
@@ -232,7 +239,6 @@ const WAVE_COMPONENTS = [
     PointInPolygonFilterOperatorComponent,
     PolygonIconComponent,
     ProvenanceTableComponent,
-    ProviderListComponent,
     RasterIconComponent,
     RasterLegendComponent,
     RasterLegendComponent,

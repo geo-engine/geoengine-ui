@@ -1,7 +1,7 @@
 import {Layer, RasterLayer, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, FormArray, Validators, FormControl} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators, UntypedFormControl} from '@angular/forms';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {WaveValidators} from '../../../util/form.validators';
@@ -47,7 +47,7 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
 
     readonly RASTER_TYPE = [ResultTypes.RASTER];
 
-    form: FormGroup;
+    form: UntypedFormGroup;
 
     attributes$ = new ReplaySubject<Array<string>>(1);
 
@@ -63,7 +63,7 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
     constructor(
         private readonly projectService: ProjectService,
         private readonly notificationService: NotificationService,
-        private readonly formBuilder: FormBuilder,
+        private readonly formBuilder: UntypedFormBuilder,
     ) {
         const layerControl = this.formBuilder.control(undefined, Validators.required);
         this.form = this.formBuilder.group({
@@ -73,8 +73,7 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
                 [],
                 WaveValidators.conditionalValidator(Validators.required, () => isVectorLayer(layerControl.value)),
             ),
-            additionalRasterLayers: new FormControl(undefined),
-            includeNoData: [false],
+            additionalRasterLayers: new UntypedFormControl(undefined),
         });
 
         this.subscriptions.push(
@@ -91,7 +90,7 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
                         if (layer instanceof VectorLayer) {
                             return this.projectService.getVectorLayerMetadata(layer).pipe(
                                 map((metadata: VectorLayerMetadata) =>
-                                    metadata.columns
+                                    metadata.dataTypes
                                         .filter(
                                             (columnType) =>
                                                 columnType === VectorColumnDataTypes.Float || columnType === VectorColumnDataTypes.Int,
@@ -124,16 +123,16 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
         this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
-    get additionalRasterLayers(): FormControl {
-        return this.form.get('additionalRasterLayers') as FormControl;
+    get additionalRasterLayers(): UntypedFormControl {
+        return this.form.get('additionalRasterLayers') as UntypedFormControl;
     }
 
     rasterInputNaming(_idx: number): string {
         return 'Input';
     }
 
-    get columnNames(): FormArray {
-        return this.form.get('columnNames') as FormArray;
+    get columnNames(): UntypedFormArray {
+        return this.form.get('columnNames') as UntypedFormArray;
     }
 
     addColumn(): void {
@@ -142,10 +141,6 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
 
     removeColumn(i: number): void {
         this.columnNames.removeAt(i);
-    }
-
-    get includeNoData(): boolean {
-        return this.form.controls['includeNoData'].value as boolean;
     }
 
     /**
@@ -180,7 +175,6 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
                             type: 'BoxPlot',
                             params: {
                                 columnNames,
-                                includeNoData: this.includeNoData,
                             } as BoxPlotParams,
                             sources: {
                                 source: isVectorLayer(inputLayer) ? inputOperators[0] : inputOperators,

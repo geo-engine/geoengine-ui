@@ -5,6 +5,7 @@ import {Injectable} from '@angular/core';
 import {containsExtent as olExtentContainsExtent, getIntersection as olExtentGetIntersection} from 'ol/extent';
 import OlGeometry from 'ol/geom/Geometry';
 import {Vector as OlSourceVector} from 'ol/source';
+import {Type as OlGeometryType} from 'ol/geom/Geometry';
 
 import {MapContainerComponent} from './map-container/map-container.component';
 import {olExtentToTuple} from '../util/conversions';
@@ -77,7 +78,7 @@ export class MapService {
         this.mapComponent = mapComponent;
     }
 
-    public startDrawInteraction(drawType: string): void {
+    public startDrawInteraction(drawType: OlGeometryType): void {
         if (!this.mapComponent) {
             throw new Error('no MapComponent registered');
         }

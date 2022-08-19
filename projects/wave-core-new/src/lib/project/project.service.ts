@@ -14,7 +14,7 @@ import {HasLayerId, HasLayerType, Layer, RasterLayer, VectorLayer} from '../laye
 import {BackendService} from '../backend/backend.service';
 import {
     BBoxDict,
-    LayerDict,
+    ProjectLayerDict,
     OperatorDict,
     PlotDict,
     ProvenanceOutputDict,
@@ -966,7 +966,7 @@ export class ProjectService {
                             id: project.id,
                             name: changes.name,
                             layers: changes.layers
-                                ? ProjectService.optimizeVecUpdates<Layer, LayerDict>(oldProject.layers, project.layers)
+                                ? ProjectService.optimizeVecUpdates<Layer, ProjectLayerDict>(oldProject.layers, project.layers)
                                 : undefined,
                             plots: changes.plots
                                 ? ProjectService.optimizeVecUpdates<Plot, PlotDict>(oldProject.plots, project.plots)
@@ -1131,7 +1131,7 @@ export class ProjectService {
             };
         } = {};
 
-        for (const [columnName, dataType] of metadata.columns.entries()) {
+        for (const [columnName, dataType] of metadata.dataTypes.entries()) {
             let aggregateType: 'meanNumber' | 'stringSample' | 'null';
             switch (dataType) {
                 case VectorColumnDataTypes.Category:
@@ -1261,7 +1261,10 @@ export class ProjectService {
                             },
                             sessionToken,
                         )
-                        .pipe(map((x) => VectorData.olParse(time, projection, requestExtent, x)));
+                        .pipe(
+                            map((x) => this.addTimeToProperties(x)),
+                            map((x) => VectorData.olParse(time, projection, requestExtent, x)),
+                        );
                 }),
                 tap(
                     () => loadingState$.next(LoadingState.OK),
@@ -1275,6 +1278,16 @@ export class ProjectService {
                 (data) => data$.next(data),
                 (error) => error, // ignore error
             );
+    }
+
+    private addTimeToProperties(x: any): any {
+        x['features'].forEach((element: any) => {
+            const start: string = element['when']['start'];
+            const end: string = element['when']['end'];
+            element['properties']['_____table__start'] = start;
+            element['properties']['_____table__end'] = end;
+        });
+        return x;
     }
 
     private createLayerChangesStream(layer: Layer): void {

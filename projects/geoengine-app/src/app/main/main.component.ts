@@ -193,7 +193,6 @@ export class MainComponent implements OnInit, AfterViewInit {
     private static createAddDataListButtons(): Array<AddDataButton> {
         return [
             AddDataComponent.createDatasetListButton(),
-            AddDataComponent.createExternalDataButton(),
             AddDataComponent.createLayerCollectionButton(),
             AddDataComponent.createUploadButton(),
             AddDataComponent.createDrawFeaturesButton(),

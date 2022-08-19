@@ -8,7 +8,7 @@ import {
     CreateProjectResponseDict,
     DatasetDict,
     PlotDict,
-    LayerDict,
+    ProjectLayerDict,
     ProjectDict,
     ProjectFilterDict,
     ProjectListingDict,
@@ -25,7 +25,6 @@ import {
     WorkflowDict,
     PlotDataDict,
     UploadResponseDict,
-    DatasetIdDict,
     CreateDatasetDict,
     AutoCreateDatasetDict,
     DatasetIdResponseDict,
@@ -37,7 +36,7 @@ import {
     ProvenanceOutputDict,
     DatasetOrderByDict,
     LayerCollectionItemDict,
-    LayerCollectionLayerDict,
+    LayerDict,
 } from './backend.model';
 
 @Injectable({
@@ -91,7 +90,7 @@ export class BackendService {
             id: UUID;
             name?: string;
             description?: string;
-            layers?: Array<LayerDict | 'none' | 'delete'>;
+            layers?: Array<ProjectLayerDict | 'none' | 'delete'>;
             plots?: Array<PlotDict | 'none' | 'delete'>;
             bounds?: STRectangleDict;
             timeStep?: TimeStepDict;
@@ -164,6 +163,15 @@ export class BackendService {
     getWorkflowProvenance(workflowId: UUID, sessionId: UUID): Observable<Array<ProvenanceOutputDict>> {
         return this.http.get<Array<ProvenanceOutputDict>>(this.config.API_URL + `/workflow/${workflowId}/provenance`, {
             headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    downloadWorkflowMetadata(workflowId: UUID, sessionId: UUID): Observable<HttpEvent<Blob>> {
+        return this.http.get(this.config.API_URL + `/workflow/${workflowId}/allMetadata/zip`, {
+            headers: BackendService.authorizationHeader(sessionId),
+            responseType: 'blob',
+            reportProgress: true,
+            observe: 'events',
         });
     }
 
@@ -244,15 +252,10 @@ export class BackendService {
         });
     }
 
-    getDataset(sessionId: UUID, datasetId: DatasetIdDict): Observable<DatasetDict> {
-        // TODO: external datasets
-        if (datasetId.type === 'internal') {
-            return this.http.get<DatasetDict>(this.config.API_URL + `/dataset/internal/${datasetId.datasetId}`, {
-                headers: BackendService.authorizationHeader(sessionId),
-            });
-        } else {
-            throw Error('cannot load external datasets yet');
-        }
+    getDataset(sessionId: UUID, datasetId: UUID): Observable<DatasetDict> {
+        return this.http.get<DatasetDict>(this.config.API_URL + `/dataset/${datasetId}`, {
+            headers: BackendService.authorizationHeader(sessionId),
+        });
     }
 
     getDatasets(
@@ -267,24 +270,6 @@ export class BackendService {
         params.set('order', order);
 
         return this.http.get<Array<DatasetDict>>(this.config.API_URL + '/datasets', {
-            params: params.httpParams,
-            headers: BackendService.authorizationHeader(sessionId),
-        });
-    }
-
-    getExternalDatasets(
-        sessionId: UUID,
-        providerId: UUID,
-        offset: number = 0,
-        limit: number = 20,
-        order: DatasetOrderByDict = 'NameAsc',
-    ): Observable<Array<DatasetDict>> {
-        const params = new NullDiscardingHttpParams();
-        params.setMapped('offset', offset, (r) => r.toString());
-        params.setMapped('limit', limit, (r) => r.toString());
-        params.set('order', order);
-
-        return this.http.get<Array<DatasetDict>>(this.config.API_URL + `/datasets/external/${providerId}`, {
             params: params.httpParams,
             headers: BackendService.authorizationHeader(sessionId),
         });
@@ -341,7 +326,8 @@ export class BackendService {
 
     getLayerCollectionItems(
         sessionId: UUID,
-        collection: UUID,
+        provider: UUID,
+        collection: string,
         offset: number = 0,
         limit: number = 20,
     ): Observable<Array<LayerCollectionItemDict>> {
@@ -349,7 +335,7 @@ export class BackendService {
         params.setMapped('offset', offset, (r) => r.toString());
         params.setMapped('limit', limit, (r) => r.toString());
 
-        return this.http.get<Array<LayerCollectionItemDict>>(this.config.API_URL + `/layers/${collection}`, {
+        return this.http.get<Array<LayerCollectionItemDict>>(this.config.API_URL + `/layers/collections/${provider}/${collection}`, {
             params: params.httpParams,
             headers: BackendService.authorizationHeader(sessionId),
         });
@@ -360,14 +346,14 @@ export class BackendService {
         params.setMapped('offset', offset, (r) => r.toString());
         params.setMapped('limit', limit, (r) => r.toString());
 
-        return this.http.get<Array<LayerCollectionItemDict>>(this.config.API_URL + '/layers', {
+        return this.http.get<Array<LayerCollectionItemDict>>(this.config.API_URL + '/layers/collections', {
             params: params.httpParams,
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
 
-    getLayerCollectionLayer(sessionId: UUID, layer: UUID): Observable<LayerCollectionLayerDict> {
-        return this.http.get<LayerCollectionLayerDict>(this.config.API_URL + `/layer/${layer}`, {
+    getLayerCollectionLayer(sessionId: UUID, provider: UUID, layer: string): Observable<LayerDict> {
+        return this.http.get<LayerDict>(this.config.API_URL + `/layers/${provider}/${layer}`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }

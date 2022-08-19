@@ -1,10 +1,10 @@
-import {AttributeFilterDict, DatasetIdDict, Layer, TypedResultDescriptorDict} from 'wave-core';
+import {AttributeFilterDict, DataIdDict, Layer, TypedResultDescriptorDict} from 'wave-core';
 
 export interface BasketEntry {
     title: string;
     status: 'ok' | 'unavailable' | 'error';
     message: string | null;
-    datasetId: DatasetIdDict;
+    datasetId: DataIdDict;
     sourceOperator: string;
     resultDescriptor: TypedResultDescriptorDict;
     attributeFilters: Array<AttributeFilterDict> | undefined;

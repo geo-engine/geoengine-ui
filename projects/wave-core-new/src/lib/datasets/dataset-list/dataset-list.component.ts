@@ -1,10 +1,10 @@
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, ViewChild, Input} from '@angular/core';
-import {Dataset, DatasetId} from '../dataset.model';
+import {Dataset} from '../dataset.model';
 import {DatasetService} from '../dataset.service';
 import {DataSource} from '@angular/cdk/collections';
-import {BehaviorSubject, EMPTY, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, EMPTY, Observable, range, Subject} from 'rxjs';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
-import {filter, mergeMap, scan, tap} from 'rxjs/operators';
+import {concatMap, filter, first, scan, tap} from 'rxjs/operators';
 import {LayoutService} from '../../layout.service';
 import {UUID} from '../../backend/backend.model';
 
@@ -18,14 +18,13 @@ export class DatasetListComponent implements OnInit, AfterViewInit {
     @ViewChild(CdkVirtualScrollViewport)
     viewport!: CdkVirtualScrollViewport;
 
-    // leave undefined for internal datasets
-    @Input() externalDatasetProviderId?: UUID = undefined;
-
     @Input() repositoryName = 'Data Repository';
 
     // TODO: dataset search
 
     // TODO: ordering of datasets
+
+    readonly itemSizePx = 72;
 
     readonly loadingSpinnerDiameterPx: number = 3 * LayoutService.remInPx;
 
@@ -34,10 +33,12 @@ export class DatasetListComponent implements OnInit, AfterViewInit {
     constructor(public datasetService: DatasetService) {}
 
     ngOnInit(): void {
-        this.datasetSource = new DatasetDataSource(this.datasetService, this.externalDatasetProviderId);
+        this.datasetSource = new DatasetDataSource(this.datasetService);
     }
 
-    ngAfterViewInit(): void {}
+    ngAfterViewInit(): void {
+        this.datasetSource?.init(this.calculateInitialNumberOfElements());
+    }
 
     /**
      * Fetch new data when scrolled to the end of the list.
@@ -48,12 +49,19 @@ export class DatasetListComponent implements OnInit, AfterViewInit {
 
         // only fetch when scrolled to the end
         if (end >= total) {
-            this.datasetSource?.fetchMoreData();
+            this.datasetSource?.fetchMoreData(1);
         }
     }
 
-    trackById(_index: number, dataset: Dataset): DatasetId {
+    trackById(_index: number, dataset: Dataset): UUID {
         return dataset.id;
+    }
+
+    protected calculateInitialNumberOfElements(): number {
+        const element = this.viewport.elementRef.nativeElement;
+        const numberOfElements = Math.ceil(element.clientHeight / this.itemSizePx);
+        // add one such that scrolling happens
+        return numberOfElements + 1;
     }
 }
 
@@ -61,33 +69,35 @@ export class DatasetListComponent implements OnInit, AfterViewInit {
  * A custom data source that allows fetching datasets for a virtual scroll source.
  */
 class DatasetDataSource extends DataSource<Dataset> {
+    // cannot increase this, since it is limited by the server
     readonly scrollFetchSize = 20;
 
     readonly loading$ = new BehaviorSubject(false);
 
-    protected nextBatch$ = new Subject<void>();
+    protected nextBatch$ = new Subject<number>();
     protected noMoreData = false;
     protected offset = 0;
 
     protected getDatasets: (offset: number, limit: number) => Observable<Array<Dataset>>;
 
-    constructor(protected datasetService: DatasetService, protected externalDatasetProviderId?: UUID) {
+    constructor(protected datasetService: DatasetService) {
         super();
 
-        if (externalDatasetProviderId) {
-            this.getDatasets = (offset, limit): Observable<Array<Dataset>> =>
-                datasetService.getExternalDatasets(externalDatasetProviderId, offset, limit);
-        } else {
-            this.getDatasets = (offset, limit): Observable<Array<Dataset>> => datasetService.getDatasets(offset, limit);
-        }
+        this.getDatasets = (offset, limit): Observable<Array<Dataset>> =>
+            datasetService.getDatasets(offset, limit).pipe(
+                first(), // first because we only want to fetch once
+            );
+    }
 
-        this.fetchMoreData(); // initially populate source
+    init(numberOfElements: number): void {
+        this.fetchMoreData(Math.ceil(numberOfElements / this.scrollFetchSize)); // initially populate source
     }
 
     connect(): Observable<Array<Dataset>> {
         return this.nextBatch$.pipe(
             filter(() => !this.loading$.value),
-            mergeMap(() => this.getMoreDataFromServer()),
+            concatMap((numberOfTimes) => range(0, numberOfTimes)),
+            concatMap(() => this.getMoreDataFromServer()),
             scan((acc, newValues) => [...acc, ...newValues]),
         );
     }
@@ -97,8 +107,8 @@ class DatasetDataSource extends DataSource<Dataset> {
      */
     disconnect(): void {}
 
-    fetchMoreData(): void {
-        this.nextBatch$.next();
+    fetchMoreData(numberOfTimes: number): void {
+        this.nextBatch$.next(numberOfTimes);
     }
 
     protected getMoreDataFromServer(): Observable<Array<Dataset>> {
