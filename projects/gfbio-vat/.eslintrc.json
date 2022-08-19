@@ -1,0 +1,22 @@
+{
+    "extends": "../../.eslintrc.json",
+    "ignorePatterns": ["!**/*"],
+    "overrides": [
+        {
+            "files": ["*.ts"],
+            "parserOptions": {
+                "project": [
+                    "projects/gfbio-vat/tsconfig.app.json",
+                    "projects/gfbio-vat/tsconfig.spec.json",
+                    "projects/gfbio-vat/e2e/tsconfig.json"
+                ],
+                "createDefaultProgram": true
+            },
+            "rules": {}
+        },
+        {
+            "files": ["*.html"],
+            "rules": {}
+        }
+    ]
+}

@@ -1,0 +1,82 @@
+@use '@angular/material' as mat;
+
+// Material Base Styles
+@include mat.core();
+
+// Define Colors
+$gfbio-darkblue: (
+    50: #e7ebf4,
+    100: #c2cee3,
+    200: #99add1,
+    300: #708cbf,
+    400: #5273b1,
+    500: #335aa3,
+    600: #2e529b,
+    700: #274891,
+    800: #203f88,
+    900: #142e77,
+    A100: #adc0ff,
+    A200: #7a98ff,
+    A400: #4770ff,
+    A700: #2e5dff,
+    contrast: (
+        50: rgba(black, 0.87),
+        100: rgba(black, 0.87),
+        200: rgba(black, 0.87),
+        300: rgba(black, 0.87),
+        400: rgba(white, 0.87),
+        500: rgba(white, 0.87),
+        600: rgba(white, 0.87),
+        700: rgba(white, 0.87),
+        800: rgba(white, 0.87),
+        900: rgba(white, 0.87),
+        A100: rgba(black, 0.87),
+        A200: rgba(black, 0.87),
+        A400: rgba(white, 0.87),
+        A700: rgba(white, 0.87),
+    ),
+);
+
+$gfbio-green: (
+    50: #f0f6e9,
+    100: #d9e8c8,
+    200: #c0d9a4,
+    300: #a7c97f,
+    400: #94be63,
+    500: #81b248,
+    600: #79ab41,
+    700: #6ea238,
+    800: #649930,
+    900: #518a21,
+    A100: #dfffc7,
+    A200: #c2ff94,
+    A400: #a5ff61,
+    A700: #97ff47,
+    contrast: (
+        50: rgba(black, 0.87),
+        100: rgba(black, 0.87),
+        200: rgba(black, 0.87),
+        300: rgba(black, 0.87),
+        400: rgba(black, 0.87),
+        500: rgba(black, 0.87),
+        600: rgba(black, 0.87),
+        700: rgba(black, 0.87),
+        800: rgba(white, 0.87),
+        900: rgba(white, 0.87),
+        A100: rgba(black, 0.87),
+        A200: rgba(black, 0.87),
+        A400: rgba(black, 0.87),
+        A700: rgba(black, 0.87),
+    ),
+);
+
+// Define App Theme
+$ge-app-primary: mat.define-palette($gfbio-darkblue);
+$ge-app-accent: mat.define-palette($gfbio-green, A200, A100, A400);
+$ge-app-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object (a Sass map containing all of the palettes).
+$ge-app-theme: mat.define-light-theme($ge-app-primary, $ge-app-accent, $ge-app-warn);
+
+// Apply Angular Material Mixin to Color Theme
+@include mat.all-component-themes($ge-app-theme);

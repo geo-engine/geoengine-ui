@@ -1,0 +1,54 @@
+<ge-sidenav-header>Temporal Raster Aggregation</ge-sidenav-header>
+
+<ge-dialog-help>
+    <p>
+        This operator aggregates the input raster time series over a specified tumbling window. You can specify an optional window reference
+        as an anchor point for the aggregation windows. You can find more information at
+        <a href="https://docs.geoengine.io/operators/temporalrasteraggregation.html">docs.geoengine.io</a>.
+    </p>
+</ge-dialog-help>
+
+<form [formGroup]="form" (ngSubmit)="add()" fxLayout="column">
+    <div fxFlex>
+        <ge-layer-selection [types]="inputTypes" formControlName="layer"></ge-layer-selection>
+        <ge-dialog-section-heading title="Config" subtitle="Specify the aggregation"></ge-dialog-section-heading>
+
+        <mat-form-field>
+            <mat-select placeholder="Aggregation Type" formControlName="aggregation">
+                <mat-option *ngFor="let aggregation of aggregations" [value]="aggregation">{{ aggregation }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-select placeholder="Time Granularity" formControlName="granularity">
+                <mat-option *ngFor="let granularity of timeGranularityOptions" [value]="granularity">{{ granularity }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+            <input matInput type="number" placeholder="Window Size" formControlName="windowSize" />
+        </mat-form-field>
+
+        <div>
+            <mat-checkbox formControlName="windowReferenceChecked">Specify a custom point in time for the aggregation window</mat-checkbox>
+            <ge-time-input
+                *ngIf="(form.controls.windowReferenceChecked.valueChanges | async) === true"
+                formControlName="windowReference"
+            ></ge-time-input>
+        </div>
+
+        <mat-checkbox formControlName="ignoreNoData">Ignore No Data</mat-checkbox>
+
+        <ge-operator-output-name
+            formControlName="name"
+            [suggestion]="'Temporal Aggregation of ' + (form.controls.layer.valueChanges | async)?.name"
+        >
+            <mat-hint align="end" class="error" *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace">
+                The name must be non-empty.
+            </mat-hint>
+        </ge-operator-output-name>
+    </div>
+    <div class="actions">
+        <button type="submit" mat-raised-button color="primary" [disabled]="disallowSubmit | async">Create</button>
+    </div>
+</form>

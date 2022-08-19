@@ -1,0 +1,18 @@
+{
+    "extends": "../../.eslintrc.json",
+    "ignorePatterns": ["!**/*"],
+    "overrides": [
+        {
+            "files": ["*.ts"],
+            "parserOptions": {
+                "project": ["projects/wave/tsconfig.app.json", "projects/wave/tsconfig.spec.json", "projects/wave/e2e/tsconfig.json"],
+                "createDefaultProgram": true
+            },
+            "rules": {}
+        },
+        {
+            "files": ["*.html"],
+            "rules": {}
+        }
+    ]
+}

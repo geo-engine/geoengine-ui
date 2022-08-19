@@ -1,0 +1,22 @@
+{
+    "extends": "../../.eslintrc.json",
+    "ignorePatterns": ["!**/*"],
+    "overrides": [
+        {
+            "files": ["*.ts"],
+            "parserOptions": {
+                "project": [
+                    "projects/data-atlas/tsconfig.app.json",
+                    "projects/data-atlas/tsconfig.spec.json",
+                    "projects/data-atlas/e2e/tsconfig.json"
+                ],
+                "createDefaultProgram": true
+            },
+            "rules": {}
+        },
+        {
+            "files": ["*.html"],
+            "rules": {}
+        }
+    ]
+}

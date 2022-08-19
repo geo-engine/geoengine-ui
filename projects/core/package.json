@@ -1,0 +1,38 @@
+{
+    "name": "@geoengine/core",
+    "version": "0.2.11",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/geo-engine/geoengine-ui.git"
+    },
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com/"
+    },
+    "peerDependencies": {
+        "@angular/animations": "~12.1.4",
+        "@angular/cdk": "~12.1.4",
+        "@angular/common": "~12.1.4",
+        "@angular/compiler": "~12.1.4",
+        "@angular/core": "~12.1.4",
+        "@angular/flex-layout": "~12.0.0-beta.34",
+        "@angular/forms": "~12.1.4",
+        "@angular/material": "~12.1.4",
+        "@angular/platform-browser": "~12.1.4",
+        "@angular/platform-browser-dynamic": "~12.1.4",
+        "@angular/router": "~12.1.4",
+        "codemirror": "~5.63.3",
+        "d3": "~7.1.1",
+        "dagre": "~0.8.5",
+        "dagre-d3": "~0.6.4",
+        "immutable": "~4.0.0",
+        "moment": "~2.29.1",
+        "ngx-color-picker": "~11.0.0",
+        "ol": "~6.9.0",
+        "proj4": "~2.7.5",
+        "rxjs": "~6.6.3",
+        "vega": "~5.21.0",
+        "vega-embed": "~6.19.1",
+        "vega-lite": "~5.1.0",
+        "zone.js": "~0.11.4"
+    }
+}

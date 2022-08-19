@@ -1,0 +1,19 @@
+:host {
+    display: list-item;
+    padding: 1rem;
+}
+mat-card {
+    padding: 0;
+}
+.actions {
+    text-align: right;
+    padding-top: 1rem;
+}
+.deleteIcon {
+    transform: scale(0.75);
+}
+.no-notifications {
+    color: var(--ge-foreground-secondary-text-color, grey);
+    margin-top: 50%;
+    text-align: center;
+}

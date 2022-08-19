@@ -1,0 +1,48 @@
+<div class="sidenav mat-elevation-z4">
+    <mat-toolbar color="primary" class="mat-elevation-z1">
+        <mat-toolbar-row>
+            <div fxFlex></div>
+            <a href="https://www.nfdi4biodiversity.org"><img src="assets/logos/nfdi4biodiversity.png" alt="NFDI4BioDiversity" /></a>
+            <p class="mat-title">Portaldemonstrator</p>
+            <div fxFlex></div>
+        </mat-toolbar-row>
+    </mat-toolbar>
+    <ng-template [cdkPortalOutlet]="datasetPortal"></ng-template>
+</div>
+
+<div id="top-float-buttons">
+    <ge-zoom-handles (zoomIn)="map.zoomIn()" (zoomOut)="map.zoomOut()" class="mat-elevation-z4"></ge-zoom-handles>
+</div>
+
+<ge-legend *ngIf="dataSelectionService.rasterLayer | async as rasterLayer" [layer]="rasterLayer"></ge-legend>
+
+<div class="mid-container" [style.height.px]="windowHeight$ | async">
+    <ge-map-container #map [grid]="false">
+        <ng-container *ngIf="userService.getSessionTokenStream() | async as sessionToken">
+            <ng-template ngFor let-layer [ngForOf]="layersReverse$ | async" [ngForTrackBy]="idFromLayer">
+                <ng-template [ngIf]="layer.layerType === 'vector'">
+                    <ge-ol-vector-layer
+                        [layerId]="layer.id"
+                        [workflow]="layer.workflowId"
+                        [symbology]="$any(layer.symbology)"
+                        [isVisible]="layer.isVisible"
+                        (mapRedraw)="map.layerForcesRedraw()"
+                    ></ge-ol-vector-layer>
+                </ng-template>
+                <ng-template [ngIf]="layer.layerType === 'raster'">
+                    <ge-ol-raster-layer
+                        [layerId]="layer.id"
+                        [workflow]="layer.workflowId"
+                        [symbology]="$any(layer.symbology)"
+                        [isVisible]="layer.isVisible"
+                        [sessionToken]="sessionToken"
+                        (mapRedraw)="map.layerForcesRedraw()"
+                    ></ge-ol-raster-layer>
+                </ng-template>
+            </ng-template>
+        </ng-container>
+    </ge-map-container>
+</div>
+
+<!-- TODO: fix layout service to work without sidenav -->
+<mat-sidenav></mat-sidenav>

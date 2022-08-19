@@ -1,0 +1,9 @@
+<ge-sidenav-header>{{ repositoryName }}</ge-sidenav-header>
+
+<cdk-virtual-scroll-viewport [itemSize]="itemSizePx" (scrolledIndexChange)="onScrolledIndexChange($event)">
+    <mat-nav-list>
+        <ge-dataset *cdkVirtualFor="let dataset of datasetSource; trackBy: trackById" [dataset]="dataset"></ge-dataset>
+    </mat-nav-list>
+
+    <mat-spinner [diameter]="loadingSpinnerDiameterPx" *ngIf="datasetSource?.loading$ | async"></mat-spinner>
+</cdk-virtual-scroll-viewport>

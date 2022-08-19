@@ -1,0 +1,11 @@
+<ge-sidenav-header>Load Project</ge-sidenav-header>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault(); load()" fxLayout="column">
+    <mat-radio-group formControlName="projectId" *ngIf="(loading$ | async) === false" fxFlex>
+        <mat-radio-button *ngFor="let projectListing of projects$ | async" [value]="projectListing.id">
+            {{ projectListing.name }}
+            {{ projectListing.id === currentProjectId ? ' (current)' : '' }}
+        </mat-radio-button>
+    </mat-radio-group>
+    <button mat-raised-button color="primary" type="submit" [disabled]="(form.statusChanges | async) !== 'VALID'">Load</button>
+</form>
+<mat-progress-spinner mode="indeterminate" *ngIf="loading$ | async"></mat-progress-spinner>

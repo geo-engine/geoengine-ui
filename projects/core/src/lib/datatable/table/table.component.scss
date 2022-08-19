@@ -1,0 +1,24 @@
+#table-container {
+    overflow: auto;
+    background-color: var(--ge-card-background-color);
+
+    height: calc(100% - 56px);
+}
+
+table {
+    width: 100%;
+
+    ::ng-deep thead tr {
+        height: 3rem !important;
+    }
+
+    ::ng-deep tbody tr {
+        height: 2rem !important;
+    }
+}
+
+.no-data-row {
+    text-align: center;
+    font-style: italic;
+    color: var(--ge-foreground-secondary-text-color);
+}

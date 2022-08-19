@@ -1,0 +1,58 @@
+<ge-sidenav-header>Time Config</ge-sidenav-header>
+
+<mat-accordion multi="true">
+    <mat-expansion-panel expanded="true">
+        <mat-expansion-panel-header>
+            <mat-panel-title>Display Time</mat-panel-title>
+            <mat-panel-description>Specify a time selection for the current data</mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <form [formGroup]="timeForm" (ngSubmit)="$event.preventDefault(); applyTime()">
+            <h3 class="mat-subheading-2" *ngIf="config.TIME.ALLOW_RANGES">Start</h3>
+
+            <ge-time-input formControlName="start"></ge-time-input>
+
+            <ng-template [ngIf]="config.TIME.ALLOW_RANGES">
+                <h3 class="mat-subheading-2" fxLayout="row" fxLayoutAlign="space-between center">
+                    End
+                    <mat-slide-toggle #timeAsPoint formControlName="timeAsPoint" class="mat-subheading-1">same as start</mat-slide-toggle>
+                </h3>
+
+                <ge-time-input formControlName="end" [isDisabled]="timeAsPoint.checked"></ge-time-input>
+            </ng-template>
+
+            <mat-action-row class="actions" fxLayout="row" fxLayoutAlign="end">
+                <span class="error" *ngIf="!timeForm.valid">Start must be before End.</span>
+                <button mat-raised-button (click)="reset()" [disabled]="isNotResettable()">Reset</button>
+                <button mat-raised-button color="primary" type="submit" [disabled]="timeForm.invalid">Apply</button>
+            </mat-action-row>
+        </form>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel expanded="true">
+        <mat-expansion-panel-header>
+            <mat-panel-title>Time Step</mat-panel-title>
+            <mat-panel-description>Specify a time step for the time component on top of the map</mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <mat-form-field>
+            <mat-select
+                placeholder="Time step"
+                [ngModel]="timeStepDuration$ | async"
+                (ngModelChange)="updateTimeStepDuration($event)"
+                [compareWith]="timeStepComparator"
+            >
+                <mat-option *ngFor="let timeStepDuration of timeStepDurations" [value]="timeStepDuration">
+                    {{ timeStepDuration.durationAmount }} {{ timeStepDuration.durationUnit }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel expanded="true">
+        <mat-expansion-panel-header>
+            <mat-panel-title>Time Slider</mat-panel-title>
+        </mat-expansion-panel-header>
+        <ge-time-slider [height]="150"></ge-time-slider>
+    </mat-expansion-panel>
+</mat-accordion>

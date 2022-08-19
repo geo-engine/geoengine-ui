@@ -1,0 +1,29 @@
+<div fxLayout="row">
+    <ge-dialog-section-heading [title]="title" [subtitle]="subtitle"></ge-dialog-section-heading>
+    <div fxFlex fxLayout="row" fxLayoutAlign="end">
+        <button mat-button color="primary" type="button" (click)="add()" *ngIf="max - min > 0" [disabled]="layersAtMax | async">
+            <mat-icon>add_circle_outline</mat-icon>
+        </button>
+        <button mat-button color="primary" type="button" (click)="remove()" *ngIf="max - min > 0" [disabled]="layersAtMin | async">
+            <mat-icon>remove_circle_outline</mat-icon>
+        </button>
+    </div>
+</div>
+<div *ngIf="hasLayers | async; else noInputAvailable" fxLayout="column">
+    <mat-form-field *ngFor="let number of [].constructor(this.selectedLayers.value.length); let i = index">
+        <mat-label>{{ inputNaming(i) }}</mat-label>
+        <mat-select
+            class="mat-select-{{ i }}"
+            [(value)]="selectedLayers.value[i]"
+            (selectionChange)="updateLayer(i, $event.value)"
+            (onBlur)="onBlur()"
+        >
+            <mat-option class="mat-option-{{ i }}" *ngFor="let layer of filteredLayers | async" [value]="layer">{{
+                layer.name
+            }}</mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+<ng-template #noInputAvailable>
+    <p>No Input Available</p>
+</ng-template>

@@ -1,0 +1,7 @@
+p {
+    color: var(--ge-foreground-secondary-text-color, grey);
+}
+
+mat-list-item ::ng-deep .highlight {
+    color: var(--ge-accent-color, grey);
+}

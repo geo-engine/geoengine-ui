@@ -1,0 +1,41 @@
+<ge-sidenav-header>Temporal Raster Mean Plot</ge-sidenav-header>
+
+<ge-dialog-help>
+    <p>
+        This operator generates a <i>Temporal Raster Mean Plot</i> based on a raster dataset (<i>Input</i>). Select the
+        <i>Time Tick Position</i>, which specifies the position of the x-axis ticks, e.g. at the the time start, end or center of the
+        raster's validity. The plot shows an area chart of the mean pixel values (y-axis) of the rasters. The x-axis displays the
+        timestamps. <i>Fill area under curve</i> allows modifying whether to fill the area under the curve. Edit the <i>Output Name</i> of
+        the plot, if desired, and click on <i>Create</i> to generate the plot.
+    </p>
+    <p>
+        Note: Plots change dynamically with the map view and include only pixels or features, which are located in this area. For the
+        display it is recommended to select a time interval and not a single point in time.
+    </p>
+</ge-dialog-help>
+
+<form [formGroup]="form" (ngSubmit)="add()" fxLayout="column">
+    <div fxFlex>
+        <ge-layer-selection [types]="inputTypes" formControlName="layer"></ge-layer-selection>
+        <ge-dialog-section-heading title="Config" subtitle="Specify the Histogram"></ge-dialog-section-heading>
+        <mat-form-field>
+            <mat-select placeholder="Time Tick Position" formControlName="timePosition">
+                <mat-option *ngFor="let timePosition of timePositionOptions" [value]="timePosition.value">{{
+                    timePosition.label
+                }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-checkbox formControlName="area">Fill area under curve</mat-checkbox>
+        <ge-operator-output-name
+            formControlName="name"
+            [suggestion]="'Temporal Raster Mean Plot of ' + (form.controls.layer.valueChanges | async)?.name"
+        >
+            <mat-hint align="end" class="error" *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace">
+                The name must be non-empty.
+            </mat-hint>
+        </ge-operator-output-name>
+    </div>
+    <div class="actions">
+        <button type="submit" mat-raised-button color="primary" [disabled]="disallowSubmit | async">Create</button>
+    </div>
+</form>

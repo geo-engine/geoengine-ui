@@ -1,0 +1,24 @@
+@use '@angular/material' as mat;
+@import 'app-theme';
+
+:root {
+    --ge-primary-color: #{mat.get-color-from-palette($ge-app-primary)};
+    --ge-accent-color: #{mat.get-color-from-palette($ge-app-accent)};
+    --ge-warn-color: #{mat.get-color-from-palette($ge-app-warn)};
+
+    --ge-faded-accent-color: #{mat.get-color-from-palette($ge-app-accent, 0.32)};
+
+    --ge-foreground-text-color: #{mat.get-color-from-palette(map-get($ge-app-theme, foreground), text)};
+    --ge-foreground-secondary-text-color: #{mat.get-color-from-palette(map-get($ge-app-theme, foreground), secondary-text)};
+
+    --ge-background-color: #{map-get(map-get($ge-app-theme, background), background)};
+    --ge-background-hover-color: #{mat.get-color-from-palette(map-get($ge-app-theme, background), hover)};
+    --ge-card-background-color: #{map-get(map-get($ge-app-theme, background), card)};
+
+    font-family: Roboto, 'Helvetica Neue', sans-serif;
+    font-size: 16px;
+}
+
+a {
+    color: mat.get-color-from-palette(map-get($ge-app-theme, foreground), secondary-text);
+}

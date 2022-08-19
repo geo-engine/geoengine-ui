@@ -1,0 +1,20 @@
+<ge-dialog-header>{{ plot.name }}</ge-dialog-header>
+<mat-dialog-content [ngSwitch]="plotData?.outputFormat">
+    <ng-template ngSwitchCase="ImagePng">
+        <img [src]="plotData?.data" [alt]="plot.name" />
+        <mat-progress-bar mode="indeterminate" *ngIf="plotLoading$ | async"></mat-progress-bar>
+    </ng-template>
+    <ng-template ngSwitchCase="JsonPlain">
+        <pre>{{ plotData?.data | json }}</pre>
+    </ng-template>
+    <ng-template ngSwitchCase="JsonVega">
+        <ng-container *ngIf="maxWidth$ | async as maxWidth">
+            <ng-container *ngIf="maxHeight$ | async as maxHeight">
+                <ge-vega-viewer [chartData]="plotData?.data" [width]="maxWidth" [height]="maxHeight"></ge-vega-viewer>
+            </ng-container>
+        </ng-container>
+    </ng-template>
+    <ng-template ngSwitchDefault>
+        <pre>{{ plotData?.data }}</pre>
+    </ng-template>
+</mat-dialog-content>

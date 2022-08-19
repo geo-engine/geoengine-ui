@@ -1,0 +1,41 @@
+<ge-sidenav-header>Feature Attribute over Time Plot</ge-sidenav-header>
+
+<ge-dialog-help>
+    <p>
+        This operator generates a <i>Multi Line Chart</i> that shows the values of a selected <i>Value Attribute</i> over time. The plot
+        contains one line for each feature. Specify an <i>Id Attribute</i> to identify the individual features.
+    </p>
+    <p>Note: Plots change dynamically with the map view and include only pixels or features, which are located in this area.</p>
+</ge-dialog-help>
+
+<form [formGroup]="form" (ngSubmit)="add()" fxLayout="column">
+    <div fxFlex class="container">
+        <ge-layer-selection [types]="inputTypes" formControlName="layer"></ge-layer-selection>
+
+        <ng-container *ngIf="attributes$ | async as attributes">
+            <mat-form-field appearance="fill">
+                <mat-select placeholder="Id Attribute" formControlName="idAttribute">
+                    <mat-option *ngFor="let attribute of attributes.id" [value]="attribute">{{ attribute }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+                <mat-select placeholder="Value Attribute" formControlName="valueAttribute">
+                    <mat-option *ngFor="let attribute of attributes.value" [value]="attribute">{{ attribute }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </ng-container>
+
+        <ge-operator-output-name
+            formControlName="name"
+            [suggestion]="'Feature Attribute Plot of ' + (form.controls.layer.valueChanges | async)?.name"
+        >
+            <mat-hint align="end" class="error" *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace">
+                The name must be non-empty.
+            </mat-hint>
+        </ge-operator-output-name>
+    </div>
+    <div class="actions">
+        <button type="submit" mat-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">Create</button>
+    </div>
+</form>
