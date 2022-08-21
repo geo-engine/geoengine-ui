@@ -19,7 +19,6 @@ interface ExpressionForm {
     expression: FormControl<string>;
     dataType: FormControl<RasterDataType | undefined>;
     name: FormControl<string>;
-    noDataValue: FormControl<string>;
     mapNoData: FormControl<boolean>;
 }
 
@@ -71,10 +70,6 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
             name: new FormControl('Expression', {
                 nonNullable: true,
                 validators: [Validators.required, WaveValidators.notOnlyWhitespace],
-            }),
-            noDataValue: new FormControl('0', {
-                nonNullable: true,
-                validators: [this.validateNoData],
             }),
             mapNoData: new FormControl(false, {
                 nonNullable: true,
@@ -141,7 +136,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
             }),
         );
 
-        this.fnSignature = this.rasterVariables$.pipe(map((vars: string[]) => `fn(${vars.join(', ')}, out_nodata) {`));
+        this.fnSignature = this.rasterVariables$.pipe(map((vars: string[]) => `fn(${vars.join(', ')}) {`));
 
         this.projectHasRasterLayers$ = this.projectService
             .getLayerStream()
@@ -208,18 +203,10 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         const dataType: RasterDataType | undefined = this.form.controls['dataType'].value;
         const expression: string = this.form.controls['expression'].value;
         const rasterLayers: Array<RasterLayer> | undefined = this.form.controls['rasterLayers'].value;
-        const noDataValueString: string = this.form.controls['noDataValue'].value;
         const mapNoData: boolean = this.form.controls['mapNoData'].value;
 
         if (!dataType || !rasterLayers) {
             return; // checked by form validator
-        }
-
-        let outputNoDataValue: number | 'nan';
-        if (isNaN(parseFloat(noDataValueString))) {
-            outputNoDataValue = 'nan';
-        } else {
-            outputNoDataValue = parseFloat(noDataValueString);
         }
 
         const sourceOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers(rasterLayers);
@@ -234,7 +221,6 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                             params: {
                                 expression,
                                 outputType: dataType.getCode(),
-                                outputNoDataValue,
                                 // TODO: make this configurable once units exist again
                                 // outputMeasurement: undefined,
                                 mapNoData,
