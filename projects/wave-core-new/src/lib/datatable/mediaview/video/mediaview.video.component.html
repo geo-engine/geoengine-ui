@@ -1,0 +1,21 @@
+<wave-dialog-header>Mediaview</wave-dialog-header>
+<mat-dialog-content class="videoContainer">
+    <div>
+        <video #video [src]="videoURLs[currentVideo]" [controls]="true" [autoplay]="autoPlay" (ended)="nextVideo()"></video>
+    </div>
+    <div class="info">
+        <h3 matTooltip="{{ videoURLs[currentVideo] }}">{{ videoURLs[currentVideo] }}</h3>
+    </div>
+    <!-- <wave-mediaview-playlist [tracks]="videoURLs" [currentTrack]="currentVideo" (gotoTrack)="goToVideo($event)"></wave-mediaview-playlist> -->
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button *ngIf="videoURLs.length > 1" mat-fab color="primary" (click)="previousVideo()" class="previous" [title]="'previous video'">
+        <mat-icon class="mat-24">chevron_left</mat-icon>
+    </button>
+
+    <button *ngIf="videoURLs.length > 1" mat-fab color="primary" (click)="nextVideo()" class="next" [title]="'next video'">
+        <mat-icon class="mat-24">chevron_right</mat-icon>
+    </button>
+
+    <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

@@ -130,6 +130,10 @@ import {LayerCollectionNavigationComponent} from './layer-collections/layer-coll
 import {ClassHistogramOperatorComponent} from './operators/dialogs/class-histogram-operator/class-histogram-operator.component';
 import {ColumnRangeFilterComponent} from './operators/dialogs/column-range-filter/column-range-filter.component';
 import {DialogSplashCheckboxComponent} from './dialogs/dialog-splash-checkbox/dialog-splash-checkbox.component';
+import {MediaviewComponent} from './datatable/mediaview/mediaview.component';
+import {MediaviewAudioComponent} from './datatable/mediaview/audio/mediaview.audio.component';
+import {MediaviewImageComponent} from './datatable/mediaview/image/mediaview.image.component';
+import {MediaviewVideoComponent} from './datatable/mediaview/video/mediaview.video.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -222,6 +226,10 @@ const WAVE_COMPONENTS = [
     LoginComponent,
     MapContainerComponent,
     MeanRasterPixelValuesOverTimeDialogComponent,
+    MediaviewComponent,
+    MediaviewAudioComponent,
+    MediaviewImageComponent,
+    MediaviewVideoComponent,
     ModalLoginComponent,
     MultiLayerSelectionComponent,
     NavigationComponent,
