@@ -1,7 +1,7 @@
 import {Layer, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {WaveValidators} from '../../../util/form.validators';
@@ -25,7 +25,7 @@ import {VectorColumnDataTypes} from '../../datatype.model';
 export class ScatterplotOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
     inputTypes = ResultTypes.VECTOR_TYPES;
 
-    form: FormGroup;
+    form: UntypedFormGroup;
 
     attributes$ = new ReplaySubject<Array<string>>(1);
 
@@ -37,7 +37,7 @@ export class ScatterplotOperatorComponent implements OnInit, AfterViewInit, OnDe
     constructor(
         private readonly projectService: ProjectService,
         private readonly notificationService: NotificationService,
-        private readonly formBuilder: FormBuilder,
+        private readonly formBuilder: UntypedFormBuilder,
     ) {
         const layerControl = this.formBuilder.control(undefined, Validators.required);
         this.form = this.formBuilder.group({

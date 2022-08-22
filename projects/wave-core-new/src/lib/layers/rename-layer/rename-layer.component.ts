@@ -1,5 +1,5 @@
 import {Component, OnInit, ChangeDetectionStrategy, Inject} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {Layer} from '../layer.model';
 import {ProjectService} from '../../project/project.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
@@ -11,13 +11,13 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RenameLayerComponent implements OnInit {
-    form: FormGroup;
+    form: UntypedFormGroup;
 
     private layer?: Layer;
 
     constructor(
         private projectService: ProjectService,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private dialogRef: MatDialogRef<RenameLayerComponent>,
         @Inject(MAT_DIALOG_DATA) private config: {layer?: Layer},
     ) {

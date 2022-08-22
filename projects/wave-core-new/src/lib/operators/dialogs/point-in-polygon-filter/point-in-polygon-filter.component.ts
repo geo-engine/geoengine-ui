@@ -3,7 +3,7 @@ import {RandomColorService} from '../../../util/services/random-color.service';
 import {Layer, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {ClusteredPointSymbology, PointSymbology} from '../../../layers/symbology/symbology.model';
-import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {UntypedFormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
 import {WaveValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap} from 'rxjs/operators';
@@ -23,9 +23,13 @@ import {PointInPolygonFilterDict} from '../../../backend/operator.model';
 export class PointInPolygonFilterOperatorComponent {
     ResultTypes = ResultTypes;
 
-    form: FormGroup;
+    form: UntypedFormGroup;
 
-    constructor(private randomColorService: RandomColorService, private projectService: ProjectService, private formBuilder: FormBuilder) {
+    constructor(
+        private randomColorService: RandomColorService,
+        private projectService: ProjectService,
+        private formBuilder: UntypedFormBuilder,
+    ) {
         this.form = formBuilder.group({
             name: ['Filtered Values', [Validators.required, WaveValidators.notOnlyWhitespace]],
             pointLayer: [undefined, Validators.required],

@@ -1,7 +1,7 @@
 import {BehaviorSubject, zip} from 'rxjs';
 import {first, mergeMap} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
-import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {UntypedFormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
 import {ProjectService} from '../project.service';
 import {NotificationService} from '../../notification.service';
 import {NamedSpatialReference, SpatialReferenceSpecification} from '../../spatial-references/spatial-reference.model';
@@ -18,12 +18,12 @@ import {extentToBboxDict} from '../../util/conversions';
 export class NewProjectComponent implements OnInit, AfterViewInit {
     spatialReferenceOptions: Array<NamedSpatialReference>;
 
-    form: FormGroup;
+    form: UntypedFormGroup;
 
     created$ = new BehaviorSubject(false);
 
     constructor(
-        protected formBuilder: FormBuilder,
+        protected formBuilder: UntypedFormBuilder,
         protected projectService: ProjectService,
         protected notificationService: NotificationService,
         protected spatialReferenceService: SpatialReferenceService,

@@ -1,6 +1,6 @@
 import {Component, OnInit, ChangeDetectionStrategy, OnDestroy} from '@angular/core';
 import {ResultTypes} from '../../result-type.model';
-import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap} from 'rxjs/operators';
@@ -24,7 +24,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
 
     attributes$ = new ReplaySubject<Array<string>>(1);
 
-    form: FormGroup;
+    form: UntypedFormGroup;
 
     attributeError = false;
     errorHint = 'default error';
@@ -34,7 +34,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
 
     constructor(
         private readonly projectService: ProjectService,
-        private readonly formBuilder: FormBuilder,
+        private readonly formBuilder: UntypedFormBuilder,
         private randomColorService: RandomColorService,
     ) {
         this.form = this.formBuilder.group({
@@ -74,11 +74,11 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     }
 
     //control over filters
-    get filters(): FormArray {
-        return this.form.get('filters') as FormArray;
+    get filters(): UntypedFormArray {
+        return this.form.get('filters') as UntypedFormArray;
     }
 
-    newFilter(): FormGroup {
+    newFilter(): UntypedFormGroup {
         return this.formBuilder.group({
             attribute: '',
             ranges: this.formBuilder.array([]),
@@ -95,11 +95,11 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     }
 
     //control over the ranges
-    ranges(filterIndex: number): FormArray {
-        return this.filters.at(filterIndex).get('ranges') as FormArray;
+    ranges(filterIndex: number): UntypedFormArray {
+        return this.filters.at(filterIndex).get('ranges') as UntypedFormArray;
     }
 
-    newRange(): FormGroup {
+    newRange(): UntypedFormGroup {
         return this.formBuilder.group({
             min: '',
             max: '',

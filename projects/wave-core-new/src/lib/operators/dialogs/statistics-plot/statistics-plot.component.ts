@@ -1,5 +1,5 @@
 import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy, OnInit} from '@angular/core';
-import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {UntypedFormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
 
 import {ProjectService} from '../../../project/project.service';
 import {WaveValidators} from '../../../util/form.validators';
@@ -23,11 +23,11 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
 
     readonly subscriptions: Array<Subscription> = [];
 
-    form: FormGroup;
+    form: UntypedFormGroup;
     outputNameSuggestion: Observable<string>;
 
     constructor(
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private projectService: ProjectService,
         private notificationService: NotificationService,
     ) {
