@@ -2,7 +2,7 @@
     <mat-card-header>
         <mat-icon mat-card-avatar>{{ icon }}</mat-icon>
         <mat-card-title>{{ dataset.name }}</mat-card-title>
-        <mat-card-subtitle> {{ dataset.properties[0][1] }}</mat-card-subtitle>
+        <mat-card-subtitle> {{ dataset.properties[0] ? dataset.properties[0][1] : 'no author information available' }}</mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content>
