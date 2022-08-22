@@ -24,6 +24,7 @@ import OlGeometry from 'ol/geom/Geometry';
 import OlPolygon from 'ol/geom/Polygon';
 import {MatDialog} from '@angular/material/dialog';
 import {FullDisplayComponent} from './full-display/full-display.component';
+import {MediaviewComponent} from '../mediaview/mediaview.component';
 
 @Component({
     selector: 'wave-datatable',
@@ -43,6 +44,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     dataSource = new FeatureDataSource();
     displayedColumns: Array<string> = [];
     featureColumns: Array<string> = [];
+    colTypes: Array<string> = [];
 
     protected layerDataSubscription?: Subscription = undefined;
     protected selectedFeatureSubscription?: Subscription = undefined;
@@ -123,6 +125,9 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         this.featureColumns = metadata.dataTypes.keySeq().toArray();
         this.displayedColumns = ['_____select', '_____coordinates', '_____table__start', '_____table__end'].concat(this.featureColumns);
         this.dataSource.data = data.data;
+        // TODO rethink where to do the calculating colum type
+        this.colTypes = this.calculateColumnProperties();
+        // console.log('processVectorLayer: TODO rethink where to do the calculating colum type', this.colTypes);
         setTimeout(() => this.navigatePage(this.projectService.getSelectedFeature()));
     }
 
@@ -236,6 +241,59 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
                 break;
             }
         }
+    }
+
+    /**
+     * Tests for the contents of the sample-data to predict the content type of each column
+     * @returns {Array} an array with the predicted content types
+     */
+    private calculateColumnProperties(): string[] {
+        let headCount = this.featureColumns.length;
+        let types = [];
+
+        for (let column = 0; column < headCount; column++) {
+            let columnType;
+
+            columnType = 'text';
+
+            for (let row = 0; row < this.dataSource.data.length; row++) {
+                // Normal Table Rows
+                let tmp = this.dataSource.data[row].get(this.featureColumns[column]);
+
+                if (typeof tmp === 'string' && tmp !== '') {
+                    let urls = tmp.split(/(,)/g);
+
+                    let mediaCount = [0, 0, 0];
+                    let nonUrlsString = '';
+
+                    for (let u in urls) {
+                        if (urls.hasOwnProperty(u)) {
+                            let mediaType = MediaviewComponent.getType(urls[u]);
+
+                            if (mediaType !== '') {
+                                if (mediaType === 'text') {
+                                    nonUrlsString += urls[u] + ' ';
+                                } else {
+                                    if (mediaType === 'image') {
+                                        mediaCount[0] += 1;
+                                    } else if (mediaType === 'audio') {
+                                        mediaCount[1] += 1;
+                                    } else if (mediaType === 'video') {
+                                        mediaCount[2] += 1;
+                                    }
+
+                                    columnType = 'media';
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            // Types
+            types[column] = columnType;
+        }
+
+        return types;
     }
 }
 
