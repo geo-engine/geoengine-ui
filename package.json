@@ -95,7 +95,7 @@
         "@types/ol": "^6.5.3",
         "@types/proj4": "^2.5.2",
         "@typescript-eslint/eslint-plugin": "~5.33.1",
-        "@typescript-eslint/parser": "~5.33.1",
+        "@typescript-eslint/parser": "~5.34.0",
         "eslint": "^8.22.0",
         "eslint-config-prettier": "^8.5.0",
         "eslint-plugin-import": "2.26.0",
