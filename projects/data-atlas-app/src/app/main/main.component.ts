@@ -73,7 +73,7 @@ export class MainComponent implements OnInit, AfterViewInit {
         this.layersReverse$ = this.dataSelectionService.layers;
 
         this.layerCollectionService
-            .getLayerCollectionItems('1690c483-b17f-4d98-95c8-00a64849cd0b', '{"Path":{"path":"."}}')
+            .getLayerCollectionItems('1690c483-b17f-4d98-95c8-00a64849cd0b', '{"type":"path","path":"."}')
             .subscribe((items) => {
                 const collections = [];
                 for (const item of items) {
