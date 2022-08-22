@@ -2,8 +2,8 @@
 # TODO: use only wildcard once it works
 status = [
     # "build %",
-    "build (12.x)",
     "build (14.x)",
+    "build (16.x)",
     "Code Format and Lints",
 ]
 
