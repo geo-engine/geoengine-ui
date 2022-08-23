@@ -1,3 +1,7 @@
 .portal-outlet {
     height: calc(100% - 36px);
 }
+
+.breadcrumb:hover {
+    text-decoration: underline;
+}

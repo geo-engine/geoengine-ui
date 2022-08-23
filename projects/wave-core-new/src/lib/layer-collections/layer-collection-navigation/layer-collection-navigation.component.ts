@@ -19,7 +19,7 @@ export class LayerCollectionNavigationComponent {
 
     selectedPortal!: Portal<any>;
 
-    constructor(private readonly breadCrumbService: LayerCollectionBreadcrumbsService) {
+    constructor() {
         this.setPortal(undefined);
     }
 
@@ -63,24 +63,15 @@ export class LayerCollectionNavigationComponent {
             const currentTrail = this.allTrails[this.selectedCollection];
             this.displayedTrail = currentTrail;
             const lastId = currentTrail[currentTrail.length - 1];
-
-            this.logAll();
             this.setPortal(lastId);
         }
     }
 
     onBreadCrumbClick(index: number) {
-        console.log('Clicked Breadcrumb with index:' + index);
         const newTrail = this.allTrails[index].map((x) => Object.assign({}, x));
         this.allTrails.push(newTrail);
-        this.logAll();
+        this.selectedCollection = this.allTrails.length - 2;
         this.forward();
-
-        // this.selectedCollection = index;
-        // const currentTrail = this.allTrails[this.selectedCollection];
-        // this.displayedTrail = currentTrail;
-        // const lastId = currentTrail[currentTrail.length - 1];
-        // this.setPortal(lastId);
     }
 
     logAll(): void {

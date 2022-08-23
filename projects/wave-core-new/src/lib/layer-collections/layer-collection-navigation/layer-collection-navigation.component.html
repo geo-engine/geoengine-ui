@@ -1,5 +1,7 @@
-<span (click)="navigateToRoot()">Root</span>
-<span *ngFor="let item of displayedTrail; let i = index" [attr.data-index]="i" (click)="onBreadCrumbClick(i)"> > {{ item.name }}</span>
+<!-- <span (click)="navigateToRoot()">Root</span> -->
+<span class="breadcrumb" *ngFor="let item of displayedTrail; let i = index" [attr.data-index]="i" (click)="onBreadCrumbClick(i)">
+    > {{ item.name }}</span
+>
 <br />
 <wave-sidenav-header>Layer Collection</wave-sidenav-header>
 <button mat-button (click)="back()" matTooltip="Navigate Back" matTooltipPosition="after">
