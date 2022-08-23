@@ -44,6 +44,7 @@ import {
 } from '../../layers/symbology/symbology.model';
 import {colorToDict} from '../../colors/color';
 import {RandomColorService} from '../../util/services/random-color.service';
+import {LayerCollectionBreadcrumbsService} from '../layer-collections-breadcrumb-service/layer-collection-breadcrumbs.service';
 
 export interface LayerCollectionListConfig {
     id?: ProviderLayerCollectionIdDict;
@@ -80,6 +81,7 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
         private readonly notificationService: NotificationService,
         private readonly randomColorService: RandomColorService,
         private readonly changeDetectorRef: ChangeDetectorRef,
+        private readonly breadCrumbService: LayerCollectionBreadcrumbsService,
     ) {
         this.collection = data.id;
         this.selectListener = data.selectListener;
@@ -131,6 +133,8 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
             this.addLayer(layer.id);
         }
     }
+
+    navigateToRoot(): void {}
 
     protected calculateInitialNumberOfElements(): number {
         const element = this.viewport.elementRef.nativeElement;

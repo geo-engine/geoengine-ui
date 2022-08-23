@@ -1,7 +1,8 @@
 import {ComponentPortal, Portal} from '@angular/cdk/portal';
 import {Component, ChangeDetectionStrategy, Injector} from '@angular/core';
-import {LayerCollectionItemDict} from '../../backend/backend.model';
+import {LayerCollectionItemDict, ProviderLayerCollectionIdDict} from '../../backend/backend.model';
 import {CONTEXT_TOKEN, LayerCollectionListComponent} from '../layer-collection-list/layer-collection-list.component';
+import {LayerCollectionBreadcrumbsService} from '../layer-collections-breadcrumb-service/layer-collection-breadcrumbs.service';
 
 @Component({
     selector: 'wave-layer-collection-navigation',
@@ -16,7 +17,7 @@ export class LayerCollectionNavigationComponent {
 
     selectedPortal!: Portal<any>;
 
-    constructor() {
+    constructor(private readonly breadCrumbService: LayerCollectionBreadcrumbsService) {
         this.setPortal(undefined);
     }
 
