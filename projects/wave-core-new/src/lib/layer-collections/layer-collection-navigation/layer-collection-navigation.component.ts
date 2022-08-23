@@ -12,6 +12,8 @@ import {LayerCollectionBreadcrumbsService} from '../layer-collections-breadcrumb
 })
 export class LayerCollectionNavigationComponent {
     collections: Array<LayerCollectionItemDict> = [];
+    allTrails: Array<Array<LayerCollectionItemDict>> = [];
+    displayedTrail: Array<LayerCollectionItemDict> = [];
 
     selectedCollection = 0;
 
@@ -26,26 +28,66 @@ export class LayerCollectionNavigationComponent {
         this.collections.push(id);
         this.selectedCollection += 1;
 
+        // handle array of arrays
+        let clone = this.collections.map((x) => Object.assign({}, x)); // ???
+        this.allTrails = this.allTrails.slice(0, this.selectedCollection);
+        this.allTrails.push(clone);
+        this.displayedTrail = this.allTrails[this.selectedCollection];
+
+        this.logAll();
         this.setPortal(id);
     }
 
     back(): void {
         if (this.selectedCollection > 0) {
             this.selectedCollection -= 1;
-            const id = this.collections[this.selectedCollection];
-            console.log(id);
+            // const id = this.collections[this.selectedCollection];
 
-            this.setPortal(id);
+            // Getting the right id from all Trails
+            const currentTrail = this.allTrails[this.selectedCollection];
+            this.displayedTrail = currentTrail;
+            const lastId = currentTrail[currentTrail.length - 1];
+
+            this.logAll();
+            this.setPortal(lastId);
         }
     }
 
     forward(): void {
-        if (this.selectedCollection < this.collections.length - 1) {
+        if (this.selectedCollection < this.allTrails.length - 1) {
             this.selectedCollection += 1;
-            const id = this.collections[this.selectedCollection];
+            // const id = this.collections[this.selectedCollection];
 
-            this.setPortal(id);
+            // Getting the right id from all Trails
+            const currentTrail = this.allTrails[this.selectedCollection];
+            this.displayedTrail = currentTrail;
+            const lastId = currentTrail[currentTrail.length - 1];
+
+            this.logAll();
+            this.setPortal(lastId);
         }
+    }
+
+    onBreadCrumbClick(index: number) {
+        console.log(index);
+        const newTrail = this.allTrails[index].map((x) => Object.assign({}, x));
+        this.allTrails.push(newTrail);
+        this.logAll();
+        this.forward();
+
+        // this.selectedCollection = index;
+        // const currentTrail = this.allTrails[this.selectedCollection];
+        // this.displayedTrail = currentTrail;
+        // const lastId = currentTrail[currentTrail.length - 1];
+        // this.setPortal(lastId);
+    }
+
+    logAll(): void {
+        console.log('Now selected collection:' + this.selectedCollection);
+        console.log('All trails:');
+        console.log(this.allTrails);
+        console.log('collections (old):');
+        console.log(this.collections);
     }
 
     navigateToRoot(): void {
