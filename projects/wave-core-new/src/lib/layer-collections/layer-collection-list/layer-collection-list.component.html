@@ -1,6 +1,3 @@
-Breadcrumbs<br />
-<span (click)="navigateToRoot()">Root</span>
-<br />
 <cdk-virtual-scroll-viewport [itemSize]="itemSizePx" (scrolledIndexChange)="onScrolledIndexChange($event)">
     <mat-nav-list>
         <div *cdkVirtualFor="let item of source; trackBy: trackById">

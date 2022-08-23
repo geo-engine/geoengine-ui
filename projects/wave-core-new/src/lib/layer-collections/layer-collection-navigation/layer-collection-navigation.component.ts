@@ -1,5 +1,5 @@
 import {ComponentPortal, Portal} from '@angular/cdk/portal';
-import {Component, ChangeDetectionStrategy, Injector} from '@angular/core';
+import {Component, ChangeDetectionStrategy, Injector, Provider} from '@angular/core';
 import {LayerCollectionItemDict, ProviderLayerCollectionIdDict} from '../../backend/backend.model';
 import {CONTEXT_TOKEN, LayerCollectionListComponent} from '../layer-collection-list/layer-collection-list.component';
 import {LayerCollectionBreadcrumbsService} from '../layer-collections-breadcrumb-service/layer-collection-breadcrumbs.service';
@@ -33,6 +33,7 @@ export class LayerCollectionNavigationComponent {
         if (this.selectedCollection > 0) {
             this.selectedCollection -= 1;
             const id = this.collections[this.selectedCollection];
+            console.log(id);
 
             this.setPortal(id);
         }
@@ -47,11 +48,16 @@ export class LayerCollectionNavigationComponent {
         }
     }
 
-    private setPortal(id?: LayerCollectionItemDict): void {
-        this.selectedPortal = new ComponentPortal(LayerCollectionListComponent, null, this.createInjector(id));
+    navigateToRoot(): void {
+        console.log('To root');
     }
 
-    private createInjector(id?: LayerCollectionItemDict): Injector {
+    private setPortal(id?: LayerCollectionItemDict): void {
+        const providerLayer = id?.id as ProviderLayerCollectionIdDict;
+        this.selectedPortal = new ComponentPortal(LayerCollectionListComponent, null, this.createInjector(providerLayer));
+    }
+
+    private createInjector(id?: ProviderLayerCollectionIdDict): Injector {
         return Injector.create({
             providers: [
                 {
