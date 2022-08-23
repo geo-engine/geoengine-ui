@@ -15,7 +15,7 @@ export class LayerCollectionNavigationComponent {
     allTrails: Array<Array<LayerCollectionItemDict>> = [];
     displayedTrail: Array<LayerCollectionItemDict> = [];
 
-    selectedCollection = 0;
+    selectedCollection = -1; // the selected trail
 
     selectedPortal!: Portal<any>;
 
@@ -24,7 +24,8 @@ export class LayerCollectionNavigationComponent {
     }
 
     selectCollection(id: LayerCollectionItemDict): void {
-        this.collections = this.collections.splice(0, this.selectedCollection + 1);
+        // this.collections = this.collections.splice(0, this.selectedCollection + 1);
+        this.collections = this.collections.splice(0, this.displayedTrail.length);
         this.collections.push(id);
         this.selectedCollection += 1;
 
@@ -69,7 +70,7 @@ export class LayerCollectionNavigationComponent {
     }
 
     onBreadCrumbClick(index: number) {
-        console.log(index);
+        console.log('Clicked Breadcrumb with index:' + index);
         const newTrail = this.allTrails[index].map((x) => Object.assign({}, x));
         this.allTrails.push(newTrail);
         this.logAll();
@@ -83,11 +84,11 @@ export class LayerCollectionNavigationComponent {
     }
 
     logAll(): void {
+        console.log('=============');
         console.log('Now selected collection:' + this.selectedCollection);
-        console.log('All trails:');
-        console.log(this.allTrails);
-        console.log('collections (old):');
-        console.log(this.collections);
+        console.log('Trail length: ' + this.displayedTrail.length);
+        console.log('Collection length:' + this.collections.length);
+        console.log('Alltrails length:' + this.allTrails.length);
     }
 
     navigateToRoot(): void {
