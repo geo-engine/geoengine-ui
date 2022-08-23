@@ -1,4 +1,5 @@
 <span (click)="navigateToRoot()">Root</span>
+<span *ngFor="let item of collections"> > {{ item.name }}</span>
 <br />
 <wave-sidenav-header>Layer Collection</wave-sidenav-header>
 <button mat-button (click)="back()" matTooltip="Navigate Back" matTooltipPosition="after" [disabled]="selectedCollection === 0">

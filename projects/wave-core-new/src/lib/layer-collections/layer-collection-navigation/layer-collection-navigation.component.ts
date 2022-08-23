@@ -11,7 +11,7 @@ import {LayerCollectionBreadcrumbsService} from '../layer-collections-breadcrumb
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerCollectionNavigationComponent {
-    collections: Array<LayerCollectionItemDict | undefined> = [undefined];
+    collections: Array<LayerCollectionItemDict> = [];
 
     selectedCollection = 0;
 
