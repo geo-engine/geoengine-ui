@@ -1,7 +1,5 @@
 import {Component, Input, OnChanges, ChangeDetectionStrategy} from '@angular/core';
-import {MediaviewImageComponent} from './image/mediaview.image.component';
-import {MediaviewAudioComponent} from './audio/mediaview.audio.component';
-import {MediaviewVideoComponent} from './video/mediaview.video.component';
+import {MediaviewDialogComponent} from './dialog/mediaview.dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 
 @Component({
@@ -95,7 +93,7 @@ export class MediaviewComponent implements OnChanges {
      */
     ngOnChanges() {
         if (this.type === 'media') {
-            console.log('onchanges', this.url);
+            // console.log('onchanges', this.url);
             this.urls = this.url.split(',');
             this.mediaType = new Array(this.urls.length);
 
@@ -140,13 +138,13 @@ export class MediaviewComponent implements OnChanges {
      * @param imageID the ID of the first image to be shown
      */
     public openImageMediaview(imageID: number) {
-        const mediaDialogref = this.mediadialog.open(MediaviewImageComponent, {
+        const mediaDialogref = this.mediadialog.open(MediaviewDialogComponent, {
             disableClose: true,
-            data: {imageURLs: this.imageUrls, currentImage: imageID},
+            data: {mediaURLs: this.imageUrls, currentMedia: imageID, mediaType: 'image'},
         });
-        this.mediadialog.afterAllClosed.subscribe((result) => {
-            console.log('dialog closed', mediaDialogref);
-        });
+        // this.mediadialog.afterAllClosed.subscribe((result) => {
+        //     console.log('dialog closed', mediaDialogref);
+        // });
     }
 
     /**
@@ -154,13 +152,13 @@ export class MediaviewComponent implements OnChanges {
      * @param audioID the ID of the first audio-file to be played
      */
     public openAudioMediaview(audioID: number) {
-        const mediaDialogref = this.mediadialog.open(MediaviewAudioComponent, {
+        const mediaDialogref = this.mediadialog.open(MediaviewDialogComponent, {
             disableClose: true,
-            data: {audioURLs: this.audioUrls, currentAudio: audioID},
+            data: {mediaURLs: this.audioUrls, currentMedia: audioID, mediaType: 'audio'},
         });
-        this.mediadialog.afterAllClosed.subscribe((result) => {
-            console.log('dialog closed', mediaDialogref);
-        });
+        // this.mediadialog.afterAllClosed.subscribe((result) => {
+        //     console.log('dialog closed', mediaDialogref);
+        // });
     }
 
     /**
@@ -168,12 +166,12 @@ export class MediaviewComponent implements OnChanges {
      * @param videoID the ID of the first video to be played
      */
     public openVideoMediaview(videoID: number) {
-        const mediaDialogref = this.mediadialog.open(MediaviewVideoComponent, {
+        const mediaDialogref = this.mediadialog.open(MediaviewDialogComponent, {
             disableClose: true,
-            data: {videoURLs: this.videoUrls, currentVideo: videoID},
+            data: {mediaURLs: this.videoUrls, currentMedia: videoID, mediaType: 'video'},
         });
-        this.mediadialog.afterAllClosed.subscribe((result) => {
-            console.log('dialog closed', mediaDialogref);
-        });
+        // this.mediadialog.afterAllClosed.subscribe((result) => {
+        //     console.log('dialog closed', mediaDialogref);
+        // });
     }
 }

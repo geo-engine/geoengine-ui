@@ -131,9 +131,7 @@ import {ClassHistogramOperatorComponent} from './operators/dialogs/class-histogr
 import {ColumnRangeFilterComponent} from './operators/dialogs/column-range-filter/column-range-filter.component';
 import {DialogSplashCheckboxComponent} from './dialogs/dialog-splash-checkbox/dialog-splash-checkbox.component';
 import {MediaviewComponent} from './datatable/mediaview/mediaview.component';
-import {MediaviewAudioComponent} from './datatable/mediaview/audio/mediaview.audio.component';
-import {MediaviewImageComponent} from './datatable/mediaview/image/mediaview.image.component';
-import {MediaviewVideoComponent} from './datatable/mediaview/video/mediaview.video.component';
+import {MediaviewDialogComponent} from './datatable/mediaview/dialog/mediaview.dialog.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -227,9 +225,7 @@ const WAVE_COMPONENTS = [
     MapContainerComponent,
     MeanRasterPixelValuesOverTimeDialogComponent,
     MediaviewComponent,
-    MediaviewAudioComponent,
-    MediaviewImageComponent,
-    MediaviewVideoComponent,
+    MediaviewDialogComponent,
     ModalLoginComponent,
     MultiLayerSelectionComponent,
     NavigationComponent,
