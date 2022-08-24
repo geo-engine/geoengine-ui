@@ -1,21 +1,12 @@
-$mat-icon-button-size: 40px !default; // TODO: import when this is possible again
-$mat-fab-size: 56px !default; // TODO: import when this is possible again
-
 .mediaContainer {
     position: relative;
     width: 100%;
     height: 100%;
-
-    mat-dialog-content {
-        width: calc(100% - 2rem);
-        margin-top: 20rem;
-        margin: 1rem;
-        padding: 0;
-    }
+    top: 2rem;
 
     img {
-        width: 80%;
-        height: auto;
+        width: 100%;
+        height: 100%;
         display: block;
     }
 
@@ -31,38 +22,16 @@ $mat-fab-size: 56px !default; // TODO: import when this is possible again
         display: block;
     }
 
-    .loading {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        background: fade_out(#ffffff, 0.5);
-
-        .spinner {
-            position: relative;
-            top: calc(50% - 50px);
-            left: calc(50% - 50px);
-        }
-    }
-
     .info {
-        margin-bottom: calc(1rem + #{$mat-fab-size});
         width: 100%;
         float: left;
 
-        h3 {
+        h4 {
             float: left;
             margin: 1rem;
-            width: calc(100% - 4rem - #{$mat-icon-button-size});
             overflow: hidden;
             text-overflow: ellipsis;
             word-break: keep-all;
-        }
-
-        .externalLink {
-            float: right;
-            margin: 1rem;
         }
     }
 
@@ -77,3 +46,6 @@ $mat-fab-size: 56px !default; // TODO: import when this is possible again
         }
     }
 }
+
+
+

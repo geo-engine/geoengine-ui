@@ -1,34 +1,29 @@
-<wave-dialog-header>Mediaview</wave-dialog-header>
+<wave-dialog-header>{{ mediaDialogHeader }}</wave-dialog-header>
+
 <mat-dialog-content class="mediaContainer">
-    <div *ngIf="mediaType == 'image'">
-        <img [src]="mediaURLs[currentMedia]" (load)="mediaLoaded()" [alt]="mediaURLs[currentMedia]" />
-        <div *ngIf="loading" class="loading">
-            <div class="spinner">
-                <mat-spinner color="primary"></mat-spinner>
-            </div>
-        </div>
+    <div *ngIf="mediaTypes[currentMedia] == 'image'">
+        <img [src]="mediaURLs[currentMedia]" [alt]="mediaURLs[currentMedia]" />
     </div>
-    <div *ngIf="mediaType == 'audio'">
-        <!-- <audio [src]="audioURLs[currentAudio]" [controls]="true" [autoplay]="autoPlay" (ended)="nextAudio()"></audio> -->
-        <audio [src]="mediaURLs[currentMedia]" (load)="mediaLoaded()" [controls]="true" (ended)="nextMedia()"></audio>
+    <div *ngIf="mediaTypes[currentMedia] == 'audio'">
+        <audio [src]="mediaURLs[currentMedia]" [controls]="true" (ended)="nextMedia()"></audio>
     </div>
-    <div *ngIf="mediaType == 'video'">
-        <!-- <video #video [src]="videoURLs[currentVideo]" [controls]="true" [autoplay]="autoPlay" (ended)="nextVideo()"></video> -->
-        <video #video [src]="mediaURLs[currentMedia]" (load)="mediaLoaded()" [controls]="true" (ended)="nextMedia()"></video>
+    <div *ngIf="mediaTypes[currentMedia] == 'video'">
+        <video #video [src]="mediaURLs[currentMedia]" [controls]="true" (ended)="nextMedia()"></video>
+    </div>
+    <div class="info">
+        <h4 matTooltip="{{ mediaURLs[currentMedia] }}">{{ mediaNames[currentMedia] }}</h4>
     </div>
 
-    <div class="info">
-        <h3 matTooltip="{{ mediaURLs[currentMedia] }}">{{ mediaURLs[currentMedia] }}</h3>
-    </div>
+    <wave-mediaview-playlist [tracks]="mediaNames" [currentTrack]="currentMedia" (onGotoMedia)="goToMedia($event)">
+    </wave-mediaview-playlist>
 </mat-dialog-content>
-<mat-dialog-actions>
-    <button *ngIf="mediaURLs.length > 1" mat-fab (click)="previousMedia()" [title]="'previous'">
+
+<mat-dialog-actions align="end">
+    <button *ngIf="mediaURLs.length > 1" mat-fab color="primary" matTooltip="Previous" (click)="previousMedia()" [title]="'previous'">
         <mat-icon class="mat-24">chevron_left</mat-icon>
     </button>
 
-    <button *ngIf="mediaURLs.length > 1" mat-fab (click)="nextMedia()" [title]="'next'">
+    <button *ngIf="mediaURLs.length > 1" mat-fab color="primary" matTooltip="Next" (click)="nextMedia()" [title]="'next'">
         <mat-icon class="mat-24">chevron_right</mat-icon>
     </button>
-
-    <!-- <button mat-button mat-dialog-close>Close</button> -->
 </mat-dialog-actions>

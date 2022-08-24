@@ -125,9 +125,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         this.featureColumns = metadata.dataTypes.keySeq().toArray();
         this.displayedColumns = ['_____select', '_____coordinates', '_____table__start', '_____table__end'].concat(this.featureColumns);
         this.dataSource.data = data.data;
-        // TODO rethink where to do the calculating colum type
-        this.colTypes = this.calculateColumnProperties();
-        // console.log('processVectorLayer: TODO rethink where to do the calculating colum type', this.colTypes);
+        this.colTypes = this.getColumnProperties();
         setTimeout(() => this.navigatePage(this.projectService.getSelectedFeature()));
     }
 
@@ -244,47 +242,25 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     }
 
     /**
-     * Tests for the contents of the sample-data to predict the content type of each column
-     * @returns {Array} an array with the predicted content types
+     * Tests and gets the content type of each column of the data source.
+     *
+     * @returns {Array} an array with the content types ('text' or 'media')
      */
-    private calculateColumnProperties(): string[] {
+    private getColumnProperties(): string[] {
         let headCount = this.featureColumns.length;
-        let types = [];
+        let types: Array<string> = [];
 
         for (let column = 0; column < headCount; column++) {
-            let columnType;
-
-            columnType = 'text';
-
+            let columnType = 'text';
             for (let row = 0; row < this.dataSource.data.length; row++) {
-                // Normal Table Rows
                 let tmp = this.dataSource.data[row].get(this.featureColumns[column]);
-
                 if (typeof tmp === 'string' && tmp !== '') {
-                    let urls = tmp.split(/(,)/g);
-
-                    let mediaCount = [0, 0, 0];
-                    let nonUrlsString = '';
-
-                    for (let u in urls) {
-                        if (urls.hasOwnProperty(u)) {
-                            let mediaType = MediaviewComponent.getType(urls[u]);
-
-                            if (mediaType !== '') {
-                                if (mediaType === 'text') {
-                                    nonUrlsString += urls[u] + ' ';
-                                } else {
-                                    if (mediaType === 'image') {
-                                        mediaCount[0] += 1;
-                                    } else if (mediaType === 'audio') {
-                                        mediaCount[1] += 1;
-                                    } else if (mediaType === 'video') {
-                                        mediaCount[2] += 1;
-                                    }
-
-                                    columnType = 'media';
-                                }
-                            }
+                    let tmpUrls = tmp.split(/(,)/g);
+                    for (let tmpUrl of tmpUrls) {
+                        let mediaType = MediaviewComponent.getType(tmpUrl);
+                        if (mediaType !== '' && mediaType !== 'text') {
+                            columnType = 'media';
+                            break;
                         }
                     }
                 }
@@ -292,7 +268,6 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
             // Types
             types[column] = columnType;
         }
-
         return types;
     }
 }

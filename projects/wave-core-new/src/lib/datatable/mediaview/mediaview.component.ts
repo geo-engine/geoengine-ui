@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, ChangeDetectionStrategy} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {MediaviewDialogComponent} from './dialog/mediaview.dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 
@@ -11,16 +11,13 @@ import {MatDialog} from '@angular/material/dialog';
 
 /**
  * Dialog-Component
- * Checks the file-type of the comma-separated urls given as input-argument and sets up links to open dialogs.
- * The dialogs will show the images or play the audios or videos
+ * Checks the file-type of the comma-separated urls given as input-argument and sets up links to open a dialog.
+ * The dialog will show the images or play the audios or videos.
  */
-export class MediaviewComponent implements OnChanges {
+export class MediaviewComponent implements OnInit {
     private urls: Array<string> = [];
-    public mediaType: Array<string> = [];
-    public imageUrls: Array<string> = [];
-    public audioUrls: Array<string> = [];
-    public videoUrls: Array<string> = [];
-    public textNoUrls: Array<string> = [];
+    mediaType: Array<string> = [];
+    mediaUrls: Array<string> = [];
 
     /**
      * Input: A List of comma-separated urls to images, audio-files and videos
@@ -28,150 +25,76 @@ export class MediaviewComponent implements OnChanges {
     @Input() url: any;
 
     /**
-     * Input: Type of the audio urls (text, media or none)
+     * Input: Type of the urls (text, media or none)
      */
     @Input() type!: string;
 
     /**
-     * Extracts the type (image, audio, video) of a given file-url
+     * Extracts the type (image, audio, video) of a given file-url string
      * @param value url containing the filename with file-ending
      * @returns {string} the type of the file or an empty string if there is no file-ending
      */
     public static getType(value: string): string {
         let ret: string;
+        if (!value || value === '') return (ret = '');
+        let fileSplits = value.split('.') ?? [];
+        if (fileSplits.length <= 1) return (ret = '');
+        let fileEnding = fileSplits.pop()?.toLowerCase() ?? '';
+        const imageArray = ['jpg', 'jpeg', 'gif', 'png', 'svg', 'bmp'];
+        const audioArray = ['wav', 'mp3', 'ogg', 'aac'];
+        const videoArray = ['webm', 'mp4', 'ogv'];
 
-        if (value !== '') {
-            let dotSplits = value.split('.');
+        imageArray.includes(fileEnding)
+            ? (ret = 'image')
+            : audioArray.includes(fileEnding)
+            ? (ret = 'audio')
+            : videoArray.includes(fileEnding)
+            ? (ret = 'video')
+            : (ret = 'text');
 
-            if (dotSplits.length > 1) {
-                let fileEnding = dotSplits[dotSplits.length - 1].toLowerCase();
-
-                switch (fileEnding) {
-                    // Image
-                    case 'jpg':
-                    case 'jpeg':
-                    case 'gif':
-                    case 'png':
-                    case 'svg':
-                    case 'bmp':
-                        ret = 'image';
-                        break;
-
-                    // Audio
-                    case 'wav':
-                    case 'mp3':
-                    case 'ogg':
-                    case 'aac':
-                        ret = 'audio';
-                        break;
-
-                    // Video
-                    case 'mp4':
-                    case 'webm':
-                    case 'ogv':
-                        ret = 'video';
-                        break;
-
-                    // None
-                    default:
-                        ret = 'text';
-                }
-            } else {
-                ret = 'text';
-            }
-        } else {
-            ret = '';
-        }
         return ret;
     }
 
     constructor(private readonly mediadialog: MatDialog) {}
 
     /**
-     * OnChange
-     * Calculates the file-type of the comma-separated urls given as input-argument
+     * OnInit
+     * Gets the urls and file-types of the comma-separated urls given as input-argument
      */
-    ngOnChanges() {
+    ngOnInit() {
         if (this.type === 'media') {
-            // console.log('onchanges', this.url);
             this.urls = this.url.split(',');
             this.mediaType = new Array(this.urls.length);
-
-            this.imageUrls = [];
-            this.audioUrls = [];
-            this.videoUrls = [];
-            this.textNoUrls = [];
+            this.mediaUrls = [];
 
             for (let i in this.urls) {
                 if (this.urls.hasOwnProperty(i)) {
                     this.mediaType[i] = MediaviewComponent.getType(this.urls[i]);
-                    // console.log(this.mediaType[i]);
-
                     if (this.mediaType[i] !== '') {
                         this.urls[i] = this.urls[i].trim();
                     }
-
-                    if (this.mediaType[i] === 'image') {
-                        this.imageUrls.push(this.urls[i]);
-                    } else if (this.mediaType[i] === 'audio') {
-                        this.audioUrls.push(this.urls[i]);
-                    } else if (this.mediaType[i] === 'video') {
-                        this.videoUrls.push(this.urls[i]);
-                    } else {
-                        this.textNoUrls.push(this.urls[i]);
-                    }
+                    this.mediaUrls.push(this.urls[i]);
                 }
             }
         } else {
             this.urls = [this.url.toString()];
             this.mediaType = [''];
-
-            this.imageUrls = [];
-            this.audioUrls = [];
-            this.videoUrls = [];
-            this.textNoUrls = [this.url.toString()];
+            this.mediaUrls = [this.url.toString()];
         }
     }
 
-    /**
-     * Opens the images in the sidenav
-     * @param imageID the ID of the first image to be shown
-     */
-    public openImageMediaview(imageID: number) {
-        const mediaDialogref = this.mediadialog.open(MediaviewDialogComponent, {
-            disableClose: true,
-            data: {mediaURLs: this.imageUrls, currentMedia: imageID, mediaType: 'image'},
-        });
-        // this.mediadialog.afterAllClosed.subscribe((result) => {
-        //     console.log('dialog closed', mediaDialogref);
-        // });
+    get media(): string {
+        return this.mediaType[0] ?? '';
     }
 
     /**
-     * Opens the audio-files in the sidenav
-     * @param audioID the ID of the first audio-file to be played
+     * Opens the media in a new dialog window
+     * @param mediaID the ID of the first media
      */
-    public openAudioMediaview(audioID: number) {
+    public openMediaviewDialog(mediaID: number) {
         const mediaDialogref = this.mediadialog.open(MediaviewDialogComponent, {
             disableClose: true,
-            data: {mediaURLs: this.audioUrls, currentMedia: audioID, mediaType: 'audio'},
+            data: {mediaURLs: this.mediaUrls, currentMedia: mediaID, mediaTypes: this.mediaType},
         });
-        // this.mediadialog.afterAllClosed.subscribe((result) => {
-        //     console.log('dialog closed', mediaDialogref);
-        // });
-    }
-
-    /**
-     * Opens the videos in the sidenav
-     * @param videoID the ID of the first video to be played
-     */
-    public openVideoMediaview(videoID: number) {
-        const mediaDialogref = this.mediadialog.open(MediaviewDialogComponent, {
-            disableClose: true,
-            data: {mediaURLs: this.videoUrls, currentMedia: videoID, mediaType: 'video'},
-        });
-        // this.mediadialog.afterAllClosed.subscribe((result) => {
-        //     console.log('dialog closed', mediaDialogref);
-        // });
     }
 }

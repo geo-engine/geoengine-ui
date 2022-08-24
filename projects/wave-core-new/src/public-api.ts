@@ -102,6 +102,7 @@ export * from './lib/operators/dialogs/column-range-filter/column-range-filter.c
 export * from './lib/dialogs/dialog-splash-checkbox/dialog-splash-checkbox.component';
 export * from './lib/datatable/mediaview/mediaview.component';
 export * from './lib/datatable/mediaview/dialog/mediaview.dialog.component';
+export * from './lib/datatable/mediaview/playlist/mediaview.playlist.component';
 
 // Pipes
 export * from './lib/util/pipes/async-converters.pipe';

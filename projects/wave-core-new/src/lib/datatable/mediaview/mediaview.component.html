@@ -1,20 +1,9 @@
 <span>
-    <button mat-icon-button *ngIf="imageUrls.length > 0" (click)="openImageMediaview(0)">
-        <mat-icon class="mat-24">image</mat-icon>{{ imageUrls.length }} <ng-template [ngIf]="imageUrls.length == 1">image</ng-template
-        ><ng-template [ngIf]="imageUrls.length != 1">images</ng-template>
+    <button mat-icon-button *ngIf="mediaUrls.length > 0" (click)="openMediaviewDialog(0)">
+        <mat-icon color="primary" *ngIf="media == 'image'" class="mat-24">image</mat-icon>
+        <mat-icon color="primary" *ngIf="media == 'audio'" class="mat-24">music_video</mat-icon>
+        <mat-icon color="primary" *ngIf="media == 'video'" class="mat-24">movie</mat-icon>
+        {{ mediaUrls.length }} <ng-template [ngIf]="mediaUrls.length == 1">{{ media }}</ng-template
+        ><ng-template [ngIf]="mediaUrls.length != 1">{{ media }}s</ng-template>
     </button>
-    <button mat-icon-button *ngIf="audioUrls.length > 0" (click)="openAudioMediaview(0)">
-        <mat-icon class="mat-24">music_video</mat-icon>{{ audioUrls.length }}
-        <ng-template [ngIf]="audioUrls.length == 1">audio-file</ng-template>
-        <ng-template [ngIf]="audioUrls.length != 1">audio-files</ng-template>
-    </button>
-    <button mat-icon-button *ngIf="videoUrls.length > 0" (click)="openVideoMediaview(0)">
-        <mat-icon class="mat-24">movie</mat-icon>{{ videoUrls.length }} <ng-template [ngIf]="videoUrls.length == 1">video</ng-template
-        ><ng-template [ngIf]="videoUrls.length != 1">videos</ng-template>
-    </button>
-    <ng-template [ngIf]="textNoUrls.length > 0">
-        <ng-template ngFor let-u [ngForOf]="textNoUrls" let-i="index">
-            {{ u }}<ng-template [ngIf]="i < textNoUrls.length - 1">, </ng-template>
-        </ng-template>
-    </ng-template>
 </span>

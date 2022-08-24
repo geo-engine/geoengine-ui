@@ -132,6 +132,7 @@ import {ColumnRangeFilterComponent} from './operators/dialogs/column-range-filte
 import {DialogSplashCheckboxComponent} from './dialogs/dialog-splash-checkbox/dialog-splash-checkbox.component';
 import {MediaviewComponent} from './datatable/mediaview/mediaview.component';
 import {MediaviewDialogComponent} from './datatable/mediaview/dialog/mediaview.dialog.component';
+import {MediaviewPlaylistComponent} from './datatable/mediaview/playlist/mediaview.playlist.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -226,6 +227,7 @@ const WAVE_COMPONENTS = [
     MeanRasterPixelValuesOverTimeDialogComponent,
     MediaviewComponent,
     MediaviewDialogComponent,
+    MediaviewPlaylistComponent,
     ModalLoginComponent,
     MultiLayerSelectionComponent,
     NavigationComponent,

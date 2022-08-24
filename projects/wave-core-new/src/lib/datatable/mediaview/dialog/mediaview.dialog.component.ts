@@ -11,57 +11,58 @@ import {MAT_DIALOG_DATA} from '@angular/material/dialog';
  * Dialog-Media-Component
  * Is shown as a dialog-popup.
  * Displays a media-gallery. One media(image, audio, video) is shown at a time.
- * The component receives an array of urls to media files.
+ * The component receives an array of urls to media files, the first media and an array specifying the types of the media files.
  */
 export class MediaviewDialogComponent implements OnInit {
-    /**
-     * Input: An array of media-urls to display in the dialog
-     */
     mediaURLs: Array<string> = [];
 
-    /**
-     * Input: The index of the media to show first
-     */
     currentMedia!: number;
 
-    /**
-     * Input: The type of the media ('audio, image, video')
-     */
-    mediaType!: string;
+    mediaTypes: Array<string> = [];
 
-    public loading = true;
+    autoPlay!: boolean;
 
-    public autoPlay!: boolean;
-
-    constructor(@Inject(MAT_DIALOG_DATA) public data: {mediaURLs: string[]; currentMedia: number; mediaType: string}) {}
+    constructor(@Inject(MAT_DIALOG_DATA) public data: {mediaURLs: string[]; currentMedia: number; mediaTypes: string[]}) {}
 
     ngOnInit(): void {
         this.mediaURLs = this.data.mediaURLs;
         this.currentMedia = this.data.currentMedia;
-        this.mediaType = this.data.mediaType;
+        this.mediaTypes = this.data.mediaTypes;
+    }
+
+    get mediaNames() {
+        let mediaNames = new Array<string>();
+        for (let media of this.mediaURLs) {
+            mediaNames.push(media?.split('/').pop() ?? '');
+        }
+        return mediaNames;
+    }
+
+    get mediaDialogHeader() {
+        return (
+            this.mediaTypes[this.currentMedia]?.charAt(0).toUpperCase() +
+            this.mediaTypes[this.currentMedia]?.slice(1) +
+            ' ' +
+            (this.currentMedia + 1) +
+            ' of ' +
+            this.mediaURLs.length
+        );
     }
 
     /**
-     * Shows the next media in the list of media-urls
+     * Plays the media with the given id
+     * @param mediaID the ID auf the media-file
      */
-    public nextMedia() {
+    goToMedia(mediaID: number) {
+        this.currentMedia = mediaID;
+        this.autoPlay = true;
+    }
+
+    nextMedia() {
         this.currentMedia = (this.currentMedia + 1) % this.mediaURLs.length;
-        this.loading = true;
     }
 
-    /**
-     * Shows the previous media in the list of media-urls
-     */
-    public previousMedia() {
+    previousMedia() {
         this.currentMedia = this.currentMedia <= 0 ? this.mediaURLs.length - 1 : this.currentMedia - 1;
-        this.loading = true;
-    }
-
-    /**
-     * Called when the media has finished loading
-     * Updates the loading-variable (to hide the loading-spinner)
-     */
-    public mediaLoaded() {
-        this.loading = false;
     }
 }
