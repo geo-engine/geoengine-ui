@@ -1,20 +1,20 @@
 <wave-dialog-header>{{ mediaDialogHeader }}</wave-dialog-header>
 
 <mat-dialog-content class="mediaContainer">
-    <div *ngIf="mediaTypes[currentMedia] == 'image'">
+    <div *ngIf="mediaTypes[currentMedia] === 'image'">
         <img [src]="mediaURLs[currentMedia]" [alt]="mediaURLs[currentMedia]" />
     </div>
-    <div *ngIf="mediaTypes[currentMedia] == 'audio'">
+    <div *ngIf="mediaTypes[currentMedia] === 'audio'">
         <audio [src]="mediaURLs[currentMedia]" [controls]="true" (ended)="nextMedia()"></audio>
     </div>
-    <div *ngIf="mediaTypes[currentMedia] == 'video'">
+    <div *ngIf="mediaTypes[currentMedia] === 'video'">
         <video #video [src]="mediaURLs[currentMedia]" [controls]="true" (ended)="nextMedia()"></video>
     </div>
     <div class="info">
         <h4 matTooltip="{{ mediaURLs[currentMedia] }}">{{ mediaNames[currentMedia] }}</h4>
     </div>
 
-    <wave-mediaview-playlist [tracks]="mediaNames" [currentTrack]="currentMedia" (onGotoMedia)="goToMedia($event)">
+    <wave-mediaview-playlist [tracks]="mediaNames" [currentTrack]="currentMedia" (gotoMediaP)="goToMedia($event)">
     </wave-mediaview-playlist>
 </mat-dialog-content>
 

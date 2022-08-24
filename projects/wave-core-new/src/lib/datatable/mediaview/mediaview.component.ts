@@ -15,59 +15,51 @@ import {MatDialog} from '@angular/material/dialog';
  * The dialog will show the images or play the audios or videos.
  */
 export class MediaviewComponent implements OnInit {
-    private urls: Array<string> = [];
     mediaType: Array<string> = [];
     mediaUrls: Array<string> = [];
 
-    /**
-     * Input: A List of comma-separated urls to images, audio-files and videos
-     */
     @Input() url: any;
 
-    /**
-     * Input: Type of the urls (text, media or none)
-     */
     @Input() type!: string;
 
+    private urls: Array<string> = [];
+
+    constructor(private readonly mediadialog: MatDialog) {}
+
     /**
-     * Extracts the type (image, audio, video) of a given file-url string
-     * @param value url containing the filename with file-ending
-     * @returns {string} the type of the file or an empty string if there is no file-ending
+     * Extracts the type (image, audio, video) of a given file-url string.
      */
     public static getType(value: string): string {
         let ret: string;
         if (!value || value === '') return (ret = '');
-        let fileSplits = value.split('.') ?? [];
+        const fileSplits = value.split('.') ?? [];
         if (fileSplits.length <= 1) return (ret = '');
-        let fileEnding = fileSplits.pop()?.toLowerCase() ?? '';
+        const fileEnding = fileSplits.pop()?.toLowerCase() ?? '';
         const imageArray = ['jpg', 'jpeg', 'gif', 'png', 'svg', 'bmp'];
         const audioArray = ['wav', 'mp3', 'ogg', 'aac'];
         const videoArray = ['webm', 'mp4', 'ogv'];
 
-        imageArray.includes(fileEnding)
+        const isMediaFile = imageArray.includes(fileEnding)
             ? (ret = 'image')
             : audioArray.includes(fileEnding)
             ? (ret = 'audio')
             : videoArray.includes(fileEnding)
             ? (ret = 'video')
             : (ret = 'text');
-
+        if (!isMediaFile) ret = 'text';
         return ret;
     }
 
-    constructor(private readonly mediadialog: MatDialog) {}
-
     /**
-     * OnInit
-     * Gets the urls and file-types of the comma-separated urls given as input-argument
+     * Gets the urls and file-types of the comma-separated urls given as input-argument.
      */
-    ngOnInit() {
+    ngOnInit(): void {
         if (this.type === 'media') {
             this.urls = this.url.split(',');
             this.mediaType = new Array(this.urls.length);
             this.mediaUrls = [];
 
-            for (let i in this.urls) {
+            for (const i in this.urls) {
                 if (this.urls.hasOwnProperty(i)) {
                     this.mediaType[i] = MediaviewComponent.getType(this.urls[i]);
                     if (this.mediaType[i] !== '') {
@@ -88,11 +80,10 @@ export class MediaviewComponent implements OnInit {
     }
 
     /**
-     * Opens the media in a new dialog window
-     * @param mediaID the ID of the first media
+     * Opens the media in a new dialog window.
      */
-    public openMediaviewDialog(mediaID: number) {
-        const mediaDialogref = this.mediadialog.open(MediaviewDialogComponent, {
+    public openMediaviewDialog(mediaID: number): void {
+        this.mediadialog.open(MediaviewDialogComponent, {
             disableClose: true,
             data: {mediaURLs: this.mediaUrls, currentMedia: mediaID, mediaTypes: this.mediaType},
         });

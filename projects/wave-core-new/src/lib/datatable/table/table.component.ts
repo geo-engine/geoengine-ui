@@ -243,21 +243,18 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
 
     /**
      * Tests and gets the content type of each column of the data source.
-     *
-     * @returns {Array} an array with the content types ('text' or 'media')
      */
     private getColumnProperties(): string[] {
-        let headCount = this.featureColumns.length;
-        let types: Array<string> = [];
+        const types: Array<string> = [];
 
-        for (let column = 0; column < headCount; column++) {
+        for (let column = 0; column < this.featureColumns.length; column++) {
             let columnType = 'text';
-            for (let row = 0; row < this.dataSource.data.length; row++) {
-                let tmp = this.dataSource.data[row].get(this.featureColumns[column]);
+            for (const rowData of this.dataSource.data) {
+                const tmp = rowData.get(this.featureColumns[column]);
                 if (typeof tmp === 'string' && tmp !== '') {
-                    let tmpUrls = tmp.split(/(,)/g);
-                    for (let tmpUrl of tmpUrls) {
-                        let mediaType = MediaviewComponent.getType(tmpUrl);
+                    const tmpUrls = tmp.split(/(,)/g);
+                    for (const tmpUrl of tmpUrls) {
+                        const mediaType = MediaviewComponent.getType(tmpUrl);
                         if (mediaType !== '' && mediaType !== 'text') {
                             columnType = 'media';
                             break;
@@ -265,7 +262,6 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
                     }
                 }
             }
-            // Types
             types[column] = columnType;
         }
         return types;

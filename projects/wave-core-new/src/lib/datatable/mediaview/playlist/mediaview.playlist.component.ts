@@ -18,11 +18,10 @@ export class MediaviewPlaylistComponent {
 
     /**
      * Output: Emitted when a link in the playlist is clicked to change the track. The track-id of the track to play is emitted
-     * @type {EventEmitter}
      */
-    @Output() onGotoMedia: EventEmitter<number> = new EventEmitter();
+    @Output() gotoMediaP: EventEmitter<number> = new EventEmitter();
 
-    public goToMedia(trackID: number) {
-        this.onGotoMedia.emit(trackID);
+    public goToMedia(trackID: number): void {
+        this.gotoMediaP.emit(trackID);
     }
 }

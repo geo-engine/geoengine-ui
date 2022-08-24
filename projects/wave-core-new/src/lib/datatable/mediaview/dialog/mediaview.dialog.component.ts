@@ -30,15 +30,15 @@ export class MediaviewDialogComponent implements OnInit {
         this.mediaTypes = this.data.mediaTypes;
     }
 
-    get mediaNames() {
-        let mediaNames = new Array<string>();
-        for (let media of this.mediaURLs) {
+    get mediaNames(): Array<string> {
+        const mediaNames = new Array<string>();
+        for (const media of this.mediaURLs) {
             mediaNames.push(media?.split('/').pop() ?? '');
         }
         return mediaNames;
     }
 
-    get mediaDialogHeader() {
+    get mediaDialogHeader(): string {
         return (
             this.mediaTypes[this.currentMedia]?.charAt(0).toUpperCase() +
             this.mediaTypes[this.currentMedia]?.slice(1) +
@@ -50,19 +50,18 @@ export class MediaviewDialogComponent implements OnInit {
     }
 
     /**
-     * Plays the media with the given id
-     * @param mediaID the ID auf the media-file
+     * Plays the media with the given id.
      */
-    goToMedia(mediaID: number) {
+    goToMedia(mediaID: number): void {
         this.currentMedia = mediaID;
         this.autoPlay = true;
     }
 
-    nextMedia() {
+    nextMedia(): void {
         this.currentMedia = (this.currentMedia + 1) % this.mediaURLs.length;
     }
 
-    previousMedia() {
+    previousMedia(): void {
         this.currentMedia = this.currentMedia <= 0 ? this.mediaURLs.length - 1 : this.currentMedia - 1;
     }
 }
