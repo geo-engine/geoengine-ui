@@ -167,33 +167,6 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         }
     }
 
-    validateNoDataType(control: AbstractControl): ValidationErrors | null {
-        let valid = true;
-        const dataType = control.get('dataType')?.value;
-        const value = control.get('noDataValue')?.value;
-        const floatValue = parseFloat(value);
-
-        if (dataType == null || floatValue == null) {
-            return {
-                error: true,
-            };
-        }
-
-        if (!isNaN(floatValue)) {
-            valid = dataType.getMin() <= floatValue && floatValue <= dataType.getMax();
-        } else {
-            valid = value.toLowerCase() === 'nan' && (dataType === RasterDataTypes.Float32 || dataType === RasterDataTypes.Float64);
-        }
-
-        if (valid) {
-            return null;
-        } else {
-            return {
-                error: true,
-            };
-        }
-    }
-
     /**
      * Uses the user input and creates a new expression operator.
      * The resulting layer is added to the map.
