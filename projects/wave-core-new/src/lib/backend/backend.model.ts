@@ -532,7 +532,7 @@ export interface ProviderLayerCollectionIdDict {
     collectionId: string;
 }
 
-export interface LayerCollectionDict extends LayerCollectionItemDict {
+export interface LayerCollectionListingDict extends LayerCollectionItemDict {
     type: 'collection';
     id: ProviderLayerCollectionIdDict;
     entryLabel: string;
@@ -554,4 +554,11 @@ export interface LayerDict {
     metadata: {
         [key: string]: string;
     };
+}
+
+export interface LayerCollectionDict {
+    id: UUID;
+    name: string;
+    description: string;
+    items: LayerCollectionItemDict[];
 }

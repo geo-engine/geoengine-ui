@@ -1,6 +1,6 @@
 import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, Input, EventEmitter, Output} from '@angular/core';
 import {
-    LayerCollectionDict,
+    LayerCollectionListingDict,
     LayerCollectionItemDict,
     ProviderLayerCollectionIdDict,
     ProviderLayerIdDict,
@@ -20,6 +20,7 @@ export class LayerCollectionDropdownComponent implements OnInit {
 
     @Output() layerSelected = new EventEmitter<ProviderLayerIdDict>();
 
+    // TODO: rework
     readonly items: Array<Array<LayerCollectionItemDict>> = [];
     readonly labels: Array<string> = [];
     readonly descriptions: Array<string> = [];
@@ -33,8 +34,8 @@ export class LayerCollectionDropdownComponent implements OnInit {
         if (this.root) {
             this.layerCollectionService
                 .getLayerCollectionItems(this.root.providerId, this.root.collectionId, 0, 9999)
-                .subscribe((items) => {
-                    this.items.push(items);
+                .subscribe((collection) => {
+                    this.items.push(collection.items);
                     this.labels.push(this.rootLabel);
                     this.descriptions.push('');
                     this.properties.push([]);
@@ -44,8 +45,8 @@ export class LayerCollectionDropdownComponent implements OnInit {
                     this.changeDetectorRef.markForCheck();
                 });
         } else {
-            this.layerCollectionService.getRootLayerCollectionItems(0, 9999).subscribe((items) => {
-                this.items.push(items);
+            this.layerCollectionService.getRootLayerCollectionItems(0, 9999).subscribe((collection) => {
+                this.items.push(collection.items);
                 this.labels.push(this.rootLabel);
                 this.descriptions.push('');
                 this.properties.push([]);
@@ -87,13 +88,13 @@ export class LayerCollectionDropdownComponent implements OnInit {
             return;
         }
 
-        const collection = item as LayerCollectionDict;
+        const collection = item as LayerCollectionListingDict;
         const label = collection.entryLabel ?? collection.name;
 
         this.layerCollectionService
             .getLayerCollectionItems(collection.id.providerId, collection.id.collectionId, 0, 9999)
-            .subscribe((items) => {
-                this.items.push(items);
+            .subscribe((c) => {
+                this.items.push(c.items);
                 this.labels.push(label);
                 this.descriptions[this.descriptions.length - 1] = item.description;
                 this.descriptions.push('');
@@ -114,15 +115,15 @@ export class LayerCollectionDropdownComponent implements OnInit {
             return;
         }
 
-        const collection = item as LayerCollectionDict;
+        const collection = item as LayerCollectionListingDict;
 
         this.layerSelected.emit(undefined);
 
         const label = collection.entryLabel ?? collection.name;
 
-        this.layerCollectionService.getLayerCollectionItems(collection.id.providerId, collection.id.collectionId).subscribe((items) => {
+        this.layerCollectionService.getLayerCollectionItems(collection.id.providerId, collection.id.collectionId).subscribe((c) => {
             this.items.splice(index + 1);
-            this.items.push(items);
+            this.items.push(c.items);
 
             this.labels.splice(index + 1);
             this.labels.push(label);
