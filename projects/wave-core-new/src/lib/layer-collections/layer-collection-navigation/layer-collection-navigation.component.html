@@ -1,4 +1,4 @@
-<!-- <span (click)="navigateToRoot()">Root</span> -->
+<span (click)="navigateToRoot()">Root</span>
 <span class="breadcrumb" *ngFor="let item of displayedTrail; let i = index" [attr.data-index]="i" (click)="onBreadCrumbClick(i)">
     > {{ item.name }}</span
 >

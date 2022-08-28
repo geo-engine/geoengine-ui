@@ -2,7 +2,6 @@ import {ComponentPortal, Portal} from '@angular/cdk/portal';
 import {Component, ChangeDetectionStrategy, Injector, Provider} from '@angular/core';
 import {LayerCollectionItemDict, ProviderLayerCollectionIdDict} from '../../backend/backend.model';
 import {CONTEXT_TOKEN, LayerCollectionListComponent} from '../layer-collection-list/layer-collection-list.component';
-import {LayerCollectionBreadcrumbsService} from '../layer-collections-breadcrumb-service/layer-collection-breadcrumbs.service';
 
 @Component({
     selector: 'wave-layer-collection-navigation',
@@ -15,7 +14,7 @@ export class LayerCollectionNavigationComponent {
     allTrails: Array<Array<LayerCollectionItemDict>> = [];
     displayedTrail: Array<LayerCollectionItemDict> = [];
 
-    selectedCollection = -1; // the selected trail
+    selectedCollection = -1;
 
     selectedPortal!: Portal<any>;
 
@@ -24,66 +23,62 @@ export class LayerCollectionNavigationComponent {
     }
 
     selectCollection(id: LayerCollectionItemDict): void {
-        // this.collections = this.collections.splice(0, this.selectedCollection + 1);
         this.collections = this.collections.splice(0, this.displayedTrail.length);
         this.collections.push(id);
         this.selectedCollection += 1;
 
-        // handle array of arrays
+        // Create a new trail, append it to the collection and display it
         let clone = this.collections.map((x) => Object.assign({}, x)); // ???
         this.allTrails = this.allTrails.slice(0, this.selectedCollection);
         this.allTrails.push(clone);
         this.displayedTrail = this.allTrails[this.selectedCollection];
 
-        this.logAll();
         this.setPortal(id);
     }
 
     back(): void {
         if (this.selectedCollection > 0) {
             this.selectedCollection -= 1;
-            // const id = this.collections[this.selectedCollection];
-
-            // Getting the right id from all Trails
-            const currentTrail = this.allTrails[this.selectedCollection];
-            this.displayedTrail = currentTrail;
-            const lastId = currentTrail[currentTrail.length - 1];
-
-            this.logAll();
-            this.setPortal(lastId);
+            this.updateLayerView();
+        }
+        if (this.selectedCollection === 0) {
+            this.displayedTrail = [];
+            this.showRoot();
         }
     }
 
     forward(): void {
         if (this.selectedCollection < this.allTrails.length - 1) {
             this.selectedCollection += 1;
-            // const id = this.collections[this.selectedCollection];
-
-            // Getting the right id from all Trails
-            const currentTrail = this.allTrails[this.selectedCollection];
-            this.displayedTrail = currentTrail;
-            const lastId = currentTrail[currentTrail.length - 1];
-            this.setPortal(lastId);
+            this.updateLayerView();
         }
     }
 
+    updateLayerView() {
+        const currentTrail = this.allTrails[this.selectedCollection];
+        this.displayedTrail = currentTrail;
+        const lastId = currentTrail[currentTrail.length - 1];
+        this.setPortal(lastId);
+    }
+
     onBreadCrumbClick(index: number) {
-        const newTrail = this.allTrails[index].map((x) => Object.assign({}, x));
+        // Creates and appends a new crumbtrail, then moves forward to it
+        if (index === this.displayedTrail.length - 1) return;
+        const newTrail = this.displayedTrail.map((x) => Object.assign({}, x)).slice(0, index + 1);
         this.allTrails.push(newTrail);
         this.selectedCollection = this.allTrails.length - 2;
         this.forward();
     }
 
-    logAll(): void {
-        console.log('=============');
-        console.log('Now selected collection:' + this.selectedCollection);
-        console.log('Trail length: ' + this.displayedTrail.length);
-        console.log('Collection length:' + this.collections.length);
-        console.log('Alltrails length:' + this.allTrails.length);
+    navigateToRoot(): void {
+        const newTrail: Array<LayerCollectionItemDict> = [];
+        this.allTrails.push(newTrail);
+        this.selectedCollection = this.allTrails.length - 2;
+        this.forward();
     }
 
-    navigateToRoot(): void {
-        console.log('To root');
+    showRoot(): void {
+        this.selectedPortal = new ComponentPortal(LayerCollectionListComponent, null, this.createInjector());
     }
 
     private setPortal(id?: LayerCollectionItemDict): void {
