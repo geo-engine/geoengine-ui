@@ -44,7 +44,6 @@ import {
 } from '../../layers/symbology/symbology.model';
 import {colorToDict} from '../../colors/color';
 import {RandomColorService} from '../../util/services/random-color.service';
-import {LayerCollectionBreadcrumbsService} from '../layer-collections-breadcrumb-service/layer-collection-breadcrumbs.service';
 
 export interface LayerCollectionListConfig {
     id?: ProviderLayerCollectionIdDict;

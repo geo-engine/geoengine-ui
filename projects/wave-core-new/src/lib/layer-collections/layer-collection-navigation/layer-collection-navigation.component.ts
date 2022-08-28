@@ -1,5 +1,5 @@
 import {ComponentPortal, Portal} from '@angular/cdk/portal';
-import {Component, ChangeDetectionStrategy, Injector, Provider} from '@angular/core';
+import {Component, ChangeDetectionStrategy, Injector} from '@angular/core';
 import {LayerCollectionItemDict, ProviderLayerCollectionIdDict} from '../../backend/backend.model';
 import {CONTEXT_TOKEN, LayerCollectionListComponent} from '../layer-collection-list/layer-collection-list.component';
 
@@ -28,7 +28,7 @@ export class LayerCollectionNavigationComponent {
         this.selectedCollection += 1;
 
         // Create a new trail, append it to the collection and display it
-        let clone = this.collections.map((x) => Object.assign({}, x)); // ???
+        const clone = this.collections.map((x) => Object.assign({}, x)); // ???
         this.allTrails = this.allTrails.slice(0, this.selectedCollection);
         this.allTrails.push(clone);
         this.displayedTrail = this.allTrails[this.selectedCollection];
@@ -54,14 +54,14 @@ export class LayerCollectionNavigationComponent {
         }
     }
 
-    updateLayerView() {
+    updateLayerView(): void {
         const currentTrail = this.allTrails[this.selectedCollection];
         this.displayedTrail = currentTrail;
         const lastId = currentTrail[currentTrail.length - 1];
         this.setPortal(lastId);
     }
 
-    onBreadCrumbClick(index: number) {
+    onBreadCrumbClick(index: number): void {
         // Creates and appends a new crumbtrail, then moves forward to it
         if (index === this.displayedTrail.length - 1) return;
         const newTrail = this.displayedTrail.map((x) => Object.assign({}, x)).slice(0, index + 1);
