@@ -40,8 +40,7 @@ export class LayerCollectionNavigationComponent {
         if (this.selectedCollection > 0) {
             this.selectedCollection -= 1;
             this.updateLayerView();
-        }
-        if (this.selectedCollection === 0) {
+        } else if (this.selectedCollection === 0) {
             this.displayedTrail = [];
             this.showRoot();
         }
