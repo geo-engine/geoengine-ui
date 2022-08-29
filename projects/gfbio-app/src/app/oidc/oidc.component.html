@@ -5,7 +5,7 @@
 </ng-container>
 <ng-container *waveIfGuest>
     <div>Please login</div>
-    <div *ngIf="user == undefined">Undefined</div>
-    <div *ngIf="user != undefined && user.isGuest">Guest User</div>
+    <div *ngIf="user === undefined">Undefined</div>
+    <div *ngIf="user !== undefined && user.isGuest">Guest User</div>
     <button mat-raised-button color="primary" (click)="login()">Login with GFBio</button>
 </ng-container>

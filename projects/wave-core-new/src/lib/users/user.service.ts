@@ -173,6 +173,26 @@ export class UserService {
         this.logoutCallback = callback;
     }
 
+    oidcInit(): Observable<AuthCodeRequestURL> {
+        return this.backend.oidcInit();
+    }
+
+    oidcLogin(request: {sessionState: string; code: string; state: string}): Observable<Session> {
+        const result = new Subject<Session>();
+        this.backend
+            .oidcLogin(request)
+            .pipe(mergeMap((response) => this.createSession(response)))
+            .subscribe(
+                (session) => {
+                    this.session$.next(session);
+                    result.next(session);
+                },
+                (error) => result.error(error),
+                () => result.complete(),
+            );
+        return result.asObservable();
+    }
+
     protected saveSessionInBrowser(session: Session | undefined): void {
         if (session) {
             localStorage.setItem(PATH_PREFIX + 'session', session.sessionToken);
@@ -206,26 +226,6 @@ export class UserService {
         };
 
         return of(session);
-    }
-
-    oidcInit(): Observable<AuthCodeRequestURL> {
-        return this.backend.oidcInit();
-    }
-
-    oidcLogin(request: {session_state: string; code: string; state: string}): Observable<Session> {
-        const result = new Subject<Session>();
-        this.backend
-            .oidcLogin(request)
-            .pipe(mergeMap((response) => this.createSession(response)))
-            .subscribe(
-                (session) => {
-                    this.session$.next(session);
-                    result.next(session);
-                },
-                (error) => result.error(error),
-                () => result.complete(),
-            );
-        return result.asObservable();
     }
 }
 

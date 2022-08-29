@@ -9,11 +9,11 @@ import {first, SubscriptionLike} from 'rxjs';
     styleUrls: ['./oidc.component.scss'],
 })
 export class OidcComponent implements OnInit, OnDestroy {
+    user?: User;
+
     private userSubscription: SubscriptionLike | undefined;
     private loginSubscription: SubscriptionLike | undefined;
     private logoutSubscription: SubscriptionLike | undefined;
-
-    user?: User;
 
     constructor(@Inject(Config) private readonly config: AppConfig, private readonly userService: UserService) {}
 
@@ -47,14 +47,14 @@ export class OidcComponent implements OnInit, OnDestroy {
                         this.user = session.user;
                     }
                 },
-                error: (e) => console.log('error ' + e), //TODO: Remove for final version.
+                error: () => {},
                 complete: () => {
                     this.logoutSubscription?.unsubscribe();
                 },
             });
     }
 
-    ngOnDestroy() {
+    ngOnDestroy() : void {
         if (this.loginSubscription) {
             this.loginSubscription.unsubscribe();
         }

@@ -253,14 +253,14 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     private tryLogin(): void {
-        let params = new URLSearchParams(window.location.search);
-        const session_state = params.get('session_state');
+        const params = new URLSearchParams(window.location.search);
+        const sessionState = params.get('session_state');
         const code = params.get('code');
         const state = params.get('state');
 
-        if (!session_state || !code || !state) {
+        if (!sessionState || !code || !state) {
             return;
         }
-        this.userService.oidcLogin({session_state, code, state}).pipe(first()).subscribe();
+        this.userService.oidcLogin({sessionState, code, state}).pipe(first()).subscribe();
     }
 }
