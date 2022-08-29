@@ -1,6 +1,7 @@
 import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {MediaviewDialogComponent} from './dialog/mediaview.dialog.component';
 import {MatDialog} from '@angular/material/dialog';
+import { VectorColumnDataType, VectorColumnDataTypes } from '../../operators/datatype.model';
 
 @Component({
     selector: 'wave-datatable-mediaview',
@@ -20,7 +21,7 @@ export class MediaviewComponent implements OnInit {
 
     @Input() url: any;
 
-    @Input() type!: string;
+    @Input() type!: VectorColumnDataType;
 
     private urls: Array<string> = [];
 
@@ -54,7 +55,7 @@ export class MediaviewComponent implements OnInit {
      * Gets the urls and file-types of the comma-separated urls given as input-argument.
      */
     ngOnInit(): void {
-        if (this.type === 'media') {
+        if (this.type === VectorColumnDataTypes.Media) {
             this.urls = this.url.split(',');
             this.mediaType = new Array(this.urls.length);
             this.mediaUrls = [];

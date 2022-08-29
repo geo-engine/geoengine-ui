@@ -25,6 +25,7 @@ import OlPolygon from 'ol/geom/Polygon';
 import {MatDialog} from '@angular/material/dialog';
 import {FullDisplayComponent} from './full-display/full-display.component';
 import {MediaviewComponent} from '../mediaview/mediaview.component';
+import { VectorColumnDataType, VectorColumnDataTypes } from '../../operators/datatype.model';
 
 @Component({
     selector: 'wave-datatable',
@@ -38,13 +39,14 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     @Input() layer?: Layer;
 
     readonly layerTypes = ResultTypes.VECTOR_TYPES;
+    readonly columnDataTypes = VectorColumnDataTypes;
 
     // selectedFeature$ = new BehaviorSubject<FeatureSelection>({feature: undefined});
 
     dataSource = new FeatureDataSource();
     displayedColumns: Array<string> = [];
     featureColumns: Array<string> = [];
-    colTypes: Array<string> = [];
+    colTypes: Array<VectorColumnDataType> = [];
 
     protected layerDataSubscription?: Subscription = undefined;
     protected selectedFeatureSubscription?: Subscription = undefined;
@@ -244,11 +246,11 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     /**
      * Tests and gets the content type of each column of the data source.
      */
-    private getColumnProperties(): string[] {
-        const types: Array<string> = [];
+    private getColumnProperties(): Array<VectorColumnDataType> {
+        const types: Array<VectorColumnDataType> = [];
 
         for (let column = 0; column < this.featureColumns.length; column++) {
-            let columnType = 'text';
+            let columnType = VectorColumnDataTypes.Text;
             for (const rowData of this.dataSource.data) {
                 const tmp = rowData.get(this.featureColumns[column]);
                 if (typeof tmp === 'string' && tmp !== '') {
@@ -256,7 +258,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
                     for (const tmpUrl of tmpUrls) {
                         const mediaType = MediaviewComponent.getType(tmpUrl);
                         if (mediaType !== '' && mediaType !== 'text') {
-                            columnType = 'media';
+                            columnType = VectorColumnDataTypes.Media;
                             break;
                         }
                     }
