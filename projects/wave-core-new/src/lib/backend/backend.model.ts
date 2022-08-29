@@ -519,7 +519,6 @@ export interface LayerCollectionItemDict {
     id: ProviderLayerIdDict | ProviderLayerCollectionIdDict;
     name: string;
     description: string;
-    properties: [string, string][];
 }
 
 export interface ProviderLayerIdDict {
@@ -550,15 +549,16 @@ export interface LayerDict {
     description: string;
     workflow: WorkflowDict;
     symbology: SymbologyDict;
-    properties: [string, string];
     metadata: {
         [key: string]: string;
     };
 }
 
 export interface LayerCollectionDict {
-    id: UUID;
+    id: ProviderLayerCollectionIdDict;
     name: string;
     description: string;
     items: LayerCollectionItemDict[];
+    properties: [string, string][];
+    entryLabel?: string;
 }

@@ -2,6 +2,7 @@ import {Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef} fr
 import {mergeMap, BehaviorSubject, combineLatest, of} from 'rxjs';
 import {
     LayerCollectionDict,
+    LayerCollectionListingDict,
     LayerCollectionService,
     ProjectService,
     ProviderLayerCollectionIdDict,
@@ -23,7 +24,7 @@ export class AccordionEntryComponent implements OnInit {
     @Input() icon = 'class';
 
     readonly selectedLayers$ = new BehaviorSubject<Array<ProviderLayerIdDict | undefined>>([]);
-    readonly datasets$ = new BehaviorSubject<Array<LayerCollectionDict>>([]);
+    readonly collections$ = new BehaviorSubject<Array<LayerCollectionDict>>([]);
 
     constructor(
         private readonly layerCollectionService: LayerCollectionService,
@@ -33,16 +34,21 @@ export class AccordionEntryComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this.layerCollectionService.getLayerCollectionItems(this.collection.providerId, this.collection.collectionId).subscribe((items) => {
+        this.layerCollectionService.getLayerCollectionItems(this.collection.providerId, this.collection.collectionId).subscribe((c) => {
             const collections = [];
-            for (const item of items) {
+            for (const item of c.items) {
                 if (item.type === 'collection') {
-                    collections.push(item as LayerCollectionDict);
+                    const collection = item as LayerCollectionListingDict;
+                    collections.push(
+                        this.layerCollectionService.getLayerCollectionItems(collection.id.providerId, collection.id.collectionId),
+                    );
                 }
             }
-            this.datasets$.next(collections);
 
-            this.selectedLayers$.next(new Array(collections.length).fill(undefined));
+            combineLatest(collections).subscribe((col) => {
+                this.collections$.next(col);
+                this.selectedLayers$.next(new Array(col.length).fill(undefined));
+            });
         });
     }
 
