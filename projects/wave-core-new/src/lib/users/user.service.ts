@@ -208,11 +208,11 @@ export class UserService {
         return of(session);
     }
 
-    oidcInit() : Observable<AuthCodeRequestURL> {
+    oidcInit(): Observable<AuthCodeRequestURL> {
         return this.backend.oidcInit();
     }
 
-    oidcLogin(request: {session_state: string, code: string, state: string}) : Observable<Session> {
+    oidcLogin(request: {session_state: string; code: string; state: string}): Observable<Session> {
         const result = new Subject<Session>();
         this.backend
             .oidcLogin(request)

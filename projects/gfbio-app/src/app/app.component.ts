@@ -46,7 +46,7 @@ import {HelpComponent} from './help/help.component';
 import {SplashDialogComponent} from './splash-dialog/splash-dialog.component';
 import {BasketService} from './basket/basket.service';
 import {BasketDialogComponent} from './basket/basket-dialog/basket-dialog.component';
-import {OidcComponent} from "./oidc/oidc.component";
+import {OidcComponent} from './oidc/oidc.component';
 
 @Component({
     selector: 'wave-app-root',
@@ -252,27 +252,15 @@ export class AppComponent implements OnInit, AfterViewInit {
         });
     }
 
-    private tryLogin() : void {
+    private tryLogin(): void {
         let params = new URLSearchParams(window.location.search);
-        if(params.has('state') && params.has('session_state') && params.has('code')) {
-            const session_state = params.get('session_state');
-            const code = params.get('code');
-            const state = params.get('state');
-            if(state != null && session_state != null && code != null){ //TODO: Redundant with previous if
-                this.userService
-                    .oidcLogin({session_state, code, state})
-                    .pipe(first())
-                    .subscribe(
-                        (session) => {
-                            console.log(session);
-                        },
-                        (e) => {
-                            console.log(e); //TODO: Remove for final version
-                        },
-                    );
-            }
-        } else {
-            //TODO: Probably no else necessary.
+        const session_state = params.get('session_state');
+        const code = params.get('code');
+        const state = params.get('state');
+
+        if (!session_state || !code || !state) {
+            return;
         }
+        this.userService.oidcLogin({session_state, code, state}).pipe(first()).subscribe();
     }
 }

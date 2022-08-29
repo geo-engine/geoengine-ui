@@ -28,7 +28,7 @@ export interface UserDict {
 }
 
 export interface AuthCodeRequestURL {
-    url: string,
+    url: string;
 }
 
 export interface CoordinateDict {
