@@ -85,6 +85,8 @@ export class MediaviewComponent implements OnInit {
      */
     public openMediaviewDialog(mediaID: number): void {
         this.mediadialog.open(MediaviewDialogComponent, {
+            height:'80vh',
+            width:'80vw',
             disableClose: true,
             data: {mediaURLs: this.mediaUrls, currentMedia: mediaID, mediaTypes: this.mediaType},
         });

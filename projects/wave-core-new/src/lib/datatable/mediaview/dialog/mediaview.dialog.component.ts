@@ -20,7 +20,7 @@ export class MediaviewDialogComponent implements OnInit {
 
     mediaTypes: Array<string> = [];
 
-    autoPlay!: boolean;
+    // autoPlay!: boolean;
 
     constructor(@Inject(MAT_DIALOG_DATA) public data: {mediaURLs: string[]; currentMedia: number; mediaTypes: string[]}) {}
 
@@ -54,7 +54,7 @@ export class MediaviewDialogComponent implements OnInit {
      */
     goToMedia(mediaID: number): void {
         this.currentMedia = mediaID;
-        this.autoPlay = true;
+        // this.autoPlay = true;
     }
 
     nextMedia(): void {

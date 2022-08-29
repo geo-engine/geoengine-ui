@@ -12,6 +12,10 @@
     </div>
     <div class="info">
         <h4 matTooltip="{{ mediaURLs[currentMedia] }}">{{ mediaNames[currentMedia] }}</h4>
+<!--         
+        <a *ngIf="mediaTypes[currentMedia] === 'image'" [href]="mediaURLs[currentMedia]" target="_blank" rel="noopener" class="externalLink" [title]="'open in new tab'">
+            <mat-icon class="mat-24">open_in_new</mat-icon>
+        </a> -->
     </div>
 
     <wave-mediaview-playlist [tracks]="mediaNames" [currentTrack]="currentMedia" (gotoMediaP)="goToMedia($event)">
@@ -22,8 +26,10 @@
     <button *ngIf="mediaURLs.length > 1" mat-fab color="primary" matTooltip="Previous" (click)="previousMedia()" [title]="'previous'">
         <mat-icon class="mat-24">chevron_left</mat-icon>
     </button>
-
     <button *ngIf="mediaURLs.length > 1" mat-fab color="primary" matTooltip="Next" (click)="nextMedia()" [title]="'next'">
         <mat-icon class="mat-24">chevron_right</mat-icon>
     </button>
+    <a *ngIf="mediaTypes[currentMedia] === 'image'" mat-fab color="primary" [href]="mediaURLs[currentMedia]" target="_blank" rel="noopener" class="externalLink" [title]="'open in new tab'">
+        <mat-icon class="mat-24">open_in_new</mat-icon>
+    </a>
 </mat-dialog-actions>
