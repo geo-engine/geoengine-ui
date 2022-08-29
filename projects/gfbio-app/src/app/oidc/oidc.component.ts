@@ -23,9 +23,10 @@ export class OidcComponent implements OnInit, OnDestroy {
             .pipe(first())
             .subscribe((session) => {
                 if (!session.user || session.user.isGuest) {
-                } else {
-                    this.user = session.user;
+                    return;
                 }
+                
+                this.user = session.user;
             });
     }
 
