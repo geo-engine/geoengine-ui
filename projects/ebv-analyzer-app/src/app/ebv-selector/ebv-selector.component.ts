@@ -174,9 +174,8 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                                     raster: {
                                         type: 'Expression',
                                         params: {
-                                            expression: 'if B IS NODATA { out_nodata } else { A }',
+                                            expression: 'if B IS NODATA { NODATA } else { A }',
                                             outputType: RasterDataTypes.Float64.getCode(),
-                                            outputNoDataValue: 'nan',
                                             mapNoData: false,
                                         },
                                         sources: {

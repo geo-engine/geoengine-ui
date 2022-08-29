@@ -19,7 +19,6 @@ export interface ExpressionDict extends OperatorDict {
     params: {
         expression: string;
         outputType: string;
-        outputNoDataValue: number | 'nan';
         outputMeasurement?: MeasurementDict;
         mapNoData: boolean;
     };
