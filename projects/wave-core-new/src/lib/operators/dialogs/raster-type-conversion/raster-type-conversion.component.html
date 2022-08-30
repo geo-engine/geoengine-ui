@@ -2,7 +2,8 @@
 
 <wave-dialog-help>
     <p>
-        This operator converts the data type of the pixels into another type. This is operation is also known as "cast". You can find more information at
+        This operator converts the data type of the pixels into another type. This is operation is also known as "cast". You can find more
+        information at
         <a href="https://docs.geoengine.io/operators/rastertypeconversion.html">docs.geoengine.io</a>.
     </p>
 </wave-dialog-help>
@@ -16,14 +17,16 @@
             <mat-label>Output Data Type</mat-label>
             <mat-select formControlName="dataType">
                 <mat-option *ngFor="let dataType of rasterDataTypes" [value]="dataType">
-                    {{ dataType}}
+                    {{ dataType }}
                 </mat-option>
             </mat-select>
         </mat-form-field>
 
         <wave-operator-output-name
             formControlName="name"
-            [suggestion]="(form.controls.layer.valueChanges | async)?.name + ' as ' + (form.controls.dataType.valueChanges | async)?.toString()"
+            [suggestion]="
+                (form.controls.layer.valueChanges | async)?.name + ' as ' + (form.controls.dataType.valueChanges | async)?.toString()
+            "
         >
             <mat-hint align="end" class="error" *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace">
                 The name must be non-empty.
