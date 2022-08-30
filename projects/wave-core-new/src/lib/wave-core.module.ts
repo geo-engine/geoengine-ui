@@ -129,6 +129,8 @@ import {LayerCollectionListComponent} from './layer-collections/layer-collection
 import {LayerCollectionNavigationComponent} from './layer-collections/layer-collection-navigation/layer-collection-navigation.component';
 import {ClassHistogramOperatorComponent} from './operators/dialogs/class-histogram-operator/class-histogram-operator.component';
 import {ColumnRangeFilterComponent} from './operators/dialogs/column-range-filter/column-range-filter.component';
+import {LayerCollectionDropdownComponent} from './layer-collections/layer-collection-dropdown/layer-collection-dropdown.component';
+import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {DialogSplashCheckboxComponent} from './dialogs/dialog-splash-checkbox/dialog-splash-checkbox.component';
 import {MediaviewComponent} from './datatable/mediaview/mediaview.component';
 import {MediaviewDialogComponent} from './datatable/mediaview/dialog/mediaview.dialog.component';
@@ -212,6 +214,7 @@ const WAVE_COMPONENTS = [
     HistogramOperatorComponent,
     IfGuestDirective,
     IfLoggedInDirective,
+    LayerCollectionDropdownComponent,
     LayerCollectionListComponent,
     LayerCollectionNavigationComponent,
     LayerListComponent,
@@ -285,6 +288,7 @@ const WAVE_COMPONENTS = [
         FlexLayoutModule,
         FormsModule,
         HttpClientModule,
+        NgxMatSelectSearchModule,
         PortalModule,
         ReactiveFormsModule,
         ScrollingModule,

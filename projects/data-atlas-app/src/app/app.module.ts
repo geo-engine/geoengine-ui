@@ -28,9 +28,19 @@ import {LoginComponent} from './login/login.component';
 import {MainComponent} from './main/main.component';
 import {AppRoutingModule} from './app-routing.module';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
+import {AccordionEntryComponent} from './accordion-entry/accordion-entry.component';
 
 @NgModule({
-    declarations: [AppComponent, SelectLayersComponent, LegendComponent, AnalysisComponent, AboutComponent, LoginComponent, MainComponent],
+    declarations: [
+        AppComponent,
+        SelectLayersComponent,
+        LegendComponent,
+        AnalysisComponent,
+        AboutComponent,
+        LoginComponent,
+        MainComponent,
+        AccordionEntryComponent,
+    ],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,
