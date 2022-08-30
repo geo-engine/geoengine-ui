@@ -1,3 +1,4 @@
+import {RasterDataType} from '../operators/datatype.model';
 import {
     DataIdDict,
     MeasurementDict,
@@ -179,6 +180,13 @@ export interface TemporalRasterAggregationDict extends OperatorDict {
         };
         window: TimeStepDict;
         windowReference?: TimeInstanceDict;
+    };
+}
+
+export interface RasterTypeConversionDict extends OperatorDict {
+    type: 'RasterTypeConversion';
+    params: {
+        outputDataType: string;
     };
 }
 
