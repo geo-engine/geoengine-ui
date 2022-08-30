@@ -1,7 +1,7 @@
 import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {MediaviewDialogComponent} from './dialog/mediaview.dialog.component';
 import {MatDialog} from '@angular/material/dialog';
-import { VectorColumnDataType, VectorColumnDataTypes } from '../../operators/datatype.model';
+import {VectorColumnDataType, VectorColumnDataTypes} from '../../operators/datatype.model';
 
 @Component({
     selector: 'wave-datatable-mediaview',
@@ -85,8 +85,8 @@ export class MediaviewComponent implements OnInit {
      */
     public openMediaviewDialog(mediaID: number): void {
         this.mediadialog.open(MediaviewDialogComponent, {
-            height:'80vh',
-            width:'80vw',
+            height: '80vh',
+            width: '80vw',
             disableClose: true,
             data: {mediaURLs: this.mediaUrls, currentMedia: mediaID, mediaTypes: this.mediaType},
         });

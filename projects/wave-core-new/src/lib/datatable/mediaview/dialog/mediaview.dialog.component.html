@@ -1,35 +1,59 @@
 <wave-dialog-header>{{ mediaDialogHeader }}</wave-dialog-header>
 
 <mat-dialog-content class="mediaContainer">
-    <div *ngIf="mediaTypes[currentMedia] === 'image'">
-        <img [src]="mediaURLs[currentMedia]" [alt]="mediaURLs[currentMedia]" />
+    <div class="media">
+        <div *ngIf="mediaTypes[currentMedia] === 'image'">
+            <img [src]="mediaURLs[currentMedia]" [alt]="mediaURLs[currentMedia]" />
+            <div class="info">
+                <h4 matTooltip="{{ mediaURLs[currentMedia] }}">{{ mediaNames[currentMedia] }}</h4>
+            </div>
+        </div>
+        <div *ngIf="mediaTypes[currentMedia] === 'audio'">
+            <audio [src]="mediaURLs[currentMedia]" [controls]="true" (ended)="nextMedia()"></audio>
+            <div class="info">
+                <h4 matTooltip="{{ mediaURLs[currentMedia] }}">{{ mediaNames[currentMedia] }}</h4>
+            </div>
+        </div>
+        <div *ngIf="mediaTypes[currentMedia] === 'video'">
+            <video #video [src]="mediaURLs[currentMedia]" [controls]="true" (ended)="nextMedia()"></video>
+            <div class="info">
+                <h4 matTooltip="{{ mediaURLs[currentMedia] }}">{{ mediaNames[currentMedia] }}</h4>
+            </div>
+        </div>
     </div>
-    <div *ngIf="mediaTypes[currentMedia] === 'audio'">
-        <audio [src]="mediaURLs[currentMedia]" [controls]="true" (ended)="nextMedia()"></audio>
+    <mat-divider vertical class="verticalline"></mat-divider>
+    <div class="playlist">
+        <wave-mediaview-playlist [tracks]="mediaNames" [currentTrack]="currentMedia" (gotoMediaP)="goToMedia($event)">
+        </wave-mediaview-playlist>
     </div>
-    <div *ngIf="mediaTypes[currentMedia] === 'video'">
-        <video #video [src]="mediaURLs[currentMedia]" [controls]="true" (ended)="nextMedia()"></video>
+    <div class="acfulldisplay">
+        <a
+            *ngIf="mediaTypes[currentMedia] === 'image'"
+            mat-icon-button
+            color="primary"
+            [href]="mediaURLs[currentMedia]"
+            target="_blank"
+            rel="noopener"
+            [title]="'open in new tab'"
+        >
+            <mat-icon>open_in_new</mat-icon>
+        </a>
     </div>
-    <div class="info">
-        <h4 matTooltip="{{ mediaURLs[currentMedia] }}">{{ mediaNames[currentMedia] }}</h4>
-<!--         
-        <a *ngIf="mediaTypes[currentMedia] === 'image'" [href]="mediaURLs[currentMedia]" target="_blank" rel="noopener" class="externalLink" [title]="'open in new tab'">
-            <mat-icon class="mat-24">open_in_new</mat-icon>
-        </a> -->
+    <div class="acleft">
+        <button
+            *ngIf="mediaURLs.length > 1"
+            mat-icon-button
+            color="primary"
+            matTooltip="Previous"
+            (click)="previousMedia()"
+            [title]="'previous'"
+        >
+            <mat-icon>chevron_left</mat-icon>
+        </button>
     </div>
-
-    <wave-mediaview-playlist [tracks]="mediaNames" [currentTrack]="currentMedia" (gotoMediaP)="goToMedia($event)">
-    </wave-mediaview-playlist>
+    <div class="acright">
+        <button *ngIf="mediaURLs.length > 1" mat-icon-button color="primary" matTooltip="Next" (click)="nextMedia()" [title]="'next'">
+            <mat-icon>chevron_right</mat-icon>
+        </button>
+    </div>
 </mat-dialog-content>
-
-<mat-dialog-actions align="end">
-    <button *ngIf="mediaURLs.length > 1" mat-fab color="primary" matTooltip="Previous" (click)="previousMedia()" [title]="'previous'">
-        <mat-icon class="mat-24">chevron_left</mat-icon>
-    </button>
-    <button *ngIf="mediaURLs.length > 1" mat-fab color="primary" matTooltip="Next" (click)="nextMedia()" [title]="'next'">
-        <mat-icon class="mat-24">chevron_right</mat-icon>
-    </button>
-    <a *ngIf="mediaTypes[currentMedia] === 'image'" mat-fab color="primary" [href]="mediaURLs[currentMedia]" target="_blank" rel="noopener" class="externalLink" [title]="'open in new tab'">
-        <mat-icon class="mat-24">open_in_new</mat-icon>
-    </a>
-</mat-dialog-actions>

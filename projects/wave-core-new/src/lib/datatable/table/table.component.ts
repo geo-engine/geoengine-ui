@@ -25,7 +25,7 @@ import OlPolygon from 'ol/geom/Polygon';
 import {MatDialog} from '@angular/material/dialog';
 import {FullDisplayComponent} from './full-display/full-display.component';
 import {MediaviewComponent} from '../mediaview/mediaview.component';
-import { VectorColumnDataType, VectorColumnDataTypes } from '../../operators/datatype.model';
+import {VectorColumnDataType, VectorColumnDataTypes} from '../../operators/datatype.model';
 
 @Component({
     selector: 'wave-datatable',

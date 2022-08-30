@@ -1,10 +1,9 @@
 <mat-nav-list>
-    <h3 mat-subheader color="primary">Files</h3>
-    <mat-list-item *ngFor="let url of tracks; let i = index" (click)="goToMedia(i)">
+    <h3 mat-subheader class="playlisttitle" color="primary">Files</h3>
+    <mat-list-item class="mat-list-item-word-wrap" *ngFor="let url of tracks; let i = index" (click)="goToMedia(i)">
         <mat-icon mat-list-icon color="primary" *ngIf="currentTrack === i">radio_button_checked</mat-icon>
         <mat-icon mat-list-icon color="primary" *ngIf="currentTrack !== i">radio_button_unchecked</mat-icon>
-
-        <p mat-line [class.playing]="currentTrack === i">
+        <p mat-line [class.playing]="currentTrack === i" matTooltip="{{ url }}">
             {{ url }}
         </p>
     </mat-list-item>
