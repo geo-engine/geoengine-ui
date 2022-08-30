@@ -1,18 +1,24 @@
-<span (click)="navigateToRoot()">Root</span>
-<span class="breadcrumb" *ngFor="let item of displayedTrail; let i = index" [attr.data-index]="i" (click)="onBreadCrumbClick(i)">
-    > {{ item.name }}</span
->
-<br />
 <wave-sidenav-header>Layer Collection</wave-sidenav-header>
-<button mat-button (click)="back()" matTooltip="Navigate Back" matTooltipPosition="after">
-    <!-- [disabled]="selectedCollection === 0" -->
+<button mat-button (click)="back()" matTooltip="Navigate Back" matTooltipPosition="after" [disabled]="selectedCollection === -1">
     <mat-icon>arrow_back</mat-icon>
 </button>
 
-<button mat-button (click)="forward()" matTooltip="Navigate Forward" matTooltipPosition="after">
-    <!-- [disabled]="selectedCollection === collections.length - 1" -->
+<button
+    mat-button
+    (click)="forward()"
+    matTooltip="Navigate Forward"
+    matTooltipPosition="after"
+    [disabled]="selectedCollection === allTrails.length - 1"
+>
     <mat-icon>arrow_forward</mat-icon>
 </button>
+
+<span class="breadcrumbarea">
+    <button mat-stroked-button class="breadcrumb" (click)="navigateToRoot()">Root</button>
+    <span *ngFor="let item of displayedTrail; let i = index" [attr.data-index]="i">
+        ● <button mat-stroked-button class="breadcrumb" (click)="onBreadCrumbClick(i)">{{ item.name }}</button></span
+    >
+</span>
 
 <div class="portal-outlet">
     <ng-template [cdkPortalOutlet]="selectedPortal"></ng-template>

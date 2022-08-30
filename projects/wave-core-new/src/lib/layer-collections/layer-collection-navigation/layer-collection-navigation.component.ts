@@ -28,7 +28,7 @@ export class LayerCollectionNavigationComponent {
         this.selectedCollection += 1;
 
         // Create a new trail, append it to the collection and display it
-        const clone = this.collections.map((x) => Object.assign({}, x)); // ???
+        const clone = this.collections.map((x) => Object.assign({}, x));
         this.allTrails = this.allTrails.slice(0, this.selectedCollection);
         this.allTrails.push(clone);
         this.displayedTrail = this.allTrails[this.selectedCollection];
@@ -43,6 +43,7 @@ export class LayerCollectionNavigationComponent {
         } else if (this.selectedCollection === 0) {
             this.displayedTrail = [];
             this.showRoot();
+            this.selectedCollection = -1;
         }
     }
 
@@ -70,6 +71,7 @@ export class LayerCollectionNavigationComponent {
     }
 
     navigateToRoot(): void {
+        if (this.selectedCollection === -1) return;
         const newTrail: Array<LayerCollectionItemDict> = [];
         this.allTrails.push(newTrail);
         this.selectedCollection = this.allTrails.length - 2;
