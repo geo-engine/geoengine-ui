@@ -1,4 +1,3 @@
-import {RasterDataType} from '../operators/datatype.model';
 import {
     DataIdDict,
     MeasurementDict,
@@ -49,11 +48,11 @@ export interface FeatureAttributeOverTimeDict extends OperatorDict {
 export interface HistogramParams extends OperatorParams {
     columnName?: string;
     bounds:
-        | {
-              min: number;
-              max: number;
-          }
-        | 'data';
+    | {
+        min: number;
+        max: number;
+    }
+    | 'data';
     buckets?: number;
     interactive?: boolean;
 }
