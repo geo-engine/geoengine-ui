@@ -47,7 +47,8 @@ export class AddDataComponent implements OnInit {
         return {
             name: 'Datasets',
             description: 'Available Datasets',
-            iconSrc: createIconDataUrl('Datasets'),
+            // iconSrc: createIconDataUrl('Datasets'),
+            icon: 'storage',
             sidenavConfig: {component: DatasetListComponent, keepParent: true},
         };
     }
@@ -56,7 +57,9 @@ export class AddDataComponent implements OnInit {
         return {
             name: 'Layers',
             description: 'Collection of existing layers',
-            iconSrc: createIconDataUrl('Layer Collection'),
+            // iconSrc: createIconDataUrl('Layer Collection'),
+            icon: 'layers',
+            // icon: 'sort',
             sidenavConfig: {component: LayerCollectionNavigationComponent, keepParent: true},
         };
     }
@@ -65,7 +68,9 @@ export class AddDataComponent implements OnInit {
         return {
             name: 'Upload',
             description: 'Upload data from you local computer',
-            iconSrc: createIconDataUrl('Upload'),
+            // iconSrc: createIconDataUrl('Upload'),
+            // icon: 'attach_file',
+            icon: 'publish',
             sidenavConfig: {component: UploadComponent, keepParent: true},
         };
     }
@@ -89,7 +94,8 @@ export class AddDataComponent implements OnInit {
         return {
             name: 'Add Workflow by Id',
             description: 'Add a workflow by its id',
-            iconSrc: createIconDataUrl('Add Workflow by id'),
+            // iconSrc: createIconDataUrl('Add Workflow by id'),
+            icon: 'build',
             sidenavConfig: {component: AddWorkflowComponent, keepParent: true},
         };
     }
