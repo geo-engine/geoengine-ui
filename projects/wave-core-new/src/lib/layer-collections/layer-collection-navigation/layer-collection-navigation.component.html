@@ -17,7 +17,6 @@
 <div class="breadcrumbarea">
     <button mat-stroked-button class="breadcrumb" (click)="navigateToRoot()"><mat-icon>layers</mat-icon></button>
     <span *ngFor="let item of displayedTrail; let i = index" [attr.data-index]="i">
-        <!-- <mat-icon class="vertical-center">keyboard_arrow_right</mat-icon> -->
         ⟩⟩
         <button mat-stroked-button class="breadcrumb" (click)="onBreadCrumbClick(i)">{{ item.name }}</button></span
     >
