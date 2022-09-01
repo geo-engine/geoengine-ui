@@ -38,9 +38,6 @@ import {
     PlotListComponent,
     SidenavConfig,
     SpatialReferenceService,
-    ExpressionOperatorComponent,
-    TemporalRasterAggregationComponent,
-    createIconDataUrl,
 } from 'wave-core';
 import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from '../app-config.service';
