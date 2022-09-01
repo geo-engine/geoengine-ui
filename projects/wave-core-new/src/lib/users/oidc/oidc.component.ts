@@ -1,5 +1,5 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
-import {first, SubscriptionLike} from 'rxjs';
+import {BehaviorSubject, finalize, first, SubscriptionLike} from 'rxjs';
 
 import {UserService} from '../user.service';
 import {User} from '../user.model';
@@ -11,10 +11,13 @@ import {User} from '../user.model';
 })
 export class OidcComponent implements OnInit, OnDestroy {
     user?: User;
+    loginDisabled: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
     private userSubscription: SubscriptionLike | undefined;
     private loginSubscription: SubscriptionLike | undefined;
     private logoutSubscription: SubscriptionLike | undefined;
+
+    private pendingLoginRequest = false;
 
     constructor(private readonly userService: UserService) {}
 
@@ -32,13 +35,22 @@ export class OidcComponent implements OnInit, OnDestroy {
     }
 
     login(): void {
-        this.loginSubscription = this.userService.oidcInit().subscribe((idr) => {
-            window.location.href = idr.url;
-        });
-    }
-
-    loginInProgress(): boolean {
-        return this.loginSubscription !== undefined;
+        if (!this.pendingLoginRequest) {
+            this.pendingLoginRequest = true;
+            this.loginDisabled.next(true);
+            this.loginSubscription = this.userService
+                .oidcInit()
+                .pipe(
+                    first(),
+                    finalize(() => {
+                        this.pendingLoginRequest = false;
+                        this.loginDisabled.next(false);
+                    }),
+                )
+                .subscribe((idr) => {
+                    window.location.href = idr.url;
+                });
+        }
     }
 
     logout(): void {
@@ -61,6 +73,7 @@ export class OidcComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.loginDisabled.unsubscribe();
         if (this.loginSubscription) {
             this.loginSubscription.unsubscribe();
         }
