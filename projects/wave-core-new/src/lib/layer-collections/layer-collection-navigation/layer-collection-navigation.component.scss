@@ -2,9 +2,21 @@
     height: calc(100% - 36px);
 }
 
+.nagivation {
+    grid-column: 1/2;
+    justify-content: center;
+}
+
+.head {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 .breadcrumbarea {
-    padding: 0.2rem;
-    margin: 0.2rem;
+    grid-column: 2/-1;
+    justify-content: center;
     overflow: auto;
     white-space: nowrap;
 }
