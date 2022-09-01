@@ -24,7 +24,7 @@ export class LayerCollectionNavigationComponent {
         this.setPortal(undefined);
     }
 
-    scrollToRight() {
+    scrollToRight(): void {
         setTimeout(() => {
             // wait until breadcrumbs are re-rendered before scrolling
             this.scrollElement.nativeElement.scrollLeft += 500;
