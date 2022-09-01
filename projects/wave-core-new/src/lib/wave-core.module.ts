@@ -96,6 +96,7 @@ import {LineageGraphComponent} from './provenance/lineage-graph/lineage-graph.co
 // eslint-disable-next-line max-len
 import {MeanRasterPixelValuesOverTimeDialogComponent} from './operators/dialogs/mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
 import {RasterVectorJoinComponent} from './operators/dialogs/raster-vector-join/raster-vector-join.component';
+import {RasterTypeConversionComponent} from './operators/dialogs/raster-type-conversion/raster-type-conversion.component';
 import {PointInPolygonFilterOperatorComponent} from './operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 import {UploadComponent} from './datasets/upload/upload.component';
 import {DataTableComponent} from './datatable/table/table.component';
@@ -253,6 +254,7 @@ const WAVE_COMPONENTS = [
     RasterLegendComponent,
     RasterSymbologyEditorComponent,
     RasterVectorJoinComponent,
+    RasterTypeConversionComponent,
     RenameLayerComponent,
     SaveProjectAsComponent,
     ScatterplotOperatorComponent,

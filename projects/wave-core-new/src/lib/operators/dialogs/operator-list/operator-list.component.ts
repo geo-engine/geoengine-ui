@@ -17,6 +17,7 @@ import {ScatterplotOperatorComponent} from '../scatterplot-operator/scatterplot-
 import {ExpressionOperatorComponent} from '../expression-operator/expression-operator.component';
 import {ClassHistogramOperatorComponent} from '../class-histogram-operator/class-histogram-operator.component';
 import {ColumnRangeFilterComponent} from '../column-range-filter/column-range-filter.component';
+import {RasterTypeConversionComponent} from '../raster-type-conversion/raster-type-conversion.component';
 
 /**
  * This type encapsulates…
@@ -155,6 +156,14 @@ export class OperatorListComponent implements OnInit, OnChanges {
                 ICON_URL: createIconDataUrl('Temporal Raster Aggregation'),
             },
             description: 'Aggregate raster time series',
+        },
+        {
+            component: RasterTypeConversionComponent,
+            type: {
+                NAME: 'Convert Raster Data Type',
+                ICON_URL: createIconDataUrl('Raster Type Conversion'),
+            },
+            description: 'Converts (casts) the raster type',
         },
         // {
         //     component: RasterMaskComponent,

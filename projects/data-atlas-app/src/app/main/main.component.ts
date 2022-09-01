@@ -13,9 +13,9 @@ import {
     DatasetService,
     RasterSymbologyEditorComponent,
     SidenavContainerComponent,
-    LayerCollectionDict,
     LayerCollectionService,
     ProviderLayerIdDict,
+    LayerCollectionListingDict,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AppConfig} from '../app-config.service';
@@ -39,7 +39,7 @@ export class MainComponent implements OnInit, AfterViewInit {
     @ViewChild(MatSidenav, {static: true}) leftSidenav!: MatSidenav;
     @ViewChild(SidenavContainerComponent, {static: true}) leftSidenavContainer!: SidenavContainerComponent;
 
-    readonly topLevelCollections$ = new BehaviorSubject<Array<LayerCollectionDict>>([]);
+    readonly topLevelCollections$ = new BehaviorSubject<Array<LayerCollectionListingDict>>([]);
 
     readonly selectedLayers$ = new BehaviorSubject<Array<ProviderLayerIdDict | undefined>>([]);
 
@@ -74,11 +74,11 @@ export class MainComponent implements OnInit, AfterViewInit {
 
         this.layerCollectionService
             .getLayerCollectionItems('1690c483-b17f-4d98-95c8-00a64849cd0b', '{"type":"path","path":"."}')
-            .subscribe((items) => {
+            .subscribe((collection) => {
                 const collections = [];
-                for (const item of items) {
+                for (const item of collection.items) {
                     if (item.type === 'collection') {
-                        collections.push(item as LayerCollectionDict);
+                        collections.push(item as LayerCollectionListingDict);
                     }
                 }
                 this.selectedLayers$.next(new Array(collections.length).fill(false));
