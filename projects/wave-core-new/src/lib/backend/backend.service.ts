@@ -335,7 +335,13 @@ export class BackendService {
         params.setMapped('offset', offset, (r) => r.toString());
         params.setMapped('limit', limit, (r) => r.toString());
 
-        collection = encodeURIComponent(collection);
+        // URI encode the collection id if it is a JSON string
+        try {
+            JSON.parse(collection);
+            collection = encodeURIComponent(collection);
+        } catch (e) {
+            // do nothing
+        }
 
         return this.http.get<LayerCollectionDict>(this.config.API_URL + `/layers/collections/${provider}/${collection}`, {
             params: params.httpParams,
@@ -355,7 +361,13 @@ export class BackendService {
     }
 
     getLayerCollectionLayer(sessionId: UUID, provider: UUID, layer: string): Observable<LayerDict> {
-        layer = encodeURIComponent(layer);
+        // URI encode the layer id if it is a JSON string
+        try {
+            JSON.parse(layer);
+            layer = encodeURIComponent(layer);
+        } catch (e) {
+            // do nothing
+        }
 
         return this.http.get<LayerDict>(this.config.API_URL + `/layers/${provider}/${layer}`, {
             headers: BackendService.authorizationHeader(sessionId),
