@@ -1,7 +1,7 @@
 import {RasterLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
-import {FormControl, UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {FormControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {WaveValidators} from '../../../util/form.validators';
 import {map, mergeMap} from 'rxjs/operators';
@@ -10,6 +10,7 @@ import {WorkflowDict} from '../../../backend/backend.model';
 import {Observable} from 'rxjs';
 import {RasterTypeConversionDict} from '../../../backend/operator.model';
 import {RasterDataType, RasterDataTypes} from '../../datatype.model';
+import {Layer} from 'ol/layer';
 
 @Component({
     selector: 'wave-raster-type-conversion',
@@ -21,17 +22,17 @@ export class RasterTypeConversionComponent implements OnInit, AfterViewInit, OnD
     readonly inputTypes = [ResultTypes.RASTER];
     readonly rasterDataTypes = RasterDataTypes.ALL_DATATYPES;
 
-    form: UntypedFormGroup;
+    form: FormGroup;
     disallowSubmit: Observable<boolean>;
 
     constructor(
         private readonly projectService: ProjectService,
         private readonly notificationService: NotificationService,
-        private readonly formBuilder: UntypedFormBuilder,
+        private readonly formBuilder: FormBuilder,
     ) {
         this.form = this.formBuilder.group({
             name: ['', [Validators.required, WaveValidators.notOnlyWhitespace]],
-            layer: [undefined, Validators.required],
+            layer: new FormControl<Layer | null>(null, {validators: Validators.required}),
             dataType: new FormControl(this.rasterDataTypes[0], {
                 nonNullable: true,
                 validators: [Validators.required],
