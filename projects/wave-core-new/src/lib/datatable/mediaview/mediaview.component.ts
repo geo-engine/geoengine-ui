@@ -88,6 +88,7 @@ export class MediaviewComponent implements OnInit {
             height: '80vh',
             width: '80vw',
             disableClose: true,
+            panelClass: 'mediaviewDialogContainer',
             data: {mediaURLs: this.mediaUrls, currentMedia: mediaID, mediaTypes: this.mediaType},
         });
     }

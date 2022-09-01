@@ -61,4 +61,8 @@ export class MediaviewDialogComponent implements OnInit {
     previousMedia(): void {
         this.currentMedia = this.currentMedia <= 0 ? this.mediaURLs.length - 1 : this.currentMedia - 1;
     }
+
+    openInNewTab(): void {
+        window.open(this.mediaURLs[this.currentMedia], '_blank', 'noopener');
+    }
 }
