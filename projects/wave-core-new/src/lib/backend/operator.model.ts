@@ -182,6 +182,13 @@ export interface TemporalRasterAggregationDict extends OperatorDict {
     };
 }
 
+export interface RasterTypeConversionDict extends OperatorDict {
+    type: 'RasterTypeConversion';
+    params: {
+        outputDataType: string;
+    };
+}
+
 export interface VisualPointClusteringParams extends OperatorParams {
     minRadiusPx: number;
     deltaPx: number;
