@@ -127,6 +127,7 @@ import {TimeSliderComponent} from './time/time-slider/time-slider.component';
 import {LayerCollectionListComponent} from './layer-collections/layer-collection-list/layer-collection-list.component';
 import {LayerCollectionNavigationComponent} from './layer-collections/layer-collection-navigation/layer-collection-navigation.component';
 import {ClassHistogramOperatorComponent} from './operators/dialogs/class-histogram-operator/class-histogram-operator.component';
+import {OidcComponent} from './users/oidc/oidc.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -222,6 +223,7 @@ const WAVE_COMPONENTS = [
     NewProjectComponent,
     NotificationsComponent,
     NumberParamEditorComponent,
+    OidcComponent,
     OlRasterLayerComponent,
     OlVectorLayerComponent,
     OperatorListComponent,

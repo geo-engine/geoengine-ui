@@ -1,10 +1,11 @@
-import {Component, OnInit, Inject, OnDestroy} from '@angular/core';
-import {UserService, Config, User} from 'wave-core';
-import {AppConfig} from '../app-config.service';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {first, SubscriptionLike} from 'rxjs';
 
+import {UserService} from '../user.service';
+import {User} from '../user.model';
+
 @Component({
-    selector: 'wave-gfbio-login',
+    selector: 'wave-oidc',
     templateUrl: 'oidc.component.html',
     styleUrls: ['./oidc.component.scss'],
 })
@@ -15,7 +16,7 @@ export class OidcComponent implements OnInit, OnDestroy {
     private loginSubscription: SubscriptionLike | undefined;
     private logoutSubscription: SubscriptionLike | undefined;
 
-    constructor(@Inject(Config) private readonly config: AppConfig, private readonly userService: UserService) {}
+    constructor(private readonly userService: UserService) {}
 
     ngOnInit(): void {
         this.userSubscription = this.userService
@@ -25,7 +26,7 @@ export class OidcComponent implements OnInit, OnDestroy {
                 if (!session.user || session.user.isGuest) {
                     return;
                 }
-                
+
                 this.user = session.user;
             });
     }
@@ -55,7 +56,7 @@ export class OidcComponent implements OnInit, OnDestroy {
             });
     }
 
-    ngOnDestroy() : void {
+    ngOnDestroy(): void {
         if (this.loginSubscription) {
             this.loginSubscription.unsubscribe();
         }

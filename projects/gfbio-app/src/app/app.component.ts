@@ -27,6 +27,7 @@ import {
     MapService,
     NavigationButton,
     NotificationService,
+    OidcComponent,
     OperatorListButtonGroups,
     OperatorListComponent,
     PlotListComponent,
@@ -46,7 +47,6 @@ import {HelpComponent} from './help/help.component';
 import {SplashDialogComponent} from './splash-dialog/splash-dialog.component';
 import {BasketService} from './basket/basket.service';
 import {BasketDialogComponent} from './basket/basket-dialog/basket-dialog.component';
-import {OidcComponent} from './oidc/oidc.component';
 
 @Component({
     selector: 'wave-app-root',
@@ -160,6 +160,11 @@ export class AppComponent implements OnInit, AfterViewInit {
     private static setupNavigation(): Array<NavigationButton> {
         return [
             {
+                sidenavConfig: {component: OidcComponent},
+                icon: 'account_circle',
+                tooltip: 'Login',
+            },
+            {
                 sidenavConfig: AppComponent.setupAddDataConfig(),
                 icon: 'add',
                 tooltip: 'Add Data',
@@ -189,11 +194,6 @@ export class AppComponent implements OnInit, AfterViewInit {
                 sidenavConfig: {component: HelpComponent},
                 icon: 'help',
                 tooltip: 'Help',
-            },
-            {
-                sidenavConfig: {component: OidcComponent},
-                icon: 'contacts',
-                tooltip: 'Login',
             },
         ];
     }
