@@ -37,6 +37,10 @@ export class OidcComponent implements OnInit, OnDestroy {
         });
     }
 
+    loginInProgress(): boolean {
+        return this.loginSubscription !== undefined;
+    }
+
     logout(): void {
         this.logoutSubscription = this.userService
             .guestLogin()
