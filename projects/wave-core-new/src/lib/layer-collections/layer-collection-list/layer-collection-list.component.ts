@@ -11,13 +11,13 @@ import {
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, combineLatest, EMPTY, Observable, of, range, Subject} from 'rxjs';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
-import {concatMap, filter, first, mergeMap, scan, tap} from 'rxjs/operators';
+import {concatMap, filter, first, map, mergeMap, scan, tap} from 'rxjs/operators';
 import {LayoutService} from '../../layout.service';
 import {
     GeoEngineError,
-    LayerCollectionDict,
     LayerCollectionItemDict,
     LayerCollectionLayerDict,
+    LayerCollectionListingDict,
     LayerDict,
     ProviderLayerCollectionIdDict,
     ProviderLayerIdDict,
@@ -108,7 +108,7 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
 
     trackById(_index: number, item: LayerCollectionItemDict): string {
         if (item.type === 'collection') {
-            const collection = item as LayerCollectionDict;
+            const collection = item as LayerCollectionListingDict;
             return collection.id.providerId + collection.id.collectionId;
         } else if (item.type === 'layer') {
             const layer = item as LayerCollectionLayerDict;
@@ -124,7 +124,7 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
 
     select(item: LayerCollectionItemDict): void {
         if (item.type === 'collection') {
-            const collection = item as LayerCollectionDict;
+            const collection = item as LayerCollectionListingDict;
             this.selectListener(collection.id);
         } else if (item.type === 'layer') {
             const layer = item as LayerCollectionLayerDict;
@@ -293,11 +293,13 @@ class LayerCollectionItemDataSource extends DataSource<LayerCollectionItemDict> 
             this.getCollectionItems = (offset, limit): Observable<Array<LayerCollectionItemDict>> =>
                 layerCollectionService.getLayerCollectionItems(collection.providerId, collection.collectionId, offset, limit).pipe(
                     first(), // first because we only want to fetch once
+                    map((c) => c.items),
                 );
         } else {
             this.getCollectionItems = (offset, limit): Observable<Array<LayerCollectionItemDict>> =>
                 layerCollectionService.getRootLayerCollectionItems(offset, limit).pipe(
                     first(), // first because we only want to fetch once
+                    map((c) => c.items),
                 );
         }
     }
