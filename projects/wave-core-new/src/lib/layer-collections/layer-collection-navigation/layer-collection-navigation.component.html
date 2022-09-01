@@ -17,8 +17,8 @@
         </button>
     </div>
 
-    <div class="breadcrumbarea">
-        <button mat-stroked-button class="breadcrumb" (click)="navigateToRoot()"><mat-icon>layers</mat-icon></button>
+    <div #scrollElement class="breadcrumbarea">
+        <button mat-stroked-button (click)="navigateToRoot()"><mat-icon>layers</mat-icon></button>
         <span *ngFor="let item of displayedTrail; let i = index" [attr.data-index]="i">
             ⟩⟩
             <button mat-stroked-button class="breadcrumb" (click)="onBreadCrumbClick(i)">{{ item.name }}</button></span

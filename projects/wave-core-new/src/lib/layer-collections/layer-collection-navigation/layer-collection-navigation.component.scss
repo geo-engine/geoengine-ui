@@ -2,11 +2,6 @@
     height: calc(100% - 36px);
 }
 
-.nagivation {
-    grid-column: 1/2;
-    justify-content: center;
-}
-
 .head {
     display: grid;
     grid-template-columns: 8rem 1fr;
@@ -14,17 +9,14 @@
     overflow: hidden;
 }
 
+.nagivation {
+    grid-column: 1/2;
+    justify-content: center;
+}
+
 .breadcrumbarea {
     grid-column: 2/-1;
     justify-content: center;
     overflow: auto;
     white-space: nowrap;
-}
-
-.vertical-center {
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);
 }

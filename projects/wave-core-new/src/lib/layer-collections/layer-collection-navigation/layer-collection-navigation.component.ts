@@ -1,5 +1,5 @@
 import {ComponentPortal, Portal} from '@angular/cdk/portal';
-import {Component, ChangeDetectionStrategy, Injector} from '@angular/core';
+import {Component, ViewChild, ElementRef, ChangeDetectionStrategy, Injector} from '@angular/core';
 import {LayerCollectionItemDict, ProviderLayerCollectionIdDict} from '../../backend/backend.model';
 import {CONTEXT_TOKEN, LayerCollectionListComponent} from '../layer-collection-list/layer-collection-list.component';
 
@@ -18,8 +18,17 @@ export class LayerCollectionNavigationComponent {
 
     selectedPortal!: Portal<any>;
 
+    @ViewChild('scrollElement', {read: ElementRef}) public scrollElement!: ElementRef<any>;
+
     constructor() {
         this.setPortal(undefined);
+    }
+
+    scrollToRight() {
+        setTimeout(() => {
+            // wait until breadcrumbs are re-rendered before scrolling
+            this.scrollElement.nativeElement.scrollLeft += 500;
+        }, 50);
     }
 
     selectCollection(id: LayerCollectionItemDict): void {
@@ -32,6 +41,8 @@ export class LayerCollectionNavigationComponent {
         this.allTrails = this.allTrails.slice(0, this.selectedCollection);
         this.allTrails.push(clone);
         this.displayedTrail = this.allTrails[this.selectedCollection];
+
+        this.scrollToRight();
 
         this.setPortal(id);
     }
@@ -51,6 +62,7 @@ export class LayerCollectionNavigationComponent {
         if (this.selectedCollection < this.allTrails.length - 1) {
             this.selectedCollection += 1;
             this.updateLayerView();
+            this.scrollToRight();
         }
     }
 

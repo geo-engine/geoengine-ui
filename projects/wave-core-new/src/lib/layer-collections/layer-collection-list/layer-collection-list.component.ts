@@ -125,8 +125,6 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
     select(item: LayerCollectionItemDict): void {
         if (item.type === 'collection') {
             this.selectListener(item);
-            // const collection = item as LayerCollectionDict;
-            // this.selectListener(collection.id);
         } else if (item.type === 'layer') {
             const layer = item as LayerCollectionLayerDict;
             this.addLayer(layer.id);
