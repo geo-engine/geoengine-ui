@@ -1,5 +1,5 @@
 import {map, mergeMap, tap} from 'rxjs/operators';
-import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
+import {BehaviorSubject, combineLatest, EMPTY, Observable} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
@@ -13,6 +13,14 @@ import {RasterLayerMetadata} from '../../../layers/layer-metadata.model';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {ExpressionDict} from '../../../backend/operator.model';
 import {LayoutService, SidenavConfig} from '../../../layout.service';
+
+interface ExpressionForm {
+    rasterLayers: FormControl<Array<RasterLayer> | undefined>;
+    expression: FormControl<string>;
+    dataType: FormControl<RasterDataType | undefined>;
+    name: FormControl<string>;
+    mapNoData: FormControl<boolean>;
+}
 
 /**
  * This dialog allows calculations on (one or more) raster layers.
@@ -30,7 +38,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
     @Input() dataListConfig?: SidenavConfig;
 
     readonly RASTER_TYPE = [ResultTypes.RASTER];
-    readonly form: FormGroup;
+    readonly form: FormGroup<ExpressionForm>;
 
     readonly outputDataTypes$: Observable<Array<[RasterDataType, string]>>;
 
@@ -46,18 +54,36 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
      * DI of services and setup of observables for the template
      */
     constructor(protected readonly projectService: ProjectService, protected readonly layoutService: LayoutService) {
-        this.form = new FormGroup({
-            rasterLayers: new FormControl(undefined, [Validators.required]),
-            expression: new FormControl('    1 * A', Validators.compose([Validators.required])),
-            dataType: new FormControl(undefined, [Validators.required]),
-            name: new FormControl('Expression', [Validators.required, WaveValidators.notOnlyWhitespace]),
-            noDataValue: new FormControl('0', this.validateNoData),
-            mapNoData: new FormControl(false, Validators.required),
+        this.form = new FormGroup<ExpressionForm>({
+            rasterLayers: new FormControl<Array<RasterLayer> | undefined>(undefined, {
+                nonNullable: true,
+                validators: [Validators.required],
+            }),
+            expression: new FormControl<string>('    1 * A', {
+                nonNullable: true,
+                validators: [Validators.required],
+            }),
+            dataType: new FormControl(undefined, {
+                nonNullable: true,
+                validators: [Validators.required],
+            }),
+            name: new FormControl('Expression', {
+                nonNullable: true,
+                validators: [Validators.required, WaveValidators.notOnlyWhitespace],
+            }),
+            mapNoData: new FormControl(false, {
+                nonNullable: true,
+                validators: [Validators.required],
+            }),
             // TODO: add unit related inputs
         });
 
         this.outputDataTypes$ = this.form.controls.rasterLayers.valueChanges.pipe(
-            mergeMap((rasterLayers: Array<RasterLayer>) => {
+            mergeMap((rasterLayers: Array<RasterLayer> | undefined) => {
+                if (!rasterLayers) {
+                    return EMPTY;
+                }
+
                 const metaData = rasterLayers.map((l) => this.projectService.getRasterLayerMetadata(l));
                 return combineLatest(metaData);
             }),
@@ -83,9 +109,9 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
             }),
             tap(([rasterLayers, outputDataTypes]: [Array<RasterLayerMetadata>, Array<[RasterDataType, string]>]) => {
                 const dataTypeControl = this.form.controls.dataType;
-                const currentDataType: RasterDataType = dataTypeControl.value;
+                const currentDataType: RasterDataType | undefined = dataTypeControl.value;
                 const rasterDataTypes = rasterLayers.map((layer) => layer.dataType);
-                if (rasterDataTypes.includes(currentDataType)) {
+                if (currentDataType && rasterDataTypes.includes(currentDataType)) {
                     // is already set at a meaningful type
                     return;
                 }
@@ -101,10 +127,16 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         );
 
         this.rasterVariables$ = this.form.controls.rasterLayers.valueChanges.pipe(
-            map((rasterLayers: Array<RasterLayer>) => rasterLayers.map((_, index) => LetterNumberConverter.toLetters(index + 1))),
+            map((rasterLayers: Array<RasterLayer> | undefined) => {
+                if (!rasterLayers) {
+                    return [];
+                }
+
+                return rasterLayers.map((_, index) => LetterNumberConverter.toLetters(index + 1));
+            }),
         );
 
-        this.fnSignature = this.rasterVariables$.pipe(map((vars: string[]) => `fn(${vars.join(', ')}, out_nodata) {`));
+        this.fnSignature = this.rasterVariables$.pipe(map((vars: string[]) => `fn(${vars.join(', ')}) {`));
 
         this.projectHasRasterLayers$ = this.projectService
             .getLayerStream()
@@ -135,50 +167,19 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         }
     }
 
-    validateNoDataType(control: AbstractControl): ValidationErrors | null {
-        let valid = true;
-        const dataType = control.get('dataType')?.value;
-        const value = control.get('noDataValue')?.value;
-        const floatValue = parseFloat(value);
-
-        if (dataType == null || floatValue == null) {
-            return {
-                error: true,
-            };
-        }
-
-        if (!isNaN(floatValue)) {
-            valid = dataType.getMin() <= floatValue && floatValue <= dataType.getMax();
-        } else {
-            valid = value.toLowerCase() === 'nan' && (dataType === RasterDataTypes.Float32 || dataType === RasterDataTypes.Float64);
-        }
-
-        if (valid) {
-            return null;
-        } else {
-            return {
-                error: true,
-            };
-        }
-    }
-
     /**
      * Uses the user input and creates a new expression operator.
      * The resulting layer is added to the map.
      */
     add(): void {
         const name: string = this.form.controls['name'].value;
-        const dataType: RasterDataType = this.form.controls['dataType'].value;
+        const dataType: RasterDataType | undefined = this.form.controls['dataType'].value;
         const expression: string = this.form.controls['expression'].value;
-        const rasterLayers: Array<RasterLayer> = this.form.controls['rasterLayers'].value;
-        const noDataValueString: string = this.form.controls['noDataValue'].value;
+        const rasterLayers: Array<RasterLayer> | undefined = this.form.controls['rasterLayers'].value;
         const mapNoData: boolean = this.form.controls['mapNoData'].value;
 
-        let outputNoDataValue: number | 'nan';
-        if (isNaN(parseFloat(noDataValueString))) {
-            outputNoDataValue = 'nan';
-        } else {
-            outputNoDataValue = parseFloat(noDataValueString);
+        if (!dataType || !rasterLayers) {
+            return; // checked by form validator
         }
 
         const sourceOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers(rasterLayers);
@@ -193,7 +194,6 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                             params: {
                                 expression,
                                 outputType: dataType.getCode(),
-                                outputNoDataValue,
                                 // TODO: make this configurable once units exist again
                                 // outputMeasurement: undefined,
                                 mapNoData,

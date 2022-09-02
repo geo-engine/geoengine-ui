@@ -1,7 +1,7 @@
 import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 
 import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
 import {Config} from '../../config.service';
 import {WaveValidators} from '../../util/form.validators';
@@ -31,7 +31,7 @@ export class ModalLoginComponent implements OnDestroy {
 
     formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.LoggedOut);
 
-    loginForm: FormGroup;
+    loginForm: UntypedFormGroup;
 
     user?: User;
     invalidCredentials$ = new BehaviorSubject<boolean>(false);
@@ -41,9 +41,12 @@ export class ModalLoginComponent implements OnDestroy {
     private formStatusSubscription?: Subscription;
 
     constructor(private readonly config: Config, private dialogRef: MatDialogRef<ModalLoginComponent>) {
-        this.loginForm = new FormGroup({
-            email: new FormControl('', Validators.compose([Validators.required, WaveValidators.keyword([this.config.USER.GUEST.NAME])])),
-            password: new FormControl('', Validators.required),
+        this.loginForm = new UntypedFormGroup({
+            email: new UntypedFormControl(
+                '',
+                Validators.compose([Validators.required, WaveValidators.keyword([this.config.USER.GUEST.NAME])]),
+            ),
+            password: new UntypedFormControl('', Validators.required),
         });
     }
 
@@ -68,7 +71,7 @@ export class ModalLoginComponent implements OnDestroy {
             () => {
                 // on error
                 this.invalidCredentials$.next(true);
-                (this.loginForm.controls['password'] as FormControl).setValue('');
+                (this.loginForm.controls['password'] as UntypedFormControl).setValue('');
                 this.formStatus$.next(FormStatus.LoggedOut);
             },
         );

@@ -16,6 +16,8 @@ import {TemporalRasterAggregationComponent} from '../temporal-raster-aggregation
 import {ScatterplotOperatorComponent} from '../scatterplot-operator/scatterplot-operator.component';
 import {ExpressionOperatorComponent} from '../expression-operator/expression-operator.component';
 import {ClassHistogramOperatorComponent} from '../class-histogram-operator/class-histogram-operator.component';
+import {ColumnRangeFilterComponent} from '../column-range-filter/column-range-filter.component';
+import {RasterTypeConversionComponent} from '../raster-type-conversion/raster-type-conversion.component';
 
 /**
  * This type encapsulates…
@@ -155,6 +157,14 @@ export class OperatorListComponent implements OnInit, OnChanges {
             },
             description: 'Aggregate raster time series',
         },
+        {
+            component: RasterTypeConversionComponent,
+            type: {
+                NAME: 'Convert Raster Data Type',
+                ICON_URL: createIconDataUrl('Raster Type Conversion'),
+            },
+            description: 'Converts (casts) the raster type',
+        },
         // {
         //     component: RasterMaskComponent,
         //     type: {
@@ -181,6 +191,14 @@ export class OperatorListComponent implements OnInit, OnChanges {
         //     type: HeatmapType,
         //     description: 'Create a heatmap for points',
         // },
+        {
+            component: ColumnRangeFilterComponent,
+            type: {
+                NAME: 'Column Range Filter',
+                ICON_URL: createIconDataUrl('Column Range Filter'),
+            },
+            description: 'Filter columns by numbers or strings',
+        },
         {
             component: PointInPolygonFilterOperatorComponent,
             type: {

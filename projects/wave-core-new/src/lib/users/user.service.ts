@@ -193,6 +193,14 @@ export class UserService {
         return result.asObservable();
     }
 
+    saveSettingInLocalStorage(keyValue: string, setting: string): void {
+        localStorage.setItem(PATH_PREFIX + keyValue, setting);
+    }
+
+    getSettingFromLocalStorage(keyValue: string): string | null {
+        return localStorage.getItem(PATH_PREFIX + keyValue);
+    }
+
     protected saveSessionInBrowser(session: Session | undefined): void {
         if (session) {
             localStorage.setItem(PATH_PREFIX + 'session', session.sessionToken);

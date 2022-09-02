@@ -10,7 +10,7 @@ import {
     Output,
     SimpleChanges,
 } from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {WaveValidators} from '../../util/form.validators';
 import {Subscription} from 'rxjs';
 import {MPL_COLORMAPS} from './mpl-colormaps';
@@ -69,7 +69,7 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
     /**
      * The form control used in the template.
      */
-    form: FormGroup;
+    form: UntypedFormGroup;
 
     /**
      * The local (work-in-progress) Colorizer.
@@ -80,7 +80,7 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
 
     protected readonly largerThanZeroValidator = WaveValidators.largerThan(0);
 
-    constructor(protected readonly changeDetectorRef: ChangeDetectorRef, protected readonly formBuilder: FormBuilder) {
+    constructor(protected readonly changeDetectorRef: ChangeDetectorRef, protected readonly formBuilder: UntypedFormBuilder) {
         const initialColorMapName = Object.keys(this.colorMaps)[0];
 
         this.form = formBuilder.group({

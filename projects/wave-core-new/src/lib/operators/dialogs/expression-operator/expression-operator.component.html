@@ -49,10 +49,6 @@
             </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="fill">
-            <mat-label>No-Data Value</mat-label>
-            <input matInput type="text" formControlName="noDataValue" />
-        </mat-form-field>
         <mat-checkbox formControlName="mapNoData">Map No-Data with expression</mat-checkbox>
         <wave-operator-output-name formControlName="name">
             <mat-error *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace">

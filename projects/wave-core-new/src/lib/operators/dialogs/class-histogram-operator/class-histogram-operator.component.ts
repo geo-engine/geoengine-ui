@@ -1,7 +1,7 @@
 import {Layer, RasterLayer, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
-import {AbstractControl, AsyncValidatorFn, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidatorFn, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {Observable, of, ReplaySubject, Subscription, first} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {WaveValidators} from '../../../util/form.validators';
@@ -28,7 +28,7 @@ const isVectorLayer = (layer: Layer): boolean => {
  * Checks whether the input is categorical
  */
 const categoricalInputValidator =
-    (projectService: ProjectService, attributeControl: FormControl): AsyncValidatorFn =>
+    (projectService: ProjectService, attributeControl: UntypedFormControl): AsyncValidatorFn =>
     (control: AbstractControl): Observable<{nonCategorical: true} | {onlyWhitespace: true} | null> => {
         const layer: Layer | undefined = control.value;
 
@@ -87,7 +87,7 @@ const categoricalInputValidator =
 export class ClassHistogramOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
     inputTypes = ResultTypes.INPUT_TYPES;
 
-    form: FormGroup;
+    form: UntypedFormGroup;
 
     attributes$ = new ReplaySubject<Array<string>>(1);
 
@@ -101,7 +101,7 @@ export class ClassHistogramOperatorComponent implements OnInit, AfterViewInit, O
     constructor(
         private readonly projectService: ProjectService,
         private readonly notificationService: NotificationService,
-        private readonly formBuilder: FormBuilder,
+        private readonly formBuilder: UntypedFormBuilder,
     ) {
         const layerControl = this.formBuilder.control(undefined, Validators.required);
         this.form = this.formBuilder.group({
@@ -110,7 +110,7 @@ export class ClassHistogramOperatorComponent implements OnInit, AfterViewInit, O
             attribute: [undefined, WaveValidators.conditionalValidator(Validators.required, () => isVectorLayer(layerControl.value))],
         });
 
-        layerControl.addAsyncValidators(categoricalInputValidator(projectService, this.form.controls['attribute'] as FormControl));
+        layerControl.addAsyncValidators(categoricalInputValidator(projectService, this.form.controls['attribute'] as UntypedFormControl));
 
         // TODO: add check if categorical
 

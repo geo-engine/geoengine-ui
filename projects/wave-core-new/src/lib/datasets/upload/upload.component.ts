@@ -1,6 +1,6 @@
 import {HttpEventType} from '@angular/common/http';
 import {Component, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {MatChipInputEvent} from '@angular/material/chips';
 import {MatStepper} from '@angular/material/stepper';
 import {Subject} from 'rxjs';
@@ -48,8 +48,8 @@ export class UploadComponent {
     selectedFiles?: Array<File>;
     selectedTimeType?: string;
 
-    formMetaData: FormGroup;
-    formNameDescription: FormGroup;
+    formMetaData: UntypedFormGroup;
+    formNameDescription: UntypedFormGroup;
 
     constructor(
         protected datasetService: DatasetService,
@@ -57,35 +57,35 @@ export class UploadComponent {
         protected projectService: ProjectService,
         protected changeDetectorRef: ChangeDetectorRef,
     ) {
-        this.formMetaData = new FormGroup({
-            mainFile: new FormControl('', Validators.required),
-            layerName: new FormControl('', Validators.required),
-            dataType: new FormControl('', Validators.required),
-            timeType: new FormControl('', Validators.required),
-            timeStartColumn: new FormControl(''),
-            timeStartFormat: new FormControl(''),
-            timeStartFormatCustom: new FormControl(''), // TODO: validate format
-            timeStartFormatUnix: new FormControl(''),
-            timeDurationColumn: new FormControl(''),
-            timeDurationValue: new FormControl(1), // TODO: validate is positive integer
-            timeDurationValueType: new FormControl('infinite'),
-            timeDurationGranularity: new FormControl(this.defaultTimeGranularity),
-            timeEndColumn: new FormControl(''),
-            timeEndFormat: new FormControl(''),
-            timeEndFormatCustom: new FormControl(''), // TODO: validate format
-            timeEndFormatUnix: new FormControl(''),
-            columnsX: new FormControl(''),
-            columnsY: new FormControl(''),
-            columnsText: new FormControl(''),
-            columnsFloat: new FormControl(''),
-            columnsInt: new FormControl(''),
-            errorHandling: new FormControl('skip', Validators.required),
-            spatialReference: new FormControl('EPSG:4326', Validators.required), // TODO: validate sref string
+        this.formMetaData = new UntypedFormGroup({
+            mainFile: new UntypedFormControl('', Validators.required),
+            layerName: new UntypedFormControl('', Validators.required),
+            dataType: new UntypedFormControl('', Validators.required),
+            timeType: new UntypedFormControl('', Validators.required),
+            timeStartColumn: new UntypedFormControl(''),
+            timeStartFormat: new UntypedFormControl(''),
+            timeStartFormatCustom: new UntypedFormControl(''), // TODO: validate format
+            timeStartFormatUnix: new UntypedFormControl(''),
+            timeDurationColumn: new UntypedFormControl(''),
+            timeDurationValue: new UntypedFormControl(1), // TODO: validate is positive integer
+            timeDurationValueType: new UntypedFormControl('infinite'),
+            timeDurationGranularity: new UntypedFormControl(this.defaultTimeGranularity),
+            timeEndColumn: new UntypedFormControl(''),
+            timeEndFormat: new UntypedFormControl(''),
+            timeEndFormatCustom: new UntypedFormControl(''), // TODO: validate format
+            timeEndFormatUnix: new UntypedFormControl(''),
+            columnsX: new UntypedFormControl(''),
+            columnsY: new UntypedFormControl(''),
+            columnsText: new UntypedFormControl(''),
+            columnsFloat: new UntypedFormControl(''),
+            columnsInt: new UntypedFormControl(''),
+            errorHandling: new UntypedFormControl('skip', Validators.required),
+            spatialReference: new UntypedFormControl('EPSG:4326', Validators.required), // TODO: validate sref string
         });
 
-        this.formNameDescription = new FormGroup({
-            name: new FormControl('', Validators.required),
-            description: new FormControl(''),
+        this.formNameDescription = new UntypedFormGroup({
+            name: new UntypedFormControl('', Validators.required),
+            description: new UntypedFormControl(''),
         });
     }
 

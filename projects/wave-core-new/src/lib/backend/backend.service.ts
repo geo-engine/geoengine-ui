@@ -35,8 +35,8 @@ import {
     DataSetProviderListingDict,
     ProvenanceOutputDict,
     DatasetOrderByDict,
-    LayerCollectionItemDict,
     LayerDict,
+    LayerCollectionDict,
     AuthCodeRequestURL,
 } from './backend.model';
 
@@ -172,6 +172,15 @@ export class BackendService {
     getWorkflowProvenance(workflowId: UUID, sessionId: UUID): Observable<Array<ProvenanceOutputDict>> {
         return this.http.get<Array<ProvenanceOutputDict>>(this.config.API_URL + `/workflow/${workflowId}/provenance`, {
             headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    downloadWorkflowMetadata(workflowId: UUID, sessionId: UUID): Observable<HttpEvent<Blob>> {
+        return this.http.get(this.config.API_URL + `/workflow/${workflowId}/allMetadata/zip`, {
+            headers: BackendService.authorizationHeader(sessionId),
+            responseType: 'blob',
+            reportProgress: true,
+            observe: 'events',
         });
     }
 
@@ -330,29 +339,33 @@ export class BackendService {
         collection: string,
         offset: number = 0,
         limit: number = 20,
-    ): Observable<Array<LayerCollectionItemDict>> {
+    ): Observable<LayerCollectionDict> {
         const params = new NullDiscardingHttpParams();
         params.setMapped('offset', offset, (r) => r.toString());
         params.setMapped('limit', limit, (r) => r.toString());
 
-        return this.http.get<Array<LayerCollectionItemDict>>(this.config.API_URL + `/layers/collections/${provider}/${collection}`, {
+        collection = encodeURIComponent(collection);
+
+        return this.http.get<LayerCollectionDict>(this.config.API_URL + `/layers/collections/${provider}/${collection}`, {
             params: params.httpParams,
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
 
-    getRootLayerCollectionItems(sessionId: UUID, offset: number = 0, limit: number = 20): Observable<Array<LayerCollectionItemDict>> {
+    getRootLayerCollectionItems(sessionId: UUID, offset: number = 0, limit: number = 20): Observable<LayerCollectionDict> {
         const params = new NullDiscardingHttpParams();
         params.setMapped('offset', offset, (r) => r.toString());
         params.setMapped('limit', limit, (r) => r.toString());
 
-        return this.http.get<Array<LayerCollectionItemDict>>(this.config.API_URL + '/layers/collections', {
+        return this.http.get<LayerCollectionDict>(this.config.API_URL + '/layers/collections', {
             params: params.httpParams,
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
 
     getLayerCollectionLayer(sessionId: UUID, provider: UUID, layer: string): Observable<LayerDict> {
+        layer = encodeURIComponent(layer);
+
         return this.http.get<LayerDict>(this.config.API_URL + `/layers/${provider}/${layer}`, {
             headers: BackendService.authorizationHeader(sessionId),
         });

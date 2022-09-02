@@ -1,5 +1,5 @@
 import {Directive, Input, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
-import {FormControl} from '@angular/forms';
+import {UntypedFormControl} from '@angular/forms';
 import {Observable, ReplaySubject, Subscription} from 'rxjs';
 
 @Directive({
@@ -10,7 +10,7 @@ export class AutocompleteSelectDirective<T> implements OnChanges, OnDestroy {
     @Input('waveAutocompleteSelectAllValues') allValues: Array<T> = [];
     @Input('waveAutocompleteSelectSearchPredicate') searchPredicate: AutocompleteSelectPredicateFunction<T> = DEFAULT_PREDICATE_FN;
 
-    readonly filterFormControl = new FormControl();
+    readonly filterFormControl = new UntypedFormControl();
     readonly _filteredValues = new ReplaySubject<Array<T>>();
 
     private filterFormSubscription: Subscription;

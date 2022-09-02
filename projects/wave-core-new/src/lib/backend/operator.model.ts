@@ -19,7 +19,6 @@ export interface ExpressionDict extends OperatorDict {
     params: {
         expression: string;
         outputType: string;
-        outputNoDataValue: number | 'nan';
         outputMeasurement?: MeasurementDict;
         mapNoData: boolean;
     };
@@ -126,6 +125,18 @@ export interface PointInPolygonFilterDict extends OperatorDict {
     };
 }
 
+export interface ColumnRangeFilterDict extends OperatorDict {
+    type: 'ColumnRangeFilter';
+    params: {
+        column: string;
+        ranges: Array<number[]> | Array<string[]>;
+        keepNulls: boolean;
+    };
+    sources: {
+        vector: SourceOperatorDict | OperatorDict;
+    };
+}
+
 export interface RasterVectorJoinParams extends OperatorParams {
     names: Array<string>;
     temporalAggregation: 'none' | 'first' | 'mean';
@@ -168,6 +179,13 @@ export interface TemporalRasterAggregationDict extends OperatorDict {
         };
         window: TimeStepDict;
         windowReference?: TimeInstanceDict;
+    };
+}
+
+export interface RasterTypeConversionDict extends OperatorDict {
+    type: 'RasterTypeConversion';
+    params: {
+        outputDataType: string;
     };
 }
 
