@@ -1,4 +1,4 @@
-import {BehaviorSubject, first, Observable} from 'rxjs';
+import {BehaviorSubject, concat, first, ignoreElements, Observable} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 
 import {
@@ -41,7 +41,7 @@ import {
     WorkspaceSettingsComponent,
 } from 'wave-core';
 import {DomSanitizer} from '@angular/platform-browser';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, ParamMap} from '@angular/router';
 import {AppConfig} from './app-config.service';
 import {HelpComponent} from './help/help.component';
 import {SplashDialogComponent} from './splash-dialog/splash-dialog.component';
@@ -239,8 +239,17 @@ export class AppComponent implements OnInit, AfterViewInit {
      * @return true, if the splash dialog should be skipped, false otherwise
      */
     private handleQueryParameters(): void {
-        this.tryLogin();
-        this.activatedRoute.queryParamMap.subscribe((p) => {
+        const params = new URLSearchParams(window.location.search);
+        const sessionState = params.get('session_state');
+        const code = params.get('code');
+        const state = params.get('state');
+
+        let login;
+        if (sessionState && code && state) {
+            login = this.userService.oidcLogin({sessionState, code, state}).pipe(first());
+        }
+
+        const handleBasketSubscription: (p: ParamMap) => void = (p: ParamMap) => {
             const basketId = p.get('basket_id');
             if (basketId != null) {
                 this.basketService.handleBasket(basketId).subscribe((result) => {
@@ -249,18 +258,10 @@ export class AppComponent implements OnInit, AfterViewInit {
             } else {
                 this.dialog.open(SplashDialogComponent, {});
             }
-        });
-    }
+        };
+        const routeParams = this.activatedRoute.queryParamMap;
 
-    private tryLogin(): void {
-        const params = new URLSearchParams(window.location.search);
-        const sessionState = params.get('session_state');
-        const code = params.get('code');
-        const state = params.get('state');
-
-        if (!sessionState || !code || !state) {
-            return;
-        }
-        this.userService.oidcLogin({sessionState, code, state}).pipe(first()).subscribe();
+        if (login) concat(login.pipe(ignoreElements()), routeParams).subscribe(handleBasketSubscription);
+        else routeParams.subscribe(handleBasketSubscription);
     }
 }

@@ -13,9 +13,9 @@ export class OidcComponent implements OnInit, OnDestroy {
     user?: User;
     loginDisabled: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-    private userSubscription: SubscriptionLike | undefined;
-    private loginSubscription: SubscriptionLike | undefined;
-    private logoutSubscription: SubscriptionLike | undefined;
+    private userSubscription?: SubscriptionLike;
+    private loginSubscription?: SubscriptionLike;
+    private logoutSubscription?: SubscriptionLike;
 
     private pendingLoginRequest = false;
 
