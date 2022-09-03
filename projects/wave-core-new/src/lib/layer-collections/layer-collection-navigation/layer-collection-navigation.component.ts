@@ -27,8 +27,8 @@ export class LayerCollectionNavigationComponent {
     scrollToRight(): void {
         setTimeout(() => {
             // wait until breadcrumbs are re-rendered before scrolling
-            this.scrollElement.nativeElement.scrollLeft += 500;
-        }, 50);
+            this.scrollElement.nativeElement.scrollLeft += Number.MAX_SAFE_INTEGER;
+        }, 0);
     }
 
     selectCollection(id: LayerCollectionItemDict): void {
