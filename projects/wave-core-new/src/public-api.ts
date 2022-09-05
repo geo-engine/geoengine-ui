@@ -102,6 +102,9 @@ export * from './lib/util/directives/autocomplete-select.directive';
 export * from './lib/time/time-slider/time-slider.component';
 export * from './lib/operators/dialogs/column-range-filter/column-range-filter.component';
 export * from './lib/dialogs/dialog-splash-checkbox/dialog-splash-checkbox.component';
+export * from './lib/datatable/mediaview/mediaview.component';
+export * from './lib/datatable/mediaview/dialog/mediaview.dialog.component';
+export * from './lib/datatable/mediaview/playlist/mediaview.playlist.component';
 
 // Pipes
 export * from './lib/util/pipes/async-converters.pipe';
