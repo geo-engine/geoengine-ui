@@ -41,11 +41,11 @@
         <ng-container *ngFor="let columnName of featureColumns; let j = index" [matColumnDef]="columnName">
             <th mat-header-cell *matHeaderCellDef>{{ columnName }}</th>
             <td mat-cell *matCellDef="let element">
-                <wave-datatable-mediaview
+                <geoengine-datatable-mediaview
                     *ngIf="colTypes[j] === columnDataTypes.Media && element.get(columnName)"
                     [url]="element.get(columnName)"
                     [type]="colTypes[j]"
-                ></wave-datatable-mediaview>
+                ></geoengine-datatable-mediaview>
                 <span *ngIf="colTypes[j] !== columnDataTypes.Media">{{ element.get(columnName) }}</span>
             </td>
         </ng-container>

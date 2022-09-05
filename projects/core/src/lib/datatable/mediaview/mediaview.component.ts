@@ -4,7 +4,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {VectorColumnDataType, VectorColumnDataTypes} from '../../operators/datatype.model';
 
 @Component({
-    selector: 'wave-datatable-mediaview',
+    selector: 'geoengine-datatable-mediaview',
     templateUrl: './mediaview.component.html',
     styleUrls: ['./mediaview.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

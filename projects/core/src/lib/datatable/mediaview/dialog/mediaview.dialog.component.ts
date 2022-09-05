@@ -2,7 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 @Component({
-    selector: 'wave-mediaview-dialog',
+    selector: 'geoengine-mediaview-dialog',
     templateUrl: './mediaview.dialog.component.html',
     styleUrls: ['./mediaview.dialog.component.scss'],
 })
