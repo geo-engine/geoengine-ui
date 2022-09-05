@@ -51,7 +51,7 @@
                 }
             }
         },
-        "geoengine-app": {
+        "gis": {
             "projectType": "application",
             "schematics": {
                 "@schematics/angular:component": {
@@ -65,8 +65,8 @@
                     "prefix": "geoengine"
                 }
             },
-            "root": "projects/geoengine-app",
-            "sourceRoot": "projects/geoengine-app/src",
+            "root": "projects/gis",
+            "sourceRoot": "projects/gis/src",
             "prefix": "geoengine",
             "architect": {
                 "build": {
@@ -84,14 +84,14 @@
                             "fast-deep-equal",
                             "fast-json-stable-stringify"
                         ],
-                        "outputPath": "dist/geoengine-app",
-                        "index": "projects/geoengine-app/src/index.html",
-                        "main": "projects/geoengine-app/src/main.ts",
-                        "polyfills": "projects/geoengine-app/src/polyfills.ts",
-                        "tsConfig": "projects/geoengine-app/tsconfig.app.json",
+                        "outputPath": "dist/gis",
+                        "index": "projects/gis/src/index.html",
+                        "main": "projects/gis/src/main.ts",
+                        "polyfills": "projects/gis/src/polyfills.ts",
+                        "tsConfig": "projects/gis/tsconfig.app.json",
                         "assets": [
-                            "projects/geoengine-app/src/favicon.ico",
-                            "projects/geoengine-app/src/assets",
+                            "projects/gis/src/favicon.ico",
+                            "projects/gis/src/assets",
                             {
                                 "glob": "**/*",
                                 "input": "dist/core/assets",
@@ -99,7 +99,7 @@
                             }
                         ],
                         "styles": [
-                            "projects/geoengine-app/src/styles.scss",
+                            "projects/gis/src/styles.scss",
                             "dist/core/assets/fonts/roboto/roboto.css",
                             "dist/core/assets/fonts/pacifico/pacifico.css",
                             "dist/core/assets/fonts/material-design-icons/material-icons.css",
@@ -119,8 +119,8 @@
                         "production": {
                             "fileReplacements": [
                                 {
-                                    "replace": "projects/geoengine-app/src/environments/environment.ts",
-                                    "with": "projects/geoengine-app/src/environments/environment.prod.ts"
+                                    "replace": "projects/gis/src/environments/environment.ts",
+                                    "with": "projects/gis/src/environments/environment.prod.ts"
                                 }
                             ],
                             "optimization": true,
@@ -152,10 +152,10 @@
                     "options": {},
                     "configurations": {
                         "production": {
-                            "browserTarget": "geoengine-app:build:production"
+                            "browserTarget": "gis:build:production"
                         },
                         "development": {
-                            "browserTarget": "geoengine-app:build:development"
+                            "browserTarget": "gis:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -163,45 +163,45 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "geoengine-app:build"
+                        "browserTarget": "gis:build"
                     }
                 },
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "main": "projects/geoengine-app/src/test.ts",
-                        "polyfills": "projects/geoengine-app/src/polyfills.ts",
-                        "tsConfig": "projects/geoengine-app/tsconfig.spec.json",
-                        "karmaConfig": "projects/geoengine-app/karma.conf.js",
-                        "assets": ["projects/geoengine-app/src/favicon.ico", "projects/geoengine-app/src/assets"],
-                        "styles": ["projects/geoengine-app/src/styles.scss"],
+                        "main": "projects/gis/src/test.ts",
+                        "polyfills": "projects/gis/src/polyfills.ts",
+                        "tsConfig": "projects/gis/tsconfig.spec.json",
+                        "karmaConfig": "projects/gis/karma.conf.js",
+                        "assets": ["projects/gis/src/favicon.ico", "projects/gis/src/assets"],
+                        "styles": ["projects/gis/src/styles.scss"],
                         "scripts": []
                     }
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "lintFilePatterns": ["projects/geoengine-app/**/*.ts", "projects/geoengine-app/**/*.html"]
+                        "lintFilePatterns": ["projects/gis/**/*.ts", "projects/gis/**/*.html"]
                     }
                 },
                 "e2e": {
                     "builder": "@angular-devkit/build-angular:protractor",
                     "options": {
-                        "protractorConfig": "projects/geoengine-app/e2e/protractor.conf.js"
+                        "protractorConfig": "projects/gis/e2e/protractor.conf.js"
                     },
                     "configurations": {
                         "production": {
-                            "devServerTarget": "geoengine-app:serve:production"
+                            "devServerTarget": "gis:serve:production"
                         },
                         "development": {
-                            "devServerTarget": "geoengine-app:serve:development"
+                            "devServerTarget": "gis:serve:development"
                         }
                     },
                     "defaultConfiguration": "development"
                 }
             }
         },
-        "data-atlas-app": {
+        "data-atlas": {
             "projectType": "application",
             "schematics": {
                 "@schematics/angular:component": {
@@ -215,8 +215,8 @@
                     "prefix": "geoengine"
                 }
             },
-            "root": "projects/data-atlas-app",
-            "sourceRoot": "projects/data-atlas-app/src",
+            "root": "projects/dashboards/data-atlas",
+            "sourceRoot": "projects/dashboards/data-atlas/src",
             "prefix": "geoengine",
             "architect": {
                 "build": {
@@ -234,14 +234,14 @@
                             "fast-deep-equal",
                             "fast-json-stable-stringify"
                         ],
-                        "outputPath": "dist/data-atlas-app",
-                        "index": "projects/data-atlas-app/src/index.html",
-                        "main": "projects/data-atlas-app/src/main.ts",
-                        "polyfills": "projects/data-atlas-app/src/polyfills.ts",
-                        "tsConfig": "projects/data-atlas-app/tsconfig.app.json",
+                        "outputPath": "dist/dashboards/data-atlas",
+                        "index": "projects/dashboards/data-atlas/src/index.html",
+                        "main": "projects/dashboards/data-atlas/src/main.ts",
+                        "polyfills": "projects/dashboards/data-atlas/src/polyfills.ts",
+                        "tsConfig": "projects/dashboards/data-atlas/tsconfig.app.json",
                         "assets": [
-                            "projects/data-atlas-app/src/favicon.ico",
-                            "projects/data-atlas-app/src/assets",
+                            "projects/dashboards/data-atlas/src/favicon.ico",
+                            "projects/dashboards/data-atlas/src/assets",
                             {
                                 "glob": "**/*",
                                 "input": "dist/core/assets",
@@ -249,7 +249,7 @@
                             }
                         ],
                         "styles": [
-                            "projects/data-atlas-app/src/styles.scss",
+                            "projects/dashboards/data-atlas/src/styles.scss",
                             "dist/core/assets/fonts/roboto/roboto.css",
                             "dist/core/assets/fonts/pacifico/pacifico.css",
                             "dist/core/assets/fonts/material-design-icons/material-icons.css",
@@ -268,8 +268,8 @@
                         "production": {
                             "fileReplacements": [
                                 {
-                                    "replace": "projects/data-atlas-app/src/environments/environment.ts",
-                                    "with": "projects/data-atlas-app/src/environments/environment.prod.ts"
+                                    "replace": "projects/dashboards/data-atlas/src/environments/environment.ts",
+                                    "with": "projects/dashboards/data-atlas/src/environments/environment.prod.ts"
                                 }
                             ],
                             "optimization": true,
@@ -301,10 +301,10 @@
                     "options": {},
                     "configurations": {
                         "production": {
-                            "browserTarget": "data-atlas-app:build:production"
+                            "browserTarget": "data-atlas:build:production"
                         },
                         "development": {
-                            "browserTarget": "data-atlas-app:build:development"
+                            "browserTarget": "data-atlas:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -312,45 +312,45 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "data-atlas-app:build"
+                        "browserTarget": "data-atlas:build"
                     }
                 },
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "main": "projects/data-atlas-app/src/test.ts",
-                        "polyfills": "projects/data-atlas-app/src/polyfills.ts",
-                        "tsConfig": "projects/data-atlas-app/tsconfig.spec.json",
-                        "karmaConfig": "projects/data-atlas-app/karma.conf.js",
-                        "assets": ["projects/data-atlas-app/src/favicon.ico", "projects/data-atlas-app/src/assets"],
-                        "styles": ["projects/data-atlas-app/src/styles.scss"],
+                        "main": "projects/dashboards/data-atlas/src/test.ts",
+                        "polyfills": "projects/dashboards/data-atlas/src/polyfills.ts",
+                        "tsConfig": "projects/dashboards/data-atlas/tsconfig.spec.json",
+                        "karmaConfig": "projects/dashboards/data-atlas/karma.conf.js",
+                        "assets": ["projects/dashboards/data-atlas/src/favicon.ico", "projects/dashboards/data-atlas/src/assets"],
+                        "styles": ["projects/dashboards/data-atlas/src/styles.scss"],
                         "scripts": []
                     }
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "lintFilePatterns": ["projects/data-atlas-app/**/*.ts", "projects/data-atlas-app/**/*.html"]
+                        "lintFilePatterns": ["projects/dashboards/data-atlas/**/*.ts", "projects/dashboards/data-atlas/**/*.html"]
                     }
                 },
                 "e2e": {
                     "builder": "@angular-devkit/build-angular:protractor",
                     "options": {
-                        "protractorConfig": "projects/data-atlas-app/e2e/protractor.conf.js"
+                        "protractorConfig": "projects/dashboards/data-atlas/e2e/protractor.conf.js"
                     },
                     "configurations": {
                         "production": {
-                            "devServerTarget": "data-atlas-app:serve:production"
+                            "devServerTarget": "data-atlas:serve:production"
                         },
                         "development": {
-                            "devServerTarget": "data-atlas-app:serve:development"
+                            "devServerTarget": "data-atlas:serve:development"
                         }
                     },
                     "defaultConfiguration": "development"
                 }
             }
         },
-        "ebv-analyzer-app": {
+        "ebv-analyzer": {
             "projectType": "application",
             "schematics": {
                 "@schematics/angular:component": {
@@ -364,8 +364,8 @@
                     "prefix": "geoengine"
                 }
             },
-            "root": "projects/ebv-analyzer-app",
-            "sourceRoot": "projects/ebv-analyzer-app/src",
+            "root": "projects/dashboards/ebv-analyzer",
+            "sourceRoot": "projects/dashboards/ebv-analyzer/src",
             "prefix": "geoengine",
             "architect": {
                 "build": {
@@ -383,14 +383,14 @@
                             "fast-deep-equal",
                             "fast-json-stable-stringify"
                         ],
-                        "outputPath": "dist/ebv-analyzer-app",
-                        "index": "projects/ebv-analyzer-app/src/index.html",
-                        "main": "projects/ebv-analyzer-app/src/main.ts",
-                        "polyfills": "projects/ebv-analyzer-app/src/polyfills.ts",
-                        "tsConfig": "projects/ebv-analyzer-app/tsconfig.app.json",
+                        "outputPath": "dist/ebv-analyzer",
+                        "index": "projects/dashboards/ebv-analyzer/src/index.html",
+                        "main": "projects/dashboards/ebv-analyzer/src/main.ts",
+                        "polyfills": "projects/dashboards/ebv-analyzer/src/polyfills.ts",
+                        "tsConfig": "projects/dashboards/ebv-analyzer/tsconfig.app.json",
                         "assets": [
-                            "projects/ebv-analyzer-app/src/favicon.ico",
-                            "projects/ebv-analyzer-app/src/assets",
+                            "projects/dashboards/ebv-analyzer/src/favicon.ico",
+                            "projects/dashboards/ebv-analyzer/src/assets",
                             {
                                 "glob": "**/*",
                                 "input": "dist/core/assets",
@@ -398,7 +398,7 @@
                             }
                         ],
                         "styles": [
-                            "projects/ebv-analyzer-app/src/styles.scss",
+                            "projects/dashboards/ebv-analyzer/src/styles.scss",
                             "dist/core/assets/fonts/roboto/roboto.css",
                             "dist/core/assets/fonts/pacifico/pacifico.css",
                             "dist/core/assets/fonts/material-design-icons/material-icons.css",
@@ -417,8 +417,8 @@
                         "production": {
                             "fileReplacements": [
                                 {
-                                    "replace": "projects/ebv-analyzer-app/src/environments/environment.ts",
-                                    "with": "projects/ebv-analyzer-app/src/environments/environment.prod.ts"
+                                    "replace": "projects/dashboards/ebv-analyzer/src/environments/environment.ts",
+                                    "with": "projects/dashboards/ebv-analyzer/src/environments/environment.prod.ts"
                                 }
                             ],
                             "optimization": true,
@@ -450,10 +450,10 @@
                     "options": {},
                     "configurations": {
                         "production": {
-                            "browserTarget": "ebv-analyzer-app:build:production"
+                            "browserTarget": "ebv-analyzer:build:production"
                         },
                         "development": {
-                            "browserTarget": "ebv-analyzer-app:build:development"
+                            "browserTarget": "ebv-analyzer:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -461,45 +461,45 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "ebv-analyzer-app:build"
+                        "browserTarget": "ebv-analyzer:build"
                     }
                 },
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "main": "projects/ebv-analyzer-app/src/test.ts",
-                        "polyfills": "projects/ebv-analyzer-app/src/polyfills.ts",
-                        "tsConfig": "projects/ebv-analyzer-app/tsconfig.spec.json",
-                        "karmaConfig": "projects/ebv-analyzer-app/karma.conf.js",
-                        "assets": ["projects/ebv-analyzer-app/src/favicon.ico", "projects/ebv-analyzer-app/src/assets"],
-                        "styles": ["projects/ebv-analyzer-app/src/styles.scss"],
+                        "main": "projects/dashboards/ebv-analyzer/src/test.ts",
+                        "polyfills": "projects/dashboards/ebv-analyzer/src/polyfills.ts",
+                        "tsConfig": "projects/dashboards/ebv-analyzer/tsconfig.spec.json",
+                        "karmaConfig": "projects/dashboards/ebv-analyzer/karma.conf.js",
+                        "assets": ["projects/dashboards/ebv-analyzer/src/favicon.ico", "projects/dashboards/ebv-analyzer/src/assets"],
+                        "styles": ["projects/dashboards/ebv-analyzer/src/styles.scss"],
                         "scripts": []
                     }
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "lintFilePatterns": ["projects/ebv-analyzer-app/**/*.ts", "projects/ebv-analyzer-app/**/*.html"]
+                        "lintFilePatterns": ["projects/dashboards/ebv-analyzer/**/*.ts", "projects/dashboards/ebv-analyzer/**/*.html"]
                     }
                 },
                 "e2e": {
                     "builder": "@angular-devkit/build-angular:protractor",
                     "options": {
-                        "protractorConfig": "projects/ebv-analyzer-app/e2e/protractor.conf.js"
+                        "protractorConfig": "projects/dashboards/ebv-analyzer/e2e/protractor.conf.js"
                     },
                     "configurations": {
                         "production": {
-                            "devServerTarget": "ebv-analyzer-app:serve:production"
+                            "devServerTarget": "ebv-analyzer:serve:production"
                         },
                         "development": {
-                            "devServerTarget": "ebv-analyzer-app:serve:development"
+                            "devServerTarget": "ebv-analyzer:serve:development"
                         }
                     },
                     "defaultConfiguration": "development"
                 }
             }
         },
-        "nfdi-gdo-app": {
+        "nfdi-gdo": {
             "projectType": "application",
             "schematics": {
                 "@schematics/angular:component": {
@@ -513,8 +513,8 @@
                     "prefix": "geoengine"
                 }
             },
-            "root": "projects/nfdi-gdo-app",
-            "sourceRoot": "projects/nfdi-gdo-app/src",
+            "root": "projects/dashboards/nfdi-gdo",
+            "sourceRoot": "projects/dashboards/nfdi-gdo/src",
             "prefix": "geoengine",
             "architect": {
                 "build": {
@@ -532,14 +532,14 @@
                             "fast-deep-equal",
                             "fast-json-stable-stringify"
                         ],
-                        "outputPath": "dist/nfdi-gdo-app",
-                        "index": "projects/nfdi-gdo-app/src/index.html",
-                        "main": "projects/nfdi-gdo-app/src/main.ts",
-                        "polyfills": "projects/nfdi-gdo-app/src/polyfills.ts",
-                        "tsConfig": "projects/nfdi-gdo-app/tsconfig.app.json",
+                        "outputPath": "dist/nfdi-gdo",
+                        "index": "projects/dashboards/nfdi-gdo/src/index.html",
+                        "main": "projects/dashboards/nfdi-gdo/src/main.ts",
+                        "polyfills": "projects/dashboards/nfdi-gdo/src/polyfills.ts",
+                        "tsConfig": "projects/dashboards/nfdi-gdo/tsconfig.app.json",
                         "assets": [
-                            "projects/nfdi-gdo-app/src/favicon.ico",
-                            "projects/nfdi-gdo-app/src/assets",
+                            "projects/dashboards/nfdi-gdo/src/favicon.ico",
+                            "projects/dashboards/nfdi-gdo/src/assets",
                             {
                                 "glob": "**/*",
                                 "input": "dist/core/assets",
@@ -547,7 +547,7 @@
                             }
                         ],
                         "styles": [
-                            "projects/nfdi-gdo-app/src/styles.scss",
+                            "projects/dashboards/nfdi-gdo/src/styles.scss",
                             "dist/core/assets/fonts/roboto/roboto.css",
                             "dist/core/assets/fonts/pacifico/pacifico.css",
                             "dist/core/assets/fonts/material-design-icons/material-icons.css",
@@ -566,8 +566,8 @@
                         "production": {
                             "fileReplacements": [
                                 {
-                                    "replace": "projects/nfdi-gdo-app/src/environments/environment.ts",
-                                    "with": "projects/nfdi-gdo-app/src/environments/environment.prod.ts"
+                                    "replace": "projects/dashboards/nfdi-gdo/src/environments/environment.ts",
+                                    "with": "projects/dashboards/nfdi-gdo/src/environments/environment.prod.ts"
                                 }
                             ],
                             "optimization": true,
@@ -599,10 +599,10 @@
                     "options": {},
                     "configurations": {
                         "production": {
-                            "browserTarget": "nfdi-gdo-app:build:production"
+                            "browserTarget": "nfdi-gdo:build:production"
                         },
                         "development": {
-                            "browserTarget": "nfdi-gdo-app:build:development"
+                            "browserTarget": "nfdi-gdo:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -610,45 +610,45 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "nfdi-gdo-app:build"
+                        "browserTarget": "nfdi-gdo:build"
                     }
                 },
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "main": "projects/nfdi-gdo-app/src/test.ts",
-                        "polyfills": "projects/nfdi-gdo-app/src/polyfills.ts",
-                        "tsConfig": "projects/nfdi-gdo-app/tsconfig.spec.json",
-                        "karmaConfig": "projects/nfdi-gdo-app/karma.conf.js",
-                        "assets": ["projects/nfdi-gdo-app/src/favicon.ico", "projects/nfdi-gdo-app/src/assets"],
-                        "styles": ["projects/nfdi-gdo-app/src/styles.scss"],
+                        "main": "projects/dashboards/nfdi-gdo/src/test.ts",
+                        "polyfills": "projects/dashboards/nfdi-gdo/src/polyfills.ts",
+                        "tsConfig": "projects/dashboards/nfdi-gdo/tsconfig.spec.json",
+                        "karmaConfig": "projects/dashboards/nfdi-gdo/karma.conf.js",
+                        "assets": ["projects/dashboards/nfdi-gdo/src/favicon.ico", "projects/dashboards/nfdi-gdo/src/assets"],
+                        "styles": ["projects/dashboards/nfdi-gdo/src/styles.scss"],
                         "scripts": []
                     }
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "lintFilePatterns": ["projects/nfdi-gdo-app/**/*.ts", "projects/nfdi-gdo-app/**/*.html"]
+                        "lintFilePatterns": ["projects/dashboards/nfdi-gdo/**/*.ts", "projects/dashboards/nfdi-gdo/**/*.html"]
                     }
                 },
                 "e2e": {
                     "builder": "@angular-devkit/build-angular:protractor",
                     "options": {
-                        "protractorConfig": "projects/nfdi-gdo-app/e2e/protractor.conf.js"
+                        "protractorConfig": "projects/dashboards/nfdi-gdo/e2e/protractor.conf.js"
                     },
                     "configurations": {
                         "production": {
-                            "devServerTarget": "nfdi-gdo-app:serve:production"
+                            "devServerTarget": "nfdi-gdo:serve:production"
                         },
                         "development": {
-                            "devServerTarget": "nfdi-gdo-app:serve:development"
+                            "devServerTarget": "nfdi-gdo:serve:development"
                         }
                     },
                     "defaultConfiguration": "development"
                 }
             }
         },
-        "gfbio-app": {
+        "gfbio": {
             "projectType": "application",
             "schematics": {
                 "@schematics/angular:component": {
@@ -662,8 +662,8 @@
                     "prefix": "geoengine"
                 }
             },
-            "root": "projects/gfbio-app",
-            "sourceRoot": "projects/gfbio-app/src",
+            "root": "projects/dashboards/gfbio",
+            "sourceRoot": "projects/dashboards/gfbio/src",
             "prefix": "geoengine",
             "architect": {
                 "build": {
@@ -681,14 +681,14 @@
                             "fast-deep-equal",
                             "fast-json-stable-stringify"
                         ],
-                        "outputPath": "dist/gfbio-app",
-                        "index": "projects/gfbio-app/src/index.html",
-                        "main": "projects/gfbio-app/src/main.ts",
-                        "polyfills": "projects/gfbio-app/src/polyfills.ts",
-                        "tsConfig": "projects/gfbio-app/tsconfig.app.json",
+                        "outputPath": "dist/gfbio",
+                        "index": "projects/dashboards/gfbio/src/index.html",
+                        "main": "projects/dashboards/gfbio/src/main.ts",
+                        "polyfills": "projects/dashboards/gfbio/src/polyfills.ts",
+                        "tsConfig": "projects/dashboards/gfbio/tsconfig.app.json",
                         "assets": [
-                            "projects/gfbio-app/src/favicon.ico",
-                            "projects/gfbio-app/src/assets",
+                            "projects/dashboards/gfbio/src/favicon.ico",
+                            "projects/dashboards/gfbio/src/assets",
                             {
                                 "glob": "**/*",
                                 "input": "dist/core/assets",
@@ -696,7 +696,7 @@
                             }
                         ],
                         "styles": [
-                            "projects/gfbio-app/src/styles.scss",
+                            "projects/dashboards/gfbio/src/styles.scss",
                             "dist/core/assets/fonts/roboto/roboto.css",
                             "dist/core/assets/fonts/pacifico/pacifico.css",
                             "dist/core/assets/fonts/material-design-icons/material-icons.css",
@@ -715,8 +715,8 @@
                         "production": {
                             "fileReplacements": [
                                 {
-                                    "replace": "projects/gfbio-app/src/environments/environment.ts",
-                                    "with": "projects/gfbio-app/src/environments/environment.prod.ts"
+                                    "replace": "projects/dashboards/gfbio/src/environments/environment.ts",
+                                    "with": "projects/dashboards/gfbio/src/environments/environment.prod.ts"
                                 }
                             ],
                             "optimization": true,
@@ -748,10 +748,10 @@
                     "options": {},
                     "configurations": {
                         "production": {
-                            "browserTarget": "gfbio-app:build:production"
+                            "browserTarget": "gfbio:build:production"
                         },
                         "development": {
-                            "browserTarget": "gfbio-app:build:development"
+                            "browserTarget": "gfbio:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -759,38 +759,38 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "gfbio-app:build"
+                        "browserTarget": "gfbio:build"
                     }
                 },
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "main": "projects/gfbio-app/src/test.ts",
-                        "polyfills": "projects/gfbio-app/src/polyfills.ts",
-                        "tsConfig": "projects/gfbio-app/tsconfig.spec.json",
-                        "karmaConfig": "projects/gfbio-app/karma.conf.js",
-                        "assets": ["projects/gfbio-app/src/favicon.ico", "projects/gfbio-app/src/assets"],
-                        "styles": ["projects/gfbio-app/src/styles.scss"],
+                        "main": "projects/dashboards/gfbio/src/test.ts",
+                        "polyfills": "projects/dashboards/gfbio/src/polyfills.ts",
+                        "tsConfig": "projects/dashboards/gfbio/tsconfig.spec.json",
+                        "karmaConfig": "projects/dashboards/gfbio/karma.conf.js",
+                        "assets": ["projects/dashboards/gfbio/src/favicon.ico", "projects/dashboards/gfbio/src/assets"],
+                        "styles": ["projects/dashboards/gfbio/src/styles.scss"],
                         "scripts": []
                     }
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "lintFilePatterns": ["projects/gfbio-app/**/*.ts", "projects/gfbio-app/**/*.html"]
+                        "lintFilePatterns": ["projects/dashboards/gfbio/**/*.ts", "projects/dashboards/gfbio/**/*.html"]
                     }
                 },
                 "e2e": {
                     "builder": "@angular-devkit/build-angular:protractor",
                     "options": {
-                        "protractorConfig": "projects/gfbio-app/e2e/protractor.conf.js"
+                        "protractorConfig": "projects/dashboards/gfbio/e2e/protractor.conf.js"
                     },
                     "configurations": {
                         "production": {
-                            "devServerTarget": "gfbio-app:serve:production"
+                            "devServerTarget": "gfbio:serve:production"
                         },
                         "development": {
-                            "devServerTarget": "gfbio-app:serve:development"
+                            "devServerTarget": "gfbio:serve:development"
                         }
                     },
                     "defaultConfiguration": "development"
