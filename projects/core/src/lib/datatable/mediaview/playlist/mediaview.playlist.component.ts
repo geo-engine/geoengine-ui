@@ -1,7 +1,7 @@
 import {Component, Input, Output, EventEmitter} from '@angular/core';
 
 @Component({
-    selector: 'wave-mediaview-playlist',
+    selector: 'geoengine-mediaview-playlist',
     templateUrl: './mediaview.playlist.component.html',
     styleUrls: ['./mediaview.playlist.component.scss'],
 })
