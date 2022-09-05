@@ -1,9 +1,9 @@
 <div class="container mat-typography" #container>
-    <wave-layer-collection-dropdown
+    <geoengine-layer-collection-dropdown
         [root]="rootCollectionId"
         (layerSelected)="layerSelected($event)"
         [preselectedPath]="preselectedPath"
-    ></wave-layer-collection-dropdown>
+    ></geoengine-layer-collection-dropdown>
 
     <div fxLayout="row" fxLayoutGap="1rem">
         <button mat-raised-button class="show" color="primary" *ngIf="layerId" (click)="showEbv()">Show</button>
@@ -15,19 +15,19 @@
     <mat-divider></mat-divider>
 
     <div *ngIf="layer" fxLayout="row" fxLayoutAlign="space-between start">
-        <wave-ebv-country-selector fxFlex=""></wave-ebv-country-selector>
+        <geoengine-ebv-country-selector fxFlex=""></geoengine-ebv-country-selector>
         <span fxFlex="1rem"></span>
         <button mat-raised-button color="primary" [disabled]="isPlotButtonDisabled$ | async" (click)="plot()">Calculate</button>
     </div>
 
-    <wave-vega-viewer *ngIf="plotData | async as plot" [chartData]="plot"></wave-vega-viewer>
+    <geoengine-vega-viewer *ngIf="plotData | async as plot" [chartData]="plot"></geoengine-vega-viewer>
 
     <mat-spinner color="accent" *ngIf="plotLoading | async"></mat-spinner>
 
     <div class="spacer"></div>
     <mat-divider></mat-divider>
 
-    <wave-ebv-attributions></wave-ebv-attributions>
+    <geoengine-ebv-attributions></geoengine-ebv-attributions>
 
     <div class="spacer"></div>
 </div>

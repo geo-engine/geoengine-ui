@@ -15,8 +15,8 @@ import {
     SpatialReferenceService,
     TabsService,
     UserService,
-    WaveCoreModule,
-} from 'wave-core';
+    CoreModule,
+} from '@geoengine/core';
 import {AppConfig} from './app-config.service';
 import {LoginComponent} from './login/login.component';
 import {MainComponent} from './main/main.component';
@@ -25,7 +25,7 @@ import {RegisterComponent} from './register/register.component';
 
 @NgModule({
     declarations: [AppComponent, LoginComponent, MainComponent, RegisterComponent],
-    imports: [BrowserAnimationsModule, BrowserModule, HttpClientModule, AppRoutingModule, WaveCoreModule],
+    imports: [BrowserAnimationsModule, BrowserModule, HttpClientModule, AppRoutingModule, CoreModule],
     providers: [
         {provide: Config, useClass: AppConfig},
         {

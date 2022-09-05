@@ -104,12 +104,12 @@ $md-white: (
 );
 
 // Define App Theme
-$wave-app-primary: mat.define-palette($md-white);
-$wave-app-accent: mat.define-palette($gdo-red);
-$wave-app-warn: mat.define-palette(mat.$red-palette);
+$geoengine-primary: mat.define-palette($md-white);
+$geoengine-accent: mat.define-palette($gdo-red);
+$geoengine-warn: mat.define-palette(mat.$red-palette);
 
 // Create the theme object (a Sass map containing all of the palettes).
-$wave-app-theme: mat.define-light-theme($wave-app-primary, $wave-app-accent, $wave-app-warn);
+$geoengine-theme: mat.define-light-theme($geoengine-primary, $geoengine-accent, $geoengine-warn);
 
 // Apply Angular Material Mixin to Color Theme
-@include mat.all-component-themes($wave-app-theme);
+@include mat.all-component-themes($geoengine-theme);

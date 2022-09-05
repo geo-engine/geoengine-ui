@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {IsLoggedInGuard} from 'wave-core';
+import {IsLoggedInGuard} from '@geoengine/core';
 import {LoginComponent} from './login/login.component';
 import {MainComponent} from './main/main.component';
 

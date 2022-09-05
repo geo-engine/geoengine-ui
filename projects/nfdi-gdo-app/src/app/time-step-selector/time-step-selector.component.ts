@@ -1,12 +1,12 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {MatSliderChange} from '@angular/material/slider';
-import {Time, ProjectService} from 'wave-core';
+import {Time, ProjectService} from '@geoengine/core';
 import {Observable, Subscription, combineLatest} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 import {DataSelectionService} from '../data-selection.service';
 
 @Component({
-    selector: 'wave-app-time-step-selector',
+    selector: 'geoengine-time-step-selector',
     templateUrl: './time-step-selector.component.html',
     styleUrls: ['./time-step-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

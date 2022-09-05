@@ -1,4 +1,4 @@
-import {AttributeFilterDict, DataIdDict, Layer, TypedResultDescriptorDict} from 'wave-core';
+import {AttributeFilterDict, DataIdDict, Layer, TypedResultDescriptorDict} from '@geoengine/core';
 
 export interface BasketEntry {
     title: string;

@@ -19,8 +19,8 @@ import {
     SpatialReferenceService,
     TabsService,
     UserService,
-    WaveCoreModule,
-} from 'wave-core';
+    CoreModule,
+} from '@geoengine/core';
 import {AppConfig} from './app-config.service';
 import {HelpComponent} from './help/help.component';
 import {SplashDialogComponent} from './splash-dialog/splash-dialog.component';
@@ -36,7 +36,7 @@ import {BasketService} from './basket/basket.service';
         MatTableModule,
         MatButtonModule,
         RouterModule.forRoot([{path: '**', component: AppComponent}], {useHash: true}),
-        WaveCoreModule,
+        CoreModule,
     ],
     providers: [
         {provide: Config, useClass: AppConfig},

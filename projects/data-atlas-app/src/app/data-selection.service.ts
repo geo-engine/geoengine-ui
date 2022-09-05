@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Layer, LoadingState, ProjectService, RasterLayer, Time, VectorLayer} from 'wave-core';
+import {Layer, LoadingState, ProjectService, RasterLayer, Time, VectorLayer} from '@geoengine/core';
 import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import moment from 'moment';

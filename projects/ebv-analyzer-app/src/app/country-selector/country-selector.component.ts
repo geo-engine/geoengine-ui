@@ -6,7 +6,7 @@ import {takeUntil, take} from 'rxjs/operators';
 import {CountryProviderService, Country} from '../country-provider.service';
 
 @Component({
-    selector: 'wave-ebv-country-selector',
+    selector: 'geoengine-ebv-country-selector',
     templateUrl: './country-selector.component.html',
     styleUrls: ['./country-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

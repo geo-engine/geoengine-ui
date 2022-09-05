@@ -2,11 +2,11 @@ import {ChangeDetectionStrategy, Component, Inject, ViewContainerRef} from '@ang
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer, Title} from '@angular/platform-browser';
 import {Router} from '@angular/router';
-import {Config, UserService} from 'wave-core';
+import {Config, UserService} from '@geoengine/core';
 import {AppConfig} from './app-config.service';
 
 @Component({
-    selector: 'wave-app-root',
+    selector: 'geoengine-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

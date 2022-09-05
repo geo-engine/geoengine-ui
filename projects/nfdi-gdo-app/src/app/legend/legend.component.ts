@@ -1,8 +1,8 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges, ChangeDetectorRef} from '@angular/core';
-import {RasterLayer} from 'wave-core';
+import {RasterLayer} from '@geoengine/core';
 
 @Component({
-    selector: 'wave-legend', // eslint-disable-line @angular-eslint/component-selector
+    selector: 'geoengine-legend', // eslint-disable-line @angular-eslint/component-selector
     templateUrl: './legend.component.html',
     styleUrls: ['./legend.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

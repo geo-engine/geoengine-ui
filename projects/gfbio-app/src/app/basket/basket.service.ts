@@ -14,7 +14,7 @@ import {
     UserService,
     UUID,
     WorkflowDict,
-} from 'wave-core';
+} from '@geoengine/core';
 import {from, Observable, of} from 'rxjs';
 import {filter, mergeMap, toArray} from 'rxjs/operators';
 import {Basket, BasketEntry, BasketResult} from './basket-model';

@@ -25,7 +25,7 @@ import {
     OperatorDict,
     VectorResultDescriptorDict,
     ReprojectionDict,
-} from 'wave-core';
+} from '@geoengine/core';
 import {BehaviorSubject, combineLatest, combineLatestWith, first, mergeMap, Observable, of, Subscription, tap} from 'rxjs';
 import {DataSelectionService} from '../data-selection.service';
 import moment from 'moment';
@@ -323,7 +323,7 @@ interface SpeciesInfo {
 }
 
 @Component({
-    selector: 'wave-species-selector',
+    selector: 'geoengine-species-selector',
     templateUrl: './species-selector.component.html',
     styleUrls: ['./species-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

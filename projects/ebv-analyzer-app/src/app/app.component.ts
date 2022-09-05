@@ -14,7 +14,7 @@ import {
     Time,
     SpatialReferenceService,
     SidenavContainerComponent,
-} from 'wave-core';
+} from '@geoengine/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AppConfig} from './app-config.service';
 import {ComponentPortal} from '@angular/cdk/portal';
@@ -24,7 +24,7 @@ import {EbvSelectorComponent} from './ebv-selector/ebv-selector.component';
 import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
 
 @Component({
-    selector: 'wave-app-root',
+    selector: 'geoengine-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

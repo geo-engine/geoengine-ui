@@ -10,7 +10,10 @@
     <mat-card-content>
         <p>{{ collection.description }}</p>
 
-        <wave-layer-collection-dropdown [root]="collection.id" (layerSelected)="layerSelected(i, $event)"></wave-layer-collection-dropdown>
+        <geoengine-layer-collection-dropdown
+            [root]="collection.id"
+            (layerSelected)="layerSelected(i, $event)"
+        ></geoengine-layer-collection-dropdown>
 
         <div *ngIf="selectedLayers$ | async as selectedLayers">
             <button mat-stroked-button (click)="loadData(i)" color="primary" [disabled]="!selectedLayers[i]">Add to map</button>

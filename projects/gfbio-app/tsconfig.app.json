@@ -7,6 +7,6 @@
     "files": ["src/main.ts", "src/polyfills.ts"],
     "include": [],
     "paths": {
-        "wave-core": ["dist/wave-core-new"]
+        "@geoengine/core": ["dist/core"]
     }
 }

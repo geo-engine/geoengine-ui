@@ -11,7 +11,7 @@ import {
     ProjectService,
     RandomColorService,
     Time,
-} from 'wave-core';
+} from '@geoengine/core';
 import {DataSelectionService} from './data-selection.service';
 
 @Injectable()

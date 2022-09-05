@@ -3,33 +3,33 @@
     "version": 1,
     "newProjectRoot": "projects",
     "projects": {
-        "wave-core-new": {
+        "core": {
             "projectType": "library",
             "schematics": {
                 "@schematics/angular:component": {
                     "changeDetection": "OnPush",
                     "inlineStyle": false,
                     "inlineTemplate": false,
-                    "prefix": "wave",
+                    "prefix": "geoengine",
                     "style": "scss"
                 },
                 "@schematics/angular:directive": {
-                    "prefix": "wave"
+                    "prefix": "geoengine"
                 }
             },
-            "root": "projects/wave-core-new",
-            "sourceRoot": "projects/wave-core-new/src",
-            "prefix": "wave",
+            "root": "projects/core",
+            "sourceRoot": "projects/core/src",
+            "prefix": "geoengine",
             "architect": {
                 "build": {
                     "builder": "@angular-devkit/build-angular:ng-packagr",
                     "options": {
-                        "tsConfig": "projects/wave-core-new/tsconfig.lib.json",
-                        "project": "projects/wave-core-new/ng-package.json"
+                        "tsConfig": "projects/core/tsconfig.lib.json",
+                        "project": "projects/core/ng-package.json"
                     },
                     "configurations": {
                         "production": {
-                            "tsConfig": "projects/wave-core-new/tsconfig.lib.prod.json"
+                            "tsConfig": "projects/core/tsconfig.lib.prod.json"
                         },
                         "development": {}
                     },
@@ -38,15 +38,15 @@
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "main": "projects/wave-core-new/src/test.ts",
-                        "tsConfig": "projects/wave-core-new/tsconfig.spec.json",
-                        "karmaConfig": "projects/wave-core-new/karma.conf.js"
+                        "main": "projects/core/src/test.ts",
+                        "tsConfig": "projects/core/tsconfig.spec.json",
+                        "karmaConfig": "projects/core/karma.conf.js"
                     }
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "lintFilePatterns": ["projects/wave-core-new/**/*.ts", "projects/wave-core-new/**/*.html"]
+                        "lintFilePatterns": ["projects/core/**/*.ts", "projects/core/**/*.html"]
                     }
                 }
             }
@@ -58,16 +58,16 @@
                     "changeDetection": "OnPush",
                     "inlineStyle": false,
                     "inlineTemplate": false,
-                    "prefix": "wave-app",
+                    "prefix": "geoengine",
                     "style": "scss"
                 },
                 "@schematics/angular:directive": {
-                    "prefix": "wave-app"
+                    "prefix": "geoengine"
                 }
             },
             "root": "projects/geoengine-app",
             "sourceRoot": "projects/geoengine-app/src",
-            "prefix": "wave-app",
+            "prefix": "geoengine",
             "architect": {
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
@@ -94,15 +94,15 @@
                             "projects/geoengine-app/src/assets",
                             {
                                 "glob": "**/*",
-                                "input": "dist/wave-core/assets",
+                                "input": "dist/core/assets",
                                 "output": "assets"
                             }
                         ],
                         "styles": [
                             "projects/geoengine-app/src/styles.scss",
-                            "dist/wave-core/assets/fonts/roboto/roboto.css",
-                            "dist/wave-core/assets/fonts/pacifico/pacifico.css",
-                            "dist/wave-core/assets/fonts/material-design-icons/material-icons.css",
+                            "dist/core/assets/fonts/roboto/roboto.css",
+                            "dist/core/assets/fonts/pacifico/pacifico.css",
+                            "dist/core/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css",
                             "./node_modules/vis-timeline/dist/vis-timeline-graph2d.min.css"
@@ -208,16 +208,16 @@
                     "changeDetection": "OnPush",
                     "inlineStyle": false,
                     "inlineTemplate": false,
-                    "prefix": "wave-app",
+                    "prefix": "geoengine",
                     "style": "scss"
                 },
                 "@schematics/angular:directive": {
-                    "prefix": "wave-app"
+                    "prefix": "geoengine"
                 }
             },
             "root": "projects/data-atlas-app",
             "sourceRoot": "projects/data-atlas-app/src",
-            "prefix": "wave-app",
+            "prefix": "geoengine",
             "architect": {
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
@@ -244,15 +244,15 @@
                             "projects/data-atlas-app/src/assets",
                             {
                                 "glob": "**/*",
-                                "input": "dist/wave-core/assets",
+                                "input": "dist/core/assets",
                                 "output": "assets"
                             }
                         ],
                         "styles": [
                             "projects/data-atlas-app/src/styles.scss",
-                            "dist/wave-core/assets/fonts/roboto/roboto.css",
-                            "dist/wave-core/assets/fonts/pacifico/pacifico.css",
-                            "dist/wave-core/assets/fonts/material-design-icons/material-icons.css",
+                            "dist/core/assets/fonts/roboto/roboto.css",
+                            "dist/core/assets/fonts/pacifico/pacifico.css",
+                            "dist/core/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
@@ -357,16 +357,16 @@
                     "changeDetection": "OnPush",
                     "inlineStyle": false,
                     "inlineTemplate": false,
-                    "prefix": "wave-app",
+                    "prefix": "geoengine",
                     "style": "scss"
                 },
                 "@schematics/angular:directive": {
-                    "prefix": "wave-app"
+                    "prefix": "geoengine"
                 }
             },
             "root": "projects/ebv-analyzer-app",
             "sourceRoot": "projects/ebv-analyzer-app/src",
-            "prefix": "wave-app",
+            "prefix": "geoengine",
             "architect": {
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
@@ -393,15 +393,15 @@
                             "projects/ebv-analyzer-app/src/assets",
                             {
                                 "glob": "**/*",
-                                "input": "dist/wave-core/assets",
+                                "input": "dist/core/assets",
                                 "output": "assets"
                             }
                         ],
                         "styles": [
                             "projects/ebv-analyzer-app/src/styles.scss",
-                            "dist/wave-core/assets/fonts/roboto/roboto.css",
-                            "dist/wave-core/assets/fonts/pacifico/pacifico.css",
-                            "dist/wave-core/assets/fonts/material-design-icons/material-icons.css",
+                            "dist/core/assets/fonts/roboto/roboto.css",
+                            "dist/core/assets/fonts/pacifico/pacifico.css",
+                            "dist/core/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
@@ -506,16 +506,16 @@
                     "changeDetection": "OnPush",
                     "inlineStyle": false,
                     "inlineTemplate": false,
-                    "prefix": "wave-app",
+                    "prefix": "geoengine",
                     "style": "scss"
                 },
                 "@schematics/angular:directive": {
-                    "prefix": "wave-app"
+                    "prefix": "geoengine"
                 }
             },
             "root": "projects/nfdi-gdo-app",
             "sourceRoot": "projects/nfdi-gdo-app/src",
-            "prefix": "wave-app",
+            "prefix": "geoengine",
             "architect": {
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
@@ -542,15 +542,15 @@
                             "projects/nfdi-gdo-app/src/assets",
                             {
                                 "glob": "**/*",
-                                "input": "dist/wave-core/assets",
+                                "input": "dist/core/assets",
                                 "output": "assets"
                             }
                         ],
                         "styles": [
                             "projects/nfdi-gdo-app/src/styles.scss",
-                            "dist/wave-core/assets/fonts/roboto/roboto.css",
-                            "dist/wave-core/assets/fonts/pacifico/pacifico.css",
-                            "dist/wave-core/assets/fonts/material-design-icons/material-icons.css",
+                            "dist/core/assets/fonts/roboto/roboto.css",
+                            "dist/core/assets/fonts/pacifico/pacifico.css",
+                            "dist/core/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
@@ -655,16 +655,16 @@
                     "changeDetection": "OnPush",
                     "inlineStyle": false,
                     "inlineTemplate": false,
-                    "prefix": "wave-app",
+                    "prefix": "geoengine",
                     "style": "scss"
                 },
                 "@schematics/angular:directive": {
-                    "prefix": "wave-app"
+                    "prefix": "geoengine"
                 }
             },
             "root": "projects/gfbio-app",
             "sourceRoot": "projects/gfbio-app/src",
-            "prefix": "wave-app",
+            "prefix": "geoengine",
             "architect": {
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
@@ -691,15 +691,15 @@
                             "projects/gfbio-app/src/assets",
                             {
                                 "glob": "**/*",
-                                "input": "dist/wave-core/assets",
+                                "input": "dist/core/assets",
                                 "output": "assets"
                             }
                         ],
                         "styles": [
                             "projects/gfbio-app/src/styles.scss",
-                            "dist/wave-core/assets/fonts/roboto/roboto.css",
-                            "dist/wave-core/assets/fonts/pacifico/pacifico.css",
-                            "dist/wave-core/assets/fonts/material-design-icons/material-icons.css",
+                            "dist/core/assets/fonts/roboto/roboto.css",
+                            "dist/core/assets/fonts/pacifico/pacifico.css",
+                            "dist/core/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],

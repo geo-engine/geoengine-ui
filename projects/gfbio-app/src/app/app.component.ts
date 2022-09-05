@@ -38,7 +38,7 @@ import {
     TimeConfigComponent,
     UserService,
     WorkspaceSettingsComponent,
-} from 'wave-core';
+} from '@geoengine/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from './app-config.service';
@@ -48,7 +48,7 @@ import {BasketService} from './basket/basket.service';
 import {BasketDialogComponent} from './basket/basket-dialog/basket-dialog.component';
 
 @Component({
-    selector: 'wave-app-root',
+    selector: 'geoengine-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

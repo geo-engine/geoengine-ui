@@ -15,8 +15,8 @@ import {
     SidenavRef,
     SpatialReferenceService,
     UserService,
-    WaveCoreModule,
-} from 'wave-core';
+    CoreModule,
+} from '@geoengine/core';
 import {AppConfig} from './app-config.service';
 import {SelectLayersComponent} from './select-layers/select-layers.component';
 import {PortalModule} from '@angular/cdk/portal';
@@ -46,7 +46,7 @@ import {AccordionEntryComponent} from './accordion-entry/accordion-entry.compone
         BrowserModule,
         HttpClientModule,
         RouterModule.forRoot([{path: '**', component: AppComponent}], {useHash: true}),
-        WaveCoreModule,
+        CoreModule,
         PortalModule,
         AppRoutingModule,
         NgxMatSelectSearchModule,

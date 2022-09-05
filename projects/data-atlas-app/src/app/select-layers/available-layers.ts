@@ -1,5 +1,5 @@
 import moment from 'moment';
-import {Colorizer, ColorizerDict, Time, TimeIntervalDict, TimeStepDict, timeStepDictTotimeStepDuration, UUID} from 'wave-core';
+import {Colorizer, ColorizerDict, Time, TimeIntervalDict, TimeStepDict, timeStepDictTotimeStepDuration, UUID} from '@geoengine/core';
 
 export interface EbvHierarchy {
     providerId: UUID;

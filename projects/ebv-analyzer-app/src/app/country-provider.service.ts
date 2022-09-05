@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, mergeMap, Observable} from 'rxjs';
 import {COUNTRY_LIST} from './country-selector/country-selector-data.model';
-import {PolygonSymbology, ProjectService, VectorLayer, WorkflowDict} from 'wave-core';
+import {PolygonSymbology, ProjectService, VectorLayer, WorkflowDict} from '@geoengine/core';
 import {DataSelectionService} from './data-selection.service';
 import {COUNTRY_DATA_LIST} from './country-selector/country-data.model';
 

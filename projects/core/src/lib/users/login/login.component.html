@@ -1,0 +1,36 @@
+<ng-container [ngSwitch]="formStatus$ | async">
+    <ng-template [ngSwitchCase]="FormStatus.LoggedOut">
+        <geoengine-sidenav-header>Login</geoengine-sidenav-header>
+        <form [formGroup]="loginForm" (ngSubmit)="login()">
+            <mat-form-field>
+                <input matInput type="text" placeholder="E-Mail" formControlName="email" />
+            </mat-form-field>
+            <mat-form-field>
+                <input matInput type="password" placeholder="Password" formControlName="password" />
+            </mat-form-field>
+            <p class="error" *ngIf="invalidCredentials$ | async">Invalid Credentials</p>
+            <button mat-raised-button type="submit" [disabled]="(loginForm.statusChanges | async) !== 'VALID'" color="primary">
+                Login
+            </button>
+        </form>
+    </ng-template>
+    <ng-template [ngSwitchCase]="FormStatus.Loading">
+        <mat-spinner></mat-spinner>
+    </ng-template>
+    <ng-template [ngSwitchCase]="FormStatus.LoggedIn">
+        <geoengine-sidenav-header>User Info</geoengine-sidenav-header>
+        <div fxLayout="row" class="container">
+            <div class="label">
+                <p>E-Mail</p>
+                <p>Real Name</p>
+            </div>
+            <div *ngIf="user">
+                <p>{{ user.email }}</p>
+                <p>{{ user.realName }}</p>
+            </div>
+        </div>
+        <div fxLayout="row" class="container">
+            <button mat-raised-button (click)="$event.preventDefault(); logout()" fxFlex color="primary">Logout</button>
+        </div>
+    </ng-template>
+</ng-container>

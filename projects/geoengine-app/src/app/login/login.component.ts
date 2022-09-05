@@ -3,7 +3,7 @@ import {BehaviorSubject, Subscription} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
-import {Config, NotificationService, UserService, User, WaveValidators} from 'wave-core';
+import {Config, NotificationService, UserService, User, geoengineValidators} from '@geoengine/core';
 import {first} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {AppConfig} from '../app-config.service';
@@ -15,7 +15,7 @@ enum FormStatus {
 }
 
 @Component({
-    selector: 'wave-app-login',
+    selector: 'geoengine-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,7 +43,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         this.loginForm = new UntypedFormGroup({
             email: new UntypedFormControl(
                 '',
-                Validators.compose([Validators.required, WaveValidators.keyword([this.config.USER.GUEST.NAME])]),
+                Validators.compose([Validators.required, geoengineValidators.keyword([this.config.USER.GUEST.NAME])]),
             ),
             password: new UntypedFormControl('', Validators.required),
         });

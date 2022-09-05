@@ -11,7 +11,7 @@ $sidenav-width: max($sidenav-default-width, $sidenav-min-width);
 
     z-index: 5;
 
-    background-color: var(--wave-background-color);
+    background-color: var(--geoengine-background-color);
 
     overflow: auto;
 
@@ -34,7 +34,7 @@ $sidenav-width: max($sidenav-default-width, $sidenav-min-width);
     }
 
     mat-expansion-panel {
-        border-bottom: 2px solid var(--wave-background-hover-color);
+        border-bottom: 2px solid var(--geoengine-background-hover-color);
     }
 }
 
@@ -52,14 +52,14 @@ $sidenav-width: max($sidenav-default-width, $sidenav-min-width);
     left: 1rem;
 }
 
-wave-zoom-handles,
-wave-time-step-selector {
+geoengine-zoom-handles,
+geoengine-time-step-selector {
     display: inline-block;
     background-color: rgba(255, 255, 255, 0.87);
     border-radius: 2px;
 }
 
-wave-zoom-handles {
+geoengine-zoom-handles {
     position: absolute;
     right: 1rem;
 }
@@ -83,7 +83,7 @@ mat-card#analysisCard {
     left: calc($sidenav-width + 1rem);
 }
 
-wave-legend {
+geoengine-legend {
     z-index: 4;
     position: absolute;
     bottom: 1rem;
@@ -120,7 +120,7 @@ mat-card.dataset {
 
 mat-card-content .striped {
     &:nth-of-type(odd) {
-        background-color: var(--wave-background-hover-color);
+        background-color: var(--geoengine-background-hover-color);
     }
 
     p {
@@ -128,14 +128,14 @@ mat-card-content .striped {
 
         span {
             display: block;
-            color: var(--wave-foreground-secondary-text-color);
+            color: var(--geoengine-foreground-secondary-text-color);
             margin-bottom: 0.5rem;
         }
     }
 }
 
 p.empty {
-    color: var(--wave-foreground-secondary-text-color);
+    color: var(--geoengine-foreground-secondary-text-color);
 }
 
 .loading-indicator {

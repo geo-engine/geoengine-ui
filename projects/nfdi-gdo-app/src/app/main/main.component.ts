@@ -12,7 +12,7 @@ import {
     MapService,
     MapContainerComponent,
     SpatialReferenceService,
-} from 'wave-core';
+} from '@geoengine/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AppConfig} from './../app-config.service';
 import {ComponentPortal} from '@angular/cdk/portal';
@@ -20,7 +20,7 @@ import {DataSelectionService} from './../data-selection.service';
 import {SpeciesSelectorComponent} from './../species-selector/species-selector.component';
 
 @Component({
-    selector: 'wave-app-main',
+    selector: 'geoengine-main',
     templateUrl: './main.component.html',
     styleUrls: ['./main.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

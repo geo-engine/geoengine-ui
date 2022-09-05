@@ -14,8 +14,8 @@ import {
     SidenavRef,
     SpatialReferenceService,
     UserService,
-    WaveCoreModule,
-} from 'wave-core';
+    CoreModule,
+} from '@geoengine/core';
 import {AppConfig} from './app-config.service';
 import {PortalModule} from '@angular/cdk/portal';
 import {LegendComponent} from './legend/legend.component';
@@ -32,7 +32,7 @@ import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
         BrowserModule,
         HttpClientModule,
         RouterModule.forRoot([{path: '**', component: AppComponent}], {useHash: true}),
-        WaveCoreModule,
+        CoreModule,
         PortalModule,
         NgxMatSelectSearchModule,
     ],

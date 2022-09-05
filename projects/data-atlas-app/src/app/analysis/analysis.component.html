@@ -2,15 +2,15 @@
     <mat-label>Country</mat-label>
     <mat-select (valueChange)="selectCountry($event)">
         <ngx-mat-select-search
-            [formControl]="waveAutocompleteSelect.filterFormControl"
-            waveAutocompleteSelect
-            [waveAutocompleteSelectAllValues]="countries"
-            [waveAutocompleteSelectSearchPredicate]="countryPredicate"
-            #waveAutocompleteSelect="waveAutocompleteSelect"
+            [formControl]="geoengineAutocompleteSelect.filterFormControl"
+            geoengineAutocompleteSelect
+            [geoengineAutocompleteSelectAllValues]="countries"
+            [geoengineAutocompleteSelectSearchPredicate]="countryPredicate"
+            #geoengineAutocompleteSelect="geoengineAutocompleteSelect"
         ></ngx-mat-select-search>
-        <mat-option *ngFor="let country of waveAutocompleteSelect.filteredValues | async" [value]="country">{{ country }}</mat-option>
+        <mat-option *ngFor="let country of geoengineAutocompleteSelect.filteredValues | async" [value]="country">{{ country }}</mat-option>
     </mat-select>
 </mat-form-field>
 <button mat-stroked-button id="compute-plot" [disabled]="cannotComputePlot$ | async" (click)="computePlot()">Compute Plot</button>
-<wave-vega-viewer *ngIf="(plotData | async) !== undefined" [chartData]="plotData | async"></wave-vega-viewer>
+<geoengine-vega-viewer *ngIf="(plotData | async) !== undefined" [chartData]="plotData | async"></geoengine-vega-viewer>
 <mat-spinner *ngIf="plotLoading | async"></mat-spinner>

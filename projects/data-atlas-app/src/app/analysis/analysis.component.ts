@@ -16,14 +16,14 @@ import {
     SourceOperatorDict,
     RasterResultDescriptorDict,
     ReprojectionDict,
-} from 'wave-core';
+} from '@geoengine/core';
 import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {DataSelectionService} from '../data-selection.service';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {CountryData, COUNTRY_DATA_LIST, COUNTRY_METADATA} from './country-data.model';
 
 @Component({
-    selector: 'wave-app-analysis',
+    selector: 'geoengine-analysis',
     templateUrl: './analysis.component.html',
     styleUrls: ['./analysis.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

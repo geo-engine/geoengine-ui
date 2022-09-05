@@ -1,7 +1,7 @@
 import {Component, OnInit, ChangeDetectionStrategy, HostBinding} from '@angular/core';
 
 @Component({
-    selector: 'wave-ebv-attributions',
+    selector: 'geoengine-ebv-attributions',
     templateUrl: './attributions.component.html',
     styleUrls: ['./attributions.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

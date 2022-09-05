@@ -1,7 +1,7 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 
 @Component({
-    selector: 'wave-app-login',
+    selector: 'geoengine-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

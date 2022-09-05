@@ -6,6 +6,6 @@ export class AppPage {
     }
 
     getTitleText(): Promise<string> {
-        return element(by.css('waveApp-root .content span')).getText() as Promise<string>;
+        return element(by.css('geoengineApp-root .content span')).getText() as Promise<string>;
     }
 }

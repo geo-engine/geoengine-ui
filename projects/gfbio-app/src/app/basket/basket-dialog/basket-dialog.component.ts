@@ -1,12 +1,12 @@
 import {Component, Inject} from '@angular/core';
 import {BasketResult} from '../basket-model';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {ProjectService} from 'wave-core';
+import {ProjectService} from '@geoengine/core';
 import {map, mergeMap} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 
 @Component({
-    selector: 'wave-gfbio-basket-dialog',
+    selector: 'geoengine-gfbio-basket-dialog',
     templateUrl: './basket-dialog.component.html',
     styleUrls: ['./basket-dialog.component.scss'],
 })

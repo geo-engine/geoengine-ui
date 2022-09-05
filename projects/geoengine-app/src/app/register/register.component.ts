@@ -3,12 +3,12 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
-import {Config, NotificationService, UserService, WaveValidators, BackendService} from 'wave-core';
+import {Config, NotificationService, UserService, geoengineValidators, BackendService} from '@geoengine/core';
 import {map, mergeMap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 
 @Component({
-    selector: 'wave-app-register',
+    selector: 'geoengine-register',
     templateUrl: './register.component.html',
     styleUrls: ['./register.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,7 +35,7 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
             name: new UntypedFormControl('', Validators.required),
             email: new UntypedFormControl(
                 '',
-                Validators.compose([Validators.required, Validators.email, WaveValidators.keyword([this.config.USER.GUEST.NAME])]),
+                Validators.compose([Validators.required, Validators.email, geoengineValidators.keyword([this.config.USER.GUEST.NAME])]),
             ),
             password: new UntypedFormControl('', [Validators.required, Validators.minLength(this.PASSWORD_MIN_LENGTH)]),
         });

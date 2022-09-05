@@ -1,12 +1,12 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {mergeMap} from 'rxjs/operators';
-import {ProjectService, RasterLayer, RasterSymbology, RgbaColorDict, Time, UUID, WorkflowDict} from 'wave-core';
+import {ProjectService, RasterLayer, RasterSymbology, RgbaColorDict, Time, UUID, WorkflowDict} from '@geoengine/core';
 import {DataSelectionService} from '../data-selection.service';
 import {MatSelectionListChange} from '@angular/material/list';
 import moment from 'moment';
 
 @Component({
-    selector: 'wave-app-mock-layers',
+    selector: 'geoengine-mock-layers',
     templateUrl: './select-layers.component.html',
     styleUrls: ['./select-layers.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

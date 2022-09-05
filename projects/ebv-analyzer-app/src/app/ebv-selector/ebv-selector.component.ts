@@ -20,7 +20,7 @@ import {
     ProviderLayerCollectionIdDict,
     LayerCollectionService,
     NotificationService,
-} from 'wave-core';
+} from '@geoengine/core';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {AppConfig} from '../app-config.service';
 import {filter, first, map, mergeMap, tap} from 'rxjs/operators';
@@ -30,7 +30,7 @@ import {ActivatedRoute} from '@angular/router';
 import {COUNTRY_DATA_LIST} from '../country-selector/country-data.model';
 
 @Component({
-    selector: 'wave-ebv-ebv-selector',
+    selector: 'geoengine-ebv-ebv-selector',
     templateUrl: './ebv-selector.component.html',
     styleUrls: ['./ebv-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

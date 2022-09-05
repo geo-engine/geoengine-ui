@@ -16,7 +16,7 @@ import {
     LayerCollectionService,
     ProviderLayerIdDict,
     LayerCollectionListingDict,
-} from 'wave-core';
+} from '@geoengine/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AppConfig} from '../app-config.service';
 import {SelectLayersComponent} from '../select-layers/select-layers.component';
@@ -28,7 +28,7 @@ import {TerraNovaGroup, EbvHierarchy} from '../select-layers/available-layers';
 import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
 
 @Component({
-    selector: 'wave-app-main',
+    selector: 'geoengine-main',
     templateUrl: './main.component.html',
     styleUrls: ['./main.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

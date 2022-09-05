@@ -104,12 +104,12 @@ $terranova-brown: (
 );
 
 // Define App Theme
-$wave-app-primary: mat.define-palette($terranova-blue);
-$wave-app-accent: mat.define-palette($terranova-green, A200, A100, A400);
-$wave-app-warn: mat.define-palette(mat.$red-palette);
+$geoengine-primary: mat.define-palette($terranova-blue);
+$geoengine-accent: mat.define-palette($terranova-green, A200, A100, A400);
+$geoengine-warn: mat.define-palette(mat.$red-palette);
 
 // Create the theme object (a Sass map containing all of the palettes).
-$wave-app-theme: mat.define-light-theme($wave-app-primary, $wave-app-accent, $wave-app-warn);
+$geoengine-theme: mat.define-light-theme($geoengine-primary, $geoengine-accent, $geoengine-warn);
 
 // Apply Angular Material Mixin to Color Theme
-@include mat.all-component-themes($wave-app-theme);
+@include mat.all-component-themes($geoengine-theme);

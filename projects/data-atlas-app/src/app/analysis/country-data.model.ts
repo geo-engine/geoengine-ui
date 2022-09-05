@@ -1,4 +1,4 @@
-import {UUID} from 'wave-core';
+import {UUID} from '@geoengine/core';
 
 export interface CountryData {
     polygon: UUID;

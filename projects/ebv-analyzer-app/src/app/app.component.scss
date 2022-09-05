@@ -9,7 +9,7 @@ $sidenav-width: 33vw;
 
     z-index: 5;
 
-    background-color: var(--wave-background-color);
+    background-color: var(--geoengine-background-color);
 
     overflow: auto;
 
@@ -38,14 +38,14 @@ $sidenav-width: 33vw;
     text-align: center;
 }
 
-wave-zoom-handles,
-wave-time-step-selector {
+geoengine-zoom-handles,
+geoengine-time-step-selector {
     display: inline-block;
     background-color: rgba(255, 255, 255, 0.87);
     border-radius: 2px;
 }
 
-wave-zoom-handles {
+geoengine-zoom-handles {
     position: absolute;
     right: 1rem;
 }
@@ -61,7 +61,7 @@ wave-zoom-handles {
     }
 }
 
-wave-legend {
+geoengine-legend {
     z-index: 4;
     position: absolute;
     bottom: 1rem;

@@ -38,12 +38,12 @@ import {
     PlotListComponent,
     SidenavConfig,
     SpatialReferenceService,
-} from 'wave-core';
+} from '@geoengine/core';
 import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from '../app-config.service';
 
 @Component({
-    selector: 'wave-app-main',
+    selector: 'geoengine-main',
     templateUrl: './main.component.html',
     styleUrls: ['./main.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,0 +1,129 @@
+<geoengine-sidenav-header>Symbology Editor</geoengine-sidenav-header>
+
+<geoengine-dialog-help>
+    <p>The Symbology Editor enables customization of the style for raster layers.</p>
+    <p>
+        The <i>Global Layer Properties</i> define the default visualization parameters. The layer <i>Opacity</i> is adjustable in a range
+        from 0 to 100 %. You can choose a <i>NoData</i> color for pixels with the nodata value. Use the picker tool to select the desired
+        RGB color and opacity. This also applies to the <i>Overflow</i> color, which indicates the pixels with values without coloring
+        rules.
+    </p>
+    <p>
+        The <i>Color Map</i> section provides an overview of the pixel values with a frequency plot, which also allows to adapt the color
+        with respect to the raster values. The plot refers to the field of view shown in the map. If <i>Sync map and histogram </i> is
+        turned on, the histogram updates if the map view changes. To specify the value range of interest, you can set a minimum and maximum
+        pixel value. You can choose a color ramp from a variety of color schemes (<i>Colormap name</i>) and reverse it, if desired.
+        Additionally, different functions for the step distribution can be selected (linear, logarithmic, square root function, square
+        function). Consider that the logarithmic function requires positive values (>0). The number of Color steps is also kept flexible and
+        can be set to a number between 2 and 16. Click <i>Create color table</i> to apply your adjustments.
+    </p>
+    <p>
+        The <i> Color Table section </i> allows fine grained changes to colors. The gradient defines the interpolation between values. You
+        can dynamically add and remove color steps by clicking the minus and plus symbols or select distinct RGBA values for a specific
+        color step value.
+    </p>
+</geoengine-dialog-help>
+
+<mat-accordion multi="true">
+    <mat-expansion-panel expanded="true">
+        <mat-expansion-panel-header>
+            <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
+                <mat-icon>map</mat-icon>
+                <span fxFlex>Global Layer Properties</span>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+            <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
+                <span>Opacity</span>
+                <mat-slider fxFlex #slo (change)="updateOpacity($event)" [value]="getOpacity()" max="100" min="1" step="1" thumbLabel>
+                </mat-slider>
+                <span>{{ slo.displayValue }} %</span>
+            </div>
+            <mat-divider></mat-divider>
+            <div>
+                <geoengine-color-attribute-input
+                    [ngModel]="getNoDataColor()"
+                    (ngModelChange)="updateNoDataColor($event)"
+                    attributePlaceholder=""
+                    [readonlyAttribute]="true"
+                >
+                </geoengine-color-attribute-input>
+                <geoengine-color-attribute-input
+                    [ngModel]="getDefaultColor()"
+                    (ngModelChange)="updateDefaultColor($event)"
+                    attributePlaceholder=""
+                    [readonlyAttribute]="true"
+                >
+                </geoengine-color-attribute-input>
+            </div>
+
+            <p fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
+                <span>Colorizer:</span>
+                <mat-button-toggle-group
+                    fxFlex
+                    [multiple]="false"
+                    [ngModel]="getColorizerType()"
+                    (ngModelChange)="updateColorizerType($event)"
+                    [disabled]="getColorizerType() === 'palette'"
+                >
+                    <mat-button-toggle fxFlex value="linearGradient">Linear Gradient</mat-button-toggle>
+                    <mat-button-toggle fxFlex value="logarithmicGradient">Logarithmic Gradient</mat-button-toggle>
+                    <mat-button-toggle fxFlex value="palette" [disabled]="true">Palette</mat-button-toggle>
+                </mat-button-toggle-group>
+            </p>
+            <div
+                *ngIf="symbology.colorizer.isGradient()"
+                class="colorizer-preview"
+                [style.background]="symbology.colorizer | geoengineColorizerCssGradient: 90"
+            ></div>
+        </ng-template>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel expanded="true">
+        <mat-expansion-panel-header>
+            <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
+                <mat-icon>looks</mat-icon>
+                <span fxFlex>Update Color Map</span>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <ng-template matExpansionPanelContent>
+            <div class="histogram">
+                <ng-container *ngIf="histogramData | async as histogramData">
+                    <geoengine-vega-viewer
+                        [chartData]="histogramData"
+                        (interactionChange)="updateBounds($any($event))"
+                    ></geoengine-vega-viewer>
+                </ng-container>
+                <mat-progress-bar mode="indeterminate" *ngIf="histogramLoading | async"></mat-progress-bar>
+            </div>
+            <div>
+                <mat-slide-toggle [checked]="histogramAutoReload" (change)="histogramAutoReload = $event.checked">
+                    Sync map and histogram
+                </mat-slide-toggle>
+            </div>
+            <mat-divider></mat-divider>
+
+            <geoengine-color-map-selector
+                (breakpointsChange)="updateBreakpoints($event)"
+                [minValue]="layerMinValue"
+                [maxValue]="layerMaxValue"
+                [scale]="scale"
+            >
+            </geoengine-color-map-selector>
+        </ng-template>
+    </mat-expansion-panel>
+
+    <!-- TODO: implement palette editor -->
+    <mat-expansion-panel expanded="false" *ngIf="symbology.colorizer.isDiscrete()">
+        <mat-expansion-panel-header>
+            <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
+                <mat-icon>color_lens</mat-icon>
+                <span fxFlex>Color Table</span>
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+            <!-- <geoengine-colorizer-editor [ngModel]="symbology.colorizer" (ngModelChange)="updateColorizer($event)"></geoengine-colorizer-editor> -->
+        </ng-template>
+    </mat-expansion-panel>
+</mat-accordion>

@@ -10,11 +10,11 @@ import {
     RasterLayer,
     RasterSymbology,
     Time,
-} from 'wave-core';
+} from '@geoengine/core';
 import {DataRange, DataSelectionService} from '../data-selection.service';
 
 @Component({
-    selector: 'wave-accordion-entry',
+    selector: 'geoengine-accordion-entry',
     templateUrl: './accordion-entry.component.html',
     styleUrls: ['./accordion-entry.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

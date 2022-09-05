@@ -1,7 +1,7 @@
 import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
 
 @Component({
-    selector: 'wave-gfbio-splash-dialog',
+    selector: 'geoengine-gfbio-splash-dialog',
     templateUrl: './splash-dialog.component.html',
     styleUrls: ['./splash-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

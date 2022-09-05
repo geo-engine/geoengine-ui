@@ -14,10 +14,10 @@ mat-divider {
 }
 
 h2 {
-    color: var(--wave-foreground-secondary-text-color);
+    color: var(--geoengine-foreground-secondary-text-color);
 }
 
-wave-dataset-list {
+geoengine-dataset-list {
     display: block;
     height: 50vh;
     width: calc(100% + 2 * 24px);

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {mergeDeep} from 'immutable';
-import {Config, WaveConfigStructure, WAVE_DEFAULT_CONFIG, VectorTiles} from 'wave-core';
+import {Config, ConfigStructure, DEFAULT_CONFIG, VectorTiles} from '@geoengine/core';
 
 interface Components {
     readonly PLAYBACK: {
@@ -19,11 +19,11 @@ interface Map {
     readonly VALID_CRS: Array<string>;
 }
 
-interface AppConfigStructure extends WaveConfigStructure {
+interface AppConfigStructure extends ConfigStructure {
     readonly COMPONENTS: Components;
 }
 
-const APP_CONFIG_DEFAULTS = mergeDeep(WAVE_DEFAULT_CONFIG, {
+const APP_CONFIG_DEFAULTS = mergeDeep(DEFAULT_CONFIG, {
     COMPONENTS: {
         PLAYBACK: {
             AVAILABLE: false,

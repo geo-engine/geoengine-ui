@@ -4,7 +4,7 @@
     padding: 0;
     width: 100vw;
     height: 100vh;
-    background: var(--wave-primary-color);
+    background: var(--geoengine-primary-color);
 }
 
 .login {
@@ -38,7 +38,7 @@ mat-card-actions button {
 }
 
 .error {
-    color: var(--wave-warn-color, red);
+    color: var(--geoengine-warn-color, red);
 }
 
 mat-spinner {
