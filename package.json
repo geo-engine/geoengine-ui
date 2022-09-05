@@ -8,7 +8,7 @@
         "build:core": "ng build --configuration development core",
         "build-watch:core": "ng build --configuration development core --watch",
         "build-prod:core": "ng build --configuration production core",
-        "build-apps": "npm run build-prod:geoengine && npm run build-prod:data-atlas && npm run build-prod:ebv-analyzer && npm run build-prod:gfbio && npm run build-prod:nfdi-gdo",
+        "build-apps": "npm run build-prod:gis && npm run build-prod:dashboard:data-atlas && npm run build-prod:dashboard:ebv-analyzer && npm run build-prod:dashboard:gfbio && npm run build-prod:dashboard:nfdi-gdo",
         "serve:dashboard:data-atlas:local": "ng serve --configuration development data-atlas --proxy-config proxy-local.conf.json",
         "serve:dashboard:data-atlas:nightly": "ng serve --configuration development data-atlas --proxy-config proxy-data-atlas.conf.json",
         "serve:dashboard:ebv-analyzer:local": "ng serve --configuration development ebv-analyzer --proxy-config proxy-local.conf.json",
