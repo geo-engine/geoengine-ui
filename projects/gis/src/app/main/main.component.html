@@ -1,0 +1,71 @@
+<mat-sidenav-container fullscreen>
+    <mat-toolbar color="primary" class="mat-elevation-z4" #topToolbar>
+        <geoengine-layer-list-menu class="box">
+            <div class="logo">
+                <mat-icon mat-list-izcon svgIcon="geoengine:logo" aria-label="Geo Engine"></mat-icon>
+            </div>
+        </geoengine-layer-list-menu>
+
+        <div class="navbar">
+            <geoengine-layer-list-menu class="small-box">
+                <div class="logo">
+                    <mat-icon svgIcon="geoengine:favicon-white"></mat-icon>
+                </div>
+            </geoengine-layer-list-menu>
+            <div class="space"></div>
+            <div class="navbar-element">
+                <geoengine-zoom-handles (zoomIn)="map.zoomIn()" (zoomOut)="map.zoomOut()"></geoengine-zoom-handles>
+            </div>
+            <div class="space"></div>
+            <div class="navbar-element">
+                <geoengine-small-time-interaction></geoengine-small-time-interaction>
+            </div>
+        </div>
+    </mat-toolbar>
+
+    <!--    <mat-sidenav position="end" mode="side" (openedChange)="mapComponent.resize()">-->
+    <mat-sidenav position="end" mode="side">
+        <geoengine-sidenav-container></geoengine-sidenav-container>
+    </mat-sidenav>
+
+    <geoengine-navigation [buttons]="navigationButtons"></geoengine-navigation>
+
+    <geoengine-layer-list
+        class="mat-elevation-z4"
+        [height]="middleContainerHeight$ | async | numberSanitizer"
+        [addAFirstLayerSidenavConfig]="addAFirstLayerConfig"
+    >
+    </geoengine-layer-list>
+
+    <div class="mid-container" [style.height.px]="middleContainerHeight$ | async">
+        <geoengine-map-container #map [grid]="mapIsGrid$ | async | valueDefault: false">
+            <ng-container *ngIf="userService.getSessionTokenStream() | async as sessionToken">
+                <ng-template ngFor let-layer [ngForOf]="layersReverse$ | async" [ngForTrackBy]="idFromLayer">
+                    <ng-template [ngIf]="layer.layerType === 'vector'">
+                        <geoengine-ol-vector-layer
+                            [layerId]="layer.id"
+                            [workflow]="layer.workflowId"
+                            [symbology]="$any(layer.symbology)"
+                            [isVisible]="layer.isVisible"
+                            (mapRedraw)="map.layerForcesRedraw()"
+                        ></geoengine-ol-vector-layer>
+                    </ng-template>
+                    <ng-template [ngIf]="layer.layerType === 'raster'">
+                        <geoengine-ol-raster-layer
+                            [layerId]="layer.id"
+                            [workflow]="layer.workflowId"
+                            [symbology]="$any(layer.symbology)"
+                            [isVisible]="layer.isVisible"
+                            [sessionToken]="sessionToken"
+                            (mapRedraw)="map.layerForcesRedraw()"
+                        ></geoengine-ol-raster-layer>
+                    </ng-template>
+                </ng-template>
+            </ng-container>
+        </geoengine-map-container>
+    </div>
+    <geoengine-tab-panel
+        [visible]="layerDetailViewVisible$ | async | valueDefault: false"
+        [maxHeight]="bottomContainerHeight$ | async | numberSanitizer"
+    ></geoengine-tab-panel>
+</mat-sidenav-container>

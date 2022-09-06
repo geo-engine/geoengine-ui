@@ -1,0 +1,57 @@
+<geoengine-dialog-header>{{ mediaDialogHeader }}</geoengine-dialog-header>
+
+<mat-dialog-content class="mediaContainer">
+    <div class="media">
+        <div *ngIf="mediaTypes[currentMedia] === 'image'">
+            <img [src]="mediaURLs[currentMedia]" [alt]="mediaURLs[currentMedia]" (click)="openInNewTab()" />
+            <div class="info">
+                <h4 matTooltip="{{ mediaURLs[currentMedia] }}">{{ mediaNames[currentMedia] }}</h4>
+                <a
+                    *ngIf="mediaTypes[currentMedia] === 'image'"
+                    mat-mini-fab
+                    disableRipple
+                    color="primary"
+                    [href]="mediaURLs[currentMedia]"
+                    target="_blank"
+                    rel="noopener"
+                    [title]="'open in new tab'"
+                >
+                    <mat-icon>open_in_new</mat-icon>
+                </a>
+            </div>
+        </div>
+        <div *ngIf="mediaTypes[currentMedia] === 'audio'">
+            <audio [src]="mediaURLs[currentMedia]" [controls]="true" (ended)="nextMedia()"></audio>
+            <div class="info">
+                <h4 matTooltip="{{ mediaURLs[currentMedia] }}">{{ mediaNames[currentMedia] }}</h4>
+            </div>
+        </div>
+        <div *ngIf="mediaTypes[currentMedia] === 'video'">
+            <video #video [src]="mediaURLs[currentMedia]" [controls]="true" (ended)="nextMedia()"></video>
+            <div class="info">
+                <h4 matTooltip="{{ mediaURLs[currentMedia] }}">{{ mediaNames[currentMedia] }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="acleft">
+        <button
+            *ngIf="mediaURLs.length > 1"
+            mat-mini-fab
+            color="primary"
+            matTooltip="Previous"
+            (click)="previousMedia()"
+            [title]="'previous'"
+        >
+            <mat-icon>chevron_left</mat-icon>
+        </button>
+    </div>
+    <div class="acright">
+        <button *ngIf="mediaURLs.length > 1" mat-mini-fab color="primary" matTooltip="Next" (click)="nextMedia()" [title]="'next'">
+            <mat-icon>chevron_right</mat-icon>
+        </button>
+    </div>
+    <div class="playlist">
+        <geoengine-mediaview-playlist [tracks]="mediaNames" [currentTrack]="currentMedia" (gotoMediaP)="goToMedia($event)">
+        </geoengine-mediaview-playlist>
+    </div>
+</mat-dialog-content>

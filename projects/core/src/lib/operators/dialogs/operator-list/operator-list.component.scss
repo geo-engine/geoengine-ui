@@ -1,0 +1,7 @@
+p {
+    color: var(--geoengine-foreground-secondary-text-color, grey);
+}
+
+mat-list-item ::ng-deep .highlight {
+    color: var(--geoengine-accent-color, grey);
+}

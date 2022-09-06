@@ -1,0 +1,24 @@
+<geoengine-sidenav-header>Layer statistics plot</geoengine-sidenav-header>
+<form [formGroup]="form" (ngSubmit)="add()" fxLayout="column">
+    <div fxFlex class="container">
+        <geoengine-multi-layer-selection
+            [types]="allowedLayerTypes"
+            [min]="1"
+            [max]="4"
+            formControlName="layers"
+        ></geoengine-multi-layer-selection>
+
+        <geoengine-operator-output-name formControlName="name" [suggestion]="outputNameSuggestion | async | stringSanitizer">
+            <mat-hint
+                align="end"
+                class="error"
+                *ngIf="form.controls['name'].errors?.required || form.controls['name'].errors?.onlyWhitespace"
+            >
+                The name must be non-empty.
+            </mat-hint>
+        </geoengine-operator-output-name>
+    </div>
+    <div class="actions">
+        <button type="submit" mat-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">Create</button>
+    </div>
+</form>

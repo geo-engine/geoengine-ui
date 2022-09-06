@@ -1,0 +1,23 @@
+<geoengine-sidenav-header>Point in Polygon Filter</geoengine-sidenav-header>
+
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault(); add()" fxLayout="column">
+    <geoengine-dialog-help>
+        <p>
+            This operator filters the given point layer using the given polygon layer. The resulting layer contains only (multi) points that
+            are contained by at least one polygon spatially and temporally.
+        </p>
+    </geoengine-dialog-help>
+
+    <div fxFlex class="container">
+        <geoengine-layer-selection [types]="[ResultTypes.POINTS]" formControlName="pointLayer"></geoengine-layer-selection>
+        <geoengine-layer-selection [types]="[ResultTypes.POLYGONS]" formControlName="polygonLayer"></geoengine-layer-selection>
+        <geoengine-operator-output-name formControlName="name">
+            <mat-hint align="end" class="error" *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace">
+                The name must be non-empty.
+            </mat-hint>
+        </geoengine-operator-output-name>
+    </div>
+    <div class="actions">
+        <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid">Apply</button>
+    </div>
+</form>

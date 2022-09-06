@@ -1,7 +1,7 @@
 #!/bin/sh
 
 current_dir=$(pwd)
-cd projects/wave-core || exit
+cd projects/core || exit
 
 # `version can be major, minor or patch`
 npm version "${version:=patch}"
@@ -10,7 +10,7 @@ cd "$current_dir" || exit
 
 npm run build:core
 
-cd dist/wave-core || exit
+cd dist/core || exit
 
 # remove `prepublishOnly` in order to publish Ivy package
 sed -i '/prepublishOnly/d' package.json
