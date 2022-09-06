@@ -531,9 +531,10 @@ export interface ProviderLayerCollectionIdDict {
     collectionId: string;
 }
 
-export interface LayerCollectionDict extends LayerCollectionItemDict {
+export interface LayerCollectionListingDict extends LayerCollectionItemDict {
     type: 'collection';
     id: ProviderLayerCollectionIdDict;
+    entryLabel: string;
 }
 
 export interface LayerCollectionLayerDict extends LayerCollectionItemDict {
@@ -548,4 +549,16 @@ export interface LayerDict {
     description: string;
     workflow: WorkflowDict;
     symbology: SymbologyDict;
+    metadata: {
+        [key: string]: string;
+    };
+}
+
+export interface LayerCollectionDict {
+    id: ProviderLayerCollectionIdDict;
+    name: string;
+    description: string;
+    items: LayerCollectionItemDict[];
+    properties: [string, string][];
+    entryLabel?: string;
 }

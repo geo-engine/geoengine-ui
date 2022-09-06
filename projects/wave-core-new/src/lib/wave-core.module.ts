@@ -96,6 +96,7 @@ import {LineageGraphComponent} from './provenance/lineage-graph/lineage-graph.co
 // eslint-disable-next-line max-len
 import {MeanRasterPixelValuesOverTimeDialogComponent} from './operators/dialogs/mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
 import {RasterVectorJoinComponent} from './operators/dialogs/raster-vector-join/raster-vector-join.component';
+import {RasterTypeConversionComponent} from './operators/dialogs/raster-type-conversion/raster-type-conversion.component';
 import {PointInPolygonFilterOperatorComponent} from './operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 import {UploadComponent} from './datasets/upload/upload.component';
 import {DataTableComponent} from './datatable/table/table.component';
@@ -129,7 +130,12 @@ import {LayerCollectionListComponent} from './layer-collections/layer-collection
 import {LayerCollectionNavigationComponent} from './layer-collections/layer-collection-navigation/layer-collection-navigation.component';
 import {ClassHistogramOperatorComponent} from './operators/dialogs/class-histogram-operator/class-histogram-operator.component';
 import {ColumnRangeFilterComponent} from './operators/dialogs/column-range-filter/column-range-filter.component';
+import {LayerCollectionDropdownComponent} from './layer-collections/layer-collection-dropdown/layer-collection-dropdown.component';
+import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {DialogSplashCheckboxComponent} from './dialogs/dialog-splash-checkbox/dialog-splash-checkbox.component';
+import {MediaviewComponent} from './datatable/mediaview/mediaview.component';
+import {MediaviewDialogComponent} from './datatable/mediaview/dialog/mediaview.dialog.component';
+import {MediaviewPlaylistComponent} from './datatable/mediaview/playlist/mediaview.playlist.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -209,6 +215,7 @@ const WAVE_COMPONENTS = [
     HistogramOperatorComponent,
     IfGuestDirective,
     IfLoggedInDirective,
+    LayerCollectionDropdownComponent,
     LayerCollectionListComponent,
     LayerCollectionNavigationComponent,
     LayerListComponent,
@@ -222,6 +229,9 @@ const WAVE_COMPONENTS = [
     LoginComponent,
     MapContainerComponent,
     MeanRasterPixelValuesOverTimeDialogComponent,
+    MediaviewComponent,
+    MediaviewDialogComponent,
+    MediaviewPlaylistComponent,
     ModalLoginComponent,
     MultiLayerSelectionComponent,
     NavigationComponent,
@@ -244,6 +254,7 @@ const WAVE_COMPONENTS = [
     RasterLegendComponent,
     RasterSymbologyEditorComponent,
     RasterVectorJoinComponent,
+    RasterTypeConversionComponent,
     RenameLayerComponent,
     SaveProjectAsComponent,
     ScatterplotOperatorComponent,
@@ -279,6 +290,7 @@ const WAVE_COMPONENTS = [
         FlexLayoutModule,
         FormsModule,
         HttpClientModule,
+        NgxMatSelectSearchModule,
         PortalModule,
         ReactiveFormsModule,
         ScrollingModule,

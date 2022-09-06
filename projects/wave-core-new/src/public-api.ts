@@ -47,6 +47,7 @@ export * from './lib/layers/legend/legend-raster/raster-legend.component';
 export * from './lib/layers/legend/legend-vector/vector-legend.component';
 export * from './lib/layers/rename-layer/rename-layer.component';
 export * from './lib/layers/symbology/color-param-editor/color-param-editor.component';
+export * from './lib/layer-collections/layer-collection-dropdown/layer-collection-dropdown.component';
 export * from './lib/layer-collections/layer-collection-list/layer-collection-list.component';
 export * from './lib/layer-collections/layer-collection-navigation/layer-collection-navigation.component';
 export * from './lib/layers/symbology/number-param-editor/number-param-editor.component';
@@ -67,6 +68,7 @@ export * from './lib/operators/dialogs/histogram-operator/histogram-operator.com
 export * from './lib/operators/dialogs/mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
 export * from './lib/operators/dialogs/operator-list/operator-list.component';
 export * from './lib/operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
+export * from './lib/operators/dialogs/raster-type-conversion/raster-type-conversion.component';
 export * from './lib/operators/dialogs/raster-vector-join/raster-vector-join.component';
 export * from './lib/operators/dialogs/scatterplot-operator/scatterplot-operator.component';
 export * from './lib/operators/dialogs/statistics-plot/statistics-plot.component';
@@ -100,6 +102,9 @@ export * from './lib/util/directives/autocomplete-select.directive';
 export * from './lib/time/time-slider/time-slider.component';
 export * from './lib/operators/dialogs/column-range-filter/column-range-filter.component';
 export * from './lib/dialogs/dialog-splash-checkbox/dialog-splash-checkbox.component';
+export * from './lib/datatable/mediaview/mediaview.component';
+export * from './lib/datatable/mediaview/dialog/mediaview.dialog.component';
+export * from './lib/datatable/mediaview/playlist/mediaview.playlist.component';
 
 // Pipes
 export * from './lib/util/pipes/async-converters.pipe';

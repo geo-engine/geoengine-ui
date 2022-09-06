@@ -19,7 +19,6 @@ export interface ExpressionDict extends OperatorDict {
     params: {
         expression: string;
         outputType: string;
-        outputNoDataValue: number | 'nan';
         outputMeasurement?: MeasurementDict;
         mapNoData: boolean;
     };
@@ -180,6 +179,13 @@ export interface TemporalRasterAggregationDict extends OperatorDict {
         };
         window: TimeStepDict;
         windowReference?: TimeInstanceDict;
+    };
+}
+
+export interface RasterTypeConversionDict extends OperatorDict {
+    type: 'RasterTypeConversion';
+    params: {
+        outputDataType: string;
     };
 }
 

@@ -1,0 +1,35 @@
+<div *ngIf="layersAvailable()">
+    <ng-container *ngFor="let collection of collections; index as i">
+        <mat-form-field>
+            <mat-label>{{ collection.entryLabel ?? 'Entries' }}</mat-label>
+            <mat-select (valueChange)="selectItem($event, i)" [(value)]="selections[i]">
+                <mat-option>
+                    <ngx-mat-select-search
+                        [formControl]="waveAutocompleteSelect.filterFormControl"
+                        waveAutocompleteSelect
+                        [waveAutocompleteSelectAllValues]="collection.items"
+                        [waveAutocompleteSelectSearchPredicate]="searchPredicate"
+                        #waveAutocompleteSelect="waveAutocompleteSelect"
+                        ngDefaultControl
+                    ></ngx-mat-select-search>
+                </mat-option>
+                <mat-option *ngFor="let item of waveAutocompleteSelect.filteredValues | async" [value]="item">{{ item.name }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <div *ngIf="collections[i + 1] as selected">
+            <div *ngFor="let prop of selected.properties">
+                <p>
+                    <em
+                        ><span class="label">{{ prop[0] }}</span> {{ prop[1] }}</em
+                    >
+                </p>
+            </div>
+            <div *ngIf="selected.description.length > 0">
+                <p class="mat-caption label justify">{{ selected.description }}</p>
+            </div>
+        </div>
+    </ng-container>
+</div>
+
+<p *ngIf="!layersAvailable()" class="empty"><em>no layers available</em></p>

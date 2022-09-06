@@ -186,11 +186,9 @@ export class AnalysisComponent implements OnInit {
                                 source: {
                                     type: 'Expression',
                                     params: {
-                                        expression: 'if B != 0 { A } else { out_nodata }',
+                                        expression: 'if B != 0 { A } else { NODATA }',
                                         // TODO: get data type from data
                                         outputType: RasterDataTypes.Float64.getCode(),
-                                        // TODO: get no data value from data
-                                        outputNoDataValue: 'nan',
                                         outputMeasurement: rasterResultDescriptor.measurement,
                                         mapNoData: false,
                                     },
