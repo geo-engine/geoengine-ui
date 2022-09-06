@@ -5,7 +5,7 @@ import {UserService} from '../user.service';
 import {User} from '../user.model';
 
 @Component({
-    selector: 'wave-oidc',
+    selector: 'geoengine-oidc',
     templateUrl: 'oidc.component.html',
     styleUrls: ['./oidc.component.scss'],
 })

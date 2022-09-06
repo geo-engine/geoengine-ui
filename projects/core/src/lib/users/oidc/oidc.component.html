@@ -1,9 +1,9 @@
-<wave-sidenav-header>Login</wave-sidenav-header>
-<ng-container *waveIfLoggedIn>
+<geoengine-sidenav-header>Login</geoengine-sidenav-header>
+<ng-container *geoengineIfLoggedIn>
     <p *ngIf="user">Welcome {{ user.realName }}!</p>
     <button mat-raised-button color="primary" (click)="logout()">Logout</button>
 </ng-container>
-<ng-container *waveIfGuest>
+<ng-container *geoengineIfGuest>
     <p>You are currently not logged in. By clicking the button below, you will be redirected to a login page.</p>
     <button mat-raised-button color="primary" [disabled]="loginDisabled | async" (click)="login()">Login</button>
 </ng-container>
