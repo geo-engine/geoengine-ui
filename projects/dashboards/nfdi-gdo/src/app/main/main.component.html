@@ -1,0 +1,48 @@
+<div class="sidenav mat-elevation-z4">
+    <mat-toolbar color="primary" class="mat-elevation-z1">
+        <mat-toolbar-row>
+            <div fxFlex></div>
+            <a href="https://www.nfdi4biodiversity.org"><img src="assets/logos/nfdi4biodiversity.png" alt="NFDI4BioDiversity" /></a>
+            <p class="mat-title">Portaldemonstrator</p>
+            <div fxFlex></div>
+        </mat-toolbar-row>
+    </mat-toolbar>
+    <ng-template [cdkPortalOutlet]="datasetPortal"></ng-template>
+</div>
+
+<div id="top-float-buttons">
+    <geoengine-zoom-handles (zoomIn)="map.zoomIn()" (zoomOut)="map.zoomOut()" class="mat-elevation-z4"></geoengine-zoom-handles>
+</div>
+
+<geoengine-legend *ngIf="dataSelectionService.rasterLayer | async as rasterLayer" [layer]="rasterLayer"></geoengine-legend>
+
+<div class="mid-container" [style.height.px]="windowHeight$ | async">
+    <geoengine-map-container #map [grid]="false">
+        <ng-container *ngIf="userService.getSessionTokenStream() | async as sessionToken">
+            <ng-template ngFor let-layer [ngForOf]="layersReverse$ | async" [ngForTrackBy]="idFromLayer">
+                <ng-template [ngIf]="layer.layerType === 'vector'">
+                    <geoengine-ol-vector-layer
+                        [layerId]="layer.id"
+                        [workflow]="layer.workflowId"
+                        [symbology]="$any(layer.symbology)"
+                        [isVisible]="layer.isVisible"
+                        (mapRedraw)="map.layerForcesRedraw()"
+                    ></geoengine-ol-vector-layer>
+                </ng-template>
+                <ng-template [ngIf]="layer.layerType === 'raster'">
+                    <geoengine-ol-raster-layer
+                        [layerId]="layer.id"
+                        [workflow]="layer.workflowId"
+                        [symbology]="$any(layer.symbology)"
+                        [isVisible]="layer.isVisible"
+                        [sessionToken]="sessionToken"
+                        (mapRedraw)="map.layerForcesRedraw()"
+                    ></geoengine-ol-raster-layer>
+                </ng-template>
+            </ng-template>
+        </ng-container>
+    </geoengine-map-container>
+</div>
+
+<!-- TODO: fix layout service to work without sidenav -->
+<mat-sidenav></mat-sidenav>

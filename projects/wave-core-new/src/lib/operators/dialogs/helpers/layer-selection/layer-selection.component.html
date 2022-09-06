@@ -1,9 +1,0 @@
-<wave-dialog-section-heading [title]="title" subtitle="Select Input {{ title }}"></wave-dialog-section-heading>
-<mat-form-field *ngIf="hasLayers | async; else noInputAvailable">
-    <mat-select placeholder="Input" [ngModel]="selectedLayer | async" (ngModelChange)="setSelectedLayer($event)" (onBlur)="onBlur()">
-        <mat-option *ngFor="let layer of filteredLayers | async" [value]="layer">{{ layer.name }}</mat-option>
-    </mat-select>
-</mat-form-field>
-<ng-template #noInputAvailable>
-    <p>No Input Available</p>
-</ng-template>

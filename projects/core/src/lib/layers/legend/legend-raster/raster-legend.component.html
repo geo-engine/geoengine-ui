@@ -1,0 +1,41 @@
+<tbody class="legend">
+    <ng-template [ngIf]="layer.symbology.colorizer.isContinuous()">
+        <tr *ngFor="let breakpoint of layer.symbology.colorizer.getBreakpoints(); let isFirst = first">
+            <td
+                class="gradient"
+                *ngIf="isFirst"
+                [rowSpan]="layer.symbology.colorizer.getBreakpoints().length"
+                [style.background]="layer.symbology.colorizer | geoengineColorizerCssGradient"
+            ></td>
+            <td>{{ breakpoint.value | number: numberPipeParameters }}</td>
+            <td *ngIf="isFirst">
+                <ng-container *ngIf="measurement$ | async | continuousMeasurement as measurement">
+                    {{ measurement.measurement }} <span *ngIf="measurement.unit">in {{ measurement.unit }}</span>
+                </ng-container>
+                <ng-container *ngIf="measurement$ | async | classificationMeasurement as measurement">
+                    {{ measurement.measurement }}
+                </ng-container>
+            </td>
+        </tr>
+    </ng-template>
+
+    <ng-container *ngIf="layer.symbology.colorizer.isDiscrete()">
+        <ng-container *ngIf="!(measurement$ | async | classificationMeasurement)">
+            <tr *ngFor="let breakpoint of layer.symbology.colorizer.getBreakpoints()">
+                <td class="classes">
+                    <div class="icon" [style.background-color]="breakpoint | breakpointToCssStringPipe"></div>
+                </td>
+                <td>{{ breakpoint.value }}</td>
+            </tr>
+        </ng-container>
+
+        <ng-container *ngIf="measurement$ | async | classificationMeasurement as measurement">
+            <tr *ngFor="let breakpoint of layer.symbology.colorizer.getBreakpoints(); let isFirst = first">
+                <td class="classes">
+                    <div class="icon" [style.background-color]="breakpoint | breakpointToCssStringPipe"></div>
+                </td>
+                <td>{{ measurement.classes.get(breakpoint.value) }}</td>
+            </tr>
+        </ng-container>
+    </ng-container>
+</tbody>

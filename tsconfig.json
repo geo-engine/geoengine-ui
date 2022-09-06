@@ -13,7 +13,7 @@
         "target": "es2020",
         "lib": ["es2018", "dom"],
         "paths": {
-            "wave-core": ["dist/wave-core/wave-core", "dist/wave-core"]
+            "@geoengine/core": ["dist/core"]
         },
         // TODO: set to false if no longer needed for moment and proj4
         "allowSyntheticDefaultImports": true,
