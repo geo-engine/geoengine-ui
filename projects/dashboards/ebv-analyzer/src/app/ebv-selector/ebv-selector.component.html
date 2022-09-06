@@ -1,0 +1,33 @@
+<div class="container mat-typography" #container>
+    <geoengine-layer-collection-dropdown
+        [root]="rootCollectionId"
+        (layerSelected)="layerSelected($event)"
+        [preselectedPath]="preselectedPath"
+    ></geoengine-layer-collection-dropdown>
+
+    <div fxLayout="row" fxLayoutGap="1rem">
+        <button mat-raised-button class="show" color="primary" *ngIf="layerId" (click)="showEbv()">Show</button>
+        <button mat-raised-button class="show" color="primary" *ngIf="layer" (click)="editSymbology()" fxFlex>
+            <mat-icon>palette</mat-icon>
+        </button>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div *ngIf="layer" fxLayout="row" fxLayoutAlign="space-between start">
+        <geoengine-ebv-country-selector fxFlex=""></geoengine-ebv-country-selector>
+        <span fxFlex="1rem"></span>
+        <button mat-raised-button color="primary" [disabled]="isPlotButtonDisabled$ | async" (click)="plot()">Calculate</button>
+    </div>
+
+    <geoengine-vega-viewer *ngIf="plotData | async as plot" [chartData]="plot"></geoengine-vega-viewer>
+
+    <mat-spinner color="accent" *ngIf="plotLoading | async"></mat-spinner>
+
+    <div class="spacer"></div>
+    <mat-divider></mat-divider>
+
+    <geoengine-ebv-attributions></geoengine-ebv-attributions>
+
+    <div class="spacer"></div>
+</div>

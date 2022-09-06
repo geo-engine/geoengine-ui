@@ -2,9 +2,9 @@
 
 # Geo Engine UI
 
-This repository contains the official frontend of Geo Engine.
-It is a web application that is built via nodejs.
-You can serve it via any http server, e.g. Apache.
+This repository contains the official UI of Geo Engine.
+It is a web application that is built via Node.js.
+You can serve it via any HTTP server, e.g. Apache.
 
 ## Requirements
 
@@ -26,7 +26,7 @@ sudo apt-get install -y nodejs
 ```
 rm -rf node_modules package-lock.json
 npm install
-npm run build-prod:core && npm run build-prod:geoengine
+npm run build-prod:core && npm run build-prod:gis
 ```
 
 You can find the output in the `dist` directory.
@@ -49,14 +49,15 @@ Then:
 ```
 npm install
 npm run build-watch:core
-npm run serve:geoengine:local
+npm run serve:gis:local
 ```
 
 When the server is started, you can visit `http://localhost:4200/`.
 
 ### Apps
 
-_TODO: describe whichs apps are there and how to build them_
+-   The default app is the GIS app. It is located in `projects/gis`.
+-   Dashboards are located under `projects/dashboards`.
 
 ## Configuration
 
