@@ -1,4 +1,4 @@
-import {Observable, ReplaySubject, of, Subject} from 'rxjs';
+import {Observable, ReplaySubject, of} from 'rxjs';
 import {catchError, filter, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
@@ -97,7 +97,7 @@ export class UserService {
      * @returns `true` if the login was successful, `false` otherwise.
      */
     login(credentials: {email: string; password: string}): Observable<Session> {
-        const result = new Subject<Session>();
+        const result = new ReplaySubject<Session>();
         this.backend
             .loginUser(credentials)
             .pipe(mergeMap((response) => this.createSession(response)))
@@ -113,7 +113,7 @@ export class UserService {
     }
 
     guestLogin(): Observable<Session> {
-        const result = new Subject<Session>();
+        const result = new ReplaySubject<Session>();
         this.session$.pipe(first()).subscribe((oldSession) => {
             if (oldSession) {
                 this.backend.logoutUser(oldSession.sessionToken).subscribe();
@@ -178,7 +178,7 @@ export class UserService {
     }
 
     oidcLogin(request: {sessionState: string; code: string; state: string}): Observable<Session> {
-        const result = new Subject<Session>();
+        const result = new ReplaySubject<Session>();
         this.backend
             .oidcLogin(request)
             .pipe(mergeMap((response) => this.createSession(response)))
