@@ -136,6 +136,7 @@ import {DialogSplashCheckboxComponent} from './dialogs/dialog-splash-checkbox/di
 import {MediaviewComponent} from './datatable/mediaview/mediaview.component';
 import {MediaviewDialogComponent} from './datatable/mediaview/dialog/mediaview.dialog.component';
 import {MediaviewPlaylistComponent} from './datatable/mediaview/playlist/mediaview.playlist.component';
+import {OidcComponent} from './users/oidc/oidc.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -238,6 +239,7 @@ const CORE_COMPONENTS = [
     NewProjectComponent,
     NotificationsComponent,
     NumberParamEditorComponent,
+    OidcComponent,
     OlRasterLayerComponent,
     OlVectorLayerComponent,
     OperatorListComponent,

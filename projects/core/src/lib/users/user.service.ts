@@ -1,4 +1,4 @@
-import {Observable, ReplaySubject, of, Subject} from 'rxjs';
+import {Observable, ReplaySubject, of} from 'rxjs';
 import {catchError, filter, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
@@ -9,7 +9,7 @@ import {User} from './user.model';
 import {Config} from '../config.service';
 import {NotificationService} from '../notification.service';
 import {BackendService} from '../backend/backend.service';
-import {SessionDict, UUID} from '../backend/backend.model';
+import {AuthCodeRequestURL, SessionDict, UUID} from '../backend/backend.model';
 import {Session} from './session.model';
 import {Router} from '@angular/router';
 
@@ -97,7 +97,7 @@ export class UserService {
      * @returns `true` if the login was successful, `false` otherwise.
      */
     login(credentials: {email: string; password: string}): Observable<Session> {
-        const result = new Subject<Session>();
+        const result = new ReplaySubject<Session>();
         this.backend
             .loginUser(credentials)
             .pipe(mergeMap((response) => this.createSession(response)))
@@ -113,7 +113,7 @@ export class UserService {
     }
 
     guestLogin(): Observable<Session> {
-        const result = new Subject<Session>();
+        const result = new ReplaySubject<Session>();
         this.session$.pipe(first()).subscribe((oldSession) => {
             if (oldSession) {
                 this.backend.logoutUser(oldSession.sessionToken).subscribe();
@@ -171,6 +171,26 @@ export class UserService {
      */
     setLogoutCallback(callback: () => void): void {
         this.logoutCallback = callback;
+    }
+
+    oidcInit(): Observable<AuthCodeRequestURL> {
+        return this.backend.oidcInit();
+    }
+
+    oidcLogin(request: {sessionState: string; code: string; state: string}): Observable<Session> {
+        const result = new ReplaySubject<Session>();
+        this.backend
+            .oidcLogin(request)
+            .pipe(mergeMap((response) => this.createSession(response)))
+            .subscribe(
+                (session) => {
+                    this.session$.next(session);
+                    result.next(session);
+                },
+                (error) => result.error(error),
+                () => result.complete(),
+            );
+        return result.asObservable();
     }
 
     saveSettingInLocalStorage(keyValue: string, setting: string): void {
