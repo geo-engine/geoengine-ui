@@ -110,7 +110,7 @@ export const DEFAULT_CONFIG: ConfigStructure = {
     },
     MAP: {
         BACKGROUND_LAYER: 'MVT',
-        BACKGROUND_LAYER_URL: 'https://base.geoengine.io/natural-earth/{z}/{x}/{y}.pbf',
+        BACKGROUND_LAYER_URL: 'https://basemap.geoengine.io/natural-earth/{z}/{x}/{y}.pbf',
         HOSTED_BACKGROUND_SERVICE: '/mapcache/',
         HOSTED_BACKGROUND_LAYER_NAME: 'osm',
         HOSTED_BACKGROUND_SERVICE_VERSION: '1.1.1',
