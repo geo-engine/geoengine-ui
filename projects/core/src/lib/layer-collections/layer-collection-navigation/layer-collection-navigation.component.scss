@@ -1,3 +1,25 @@
 .portal-outlet {
-    height: calc(100% - 36px);
+    height: calc(100% - 70px);
+}
+
+.head {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    white-space: nowrap;
+    overflow: hidden;
+    padding-top: 0.5rem;
+}
+
+.nagivation {
+    grid-column: 1/2;
+    justify-content: center;
+}
+
+.breadcrumbarea {
+    grid-column: 2/-1;
+    justify-content: center;
+    overflow: auto;
+    white-space: nowrap;
+    padding-bottom: 0.2rem;
+    margin-bottom: 0.2rem;
 }
