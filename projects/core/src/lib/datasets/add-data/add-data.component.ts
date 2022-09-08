@@ -1,7 +1,6 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
 import {LayerCollectionNavigationComponent} from '../../layer-collections/layer-collection-navigation/layer-collection-navigation.component';
 import {LayoutService, SidenavConfig} from '../../layout.service';
-import {createIconDataUrl} from '../../util/icons';
 import {AddWorkflowComponent} from '../add-workflow/add-workflow.component';
 import {DatasetListComponent} from '../dataset-list/dataset-list.component';
 import {DrawFeaturesComponent} from '../draw-features/draw-features.component';
