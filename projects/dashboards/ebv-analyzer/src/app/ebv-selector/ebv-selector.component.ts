@@ -45,7 +45,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
     rootCollectionId: ProviderLayerCollectionIdDict = {
         providerId: '77d0bf11-986e-43f5-b11d-898321f1854c',
-        collectionId: '{"type":"classes"}',
+        collectionId: 'classes',
     };
 
     preselectedPath: Array<string | number> = [];

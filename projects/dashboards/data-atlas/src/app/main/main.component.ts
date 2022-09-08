@@ -72,18 +72,16 @@ export class MainComponent implements OnInit, AfterViewInit {
 
         this.layersReverse$ = this.dataSelectionService.layers;
 
-        this.layerCollectionService
-            .getLayerCollectionItems('1690c483-b17f-4d98-95c8-00a64849cd0b', '{"type":"path","path":"."}')
-            .subscribe((collection) => {
-                const collections = [];
-                for (const item of collection.items) {
-                    if (item.type === 'collection') {
-                        collections.push(item as LayerCollectionListingDict);
-                    }
+        this.layerCollectionService.getLayerCollectionItems('1690c483-b17f-4d98-95c8-00a64849cd0b', 'root').subscribe((collection) => {
+            const collections = [];
+            for (const item of collection.items) {
+                if (item.type === 'collection') {
+                    collections.push(item as LayerCollectionListingDict);
                 }
-                this.selectedLayers$.next(new Array(collections.length).fill(false));
-                this.topLevelCollections$.next(collections);
-            });
+            }
+            this.selectedLayers$.next(new Array(collections.length).fill(false));
+            this.topLevelCollections$.next(collections);
+        });
     }
 
     ngOnInit(): void {
