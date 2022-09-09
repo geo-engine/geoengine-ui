@@ -11,7 +11,7 @@
 <form [formGroup]="form" (ngSubmit)="add()" fxLayout="column">
     <div fxFlex>
         <geoengine-layer-selection [types]="inputTypes" formControlName="layer"></geoengine-layer-selection>
-        <geoengine-dialog-section-heading title="Config" subtitle="Specify the output data tpe"></geoengine-dialog-section-heading>
+        <geoengine-dialog-section-heading title="Config" subtitle="Specify the output data type"></geoengine-dialog-section-heading>
 
         <mat-form-field appearance="fill">
             <mat-label>Output Data Type</mat-label>
