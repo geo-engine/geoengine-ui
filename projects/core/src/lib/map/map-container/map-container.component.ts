@@ -58,7 +58,7 @@ import {LayoutService} from '../../layout.service';
 import {MatGridList, MatGridTile} from '@angular/material/grid-list';
 import {VectorSymbology} from '../../layers/symbology/symbology.model';
 import {SpatialReferenceService} from '../../spatial-references/spatial-reference.service';
-import {containsCoordinate, getCenter} from 'ol/extent';
+import {containsCoordinate, getBottomLeft, getTopRight, getCenter, boundingExtent} from 'ol/extent';
 import {olExtentToTuple} from '../../util/conversions';
 import {applyBackground, stylefunction} from 'ol-mapbox-style';
 
@@ -127,7 +127,6 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         private config: Config,
         private changeDetectorRef: ChangeDetectorRef,
         private mapService: MapService,
-        // private layerService: LayerService,
         private layoutService: LayoutService,
         private projectService: ProjectService,
         private spatialReferenceService: SpatialReferenceService,
@@ -216,6 +215,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
      * Zoom to and focus a bounding box
      */
     zoomTo(boundingBox: Extent): void {
+        this.maps[0].updateSize();
         this.view.fit(boundingBox, {
             nearest: true,
             maxZoom: MAX_ZOOM_LEVEL,
@@ -423,8 +423,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         }
 
         // TODO: add to all maps in grid view
-        const map: OlMap = this.maps[0];
-        map.addInteraction(this.userSelect);
+        const firstMap: OlMap = this.maps[0];
+        firstMap.addInteraction(this.userSelect);
     }
 
     private redrawLayers(projection: SpatialReference): void {
@@ -507,6 +507,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         const olProjection = this.spatialReferenceService.getOlProjection(projection);
 
         let newCenterPoint: OlGeomPoint;
+        let focusExtent: Extent | undefined;
         if (this.view && this.view.getCenter()) {
             const oldCenterPoint = new OlGeomPoint(this.view.getCenter() as any);
             newCenterPoint = oldCenterPoint.transform(this.view.getProjection(), olProjection) as OlGeomPoint;
@@ -515,6 +516,15 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 newCenterPoint = new OlGeomPoint(getCenter(olProjection.getExtent()));
                 zoomLevel = DEFAULT_ZOOM_LEVEL;
             }
+        } else if (this.config.DEFAULTS.FOCUS_EXTENT) {
+            const epsg4326BottomLeft = new OlGeomPoint(getBottomLeft(this.config.DEFAULTS.FOCUS_EXTENT));
+            const epsg4326TopRight = new OlGeomPoint(getTopRight(this.config.DEFAULTS.FOCUS_EXTENT));
+            const bottomLeft = epsg4326BottomLeft.transform('EPSG:4326', olProjection) as OlGeomPoint;
+            const topRight = epsg4326TopRight.transform('EPSG:4326', olProjection) as OlGeomPoint;
+
+            focusExtent = boundingExtent([bottomLeft.getCoordinates(), topRight.getCoordinates()]) as Extent;
+
+            newCenterPoint = new OlGeomPoint(getCenter(focusExtent));
         } else {
             newCenterPoint = new OlGeomPoint([0, 0]);
         }
@@ -530,6 +540,23 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             multiWorld: true,
         });
         this.maps.forEach((map) => map.setView(this.view));
+
+        if (focusExtent) {
+            const firstMap = this.maps[0];
+
+            const listener = firstMap.once('change:size', () => {
+                if (!focusExtent) {
+                    return;
+                }
+                this.zoomTo(focusExtent);
+            });
+
+            // In theory, there could be a race-condition if the size is set before adding the `once` trigger.
+            if (this.maps[0].getSize()) {
+                firstMap.un(listener.type as any, listener.listener);
+                this.zoomTo(focusExtent);
+            }
+        }
 
         this.emitViewportSize();
 
