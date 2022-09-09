@@ -521,16 +521,17 @@
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
                         "allowedCommonJsDependencies": [
+                            "clone",
                             "codemirror",
                             "dagre-d3",
-                            "moment",
-                            "xml-utils",
-                            "lru-cache",
-                            "web-worker",
-                            "rbush",
-                            "clone",
                             "fast-deep-equal",
-                            "fast-json-stable-stringify"
+                            "fast-json-stable-stringify",
+                            "lru-cache",
+                            "moment",
+                            "pbf"
+                            "rbush",
+                            "web-worker",
+                            "xml-utils",
                         ],
                         "outputPath": "dist/nfdi-gdo",
                         "index": "projects/dashboards/nfdi-gdo/src/index.html",

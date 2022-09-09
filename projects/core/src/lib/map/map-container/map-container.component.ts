@@ -57,8 +57,8 @@ import {Config} from '../../config.service';
 import {LayoutService} from '../../layout.service';
 import {MatGridList, MatGridTile} from '@angular/material/grid-list';
 import {VectorSymbology} from '../../layers/symbology/symbology.model';
-import {SpatialReferenceService} from '../../spatial-references/spatial-reference.service';
-import {containsCoordinate, getBottomLeft, getTopRight, getCenter, boundingExtent} from 'ol/extent';
+import {SpatialReferenceService, WGS_84} from '../../spatial-references/spatial-reference.service';
+import {containsCoordinate, getCenter} from 'ol/extent';
 import {olExtentToTuple} from '../../util/conversions';
 import {applyBackground, stylefunction} from 'ol-mapbox-style';
 
@@ -517,12 +517,11 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 zoomLevel = DEFAULT_ZOOM_LEVEL;
             }
         } else if (this.config.DEFAULTS.FOCUS_EXTENT) {
-            const epsg4326BottomLeft = new OlGeomPoint(getBottomLeft(this.config.DEFAULTS.FOCUS_EXTENT));
-            const epsg4326TopRight = new OlGeomPoint(getTopRight(this.config.DEFAULTS.FOCUS_EXTENT));
-            const bottomLeft = epsg4326BottomLeft.transform('EPSG:4326', olProjection) as OlGeomPoint;
-            const topRight = epsg4326TopRight.transform('EPSG:4326', olProjection) as OlGeomPoint;
-
-            focusExtent = boundingExtent([bottomLeft.getCoordinates(), topRight.getCoordinates()]) as Extent;
+            focusExtent = this.spatialReferenceService.reprojectExtent(
+                this.config.DEFAULTS.FOCUS_EXTENT,
+                WGS_84.spatialReference,
+                projection,
+            );
 
             newCenterPoint = new OlGeomPoint(getCenter(focusExtent));
         } else {
