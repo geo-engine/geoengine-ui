@@ -528,10 +528,10 @@
                             "fast-json-stable-stringify",
                             "lru-cache",
                             "moment",
-                            "pbf"
+                            "pbf",
                             "rbush",
                             "web-worker",
-                            "xml-utils",
+                            "xml-utils"
                         ],
                         "outputPath": "dist/nfdi-gdo",
                         "index": "projects/dashboards/nfdi-gdo/src/index.html",
