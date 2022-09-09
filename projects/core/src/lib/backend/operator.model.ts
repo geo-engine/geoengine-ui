@@ -224,3 +224,13 @@ export interface TimeProjectionDict extends OperatorDict {
         stepReference?: TimeInstanceDict;
     };
 }
+
+export interface InterpolationDict extends OperatorDict {
+    type: 'Interpolation';
+    params: {
+        interpolation: 'nearestNeighbor' | 'bilinear';
+        inputResolution: InputResolutionDict;
+    };
+}
+
+export type InputResolutionDict = {type: 'native'} | {type: 'value'; x: number; y: number};

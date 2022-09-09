@@ -1,0 +1,71 @@
+<geoengine-sidenav-header>Interpolation</geoengine-sidenav-header>
+
+<geoengine-dialog-help>
+    <p>
+        This operator artificially increases the resolution of a raster by interpolating the values of the input raster.
+        <a href="https://docs.geoengine.io/operators/interpolation.html">docs.geoengine.io</a>.
+    </p>
+</geoengine-dialog-help>
+
+<form [formGroup]="form" (ngSubmit)="add()" fxLayout="column">
+    <div fxFlex>
+        <geoengine-layer-selection [types]="inputTypes" formControlName="layer"></geoengine-layer-selection>
+        <geoengine-dialog-section-heading title="Config" subtitle="Specify the interpolation">
+        </geoengine-dialog-section-heading>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Interpolation method</mat-label>
+            <mat-select formControlName="interpolationMethod">
+                <mat-option *ngFor="let method of interpolationMethods" [value]="method[1]">
+                    {{ method[0] }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Input resolution</mat-label>
+            <mat-select formControlName="inputResolution">
+                <mat-option value="native">
+                    Source resolution
+                </mat-option>
+                <mat-option value="value">
+                    Value
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <div fxLayout="row" *ngIf="form.get('inputResolution')?.value === 'value'">
+            <mat-form-field appearance="fill">
+                <mat-label>Input resolution (x)</mat-label>
+                <input matInput type="number" formControlName="inputResolutionX" />
+                <mat-hint class="error"
+                    *ngIf="form.controls.inputResolutionX.errors?.required || form.controls.inputResolutionX.errors?.valueNotLarger">
+                    The x resolution must be a positive number.
+                </mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+                <mat-label>Input resolution (y)</mat-label>
+                <input matInput type="number" formControlName="inputResolutionY" />
+                <mat-hint class="error"
+                    *ngIf="form.controls.inputResolutionY.errors?.required || form.controls.inputResolutionY.errors?.valueNotLarger">
+                    The y resolution must be a positive number.
+                </mat-hint>
+            </mat-form-field>
+        </div>
+
+
+
+        <geoengine-operator-output-name formControlName="name" [suggestion]="
+                (form.controls.layer.valueChanges | async)?.name + ' interpolated' 
+            ">
+            <mat-hint align="end" class="error"
+                *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace">
+                The name must be non-empty.
+            </mat-hint>
+        </geoengine-operator-output-name>
+    </div>
+    <div class="actions">
+        <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid">Create</button>
+    </div>
+</form>
