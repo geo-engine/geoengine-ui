@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import {Injectable} from '@angular/core';
-import {mergeDeep} from 'immutable';
-import {Config, ConfigStructure, DEFAULT_CONFIG} from '@geoengine/core';
+import {Config, ConfigStructure, DEFAULT_CONFIG, mergeDeepOverrideLists} from '@geoengine/core';
 
 interface Components {
     readonly PLAYBACK: {
@@ -14,7 +13,7 @@ interface AppConfigStructure extends ConfigStructure {
     readonly COMPONENTS: Components;
 }
 
-const APP_CONFIG_DEFAULTS = mergeDeep(DEFAULT_CONFIG, {
+const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CONFIG, {
     COMPONENTS: {
         PLAYBACK: {
             AVAILABLE: false,
