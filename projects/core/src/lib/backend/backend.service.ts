@@ -37,6 +37,7 @@ import {
     DatasetOrderByDict,
     LayerDict,
     LayerCollectionDict,
+    AuthCodeRequestURL,
 } from './backend.model';
 
 @Injectable({
@@ -69,6 +70,14 @@ export class BackendService {
 
     createAnonymousUserSession(): Observable<SessionDict> {
         return this.http.post<SessionDict>(this.config.API_URL + '/anonymous', null);
+    }
+
+    oidcInit(): Observable<AuthCodeRequestURL> {
+        return this.http.post<AuthCodeRequestURL>(this.config.API_URL + '/oidcInit', null);
+    }
+
+    oidcLogin(request: {sessionState: string; code: string; state: string}): Observable<SessionDict> {
+        return this.http.post<SessionDict>(this.config.API_URL + '/oidcLogin', request);
     }
 
     createProject(

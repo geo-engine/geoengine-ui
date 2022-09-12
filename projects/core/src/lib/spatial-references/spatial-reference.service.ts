@@ -10,6 +10,8 @@ import {register as olProj4Register} from 'ol/proj/proj4';
 import OlProjection from 'ol/proj/Projection';
 import proj4 from 'proj4';
 import {Config} from '../config.service';
+import {boundingExtent, getBottomLeft, getTopRight} from 'ol/extent';
+import OlGeomPoint from 'ol/geom/Point';
 
 export const WEB_MERCATOR = new NamedSpatialReference('WGS 84 / Pseudomercator', 'EPSG:3857');
 export const WGS_84 = new NamedSpatialReference('WGS 84', 'EPSG:4326');
@@ -60,6 +62,16 @@ export class SpatialReferenceService {
         } else {
             throw new Error(`Projection ${spatialReference.srsString} not found`);
         }
+    }
+
+    reprojectExtent(
+        extent: [number, number, number, number],
+        from: SpatialReference,
+        to: SpatialReference,
+    ): [number, number, number, number] {
+        const topRight = new OlGeomPoint(getTopRight(extent)).transform(from.srsString, to.srsString) as OlGeomPoint;
+        const bottomLeft = new OlGeomPoint(getBottomLeft(extent)).transform(from.srsString, to.srsString) as OlGeomPoint;
+        return boundingExtent([bottomLeft.getCoordinates(), topRight.getCoordinates()]) as [number, number, number, number];
     }
 
     private registerDefaults(): void {
