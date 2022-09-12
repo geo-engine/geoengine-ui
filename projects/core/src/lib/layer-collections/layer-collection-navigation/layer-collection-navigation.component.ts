@@ -27,7 +27,7 @@ export class LayerCollectionNavigationComponent {
     scrollToRight(): void {
         setTimeout(() => {
             // wait until breadcrumbs are re-rendered before scrolling
-            this.scrollElement.nativeElement.scrollLeft += 900000; // A large number to scroll all the way to the end
+            this.scrollElement.nativeElement.scrollLeft += this.scrollElement.nativeElement.scrollWidth;
         }, 0);
     }
 
