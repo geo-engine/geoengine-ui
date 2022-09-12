@@ -27,7 +27,7 @@ export class LayerCollectionNavigationComponent {
     scrollToRight(): void {
         setTimeout(() => {
             // wait until breadcrumbs are re-rendered before scrolling
-            this.scrollElement.nativeElement.scrollLeft += Number.MAX_SAFE_INTEGER;
+            this.scrollElement.nativeElement.scrollLeft += 900000; // A large number to scroll all the way to the end
         }, 0);
     }
 
@@ -75,7 +75,9 @@ export class LayerCollectionNavigationComponent {
 
     onBreadCrumbClick(index: number): void {
         // Creates and appends a new crumbtrail, then moves forward to it
-        if (index === this.displayedTrail.length - 1) return;
+        if (index === this.displayedTrail.length - 1) {
+            return;
+        }
         const newTrail = this.displayedTrail.map((x) => Object.assign({}, x)).slice(0, index + 1);
         this.allTrails.push(newTrail);
         this.selectedCollection = this.allTrails.length - 2;
@@ -83,7 +85,9 @@ export class LayerCollectionNavigationComponent {
     }
 
     navigateToRoot(): void {
-        if (this.selectedCollection === -1) return;
+        if (this.selectedCollection === -1) {
+            return;
+        }
         const newTrail: Array<LayerCollectionItemDict> = [];
         this.allTrails.push(newTrail);
         this.selectedCollection = this.allTrails.length - 2;

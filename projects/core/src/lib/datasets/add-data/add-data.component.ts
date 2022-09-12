@@ -55,7 +55,7 @@ export class AddDataComponent implements OnInit {
         return {
             name: 'Layers',
             description: 'Collection of existing layers',
-            icon: 'sort',
+            icon: 'layers',
             sidenavConfig: {component: LayerCollectionNavigationComponent, keepParent: true},
         };
     }
