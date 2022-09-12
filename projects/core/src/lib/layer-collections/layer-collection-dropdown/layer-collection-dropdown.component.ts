@@ -22,7 +22,7 @@ export class LayerCollectionDropdownComponent implements OnInit {
 
     readonly collections: Array<LayerCollectionDict> = [];
 
-    selections: Array<LayerCollectionDict> = [];
+    selections: Array<LayerCollectionItemDict> = [];
 
     constructor(protected readonly layerCollectionService: LayerCollectionService, private readonly changeDetectorRef: ChangeDetectorRef) {}
 
@@ -68,23 +68,28 @@ export class LayerCollectionDropdownComponent implements OnInit {
             return;
         }
 
+        const item = found as LayerCollectionItemDict;
+        this.selections.push(item);
+
         if (found.type === 'layer') {
             this.layerSelected.emit(found.id as ProviderLayerIdDict);
             this.changeDetectorRef.markForCheck();
             return;
         }
 
-        const item = found as LayerCollectionListingDict;
+        const collection = found as LayerCollectionListingDict;
 
-        this.layerCollectionService.getLayerCollectionItems(item.id.providerId, item.id.collectionId, 0, 9999).subscribe((c) => {
-            this.collections.push(c);
+        this.layerCollectionService
+            .getLayerCollectionItems(collection.id.providerId, collection.id.collectionId, 0, 9999)
+            .subscribe((c) => {
+                this.collections.push(c);
 
-            if (path.length > 0) {
-                this.preselect(path);
-            } else {
-                this.changeDetectorRef.markForCheck();
-            }
-        });
+                if (path.length > 0) {
+                    this.preselect(path);
+                } else {
+                    this.changeDetectorRef.markForCheck();
+                }
+            });
     }
 
     selectItem(item: LayerCollectionItemDict, index: number): void {
