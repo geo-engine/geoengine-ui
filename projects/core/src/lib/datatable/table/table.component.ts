@@ -46,7 +46,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     dataSource = new FeatureDataSource();
     displayedColumns: Array<string> = [];
     featureColumns: Array<string> = [];
-    colTypes: Array<VectorColumnDataType> = [];
+    featureColumnDataTypes: Array<VectorColumnDataType> = [];
 
     protected layerDataSubscription?: Subscription = undefined;
     protected selectedFeatureSubscription?: Subscription = undefined;
@@ -125,9 +125,10 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
 
     processVectorLayer(_layer: VectorLayer, metadata: VectorLayerMetadata, data: VectorData): void {
         this.featureColumns = metadata.dataTypes.keySeq().toArray();
+        this.featureColumnDataTypes = metadata.dataTypes.valueSeq().toArray();
         this.displayedColumns = ['_____select', '_____coordinates', '_____table__start', '_____table__end'].concat(this.featureColumns);
         this.dataSource.data = data.data;
-        this.colTypes = this.getColumnProperties();
+        this.featureColumnDataTypes = this.getColumnProperties();
         setTimeout(() => this.navigatePage(this.projectService.getSelectedFeature()));
     }
 
@@ -223,6 +224,14 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         }
     }
 
+    /**
+     * Truncates column text.
+     */
+    sliceColumnContent(columnText: string, colmaxlen: number): string {
+        const colText = columnText?.length > colmaxlen ? columnText.slice(0, colmaxlen) + '...' : columnText;
+        return colText;
+    }
+
     protected navigatePage(selection: FeatureSelection): void {
         if (!this.paginator) {
             return;
@@ -250,7 +259,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         const types: Array<VectorColumnDataType> = [];
 
         for (let column = 0; column < this.featureColumns.length; column++) {
-            let columnType = VectorColumnDataTypes.Text;
+            let columnType = this.featureColumnDataTypes[column];
             for (const rowData of this.dataSource.data) {
                 const tmp = rowData.get(this.featureColumns[column]);
                 if (typeof tmp === 'string' && tmp !== '') {

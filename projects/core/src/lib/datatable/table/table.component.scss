@@ -4,7 +4,10 @@
 
     height: calc(100% - 56px);
 }
-
+.mat-icon-button {
+    width: 30px;
+    padding-right: 10px;
+}
 table {
     width: 100%;
 
@@ -14,6 +17,20 @@ table {
 
     ::ng-deep tbody tr {
         height: 2rem !important;
+    }
+
+    th,
+    td {
+        white-space: nowrap;
+        padding: 1rem;
+        min-width: 2rem;
+    }
+    .selectColumn {
+        min-width: 1rem;
+    }
+    .mediaviewColumn {
+        min-width: 5rem;
+        display: block;
     }
 }
 
