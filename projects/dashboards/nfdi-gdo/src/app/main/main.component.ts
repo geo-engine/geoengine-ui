@@ -58,9 +58,6 @@ export class MainComponent implements OnInit, AfterViewInit {
     ngAfterViewInit(): void {
         // this.reset();
         this.mapComponent.resize();
-
-        // zoom to Germany
-        setTimeout(() => this.mapComponent.zoomTo([5.98865807458, 47.3024876979, 15.0169958839, 54.983104153]), 1000);
     }
 
     idFromLayer(index: number, layer: Layer): number {

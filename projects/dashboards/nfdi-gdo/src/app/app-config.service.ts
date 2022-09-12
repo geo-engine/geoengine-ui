@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
-import {mergeDeep} from 'immutable';
-import {Config, ConfigStructure, DEFAULT_CONFIG, VectorTiles} from '@geoengine/core';
+import {Config, ConfigStructure, ConfigDefaults, ConfigMap, DEFAULT_CONFIG, mergeDeepOverrideLists} from '@geoengine/core';
 
 interface Components {
     readonly PLAYBACK: {
@@ -8,26 +7,31 @@ interface Components {
     };
 }
 
-interface Map {
-    readonly BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted' | 'XYZ' | 'eumetview';
-    readonly BACKGROUND_LAYER_URL: string;
-    readonly HOSTED_BACKGROUND_SERVICE: string;
-    readonly HOSTED_BACKGROUND_LAYER_NAME: string;
-    readonly HOSTED_BACKGROUND_SERVICE_VERSION: string;
-    readonly VECTOR_TILES: VectorTiles;
-    readonly REFRESH_LAYERS_ON_CHANGE: boolean;
-    readonly VALID_CRS: Array<string>;
-}
-
 interface AppConfigStructure extends ConfigStructure {
     readonly COMPONENTS: Components;
+    readonly DEFAULTS: ConfigDefaults;
+    readonly MAP: ConfigMap;
 }
 
-const APP_CONFIG_DEFAULTS = mergeDeep(DEFAULT_CONFIG, {
+const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CONFIG, {
     COMPONENTS: {
         PLAYBACK: {
             AVAILABLE: false,
         },
+    },
+    DEFAULTS: {
+        PROJECT: {
+            NAME: 'Default',
+            TIME: '1991-01-01T00:00:00.000Z',
+            TIMESTEP: '1 month',
+            PROJECTION: 'EPSG:3857',
+        },
+        FOCUS_EXTENT: [6.98865807458, 47.3024876979, 15.0169958839, 54.983104153],
+    },
+    MAP: {
+        // TODO: Geo Engine basemap!
+        BACKGROUND_LAYER: 'OSM',
+        VALID_CRS: ['EPSG:3857', 'EPSG:4326'],
     },
 }) as AppConfigStructure;
 
@@ -39,22 +43,12 @@ export class AppConfig extends Config {
         return this.config.COMPONENTS;
     }
 
-    get MAP(): Map {
-        return {
-            BACKGROUND_LAYER: 'OSM',
-            BACKGROUND_LAYER_URL: '',
-            HOSTED_BACKGROUND_SERVICE: '',
-            HOSTED_BACKGROUND_LAYER_NAME: '',
-            HOSTED_BACKGROUND_SERVICE_VERSION: '',
-            VECTOR_TILES: {
-                STYLE_URL: 'assets/mvt/ne-ge.json',
-                SOURCE: 'ne',
-                BACKGROUND_LAYER_EXTENT: [-180, -180, 180, 180],
-                MAX_ZOOM: 22,
-            },
-            REFRESH_LAYERS_ON_CHANGE: false,
-            VALID_CRS: ['EPSG:3857', 'EPSG:4326'],
-        };
+    get MAP(): ConfigMap {
+        return this.config.MAP;
+    }
+
+    get DEFAULTS(): ConfigDefaults {
+        return this.config.DEFAULTS;
     }
 
     load(): Promise<void> {
