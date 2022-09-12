@@ -1,17 +1,29 @@
 <geoengine-sidenav-header>Layer Collection</geoengine-sidenav-header>
-<button mat-button (click)="back()" matTooltip="Navigate Back" matTooltipPosition="after" [disabled]="selectedCollection === 0">
-    <mat-icon>arrow_back</mat-icon>
-</button>
+<div class="head">
+    <div class="navigation">
+        <button mat-button (click)="back()" matTooltip="Navigate Back" matTooltipPosition="after" [disabled]="selectedCollection === -1">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
 
-<button
-    mat-button
-    (click)="forward()"
-    matTooltip="Navigate Forward"
-    matTooltipPosition="after"
-    [disabled]="selectedCollection === collections.length - 1"
->
-    <mat-icon>arrow_forward</mat-icon>
-</button>
+        <button
+            mat-button
+            (click)="forward()"
+            matTooltip="Navigate Forward"
+            matTooltipPosition="after"
+            [disabled]="selectedCollection === allTrails.length - 1"
+        >
+            <mat-icon>arrow_forward</mat-icon>
+        </button>
+    </div>
+
+    <div #scrollElement class="breadcrumbarea">
+        <button mat-stroked-button (click)="navigateToRoot()"><mat-icon>layers</mat-icon></button>
+        <span *ngFor="let item of displayedTrail; let i = index" [attr.data-index]="i">
+            ⟩⟩
+            <button mat-stroked-button class="breadcrumb" (click)="onBreadCrumbClick(i)">{{ item.name }}</button></span
+        >
+    </div>
+</div>
 
 <div class="portal-outlet">
     <ng-template [cdkPortalOutlet]="selectedPortal"></ng-template>
