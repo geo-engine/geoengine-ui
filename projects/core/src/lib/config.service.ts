@@ -68,7 +68,7 @@ export interface ConfigMap {
 export interface VectorTiles {
     readonly STYLE_URL: string;
     readonly SOURCE: string;
-    readonly BACKGROUND_LAYER_EXTENT: [number, number, number, number];
+    readonly BACKGROUND_LAYER_EXTENTS: {[epsg: string]: [number, number, number, number]};
     readonly MAX_ZOOM: number;
 }
 
@@ -116,18 +116,23 @@ export const DEFAULT_CONFIG: ConfigStructure = {
     },
     MAP: {
         BACKGROUND_LAYER: 'MVT',
-        BACKGROUND_LAYER_URL: 'https://basemap.geoengine.io/natural-earth/{z}/{x}/{y}.pbf',
+        BACKGROUND_LAYER_URL: 'https://basemap.geoengine.io/natural-earth/{epsg}/{z}/{x}/{y}.pbf',
         HOSTED_BACKGROUND_SERVICE: '/mapcache/',
         HOSTED_BACKGROUND_LAYER_NAME: 'osm',
         HOSTED_BACKGROUND_SERVICE_VERSION: '1.1.1',
         VECTOR_TILES: {
             STYLE_URL: 'assets/mvt/ne-ge.json',
             SOURCE: 'ne',
-            BACKGROUND_LAYER_EXTENT: [-180, -180, 180, 180],
+            BACKGROUND_LAYER_EXTENTS: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'EPSG:4326': [-180, -180, 180, 180],
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'EPSG:3857': [-20037508.342789244, -20037508.342789244, 20037508.342789244, 20037508.342789244],
+            },
             MAX_ZOOM: 22,
         },
         REFRESH_LAYERS_ON_CHANGE: false,
-        VALID_CRS: ['EPSG:4326'],
+        VALID_CRS: ['EPSG:4326', 'EPSG:3857'],
     },
     API_URL: '/api',
     TIME: {
