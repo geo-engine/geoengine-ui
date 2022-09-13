@@ -29,9 +29,20 @@ const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CONFIG, {
         FOCUS_EXTENT: [6.98865807458, 47.3024876979, 15.0169958839, 54.983104153],
     },
     MAP: {
-        // TODO: Geo Engine basemap!
-        BACKGROUND_LAYER: 'OSM',
-        VALID_CRS: ['EPSG:3857', 'EPSG:4326'],
+        BACKGROUND_LAYER: 'MVT',
+        BACKGROUND_LAYER_URL: 'https://basemap.geoengine.io/natural-earth-v2/{epsg}/{z}/{x}/{y}.pbf',
+        VECTOR_TILES: {
+            STYLE_URL: 'assets/mvt/ne-ge-de.json',
+            SOURCE: 'ne',
+            BACKGROUND_LAYER_EXTENTS: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'EPSG:4326': [-180, -180, 180, 180],
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'EPSG:3857': [-20037508.3427892, -20037508.3427892, 20037508.3427892, 20037508.3427892],
+            },
+            MAX_ZOOM: 22,
+        },
+        VALID_CRS: ['EPSG:3857'],
     },
 }) as AppConfigStructure;
 

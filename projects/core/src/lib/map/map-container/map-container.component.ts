@@ -517,9 +517,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 zoomLevel = DEFAULT_ZOOM_LEVEL;
             }
         } else if (this.config.DEFAULTS.FOCUS_EXTENT) {
-            focusExtent = this.spatialReferenceService.reprojectExtent(
-                this.config.DEFAULTS.FOCUS_EXTENT,
-                WGS_84.spatialReference,
+            focusExtent = this.spatialReferenceService.clipBoundsIfAvailable(
+                this.spatialReferenceService.reprojectExtent(this.config.DEFAULTS.FOCUS_EXTENT, WGS_84.spatialReference, projection),
                 projection,
             );
 
@@ -695,15 +694,21 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     wrapX: false,
                     projection: projection.srsString,
                 });
-            case 'MVT':
+            case 'MVT': {
+                let url = this.config.MAP.BACKGROUND_LAYER_URL;
+                // possible custom replacement strings other than `{z}`, `{x}` and `{y}`
+                if (url.includes('{epsg}')) {
+                    url = url.replace('{epsg}', projection.srsString.split(':')[1]);
+                }
                 return new OlSourceVectorTile({
                     format: new OlFormatMVT(),
-                    url: this.config.MAP.BACKGROUND_LAYER_URL,
-                    extent: this.config.MAP.VECTOR_TILES.BACKGROUND_LAYER_EXTENT,
+                    url,
+                    extent: this.config.MAP.VECTOR_TILES.BACKGROUND_LAYER_EXTENTS[projection.srsString],
                     maxZoom: this.config.MAP.VECTOR_TILES.MAX_ZOOM,
                     wrapX: false,
                     projection: projection.srsString,
                 });
+            }
             case 'fallback':
             default:
                 if (backgroundLayer !== 'fallback') {
