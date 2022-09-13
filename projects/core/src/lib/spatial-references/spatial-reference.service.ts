@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {merge, Observable, of} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
-import {SpatialReferenceSpecificationDict, SrsString, UUID} from '../backend/backend.model';
+import {BBoxDict, SpatialReferenceSpecificationDict, SrsString, UUID} from '../backend/backend.model';
 import {BackendService} from '../backend/backend.service';
 import {UserService} from '../users/user.service';
 import {NamedSpatialReference, SpatialReference, SpatialReferenceSpecification} from './spatial-reference.model';
@@ -10,8 +10,9 @@ import {register as olProj4Register} from 'ol/proj/proj4';
 import OlProjection from 'ol/proj/Projection';
 import proj4 from 'proj4';
 import {Config} from '../config.service';
-import {boundingExtent, getBottomLeft, getTopRight} from 'ol/extent';
-import OlGeomPoint from 'ol/geom/Point';
+import {transformExtent} from 'ol/proj';
+import {bboxDictToExtent, extentToBboxDict} from '../util/conversions';
+import {getIntersection} from 'ol/extent';
 
 export const WEB_MERCATOR = new NamedSpatialReference('WGS 84 / Pseudomercator', 'EPSG:3857');
 export const WGS_84 = new NamedSpatialReference('WGS 84', 'EPSG:4326');
@@ -69,9 +70,21 @@ export class SpatialReferenceService {
         from: SpatialReference,
         to: SpatialReference,
     ): [number, number, number, number] {
-        const topRight = new OlGeomPoint(getTopRight(extent)).transform(from.srsString, to.srsString) as OlGeomPoint;
-        const bottomLeft = new OlGeomPoint(getBottomLeft(extent)).transform(from.srsString, to.srsString) as OlGeomPoint;
-        return boundingExtent([bottomLeft.getCoordinates(), topRight.getCoordinates()]) as [number, number, number, number];
+        return transformExtent(extent, from.srsString, to.srsString) as [number, number, number, number];
+    }
+
+    clipBoundsIfAvailable(extent: [number, number, number, number], projection: SpatialReference): [number, number, number, number] {
+        try {
+            const olProjection = this.getOlProjection(projection);
+            return getIntersection(extent, olProjection.getExtent()) as [number, number, number, number];
+        } catch (_e) {
+            // on error, just return the extent
+            return extent;
+        }
+    }
+
+    reprojectBbox(bbox: BBoxDict, from: SpatialReference, to: SpatialReference): BBoxDict {
+        return extentToBboxDict(this.reprojectExtent(bboxDictToExtent(bbox), from, to));
     }
 
     private registerDefaults(): void {

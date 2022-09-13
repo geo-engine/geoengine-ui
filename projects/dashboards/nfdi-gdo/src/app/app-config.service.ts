@@ -38,7 +38,7 @@ const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CONFIG, {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 'EPSG:4326': [-180, -180, 180, 180],
                 // eslint-disable-next-line @typescript-eslint/naming-convention
-                'EPSG:3857': [-20037508.342789244, -20037508.342789244, 20037508.342789244, 20037508.342789244],
+                'EPSG:3857': [-20037508.3427892, -20037508.3427892, 20037508.3427892, 20037508.3427892],
             },
             MAX_ZOOM: 22,
         },

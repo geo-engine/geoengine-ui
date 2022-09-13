@@ -517,9 +517,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 zoomLevel = DEFAULT_ZOOM_LEVEL;
             }
         } else if (this.config.DEFAULTS.FOCUS_EXTENT) {
-            focusExtent = this.spatialReferenceService.reprojectExtent(
-                this.config.DEFAULTS.FOCUS_EXTENT,
-                WGS_84.spatialReference,
+            focusExtent = this.spatialReferenceService.clipBoundsIfAvailable(
+                this.spatialReferenceService.reprojectExtent(this.config.DEFAULTS.FOCUS_EXTENT, WGS_84.spatialReference, projection),
                 projection,
             );
 
