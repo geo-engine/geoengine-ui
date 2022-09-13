@@ -42,7 +42,7 @@ export class InterpolationComponent implements OnInit, AfterViewInit, OnDestroy 
                 nonNullable: true,
                 validators: [Validators.required],
             }),
-            inputResolution: new FormControl('native', {
+            inputResolution: new FormControl('source', {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
@@ -128,9 +128,9 @@ export class InterpolationComponent implements OnInit, AfterViewInit, OnDestroy 
     private getInputResolution(): InputResolutionDict {
         const inputResolution = this.form.controls['inputResolution'].value;
 
-        if (inputResolution === 'native') {
+        if (inputResolution === 'source') {
             return {
-                type: 'native',
+                type: 'source',
             };
         } else if (inputResolution === 'value') {
             return {

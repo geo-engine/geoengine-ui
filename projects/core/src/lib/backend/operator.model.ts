@@ -233,4 +233,4 @@ export interface InterpolationDict extends OperatorDict {
     };
 }
 
-export type InputResolutionDict = {type: 'native'} | {type: 'value'; x: number; y: number};
+export type InputResolutionDict = {type: 'source'} | {type: 'value'; x: number; y: number};
