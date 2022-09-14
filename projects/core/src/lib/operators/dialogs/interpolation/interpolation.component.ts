@@ -121,7 +121,7 @@ export class InterpolationComponent implements OnInit, AfterViewInit, OnDestroy 
                 () => {
                     // success
                 },
-                (error) => this.notificationService.error(error),
+                (error) => this.notificationService.error(error.error.message),
             );
     }
 
