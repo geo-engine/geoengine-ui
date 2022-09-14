@@ -120,7 +120,7 @@ export class OperatorListComponent implements OnInit, OnChanges {
                 NAME: 'Basic Statistics',
                 ICON_URL: createIconDataUrl('Basic Statistics'),
             },
-            description: 'Get statistics for raster layer',
+            description: 'Get statistics for raster or vector layer',
         },
         {
             component: MeanRasterPixelValuesOverTimeDialogComponent,
