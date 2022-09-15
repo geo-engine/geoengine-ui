@@ -76,7 +76,7 @@ jobs:
       - name: Build with podman
         run: |
           podman build \
-            --tag "geoengine-ui:${{env.TAG_NAME}}" \
+            --tag "geoengine-ui:${{env.FULL_TAG_NAME}}" \
             --build-arg GEOENGINE_UI_PROJECT="${{env.BUILD_TAG}}" \
             -f container/geoengine-ui/Dockerfile \
             .
