@@ -22,7 +22,7 @@ jobs:
                 uses: actions/setup-node@v3
                 with:
                     node-version: ${{ matrix.node-version }}
-                    cache: 'npm'
+                    # cache: 'npm' # can be used only with a lockfile
             #            -   run: npm ci    # use instead of install if we choose to commit the `package-lock.json`
             -   run: npm install
             -   name: Build core
