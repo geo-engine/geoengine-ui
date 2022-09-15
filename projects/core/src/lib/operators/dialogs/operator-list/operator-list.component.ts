@@ -18,6 +18,7 @@ import {ExpressionOperatorComponent} from '../expression-operator/expression-ope
 import {ClassHistogramOperatorComponent} from '../class-histogram-operator/class-histogram-operator.component';
 import {ColumnRangeFilterComponent} from '../column-range-filter/column-range-filter.component';
 import {RasterTypeConversionComponent} from '../raster-type-conversion/raster-type-conversion.component';
+import {InterpolationComponent} from '../interpolation/interpolation.component';
 
 /**
  * This type encapsulates…
@@ -164,6 +165,14 @@ export class OperatorListComponent implements OnInit, OnChanges {
                 ICON_URL: createIconDataUrl('Raster Type Conversion'),
             },
             description: 'Converts (casts) the raster type',
+        },
+        {
+            component: InterpolationComponent,
+            type: {
+                NAME: 'Interpolation',
+                ICON_URL: createIconDataUrl('Interpolation'),
+            },
+            description: 'Interpolates raster data',
         },
         // {
         //     component: RasterMaskComponent,
