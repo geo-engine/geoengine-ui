@@ -5,14 +5,13 @@ import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {ResultTypes} from '../../result-type.model';
 import {Layer, RasterLayer, VectorLayer} from '../../../layers/layer.model';
-import {combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
-import {OperatorDict, SourceOperatorDict, WorkflowDict} from '../../../backend/backend.model';
+import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
+import {OperatorDict, SourceOperatorDict} from '../../../backend/backend.model';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {Plot} from '../../../plots/plot.model';
 import {StatisticsDict, StatisticsParams} from '../../../backend/operator.model';
 import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
 import {VectorColumnDataTypes} from '../../datatype.model';
-
 /**
  * Checks whether the layer is a vector layer (points, lines, polygons).
  */
@@ -99,7 +98,6 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
                     this.attributes$.next(attributes);
                 }),
         );
-
         this.isVectorLayer$ = this.form.controls['layer'].valueChanges.pipe(map((layer) => isVectorLayer(layer)));
         this.isRasterLayer$ = this.form.controls['layer'].valueChanges.pipe(map((layer) => isRasterLayer(layer)));
     }
@@ -138,14 +136,9 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
             });
         }
 
-        const workflowObservables: Array<Observable<WorkflowDict>> = sources.map((l) => this.projectService.getWorkflow(l.workflowId));
-
-        combineLatest(workflowObservables)
+        this.projectService
+            .getAutomaticallyProjectedOperatorsFromLayers(sources)
             .pipe(
-                map((workflows: Array<WorkflowDict>) => {
-                    const inputOperators: Array<OperatorDict | SourceOperatorDict> = workflows.map((workflow) => workflow.operator);
-                    return inputOperators;
-                }),
                 mergeMap((inputOperators: Array<OperatorDict | SourceOperatorDict>) =>
                     this.projectService.registerWorkflow({
                         type: 'Plot',
