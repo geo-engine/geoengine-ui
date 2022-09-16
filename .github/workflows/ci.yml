@@ -14,16 +14,21 @@ jobs:
         strategy:
             matrix:
                 node-version: [ 14.x, 16.x ]
+                app: [ gis, dashboards/gfbio, dashboards/data-atlas, dashboards/nfdi-gdo, dashboards/ebv-analyzer ]
 
         steps:
-            -   uses: actions/checkout@v2
+            -   uses: actions/checkout@v3
             -   name: Use Node.js ${{ matrix.node-version }}
-                uses: actions/setup-node@v1
+                uses: actions/setup-node@v3
                 with:
                     node-version: ${{ matrix.node-version }}
+                    # cache: 'npm' # can be used only with a lockfile
             #            -   run: npm ci    # use instead of install if we choose to commit the `package-lock.json`
             -   run: npm install
-            -   run: npm run build --if-present
+            -   name: Build core
+                run: npm run build-prod:core
+            -   name: Build app ${{ matrix.app }}
+                run: npm run build-prod:${{ matrix.app }}
             -   run: npm test
                 env:
                     CI: true
@@ -33,7 +38,7 @@ jobs:
         runs-on: ubuntu-20.04
         steps:
             -   name: Checkout
-                uses: actions/checkout@v2
+                uses: actions/checkout@v3
             -   name: Install Dependencies
                 run: npm install
             -   name: Code Format Check with Prettier
