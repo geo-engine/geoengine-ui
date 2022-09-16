@@ -103,6 +103,17 @@
 
     <div class="spacer"></div>
 
+    <mat-expansion-panel class="species-info" *ngIf="getSpeciesInfo(selectedFishSpecies) as speciesInfo">
+        <mat-expansion-panel-header>Spezies-Info</mat-expansion-panel-header>
+
+        <img [src]="speciesInfo.imageSrc" [alt]="selectedDragonflySpecies" />
+        <p class="mat-caption" *ngIf="speciesInfo.imageRef">({{ speciesInfo.imageRef }})</p>
+
+        <p class="info-text" [innerHtml]="speciesInfo.text"></p>
+    </mat-expansion-panel>
+
+    <div class="spacer"></div>
+
     <mat-divider></mat-divider>
 
     <div class="spacer"></div>
