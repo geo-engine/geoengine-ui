@@ -74,7 +74,7 @@
             "source": "ne",
             "source-layer": "glaciated_areas",
             "paint": {
-                "fill-color": "rgba(255, 255, 255, 1)"
+                "fill-color": "rgba(255, 255, 255, 0)"
             }
         },
         {
