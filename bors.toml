@@ -2,8 +2,16 @@
 # TODO: use only wildcard once it works
 status = [
     # "build %",
-    "build (14.x)",
-    "build (16.x)",
+    "build (14.x, gis)",
+    "build (14.x, dashboards/gfbio)",
+    "build (14.x, dashboards/data-atlas)",
+    "build (14.x, dashboards/nfdi-gdo)",
+    "build (14.x, dashboards/ebv-analyzer)",
+    "build (16.x, gis)",
+    "build (16.x, dashboards/gfbio)",
+    "build (16.x, dashboards/data-atlas)",
+    "build (16.x, dashboards/nfdi-gdo)",
+    "build (16.x, dashboards/ebv-analyzer)",
     "Code Format and Lints",
 ]
 
