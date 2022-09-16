@@ -1,4 +1,4 @@
-import {Observable, BehaviorSubject, first, filter} from 'rxjs';
+import {Observable, BehaviorSubject, first} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {
