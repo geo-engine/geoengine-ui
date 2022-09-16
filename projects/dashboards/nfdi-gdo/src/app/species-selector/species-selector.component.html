@@ -174,38 +174,6 @@
 
     <div class="spacer"></div>
 
-    <p>
-        Im Folgenden kann ein Histogramm berechnet werden, welches den Umweltlayer mit den Beobachtungsdaten räumlich und zeitlich verknüpft
-        und die Werteverteilung darstellt. Maßgeblich ist der ausgewählte Monat und das Jahr.
-    </p>
-
-    <mat-form-field *ngIf="dragonflySpeciesLayer && fishSpeciesLayer">
-        <mat-label>Welcher Beobachtungslayer?</mat-label>
-        <mat-select [(value)]="plotLayerSelection">
-            <mat-option [value]="'dragonfly'">Libellen</mat-option>
-            <mat-option [value]="'fish'">Fische</mat-option>
-        </mat-select>
-    </mat-form-field>
-
-    <button
-        [disabled]="(!selectedDragonflySpecies && !selectedFishSpecies) || !selectedEnvironmentLayer"
-        mat-stroked-button
-        id="compute-plot"
-        (click)="computePlot()"
-    >
-        Berechne Plot
-    </button>
-
-    <div class="spacer"></div>
-
-    <h3 *ngIf="(plotData | async) !== undefined">Plot von {{ plotSpecies }} und {{ plotEnvironmentLayer }}</h3>
-
-    <geoengine-vega-viewer *ngIf="(plotData | async) !== undefined" [chartData]="plotData | async"></geoengine-vega-viewer>
-
-    <mat-spinner color="accent" *ngIf="plotLoading | async"></mat-spinner>
-
-    <div class="spacer"></div>
-
     <mat-divider></mat-divider>
 
     <geoengine-attributions></geoengine-attributions>
