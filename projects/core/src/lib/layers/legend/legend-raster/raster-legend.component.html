@@ -1,5 +1,7 @@
 <tbody class="legend">
     <ng-template [ngIf]="layer.symbology.colorizer.isContinuous()">
+        continuous
+        <!-- TODO delete this line-->
         <tr *ngFor="let breakpoint of layer.symbology.colorizer.getBreakpoints(); let isFirst = first">
             <td
                 class="gradient"
@@ -7,7 +9,8 @@
                 [rowSpan]="layer.symbology.colorizer.getBreakpoints().length"
                 [style.background]="layer.symbology.colorizer | geoengineColorizerCssGradient"
             ></td>
-            <td>{{ breakpoint.value | number: numberPipeParameters }}</td>
+            <td>{{ roundToTwoDecimals(breakpoint.value) | number: numberPipeParameters }}</td>
+            <td>{{ shortenDecimals(breakpoint.value) | number: numberPipeParameters }}</td>
             <td *ngIf="isFirst">
                 <ng-container *ngIf="measurement$ | async | continuousMeasurement as measurement">
                     {{ measurement.measurement }} <span *ngIf="measurement.unit">in {{ measurement.unit }}</span>
@@ -20,12 +23,14 @@
     </ng-template>
 
     <ng-container *ngIf="layer.symbology.colorizer.isDiscrete()">
+        discrete
+        <!-- TODO delete this line-->
         <ng-container *ngIf="!(measurement$ | async | classificationMeasurement)">
             <tr *ngFor="let breakpoint of layer.symbology.colorizer.getBreakpoints()">
                 <td class="classes">
                     <div class="icon" [style.background-color]="breakpoint | breakpointToCssStringPipe"></div>
                 </td>
-                <td>{{ breakpoint.value }}</td>
+                <td>{{ roundToTwoDecimals(breakpoint.value) }}</td>
             </tr>
         </ng-container>
 
