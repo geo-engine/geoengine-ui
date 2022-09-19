@@ -88,26 +88,16 @@ export class RasterLegendComponent implements OnInit, OnChanges {
         }
     }
 
-    roundToTwoDecimals(toRound: number): number {
-        return Math.round(toRound * 100) / 100;
-    }
-
     shortenDecimals(toShorten: number): number {
         const integerPart: number = Math.floor(toShorten);
         const decimals: number = toShorten - integerPart;
-        let zeroes: number = 3; // Third index is where the decimals start. Since we want to round to 3 places after the last 0, this should land us there (?)
         const decimalsString = decimals.toString();
-        console.log(decimalsString); // TODO delete log
-        while (decimalsString.charAt(zeroes) === '0') {
+        const DECIMAL_PLACES = 3; // decimal places left after rounding
+        let zeroes: number = 0; 
+        while (decimalsString.charAt(zeroes+2) === '0') {
             zeroes++;
         }
-        const roundAt: number = Math.pow(10, zeroes);
-        return Math.round((toShorten * roundAt) / roundAt);
+        const roundAt: number = (Math.pow(10, zeroes + DECIMAL_PLACES));
+        return integerPart + Math.round(decimals * roundAt) / roundAt;
     }
-
-    /*
-    12.423562343 -> 12.424
-    3.00034525 -> 3.000346
-    3.00010000453 -> ?
-    */
 }
