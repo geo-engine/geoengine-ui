@@ -162,11 +162,15 @@ export interface ReprojectionDict extends OperatorDict {
     };
 }
 
+export interface StatisticsParams extends OperatorParams {
+    columnNames: Array<string>;
+}
+
 export interface StatisticsDict extends OperatorDict {
     type: 'Statistics';
-    params: EmptyParams;
+    params: StatisticsParams;
     sources: {
-        rasters: Array<SourceOperatorDict | OperatorDict>;
+        source: SourceOperatorDict | OperatorDict | Array<SourceOperatorDict | OperatorDict>;
     };
 }
 
