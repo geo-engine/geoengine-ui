@@ -383,7 +383,7 @@
                             "fast-deep-equal",
                             "fast-json-stable-stringify"
                         ],
-                        "outputPath": "dist/ebv-analyzer",
+                        "outputPath": "dist/dashboards/ebv-analyzer",
                         "index": "projects/dashboards/ebv-analyzer/src/index.html",
                         "main": "projects/dashboards/ebv-analyzer/src/main.ts",
                         "polyfills": "projects/dashboards/ebv-analyzer/src/polyfills.ts",
@@ -521,18 +521,19 @@
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
                         "allowedCommonJsDependencies": [
+                            "clone",
                             "codemirror",
                             "dagre-d3",
-                            "moment",
-                            "xml-utils",
-                            "lru-cache",
-                            "web-worker",
-                            "rbush",
-                            "clone",
                             "fast-deep-equal",
-                            "fast-json-stable-stringify"
+                            "fast-json-stable-stringify",
+                            "lru-cache",
+                            "moment",
+                            "pbf",
+                            "rbush",
+                            "web-worker",
+                            "xml-utils"
                         ],
-                        "outputPath": "dist/nfdi-gdo",
+                        "outputPath": "dist/dashboards/nfdi-gdo",
                         "index": "projects/dashboards/nfdi-gdo/src/index.html",
                         "main": "projects/dashboards/nfdi-gdo/src/main.ts",
                         "polyfills": "projects/dashboards/nfdi-gdo/src/polyfills.ts",
@@ -681,7 +682,7 @@
                             "fast-deep-equal",
                             "fast-json-stable-stringify"
                         ],
-                        "outputPath": "dist/gfbio",
+                        "outputPath": "dist/dashboards/gfbio",
                         "index": "projects/dashboards/gfbio/src/index.html",
                         "main": "projects/dashboards/gfbio/src/main.ts",
                         "polyfills": "projects/dashboards/gfbio/src/polyfills.ts",

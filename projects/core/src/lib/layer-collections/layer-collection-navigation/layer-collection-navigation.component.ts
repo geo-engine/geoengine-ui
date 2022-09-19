@@ -1,6 +1,6 @@
 import {ComponentPortal, Portal} from '@angular/cdk/portal';
-import {Component, ChangeDetectionStrategy, Injector} from '@angular/core';
-import {LayerCollectionItemDict} from '../../backend/backend.model';
+import {Component, ViewChild, ElementRef, ChangeDetectionStrategy, Injector} from '@angular/core';
+import {LayerCollectionItemDict, ProviderLayerCollectionIdDict} from '../../backend/backend.model';
 import {CONTEXT_TOKEN, LayerCollectionListComponent} from '../layer-collection-list/layer-collection-list.component';
 
 @Component({
@@ -10,20 +10,39 @@ import {CONTEXT_TOKEN, LayerCollectionListComponent} from '../layer-collection-l
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerCollectionNavigationComponent {
-    collections: Array<LayerCollectionItemDict | undefined> = [undefined];
+    collections: Array<LayerCollectionItemDict> = [];
+    allTrails: Array<Array<LayerCollectionItemDict>> = [];
+    displayedTrail: Array<LayerCollectionItemDict> = [];
 
-    selectedCollection = 0;
+    selectedCollection = -1;
 
     selectedPortal!: Portal<any>;
+
+    @ViewChild('scrollElement', {read: ElementRef}) public scrollElement!: ElementRef<any>;
 
     constructor() {
         this.setPortal(undefined);
     }
 
+    scrollToRight(): void {
+        setTimeout(() => {
+            // wait until breadcrumbs are re-rendered before scrolling
+            this.scrollElement.nativeElement.scrollLeft += this.scrollElement.nativeElement.scrollWidth;
+        }, 0);
+    }
+
     selectCollection(id: LayerCollectionItemDict): void {
-        this.collections = this.collections.splice(0, this.selectedCollection + 1);
+        this.collections = this.collections.splice(0, this.displayedTrail.length);
         this.collections.push(id);
         this.selectedCollection += 1;
+
+        // Create a new trail, append it to the collection and display it
+        const clone = this.collections.map((x) => Object.assign({}, x));
+        this.allTrails = this.allTrails.slice(0, this.selectedCollection);
+        this.allTrails.push(clone);
+        this.displayedTrail = this.allTrails[this.selectedCollection];
+
+        this.scrollToRight();
 
         this.setPortal(id);
     }
@@ -31,26 +50,60 @@ export class LayerCollectionNavigationComponent {
     back(): void {
         if (this.selectedCollection > 0) {
             this.selectedCollection -= 1;
-            const id = this.collections[this.selectedCollection];
-
-            this.setPortal(id);
+            this.updateLayerView();
+        } else if (this.selectedCollection === 0) {
+            this.displayedTrail = [];
+            this.showRoot();
+            this.selectedCollection = -1;
         }
     }
 
     forward(): void {
-        if (this.selectedCollection < this.collections.length - 1) {
+        if (this.selectedCollection < this.allTrails.length - 1) {
             this.selectedCollection += 1;
-            const id = this.collections[this.selectedCollection];
-
-            this.setPortal(id);
+            this.updateLayerView();
+            this.scrollToRight();
         }
     }
 
-    private setPortal(id?: LayerCollectionItemDict): void {
-        this.selectedPortal = new ComponentPortal(LayerCollectionListComponent, null, this.createInjector(id));
+    updateLayerView(): void {
+        const currentTrail = this.allTrails[this.selectedCollection];
+        this.displayedTrail = currentTrail;
+        const lastId = currentTrail[currentTrail.length - 1];
+        this.setPortal(lastId);
     }
 
-    private createInjector(id?: LayerCollectionItemDict): Injector {
+    onBreadCrumbClick(index: number): void {
+        // Creates and appends a new crumbtrail, then moves forward to it
+        if (index === this.displayedTrail.length - 1) {
+            return;
+        }
+        const newTrail = this.displayedTrail.map((x) => Object.assign({}, x)).slice(0, index + 1);
+        this.allTrails.push(newTrail);
+        this.selectedCollection = this.allTrails.length - 2;
+        this.forward();
+    }
+
+    navigateToRoot(): void {
+        if (this.selectedCollection === -1) {
+            return;
+        }
+        const newTrail: Array<LayerCollectionItemDict> = [];
+        this.allTrails.push(newTrail);
+        this.selectedCollection = this.allTrails.length - 2;
+        this.forward();
+    }
+
+    showRoot(): void {
+        this.selectedPortal = new ComponentPortal(LayerCollectionListComponent, null, this.createInjector());
+    }
+
+    private setPortal(id?: LayerCollectionItemDict): void {
+        const providerLayer = id?.id as ProviderLayerCollectionIdDict;
+        this.selectedPortal = new ComponentPortal(LayerCollectionListComponent, null, this.createInjector(providerLayer));
+    }
+
+    private createInjector(id?: ProviderLayerCollectionIdDict): Injector {
         return Injector.create({
             providers: [
                 {

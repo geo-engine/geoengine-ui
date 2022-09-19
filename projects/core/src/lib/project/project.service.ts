@@ -1,5 +1,5 @@
 import {BehaviorSubject, combineLatest, Observable, Observer, of, ReplaySubject, Subject, Subscription} from 'rxjs';
-import {debounceTime, distinctUntilChanged, first, map, mapTo, mergeMap, switchMap, tap} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, first, map, mergeMap, switchMap, tap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
 
@@ -287,7 +287,17 @@ export class ProjectService {
      * Set the projection used by the current project.
      */
     setSpatialReference(spatialReference: SpatialReference): Observable<void> {
-        return this.changeProjectConfig({spatialReference});
+        const result = this.getProjectOnce().pipe(
+            mergeMap((project) => {
+                let bbox = project._bbox;
+                if (project.spatialReference.srsString !== spatialReference.srsString) {
+                    bbox = this.spatialReferenceService.reprojectBbox(project._bbox, project.spatialReference, spatialReference);
+                }
+                return this.changeProjectConfig({spatialReference, bbox});
+            }),
+        );
+
+        return ProjectService.subscribeAndProvide(result);
     }
 
     /**
@@ -946,6 +956,7 @@ export class ProjectService {
         id?: UUID;
         name?: string;
         spatialReference?: SpatialReference;
+        bbox?: BBoxDict;
         time?: Time;
         plots?: Array<any>;
         layers?: Array<Layer>;
@@ -971,13 +982,13 @@ export class ProjectService {
                             plots: changes.plots
                                 ? ProjectService.optimizeVecUpdates<Plot, PlotDict>(oldProject.plots, project.plots)
                                 : undefined,
-                            bounds: changes.time || changes.spatialReference ? project.toBoundsDict() : undefined,
+                            bounds: changes.time || changes.spatialReference || changes.bbox ? project.toBoundsDict() : undefined,
                             // TODO: description: changes.description,
                             timeStep: changes.timeStepDuration ? timeStepDurationToTimeStepDict(changes.timeStepDuration) : undefined,
                         },
                         sessionToken,
                     )
-                    .pipe(mapTo(project));
+                    .pipe(map(() => project));
             }),
             map((project) => {
                 this.project$.next(project);
@@ -1069,9 +1080,9 @@ export class ProjectService {
                             this.backend.wmsBaseUrl,
                         ),
                 ),
-                tap(
-                    () => loadingState$.next(LoadingState.OK),
-                    (reason: HttpErrorResponse) => {
+                tap({
+                    next: () => loadingState$.next(LoadingState.OK),
+                    error: (reason: HttpErrorResponse) => {
                         // if (ProjectService.isNoRasterForGivenTimeException(reason)) {
                         //     this.notificationService.error(`${layer.name}: No Raster for the given Time`);
                         //     loadingState$.next(LoadingState.NODATAFORGIVENTIME);
@@ -1080,12 +1091,12 @@ export class ProjectService {
                         loadingState$.next(LoadingState.ERROR);
                         // }
                     },
-                ),
+                }),
             )
-            .subscribe(
-                (data) => data$.next(data),
-                (error) => error, // ignore error
-            );
+            .subscribe({
+                next: (data) => data$.next(data),
+                error: (error) => error, // ignore error
+            });
     }
 
     /**
@@ -1105,18 +1116,18 @@ export class ProjectService {
                             return RasterLayerMetadata.fromDict(workflowMetadataDict as RasterResultDescriptorDict);
                     }
                 }),
-                tap(
-                    () => loadingState$.next(LoadingState.OK),
-                    (reason: Response) => {
+                tap({
+                    next: () => loadingState$.next(LoadingState.OK),
+                    error: (reason: Response) => {
                         this.notificationService.error(`${layer.name}: ${reason}`);
                         loadingState$.next(LoadingState.ERROR);
                     },
-                ),
+                }),
             )
-            .subscribe(
-                (metadata) => metadata$.next(metadata),
-                (error) => error, // ignore error
-            );
+            .subscribe({
+                next: (metadata) => metadata$.next(metadata),
+                error: (error) => error, // ignore error
+            });
     }
 
     /**
@@ -1266,18 +1277,18 @@ export class ProjectService {
                             map((x) => VectorData.olParse(time, projection, requestExtent, x)),
                         );
                 }),
-                tap(
-                    () => loadingState$.next(LoadingState.OK),
-                    (reason: Response) => {
+                tap({
+                    next: () => loadingState$.next(LoadingState.OK),
+                    error: (reason: Response) => {
                         this.notificationService.error(`${layer.name}: ${reason.statusText}`);
                         loadingState$.next(LoadingState.ERROR);
                     },
-                ),
+                }),
             )
-            .subscribe(
-                (data) => data$.next(data),
-                (error) => error, // ignore error
-            );
+            .subscribe({
+                next: (data) => data$.next(data),
+                error: (error) => error, // ignore error
+            });
     }
 
     private addTimeToProperties(x: any): any {
@@ -1360,17 +1371,17 @@ export class ProjectService {
                         sessionToken,
                     ),
                 ),
-                tap(
-                    () => loadingState$.next(LoadingState.OK),
-                    (reason: Response) => {
+                tap({
+                    next: () => loadingState$.next(LoadingState.OK),
+                    error: (reason: Response) => {
                         this.notificationService.error(`${plot.name}: ${reason.status} ${reason.statusText}`);
                         loadingState$.next(LoadingState.ERROR);
                     },
-                ),
+                }),
             )
-            .subscribe(
-                (data) => data$.next(data),
-                (error) => error, // ignore error
-            );
+            .subscribe({
+                next: (data) => data$.next(data),
+                error: (error) => error, // ignore error
+            });
     }
 }

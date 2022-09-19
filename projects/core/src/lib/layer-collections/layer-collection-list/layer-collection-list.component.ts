@@ -47,7 +47,7 @@ import {RandomColorService} from '../../util/services/random-color.service';
 
 export interface LayerCollectionListConfig {
     id?: ProviderLayerCollectionIdDict;
-    selectListener: (id: ProviderLayerCollectionIdDict) => void;
+    selectListener: (id: LayerCollectionItemDict) => void;
 }
 
 export const CONTEXT_TOKEN = new InjectionToken<LayerCollectionListConfig>('CONTEXT_TOKEN');
@@ -66,7 +66,7 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
 
     collection?: ProviderLayerCollectionIdDict = undefined;
 
-    selectListener!: (id: ProviderLayerCollectionIdDict) => void;
+    selectListener!: (id: LayerCollectionItemDict) => void;
 
     readonly loadingSpinnerDiameterPx: number = 3 * LayoutService.remInPx;
 
@@ -124,8 +124,7 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
 
     select(item: LayerCollectionItemDict): void {
         if (item.type === 'collection') {
-            const collection = item as LayerCollectionListingDict;
-            this.selectListener(collection.id);
+            this.selectListener(item);
         } else if (item.type === 'layer') {
             const layer = item as LayerCollectionLayerDict;
             this.addLayer(layer.id);

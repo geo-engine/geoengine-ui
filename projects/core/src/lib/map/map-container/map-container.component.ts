@@ -57,7 +57,7 @@ import {Config} from '../../config.service';
 import {LayoutService} from '../../layout.service';
 import {MatGridList, MatGridTile} from '@angular/material/grid-list';
 import {VectorSymbology} from '../../layers/symbology/symbology.model';
-import {SpatialReferenceService} from '../../spatial-references/spatial-reference.service';
+import {SpatialReferenceService, WGS_84} from '../../spatial-references/spatial-reference.service';
 import {containsCoordinate, getCenter} from 'ol/extent';
 import {olExtentToTuple} from '../../util/conversions';
 import {applyBackground, stylefunction} from 'ol-mapbox-style';
@@ -127,7 +127,6 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         private config: Config,
         private changeDetectorRef: ChangeDetectorRef,
         private mapService: MapService,
-        // private layerService: LayerService,
         private layoutService: LayoutService,
         private projectService: ProjectService,
         private spatialReferenceService: SpatialReferenceService,
@@ -216,6 +215,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
      * Zoom to and focus a bounding box
      */
     zoomTo(boundingBox: Extent): void {
+        this.maps[0].updateSize();
         this.view.fit(boundingBox, {
             nearest: true,
             maxZoom: MAX_ZOOM_LEVEL,
@@ -423,8 +423,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         }
 
         // TODO: add to all maps in grid view
-        const map: OlMap = this.maps[0];
-        map.addInteraction(this.userSelect);
+        const firstMap: OlMap = this.maps[0];
+        firstMap.addInteraction(this.userSelect);
     }
 
     private redrawLayers(projection: SpatialReference): void {
@@ -507,6 +507,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         const olProjection = this.spatialReferenceService.getOlProjection(projection);
 
         let newCenterPoint: OlGeomPoint;
+        let focusExtent: Extent | undefined;
         if (this.view && this.view.getCenter()) {
             const oldCenterPoint = new OlGeomPoint(this.view.getCenter() as any);
             newCenterPoint = oldCenterPoint.transform(this.view.getProjection(), olProjection) as OlGeomPoint;
@@ -515,6 +516,13 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 newCenterPoint = new OlGeomPoint(getCenter(olProjection.getExtent()));
                 zoomLevel = DEFAULT_ZOOM_LEVEL;
             }
+        } else if (this.config.DEFAULTS.FOCUS_EXTENT) {
+            focusExtent = this.spatialReferenceService.clipBoundsIfAvailable(
+                this.spatialReferenceService.reprojectExtent(this.config.DEFAULTS.FOCUS_EXTENT, WGS_84.spatialReference, projection),
+                projection,
+            );
+
+            newCenterPoint = new OlGeomPoint(getCenter(focusExtent));
         } else {
             newCenterPoint = new OlGeomPoint([0, 0]);
         }
@@ -530,6 +538,23 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             multiWorld: true,
         });
         this.maps.forEach((map) => map.setView(this.view));
+
+        if (focusExtent) {
+            const firstMap = this.maps[0];
+
+            const listener = firstMap.once('change:size', () => {
+                if (!focusExtent) {
+                    return;
+                }
+                this.zoomTo(focusExtent);
+            });
+
+            // In theory, there could be a race-condition if the size is set before adding the `once` trigger.
+            if (this.maps[0].getSize()) {
+                firstMap.un(listener.type as any, listener.listener);
+                this.zoomTo(focusExtent);
+            }
+        }
 
         this.emitViewportSize();
 
@@ -669,15 +694,21 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     wrapX: false,
                     projection: projection.srsString,
                 });
-            case 'MVT':
+            case 'MVT': {
+                let url = this.config.MAP.BACKGROUND_LAYER_URL;
+                // possible custom replacement strings other than `{z}`, `{x}` and `{y}`
+                if (url.includes('{epsg}')) {
+                    url = url.replace('{epsg}', projection.srsString.split(':')[1]);
+                }
                 return new OlSourceVectorTile({
                     format: new OlFormatMVT(),
-                    url: this.config.MAP.BACKGROUND_LAYER_URL,
-                    extent: this.config.MAP.VECTOR_TILES.BACKGROUND_LAYER_EXTENT,
+                    url,
+                    extent: this.config.MAP.VECTOR_TILES.BACKGROUND_LAYER_EXTENTS[projection.srsString],
                     maxZoom: this.config.MAP.VECTOR_TILES.MAX_ZOOM,
                     wrapX: false,
                     projection: projection.srsString,
                 });
+            }
             case 'fallback':
             default:
                 if (backgroundLayer !== 'fallback') {

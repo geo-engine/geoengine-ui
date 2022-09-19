@@ -1,8 +1,9 @@
-import {of} from 'rxjs';
+import {firstValueFrom, of} from 'rxjs';
 import {catchError, map, tap} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
-import {mergeDeep} from 'immutable';
+import {mergeWith} from 'immutable';
 import {HttpClient} from '@angular/common/http';
+import Immutable from 'immutable';
 
 interface Plots {
     readonly THEME: 'excel' | 'ggplot2' | 'quartz' | 'vox' | 'dark';
@@ -40,16 +41,20 @@ interface Delays {
     readonly GUEST_LOGIN_HINT: number;
 }
 
-interface Defaults {
+export interface ConfigDefaults {
     readonly PROJECT: {
         readonly NAME: string;
         readonly TIME: string;
         readonly TIMESTEP: '15 minutes' | '1 hour' | '1 day' | '1 month' | '6 months' | '1 year';
         readonly PROJECTION: 'EPSG:3857' | 'EPSG:4326';
     };
+    /**
+     * The default extent to focus on in EPSG:4326.
+     */
+    readonly FOCUS_EXTENT: [number, number, number, number];
 }
 
-interface Map {
+export interface ConfigMap {
     readonly BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted' | 'XYZ' | 'eumetview' | 'MVT' | 'fallback';
     readonly BACKGROUND_LAYER_URL: string;
     readonly HOSTED_BACKGROUND_SERVICE: string;
@@ -63,7 +68,7 @@ interface Map {
 export interface VectorTiles {
     readonly STYLE_URL: string;
     readonly SOURCE: string;
-    readonly BACKGROUND_LAYER_EXTENT: [number, number, number, number];
+    readonly BACKGROUND_LAYER_EXTENTS: {[epsg: string]: [number, number, number, number]};
     readonly MAX_ZOOM: number;
 }
 
@@ -77,9 +82,9 @@ interface SpatialReferenceConfig {
 }
 
 export interface ConfigStructure {
-    readonly DEFAULTS: Defaults;
+    readonly DEFAULTS: ConfigDefaults;
     readonly DELAYS: Delays;
-    readonly MAP: Map;
+    readonly MAP: ConfigMap;
     readonly API_URL: string;
     readonly TIME: Time;
     readonly USER: User;
@@ -98,6 +103,7 @@ export const DEFAULT_CONFIG: ConfigStructure = {
             TIMESTEP: '1 month',
             PROJECTION: 'EPSG:4326', // TODO: change back to 'EPSG:3857'
         },
+        FOCUS_EXTENT: [-180, -90, 180, 90],
     },
     DELAYS: {
         LOADING: {
@@ -110,18 +116,23 @@ export const DEFAULT_CONFIG: ConfigStructure = {
     },
     MAP: {
         BACKGROUND_LAYER: 'MVT',
-        BACKGROUND_LAYER_URL: 'https://basemap.geoengine.io/natural-earth/{z}/{x}/{y}.pbf',
+        BACKGROUND_LAYER_URL: 'https://basemap.geoengine.io/natural-earth/{epsg}/{z}/{x}/{y}.pbf',
         HOSTED_BACKGROUND_SERVICE: '/mapcache/',
         HOSTED_BACKGROUND_LAYER_NAME: 'osm',
         HOSTED_BACKGROUND_SERVICE_VERSION: '1.1.1',
         VECTOR_TILES: {
             STYLE_URL: 'assets/mvt/ne-ge.json',
             SOURCE: 'ne',
-            BACKGROUND_LAYER_EXTENT: [-180, -180, 180, 180],
+            BACKGROUND_LAYER_EXTENTS: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'EPSG:4326': [-180, -180, 180, 180],
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                'EPSG:3857': [-20037508.3427892, -20037508.3427892, 20037508.3427892, 20037508.3427892],
+            },
             MAX_ZOOM: 22,
         },
         REFRESH_LAYERS_ON_CHANGE: false,
-        VALID_CRS: ['EPSG:4326'],
+        VALID_CRS: ['EPSG:4326', 'EPSG:3857'],
     },
     API_URL: '/api',
     TIME: {
@@ -214,11 +225,11 @@ export class Config {
         return this.config.DELAYS;
     }
 
-    get DEFAULTS(): Defaults {
+    get DEFAULTS(): ConfigDefaults {
         return this.config.DEFAULTS;
     }
 
-    get MAP(): Map {
+    get MAP(): ConfigMap {
         return this.config.MAP;
     }
 
@@ -241,22 +252,34 @@ export class Config {
      * Initialize the config on app start.
      */
     load(defaults: ConfigStructure = DEFAULT_CONFIG): Promise<void> {
-        return this.http
-            .get<ConfigStructure>(Config.CONFIG_FILE)
-            .pipe(
-                map((appConfig) => ({...appConfig})), // The interface returned by http get is not indexable, create an object with the same content.
-                tap(
-                    (appConfig) => {
-                        this.config = mergeDeep(defaults, appConfig);
-                    },
-                    () => {
-                        // error
-                        this.config = defaults;
-                    },
-                ),
-                catchError(() => of(undefined)),
-                map(() => {}),
-            )
-            .toPromise();
+        const config = this.http.get<ConfigStructure>(Config.CONFIG_FILE).pipe(
+            map((appConfig) => ({...appConfig})), // The interface returned by http get is not indexable, create an object with the same content.
+            tap({
+                next: (appConfig) => {
+                    this.config = mergeDeepOverrideLists(defaults, appConfig);
+                },
+                error: () => {
+                    // error
+                    this.config = defaults;
+                },
+            }),
+            catchError(() => of(undefined)),
+            map(() => {}),
+        );
+        return firstValueFrom(config);
     }
+}
+
+/**
+ * A version of ImmutableJS `mergeDeep` that replaces Lists instead of concatenating them.
+ */
+export function mergeDeepOverrideLists<C>(a: C, b: Iterable<unknown> | Iterable<[unknown, unknown]> | {[key: string]: unknown}): C {
+    // If b is null, it would overwrite a, even if a is mergeable
+    if (b === null) return b;
+
+    if (a && typeof a === 'object' && !Array.isArray(a) && !Immutable.List.isList(a)) {
+        return mergeWith(mergeDeepOverrideLists as (a: unknown, b: unknown) => unknown, a, b);
+    }
+
+    return b as any;
 }
