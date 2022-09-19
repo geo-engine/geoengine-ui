@@ -1,5 +1,5 @@
 import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy, OnInit} from '@angular/core';
-import {UntypedFormGroup, UntypedFormBuilder, Validators, UntypedFormControl, UntypedFormArray} from '@angular/forms';
+import {Validators, FormBuilder, FormControl, FormArray, FormGroup} from '@angular/forms';
 
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
@@ -12,10 +12,18 @@ import {Plot} from '../../../plots/plot.model';
 import {StatisticsDict, StatisticsParams} from '../../../backend/operator.model';
 import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
 import {VectorColumnDataTypes} from '../../datatype.model';
+
+interface StatisticsPlotForm {
+    layer: FormControl<Layer | null>;
+    name: FormControl<string>;
+    columnNames: FormArray<FormControl<string | null>>;
+    additionalRasterLayers: FormControl<Array<RasterLayer> | null>;
+}
+
 /**
  * Checks whether the layer is a vector layer (points, lines, polygons).
  */
-const isVectorLayer = (layer: Layer): boolean => {
+const isVectorLayer = (layer: Layer | null): boolean => {
     if (!layer) {
         return false;
     }
@@ -25,7 +33,7 @@ const isVectorLayer = (layer: Layer): boolean => {
 /**
  * Checks whether the layer is a raster layer.
  */
-const isRasterLayer = (layer: Layer): boolean => {
+const isRasterLayer = (layer: Layer | null): boolean => {
     if (!layer) {
         return false;
     }
@@ -49,20 +57,20 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
 
     isRasterLayer$: Observable<boolean>;
 
-    form: UntypedFormGroup;
+    form: FormGroup<StatisticsPlotForm>;
 
     private subscriptions: Array<Subscription> = [];
 
-    constructor(private formBuilder: UntypedFormBuilder, private projectService: ProjectService) {
-        const layerControl = this.formBuilder.control(undefined, Validators.required);
+    constructor(private formBuilder: FormBuilder, private projectService: ProjectService) {
+        const layerControl = this.formBuilder.control<Layer | null>(null, Validators.required);
         this.form = this.formBuilder.group({
             layer: layerControl,
-            name: ['Statistics', [Validators.required, geoengineValidators.notOnlyWhitespace]],
-            columnNames: this.formBuilder.array(
+            name: this.formBuilder.nonNullable.control<string>('Statistics', [Validators.required, geoengineValidators.notOnlyWhitespace]),
+            columnNames: this.formBuilder.array<string>(
                 [],
                 geoengineValidators.conditionalValidator(Validators.required, () => isVectorLayer(layerControl.value)),
             ),
-            additionalRasterLayers: new UntypedFormControl(undefined),
+            additionalRasterLayers: this.formBuilder.control<Array<RasterLayer> | null>(null), // new FormControl<Array<RasterLayer> | null>(null),
         });
         this.subscriptions.push(
             this.form.controls['layer'].valueChanges
@@ -70,13 +78,13 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
                     // reset
                     tap(() => {
                         this.columnNames.clear();
-                        this.additionalRasterLayers.setValue(undefined);
+                        this.additionalRasterLayers.setValue(null);
                         if (isVectorLayer(layerControl.value)) {
                             this.addColumn();
                         }
                     }),
                     // get vector attributes or []
-                    mergeMap((layer: Layer) => {
+                    mergeMap((layer: Layer | null) => {
                         if (layer instanceof VectorLayer) {
                             return this.projectService.getVectorLayerMetadata(layer).pipe(
                                 map((metadata: VectorLayerMetadata) =>
@@ -98,22 +106,22 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
                     this.attributes$.next(attributes);
                 }),
         );
-        this.isVectorLayer$ = this.form.controls['layer'].valueChanges.pipe(map((layer) => isVectorLayer(layer)));
-        this.isRasterLayer$ = this.form.controls['layer'].valueChanges.pipe(map((layer) => isRasterLayer(layer)));
+        this.isVectorLayer$ = this.form.controls['layer']?.valueChanges.pipe(map((layer) => isVectorLayer(layer)));
+        this.isRasterLayer$ = this.form.controls['layer']?.valueChanges.pipe(map((layer) => isRasterLayer(layer)));
     }
 
     ngOnInit(): void {}
 
-    get columnNames(): UntypedFormArray {
-        return this.form.get('columnNames') as UntypedFormArray;
+    get columnNames(): FormArray<FormControl<string | null>> {
+        return this.form.get('columnNames') as FormArray<FormControl<string | null>>;
     }
 
-    get additionalRasterLayers(): UntypedFormControl {
-        return this.form.get('additionalRasterLayers') as UntypedFormControl;
+    get additionalRasterLayers(): FormControl<Array<RasterLayer> | null> {
+        return this.form.get('additionalRasterLayers') as FormControl<Array<RasterLayer> | null>;
     }
 
     addColumn(): void {
-        this.columnNames.push(this.formBuilder.control(undefined, Validators.required));
+        this.columnNames.push(this.formBuilder.control<string | null>(null, Validators.required));
     }
 
     removeColumn(i: number): void {
@@ -123,14 +131,14 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
     add(): void {
         const inputLayer = this.form.controls['layer'].value as Layer;
 
-        const columnNames = this.columnNames.controls.map((fc) => fc.value.toString());
+        const columnNames = this.columnNames.controls.map((fc) => (fc ? fc.value?.toString() : ''));
 
         const sources = [inputLayer] as Array<Layer>;
 
         if (inputLayer.layerType === 'raster') {
-            const rasterLayers: Array<RasterLayer> = this.additionalRasterLayers.value;
+            const rasterLayers: Array<RasterLayer> | null = this.additionalRasterLayers.value;
             columnNames.push(inputLayer.name);
-            rasterLayers.forEach((value) => {
+            rasterLayers?.forEach((value) => {
                 sources.push(value);
                 columnNames.push(value.name);
             });
