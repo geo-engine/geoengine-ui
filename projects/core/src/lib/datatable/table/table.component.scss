@@ -11,18 +11,18 @@
 table {
     width: 100%;
 
-    ::ng-deep thead tr {
-        height: 3rem !important;
-    }
+    // ::ng-deep thead tr {
+    //     height: 3rem !important;
+    // }
 
-    ::ng-deep tbody tr {
-        height: 2rem !important;
-    }
+    // ::ng-deep tbody tr {
+    //     height: 2rem !important;
+    // }
 
     th,
     td {
         white-space: nowrap;
-        padding: 1rem;
+        padding: 0 0.5rem 0 0.5rem;
         min-width: 2rem;
     }
     .selectColumn {
