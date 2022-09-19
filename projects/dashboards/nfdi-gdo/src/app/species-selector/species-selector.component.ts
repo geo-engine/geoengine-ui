@@ -316,6 +316,20 @@ const SPECIES_INFO: {[key: string]: SpeciesInfo} = {
         imageSrc: 'https://upload.wikimedia.org/wikipedia/commons/4/4e/Coenagrion_puella_3%28loz%29.jpg',
         imageRef: 'L. B. Tettenborn',
     },
+    'Abramis brama': {
+        text: `Im Alter von acht Jahren erreichen Brachsen eine Länge von ca. 30 bis 50 cm. Bei einer Länge von 60 cm wiegen sie im Durchschnitt 3 bis 3,5 kg.
+        Unter idealen Bedingungen können Brachsen maximal 85 cm und über 8 kg schwer werden, so auch der deutsche Rekordfisch, gefangen im Jahr 2000.[1] Brachsen
+        können ein Alter von etwa 16 Jahren erreichen. Brachsen sind seitlich sehr stark abgeflacht und hochrückig. Bei schlechter Ernährung kommt es bei 
+        den Brachsen zum sogenannten Messerrücken, der Bildung einer sehr scharfen Rückenkante. Das stumpfe Maul ist leicht unterständig, die Augen verhältnismäßig 
+        klein. Auffällig ist die grünlich glänzende, schwarze bis bleigraue oder bleiblaue Färbung auf dem Rücken, der die Fische den Namen Blei verdanken.
+        Die Seiten glänzen metallisch, der Bauch ist weißlich mit Perlmuttglanz. Bei älteren Brachsen kommt ein lichter Bronze- oder goldgrüner Ton durch.
+        Die Schuppen sind stark mit Schleim bedeckt. Die Rückenflosse ist 12-, die Afterflosse 26- bis 31-strahlig. Bis auf die Brustflossen sind die Flossen
+        dunkelgrau, die mittelgrauen Brustflossen der Brachsen sind lang und reichen angelegt bis an den Ansatz der Bauchflossen heran. Dadurch unterscheiden sie
+        sich vom Güster, mit dem sie manchmal verwechselt werden. Durch gleichzeitige Laichzeiten vermischen sich Eier und Samen von Blei und Güster
+        (und anderen Weißfischen), dadurch entstehen sogenannte Bastardfische, die sich aber anhand der Anzahl und Verteilung der Schlundzähne unterscheiden lassen.`,
+        imageSrc: 'https://upload.wikimedia.org/wikipedia/commons/6/69/Carp_bream.jpg',
+        imageRef: 'Микова Наталия',
+    },
 };
 
 interface SpeciesInfo {
