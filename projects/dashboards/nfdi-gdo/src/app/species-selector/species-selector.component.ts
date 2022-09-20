@@ -447,7 +447,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             new Time('2010-01-01T00:00:00.000Z', '2010-02-01T00:00:00.000Z'),
         );
 
-        this.selectDragonflySpecies('Anax Imperator');
+        this.selectDragonflySpecies('Anax imperator');
         this.selectFishSpecies('Abramis brama');
     }
 
