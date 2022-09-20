@@ -19,6 +19,8 @@ on:
 
 jobs:
   create-container:
+    if: github.event_name != 'schedule' || github.repository_owner == 'geo-engine'
+
     strategy:
       matrix:
         app: ["gis", "gfbio", "data-atlas", "nfdi-gdo", "ebv-analyzer"]
