@@ -1,16 +1,44 @@
 import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy, OnInit} from '@angular/core';
-import {UntypedFormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
+import {Validators, FormBuilder, FormControl, FormArray, FormGroup} from '@angular/forms';
 
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {ResultTypes} from '../../result-type.model';
-import {Layer} from '../../../layers/layer.model';
-import {combineLatest, Observable, Subscription} from 'rxjs';
-import {WorkflowDict} from '../../../backend/backend.model';
-import {map, mergeMap} from 'rxjs/operators';
+import {Layer, RasterLayer, VectorLayer} from '../../../layers/layer.model';
+import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
+import {OperatorDict, SourceOperatorDict} from '../../../backend/backend.model';
+import {map, mergeMap, tap} from 'rxjs/operators';
 import {Plot} from '../../../plots/plot.model';
-import {NotificationService} from '../../../notification.service';
-import {StatisticsDict} from '../../../backend/operator.model';
+import {StatisticsDict, StatisticsParams} from '../../../backend/operator.model';
+import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
+import {VectorColumnDataTypes} from '../../datatype.model';
+
+interface StatisticsPlotForm {
+    layer: FormControl<Layer | null>;
+    name: FormControl<string>;
+    columnNames: FormArray<FormControl<string | null>>;
+    additionalRasterLayers: FormControl<Array<RasterLayer> | null>;
+}
+
+/**
+ * Checks whether the layer is a vector layer (points, lines, polygons).
+ */
+const isVectorLayer = (layer: Layer | null): boolean => {
+    if (!layer) {
+        return false;
+    }
+    return layer.layerType === 'vector';
+};
+
+/**
+ * Checks whether the layer is a raster layer.
+ */
+const isRasterLayer = (layer: Layer | null): boolean => {
+    if (!layer) {
+        return false;
+    }
+    return layer.layerType === 'raster';
+};
 
 @Component({
     selector: 'geoengine-statistics-plot',
@@ -19,43 +47,116 @@ import {StatisticsDict} from '../../../backend/operator.model';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy {
-    readonly allowedLayerTypes = [ResultTypes.RASTER];
+    readonly allowedLayerTypes = ResultTypes.LAYER_TYPES;
 
-    readonly subscriptions: Array<Subscription> = [];
+    readonly RASTER_TYPE = [ResultTypes.RASTER];
 
-    form: UntypedFormGroup;
-    outputNameSuggestion: Observable<string>;
+    attributes$ = new ReplaySubject<Array<string>>(1);
 
-    constructor(
-        private formBuilder: UntypedFormBuilder,
-        private projectService: ProjectService,
-        private notificationService: NotificationService,
-    ) {
+    isVectorLayer$: Observable<boolean>;
+
+    isRasterLayer$: Observable<boolean>;
+
+    form: FormGroup<StatisticsPlotForm>;
+
+    private subscriptions: Array<Subscription> = [];
+
+    constructor(private formBuilder: FormBuilder, private projectService: ProjectService) {
+        const layerControl = this.formBuilder.control<Layer | null>(null, Validators.required);
         this.form = this.formBuilder.group({
-            layers: [undefined, Validators.required],
-            name: ['', [Validators.required, geoengineValidators.notOnlyWhitespace]],
+            layer: layerControl,
+            name: this.formBuilder.nonNullable.control<string>('Statistics', [Validators.required, geoengineValidators.notOnlyWhitespace]),
+            columnNames: this.formBuilder.array<string>(
+                [],
+                geoengineValidators.conditionalValidator(Validators.required, () => isVectorLayer(layerControl.value)),
+            ),
+            additionalRasterLayers: this.formBuilder.control<Array<RasterLayer> | null>(null), // new FormControl<Array<RasterLayer> | null>(null),
         });
-
-        this.outputNameSuggestion = StatisticsPlotComponent.createOutputNameSuggestionStream(this.form.controls['layers'].valueChanges);
+        this.subscriptions.push(
+            this.form.controls['layer'].valueChanges
+                .pipe(
+                    // reset
+                    tap(() => {
+                        this.columnNames.clear();
+                        this.additionalRasterLayers.setValue(null);
+                        if (isVectorLayer(layerControl.value)) {
+                            this.addColumn();
+                        }
+                    }),
+                    // get vector attributes or []
+                    mergeMap((layer: Layer | null) => {
+                        if (layer instanceof VectorLayer) {
+                            return this.projectService.getVectorLayerMetadata(layer).pipe(
+                                map((metadata: VectorLayerMetadata) =>
+                                    metadata.dataTypes
+                                        .filter(
+                                            (columnType) =>
+                                                columnType === VectorColumnDataTypes.Float || columnType === VectorColumnDataTypes.Int,
+                                        )
+                                        .keySeq()
+                                        .toArray(),
+                                ),
+                            );
+                        } else {
+                            return of([]);
+                        }
+                    }),
+                )
+                .subscribe((attributes) => {
+                    this.attributes$.next(attributes);
+                }),
+        );
+        this.isVectorLayer$ = this.form.controls['layer']?.valueChanges.pipe(map((layer) => isVectorLayer(layer)));
+        this.isRasterLayer$ = this.form.controls['layer']?.valueChanges.pipe(map((layer) => isRasterLayer(layer)));
     }
 
     ngOnInit(): void {}
 
-    add(): void {
-        const workflowObservables: Array<Observable<WorkflowDict>> = this.form.controls['layers'].value.map((layer: Layer) =>
-            this.projectService.getWorkflow(layer.workflowId),
-        );
+    get columnNames(): FormArray<FormControl<string | null>> {
+        return this.form.get('columnNames') as FormArray<FormControl<string | null>>;
+    }
 
-        combineLatest(workflowObservables)
+    get additionalRasterLayers(): FormControl<Array<RasterLayer> | null> {
+        return this.form.get('additionalRasterLayers') as FormControl<Array<RasterLayer> | null>;
+    }
+
+    addColumn(): void {
+        this.columnNames.push(this.formBuilder.control<string | null>(null, Validators.required));
+    }
+
+    removeColumn(i: number): void {
+        this.columnNames.removeAt(i);
+    }
+
+    add(): void {
+        const inputLayer = this.form.controls['layer'].value as Layer;
+
+        const columnNames = this.columnNames.controls.map((fc) => (fc ? fc.value?.toString() : ''));
+
+        const sources = [inputLayer] as Array<Layer>;
+
+        if (inputLayer.layerType === 'raster') {
+            const rasterLayers: Array<RasterLayer> | null = this.additionalRasterLayers.value;
+            columnNames.push(inputLayer.name);
+            rasterLayers?.forEach((value) => {
+                sources.push(value);
+                columnNames.push(value.name);
+            });
+        }
+
+        this.projectService
+            .getAutomaticallyProjectedOperatorsFromLayers(sources)
             .pipe(
-                mergeMap((workflows) =>
+                mergeMap((inputOperators: Array<OperatorDict | SourceOperatorDict>) =>
                     this.projectService.registerWorkflow({
                         type: 'Plot',
                         operator: {
                             type: 'Statistics',
-                            params: {},
+                            params: {
+                                columnNames,
+                            } as StatisticsParams,
                             sources: {
-                                rasters: workflows.map((workflow) => workflow.operator),
+                                source: isVectorLayer(inputLayer) ? inputOperators[0] : inputOperators,
                             },
                         } as StatisticsDict,
                     }),
@@ -69,10 +170,7 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
                     ),
                 ),
             )
-            .subscribe(
-                () => {},
-                (error) => this.notificationService.error(error),
-            );
+            .subscribe();
     }
 
     ngOnDestroy(): void {
@@ -85,19 +183,7 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
                 onlySelf: false,
                 emitEvent: true,
             });
-            this.form.controls['layers'].updateValueAndValidity();
+            this.form.controls['layer'].updateValueAndValidity();
         });
-    }
-
-    private static createOutputNameSuggestionStream(layersChanges: Observable<Array<Layer>>): Observable<string> {
-        return layersChanges.pipe(
-            map((layers) => {
-                if (!layers) {
-                    return 'Statistics';
-                }
-
-                return `Statistics of ${layers.map((layer) => layer.name).join(', ')}`;
-            }),
-        );
     }
 }
