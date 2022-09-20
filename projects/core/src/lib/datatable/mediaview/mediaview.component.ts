@@ -63,10 +63,10 @@ export class MediaviewComponent implements OnInit {
             for (const i in this.urls) {
                 if (this.urls.hasOwnProperty(i)) {
                     this.mediaType[i] = MediaviewComponent.getType(this.urls[i]);
-                    if (this.mediaType[i] !== '') {
+                    if (this.mediaType[i] !== '' && this.mediaType[i] !== 'text') {
                         this.urls[i] = this.urls[i].trim();
+                        this.mediaUrls.push(this.urls[i]);
                     }
-                    this.mediaUrls.push(this.urls[i]);
                 }
             }
         } else {
