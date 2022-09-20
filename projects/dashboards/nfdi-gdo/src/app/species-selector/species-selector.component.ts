@@ -449,7 +449,6 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
 
         this.selectDragonflySpecies('Anax Imperator');
         this.selectFishSpecies('Abramis brama');
-        this.selectEnvironmentLayer(this.environmentLayers[0]);
     }
 
     ngOnDestroy(): void {
