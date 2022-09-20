@@ -124,10 +124,14 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     }
 
     processVectorLayer(_layer: VectorLayer, metadata: VectorLayerMetadata, data: VectorData): void {
+        if (!data.data || (data.data && data.data.length === 0)) {
+            this.emptyTable();
+            return;
+        }
+        this.dataSource.data = data.data;
         this.featureColumns = metadata.dataTypes.keySeq().toArray();
         this.featureColumnDataTypes = metadata.dataTypes.valueSeq().toArray();
         this.displayedColumns = ['_____select', '_____coordinates', '_____table__start', '_____table__end'].concat(this.featureColumns);
-        this.dataSource.data = data.data;
         this.featureColumnDataTypes = this.getColumnProperties();
         setTimeout(() => this.navigatePage(this.projectService.getSelectedFeature()));
     }
