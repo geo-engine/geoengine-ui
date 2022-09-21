@@ -89,15 +89,15 @@ export class RasterLegendComponent implements OnInit, OnChanges {
     }
 
     shortenDecimals(toShorten: number): number {
+        const DECIMAL_PLACES = 3; // number of decimal places left after rounding
         const integerPart: number = Math.floor(toShorten);
         const decimals: number = toShorten - integerPart;
         const decimalsString = decimals.toString();
-        const DECIMAL_PLACES = 3; // decimal places left after rounding
-        let zeroes: number = 0; 
-        while (decimalsString.charAt(zeroes+2) === '0') {
+        let zeroes = 0;
+        while (decimalsString.charAt(zeroes + 2) === '0') {
             zeroes++;
         }
-        const roundAt: number = (Math.pow(10, zeroes + DECIMAL_PLACES));
+        const roundAt: number = Math.pow(10, zeroes + DECIMAL_PLACES);
         return integerPart + Math.round(decimals * roundAt) / roundAt;
     }
 }

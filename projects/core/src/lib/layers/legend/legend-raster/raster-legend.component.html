@@ -1,7 +1,14 @@
 <tbody class="legend">
     <ng-template [ngIf]="layer.symbology.colorizer.isContinuous()">
-        continuous (measurement goes here)
-        <!-- TODO delete this line-->
+        <!-- measurement -->
+        <ng-container *ngIf="measurement$ | async | continuousMeasurement as measurement">
+            {{ measurement.measurement }} <span *ngIf="measurement.unit">in {{ measurement.unit }}</span>
+        </ng-container>
+        <ng-container *ngIf="measurement$ | async | classificationMeasurement as measurement">
+            {{ measurement.measurement }}
+        </ng-container>
+
+        <!-- data -->
         <tr *ngFor="let breakpoint of layer.symbology.colorizer.getBreakpoints(); let isFirst = first">
             <td
                 class="gradient"
@@ -10,20 +17,10 @@
                 [style.background]="layer.symbology.colorizer | geoengineColorizerCssGradient"
             ></td>
             <td>{{ shortenDecimals(breakpoint.value) | number: numberPipeParameters }}</td>
-            <td *ngIf="isFirst">
-                <ng-container *ngIf="measurement$ | async | continuousMeasurement as measurement">
-                    {{ measurement.measurement }} <span *ngIf="measurement.unit">in {{ measurement.unit }}</span>
-                </ng-container>
-                <ng-container *ngIf="measurement$ | async | classificationMeasurement as measurement">
-                    {{ measurement.measurement }}
-                </ng-container>
-            </td>
         </tr>
     </ng-template>
 
     <ng-container *ngIf="layer.symbology.colorizer.isDiscrete()">
-        discrete (measurement goes here)
-        <!-- TODO delete this line-->
         <ng-container *ngIf="!(measurement$ | async | classificationMeasurement)">
             <tr *ngFor="let breakpoint of layer.symbology.colorizer.getBreakpoints()">
                 <td class="classes">
