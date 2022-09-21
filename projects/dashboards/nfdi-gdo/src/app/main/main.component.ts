@@ -1,4 +1,4 @@
-import {Observable, BehaviorSubject} from 'rxjs';
+import {Observable, BehaviorSubject, first} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {
@@ -12,6 +12,7 @@ import {
     MapService,
     MapContainerComponent,
     SpatialReferenceService,
+    WEB_MERCATOR,
 } from '@geoengine/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AppConfig} from '../app-config.service';
@@ -58,6 +59,20 @@ export class MainComponent implements OnInit, AfterViewInit {
     ngAfterViewInit(): void {
         // this.reset();
         this.mapComponent.resize();
+
+        // change projection to web mercator if for whatever reasons it is a different one
+        this.projectService
+            .getSpatialReferenceStream()
+            .pipe(first())
+            .subscribe({
+                next: (spatialReference) => {
+                    if (spatialReference.equals(WEB_MERCATOR.spatialReference)) {
+                        return;
+                    }
+
+                    this.projectService.setSpatialReference(WEB_MERCATOR.spatialReference);
+                },
+            });
     }
 
     idFromLayer(index: number, layer: Layer): number {

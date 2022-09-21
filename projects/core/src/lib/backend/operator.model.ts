@@ -162,11 +162,15 @@ export interface ReprojectionDict extends OperatorDict {
     };
 }
 
+export interface StatisticsParams extends OperatorParams {
+    columnNames: Array<string>;
+}
+
 export interface StatisticsDict extends OperatorDict {
     type: 'Statistics';
-    params: EmptyParams;
+    params: StatisticsParams;
     sources: {
-        rasters: Array<SourceOperatorDict | OperatorDict>;
+        source: SourceOperatorDict | OperatorDict | Array<SourceOperatorDict | OperatorDict>;
     };
 }
 
@@ -224,3 +228,13 @@ export interface TimeProjectionDict extends OperatorDict {
         stepReference?: TimeInstanceDict;
     };
 }
+
+export interface InterpolationDict extends OperatorDict {
+    type: 'Interpolation';
+    params: {
+        interpolation: 'nearestNeighbor' | 'bilinear';
+        inputResolution: InputResolutionDict;
+    };
+}
+
+export type InputResolutionDict = {type: 'source'} | {type: 'value'; x: number; y: number};
