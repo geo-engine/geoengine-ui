@@ -57,14 +57,15 @@ export class MediaviewComponent implements OnInit {
     ngOnInit(): void {
         if (this.type === VectorColumnDataTypes.Media) {
             this.urls = this.url.split(',');
-            this.mediaType = new Array(this.urls.length);
+            this.mediaType = [];
             this.mediaUrls = [];
 
             for (const i in this.urls) {
                 if (this.urls.hasOwnProperty(i)) {
-                    this.mediaType[i] = MediaviewComponent.getType(this.urls[i]);
-                    if (this.mediaType[i] !== '' && this.mediaType[i] !== 'text') {
+                    const checkMediaType = MediaviewComponent.getType(this.urls[i]);
+                    if (checkMediaType !== '' && checkMediaType !== 'text') {
                         this.urls[i] = this.urls[i].trim();
+                        this.mediaType.push(checkMediaType);
                         this.mediaUrls.push(this.urls[i]);
                     }
                 }
