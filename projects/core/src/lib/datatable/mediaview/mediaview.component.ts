@@ -78,7 +78,12 @@ export class MediaviewComponent implements OnInit {
     }
 
     get media(): string {
-        return this.mediaType[0] ?? '';
+        const differentMediaTypes = this.mediaType.filter((item, index) => !(this.mediaType.indexOf(item) !== index));
+        if (differentMediaTypes?.length > 1) {
+            return 'media';
+        } else {
+            return this.mediaType[0] ?? '';
+        }
     }
 
     /**

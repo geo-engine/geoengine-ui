@@ -3,6 +3,7 @@
         <mat-icon color="primary" *ngIf="media === 'image'">image</mat-icon>
         <mat-icon color="primary" *ngIf="media === 'audio'">music_video</mat-icon>
         <mat-icon color="primary" *ngIf="media === 'video'">movie</mat-icon>
+        <mat-icon color="primary" *ngIf="media === 'media'">featured_play_list</mat-icon>
         {{ mediaUrls.length }}
         <ng-template [ngIf]="mediaUrls.length === 1">{{ media }}</ng-template>
         <ng-template [ngIf]="mediaUrls.length !== 1">{{ media }}s</ng-template>
