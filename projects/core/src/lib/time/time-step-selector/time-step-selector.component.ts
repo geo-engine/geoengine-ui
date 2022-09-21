@@ -31,7 +31,14 @@ export class TimeStepSelectorComponent implements OnInit, OnChanges, OnDestroy {
      */
     constructor(private readonly projectService: ProjectService, private readonly changeDetectorRef: ChangeDetectorRef) {
         this.currentTimeFormatted = combineLatest([this.projectService.getTimeStream(), this.timeFormat$]).pipe(
-            map(([time, format]) => time.start.format(format)),
+            map(([time, format]) => {
+                if (this.timeSteps) {
+                    this.currentTimeIndex = this.timeSteps.findIndex((t) => time.isSame(t));
+                    setTimeout(() => this.changeDetectorRef.detectChanges());
+                }
+
+                return time.start.format(format);
+            }),
         );
     }
 
@@ -51,7 +58,7 @@ export class TimeStepSelectorComponent implements OnInit, OnChanges, OnDestroy {
                     return;
                 }
 
-                this.currentTimeIndex = this.timeSteps.indexOf(time);
+                this.currentTimeIndex = this.timeSteps.findIndex((t) => time.isSame(t));
 
                 setTimeout(() => this.changeDetectorRef.detectChanges());
             });

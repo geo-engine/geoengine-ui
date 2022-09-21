@@ -71,7 +71,7 @@ export class DataSelectionService {
         );
     }
 
-    setTimeSteps(timeSteps: Array<Time>, preselectComparator?: (currentTime: Time, timeStep: Time) => boolean): void {
+    setTimeSteps(timeSteps: Array<Time>, preselectComparator?: (currentTime: Time, timeStep: Time) => boolean, defaultTime?: Time): void {
         if (!timeSteps.length) {
             throw Error('`timeSteps` must not be empty');
         }
@@ -80,6 +80,10 @@ export class DataSelectionService {
             .getTimeOnce()
             .pipe(
                 map((currentTime) => {
+                    if (defaultTime) {
+                        return defaultTime;
+                    }
+
                     if (!preselectComparator) {
                         return timeSteps[0];
                     }
