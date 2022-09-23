@@ -2,10 +2,10 @@
     <ng-template [ngIf]="layer.symbology.colorizer.isContinuous()">
         <!-- measurement -->
         <ng-container *ngIf="measurement$ | async | continuousMeasurement as measurement">
-             ( {{ measurement.measurement }} <span *ngIf="measurement.unit">in {{ measurement.unit }}</span> )
+            ( {{ measurement.measurement }} <span *ngIf="measurement.unit">in {{ measurement.unit }}</span> )
         </ng-container>
         <ng-container *ngIf="measurement$ | async | classificationMeasurement as measurement">
-             ( {{ measurement.measurement }} )
+            ( {{ measurement.measurement }} )
         </ng-container>
 
         <!-- data -->
