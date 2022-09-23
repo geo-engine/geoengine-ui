@@ -1,9 +1,11 @@
 <span>
     <button mat-icon-button *ngIf="mediaUrls.length > 0" (click)="openMediaviewDialog(0)">
-        <mat-icon color="primary" *ngIf="media === 'image'" class="mat-24">image</mat-icon>
-        <mat-icon color="primary" *ngIf="media === 'audio'" class="mat-24">music_video</mat-icon>
-        <mat-icon color="primary" *ngIf="media === 'video'" class="mat-24">movie</mat-icon>
-        {{ mediaUrls.length }} <ng-template [ngIf]="mediaUrls.length === 1">{{ media }}</ng-template
-        ><ng-template [ngIf]="mediaUrls.length !== 1">{{ media }}s</ng-template>
+        <mat-icon color="primary" *ngIf="media === 'image'">image</mat-icon>
+        <mat-icon color="primary" *ngIf="media === 'audio'">music_video</mat-icon>
+        <mat-icon color="primary" *ngIf="media === 'video'">movie</mat-icon>
+        <mat-icon color="primary" *ngIf="media === 'media'">featured_play_list</mat-icon>
+        {{ mediaUrls.length }}
+        <ng-template [ngIf]="mediaUrls.length === 1">{{ media }}</ng-template>
+        <ng-template [ngIf]="mediaUrls.length !== 1">{{ media }}s</ng-template>
     </button>
 </span>

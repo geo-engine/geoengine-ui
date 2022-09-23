@@ -27,7 +27,7 @@
 
     <mat-form-field color="accent">
         <mat-label>Artauswahl Libellen</mat-label>
-        <mat-select (valueChange)="selectDragonflySpecies($event)">
+        <mat-select (valueChange)="selectDragonflySpecies($event)" [(value)]="selectedDragonflySpecies">
             <mat-option>
                 <ngx-mat-select-search
                     [formControl]="geoengineAutocompleteSelect.filterFormControl"
@@ -72,7 +72,7 @@
     <!-- Fish -->
     <mat-form-field color="accent">
         <mat-label>Artauswahl Fische</mat-label>
-        <mat-select (valueChange)="selectFishSpecies($event)">
+        <mat-select (valueChange)="selectFishSpecies($event)" [(value)]="selectedFishSpecies">
             <mat-option>
                 <ngx-mat-select-search
                     [formControl]="geoengineAutocompleteSelect2.filterFormControl"

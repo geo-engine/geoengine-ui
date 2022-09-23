@@ -57,16 +57,17 @@ export class MediaviewComponent implements OnInit {
     ngOnInit(): void {
         if (this.type === VectorColumnDataTypes.Media) {
             this.urls = this.url.split(',');
-            this.mediaType = new Array(this.urls.length);
+            this.mediaType = [];
             this.mediaUrls = [];
 
             for (const i in this.urls) {
                 if (this.urls.hasOwnProperty(i)) {
-                    this.mediaType[i] = MediaviewComponent.getType(this.urls[i]);
-                    if (this.mediaType[i] !== '') {
+                    const checkMediaType = MediaviewComponent.getType(this.urls[i]);
+                    if (checkMediaType !== '' && checkMediaType !== 'text') {
                         this.urls[i] = this.urls[i].trim();
+                        this.mediaType.push(checkMediaType);
+                        this.mediaUrls.push(this.urls[i]);
                     }
-                    this.mediaUrls.push(this.urls[i]);
                 }
             }
         } else {
@@ -77,7 +78,12 @@ export class MediaviewComponent implements OnInit {
     }
 
     get media(): string {
-        return this.mediaType[0] ?? '';
+        const differentMediaTypes = this.mediaType.filter((item, index) => !(this.mediaType.indexOf(item) !== index));
+        if (differentMediaTypes?.length > 1) {
+            return 'media';
+        } else {
+            return this.mediaType[0] ?? '';
+        }
     }
 
     /**
