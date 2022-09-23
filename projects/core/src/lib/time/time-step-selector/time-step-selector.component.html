@@ -1,4 +1,4 @@
-<div class="container mat-typography" fxLayout="row" fxLayoutAlign="space-between center">
+<div *ngIf="displayTimeLine()" class="container mat-typography" fxLayout="row" fxLayoutAlign="space-between center">
     <mat-slider
         thumbLabel="true"
         [min]="min"

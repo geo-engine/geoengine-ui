@@ -94,4 +94,8 @@ export class TimeStepSelectorComponent implements OnInit, OnChanges, OnDestroy {
             return timeStep.start.format(this.timeFormat);
         };
     }
+
+    displayTimeLine(): boolean {
+        return this.timeSteps !== undefined && this.timeSteps.length > 1 ? true : false;
+    }
 }
