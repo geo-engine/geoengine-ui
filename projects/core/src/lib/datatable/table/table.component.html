@@ -2,8 +2,8 @@
     <table mat-table [dataSource]="dataSource">
         <!-- Checkbox Column -->
         <ng-container matColumnDef="_____select">
-            <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let element">
+            <th mat-header-cell class="selectColumn" *matHeaderCellDef></th>
+            <td mat-cell class="selectColumn" *matCellDef="let element">
                 <mat-checkbox [checked]="isSelected(element)" (change)="select(element, $event.checked)"> </mat-checkbox>
             </td>
         </ng-container>
@@ -12,16 +12,15 @@
         <ng-container matColumnDef="_____coordinates">
             <th mat-header-cell *matHeaderCellDef>Coordinates</th>
             <td mat-cell id="coordCell" *matCellDef="let element">
-                {{ coordinateFromGeometry(element) }}
                 <button
                     mat-icon-button
-                    color="primary"
                     aria-label="Display full coordinates"
                     matTooltip="Display full coordinates"
                     (click)="onFullDisplayClick(element)"
                 >
-                    <mat-icon>explore</mat-icon>
+                    <mat-icon color="primary">explore</mat-icon>
                 </button>
+                {{ coordinateFromGeometry(element) }}
             </td>
         </ng-container>
 
@@ -42,11 +41,19 @@
             <th mat-header-cell *matHeaderCellDef>{{ columnName }}</th>
             <td mat-cell *matCellDef="let element">
                 <geoengine-datatable-mediaview
-                    *ngIf="colTypes[j] === columnDataTypes.Media && element.get(columnName)"
+                    class="mediaviewColumn"
+                    *ngIf="featureColumnDataTypes[j] === columnDataTypes.Media && element.get(columnName)"
                     [url]="element.get(columnName)"
-                    [type]="colTypes[j]"
+                    [type]="featureColumnDataTypes[j]"
                 ></geoengine-datatable-mediaview>
-                <span *ngIf="colTypes[j] !== columnDataTypes.Media">{{ element.get(columnName) }}</span>
+                <span *ngIf="featureColumnDataTypes[j] === columnDataTypes.Text" [matTooltip]="element.get(columnName)">{{
+                    sliceColumnContent(element.get(columnName), 80)
+                }}</span>
+                <span
+                    *ngIf="featureColumnDataTypes[j] !== columnDataTypes.Text && featureColumnDataTypes[j] !== columnDataTypes.Media"
+                    [matTooltip]="element.get(columnName)"
+                    >{{ element.get(columnName) }}</span
+                >
             </td>
         </ng-container>
 

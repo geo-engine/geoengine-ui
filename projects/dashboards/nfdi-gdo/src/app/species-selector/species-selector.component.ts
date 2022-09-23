@@ -441,7 +441,18 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
         });
         this.subscriptions.push(environmentLayerSubscription);
 
-        this.dataSelectionService.setTimeSteps([...generateYearlyTimeSteps(START_YEAR, END_YEAR, this.currentMonth)]);
+        // initialize start values
+        // must ensure that project is loaded before
+        this.projectService.clearLayers().subscribe(() => {
+            this.dataSelectionService.setTimeSteps(
+                [...generateYearlyTimeSteps(START_YEAR, END_YEAR, this.currentMonth)],
+                undefined,
+                new Time('2010-01-01T00:00:00.000Z', '2010-02-01T00:00:00.000Z'),
+            );
+
+            this.selectDragonflySpecies('Anax imperator');
+            this.selectFishSpecies('Abramis brama');
+        });
     }
 
     ngOnDestroy(): void {
