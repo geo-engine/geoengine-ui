@@ -68,6 +68,7 @@ export class CastMeasurementToContinuousPipe implements PipeTransform {
 export class RasterLegendComponent implements OnInit, OnChanges {
     @Input() layer!: RasterLayer;
     measurement$?: Observable<Measurement>;
+    displayedBreakpoints: number[] = [];
 
     /**
      * Parameters to use with the number pipe in the template.
@@ -79,6 +80,8 @@ export class RasterLegendComponent implements OnInit, OnChanges {
 
     ngOnInit(): void {
         this.measurement$ = this.projectService.getLayerMetadata(this.layer).pipe(map((m) => (m as RasterLayerMetadata).measurement));
+        this.displayedBreakpoints = this.layer.symbology.colorizer.getBreakpoints().map(x => x.value);
+        this.displayedBreakpoints = this.unifyDecimals(this.displayedBreakpoints);
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -88,16 +91,57 @@ export class RasterLegendComponent implements OnInit, OnChanges {
         }
     }
 
-    shortenDecimals(toShorten: number): number {
-        const DECIMAL_PLACES = 3; // number of decimal places left after rounding
+    unifyDecimals(values: number[]): number[] {
+        // if values overlap, i.e. only differ in their last few digits, we can't round
+        // 13.5555123123 and 13.55554567 need to be rounded after 13.5555
+        
+        // find overlap             
+        let allSame: boolean = true;
+        let sameCount = 0
+        while (allSame) {
+            let integerNextValues: number[] = values.map((x) => Math.floor(x*Math.pow(10, sameCount)))
+            allSame = integerNextValues.every((x) => {return (x === integerNextValues[0])})
+            sameCount++;
+        }
+        sameCount -= 2; // reverse last iteration and subtract possible pre-decimal overlap
+        
+        // find maximum amount of zeroes
+        let maxZeroes = 0;
+        values.forEach((x) => {
+            const zeroes = this.countZeroesAfterDecimal(x);
+            maxZeroes = (zeroes > maxZeroes) ? zeroes : maxZeroes;
+        })
+        values = values.map((x) => this.shortenDecimals(x, Math.max(maxZeroes, sameCount)+3))
+
+        return values;
+    }
+
+    countZeroesAfterDecimal(toCount: number): number {
+            const stringRepresentation = toCount.toString();
+            if (!(stringRepresentation.includes('.'))) {
+                return 0;
+            }
+            const decimalsString = toCount.toString().split('.')[1];
+            let zeroCount = 0
+            while(decimalsString.charAt(zeroCount) === '0') {
+                zeroCount++;
+            }
+            return zeroCount;
+    }
+
+    shortenDecimals(toShorten: number, places: number): number {
         const integerPart: number = Math.floor(toShorten);
         const decimals: number = toShorten - integerPart;
         const decimalsString = decimals.toString();
-        let zeroes = 0;
+        let zeroes: number = 0;
         while (decimalsString.charAt(zeroes + 2) === '0') {
             zeroes++;
         }
-        const roundAt: number = Math.pow(10, zeroes + DECIMAL_PLACES);
+        const roundAt: number = Math.pow(10, places);
         return integerPart + Math.round(decimals * roundAt) / roundAt;
+    }
+
+    onDebugClick(): void {
+        // console.log(this.displayedBreakPoints);
     }
 }
