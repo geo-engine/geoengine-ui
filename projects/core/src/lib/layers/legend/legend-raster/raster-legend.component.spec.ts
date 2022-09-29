@@ -1,4 +1,4 @@
-import {calculateNumberPipeParameters} from './raster-legend.component';
+import {calculateNumberPipeParameters, unifyDecimals} from './raster-legend.component';
 import {ColorBreakpoint} from '@geoengine/core';
 import {BLACK} from '../../../colors/color';
 
@@ -45,5 +45,49 @@ describe('RasterLegend', () => {
             new ColorBreakpoint(5, BLACK),
         ];
         expect(calculateNumberPipeParameters(breakpoints6)).toBe('1.0-0');
+    });
+
+    it('unifyDecimals', () => {
+        const values1: number[] = [12.34567, 12.345678];
+        const expect1: number[] = [12.34567, 12.345678];
+        expect(unifyDecimals(values1)).toBe(expect1);
+
+        const values2: number[] = [12.345, 12.34567];
+        const expect2: number[] = [12.345, 12.34567];
+        expect(unifyDecimals(values2)).toBe(expect2);
+
+        const values3: number[] = [12345, 12345, 12345.3236434];
+        const expect3: number[] = [12345, 12345, 12345.32];
+        expect(unifyDecimals(values3)).toBe(expect3);
+
+        const values4: number[] = [
+            12.423562343, 3.0034456333, 2, 2.9, 2.09643543, 1235.0009634526, 3.00000065, 4.11111123234234, 4.111111654234234,
+        ];
+        const expect4: number[] = [12.4235623, 3.00344563, 2, 2.9, 2.09643543, 1235.00096, 3.00000065, 4.11111123, 4.11111165];
+        expect(unifyDecimals(values4)).toBe(expect4);
+
+        const values5: number[] = [122.4222235625234343, 122.42222034432356, 122.422225654352, 122.422226441233];
+        const expect5: number[] = [122.4222236, 122.4222203, 122.4222257, 122.4222264];
+        expect(unifyDecimals(values5)).toBe(expect5);
+
+        const values6: number[] = [4.0000123464234235234, 4.000005243423424, 4.000000009];
+        const expect6: number[] = [4.0000123, 4.0000052, 4];
+        expect(unifyDecimals(values6)).toBe(expect6);
+
+        const values7: number[] = [5243.42352135234, 1643.262342314436, 23676.23464564, 23675];
+        const expect7: number[] = [5243, 1643, 23676, 23675];
+        expect(unifyDecimals(values7)).toBe(expect7);
+
+        const values8: number[] = [1.2345, 1.2345679912358765];
+        const expect8: number[] = [1.2345, 1.234568];
+        expect(unifyDecimals(values8)).toBe(expect8);
+
+        const values9: number[] = [12345, 12345, 12345.3236434];
+        const expect9: number[] = [12345, 12345, 12345.32];
+        expect(unifyDecimals(values9)).toBe(expect9);
+
+        const values10: number[] = [81.123123, 81.123456, 81.123987];
+        const expect10: number[] = [81.12312, 81.12346, 81.12399];
+        expect(unifyDecimals(values10)).toBe(expect10);
     });
 });

@@ -1,5 +1,4 @@
 <tbody class="legend">
-    <button (click)="onDebugClick()">Debug</button>
     <ng-template [ngIf]="layer.symbology.colorizer.isContinuous()">
         <!-- measurement -->
         <ng-container *ngIf="measurement$ | async | continuousMeasurement as measurement">
@@ -10,7 +9,6 @@
         </ng-container>
 
         <!-- data -->
-        <!-- <tr *ngFor="let breakpoint of layer.symbology.colorizer.getBreakpoints(); let isFirst = first"> -->
         <tr *ngFor="let breakpoint of displayedBreakpoints; let isFirst = first">
             <td
                 class="gradient"
@@ -18,7 +16,7 @@
                 [rowSpan]="layer.symbology.colorizer.getBreakpoints().length"
                 [style.background]="layer.symbology.colorizer | geoengineColorizerCssGradient"
             ></td>
-            <td>{{ breakpoint | number: numberPipeParameters }}</td>
+            <td>{{ breakpoint }}</td>
         </tr>
     </ng-template>
 
@@ -28,7 +26,7 @@
                 <td class="classes">
                     <div class="icon" [style.background-color]="breakpoint | breakpointToCssStringPipe"></div>
                 </td>
-                <td>{{ shortenDecimals(breakpoint.value, 3) }}</td>
+                <td>{{ breakpoint }}</td>
             </tr>
         </ng-container>
 
@@ -37,7 +35,7 @@
                 <td class="classes">
                     <div class="icon" [style.background-color]="breakpoint | breakpointToCssStringPipe"></div>
                 </td>
-                <td>{{ measurement.classes.get(breakpoint.value, 3) }}</td>
+                <td>{{ measurement.classes.get(breakpoint.value) }}</td>
             </tr>
         </ng-container>
     </ng-container>

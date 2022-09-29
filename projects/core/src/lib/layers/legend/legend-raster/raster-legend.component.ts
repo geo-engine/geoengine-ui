@@ -56,6 +56,52 @@ export class CastMeasurementToContinuousPipe implements PipeTransform {
     }
 }
 
+export function unifyDecimals(values: number[]): number[] {
+    // Early return if all values differ by more than 1
+    if (values.every((x) => x >= 1)) {
+        const toCompare: number[] = values.map((x) => Math.floor(x)).sort((a, b) => a - b);
+        let oneApart = true;
+        for (let i = 0; i < toCompare.length - 1; i++) {
+            if (toCompare[i + 1] - toCompare[i] < 1) {
+                oneApart = false;
+            }
+        }
+        if (oneApart) return values.map((x) => Math.floor(x));
+    }
+
+    // Find highest overlap for cut-off point
+    let maxOverlap = 0;
+    values.forEach((x) => {
+        values.forEach((y) => {
+            if (x === y) {
+                return;
+            }
+            const overlap: number = overlappingDigits(x, y);
+            maxOverlap = overlap > maxOverlap ? overlap : maxOverlap;
+        });
+    });
+    return values.map((x) => {
+        const preDecimals = Math.floor(x).toString().length;
+        const roundAt = Math.pow(10, Math.max(0, maxOverlap + 2 - preDecimals));
+        return Math.round(x * roundAt) / roundAt;
+    });
+}
+
+export function overlappingDigits(val1: number, val2: number): number {
+    let overlap = 0;
+    const str1 = val1.toString();
+    const str2 = val2.toString();
+    const maxLength = Math.min(str1.length, str2.length);
+    let passedDecimal = false;
+    while (overlap < maxLength && str1.charAt(overlap) === str2.charAt(overlap)) {
+        if (str1.charAt(overlap) === '.' && str2.charAt(overlap) === '.') {
+            passedDecimal = true;
+        }
+        overlap++;
+    }
+    return passedDecimal ? overlap - 1 : overlap;
+}
+
 /**
  * The raster legend component.
  */
@@ -81,7 +127,7 @@ export class RasterLegendComponent implements OnInit, OnChanges {
     ngOnInit(): void {
         this.measurement$ = this.projectService.getLayerMetadata(this.layer).pipe(map((m) => (m as RasterLayerMetadata).measurement));
         this.displayedBreakpoints = this.layer.symbology.colorizer.getBreakpoints().map((x) => x.value);
-        this.displayedBreakpoints = this.unifyDecimals(this.displayedBreakpoints);
+        this.displayedBreakpoints = unifyDecimals(this.displayedBreakpoints);
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -89,59 +135,5 @@ export class RasterLegendComponent implements OnInit, OnChanges {
             const symbology = changes.layer.currentValue.symbology;
             this.numberPipeParameters = calculateNumberPipeParameters(symbology.colorizer.getBreakpoints());
         }
-    }
-
-    unifyDecimals(values: number[]): number[] {
-        // if values overlap, i.e. only differ in their last few digits, we can't round
-        // 13.5555123123 and 13.55554567 need to be rounded after 13.5555
-
-        // find overlap
-        let allSame = true;
-        let sameCount = 0;
-        while (allSame) {
-            const integerNextValues: number[] = values.map((x) => Math.floor(x * Math.pow(10, sameCount)));
-            allSame = integerNextValues.every((x) => x === integerNextValues[0]);
-            sameCount++;
-        }
-        sameCount -= 2; // reverse last iteration and subtract possible pre-decimal overlap
-
-        // find maximum amount of zeroes
-        let maxZeroes = 0;
-        values.forEach((x) => {
-            const zeroes = this.countZeroesAfterDecimal(x);
-            maxZeroes = zeroes > maxZeroes ? zeroes : maxZeroes;
-        });
-        values = values.map((x) => this.shortenDecimals(x, Math.max(maxZeroes, sameCount) + 3));
-
-        return values;
-    }
-
-    countZeroesAfterDecimal(toCount: number): number {
-        const stringRepresentation = toCount.toString();
-        if (!stringRepresentation.includes('.')) {
-            return 0;
-        }
-        const decimalsString = toCount.toString().split('.')[1];
-        let zeroCount = 0;
-        while (decimalsString.charAt(zeroCount) === '0') {
-            zeroCount++;
-        }
-        return zeroCount;
-    }
-
-    shortenDecimals(toShorten: number, places: number): number {
-        const integerPart: number = Math.floor(toShorten);
-        const decimals: number = toShorten - integerPart;
-        const decimalsString = decimals.toString();
-        let zeroes = 0;
-        while (decimalsString.charAt(zeroes + 2) === '0') {
-            zeroes++;
-        }
-        const roundAt: number = Math.pow(10, places);
-        return integerPart + Math.round(decimals * roundAt) / roundAt;
-    }
-
-    onDebugClick(): void {
-        // console.log(this.displayedBreakPoints);
     }
 }
