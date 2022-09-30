@@ -8,21 +8,24 @@ import {map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {WorkflowDict} from '../../../backend/backend.model';
 import {Observable} from 'rxjs';
-import {RasterMetadataKey, RasterTypeConversionDict, RasterUnScalingDict} from '../../../backend/operator.model';
-import {RasterDataType, RasterDataTypes} from '../../datatype.model';
+import {RasterMetadataKey, RasterUnScalingDict} from '../../../backend/operator.model';
+import {RasterDataTypes} from '../../datatype.model';
 import {Layer} from 'ol/layer';
 
 @Component({
-    selector: 'geoengine-raster-un_scaling',
-    templateUrl: './raster-un_scaling.component.html',
-    styleUrls: ['./raster-un_scaling.component.scss'],
+    selector: 'geoengine-raster-scaling',
+    templateUrl: './raster-scaling.component.html',
+    styleUrls: ['./raster-scaling.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly inputTypes = [ResultTypes.RASTER];
     readonly rasterDataTypes = RasterDataTypes.ALL_DATATYPES;
 
-    readonly scaleTypes: Array<'scale' | 'unscale'> = ['scale', 'unscale'];
+    readonly scaleTypes: Array<{formular: string; type: 'scale' | 'unscale'}> = [
+        {formular: 'p_new = (p_old - offset)/slope', type: 'scale'},
+        {formular: 'p_new = p_old * slope + offset', type: 'unscale'},
+    ];
 
     readonly validRasterMetadataKeyValidator = geoengineValidators.validRasterMetadataKey;
     readonly isNumberValidator = geoengineValidators.isNumber;

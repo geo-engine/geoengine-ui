@@ -179,7 +179,7 @@ export class OperatorListComponent implements OnInit, OnChanges {
             component: RasterScalingComponent,
             type: {
                 NAME: 'Scale / Unscale Raster Values',
-                ICON_URL: createIconDataUrl('RasterUnScaling'),
+                ICON_URL: createIconDataUrl('RasterScaling'),
             },
             description: 'Transform the values of a raster using offset and scale',
         },

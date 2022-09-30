@@ -2,10 +2,15 @@
 
 <geoengine-dialog-help>
     <p>
-        This operator applies scaling or unscaling to a raster data set.
+        This operator applies scaling or unscaling to a raster data.
         <br />
-        Scaling multiplies a raster data set with a scale value and adds a offset value: <span>new = old * scale + offset </span>. Unscaling
-        is the inverse of the scaling operation: <span>new = (old - offset) / scale </span>.
+        The raster scaling operator scales/unscales the values of a raster by a given scale factor and offset. This is done by applying the
+        formulas to every pixel.
+        <br />
+        For <b> unscaling </b> the formula is: <i>p_new = p_old * slope + offset</i>. <br />
+        For <b> scaling </b> the formula is: <i>p_new = (p_old - offset) / slope</i>. <br />
+        <i>p_old</i>> and <i>p_new</i> refer to the old and new pixel values. The slope and offset values are either properties attached to
+        the input raster or a fixed value. For more information see
         <a href="https://docs.geoengine.io/operators/rasterunscaling.html">docs.geoengine.io</a>.
     </p>
 </geoengine-dialog-help>
@@ -50,8 +55,8 @@
         <mat-form-field appearance="fill">
             <mat-label>Scale Type</mat-label>
             <mat-select formControlName="scaleType">
-                <mat-option *ngFor="let scaleType of scaleTypes" [value]="scaleType">
-                    {{ scaleType }}
+                <mat-option *ngFor="let scaleType of scaleTypes" [value]="scaleType.type">
+                    {{ scaleType.type }} <i>{{ scaleType.formular }}</i>
                 </mat-option>
             </mat-select>
         </mat-form-field>
