@@ -146,7 +146,7 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
         if (fg.get('byKey')?.value) {
             const key = fg.get('key')?.value;
             const domain = fg.get('domain')?.value;
-            return {type: 'metadataKey', domain: domain, key: key};
+            return {type: 'metadataKey', domain, key};
         } else {
             return {type: 'constant', value: fg.get('constant')?.value};
         }
