@@ -1,0 +1,73 @@
+<geoengine-sidenav-header>Raster Scaling / Unscaling</geoengine-sidenav-header>
+
+<geoengine-dialog-help>
+    <p>
+        This operator applies scaling or unscaling to a raster data set.
+        <br />
+        Scaling multiplies a raster data set with a scale value and adds a offset value: <span>new = old * scale + offset </span>. Unscaling
+        is the inverse of the scaling operation: <span>new = (old - offset) / scale </span>.
+        <a href="https://docs.geoengine.io/operators/rasterunscaling.html">docs.geoengine.io</a>.
+    </p>
+</geoengine-dialog-help>
+
+<form [formGroup]="form" (ngSubmit)="add()" fxLayout="column" ngNativeValidate>
+    <div fxFlex>
+        <geoengine-layer-selection [types]="inputTypes" formControlName="layer"></geoengine-layer-selection>
+        <geoengine-dialog-section-heading title="Config" subtitle="Specify the output data type"></geoengine-dialog-section-heading>
+
+        <div formGroupName="scale">
+            <mat-slide-toggle formControlName="byKey" #byKey>Use scale factor from metadata key</mat-slide-toggle>
+            <mat-form-field appearance="fill">
+                <mat-label>Scale metadata <i>domain</i></mat-label>
+                <input matInput type="text" formControlName="domain" />
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Scale metadata <i>key</i></mat-label>
+                <input matInput type="text" formControlName="key" />
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Scale <i>Constant</i></mat-label>
+                <input matInput type="number" formControlName="constant" />
+            </mat-form-field>
+        </div>
+
+        <div formGroupName="offset">
+            <mat-slide-toggle formControlName="byKey" #byKey>Use offset value from metadata key</mat-slide-toggle>
+            <mat-form-field appearance="fill">
+                <mat-label>Offset metadata <i>domain</i></mat-label>
+                <input matInput type="text" formControlName="domain" />
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Offset metadata <i>key</i></mat-label>
+                <input matInput type="text" formControlName="key" />
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Offset <i>Constant</i></mat-label>
+                <input matInput type="number" formControlName="constant" />
+            </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Scale Type</mat-label>
+            <mat-select formControlName="scaleType">
+                <mat-option *ngFor="let scaleType of scaleTypes" [value]="scaleType">
+                    {{ scaleType }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <geoengine-operator-output-name
+            formControlName="name"
+            [suggestion]="
+                (form.controls.layer.valueChanges | async)?.name + ' ' + (form.controls.scaleType.valueChanges | async)?.toString()
+            "
+        >
+            <mat-hint align="end" class="error" *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace">
+                The name must be non-empty.
+            </mat-hint>
+        </geoengine-operator-output-name>
+    </div>
+    <div class="actions">
+        <button type="submit" mat-raised-button color="primary" [disabled]="disallowSubmit | async">Create</button>
+    </div>
+</form>
