@@ -67,7 +67,7 @@ describe('RasterLegend', () => {
         expect(unifyDecimals(values4)).toBe(expect4);
 
         const values5: number[] = [122.4222235625234343, 122.42222034432356, 122.422225654352, 122.422226441233];
-        const expect5: number[] = [122.4222236, 122.4222203, 122.4222257, 122.4222264];
+        const expect5: number[] = [122.4222235, 122.4222203, 122.4222256, 122.4222264];
         expect(unifyDecimals(values5)).toBe(expect5);
 
         const values6: number[] = [4.0000123464234235234, 4.000005243423424, 4.000000009];
@@ -79,7 +79,7 @@ describe('RasterLegend', () => {
         expect(unifyDecimals(values7)).toBe(expect7);
 
         const values8: number[] = [1.2345, 1.2345679912358765];
-        const expect8: number[] = [1.2345, 1.234568];
+        const expect8: number[] = [1.2345, 1.234567];
         expect(unifyDecimals(values8)).toBe(expect8);
 
         const values9: number[] = [12345, 12345, 12345.3236434];
@@ -87,7 +87,7 @@ describe('RasterLegend', () => {
         expect(unifyDecimals(values9)).toBe(expect9);
 
         const values10: number[] = [81.123123, 81.123456, 81.123987];
-        const expect10: number[] = [81.12312, 81.12346, 81.12399];
+        const expect10: number[] = [81.12312, 81.12345, 81.12398];
         expect(unifyDecimals(values10)).toBe(expect10);
     });
 });

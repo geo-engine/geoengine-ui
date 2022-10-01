@@ -58,32 +58,21 @@ export class CastMeasurementToContinuousPipe implements PipeTransform {
 
 export function unifyDecimals(values: number[]): number[] {
     // Early return if all values differ by more than 1
-    if (values.every((x) => x >= 1)) {
-        const toCompare: number[] = values.map((x) => Math.floor(x)).sort((a, b) => a - b);
-        let oneApart = true;
-        for (let i = 0; i < toCompare.length - 1; i++) {
-            if (toCompare[i + 1] - toCompare[i] < 1) {
-                oneApart = false;
-            }
-        }
-        if (oneApart) return values.map((x) => Math.floor(x));
+    if (oneApart(values.map((x) => Math.floor(x)).sort((a, b) => a - b))) {
+        return values.map((x) => Math.floor(x));
     }
 
     // Find highest overlap for cut-off point
     let maxOverlap = 0;
-    values.forEach((x) => {
-        values.forEach((y) => {
-            if (x === y) {
-                return;
-            }
-            const overlap: number = overlappingDigits(x, y);
-            maxOverlap = overlap > maxOverlap ? overlap : maxOverlap;
-        });
-    });
+    for (let i = 0; i < values.length - 1; i++) {
+        const overlap: number = overlappingDigits(values[i], values[i + 1]);
+        maxOverlap = overlap > maxOverlap ? overlap : maxOverlap;
+    }
+
     return values.map((x) => {
         const preDecimals = Math.floor(x).toString().length;
         const roundAt = Math.pow(10, Math.max(0, maxOverlap + 2 - preDecimals));
-        return Math.round(x * roundAt) / roundAt;
+        return Math.floor(x * roundAt) / roundAt;
     });
 }
 
@@ -93,13 +82,27 @@ export function overlappingDigits(val1: number, val2: number): number {
     const str2 = val2.toString();
     const maxLength = Math.min(str1.length, str2.length);
     let passedDecimal = false;
-    while (overlap < maxLength && str1.charAt(overlap) === str2.charAt(overlap)) {
-        if (str1.charAt(overlap) === '.' && str2.charAt(overlap) === '.') {
+    for (let i = 0; i < maxLength; i++) {
+        if (str1.charAt(i) === '.' && str2.charAt(i) === '.') {
             passedDecimal = true;
+        }
+        if (str1.charAt(i) !== str2.charAt(i)) {
+            break;
         }
         overlap++;
     }
     return passedDecimal ? overlap - 1 : overlap;
+}
+
+export function oneApart(values: number[]): boolean {
+    let oneApart = true;
+    for (let i = 0; i < values.length - 1; i++) {
+        if (values[i + 1] - values[i] < 1) {
+            oneApart = false;
+            break;
+        }
+    }
+    return oneApart;
 }
 
 /**
