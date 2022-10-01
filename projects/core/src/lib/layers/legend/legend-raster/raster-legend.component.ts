@@ -95,14 +95,14 @@ export function overlappingDigits(val1: number, val2: number): number {
 }
 
 export function oneApart(values: number[]): boolean {
-    let oneApart = true;
+    let apart = true;
     for (let i = 0; i < values.length - 1; i++) {
         if (values[i + 1] - values[i] < 1) {
-            oneApart = false;
+            apart = false;
             break;
         }
     }
-    return oneApart;
+    return apart;
 }
 
 /**
