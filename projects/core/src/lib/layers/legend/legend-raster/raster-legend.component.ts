@@ -56,6 +56,55 @@ export class CastMeasurementToContinuousPipe implements PipeTransform {
     }
 }
 
+export function unifyDecimals(values: number[]): number[] {
+    // Early return if all values differ by more than 1
+    if (oneApart(values.map((x) => Math.floor(x)).sort((a, b) => a - b))) {
+        return values.map((x) => Math.floor(x));
+    }
+
+    // Find highest overlap for cut-off point
+    let maxOverlap = 0;
+    for (let i = 0; i < values.length - 1; i++) {
+        const overlap: number = overlappingDigits(values[i], values[i + 1]);
+        maxOverlap = overlap > maxOverlap ? overlap : maxOverlap;
+    }
+
+    return values.map((x) => {
+        const preDecimals = Math.floor(x).toString().length;
+        const roundAt = Math.pow(10, Math.max(0, maxOverlap + 2 - preDecimals));
+        return Math.floor(x * roundAt) / roundAt;
+    });
+}
+
+export function overlappingDigits(val1: number, val2: number): number {
+    let overlap = 0;
+    const str1 = val1.toString();
+    const str2 = val2.toString();
+    const maxLength = Math.min(str1.length, str2.length);
+    let passedDecimal = false;
+    for (let i = 0; i < maxLength; i++) {
+        if (str1.charAt(i) === '.' && str2.charAt(i) === '.') {
+            passedDecimal = true;
+        }
+        if (str1.charAt(i) !== str2.charAt(i)) {
+            break;
+        }
+        overlap++;
+    }
+    return passedDecimal ? overlap - 1 : overlap;
+}
+
+export function oneApart(values: number[]): boolean {
+    let apart = true;
+    for (let i = 0; i < values.length - 1; i++) {
+        if (values[i + 1] - values[i] < 1) {
+            apart = false;
+            break;
+        }
+    }
+    return apart;
+}
+
 /**
  * The raster legend component.
  */
@@ -68,6 +117,7 @@ export class CastMeasurementToContinuousPipe implements PipeTransform {
 export class RasterLegendComponent implements OnInit, OnChanges {
     @Input() layer!: RasterLayer;
     measurement$?: Observable<Measurement>;
+    displayedBreakpoints: number[] = [];
 
     /**
      * Parameters to use with the number pipe in the template.
@@ -79,6 +129,8 @@ export class RasterLegendComponent implements OnInit, OnChanges {
 
     ngOnInit(): void {
         this.measurement$ = this.projectService.getLayerMetadata(this.layer).pipe(map((m) => (m as RasterLayerMetadata).measurement));
+        this.displayedBreakpoints = this.layer.symbology.colorizer.getBreakpoints().map((x) => x.value);
+        this.displayedBreakpoints = unifyDecimals(this.displayedBreakpoints);
     }
 
     ngOnChanges(changes: SimpleChanges): void {
