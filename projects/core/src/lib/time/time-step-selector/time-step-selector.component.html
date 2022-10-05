@@ -1,4 +1,4 @@
-<div *ngIf="displayTimeLine()" class="container mat-typography" fxLayout="row" fxLayoutAlign="space-between center">
+<div *ngIf="displayTimeSlider()" class="container mat-typography" fxLayout="row" fxLayoutAlign="space-between center">
     <mat-slider
         thumbLabel="true"
         [min]="min"
@@ -12,6 +12,6 @@
     <span>{{ currentTimeFormatted | async }}</span>
 </div>
 
-<div *ngIf="!displayTimeLine()" class="padded mat-typography">
+<div *ngIf="!displayTimeSlider()" class="padded mat-typography">
     <span>{{ currentTimeFormatted | async }}</span>
 </div>

@@ -102,7 +102,7 @@ export class TimeStepSelectorComponent implements OnInit, OnChanges, OnDestroy {
         };
     }
 
-    displayTimeLine(): boolean {
+    displayTimeSlider(): boolean {
         return this.timeSteps !== undefined && this.timeSteps.length > 1 ? true : false;
     }
 }
