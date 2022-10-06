@@ -34,6 +34,16 @@ export interface ExpressionDict extends OperatorDict {
     };
 }
 
+export interface RasterKernelDict extends OperatorDict {
+    type: 'RasterKernel';
+    params: {
+        kernel: {type: 'convolution'; matrix: Array<Array<number>>} | {type: 'standardDeviation'; matrix: [number, number]};
+    };
+    sources: {
+        raster: SourceOperatorDict | OperatorDict;
+    };
+}
+
 export interface FeatureAttributeOverTimeDict extends OperatorDict {
     type: 'FeatureAttributeValuesOverTime';
     params: {

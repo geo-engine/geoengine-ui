@@ -138,6 +138,7 @@ import {MediaviewDialogComponent} from './datatable/mediaview/dialog/mediaview.d
 import {MediaviewPlaylistComponent} from './datatable/mediaview/playlist/mediaview.playlist.component';
 import {OidcComponent} from './users/oidc/oidc.component';
 import {InterpolationComponent} from './operators/dialogs/interpolation/interpolation.component';
+import {RasterKernelComponent} from './operators/dialogs/raster-kernel/raster-kernel.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -254,11 +255,12 @@ const CORE_COMPONENTS = [
     PolygonIconComponent,
     ProvenanceTableComponent,
     RasterIconComponent,
+    RasterKernelComponent,
     RasterLegendComponent,
     RasterLegendComponent,
     RasterSymbologyEditorComponent,
-    RasterVectorJoinComponent,
     RasterTypeConversionComponent,
+    RasterVectorJoinComponent,
     RenameLayerComponent,
     SaveProjectAsComponent,
     ScatterplotOperatorComponent,
