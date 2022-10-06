@@ -1,4 +1,4 @@
-<div class="container mat-typography" fxLayout="row" fxLayoutAlign="space-between center">
+<div *ngIf="displayTimeSlider()" class="container mat-typography" fxLayout="row" fxLayoutAlign="space-between center">
     <mat-slider
         thumbLabel="true"
         [min]="min"
@@ -9,5 +9,9 @@
         [displayWith]="thumbLabelDisplay()"
         (change)="setTime($event)"
     ></mat-slider>
+    <span>{{ currentTimeFormatted | async }}</span>
+</div>
+
+<div *ngIf="!displayTimeSlider()" class="padded mat-typography">
     <span>{{ currentTimeFormatted | async }}</span>
 </div>
