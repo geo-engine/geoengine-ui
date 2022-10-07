@@ -19,6 +19,7 @@ import {ClassHistogramOperatorComponent} from '../class-histogram-operator/class
 import {ColumnRangeFilterComponent} from '../column-range-filter/column-range-filter.component';
 import {RasterTypeConversionComponent} from '../raster-type-conversion/raster-type-conversion.component';
 import {InterpolationComponent} from '../interpolation/interpolation.component';
+import {NeighborhoodAggregateComponent} from '../neighborhood-aggregate/neighborhood-aggregate.component';
 
 /**
  * This type encapsulates…
@@ -70,11 +71,6 @@ export class OperatorListComponent implements OnInit, OnChanges {
         //     },
         //     description: 'Clip a raster image via polygon boundaries',
         // },
-        // {
-        //     component: ROperatorComponent,
-        //     type: RScriptType,
-        //     description: 'Execute an R script (experimental)'
-        // }
     ];
 
     static readonly DEFAULT_PLOT_OPERATOR_DIALOGS: Array<OperatorListType> = [
@@ -174,6 +170,14 @@ export class OperatorListComponent implements OnInit, OnChanges {
             },
             description: 'Interpolates raster data',
         },
+        {
+            component: NeighborhoodAggregateComponent,
+            type: {
+                NAME: 'Neighborhood Aggregate',
+                ICON_URL: createIconDataUrl('Neighborhood Aggregate'),
+            },
+            description: 'Compute a neighborhood aggregate',
+        },
         // {
         //     component: RasterMaskComponent,
         //     type: {
@@ -190,11 +194,6 @@ export class OperatorListComponent implements OnInit, OnChanges {
     ];
 
     static readonly DEFAULT_VECTOR_OPERATOR_DIALOGS: Array<OperatorListType> = [
-        // {
-        //     component: NumericAttributeFilterOperatorComponent,
-        //     type: NumericAttributeFilterType,
-        //     description: 'Filter data via numeric range',
-        // },
         // {
         //     component: HeatmapOperatorComponent,
         //     type: HeatmapType,
@@ -216,11 +215,6 @@ export class OperatorListComponent implements OnInit, OnChanges {
             },
             description: 'Filter points that are enclosed by a polygon',
         },
-        // {
-        //     component: TextualAttributeFilterOperatorComponent,
-        //     type: TextualAttributeFilterType,
-        //     description: 'Filter data via text filter',
-        // },
     ];
 
     /**

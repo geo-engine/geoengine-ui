@@ -34,6 +34,17 @@ export interface ExpressionDict extends OperatorDict {
     };
 }
 
+export interface NeighborhoodAggregateDict extends OperatorDict {
+    type: 'NeighborhoodAggregate';
+    params: {
+        neighborhood: {type: 'weightsMatrix'; weights: Array<Array<number>>} | {type: 'rectangle'; dimensions: [number, number]};
+        aggregateFunction: 'sum' | 'standardDeviation';
+    };
+    sources: {
+        raster: SourceOperatorDict | OperatorDict;
+    };
+}
+
 export interface FeatureAttributeOverTimeDict extends OperatorDict {
     type: 'FeatureAttributeValuesOverTime';
     params: {

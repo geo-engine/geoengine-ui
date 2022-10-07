@@ -138,6 +138,7 @@ import {MediaviewDialogComponent} from './datatable/mediaview/dialog/mediaview.d
 import {MediaviewPlaylistComponent} from './datatable/mediaview/playlist/mediaview.playlist.component';
 import {OidcComponent} from './users/oidc/oidc.component';
 import {InterpolationComponent} from './operators/dialogs/interpolation/interpolation.component';
+import {NeighborhoodAggregateComponent} from './operators/dialogs/neighborhood-aggregate/neighborhood-aggregate.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -238,6 +239,7 @@ const CORE_COMPONENTS = [
     ModalLoginComponent,
     MultiLayerSelectionComponent,
     NavigationComponent,
+    NeighborhoodAggregateComponent,
     NewProjectComponent,
     NotificationsComponent,
     NumberParamEditorComponent,
@@ -257,8 +259,8 @@ const CORE_COMPONENTS = [
     RasterLegendComponent,
     RasterLegendComponent,
     RasterSymbologyEditorComponent,
-    RasterVectorJoinComponent,
     RasterTypeConversionComponent,
+    RasterVectorJoinComponent,
     RenameLayerComponent,
     SaveProjectAsComponent,
     ScatterplotOperatorComponent,
