@@ -1,4 +1,4 @@
-import {increaseMatrix, decreaseMatrix, rotateMatrixClockwise} from './raster-kernel.component';
+import {increaseMatrix, decreaseMatrix, rotateMatrixClockwise} from './neighborhood-aggregate.component';
 
 describe('RasterKernel', () => {
     it('increases a matrix', () => {

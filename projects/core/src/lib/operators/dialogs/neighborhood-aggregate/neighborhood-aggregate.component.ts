@@ -6,48 +6,48 @@ import {ResultTypes} from '../../result-type.model';
 import {Layer, RasterLayer} from '../../../layers/layer.model';
 import {ProjectService} from '../../../project/project.service';
 import {UUID, WorkflowDict} from '../../../backend/backend.model';
-import {RasterKernelDict} from '../../../backend/operator.model';
+import {NeighborhoodAggregateDict} from '../../../backend/operator.model';
 import {LayoutService, SidenavConfig} from '../../../layout.service';
 import {geoengineValidators} from '../../../util/form.validators';
 
-interface RasterKernelForm {
+interface NeighborhoodAggregateForm {
     rasterLayer: FormControl<RasterLayer | undefined>;
-    kernelType: FormControl<'convolution' | 'standardDeviation'>;
-    kernel: FormControl<KernelForm>;
+    neighborhood: FormControl<NeighborhoodForm>;
+    aggregateFunction: FormControl<'sum' | 'standardDeviation'>;
     name: FormControl<string>;
 }
 
-interface KernelForm {
-    type: string;
+interface NeighborhoodForm {
+    type: 'weightsMatrix' | 'rectangle';
 }
 
-interface ConvolutionKernelForm extends KernelForm {
-    type: 'convolution';
-    matrix: Array<Array<number>>;
+interface WeightsMatrixNeighborhoodForm extends NeighborhoodForm {
+    type: 'weightsMatrix';
+    weights: Array<Array<number>>;
 }
 
-interface StandardDeviationForm extends KernelForm {
-    type: 'standardDeviation';
+interface RectangleNeighborhoodForm extends NeighborhoodForm {
+    type: 'rectangle';
     dimensions: [number, number];
 }
 
 /**
- * The dialog for applying a `RasterKernel` operator.
+ * The dialog for applying a `NeighborhoodAggregate` operator.
  */
 @Component({
-    selector: 'geoengine-raster-kernel',
-    templateUrl: './raster-kernel.component.html',
-    styleUrls: ['./raster-kernel.component.scss'],
+    selector: 'geoengine-neighborhood-aggregate',
+    templateUrl: './neighborhood-aggregate.component.html',
+    styleUrls: ['./neighborhood-aggregate.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RasterKernelComponent implements AfterViewInit, OnDestroy {
+export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy {
     /**
      * If the inputs are empty, show the following button.
      */
     @Input() dataListConfig?: SidenavConfig;
 
     readonly RASTER_TYPE = [ResultTypes.RASTER];
-    readonly form: FormGroup<RasterKernelForm>;
+    readonly form: FormGroup<NeighborhoodAggregateForm>;
 
     readonly lastError$ = new BehaviorSubject<string | undefined>(undefined);
 
@@ -59,19 +59,15 @@ export class RasterKernelComponent implements AfterViewInit, OnDestroy {
      * DI of services and setup of observables for the template
      */
     constructor(protected readonly projectService: ProjectService, protected readonly layoutService: LayoutService) {
-        this.form = new FormGroup<RasterKernelForm>({
+        this.form = new FormGroup<NeighborhoodAggregateForm>({
             rasterLayer: new FormControl<RasterLayer | undefined>(undefined, {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
-            kernelType: new FormControl('convolution', {
-                nonNullable: true,
-                validators: [Validators.required, geoengineValidators.notOnlyWhitespace],
-            }),
-            kernel: new FormControl<ConvolutionKernelForm | StandardDeviationForm>(
+            neighborhood: new FormControl<WeightsMatrixNeighborhoodForm | RectangleNeighborhoodForm>(
                 {
-                    type: 'convolution',
-                    matrix: [
+                    type: 'weightsMatrix',
+                    weights: [
                         [1.0, 0.0, -1.0],
                         [2.0, 0.0, -2.0],
                         [1.0, 0.0, -1.0],
@@ -79,34 +75,18 @@ export class RasterKernelComponent implements AfterViewInit, OnDestroy {
                 },
                 {
                     nonNullable: true,
-                    validators: [Validators.required, correctKernelDimensions],
+                    validators: [Validators.required, correctNeighborhoodDimensions],
                 },
             ),
-            name: new FormControl('Raster Kernel', {
+            aggregateFunction: new FormControl<'sum' | 'standardDeviation'>('sum', {
+                nonNullable: true,
+                validators: [Validators.required],
+            }),
+            name: new FormControl('Neighborhood Aggregate', {
                 nonNullable: true,
                 validators: [Validators.required, geoengineValidators.notOnlyWhitespace],
             }),
         });
-
-        this.subscriptions.push(
-            this.form.controls.kernelType.valueChanges.subscribe((dataType) => {
-                if (dataType === 'convolution') {
-                    this.form.controls.kernel.setValue({
-                        type: 'convolution',
-                        matrix: [
-                            [1.0, 0.0, -1.0],
-                            [2.0, 0.0, -2.0],
-                            [1.0, 0.0, -1.0],
-                        ],
-                    } as ConvolutionKernelForm);
-                } else if (dataType === 'standardDeviation') {
-                    this.form.controls.kernel.setValue({
-                        type: 'standardDeviation',
-                        dimensions: [3, 3],
-                    } as StandardDeviationForm);
-                }
-            }),
-        );
 
         this.projectHasRasterLayers$ = this.projectService
             .getLayerStream()
@@ -128,14 +108,32 @@ export class RasterKernelComponent implements AfterViewInit, OnDestroy {
         }
     }
 
-    getMatrix(): Array<Array<number>> {
-        const kernel = this.form.controls.kernel.value as ConvolutionKernelForm;
+    changeNeighborhood(neighborhood: string): void {
+        if (neighborhood === 'weightsMatrix') {
+            this.form.controls.neighborhood.setValue({
+                type: 'weightsMatrix',
+                weights: [
+                    [1.0, 0.0, -1.0],
+                    [2.0, 0.0, -2.0],
+                    [1.0, 0.0, -1.0],
+                ],
+            } as WeightsMatrixNeighborhoodForm);
+        } else if (neighborhood === 'rectangle') {
+            this.form.controls.neighborhood.setValue({
+                type: 'rectangle',
+                dimensions: [3, 3],
+            } as RectangleNeighborhoodForm);
+        }
+    }
 
-        if (kernel.type !== 'convolution') {
+    getMatrix(): Array<Array<number>> {
+        const neighborhood = this.form.controls.neighborhood.value as WeightsMatrixNeighborhoodForm;
+
+        if (neighborhood.type !== 'weightsMatrix') {
             return [];
         }
 
-        return kernel.matrix;
+        return neighborhood.weights;
     }
 
     setMatrixValue(row: number, col: number, value: number): void {
@@ -149,79 +147,79 @@ export class RasterKernelComponent implements AfterViewInit, OnDestroy {
     }
 
     enlargeMatrix(): void {
-        this.form.controls.kernel.setValue({
-            type: 'convolution',
-            matrix: increaseMatrix(this.getMatrix()),
-        } as ConvolutionKernelForm);
+        this.form.controls.neighborhood.setValue({
+            type: 'weightsMatrix',
+            weights: increaseMatrix(this.getMatrix()),
+        } as WeightsMatrixNeighborhoodForm);
     }
 
     smallenMatrix(): void {
-        this.form.controls.kernel.setValue({
-            type: 'convolution',
-            matrix: decreaseMatrix(this.getMatrix()),
-        } as ConvolutionKernelForm);
+        this.form.controls.neighborhood.setValue({
+            type: 'weightsMatrix',
+            weights: decreaseMatrix(this.getMatrix()),
+        } as WeightsMatrixNeighborhoodForm);
     }
 
     rotate90(): void {
-        this.form.controls.kernel.setValue({
-            type: 'convolution',
-            matrix: rotateMatrixClockwise(this.getMatrix()),
-        } as ConvolutionKernelForm);
+        this.form.controls.neighborhood.setValue({
+            type: 'weightsMatrix',
+            weights: rotateMatrixClockwise(this.getMatrix()),
+        } as WeightsMatrixNeighborhoodForm);
     }
 
-    presetSobel(): void {
-        this.form.controls.kernel.setValue({
-            type: 'convolution',
-            matrix: [
+    presetDerivativeForSobel(): void {
+        this.form.controls.neighborhood.setValue({
+            type: 'weightsMatrix',
+            weights: [
                 [1.0, 0.0, -1.0],
                 [2.0, 0.0, -2.0],
                 [1.0, 0.0, -1.0],
             ],
-        } as ConvolutionKernelForm);
+        } as WeightsMatrixNeighborhoodForm);
     }
 
     presetMean(): void {
-        this.form.controls.kernel.setValue({
-            type: 'convolution',
-            matrix: [
+        this.form.controls.neighborhood.setValue({
+            type: 'weightsMatrix',
+            weights: [
                 [1 / 9, 1 / 9, 1 / 9],
                 [1 / 9, 1 / 9, 1 / 9],
                 [1 / 9, 1 / 9, 1 / 9],
             ],
-        } as ConvolutionKernelForm);
+        } as WeightsMatrixNeighborhoodForm);
     }
 
     presetGaussianBlur(): void {
-        this.form.controls.kernel.setValue({
-            type: 'convolution',
-            matrix: [
+        this.form.controls.neighborhood.setValue({
+            type: 'weightsMatrix',
+            weights: [
                 [0.003, 0.0133, 0.0219, 0.0133, 0.003],
                 [0.0133, 0.0596, 0.0983, 0.0596, 0.0133],
                 [0.0219, 0.0983, 0.1621, 0.0983, 0.0219],
                 [0.0133, 0.0596, 0.0983, 0.0596, 0.0133],
                 [0.003, 0.0133, 0.0219, 0.0133, 0.003],
             ],
-        } as ConvolutionKernelForm);
+        } as WeightsMatrixNeighborhoodForm);
     }
 
     setDimensionValue(dimension: number, value: number): void {
         const dimensions = this.getDimensions();
         dimensions[dimension] = value;
 
-        this.form.controls.kernel.setValue({
-            type: 'standardDeviation',
+        this.form.controls.neighborhood.setValue({
+            type: 'rectangle',
             dimensions,
-        } as StandardDeviationForm);
+        } as RectangleNeighborhoodForm);
     }
 
     getDimensions(): [number, number] {
-        const kernel = this.form.controls.kernel.value as StandardDeviationForm;
+        const neighborhood = this.form.controls.neighborhood.value as RectangleNeighborhoodForm;
 
-        if (kernel.type !== 'standardDeviation') {
+        if (neighborhood.type !== 'rectangle') {
             return [0, 0];
         }
 
-        return kernel.dimensions;
+        return neighborhood.dimensions;
     }
 
     /**
@@ -231,7 +229,8 @@ export class RasterKernelComponent implements AfterViewInit, OnDestroy {
     add(): void {
         const name: string = this.form.controls['name'].value;
         const rasterLayer: RasterLayer | undefined = this.form.controls['rasterLayer'].value;
-        const kernel: KernelForm = this.form.controls['kernel'].value;
+        const neighborhood: NeighborhoodForm = this.form.controls.neighborhood.value;
+        const aggregateFunction: 'sum' | 'standardDeviation' = this.form.controls.aggregateFunction.value;
 
         if (!rasterLayer) {
             return; // checked by form validator
@@ -244,14 +243,15 @@ export class RasterKernelComponent implements AfterViewInit, OnDestroy {
                     const workflow: WorkflowDict = {
                         type: 'Raster',
                         operator: {
-                            type: 'RasterKernel',
+                            type: 'NeighborhoodAggregate',
                             params: {
-                                kernel,
+                                neighborhood,
+                                aggregateFunction,
                             },
                             sources: {
                                 raster,
                             },
-                        } as RasterKernelDict,
+                        } as NeighborhoodAggregateDict,
                     };
 
                     return this.projectService.registerWorkflow(workflow);
@@ -370,28 +370,32 @@ export function rotateMatrixClockwise(matrix: Array<Array<number>>): Array<Array
     return newMatrix;
 }
 
-const correctKernelDimensions = (
+const correctNeighborhoodDimensions = (
     control: AbstractControl,
-): {emptyKernel?: true; kernelDimensionsNotOdd?: true; kernelDimensionsNegative?: true} | null => {
-    const kernelForm = control.value as KernelForm;
-    if (!kernelForm) {
+): {emptyDimensions?: true; dimensionsNotOdd?: true; dimensionsNegative?: true} | null => {
+    const neighborhoodForm = control.value as NeighborhoodForm;
+    if (!neighborhoodForm) {
         return null;
     }
 
     let rows: number;
     let cols: number;
 
-    if (kernelForm.type === 'convolution') {
-        const convolutionKernelForm = kernelForm as ConvolutionKernelForm;
-        rows = convolutionKernelForm.matrix.length;
-        cols = rows > 0 ? convolutionKernelForm.matrix[0].length : 0;
-    } else if (kernelForm.type === 'standardDeviation') {
-        const standardDeviationForm = kernelForm as StandardDeviationForm;
-        rows = standardDeviationForm.dimensions[0];
-        cols = standardDeviationForm.dimensions[1];
+    if (neighborhoodForm.type === 'weightsMatrix') {
+        const weightsMatrixNeighborhoodForm = neighborhoodForm as WeightsMatrixNeighborhoodForm;
+        rows = weightsMatrixNeighborhoodForm.weights.length;
+        cols = rows > 0 ? weightsMatrixNeighborhoodForm.weights[0].length : 0;
+    } else if (neighborhoodForm.type === 'rectangle') {
+        const rectangleNeighborhoodForm = neighborhoodForm as RectangleNeighborhoodForm;
+        rows = rectangleNeighborhoodForm.dimensions[0];
+        cols = rectangleNeighborhoodForm.dimensions[1];
+
+        if (rows === null || cols === null) {
+            return {emptyDimensions: true};
+        }
 
         if (rows < 0 || cols < 0) {
-            return {kernelDimensionsNegative: true};
+            return {dimensionsNegative: true};
         }
     } else {
         rows = 0;
@@ -399,11 +403,11 @@ const correctKernelDimensions = (
     }
 
     if (rows === 0 || cols === 0) {
-        return {emptyKernel: true};
+        return {emptyDimensions: true};
     }
 
     if (rows % 2 === 0 || cols % 2 === 0) {
-        return {kernelDimensionsNotOdd: true};
+        return {dimensionsNotOdd: true};
     }
 
     return null;

@@ -34,10 +34,11 @@ export interface ExpressionDict extends OperatorDict {
     };
 }
 
-export interface RasterKernelDict extends OperatorDict {
-    type: 'RasterKernel';
+export interface NeighborhoodAggregateDict extends OperatorDict {
+    type: 'NeighborhoodAggregate';
     params: {
-        kernel: {type: 'convolution'; matrix: Array<Array<number>>} | {type: 'standardDeviation'; matrix: [number, number]};
+        neighborhood: {type: 'weightsMatrix'; weights: Array<Array<number>>} | {type: 'rectangle'; dimensions: [number, number]};
+        aggregateFunction: 'sum' | 'standardDeviation';
     };
     sources: {
         raster: SourceOperatorDict | OperatorDict;

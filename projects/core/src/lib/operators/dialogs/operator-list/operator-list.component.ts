@@ -19,7 +19,7 @@ import {ClassHistogramOperatorComponent} from '../class-histogram-operator/class
 import {ColumnRangeFilterComponent} from '../column-range-filter/column-range-filter.component';
 import {RasterTypeConversionComponent} from '../raster-type-conversion/raster-type-conversion.component';
 import {InterpolationComponent} from '../interpolation/interpolation.component';
-import {RasterKernelComponent} from '../raster-kernel/raster-kernel.component';
+import {NeighborhoodAggregateComponent} from '../neighborhood-aggregate/neighborhood-aggregate.component';
 
 /**
  * This type encapsulates…
@@ -171,12 +171,12 @@ export class OperatorListComponent implements OnInit, OnChanges {
             description: 'Interpolates raster data',
         },
         {
-            component: RasterKernelComponent,
+            component: NeighborhoodAggregateComponent,
             type: {
-                NAME: 'Raster Kernel',
-                ICON_URL: createIconDataUrl('Raster Kernel'),
+                NAME: 'Neighborhood Aggregate',
+                ICON_URL: createIconDataUrl('Neighborhood Aggregate'),
             },
-            description: 'Compute a raster kernel',
+            description: 'Compute a neighborhood aggregate',
         },
         // {
         //     component: RasterMaskComponent,
