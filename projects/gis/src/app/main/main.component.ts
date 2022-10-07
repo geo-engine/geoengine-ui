@@ -1,5 +1,5 @@
 import {Observable, BehaviorSubject} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
+import {first, map, tap} from 'rxjs/operators';
 
 import {
     AfterViewInit,
@@ -134,7 +134,7 @@ export class MainComponent implements OnInit, AfterViewInit {
         //     }
         // });
 
-        // this.handleQueryParameters();
+        this.handleQueryParameters();
     }
 
     setTabIndex(index: number): void {
@@ -220,39 +220,14 @@ export class MainComponent implements OnInit, AfterViewInit {
         this.windowHeight$.next(window.innerHeight);
     }
 
-    // private handleQueryParameters() {
-    //     this.activatedRoute.queryParams.subscribe(p => {
-    //         for (const parameter of Object.keys(p)) {
-    //             const value = p[parameter];
-    //             switch (parameter) {
-    //                 case 'workflow':
-    //                     try {
-    //                         const newLayer = Layer.fromDict(JSON.parse(value));
-    //                         this.projectService.getProjectStream().pipe(first()).subscribe(project => {
-    //                             if (project.layers.length > 0) {
-    //                                 // show popup
-    //                                 this.dialog.open(WorkflowParameterChoiceDialogComponent, {
-    //                                     data: {
-    //                                         dialogTitle: 'Workflow URL Parameter',
-    //                                         sourceName: 'URL parameter',
-    //                                         layers: [newLayer],
-    //                                         nonAvailableNames: [],
-    //                                         numberOfLayersInProject: project.layers.length,
-    //                                     }
-    //                                 });
-    //                             } else {
-    //                                 // just add the layer if the layer array is empty
-    //                                 this.projectService.addLayer(newLayer);
-    //                             }
-    //                         });
-    //                     } catch (error) {
-    //                         this.notificationService.error(`Invalid Workflow: »${error}«`);
-    //                     }
-    //                     break;
-    //                 default:
-    //                     this.notificationService.error(`Unknown URL Parameter »${parameter}«`);
-    //             }
-    //         }
-    //     });
-    // }
+    private handleQueryParameters(): void {
+        const params = new URLSearchParams(window.location.search);
+        const sessionState = params.get('session_state');
+        const code = params.get('code');
+        const state = params.get('state');
+
+        if (sessionState && code && state) {
+            this.userService.oidcLogin({sessionState, code, state}).pipe(first()).subscribe();
+        }
+    }
 }
