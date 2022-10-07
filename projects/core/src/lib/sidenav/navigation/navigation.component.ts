@@ -4,9 +4,9 @@ import {LayoutService, SidenavConfig} from '../../layout.service';
 import {ThemePalette} from '@angular/material/core';
 import {distinctUntilChanged, map, mergeScan} from 'rxjs/operators';
 import {UserService} from '../../users/user.service';
-import {LoginComponent} from '../../users/login/login.component';
 import {Config} from '../../config.service';
 import {SidenavRef} from '../sidenav-ref.service';
+import {OidcComponent} from '../../users/oidc/oidc.component';
 
 /**
  * Button config for the sidenav navigation
@@ -94,7 +94,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
         config: Config,
         loginSidenavConfig?: SidenavConfig,
     ): NavigationButton {
-        loginSidenavConfig = loginSidenavConfig ? loginSidenavConfig : {component: LoginComponent};
+        loginSidenavConfig = loginSidenavConfig ? loginSidenavConfig : {component: OidcComponent};
         return {
             sidenavConfig: loginSidenavConfig,
             icon: '',
