@@ -17,16 +17,16 @@ import {DataSelectionService} from './data-selection.service';
 @Injectable()
 export class AppDatasetService extends DatasetService {
     constructor(
-        protected readonly backend: BackendService,
-        protected readonly userService: UserService,
-        protected readonly projectService: ProjectService,
-        protected readonly randomColorService: RandomColorService,
+        protected override readonly backend: BackendService,
+        protected override readonly userService: UserService,
+        protected override readonly projectService: ProjectService,
+        protected override readonly randomColorService: RandomColorService,
         protected readonly dataSelectionService: DataSelectionService,
     ) {
         super(backend, userService, projectService, randomColorService);
     }
 
-    addDatasetToMap(dataset: Dataset): Observable<void> {
+    override addDatasetToMap(dataset: Dataset): Observable<void> {
         const workflow = dataset.createSourceWorkflow();
 
         return this.projectService.registerWorkflow(workflow).pipe(
