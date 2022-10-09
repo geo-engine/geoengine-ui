@@ -37,6 +37,10 @@ mat-form-field {
     ::ng-deep .mat-form-field-infix {
         width: unset;
     }
+
+    td {
+        min-width: 4rem;
+    }
 }
 
 .matrix-controls {
