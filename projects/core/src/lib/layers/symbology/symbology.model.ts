@@ -126,7 +126,7 @@ export abstract class VectorSymbology extends Symbology {
         return this.createStyler(feature).createHighlightStyle();
     }
 
-    abstract clone(): VectorSymbology;
+    abstract override clone(): VectorSymbology;
 
     protected abstract createStyler(feature: OlFeature<OlGeometry>): Styler;
 }

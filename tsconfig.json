@@ -19,12 +19,11 @@
         "allowSyntheticDefaultImports": true,
         "forceConsistentCasingInFileNames": true,
         "strict": true,
-        // TODO: activate
-        // "noImplicitOverride": true,
+        "noImplicitOverride": true,
         "noImplicitReturns": true,
-        // TODO: this is true for angular in general, but is maybe inconvenient for us
+        // this is `true` for angular in general, but is maybe inconvenient for us
         "noPropertyAccessFromIndexSignature": false,
-        // TODO: remove
+        // TODO: remove when new version of geotiff.js is released (https://github.com/geotiffjs/geotiff.js/issues/297)
         "skipLibCheck": true,
         "noFallthroughCasesInSwitch": true
     },
