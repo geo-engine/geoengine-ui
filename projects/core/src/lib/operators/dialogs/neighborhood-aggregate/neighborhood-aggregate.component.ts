@@ -169,7 +169,7 @@ export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy 
     add(): void {
         const name: string = this.form.controls['name'].value;
         const rasterLayer: RasterLayer | undefined = this.form.controls['rasterLayer'].value;
-        const neighborhood = this.form.controls.neighborhood.getRawValue();
+        const neighborhood = this.form.controls.neighborhood.value;
         const aggregateFunction: 'sum' | 'standardDeviation' = this.form.controls.aggregateFunction.value;
 
         if (!rasterLayer) {
