@@ -11,18 +11,22 @@
         "moduleResolution": "node",
         "importHelpers": true,
         "target": "es2020",
-        "lib": ["es2018", "dom"],
+        "lib": ["es2020", "dom"],
         "paths": {
             "@geoengine/core": ["dist/core"]
         },
         // TODO: set to false if no longer needed for moment and proj4
         "allowSyntheticDefaultImports": true,
-        "resolveJsonModule": false,
         "forceConsistentCasingInFileNames": true,
         "strict": true,
+        // TODO: activate
+        // "noImplicitOverride": true,
         "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true,
-        "skipLibCheck": true
+        // TODO: this is true for angular in general, but is maybe inconvenient for us
+        "noPropertyAccessFromIndexSignature": false,
+        // TODO: remove
+        "skipLibCheck": true,
+        "noFallthroughCasesInSwitch": true
     },
     "angularCompilerOptions": {
         "enableI18nLegacyMessageIdFormat": false,
