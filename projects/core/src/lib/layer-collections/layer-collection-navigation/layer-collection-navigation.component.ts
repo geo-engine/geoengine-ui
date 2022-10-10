@@ -28,6 +28,14 @@ export class LayerCollectionNavigationComponent implements OnInit {
         this.setPortal(undefined);
     }
 
+    get title(): string {
+        if (!this.rootCollectionItem) {
+            return 'Layer Collection';
+        }
+
+        return this.rootCollectionItem.name;
+    }
+
     scrollToRight(): void {
         setTimeout(() => {
             // wait until breadcrumbs are re-rendered before scrolling
