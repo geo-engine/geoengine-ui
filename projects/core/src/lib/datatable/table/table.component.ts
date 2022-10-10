@@ -47,6 +47,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     displayedColumns: Array<string> = [];
     featureColumns: Array<string> = [];
     featureColumnDataTypes: Array<VectorColumnDataType> = [];
+    checkboxLabels: Array<string> = [];
 
     protected layerDataSubscription?: Subscription = undefined;
     protected selectedFeatureSubscription?: Subscription = undefined;
@@ -78,6 +79,14 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
             } else {
                 this.emptyTable();
             }
+        }
+    }
+
+    ngDoCheck(): void {
+        // Necessary because dropdown-menu is bound to displayedColumns. Since the menu doesn't contain an option for the
+        // select-checkbox, that column gets removed on each change as well. It is added back in here.
+        if (!this.displayedColumns.find((x) => x === '_____select')) {
+            this.displayedColumns = this.displayedColumns.reverse().concat('_____select').reverse(); // Is there a better way to prepend?
         }
     }
 
@@ -133,7 +142,24 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         this.featureColumnDataTypes = metadata.dataTypes.valueSeq().toArray();
         this.displayedColumns = ['_____select', '_____coordinates', '_____table__start', '_____table__end'].concat(this.featureColumns);
         this.featureColumnDataTypes = this.getColumnProperties();
+        this.checkboxLabels = this.displayedColumns.filter((element) => element !== '_____select');
+        // this.checkboxLabels = this.displayedColumns; // TODO delete (only used when checkbox can be hidden)
         setTimeout(() => this.navigatePage(this.projectService.getSelectedFeature()));
+    }
+
+    /**
+     * Used only by HTML template to display prettier names for default columns inside dropdown menu
+     */
+    fixedColumnDescriptors(columnName: string): string {
+        return columnName === '_____coordinates'
+            ? 'Coordinates'
+            : columnName === '_____table__start'
+            ? 'Start '
+            : columnName === '_____table__end'
+            ? 'End'
+            : columnName === '_____select' // TODO delete this if hiding select box is not necessary
+            ? 'Select'
+            : columnName;
     }
 
     processRasterLayer(_layer: RasterLayer, _metadata: RasterLayerMetadata, _data: any): void {

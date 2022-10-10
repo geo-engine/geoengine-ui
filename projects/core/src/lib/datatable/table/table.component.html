@@ -66,5 +66,12 @@
         </tr>
     </table>
 </div>
-
-<mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+<mat-form-field id="columnSelector" class="dropdown">
+    <mat-label>Select columns</mat-label>
+    <mat-select multiple [(ngModel)]="displayedColumns">
+        <mat-option *ngFor="let columnName of checkboxLabels" [value]="columnName">
+            {{ fixedColumnDescriptors(columnName) }}
+        </mat-option>
+    </mat-select>
+</mat-form-field>
+<mat-paginator class="paginate" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
