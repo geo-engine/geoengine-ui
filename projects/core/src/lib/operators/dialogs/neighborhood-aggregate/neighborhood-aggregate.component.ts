@@ -103,25 +103,15 @@ export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy 
 
     changeNeighborhood(neighborhood: string): void {
         if (neighborhood === 'weightsMatrix') {
-            this.form.controls.neighborhood = this.defaultWeightsMatrixNeighborhood();
+            this.form.setControl('neighborhood', this.defaultWeightsMatrixNeighborhood());
         } else if (neighborhood === 'rectangle') {
-            this.form.controls.neighborhood = this.defaultRectangleNeighborhood();
+            this.form.setControl('neighborhood', this.defaultRectangleNeighborhood());
         }
     }
 
     get weightsMatrixControls(): FormArray<FormArray<FormControl<number>>> {
         const neighborhood = this.form.controls.neighborhood as FormGroup<WeightsMatrixNeighborhoodForm>;
         return neighborhood.controls.weights;
-    }
-
-    setMatrixValue(row: number, col: number, value: number): void {
-        const matrix = this.getMatrix();
-
-        if (matrix.length <= row || matrix[0].length <= col) {
-            return;
-        }
-
-        matrix[row][col] = value;
     }
 
     enlargeMatrix(): void {
@@ -371,7 +361,13 @@ export function rotateMatrixClockwise(matrix: Array<Array<number>>): Array<Array
 
 const correctNeighborhoodDimensions = (
     control: AbstractControl,
-): {emptyDimensions?: true; dimensionsNotOdd?: true; dimensionsNegative?: true; valuesMissing?: true} | null => {
+): {
+    emptyDimensions?: true;
+    dimensionsNotOdd?: true;
+    dimensionsNegative?: true;
+    dimensionsNotInteger?: true;
+    valuesMissing?: true;
+} | null => {
     const neighborhoodType: AbstractControl<NeighborhoodType> | null = control.get('type');
 
     if (!neighborhoodType) {
@@ -424,6 +420,10 @@ const correctNeighborhoodDimensions = (
 
     if (rows < 0 || cols < 0) {
         return {dimensionsNegative: true};
+    }
+
+    if (!Number.isInteger(rows) || !Number.isInteger(cols)) {
+        return {dimensionsNotInteger: true};
     }
 
     if (rows % 2 === 0 || cols % 2 === 0) {

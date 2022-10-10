@@ -78,6 +78,7 @@
             <span *ngIf="neighborhoodError?.dimensionsNotOdd">Dimensions must be odd</span>
             <span *ngIf="neighborhoodError?.dimensionsNegative">Dimensions must be positive</span>
             <span *ngIf="neighborhoodError?.valuesMissing">Some values are missing or no numbers</span>
+            <span *ngIf="neighborhoodError?.dimensionsNotInteger">Dimensions must be integer values</span>
         </p>
 
         <mat-form-field appearance="fill">
