@@ -98,11 +98,11 @@ export class OlVectorLayerComponent
     extends MapLayerComponent<OlLayerVector<OlVectorSource<OlGeometry>>, OlVectorSource<OlGeometry>>
     implements OnInit, OnDestroy, OnChanges
 {
-    symbology?: VectorSymbology;
+    override symbology?: VectorSymbology;
 
     protected dataSubscription?: Subscription;
 
-    constructor(protected projectService: ProjectService) {
+    constructor(protected override projectService: ProjectService) {
         super(
             projectService,
             new OlVectorSource({wrapX: false}),
@@ -170,7 +170,7 @@ export class OlRasterLayerComponent
     extends MapLayerComponent<OlLayerTile<OlTileWmsSource>, OlTileWmsSource>
     implements OnInit, OnDestroy, OnChanges
 {
-    symbology?: RasterSymbology;
+    override symbology?: RasterSymbology;
 
     @Input() sessionToken?: UUID;
 
@@ -181,7 +181,7 @@ export class OlRasterLayerComponent
     protected spatialReference?: SpatialReference;
     protected time?: Time;
 
-    constructor(protected projectService: ProjectService, protected backend: BackendService, protected config: Config) {
+    constructor(protected override projectService: ProjectService, protected backend: BackendService, protected config: Config) {
         super(
             projectService,
             new OlTileWmsSource({

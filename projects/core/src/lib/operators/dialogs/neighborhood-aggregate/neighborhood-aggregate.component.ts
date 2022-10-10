@@ -1,7 +1,7 @@
 import {map, mergeMap} from 'rxjs/operators';
 import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy} from '@angular/core';
-import {AbstractControl, FormControl, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
 import {Layer, RasterLayer} from '../../../layers/layer.model';
 import {ProjectService} from '../../../project/project.service';
@@ -12,23 +12,25 @@ import {geoengineValidators} from '../../../util/form.validators';
 
 interface NeighborhoodAggregateForm {
     rasterLayer: FormControl<RasterLayer | undefined>;
-    neighborhood: FormControl<NeighborhoodForm>;
+    neighborhood: FormGroup<WeightsMatrixNeighborhoodForm> | FormGroup<RectangleNeighborhoodForm>;
     aggregateFunction: FormControl<'sum' | 'standardDeviation'>;
     name: FormControl<string>;
 }
 
+type NeighborhoodType = 'weightsMatrix' | 'rectangle';
+
 interface NeighborhoodForm {
-    type: 'weightsMatrix' | 'rectangle';
+    type: FormControl<NeighborhoodType>;
 }
 
 interface WeightsMatrixNeighborhoodForm extends NeighborhoodForm {
-    type: 'weightsMatrix';
-    weights: Array<Array<number>>;
+    type: FormControl<'weightsMatrix'>;
+    weights: FormArray<FormArray<FormControl<number>>>;
 }
 
 interface RectangleNeighborhoodForm extends NeighborhoodForm {
-    type: 'rectangle';
-    dimensions: [number, number];
+    type: FormControl<'rectangle'>;
+    dimensions: FormArray<FormControl<number>>;
 }
 
 /**
@@ -58,26 +60,17 @@ export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy 
     /**
      * DI of services and setup of observables for the template
      */
-    constructor(protected readonly projectService: ProjectService, protected readonly layoutService: LayoutService) {
+    constructor(
+        protected readonly projectService: ProjectService,
+        protected readonly layoutService: LayoutService,
+        protected readonly formBuilder: FormBuilder,
+    ) {
         this.form = new FormGroup<NeighborhoodAggregateForm>({
             rasterLayer: new FormControl<RasterLayer | undefined>(undefined, {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
-            neighborhood: new FormControl<WeightsMatrixNeighborhoodForm | RectangleNeighborhoodForm>(
-                {
-                    type: 'weightsMatrix',
-                    weights: [
-                        [1.0, 0.0, -1.0],
-                        [2.0, 0.0, -2.0],
-                        [1.0, 0.0, -1.0],
-                    ],
-                },
-                {
-                    nonNullable: true,
-                    validators: [Validators.required, correctNeighborhoodDimensions],
-                },
-            ),
+            neighborhood: this.defaultWeightsMatrixNeighborhood(),
             aggregateFunction: new FormControl<'sum' | 'standardDeviation'>('sum', {
                 nonNullable: true,
                 validators: [Validators.required],
@@ -110,116 +103,53 @@ export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy 
 
     changeNeighborhood(neighborhood: string): void {
         if (neighborhood === 'weightsMatrix') {
-            this.form.controls.neighborhood.setValue({
-                type: 'weightsMatrix',
-                weights: [
-                    [1.0, 0.0, -1.0],
-                    [2.0, 0.0, -2.0],
-                    [1.0, 0.0, -1.0],
-                ],
-            } as WeightsMatrixNeighborhoodForm);
+            this.form.setControl('neighborhood', this.defaultWeightsMatrixNeighborhood());
         } else if (neighborhood === 'rectangle') {
-            this.form.controls.neighborhood.setValue({
-                type: 'rectangle',
-                dimensions: [3, 3],
-            } as RectangleNeighborhoodForm);
+            this.form.setControl('neighborhood', this.defaultRectangleNeighborhood());
         }
     }
 
-    getMatrix(): Array<Array<number>> {
-        const neighborhood = this.form.controls.neighborhood.value as WeightsMatrixNeighborhoodForm;
-
-        if (neighborhood.type !== 'weightsMatrix') {
-            return [];
-        }
-
-        return neighborhood.weights;
-    }
-
-    setMatrixValue(row: number, col: number, value: number): void {
-        const matrix = this.getMatrix();
-
-        if (matrix.length <= row || matrix[0].length <= col) {
-            return;
-        }
-
-        matrix[row][col] = value;
+    get weightsMatrixControls(): FormArray<FormArray<FormControl<number>>> {
+        const neighborhood = this.form.controls.neighborhood as FormGroup<WeightsMatrixNeighborhoodForm>;
+        return neighborhood.controls.weights;
     }
 
     enlargeMatrix(): void {
-        this.form.controls.neighborhood.setValue({
-            type: 'weightsMatrix',
-            weights: increaseMatrix(this.getMatrix()),
-        } as WeightsMatrixNeighborhoodForm);
+        this.setMatrix(increaseMatrix(this.getMatrix()));
     }
 
     smallenMatrix(): void {
-        this.form.controls.neighborhood.setValue({
-            type: 'weightsMatrix',
-            weights: decreaseMatrix(this.getMatrix()),
-        } as WeightsMatrixNeighborhoodForm);
+        this.setMatrix(decreaseMatrix(this.getMatrix()));
     }
 
     rotate90(): void {
-        this.form.controls.neighborhood.setValue({
-            type: 'weightsMatrix',
-            weights: rotateMatrixClockwise(this.getMatrix()),
-        } as WeightsMatrixNeighborhoodForm);
+        this.setMatrix(rotateMatrixClockwise(this.getMatrix()));
     }
 
     presetDerivativeForSobel(): void {
-        this.form.controls.neighborhood.setValue({
-            type: 'weightsMatrix',
-            weights: [
-                [1.0, 0.0, -1.0],
-                [2.0, 0.0, -2.0],
-                [1.0, 0.0, -1.0],
-            ],
-        } as WeightsMatrixNeighborhoodForm);
+        this.setMatrix([
+            [1.0, 0.0, -1.0],
+            [2.0, 0.0, -2.0],
+            [1.0, 0.0, -1.0],
+        ]);
     }
 
     presetMean(): void {
-        this.form.controls.neighborhood.setValue({
-            type: 'weightsMatrix',
-            weights: [
-                [1 / 9, 1 / 9, 1 / 9],
-                [1 / 9, 1 / 9, 1 / 9],
-                [1 / 9, 1 / 9, 1 / 9],
-            ],
-        } as WeightsMatrixNeighborhoodForm);
+        this.setMatrix([
+            [1 / 9, 1 / 9, 1 / 9],
+            [1 / 9, 1 / 9, 1 / 9],
+            [1 / 9, 1 / 9, 1 / 9],
+        ]);
     }
 
     presetGaussianBlur(): void {
-        this.form.controls.neighborhood.setValue({
-            type: 'weightsMatrix',
-            weights: [
-                [0.003, 0.0133, 0.0219, 0.0133, 0.003],
-                [0.0133, 0.0596, 0.0983, 0.0596, 0.0133],
-                [0.0219, 0.0983, 0.1621, 0.0983, 0.0219],
-                [0.0133, 0.0596, 0.0983, 0.0596, 0.0133],
-                [0.003, 0.0133, 0.0219, 0.0133, 0.003],
-            ],
-        } as WeightsMatrixNeighborhoodForm);
-    }
-
-    setDimensionValue(dimension: number, value: number): void {
-        const dimensions = this.getDimensions();
-        dimensions[dimension] = value;
-
-        this.form.controls.neighborhood.setValue({
-            type: 'rectangle',
-            dimensions,
-        } as RectangleNeighborhoodForm);
-    }
-
-    getDimensions(): [number, number] {
-        const neighborhood = this.form.controls.neighborhood.value as RectangleNeighborhoodForm;
-
-        if (neighborhood.type !== 'rectangle') {
-            return [0, 0];
-        }
-
-        return neighborhood.dimensions;
+        this.setMatrix([
+            [0.003, 0.0133, 0.0219, 0.0133, 0.003],
+            [0.0133, 0.0596, 0.0983, 0.0596, 0.0133],
+            [0.0219, 0.0983, 0.1621, 0.0983, 0.0219],
+            [0.0133, 0.0596, 0.0983, 0.0596, 0.0133],
+            [0.003, 0.0133, 0.0219, 0.0133, 0.003],
+        ]);
     }
 
     /**
@@ -229,7 +159,7 @@ export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy 
     add(): void {
         const name: string = this.form.controls['name'].value;
         const rasterLayer: RasterLayer | undefined = this.form.controls['rasterLayer'].value;
-        const neighborhood: NeighborhoodForm = this.form.controls.neighborhood.value;
+        const neighborhood = this.form.controls.neighborhood.value;
         const aggregateFunction: 'sum' | 'standardDeviation' = this.form.controls.aggregateFunction.value;
 
         if (!rasterLayer) {
@@ -289,6 +219,65 @@ export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy 
         }
 
         this.layoutService.setSidenavContentComponent(this.dataListConfig);
+    }
+
+    protected setMatrix(matrix: number[][]): void {
+        const matrixForm = this.matrixToFormArray(matrix);
+
+        const neighborhood = this.form.controls.neighborhood as FormGroup<WeightsMatrixNeighborhoodForm>;
+        neighborhood.setControl('weights', matrixForm);
+    }
+
+    protected getMatrix(): Array<Array<number>> {
+        const neighborhood = this.form.controls.neighborhood as FormGroup<WeightsMatrixNeighborhoodForm>;
+        const value = neighborhood.value;
+
+        if (value.type !== 'weightsMatrix' || !value.weights) {
+            return [];
+        }
+
+        return value.weights;
+    }
+
+    protected defaultWeightsMatrixNeighborhood(): FormGroup<WeightsMatrixNeighborhoodForm> {
+        const fb = this.formBuilder.nonNullable;
+        return fb.group<WeightsMatrixNeighborhoodForm>(
+            {
+                type: this.createNeighborhoodType('weightsMatrix'),
+                weights: this.matrixToFormArray([
+                    [1.0, 0.0, -1.0],
+                    [2.0, 0.0, -2.0],
+                    [1.0, 0.0, -1.0],
+                ]),
+            },
+            {validators: [correctNeighborhoodDimensions]},
+        );
+    }
+
+    protected defaultRectangleNeighborhood(): FormGroup<RectangleNeighborhoodForm> {
+        const fb = this.formBuilder.nonNullable;
+        return fb.group<RectangleNeighborhoodForm>(
+            {
+                type: this.createNeighborhoodType('rectangle'),
+                dimensions: fb.array([3, 3]),
+            },
+            {validators: [correctNeighborhoodDimensions]},
+        );
+    }
+
+    protected createNeighborhoodType<T extends NeighborhoodType>(name: T): FormControl<T> {
+        const fb = this.formBuilder.nonNullable;
+        const neighborhoodType = fb.control<T>(name, Validators.required);
+        neighborhoodType.valueChanges.subscribe((value) => this.changeNeighborhood(value));
+        return neighborhoodType;
+    }
+
+    protected matrixToFormArray(matrix: Array<Array<number>>): FormArray<FormArray<FormControl<number>>> {
+        const fb = this.formBuilder.nonNullable;
+
+        const rows = matrix.map((row) => fb.array(row));
+
+        return fb.array(rows);
     }
 }
 
@@ -372,42 +361,77 @@ export function rotateMatrixClockwise(matrix: Array<Array<number>>): Array<Array
 
 const correctNeighborhoodDimensions = (
     control: AbstractControl,
-): {emptyDimensions?: true; dimensionsNotOdd?: true; dimensionsNegative?: true} | null => {
-    const neighborhoodForm = control.value as NeighborhoodForm;
-    if (!neighborhoodForm) {
+): {
+    emptyDimensions?: true;
+    dimensionsNotOdd?: true;
+    dimensionsNegative?: true;
+    dimensionsNotInteger?: true;
+    valuesMissing?: true;
+} | null => {
+    const neighborhoodType: AbstractControl<NeighborhoodType> | null = control.get('type');
+
+    if (!neighborhoodType) {
         return null;
     }
 
     let rows: number;
     let cols: number;
+    let values: Array<number> = [];
 
-    if (neighborhoodForm.type === 'weightsMatrix') {
-        const weightsMatrixNeighborhoodForm = neighborhoodForm as WeightsMatrixNeighborhoodForm;
-        rows = weightsMatrixNeighborhoodForm.weights.length;
-        cols = rows > 0 ? weightsMatrixNeighborhoodForm.weights[0].length : 0;
-    } else if (neighborhoodForm.type === 'rectangle') {
-        const rectangleNeighborhoodForm = neighborhoodForm as RectangleNeighborhoodForm;
-        rows = rectangleNeighborhoodForm.dimensions[0];
-        cols = rectangleNeighborhoodForm.dimensions[1];
+    switch (neighborhoodType.value) {
+        case 'weightsMatrix': {
+            const weightsMatrixForm: AbstractControl<FormArray<FormControl<number>>> | null = control.get('weights');
 
-        if (rows === null || cols === null) {
-            return {emptyDimensions: true};
+            if (!weightsMatrixForm || !(weightsMatrixForm instanceof FormArray)) {
+                rows = cols = 0;
+                break;
+            }
+
+            const weights: Array<Array<number>> = weightsMatrixForm.value;
+            rows = weights.length;
+            cols = rows > 0 ? weights[0].length : 0;
+
+            values = weights.flat();
+
+            break;
         }
+        case 'rectangle': {
+            const dimensionsForm: AbstractControl<FormControl<number>> | null = control.get('dimensions');
 
-        if (rows < 0 || cols < 0) {
-            return {dimensionsNegative: true};
+            if (!dimensionsForm || !(dimensionsForm instanceof FormArray)) {
+                rows = cols = 0;
+                break;
+            }
+
+            const dimensions: [number, number] = dimensionsForm.value;
+            rows = dimensions[0];
+            cols = dimensions[1];
+
+            break;
         }
-    } else {
-        rows = 0;
-        cols = 0;
+        default: {
+            rows = cols = 0;
+        }
     }
 
-    if (rows === 0 || cols === 0) {
+    if (!rows || !cols) {
         return {emptyDimensions: true};
+    }
+
+    if (rows < 0 || cols < 0) {
+        return {dimensionsNegative: true};
+    }
+
+    if (!Number.isInteger(rows) || !Number.isInteger(cols)) {
+        return {dimensionsNotInteger: true};
     }
 
     if (rows % 2 === 0 || cols % 2 === 0) {
         return {dimensionsNotOdd: true};
+    }
+
+    if (values.some((value) => !Number.isFinite(value))) {
+        return {valuesMissing: true};
     }
 
     return null;

@@ -68,7 +68,7 @@ export abstract class Layer implements HasLayerId, HasLayerType, ToDict<ProjectL
 export class VectorLayer extends Layer {
     readonly layerType = 'vector';
 
-    readonly symbology: VectorSymbology;
+    override readonly symbology: VectorSymbology;
 
     constructor(config: {
         id?: number;
@@ -82,7 +82,7 @@ export class VectorLayer extends Layer {
         this.symbology = config.symbology;
     }
 
-    static fromDict(dict: ProjectLayerDict): Layer {
+    static override fromDict(dict: ProjectLayerDict): Layer {
         if (dict.symbology.type === 'point' || dict.symbology.type === 'line' || dict.symbology.type === 'polygon') {
             return new VectorLayer({
                 name: dict.name,
@@ -144,7 +144,7 @@ export class VectorLayer extends Layer {
 export class RasterLayer extends Layer {
     readonly layerType = 'raster';
 
-    readonly symbology: RasterSymbology;
+    override readonly symbology: RasterSymbology;
 
     constructor(config: {
         id?: number;
@@ -158,7 +158,7 @@ export class RasterLayer extends Layer {
         this.symbology = config.symbology;
     }
 
-    static fromDict(dict: ProjectLayerDict): Layer {
+    static override fromDict(dict: ProjectLayerDict): Layer {
         if (dict.symbology.type === 'raster') {
             return new RasterLayer({
                 name: dict.name,

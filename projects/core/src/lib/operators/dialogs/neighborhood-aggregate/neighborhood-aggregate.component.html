@@ -13,81 +13,62 @@
         <geoengine-layer-selection [types]="RASTER_TYPE" formControlName="rasterLayer"></geoengine-layer-selection>
         <geoengine-dialog-section-heading title="Configuration" subtitle="Specify the operator"></geoengine-dialog-section-heading>
 
-        <mat-form-field appearance="fill">
-            <mat-label>Neighborhood</mat-label>
-            <mat-select
-                [ngModel]="form.controls.neighborhood.value.type"
-                [ngModelOptions]="{standalone: true}"
-                (ngModelChange)="changeNeighborhood($event)"
-            >
-                <mat-option value="weightsMatrix">Weights Matrix</mat-option>
-                <mat-option value="rectangle">Rectangle</mat-option>
-            </mat-select>
-        </mat-form-field>
+        <ng-container formGroupName="neighborhood">
+            <mat-form-field appearance="fill">
+                <mat-label>Neighborhood</mat-label>
+                <mat-select formControlName="type">
+                    <mat-option value="weightsMatrix">Weights Matrix</mat-option>
+                    <mat-option value="rectangle">Rectangle</mat-option>
+                </mat-select>
+            </mat-form-field>
 
-        <ng-container [ngSwitch]="form.controls.neighborhood.value.type">
-            <ng-container *ngSwitchCase="'weightsMatrix'">
-                <div class="matrix-controls">
-                    <button mat-button color="primary" type="button" (click)="enlargeMatrix()">
-                        <mat-icon>add_circle_outline</mat-icon>
-                    </button>
-                    <button mat-button color="primary" type="button" (click)="smallenMatrix()">
-                        <mat-icon>remove_circle_outline</mat-icon>
-                    </button>
-                    <button mat-button color="primary" type="button" (click)="rotate90()">
-                        <mat-icon>rotate_right</mat-icon>
-                    </button>
-                    <button mat-button color="primary" type="button" [matMenuTriggerFor]="matrixMenu">
-                        <mat-icon>folder</mat-icon>
-                    </button>
-                    <mat-menu #matrixMenu="matMenu">
-                        <button mat-menu-item (click)="presetDerivativeForSobel()">Sobel</button>
-                        <button mat-menu-item (click)="presetGaussianBlur()">Gaussian blur 5x5</button>
-                        <button mat-menu-item (click)="presetMean()">Mean 3x3</button>
-                    </mat-menu>
+            <ng-container [ngSwitch]="form.controls.neighborhood.value.type">
+                <div *ngSwitchCase="'weightsMatrix'">
+                    <div class="matrix-controls">
+                        <button mat-button color="primary" type="button" (click)="enlargeMatrix()">
+                            <mat-icon>add_circle_outline</mat-icon>
+                        </button>
+                        <button mat-button color="primary" type="button" (click)="smallenMatrix()">
+                            <mat-icon>remove_circle_outline</mat-icon>
+                        </button>
+                        <button mat-button color="primary" type="button" (click)="rotate90()">
+                            <mat-icon>rotate_right</mat-icon>
+                        </button>
+                        <button mat-button color="primary" type="button" [matMenuTriggerFor]="matrixMenu">
+                            <mat-icon>folder</mat-icon>
+                        </button>
+                        <mat-menu #matrixMenu="matMenu">
+                            <button mat-menu-item (click)="presetDerivativeForSobel()">Sobel</button>
+                            <button mat-menu-item (click)="presetGaussianBlur()">Gaussian blur 5x5</button>
+                            <button mat-menu-item (click)="presetMean()">Mean 3x3</button>
+                        </mat-menu>
+                    </div>
+                    <div class="matrix">
+                        <table formArrayName="weights">
+                            <tr *ngFor="let row of weightsMatrixControls.controls; index as r">
+                                <td *ngFor="let value of row.controls; index as c" [formArrayName]="r">
+                                    <mat-form-field appearance="fill">
+                                        <input matInput type="number" [formControlName]="c" />
+                                    </mat-form-field>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
-                <div class="matrix">
-                    <table>
-                        <tr *ngFor="let row of getMatrix(); index as r">
-                            <td *ngFor="let value of row; index as c">
-                                <mat-form-field appearance="fill">
-                                    <input
-                                        matInput
-                                        type="number"
-                                        [ngModel]="value"
-                                        (ngModelChange)="setMatrixValue(r, c, $event)"
-                                        [ngModelOptions]="{standalone: true, updateOn: 'blur'}"
-                                    />
-                                </mat-form-field>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </ng-container>
-            <ng-container *ngSwitchCase="'rectangle'">
-                <p>Dimensions</p>
-                <div *ngIf="getDimensions() as dimensions" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
-                    <mat-form-field appearance="fill" fxFlex>
-                        <mat-label>X</mat-label>
-                        <input
-                            matInput
-                            type="number"
-                            [ngModel]="dimensions[0]"
-                            (ngModelChange)="setDimensionValue(0, $event)"
-                            [ngModelOptions]="{standalone: true}"
-                        />
-                    </mat-form-field>
-                    <span>x</span>
-                    <mat-form-field appearance="fill" fxFlex>
-                        <mat-label>Y</mat-label>
-                        <input
-                            matInput
-                            type="number"
-                            [ngModel]="dimensions[1]"
-                            (ngModelChange)="setDimensionValue(1, $event)"
-                            [ngModelOptions]="{standalone: true}"
-                        />
-                    </mat-form-field>
+
+                <div *ngSwitchCase="'rectangle'">
+                    <p>Dimensions</p>
+                    <div formArrayName="dimensions" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
+                        <mat-form-field appearance="fill" fxFlex>
+                            <mat-label>X</mat-label>
+                            <input matInput type="number" formControlName="0" />
+                        </mat-form-field>
+                        <span>x</span>
+                        <mat-form-field appearance="fill" fxFlex>
+                            <mat-label>Y</mat-label>
+                            <input matInput type="number" formControlName="1" />
+                        </mat-form-field>
+                    </div>
                 </div>
             </ng-container>
         </ng-container>
@@ -96,6 +77,8 @@
             <span *ngIf="neighborhoodError?.emptyDimensions">Dimensions must not be empty</span>
             <span *ngIf="neighborhoodError?.dimensionsNotOdd">Dimensions must be odd</span>
             <span *ngIf="neighborhoodError?.dimensionsNegative">Dimensions must be positive</span>
+            <span *ngIf="neighborhoodError?.valuesMissing">Some values are missing or no numbers</span>
+            <span *ngIf="neighborhoodError?.dimensionsNotInteger">Dimensions must be integer values</span>
         </p>
 
         <mat-form-field appearance="fill">

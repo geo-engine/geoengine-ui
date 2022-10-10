@@ -43,7 +43,7 @@ const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CONFIG, {
 
 @Injectable()
 export class AppConfig extends Config {
-    protected config!: AppConfigStructure;
+    protected override config!: AppConfigStructure;
 
     get COMPONENTS(): Components {
         return this.config.COMPONENTS;
@@ -53,7 +53,7 @@ export class AppConfig extends Config {
         return this.config.BRANDING;
     }
 
-    load(): Promise<void> {
+    override load(): Promise<void> {
         return super.load(APP_CONFIG_DEFAULTS);
     }
 }
