@@ -1,4 +1,4 @@
-import {BehaviorSubject, concat, first, ignoreElements, Observable} from 'rxjs';
+import {BehaviorSubject, concat, first, ignoreElements, Observable, ReplaySubject} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 
 import {
@@ -22,6 +22,7 @@ import {
     AddDataComponent,
     Config,
     Layer,
+    LayerCollectionService,
     LayoutService,
     MapContainerComponent,
     MapService,
@@ -67,8 +68,9 @@ export class AppComponent implements OnInit, AfterViewInit {
     readonly layerListVisible$: Observable<boolean>;
     readonly layerDetailViewVisible$: Observable<boolean>;
 
-    readonly navigationButtons = AppComponent.setupNavigation();
-    readonly addAFirstLayerConfig = AppComponent.setupAddDataConfig();
+    readonly addDataConfig = new ReplaySubject<SidenavConfig>(1);
+    readonly navigationButtons = new ReplaySubject<Array<NavigationButton>>(1);
+    readonly AddDataComponent = AddDataComponent;
 
     middleContainerHeight$: Observable<number>;
     bottomContainerHeight$: Observable<number>;
@@ -82,6 +84,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         readonly projectService: ProjectService,
         readonly vcRef: ViewContainerRef, // reference used by color picker
         readonly userService: UserService,
+        private readonly layerService: LayerCollectionService,
         private readonly changeDetectorRef: ChangeDetectorRef,
         private readonly dialog: MatDialog,
         private readonly iconRegistry: MatIconRegistry,
@@ -108,6 +111,9 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         this.middleContainerHeight$ = this.layoutService.getMapHeightStream(totalHeight$).pipe(tap(() => this.mapComponent.resize()));
         this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(totalHeight$);
+
+        this.setupAddDataConfig().subscribe((addDataConfig) => this.addDataConfig.next(addDataConfig));
+        this.setupNavigation().subscribe((navigationButtons) => this.navigationButtons.next(navigationButtons));
     }
 
     ngOnInit(): void {
@@ -157,67 +163,62 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.iconRegistry.addSvgIcon('cogs', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/cogs.svg'));
     }
 
-    private static setupNavigation(): Array<NavigationButton> {
-        return [
-            {
-                sidenavConfig: {component: OidcComponent},
-                icon: 'account_circle',
-                tooltip: 'Login',
-            },
-            {
-                sidenavConfig: AppComponent.setupAddDataConfig(),
-                icon: 'add',
-                tooltip: 'Add Data',
-            },
-            {
-                sidenavConfig: {component: OperatorListComponent, config: {operators: AppComponent.createOperatorListButtons()}},
-                icon: '',
-                svgIcon: 'cogs',
-                tooltip: 'Operators',
-            },
-            {
-                sidenavConfig: {component: PlotListComponent},
-                icon: 'equalizer',
-                tooltip: 'Plots',
-            },
-            {
-                sidenavConfig: {component: TimeConfigComponent},
-                icon: 'access_time',
-                tooltip: 'Time',
-            },
-            {
-                sidenavConfig: {component: WorkspaceSettingsComponent},
-                icon: 'settings',
-                tooltip: 'Workspace',
-            },
-            {
-                sidenavConfig: {component: HelpComponent},
-                icon: 'help',
-                tooltip: 'Help',
-            },
-        ];
+    private setupNavigation(): Observable<Array<NavigationButton>> {
+        return this.addDataConfig.pipe(
+            map((addDataConfig) => [
+                {
+                    sidenavConfig: {component: OidcComponent},
+                    icon: 'account_circle',
+                    tooltip: 'Login',
+                },
+                {
+                    sidenavConfig: addDataConfig,
+                    icon: 'add',
+                    tooltip: 'Add Data',
+                },
+                {
+                    sidenavConfig: {component: OperatorListComponent, config: {operators: AppComponent.createOperatorListButtons()}},
+                    icon: '',
+                    svgIcon: 'cogs',
+                    tooltip: 'Operators',
+                },
+                {
+                    sidenavConfig: {component: PlotListComponent},
+                    icon: 'equalizer',
+                    tooltip: 'Plots',
+                },
+                {
+                    sidenavConfig: {component: TimeConfigComponent},
+                    icon: 'access_time',
+                    tooltip: 'Time',
+                },
+                {
+                    sidenavConfig: {component: WorkspaceSettingsComponent},
+                    icon: 'settings',
+                    tooltip: 'Workspace',
+                },
+                {
+                    sidenavConfig: {component: HelpComponent},
+                    icon: 'help',
+                    tooltip: 'Help',
+                },
+            ]),
+        );
     }
 
-    private static setupAddDataConfig(): SidenavConfig {
-        return {component: AddDataComponent, config: {buttons: AppComponent.createAddDataListButtons()}};
+    private setupAddDataConfig(): Observable<SidenavConfig> {
+        return this.createAddDataListButtons().pipe(map((buttons) => ({component: AddDataComponent, config: {buttons}})));
     }
 
-    private static createAddDataListButtons(): Array<AddDataButton> {
-        return [
-            AddDataComponent.createDatasetListButton(),
-            AddDataComponent.createUploadButton(),
-            AddDataComponent.createDrawFeaturesButton(),
-            AddDataComponent.createAddWorkflowByIdButton(),
-
-            // ...SourceOperatorListComponent.createCustomFeaturesButtons(),
-            // {
-            //     name: 'Species Occurrences',
-            //     description: 'Query data from GBIF',
-            //     iconSrc: GFBioSourceType.ICON_URL,
-            //     sidenavConfig: {component: GbifOperatorComponent, keepParent: true},
-            // },
-            // SourceOperatorListComponent.createCountryPolygonsButton(),
-        ];
+    private createAddDataListButtons(): Observable<Array<AddDataButton>> {
+        return AddDataComponent.createLayerRootCollectionButtons(this.layerService).pipe(
+            map((buttons) => [
+                ...buttons,
+                AddDataComponent.createUploadButton(),
+                AddDataComponent.createDrawFeaturesButton(),
+                AddDataComponent.createAddWorkflowByIdButton(),
+            ]),
+        );
     }
 
     private static createOperatorListButtons(): OperatorListButtonGroups {

@@ -38,11 +38,11 @@
         <geoengine-sidenav-container></geoengine-sidenav-container>
     </mat-sidenav>
 
-    <geoengine-navigation [buttons]="navigationButtons"></geoengine-navigation>
+    <geoengine-navigation [buttons]="navigationButtons | async | valueDefault: []"></geoengine-navigation>
     <geoengine-layer-list
         class="mat-elevation-z4"
         [height]="middleContainerHeight$ | async | numberSanitizer"
-        [addAFirstLayerSidenavConfig]="addAFirstLayerConfig"
+        [addAFirstLayerSidenavConfig]="addDataConfig | async | valueDefault: {component: AddDataComponent}"
     >
     </geoengine-layer-list>
 

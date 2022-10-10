@@ -8,7 +8,6 @@ import {Layer, RasterLayer} from '../../../layers/layer.model';
 import {geoengineValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
 import {OperatorDict, SourceOperatorDict, UUID, WorkflowDict} from '../../../backend/backend.model';
-import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 import {RasterLayerMetadata} from '../../../layers/layer-metadata.model';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {ExpressionDict} from '../../../backend/operator.model';
@@ -218,19 +217,8 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                         new RasterLayer({
                             workflowId,
                             name,
-                            symbology: RasterSymbology.fromRasterSymbologyDict({
-                                type: 'raster',
-                                opacity: 1.0,
-                                colorizer: {
-                                    type: 'linearGradient',
-                                    breakpoints: [
-                                        {value: 0, color: [0, 0, 0, 255]},
-                                        {value: 255, color: [255, 255, 255, 255]},
-                                    ],
-                                    defaultColor: [0, 0, 0, 255],
-                                    noDataColor: [0, 0, 0, 255],
-                                },
-                            }),
+                            // copy symbolog from first layer
+                            symbology: rasterLayers[0].symbology,
                             isLegendVisible: false,
                             isVisible: true,
                         }),
