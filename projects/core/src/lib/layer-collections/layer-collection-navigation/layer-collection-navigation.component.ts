@@ -1,5 +1,5 @@
 import {ComponentPortal, Portal} from '@angular/cdk/portal';
-import {Component, ViewChild, ElementRef, ChangeDetectionStrategy, Injector} from '@angular/core';
+import {Component, ViewChild, ElementRef, ChangeDetectionStrategy, Injector, Input, OnInit} from '@angular/core';
 import {LayerCollectionItemDict, ProviderLayerCollectionIdDict} from '../../backend/backend.model';
 import {CONTEXT_TOKEN, LayerCollectionListComponent} from '../layer-collection-list/layer-collection-list.component';
 
@@ -9,7 +9,9 @@ import {CONTEXT_TOKEN, LayerCollectionListComponent} from '../layer-collection-l
     styleUrls: ['./layer-collection-navigation.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LayerCollectionNavigationComponent {
+export class LayerCollectionNavigationComponent implements OnInit {
+    @Input() rootCollectionItem?: LayerCollectionItemDict;
+
     collections: Array<LayerCollectionItemDict> = [];
     allTrails: Array<Array<LayerCollectionItemDict>> = [];
     displayedTrail: Array<LayerCollectionItemDict> = [];
@@ -20,7 +22,9 @@ export class LayerCollectionNavigationComponent {
 
     @ViewChild('scrollElement', {read: ElementRef}) public scrollElement!: ElementRef<any>;
 
-    constructor() {
+    constructor() {}
+
+    ngOnInit(): void {
         this.setPortal(undefined);
     }
 
@@ -95,10 +99,14 @@ export class LayerCollectionNavigationComponent {
     }
 
     showRoot(): void {
-        this.selectedPortal = new ComponentPortal(LayerCollectionListComponent, null, this.createInjector());
+        this.setPortal(undefined);
     }
 
     private setPortal(id?: LayerCollectionItemDict): void {
+        if (!id) {
+            id = this.rootCollectionItem;
+        }
+
         const providerLayer = id?.id as ProviderLayerCollectionIdDict;
         this.selectedPortal = new ComponentPortal(LayerCollectionListComponent, null, this.createInjector(providerLayer));
     }
