@@ -1,5 +1,5 @@
 import {Observable, BehaviorSubject} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
+import {first, map, tap} from 'rxjs/operators';
 
 import {
     AfterViewInit,
@@ -38,9 +38,11 @@ import {
     PlotListComponent,
     SidenavConfig,
     SpatialReferenceService,
+    LayerCollectionService,
 } from '@geoengine/core';
 import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from '../app-config.service';
+import {ReplaySubject} from 'rxjs';
 
 @Component({
     selector: 'geoengine-main',
@@ -61,8 +63,9 @@ export class MainComponent implements OnInit, AfterViewInit {
     readonly layerListVisible$: Observable<boolean>;
     readonly layerDetailViewVisible$: Observable<boolean>;
 
-    readonly navigationButtons = this.setupNavigation();
-    readonly addAFirstLayerConfig = MainComponent.setupAddDataConfig();
+    readonly addDataConfig = new ReplaySubject<SidenavConfig>(1);
+    readonly navigationButtons = new ReplaySubject<Array<NavigationButton>>(1);
+    readonly AddDataComponent = AddDataComponent;
 
     middleContainerHeight$: Observable<number>;
     bottomContainerHeight$: Observable<number>;
@@ -76,6 +79,7 @@ export class MainComponent implements OnInit, AfterViewInit {
         readonly projectService: ProjectService,
         readonly vcRef: ViewContainerRef, // reference used by color picker, MUST BE EXACTLY THIS NAME
         readonly userService: UserService,
+        private readonly layerService: LayerCollectionService,
         private readonly changeDetectorRef: ChangeDetectorRef,
         private readonly dialog: MatDialog,
         private readonly randomColorService: RandomColorService,
@@ -97,6 +101,9 @@ export class MainComponent implements OnInit, AfterViewInit {
 
         this.middleContainerHeight$ = this.layoutService.getMapHeightStream(totalHeight$).pipe(tap(() => this.mapComponent.resize()));
         this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(totalHeight$);
+
+        this.setupAddDataConfig().subscribe((addDataConfig) => this.addDataConfig.next(addDataConfig));
+        this.setupNavigation().subscribe((navigationButtons) => this.navigationButtons.next(navigationButtons));
     }
 
     ngOnInit(): void {
@@ -134,7 +141,7 @@ export class MainComponent implements OnInit, AfterViewInit {
         //     }
         // });
 
-        // this.handleQueryParameters();
+        this.handleQueryParameters();
     }
 
     setTabIndex(index: number): void {
@@ -146,64 +153,58 @@ export class MainComponent implements OnInit, AfterViewInit {
         return layer.id;
     }
 
-    private setupNavigation(): Array<NavigationButton> {
-        return [
-            NavigationComponent.createLoginButton(this.userService, this.layoutService, this.config),
-            {
-                sidenavConfig: MainComponent.setupAddDataConfig(),
-                icon: 'add',
-                tooltip: 'Add Data',
-            },
-            {
-                sidenavConfig: {component: OperatorListComponent, config: {operators: MainComponent.createOperatorListButtons()}},
-                icon: '',
-                svgIcon: 'cogs',
-                tooltip: 'Operators',
-            },
-            {
-                sidenavConfig: {component: PlotListComponent},
-                icon: 'equalizer',
-                tooltip: 'Plots',
-            },
-            {
-                sidenavConfig: {component: TimeConfigComponent},
-                icon: 'access_time',
-                tooltip: 'Time',
-            },
-            {
-                sidenavConfig: {component: WorkspaceSettingsComponent},
-                icon: 'settings',
-                tooltip: 'Workspace',
-            },
-            // {
-            //     sidenavConfig: {component: HelpComponent},
-            //     icon: 'help',
-            //     tooltip: 'Help',
-            // },
-        ];
+    private setupNavigation(): Observable<Array<NavigationButton>> {
+        return this.addDataConfig.pipe(
+            map((addDataConfig) => [
+                NavigationComponent.createLoginButton(this.userService, this.layoutService, this.config),
+                {
+                    sidenavConfig: addDataConfig,
+                    icon: 'add',
+                    tooltip: 'Add Data',
+                },
+                {
+                    sidenavConfig: {component: OperatorListComponent, config: {operators: MainComponent.createOperatorListButtons()}},
+                    icon: '',
+                    svgIcon: 'cogs',
+                    tooltip: 'Operators',
+                },
+                {
+                    sidenavConfig: {component: PlotListComponent},
+                    icon: 'equalizer',
+                    tooltip: 'Plots',
+                },
+                {
+                    sidenavConfig: {component: TimeConfigComponent},
+                    icon: 'access_time',
+                    tooltip: 'Time',
+                },
+                {
+                    sidenavConfig: {component: WorkspaceSettingsComponent},
+                    icon: 'settings',
+                    tooltip: 'Workspace',
+                },
+                // {
+                //     sidenavConfig: {component: HelpComponent},
+                //     icon: 'help',
+                //     tooltip: 'Help',
+                // },
+            ]),
+        );
     }
 
-    private static setupAddDataConfig(): SidenavConfig {
-        return {component: AddDataComponent, config: {buttons: MainComponent.createAddDataListButtons()}};
+    private setupAddDataConfig(): Observable<SidenavConfig> {
+        return this.createAddDataListButtons().pipe(map((buttons) => ({component: AddDataComponent, config: {buttons}})));
     }
 
-    private static createAddDataListButtons(): Array<AddDataButton> {
-        return [
-            AddDataComponent.createDatasetListButton(),
-            AddDataComponent.createLayerCollectionButton(),
-            AddDataComponent.createUploadButton(),
-            AddDataComponent.createDrawFeaturesButton(),
-            AddDataComponent.createAddWorkflowByIdButton(),
-
-            // ...SourceOperatorListComponent.createCustomFeaturesButtons(),
-            // {
-            //     name: 'Species Occurrences',
-            //     description: 'Query data from GBIF',
-            //     iconSrc: GFBioSourceType.ICON_URL,
-            //     sidenavConfig: {component: GbifOperatorComponent, keepParent: true},
-            // },
-            // SourceOperatorListComponent.createCountryPolygonsButton(),
-        ];
+    private createAddDataListButtons(): Observable<Array<AddDataButton>> {
+        return AddDataComponent.createLayerRootCollectionButtons(this.layerService).pipe(
+            map((buttons) => [
+                ...buttons,
+                AddDataComponent.createUploadButton(),
+                AddDataComponent.createDrawFeaturesButton(),
+                AddDataComponent.createAddWorkflowByIdButton(),
+            ]),
+        );
     }
 
     private static createOperatorListButtons(): OperatorListButtonGroups {
@@ -220,39 +221,14 @@ export class MainComponent implements OnInit, AfterViewInit {
         this.windowHeight$.next(window.innerHeight);
     }
 
-    // private handleQueryParameters() {
-    //     this.activatedRoute.queryParams.subscribe(p => {
-    //         for (const parameter of Object.keys(p)) {
-    //             const value = p[parameter];
-    //             switch (parameter) {
-    //                 case 'workflow':
-    //                     try {
-    //                         const newLayer = Layer.fromDict(JSON.parse(value));
-    //                         this.projectService.getProjectStream().pipe(first()).subscribe(project => {
-    //                             if (project.layers.length > 0) {
-    //                                 // show popup
-    //                                 this.dialog.open(WorkflowParameterChoiceDialogComponent, {
-    //                                     data: {
-    //                                         dialogTitle: 'Workflow URL Parameter',
-    //                                         sourceName: 'URL parameter',
-    //                                         layers: [newLayer],
-    //                                         nonAvailableNames: [],
-    //                                         numberOfLayersInProject: project.layers.length,
-    //                                     }
-    //                                 });
-    //                             } else {
-    //                                 // just add the layer if the layer array is empty
-    //                                 this.projectService.addLayer(newLayer);
-    //                             }
-    //                         });
-    //                     } catch (error) {
-    //                         this.notificationService.error(`Invalid Workflow: »${error}«`);
-    //                     }
-    //                     break;
-    //                 default:
-    //                     this.notificationService.error(`Unknown URL Parameter »${parameter}«`);
-    //             }
-    //         }
-    //     });
-    // }
+    private handleQueryParameters(): void {
+        const params = new URLSearchParams(window.location.search);
+        const sessionState = params.get('session_state');
+        const code = params.get('code');
+        const state = params.get('state');
+
+        if (sessionState && code && state) {
+            this.userService.oidcLogin({sessionState, code, state}).pipe(first()).subscribe();
+        }
+    }
 }

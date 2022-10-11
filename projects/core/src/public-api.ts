@@ -67,6 +67,7 @@ export * from './lib/operators/dialogs/helpers/operator-output-name/operator-out
 export * from './lib/operators/dialogs/histogram-operator/histogram-operator.component';
 export * from './lib/operators/dialogs/interpolation/interpolation.component';
 export * from './lib/operators/dialogs/mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
+export * from './lib/operators/dialogs/neighborhood-aggregate/neighborhood-aggregate.component';
 export * from './lib/operators/dialogs/operator-list/operator-list.component';
 export * from './lib/operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 export * from './lib/operators/dialogs/raster-type-conversion/raster-type-conversion.component';
