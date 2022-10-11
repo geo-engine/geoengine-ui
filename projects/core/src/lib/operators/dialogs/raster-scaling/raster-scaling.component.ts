@@ -10,7 +10,21 @@ import {WorkflowDict} from '../../../backend/backend.model';
 import {Observable} from 'rxjs';
 import {RasterMetadataKey, RasterUnScalingDict} from '../../../backend/operator.model';
 import {RasterDataTypes} from '../../datatype.model';
-import {Layer} from 'ol/layer';
+
+interface RasterScalingForm {
+    name: FormControl<string>;
+    layer: FormControl<RasterLayer | undefined>;
+    slope: FormGroup<MetadataKeyOrConstantForm>;
+    offset: FormGroup<MetadataKeyOrConstantForm>;
+    scaleType: FormControl<'scale' | 'unscale'>;
+}
+
+interface MetadataKeyOrConstantForm {
+    metadataKeyOrConstant: FormControl<'MetadataKey' | 'Constant'>;
+    domain: FormControl<string>;
+    key: FormControl<string>;
+    constant: FormControl<number>;
+}
 
 @Component({
     selector: 'geoengine-raster-scaling',
@@ -27,97 +41,67 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
         {formular: 'p_new = p_old * slope + offset', type: 'unscale'},
     ];
 
+    readonly metadataOrKeyTypes: Array<'Constant' | 'MetadataKey'> = ['Constant', 'MetadataKey'];
+
     readonly validRasterMetadataKeyValidator = geoengineValidators.validRasterMetadataKey;
     readonly isNumberValidator = geoengineValidators.isNumber;
 
-    form: FormGroup;
+    form: FormGroup<RasterScalingForm>;
     disallowSubmit: Observable<boolean>;
 
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly notificationService: NotificationService,
-        private readonly formBuilder: FormBuilder,
-    ) {
-        this.form = this.formBuilder.group({
-            name: ['', [Validators.required, geoengineValidators.notOnlyWhitespace]],
-            layer: new FormControl<Layer | null>(null, {validators: Validators.required}),
-            scale: this.formBuilder.group(
+    constructor(private readonly projectService: ProjectService, private readonly notificationService: NotificationService) {
+        this.form = new FormGroup<RasterScalingForm>({
+            name: new FormControl<string>('', {
+                nonNullable: true,
+                validators: [Validators.required, geoengineValidators.notOnlyWhitespace],
+            }),
+            layer: new FormControl<RasterLayer | undefined>(undefined, {validators: Validators.required, nonNullable: true}),
+            slope: new FormGroup<MetadataKeyOrConstantForm>(
                 {
-                    byKey: [false],
-                    domain: new FormControl<string>(
-                        {value: '', disabled: true},
-                        {
-                            validators: [Validators.pattern('[a-zA-Z0-9_]*')],
-                        },
-                    ),
-                    key: new FormControl<string>(
-                        {value: 'scale', disabled: true},
-                        {
-                            validators: [Validators.required, Validators.pattern('[a-zA-Z0-9_]+')],
-                        },
-                    ),
-                    constant: new FormControl<number>(1, {validators: geoengineValidators.isNumber}),
+                    metadataKeyOrConstant: new FormControl<'MetadataKey' | 'Constant'>('Constant', {
+                        validators: [Validators.required],
+                        nonNullable: true,
+                    }),
+                    domain: new FormControl<string>('', {
+                        validators: [Validators.pattern('[a-zA-Z0-9_]*')],
+                        nonNullable: true,
+                    }),
+                    key: new FormControl<string>('slope', {
+                        validators: [Validators.required, Validators.pattern('[a-zA-Z0-9_]+')],
+                        nonNullable: true,
+                    }),
+                    constant: new FormControl<number>(1, {validators: geoengineValidators.isNumber, nonNullable: true}),
                 },
                 {validators: [this.numberOrMetadataKeyValidator]},
             ),
-            offset: this.formBuilder.group(
+            offset: new FormGroup<MetadataKeyOrConstantForm>(
                 {
-                    byKey: [false],
-                    domain: new FormControl<string>(
-                        {value: '', disabled: true},
-                        {
-                            validators: [Validators.pattern('[a-zA-Z0-9_]*')],
-                        },
-                    ),
-                    key: new FormControl<string>(
-                        {value: 'offset', disabled: true},
-                        {
-                            validators: [geoengineValidators.notOnlyWhitespace, geoengineValidators.validRasterMetadataKey],
-                        },
-                    ),
-                    constant: new FormControl<number>(0, {validators: geoengineValidators.isNumber}),
+                    metadataKeyOrConstant: new FormControl<'MetadataKey' | 'Constant'>('Constant', {
+                        validators: [Validators.required],
+                        nonNullable: true,
+                    }),
+                    domain: new FormControl<string>('', {
+                        validators: [Validators.pattern('[a-zA-Z0-9_]*')],
+                        nonNullable: true,
+                    }),
+                    key: new FormControl<string>('offset', {
+                        validators: [geoengineValidators.notOnlyWhitespace, geoengineValidators.validRasterMetadataKey],
+                        nonNullable: true,
+                    }),
+                    constant: new FormControl<number>(0, {validators: geoengineValidators.isNumber, nonNullable: true}),
                 },
                 {validators: [this.numberOrMetadataKeyValidator]},
             ),
-            scaleType: new FormControl(this.scaleTypes[0], {
+            scaleType: new FormControl(this.scaleTypes[0].type, {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
         });
         this.disallowSubmit = this.form.statusChanges.pipe(map((status) => status !== 'VALID'));
-        this.form.controls.scale.get('byKey')?.valueChanges.subscribe((byKey: boolean) => {
-            const keyControl = this.form.controls.scale.get('key');
-            const domainControl = this.form.controls.scale.get('domain');
-            const constantControl = this.form.controls.scale.get('constant');
-            if (byKey) {
-                keyControl?.enable();
-                domainControl?.enable();
-                constantControl?.disable();
-            } else {
-                keyControl?.disable();
-                domainControl?.disable();
-                constantControl?.enable();
-            }
-        });
-
-        this.form.controls.offset.get('byKey')?.valueChanges.subscribe((byKey: boolean) => {
-            const keyControl = this.form.controls.offset.get('key');
-            const domainControl = this.form.controls.offset.get('domain');
-            const constantControl = this.form.controls.offset.get('constant');
-            if (byKey) {
-                keyControl?.enable();
-                domainControl?.enable();
-                constantControl?.disable();
-            } else {
-                keyControl?.disable();
-                domainControl?.disable();
-                constantControl?.enable();
-            }
-        });
     }
 
     numberOrMetadataKeyValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-        const isByKey = control.get('isByKey')?.value;
+        const isByKey = control.get('metadataKeyOrConstant')?.value === 'MetadataKey';
         const key = control.get('key');
         const constant = control.get('constant');
 
@@ -137,13 +121,14 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
         setTimeout(() => {
             this.form.updateValueAndValidity();
             this.form.controls['layer'].updateValueAndValidity();
+            this.form.controls['scaleType'].updateValueAndValidity();
         });
     }
 
     ngOnDestroy(): void {}
 
     formGroupToDict(fg: AbstractControl): RasterMetadataKey | {type: 'constant'; value: number} {
-        if (fg.get('byKey')?.value) {
+        if (fg.get('metadataKeyOrConstant')?.value === 'MetadataKey') {
             const key = fg.get('key')?.value;
             const domain = fg.get('domain')?.value;
             return {type: 'metadataKey', domain, key};
@@ -153,13 +138,17 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     add(): void {
-        const inputLayer: RasterLayer = this.form.controls['layer'].value;
+        const inputLayer: RasterLayer | undefined = this.form.controls['layer'].value;
         const outputName: string = this.form.controls['name'].value;
 
-        const scale = this.formGroupToDict(this.form.controls.scale);
+        const slope = this.formGroupToDict(this.form.controls.slope);
         const offset = this.formGroupToDict(this.form.controls.offset);
 
         const scaleType = this.form.controls.scaleType.value;
+
+        if (!inputLayer) {
+            return; // checked by form validator
+        }
 
         this.projectService
             .getWorkflow(inputLayer.workflowId)
@@ -170,8 +159,8 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
                         operator: {
                             type: 'RasterScaling',
                             params: {
-                                scaleWith: scale,
-                                offsetBy: offset,
+                                slope,
+                                offset,
                                 scalingMode: scaleType,
                             },
                             sources: {

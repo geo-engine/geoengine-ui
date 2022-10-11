@@ -9,57 +9,96 @@
         <br />
         For <b> unscaling </b> the formula is: <i>p_new = p_old * slope + offset</i>. <br />
         For <b> scaling </b> the formula is: <i>p_new = (p_old - offset) / slope</i>. <br />
-        <i>p_old</i>> and <i>p_new</i> refer to the old and new pixel values. The slope and offset values are either properties attached to
+        <i>p_old</i> and <i>p_new</i> refer to the old and new pixel values. The slope and offset values are either properties attached to
         the input raster or a fixed value. For more information see
         <a href="https://docs.geoengine.io/operators/rasterunscaling.html">docs.geoengine.io</a>.
     </p>
 </geoengine-dialog-help>
 
 <form [formGroup]="form" (ngSubmit)="add()" fxLayout="column" ngNativeValidate>
-    <div fxFlex>
+    <div fxFlex class="container">
         <geoengine-layer-selection [types]="inputTypes" formControlName="layer"></geoengine-layer-selection>
-        <geoengine-dialog-section-heading title="Config" subtitle="Specify the output data type"></geoengine-dialog-section-heading>
+        <geoengine-dialog-section-heading title="Config" subtitle="Specify the scaling parameters"></geoengine-dialog-section-heading>
 
-        <div formGroupName="scale">
-            <mat-slide-toggle formControlName="byKey" #byKey>Use scale factor from metadata key</mat-slide-toggle>
-            <mat-form-field appearance="fill">
-                <mat-label>Scale metadata <i>domain</i></mat-label>
-                <input matInput type="text" formControlName="domain" />
-            </mat-form-field>
-            <mat-form-field appearance="fill">
-                <mat-label>Scale metadata <i>key</i></mat-label>
-                <input matInput type="text" formControlName="key" />
-            </mat-form-field>
-            <mat-form-field appearance="fill">
-                <mat-label>Scale <i>Constant</i></mat-label>
-                <input matInput type="number" formControlName="constant" />
-            </mat-form-field>
+        <mat-divider></mat-divider>
+
+        <div class="block" fxLayout="column" fxLayoutAlign="start stretch">
+            <ng-container formGroupName="slope">
+                <mat-form-field appearance="fill">
+                    <mat-label>Slope value from </mat-label>
+                    <mat-select formControlName="metadataKeyOrConstant">
+                        <mat-option *ngFor="let mk of metadataOrKeyTypes" [value]="mk">
+                            {{ mk }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <ng-container [ngSwitch]="form.controls.slope.controls.metadataKeyOrConstant.value">
+                    <div *ngSwitchCase="'MetadataKey'" fxLayout="row">
+                        <mat-form-field appearance="fill">
+                            <mat-label>Slope metadata <i>domain</i></mat-label>
+                            <input matInput type="text" formControlName="domain" />
+                        </mat-form-field>
+                        <span>.</span>
+                        <mat-form-field appearance="fill">
+                            <mat-label>Slope metadata <i>key</i></mat-label>
+                            <input matInput type="text" formControlName="key" />
+                        </mat-form-field>
+                    </div>
+                    <div *ngSwitchCase="'Constant'">
+                        <mat-form-field appearance="fill">
+                            <mat-label>Slope <i>Constant</i></mat-label>
+                            <input matInput type="number" formControlName="constant" />
+                        </mat-form-field>
+                    </div>
+                </ng-container>
+            </ng-container>
         </div>
 
-        <div formGroupName="offset">
-            <mat-slide-toggle formControlName="byKey" #byKey>Use offset value from metadata key</mat-slide-toggle>
-            <mat-form-field appearance="fill">
-                <mat-label>Offset metadata <i>domain</i></mat-label>
-                <input matInput type="text" formControlName="domain" />
-            </mat-form-field>
-            <mat-form-field appearance="fill">
-                <mat-label>Offset metadata <i>key</i></mat-label>
-                <input matInput type="text" formControlName="key" />
-            </mat-form-field>
-            <mat-form-field appearance="fill">
-                <mat-label>Offset <i>Constant</i></mat-label>
-                <input matInput type="number" formControlName="constant" />
-            </mat-form-field>
+        <mat-divider></mat-divider>
+
+        <div class="block" fxLayout="column" fxLayoutAlign="start stretch">
+            <ng-container formGroupName="offset">
+                <mat-form-field appearance="fill">
+                    <mat-label>Offset value from </mat-label>
+                    <mat-select formControlName="metadataKeyOrConstant">
+                        <mat-option *ngFor="let mk of metadataOrKeyTypes" [value]="mk">
+                            {{ mk }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <ng-container [ngSwitch]="form.controls.offset.controls.metadataKeyOrConstant.value">
+                    <div *ngSwitchCase="'MetadataKey'" fxLayout="row">
+                        <mat-form-field appearance="fill">
+                            <mat-label>Offset metadata <i>domain</i></mat-label>
+                            <input matInput type="text" formControlName="domain" />
+                        </mat-form-field>
+                        <span>.</span>
+                        <mat-form-field appearance="fill">
+                            <mat-label>Offset metadata <i>key</i></mat-label>
+                            <input matInput type="text" formControlName="key" />
+                        </mat-form-field>
+                    </div>
+                    <div *ngSwitchCase="'Constant'">
+                        <mat-form-field appearance="fill">
+                            <mat-label>Offset <i>Constant</i></mat-label>
+                            <input matInput type="number" formControlName="constant" />
+                        </mat-form-field>
+                    </div>
+                </ng-container>
+            </ng-container>
         </div>
 
-        <mat-form-field appearance="fill">
-            <mat-label>Scale Type</mat-label>
-            <mat-select formControlName="scaleType">
-                <mat-option *ngFor="let scaleType of scaleTypes" [value]="scaleType.type">
-                    {{ scaleType.type }} <i>{{ scaleType.formular }}</i>
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
+        <mat-divider></mat-divider>
+        <div class="block">
+            <mat-form-field appearance="fill">
+                <mat-label>Scale Type</mat-label>
+                <mat-select formControlName="scaleType">
+                    <mat-option *ngFor="let scaleType of scaleTypes" [value]="scaleType.type">
+                        {{ scaleType.type }} | <i>{{ scaleType.formular }}</i>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
 
         <geoengine-operator-output-name
             formControlName="name"
