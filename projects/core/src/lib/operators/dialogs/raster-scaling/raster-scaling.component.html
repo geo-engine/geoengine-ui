@@ -94,7 +94,7 @@
                 <mat-label>Scale Type</mat-label>
                 <mat-select formControlName="scaleType">
                     <mat-option *ngFor="let scaleType of scaleTypes" [value]="scaleType.type">
-                        {{ scaleType.type }} | <i>{{ scaleType.formula }}</i>
+                        <span class="scaleType">{{ scaleType.type }}</span> | <span class="scaleFormula">{{ scaleType.formula }}</span>
                     </mat-option>
                 </mat-select>
             </mat-form-field>
