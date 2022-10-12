@@ -22,74 +22,84 @@
 
         <mat-divider></mat-divider>
 
-        <div class="block" fxLayout="column" fxLayoutAlign="start stretch">
-            <ng-container formGroupName="slope">
-                <mat-form-field appearance="fill">
-                    <mat-label>Slope value from </mat-label>
-                    <mat-select formControlName="metadataKeyOrConstant">
-                        <mat-option *ngFor="let mk of metadataOrKeyTypes" [value]="mk">
-                            {{ mk }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <ng-container [ngSwitch]="form.controls.slope.controls.metadataKeyOrConstant.value">
-                    <div *ngSwitchCase="'MetadataKey'" fxLayout="row">
-                        <mat-form-field appearance="fill">
-                            <mat-label>Slope metadata <i>domain</i></mat-label>
-                            <input matInput type="text" formControlName="domain" />
-                        </mat-form-field>
-                        <span>.</span>
-                        <mat-form-field appearance="fill">
-                            <mat-label>Slope metadata <i>key</i></mat-label>
-                            <input matInput type="text" formControlName="key" />
-                        </mat-form-field>
-                    </div>
-                    <div *ngSwitchCase="'Constant'">
-                        <mat-form-field appearance="fill">
-                            <mat-label>Slope <i>Constant</i></mat-label>
-                            <input matInput type="number" formControlName="constant" />
-                        </mat-form-field>
-                    </div>
-                </ng-container>
+        <div class="block" formGroupName="slope">
+            <p>Slope</p>
+
+            <mat-form-field appearance="fill">
+                <mat-label>Slope value from </mat-label>
+                <mat-select formControlName="metadataKeyOrConstant">
+                    <mat-option *ngFor="let mk of metadataOrKeyTypes" [value]="mk">
+                        {{ mk }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <ng-container [ngSwitch]="form.controls.slope.controls.metadataKeyOrConstant.value">
+                <div
+                    *ngSwitchCase="'MetadataKey'"
+                    fxLayout="row"
+                    fxLayoutAlign="space-between center"
+                    fxLayoutGap="0.5rem"
+                    class="keyOrConstant"
+                >
+                    <mat-form-field appearance="fill" fxFlex>
+                        <mat-label>Slope metadata <i>domain</i></mat-label>
+                        <input matInput type="text" formControlName="domain" />
+                    </mat-form-field>
+                    <mat-form-field appearance="fill" fxFlex>
+                        <mat-label>Slope metadata <i>key</i></mat-label>
+                        <input matInput type="text" formControlName="key" />
+                    </mat-form-field>
+                </div>
+                <div *ngSwitchCase="'Constant'" class="keyOrConstant">
+                    <mat-form-field appearance="fill" fxFlex>
+                        <mat-label>Slope <i>Constant</i></mat-label>
+                        <input matInput type="number" formControlName="constant" />
+                    </mat-form-field>
+                </div>
             </ng-container>
         </div>
 
         <mat-divider></mat-divider>
 
-        <div class="block" fxLayout="column" fxLayoutAlign="start stretch">
-            <ng-container formGroupName="offset">
-                <mat-form-field appearance="fill">
-                    <mat-label>Offset value from </mat-label>
-                    <mat-select formControlName="metadataKeyOrConstant">
-                        <mat-option *ngFor="let mk of metadataOrKeyTypes" [value]="mk">
-                            {{ mk }}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <ng-container [ngSwitch]="form.controls.offset.controls.metadataKeyOrConstant.value">
-                    <div *ngSwitchCase="'MetadataKey'" fxLayout="row">
-                        <mat-form-field appearance="fill">
-                            <mat-label>Offset metadata <i>domain</i></mat-label>
-                            <input matInput type="text" formControlName="domain" />
-                        </mat-form-field>
-                        <span>.</span>
-                        <mat-form-field appearance="fill">
-                            <mat-label>Offset metadata <i>key</i></mat-label>
-                            <input matInput type="text" formControlName="key" />
-                        </mat-form-field>
-                    </div>
-                    <div *ngSwitchCase="'Constant'">
-                        <mat-form-field appearance="fill">
-                            <mat-label>Offset <i>Constant</i></mat-label>
-                            <input matInput type="number" formControlName="constant" />
-                        </mat-form-field>
-                    </div>
-                </ng-container>
+        <div class="block" formGroupName="offset">
+            <p>Offset</p>
+            <mat-form-field appearance="fill">
+                <mat-label>Offset value from </mat-label>
+                <mat-select formControlName="metadataKeyOrConstant">
+                    <mat-option *ngFor="let mk of metadataOrKeyTypes" [value]="mk">
+                        {{ mk }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <ng-container [ngSwitch]="form.controls.offset.controls.metadataKeyOrConstant.value">
+                <div
+                    *ngSwitchCase="'MetadataKey'"
+                    fxLayout="row"
+                    fxLayoutAlign="space-between center"
+                    fxLayoutGap="0.5rem"
+                    class="keyOrConstant"
+                >
+                    <mat-form-field appearance="fill" fxFlex>
+                        <mat-label>Offset metadata <i>domain</i></mat-label>
+                        <input matInput type="text" formControlName="domain" />
+                    </mat-form-field>
+                    <mat-form-field appearance="fill" fxFlex>
+                        <mat-label>Offset metadata <i>key</i></mat-label>
+                        <input matInput type="text" formControlName="key" />
+                    </mat-form-field>
+                </div>
+                <div *ngSwitchCase="'Constant'" class="keyOrConstant">
+                    <mat-form-field appearance="fill" fxFlex>
+                        <mat-label>Offset <i>Constant</i></mat-label>
+                        <input matInput type="number" formControlName="constant" />
+                    </mat-form-field>
+                </div>
             </ng-container>
         </div>
 
         <mat-divider></mat-divider>
         <div class="block">
+            <p>Scale / unscale mode</p>
             <mat-form-field appearance="fill">
                 <mat-label>Scale Type</mat-label>
                 <mat-select formControlName="scaleType">

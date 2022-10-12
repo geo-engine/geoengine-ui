@@ -33,15 +33,18 @@ mat-form-field {
     color: var(--geoengine-warn-color, red);
 }
 
-div {
-    padding-bottom: 0.5rem;
-    padding-top: 1rem;
-}
-
 .scaleType {
     font-weight: bold;
 }
 
 .scaleFormula {
     font-style: italic;
+}
+
+.block {
+    .keyOrConstant {
+        margin: 0;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
 }
