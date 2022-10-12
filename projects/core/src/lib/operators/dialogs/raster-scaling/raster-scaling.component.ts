@@ -36,9 +36,9 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
     readonly inputTypes = [ResultTypes.RASTER];
     readonly rasterDataTypes = RasterDataTypes.ALL_DATATYPES;
 
-    readonly scaleTypes: Array<{formular: string; type: 'scale' | 'unscale'}> = [
-        {formular: 'p_new = (p_old - offset)/slope', type: 'scale'},
-        {formular: 'p_new = p_old * slope + offset', type: 'unscale'},
+    readonly scaleTypes: Array<{formula: string; type: 'scale' | 'unscale'}> = [
+        {formula: 'p_new = (p_old - offset)/slope', type: 'scale'},
+        {formula: 'p_new = p_old * slope + offset', type: 'unscale'},
     ];
 
     readonly metadataOrKeyTypes: Array<'Constant' | 'MetadataKey'> = ['Constant', 'MetadataKey'];
