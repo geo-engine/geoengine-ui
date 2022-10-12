@@ -16,7 +16,7 @@ interface RasterScalingForm {
     layer: FormControl<RasterLayer | undefined>;
     slope: FormGroup<MetadataKeyOrConstantForm>;
     offset: FormGroup<MetadataKeyOrConstantForm>;
-    scaleType: FormControl<'scale' | 'unscale'>;
+    scaleType: FormControl<{formula: string; type: 'scale' | 'unscale'}>;
 }
 
 interface MetadataKeyOrConstantForm {
@@ -92,7 +92,7 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
                 },
                 {validators: [this.numberOrMetadataKeyValidator]},
             ),
-            scaleType: new FormControl(this.scaleTypes[0].type, {
+            scaleType: new FormControl(this.scaleTypes[0], {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
@@ -161,7 +161,7 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
                             params: {
                                 slope,
                                 offset,
-                                scalingMode: scaleType,
+                                scalingMode: scaleType.type,
                             },
                             sources: {
                                 raster: inputWorkflow.operator,

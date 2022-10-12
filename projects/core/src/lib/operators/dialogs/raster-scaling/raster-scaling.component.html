@@ -103,17 +103,23 @@
             <mat-form-field appearance="fill">
                 <mat-label>Scale Type</mat-label>
                 <mat-select formControlName="scaleType">
-                    <mat-option *ngFor="let scaleType of scaleTypes" [value]="scaleType.type">
-                        <span class="scaleType">{{ scaleType.type }}</span> | <span class="scaleFormula">{{ scaleType.formula }}</span>
+                    <mat-option *ngFor="let scaleType of scaleTypes" [value]="scaleType">
+                        <span class="scaleType">{{ scaleType.type }}</span>
                     </mat-option>
                 </mat-select>
             </mat-form-field>
+            <div class="scaleModeHint">
+                The selected <span class="scaleType">{{ form.controls.scaleType.value.type }}</span> mode uses the following formula:
+                <span class="scaleFormula">{{ form.controls.scaleType.value.formula }}</span>
+            </div>
         </div>
+
+        <mat-divider></mat-divider>
 
         <geoengine-operator-output-name
             formControlName="name"
             [suggestion]="
-                (form.controls.layer.valueChanges | async)?.name + ' ' + (form.controls.scaleType.valueChanges | async)?.toString()
+                (form.controls.layer.valueChanges | async)?.name + ' ' + (form.controls.scaleType.valueChanges | async)?.type + 'd'
             "
         >
             <mat-hint align="end" class="error" *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace">
