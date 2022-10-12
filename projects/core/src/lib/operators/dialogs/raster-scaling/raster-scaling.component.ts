@@ -1,7 +1,7 @@
 import {RasterLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
-import {FormControl, FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors} from '@angular/forms';
+import {FormControl, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap} from 'rxjs/operators';
