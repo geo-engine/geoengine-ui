@@ -140,7 +140,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         setTimeout(() => this.navigatePage(this.projectService.getSelectedFeature()));
     }
 
-    showCheckboxColumn() {
+    showCheckboxColumn(): void {
         // Necessary because dropdown-menu is bound to displayedColumns. Since the menu doesn't contain an option for the
         // select-checkbox, that column gets removed on each change as well. It is added back in here.
         if (!this.displayedColumns.find((x) => x === '_____select')) {
