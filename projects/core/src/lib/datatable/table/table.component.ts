@@ -132,22 +132,19 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         this.dataSource.data = data.data;
         this.featureColumns = metadata.dataTypes.keySeq().toArray();
         this.featureColumnDataTypes = metadata.dataTypes.valueSeq().toArray();
-        this.displayedColumns = ['_____select', '_____coordinates', '_____table__start', '_____table__end'].concat(this.featureColumns);
+        if (this.displayedColumns.length === 0) {
+            this.displayedColumns = ['_____select', '_____coordinates', '_____table__start', '_____table__end'].concat(this.featureColumns);
+        }
         this.featureColumnDataTypes = this.getColumnProperties();
-        this.checkboxLabels = this.displayedColumns.filter((element) => element !== '_____select');
-        // this.checkboxLabels = this.displayedColumns; // TODO delete (only used when checkbox can be hidden)
+        this.checkboxLabels = ['_____coordinates', '_____table__start', '_____table__end'].concat(this.featureColumns);
         setTimeout(() => this.navigatePage(this.projectService.getSelectedFeature()));
-    }
-
-    testClick() {
-        console.log('Test');
     }
 
     showCheckboxColumn() {
         // Necessary because dropdown-menu is bound to displayedColumns. Since the menu doesn't contain an option for the
         // select-checkbox, that column gets removed on each change as well. It is added back in here.
         if (!this.displayedColumns.find((x) => x === '_____select')) {
-            this.displayedColumns = this.displayedColumns.reverse().concat('_____select').reverse(); // Is there a better way to prepend?
+            this.displayedColumns = ['_____select'].concat(this.displayedColumns);
         }
     }
 
