@@ -145,7 +145,7 @@ export class RasterResultDescriptor extends ResultDescriptor {
         this.dataType = RasterDataTypes.fromCode(config.dataType);
     }
 
-    static fromDict(dict: RasterResultDescriptorDict): ResultDescriptor {
+    static override fromDict(dict: RasterResultDescriptorDict): ResultDescriptor {
         return new RasterResultDescriptor(dict);
     }
 
@@ -166,7 +166,7 @@ export class VectorResultDescriptor extends ResultDescriptor {
         this.measurements = new Map(Object.entries(config.columns).map(([key, value]) => [key, Measurement.fromDict(value.measurement)]));
     }
 
-    static fromDict(dict: VectorResultDescriptorDict): ResultDescriptor {
+    static override fromDict(dict: VectorResultDescriptorDict): ResultDescriptor {
         return new VectorResultDescriptor(dict);
     }
 

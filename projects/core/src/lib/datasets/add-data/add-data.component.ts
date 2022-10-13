@@ -1,8 +1,9 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
+import {mergeMap, Observable, range, reduce, takeWhile} from 'rxjs';
 import {LayerCollectionNavigationComponent} from '../../layer-collections/layer-collection-navigation/layer-collection-navigation.component';
+import {LayerCollectionService} from '../../layer-collections/layer-collection.service';
 import {LayoutService, SidenavConfig} from '../../layout.service';
 import {AddWorkflowComponent} from '../add-workflow/add-workflow.component';
-import {DatasetListComponent} from '../dataset-list/dataset-list.component';
 import {DrawFeaturesComponent} from '../draw-features/draw-features.component';
 import {UploadComponent} from '../upload/upload.component';
 
@@ -27,7 +28,7 @@ export class AddDataComponent implements OnInit {
      */
     @Input() buttons!: Array<AddDataButton>;
 
-    constructor(private layoutService: LayoutService) {}
+    constructor(protected readonly layoutService: LayoutService) {}
 
     ngOnInit(): void {}
 
@@ -42,22 +43,29 @@ export class AddDataComponent implements OnInit {
         this.layoutService.setSidenavContentComponent(sidenavConfig);
     }
 
-    static createDatasetListButton(): AddDataButton {
-        return {
-            name: 'Datasets',
-            description: 'Available Datasets',
-            icon: 'storage',
-            sidenavConfig: {component: DatasetListComponent, keepParent: true},
-        };
-    }
-
-    static createLayerCollectionButton(): AddDataButton {
-        return {
-            name: 'Layers',
-            description: 'Collection of existing layers',
-            icon: 'layers',
-            sidenavConfig: {component: LayerCollectionNavigationComponent, keepParent: true},
-        };
+    static createLayerRootCollectionButtons(layerService: LayerCollectionService): Observable<Array<AddDataButton>> {
+        const MAX_NUMBER_OF_QUERIES = 10;
+        const BATCH_SIZE = 20;
+        return range(0, MAX_NUMBER_OF_QUERIES).pipe(
+            mergeMap((i) => {
+                const start = i * BATCH_SIZE;
+                return layerService.getRootLayerCollectionItems(start, BATCH_SIZE);
+            }),
+            takeWhile((collection) => collection.items.length > 0),
+            reduce((acc, collection) => {
+                const buttons: Array<AddDataButton> = collection.items.map((item) => ({
+                    name: item.name,
+                    description: item.description,
+                    icon: 'layers',
+                    sidenavConfig: {
+                        component: LayerCollectionNavigationComponent,
+                        keepParent: true,
+                        config: {rootCollectionItem: item},
+                    },
+                }));
+                return acc.concat(buttons);
+            }, [] as Array<AddDataButton>),
+        );
     }
 
     static createUploadButton(): AddDataButton {
