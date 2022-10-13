@@ -82,14 +82,6 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         }
     }
 
-    ngDoCheck(): void {
-        // Necessary because dropdown-menu is bound to displayedColumns. Since the menu doesn't contain an option for the
-        // select-checkbox, that column gets removed on each change as well. It is added back in here.
-        if (!this.displayedColumns.find((x) => x === '_____select')) {
-            this.displayedColumns = this.displayedColumns.reverse().concat('_____select').reverse(); // Is there a better way to prepend?
-        }
-    }
-
     ngAfterViewInit(): void {
         this.dataSource.paginator = this.paginator;
     }
@@ -147,6 +139,18 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         setTimeout(() => this.navigatePage(this.projectService.getSelectedFeature()));
     }
 
+    testClick() {
+        console.log('Test');
+    }
+
+    showCheckboxColumn() {
+        // Necessary because dropdown-menu is bound to displayedColumns. Since the menu doesn't contain an option for the
+        // select-checkbox, that column gets removed on each change as well. It is added back in here.
+        if (!this.displayedColumns.find((x) => x === '_____select')) {
+            this.displayedColumns = this.displayedColumns.reverse().concat('_____select').reverse(); // Is there a better way to prepend?
+        }
+    }
+
     /**
      * Used only by HTML template to display prettier names for default columns inside dropdown menu
      */
@@ -186,7 +190,11 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         // For truncated coordinate view in table
         const coords: string[][] = this.readCoordinates(geometry);
         const contd: string = coords[0].length > 1 ? '...' : '';
-        const output = ` ${coords[0][0]}, ${coords[1][0]} ${contd}`;
+        const displayLength = 5;
+        const output = ` ${this.sliceColumnContent(coords[0][0], displayLength)}, ${this.sliceColumnContent(
+            coords[1][0],
+            displayLength,
+        )} ${contd}`;
         return output;
     }
 

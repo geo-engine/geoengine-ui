@@ -69,7 +69,7 @@
 <mat-form-field id="columnSelector" class="dropdown">
     <mat-label>Select columns</mat-label>
     <mat-select multiple [(ngModel)]="displayedColumns">
-        <mat-option *ngFor="let columnName of checkboxLabels" [value]="columnName">
+        <mat-option *ngFor="let columnName of checkboxLabels" [value]="columnName" (click)="showCheckboxColumn()">
             {{ fixedColumnDescriptors(columnName) }}
         </mat-option>
     </mat-select>
