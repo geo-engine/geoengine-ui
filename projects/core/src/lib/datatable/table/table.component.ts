@@ -133,6 +133,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         this.featureColumns = metadata.dataTypes.keySeq().toArray();
         this.featureColumnDataTypes = metadata.dataTypes.valueSeq().toArray();
         if (this.displayedColumns.length === 0) {
+            // Only true when the table is first created. Prevents "forgetting" selected columns when zooming/scrolling the map
             this.displayedColumns = ['_____select', '_____coordinates', '_____table__start', '_____table__end'].concat(this.featureColumns);
         }
         this.featureColumnDataTypes = this.getColumnProperties();
@@ -140,7 +141,10 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         setTimeout(() => this.navigatePage(this.projectService.getSelectedFeature()));
     }
 
-    showCheckboxColumn(): void {
+    /**
+     * Used by HTML template when (de)selecting a column to make sure the leftmost checkbox column stays visible
+     */
+    prependCheckboxColumn(): void {
         // Necessary because dropdown-menu is bound to displayedColumns. Since the menu doesn't contain an option for the
         // select-checkbox, that column gets removed on each change as well. It is added back in here.
         if (!this.displayedColumns.find((x) => x === '_____select')) {
