@@ -97,6 +97,7 @@ import {LineageGraphComponent} from './provenance/lineage-graph/lineage-graph.co
 import {MeanRasterPixelValuesOverTimeDialogComponent} from './operators/dialogs/mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
 import {RasterVectorJoinComponent} from './operators/dialogs/raster-vector-join/raster-vector-join.component';
 import {RasterTypeConversionComponent} from './operators/dialogs/raster-type-conversion/raster-type-conversion.component';
+import {RasterScalingComponent} from './operators/dialogs/raster-scaling/raster-scaling.component';
 import {PointInPolygonFilterOperatorComponent} from './operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 import {UploadComponent} from './datasets/upload/upload.component';
 import {DataTableComponent} from './datatable/table/table.component';
@@ -259,6 +260,8 @@ const CORE_COMPONENTS = [
     RasterLegendComponent,
     RasterLegendComponent,
     RasterSymbologyEditorComponent,
+    RasterScalingComponent,
+    RasterVectorJoinComponent,
     RasterTypeConversionComponent,
     RasterVectorJoinComponent,
     RenameLayerComponent,
