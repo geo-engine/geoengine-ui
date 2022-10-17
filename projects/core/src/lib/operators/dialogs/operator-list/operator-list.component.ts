@@ -19,6 +19,7 @@ import {ClassHistogramOperatorComponent} from '../class-histogram-operator/class
 import {ColumnRangeFilterComponent} from '../column-range-filter/column-range-filter.component';
 import {RasterTypeConversionComponent} from '../raster-type-conversion/raster-type-conversion.component';
 import {InterpolationComponent} from '../interpolation/interpolation.component';
+import {RasterScalingComponent} from '../raster-scaling/raster-scaling.component';
 import {NeighborhoodAggregateComponent} from '../neighborhood-aggregate/neighborhood-aggregate.component';
 
 /**
@@ -169,6 +170,14 @@ export class OperatorListComponent implements OnInit, OnChanges {
                 ICON_URL: createIconDataUrl('Interpolation'),
             },
             description: 'Interpolates raster data',
+        },
+        {
+            component: RasterScalingComponent,
+            type: {
+                NAME: 'Scale / Unscale Raster Values',
+                ICON_URL: createIconDataUrl('RasterScaling'),
+            },
+            description: 'Transform the values of a raster using offset and scale',
         },
         {
             component: NeighborhoodAggregateComponent,

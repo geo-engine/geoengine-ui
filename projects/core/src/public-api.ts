@@ -71,6 +71,7 @@ export * from './lib/operators/dialogs/neighborhood-aggregate/neighborhood-aggre
 export * from './lib/operators/dialogs/operator-list/operator-list.component';
 export * from './lib/operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 export * from './lib/operators/dialogs/raster-type-conversion/raster-type-conversion.component';
+export * from './lib/operators/dialogs/raster-scaling/raster-scaling.component';
 export * from './lib/operators/dialogs/raster-vector-join/raster-vector-join.component';
 export * from './lib/operators/dialogs/scatterplot-operator/scatterplot-operator.component';
 export * from './lib/operators/dialogs/statistics-plot/statistics-plot.component';

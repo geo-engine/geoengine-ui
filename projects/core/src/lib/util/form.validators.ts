@@ -1,6 +1,6 @@
 import {Observable, Observer} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {AbstractControl, AsyncValidatorFn, ValidationErrors, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidatorFn, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 
 const isFiniteNumber = (value: any): boolean => value !== null && value !== undefined && !isNaN(value) && isFinite(value);
 
@@ -196,6 +196,22 @@ export function valueRelation(
 
 export const isValidUuid = Validators.pattern(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
 
+const validRasterMetadataKey = Validators.pattern(/^([a-zA-Z0-9]+\.)?[a-zA-Z0-9]+$/);
+
+/**
+ * A vaidator that checks if at least on of the provided validators is valid.
+ */
+const oneOrBoth =
+    (first: ValidatorFn, second: ValidatorFn) =>
+    (control: AbstractControl): ValidationErrors | null => {
+        const firstResult = first(control);
+        const secondResult = second(control);
+        if (firstResult && secondResult) {
+            return {...firstResult, ...secondResult, noneOfBoth: true};
+        }
+        return null;
+    };
+
 /**
  * A validator that checks if values are larger than the given value.
  */
@@ -224,4 +240,6 @@ export const geoengineValidators = {
     notOnlyWhitespace,
     uniqueProjectName: uniqueProjectNameValidator,
     largerThan,
+    validRasterMetadataKey,
+    oneOrBoth,
 };
