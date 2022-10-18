@@ -53,7 +53,7 @@
                 <div *ngSwitchCase="'Constant'" class="keyOrConstant">
                     <mat-form-field appearance="fill" fxFlex>
                         <mat-label>Slope <i>Constant</i></mat-label>
-                        <input matInput type="number" formControlName="constant" />
+                        <input matInput type="number" step="any" formControlName="constant" />
                     </mat-form-field>
                 </div>
             </ng-container>
@@ -91,7 +91,7 @@
                 <div *ngSwitchCase="'Constant'" class="keyOrConstant">
                     <mat-form-field appearance="fill" fxFlex>
                         <mat-label>Offset <i>Constant</i></mat-label>
-                        <input matInput type="number" formControlName="constant" />
+                        <input matInput type="number" step="any" formControlName="constant" />
                     </mat-form-field>
                 </div>
             </ng-container>
