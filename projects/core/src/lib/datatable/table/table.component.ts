@@ -47,6 +47,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     displayedColumns: Array<string> = [];
     featureColumns: Array<string> = [];
     featureColumnDataTypes: Array<VectorColumnDataType> = [];
+    checkboxLabels: Array<string> = [];
 
     protected layerDataSubscription?: Subscription = undefined;
     protected selectedFeatureSubscription?: Subscription = undefined;
@@ -131,9 +132,39 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         this.dataSource.data = data.data;
         this.featureColumns = metadata.dataTypes.keySeq().toArray();
         this.featureColumnDataTypes = metadata.dataTypes.valueSeq().toArray();
-        this.displayedColumns = ['_____select', '_____coordinates', '_____table__start', '_____table__end'].concat(this.featureColumns);
+        if (this.displayedColumns.length === 0) {
+            // Only true when the table is first created. Prevents "forgetting" selected columns when zooming/scrolling the map
+            this.displayedColumns = ['_____select', '_____coordinates', '_____table__start', '_____table__end'].concat(this.featureColumns);
+        }
         this.featureColumnDataTypes = this.getColumnProperties();
+        this.checkboxLabels = ['_____coordinates', '_____table__start', '_____table__end'].concat(this.featureColumns);
         setTimeout(() => this.navigatePage(this.projectService.getSelectedFeature()));
+    }
+
+    /**
+     * Used by HTML template when (de)selecting a column to make sure the leftmost checkbox column stays visible
+     */
+    prependCheckboxColumn(): void {
+        // Necessary because dropdown-menu is bound to displayedColumns. Since the menu doesn't contain an option for the
+        // select-checkbox, that column gets removed on each change as well. It is added back in here.
+        if (!this.displayedColumns.find((x) => x === '_____select')) {
+            this.displayedColumns = ['_____select'].concat(this.displayedColumns);
+        }
+    }
+
+    /**
+     * Used only by HTML template to display prettier names for default columns inside dropdown menu
+     */
+    fixedColumnDescriptors(columnName: string): string {
+        return columnName === '_____coordinates'
+            ? 'Coordinates'
+            : columnName === '_____table__start'
+            ? 'Start '
+            : columnName === '_____table__end'
+            ? 'End'
+            : columnName === '_____select' // TODO delete this if hiding select box is not necessary
+            ? 'Select'
+            : columnName;
     }
 
     processRasterLayer(_layer: RasterLayer, _metadata: RasterLayerMetadata, _data: any): void {
@@ -160,7 +191,11 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         // For truncated coordinate view in table
         const coords: string[][] = this.readCoordinates(geometry);
         const contd: string = coords[0].length > 1 ? '...' : '';
-        const output = ` ${coords[0][0]}, ${coords[1][0]} ${contd}`;
+        const displayLength = 5;
+        const output = ` ${this.sliceColumnContent(coords[0][0], displayLength)}, ${this.sliceColumnContent(
+            coords[1][0],
+            displayLength,
+        )} ${contd}`;
         return output;
     }
 
