@@ -851,9 +851,9 @@ export class ProjectService {
     }
 
     /**
-     * Get a stream that signals whether a running query should be aborted because the results are no longer needed
+     * Create a stream that signals whether a running query should be aborted because the results are no longer needed
      */
-    getQueryAbortStream(): Observable<any> {
+    createQueryAbortStream(): Observable<void> {
         const observables: Array<Observable<any>> = [
             this.getTimeStream(),
             this.mapService.getViewportSizeStream(),
@@ -861,7 +861,11 @@ export class ProjectService {
             this.getSpatialReferenceStream(),
         ];
 
-        return combineLatest(observables).pipe(skip(1), take(1));
+        return combineLatest(observables).pipe(
+            skip(1),
+            take(1),
+            map(() => {}),
+        );
     }
 
     /**

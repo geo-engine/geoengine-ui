@@ -312,7 +312,7 @@ export class OlRasterLayerComponent
         this.source.setTileLoadFunction((tile, src) => {
             const client = new XMLHttpRequest();
 
-            const sub = this.projectService.getQueryAbortStream().subscribe((_) => {
+            const sub = this.projectService.createQueryAbortStream().subscribe(() => {
                 client.abort();
                 sub.unsubscribe();
                 this.source.dispatchEvent('tileloaderror');
