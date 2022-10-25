@@ -1,5 +1,5 @@
 import {BehaviorSubject, combineLatest, Observable, Observer, of, ReplaySubject, Subject, Subscription} from 'rxjs';
-import {debounceTime, distinctUntilChanged, first, map, mergeMap, switchMap, tap} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, first, map, mergeMap, skip, switchMap, take, tap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
 
@@ -316,7 +316,7 @@ export class ProjectService {
     getTimeStream(): Observable<Time> {
         return this.project$.pipe(
             map((project) => project.time),
-            distinctUntilChanged(),
+            distinctUntilChanged((t1, t2) => t1.isSame(t2)),
         );
     }
 
@@ -848,6 +848,20 @@ export class ProjectService {
 
     getSelectedFeature(): FeatureSelection {
         return this.selectedFeature$.value;
+    }
+
+    /**
+     * Get a stream that signals whether a running query should be aborted because the results are no longer needed
+     */
+    getQueryAbortStream(): Observable<any> {
+        const observables: Array<Observable<any>> = [
+            this.getTimeStream(),
+            this.mapService.getViewportSizeStream(),
+            this.userService.getSessionTokenForRequest(),
+            this.getSpatialReferenceStream(),
+        ];
+
+        return combineLatest(observables).pipe(skip(1), take(1));
     }
 
     /**

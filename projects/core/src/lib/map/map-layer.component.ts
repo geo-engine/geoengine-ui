@@ -311,10 +311,18 @@ export class OlRasterLayerComponent
 
         this.source.setTileLoadFunction((tile, src) => {
             const client = new XMLHttpRequest();
+
+            const sub = this.projectService.getQueryAbortStream().subscribe((_) => {
+                client.abort();
+                sub.unsubscribe();
+                this.source.dispatchEvent('tileloaderror');
+            });
+
             client.open('GET', src);
             client.responseType = 'blob';
             client.setRequestHeader('Authorization', `Bearer ${this.sessionToken}`);
             client.onload = function (): any {
+                sub.unsubscribe();
                 const data = URL.createObjectURL(client.response);
                 // TODO: proper type cast
                 (tile as any).getImage().src = data;
