@@ -1,5 +1,5 @@
-import {BehaviorSubject, concat, first, ignoreElements, Observable, ReplaySubject} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
+import {BehaviorSubject, concat, first, ignoreElements, Observable, of, ReplaySubject} from 'rxjs';
+import {map, mergeMap, tap} from 'rxjs/operators';
 
 import {
     AfterViewInit,
@@ -27,6 +27,7 @@ import {
     MapContainerComponent,
     MapService,
     NavigationButton,
+    NavigationComponent,
     NotificationService,
     OidcComponent,
     OperatorListButtonGroups,
@@ -68,7 +69,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     readonly layerListVisible$: Observable<boolean>;
     readonly layerDetailViewVisible$: Observable<boolean>;
 
-    readonly addDataConfig = new ReplaySubject<SidenavConfig>(1);
+    readonly addDataConfig = new BehaviorSubject<SidenavConfig | undefined>(undefined);
     readonly navigationButtons = new ReplaySubject<Array<NavigationButton>>(1);
     readonly AddDataComponent = AddDataComponent;
 
@@ -112,8 +113,12 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.middleContainerHeight$ = this.layoutService.getMapHeightStream(totalHeight$).pipe(tap(() => this.mapComponent.resize()));
         this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(totalHeight$);
 
-        this.setupAddDataConfig().subscribe((addDataConfig) => this.addDataConfig.next(addDataConfig));
-        this.setupNavigation().subscribe((navigationButtons) => this.navigationButtons.next(navigationButtons));
+        this.createAddDataConfigStream().subscribe((addDataConfig) => this.addDataConfig.next(addDataConfig));
+        this.createNavigationButtonStream().subscribe((navigationButtons) => {
+            this.navigationButtons.next(navigationButtons);
+            // loading spinners somewhat don't show up without this
+            setTimeout(() => this.changeDetectorRef.detectChanges());
+        });
     }
 
     ngOnInit(): void {
@@ -163,51 +168,74 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.iconRegistry.addSvgIcon('cogs', this.sanitizer.bypassSecurityTrustResourceUrl('assets/icons/cogs.svg'));
     }
 
-    private setupNavigation(): Observable<Array<NavigationButton>> {
+    private createNavigationButtonStream(): Observable<Array<NavigationButton>> {
         return this.addDataConfig.pipe(
             map((addDataConfig) => [
                 {
                     sidenavConfig: {component: OidcComponent},
-                    icon: 'account_circle',
+                    icon: {
+                        type: 'icon',
+                        name: 'account_circle',
+                    },
                     tooltip: 'Login',
                 },
-                {
-                    sidenavConfig: addDataConfig,
-                    icon: 'add',
-                    tooltip: 'Add Data',
-                },
+                addDataConfig
+                    ? NavigationComponent.createAddDataButton(addDataConfig)
+                    : NavigationComponent.createLoadingButton('add data'),
                 {
                     sidenavConfig: {component: OperatorListComponent, config: {operators: AppComponent.createOperatorListButtons()}},
-                    icon: '',
-                    svgIcon: 'cogs',
+                    icon: {
+                        type: 'svg',
+                        name: 'cogs',
+                    },
                     tooltip: 'Operators',
                 },
                 {
                     sidenavConfig: {component: PlotListComponent},
-                    icon: 'equalizer',
+                    icon: {
+                        type: 'icon',
+                        name: 'equalizer',
+                    },
                     tooltip: 'Plots',
                 },
                 {
                     sidenavConfig: {component: TimeConfigComponent},
-                    icon: 'access_time',
+                    icon: {
+                        type: 'icon',
+                        name: 'access_time',
+                    },
                     tooltip: 'Time',
                 },
                 {
                     sidenavConfig: {component: WorkspaceSettingsComponent},
-                    icon: 'settings',
+                    icon: {
+                        type: 'icon',
+                        name: 'settings',
+                    },
                     tooltip: 'Workspace',
                 },
                 {
                     sidenavConfig: {component: HelpComponent},
-                    icon: 'help',
+                    icon: {
+                        type: 'icon',
+                        name: 'help',
+                    },
                     tooltip: 'Help',
                 },
             ]),
         );
     }
 
-    private setupAddDataConfig(): Observable<SidenavConfig> {
-        return this.createAddDataListButtons().pipe(map((buttons) => ({component: AddDataComponent, config: {buttons}})));
+    private createAddDataConfigStream(): Observable<SidenavConfig | undefined> {
+        return this.userService.getSessionStream().pipe(
+            mergeMap(() =>
+                concat(
+                    of(undefined), // first emit undefined to show loading indicator
+                    this.createAddDataListButtons(),
+                ),
+            ),
+            map((buttons) => (buttons ? {component: AddDataComponent, config: {buttons}} : undefined)),
+        );
     }
 
     private createAddDataListButtons(): Observable<Array<AddDataButton>> {

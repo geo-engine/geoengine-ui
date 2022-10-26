@@ -150,4 +150,25 @@ export class NavigationComponent implements OnInit, OnDestroy {
             ),
         };
     }
+
+    static createLoadingButton(tooltip: string): NavigationButton {
+        return {
+            sidenavConfig: undefined,
+            icon: {
+                type: 'loading',
+            },
+            tooltip,
+        };
+    }
+
+    static createAddDataButton(addDataConfig: SidenavConfig): NavigationButton {
+        return {
+            sidenavConfig: addDataConfig,
+            icon: {
+                type: 'icon',
+                name: 'add',
+            },
+            tooltip: 'Add Data',
+        };
+    }
 }

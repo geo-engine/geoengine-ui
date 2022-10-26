@@ -160,7 +160,9 @@ export class MainComponent implements OnInit, AfterViewInit {
         return this.addDataConfig.pipe(
             map((addDataConfig) => [
                 NavigationComponent.createLoginButton(this.userService, this.layoutService, this.config),
-                addDataConfig ? MainComponent.createLoadedAddDataButton(addDataConfig) : MainComponent.createLoadingAddDataButton(),
+                addDataConfig
+                    ? NavigationComponent.createAddDataButton(addDataConfig)
+                    : NavigationComponent.createLoadingButton('add data'),
                 {
                     sidenavConfig: {component: OperatorListComponent, config: {operators: MainComponent.createOperatorListButtons()}},
                     icon: {
@@ -232,27 +234,6 @@ export class MainComponent implements OnInit, AfterViewInit {
             {name: 'Raster', list: OperatorListComponent.DEFAULT_RASTER_OPERATOR_DIALOGS},
             {name: 'Vector', list: OperatorListComponent.DEFAULT_VECTOR_OPERATOR_DIALOGS},
         ];
-    }
-
-    private static createLoadingAddDataButton(): NavigationButton {
-        return {
-            sidenavConfig: undefined,
-            icon: {
-                type: 'loading',
-            },
-            tooltip: 'Add Data',
-        };
-    }
-
-    private static createLoadedAddDataButton(addDataConfig: SidenavConfig): NavigationButton {
-        return {
-            sidenavConfig: addDataConfig,
-            icon: {
-                type: 'icon',
-                name: 'add',
-            },
-            tooltip: 'Add Data',
-        };
     }
 
     @HostListener('window:resize')
