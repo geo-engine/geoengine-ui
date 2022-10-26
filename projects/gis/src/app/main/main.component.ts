@@ -1,4 +1,4 @@
-import {Observable, BehaviorSubject} from 'rxjs';
+import {Observable, BehaviorSubject, of, concat} from 'rxjs';
 import {first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {
@@ -103,13 +103,16 @@ export class MainComponent implements OnInit, AfterViewInit {
         this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(totalHeight$);
 
         this.createAddDataConfigStream().subscribe((addDataConfig) => this.addDataConfig.next(addDataConfig));
-        this.createNavigationButtonStream().subscribe((navigationButtons) => this.navigationButtons.next(navigationButtons));
+        this.createNavigationButtonStream().subscribe((navigationButtons) => {
+            this.navigationButtons.next(navigationButtons);
+            // loading spinners somewhat don't show up without this
+            setTimeout(() => this.changeDetectorRef.detectChanges());
+        });
     }
 
     ngOnInit(): void {
         this.mapService.registerMapComponent(this.mapComponent);
 
-        // TODO: remove if table is back
         this.layoutService.setLayerDetailViewVisibility(false);
     }
 
@@ -199,10 +202,15 @@ export class MainComponent implements OnInit, AfterViewInit {
         );
     }
 
-    private createAddDataConfigStream(): Observable<SidenavConfig> {
+    private createAddDataConfigStream(): Observable<SidenavConfig | undefined> {
         return this.userService.getSessionStream().pipe(
-            mergeMap(() => this.createAddDataListButtons()),
-            map((buttons) => ({component: AddDataComponent, config: {buttons}})),
+            mergeMap(() =>
+                concat(
+                    of(undefined), // first emit undefined to show loading indicator
+                    this.createAddDataListButtons(),
+                ),
+            ),
+            map((buttons) => (buttons ? {component: AddDataComponent, config: {buttons}} : undefined)),
         );
     }
 
