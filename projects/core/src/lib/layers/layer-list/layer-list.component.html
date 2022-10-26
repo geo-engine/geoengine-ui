@@ -8,6 +8,7 @@
     >
         <div class="layer-list-box" *ngIf="(projectService.getLayerStream() | async)?.length === 0">
             <button
+                *ngIf="addAFirstLayerSidenavConfig"
                 mat-button
                 class="no-layer"
                 (click)="layoutService.setSidenavContentComponent(addAFirstLayerSidenavConfig)"
@@ -18,6 +19,7 @@
                 <mat-icon>add</mat-icon>
                 add a first layer
             </button>
+            <mat-spinner class="add-first-layer-spinner" *ngIf="addAFirstLayerSidenavConfig === undefined" diameter="32"></mat-spinner>
         </div>
 
         <div class="layer-list-box" cdkDrag *ngFor="let layer of layerList" cdkDragLockAxis="y">

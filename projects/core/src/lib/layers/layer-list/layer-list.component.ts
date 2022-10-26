@@ -32,7 +32,7 @@ export class LayerListComponent implements OnDestroy, OnChanges {
      * The empty list shows a button to trigger the generation of a first layer.
      * This sidenav config is called to present a date listing or a similar dialog in the sidenav.
      */
-    @Input() addAFirstLayerSidenavConfig: SidenavConfig = {component: AddDataComponent};
+    @Input() addAFirstLayerSidenavConfig?: SidenavConfig = {component: AddDataComponent};
 
     /**
      * sends if the layerlist should be visible

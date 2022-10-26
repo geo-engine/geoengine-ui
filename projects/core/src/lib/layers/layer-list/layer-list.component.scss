@@ -32,6 +32,10 @@
     background-color: var(--geoengine-background-color, white);
 }
 
+.add-first-layer-spinner {
+    margin: 0.25rem auto;
+}
+
 .cdk-drag-preview {
     box-sizing: border-box;
     border-radius: 4px;
