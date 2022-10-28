@@ -313,6 +313,7 @@ export class OlRasterLayerComponent
             const client = new XMLHttpRequest();
 
             const sub = this.projectService.createQueryAbortStream().subscribe(() => {
+                (tile as any).getImage().src = 'assets/images/empty_tile.png';
                 client.abort();
                 sub.unsubscribe();
                 this.source.dispatchEvent('tileloaderror');
