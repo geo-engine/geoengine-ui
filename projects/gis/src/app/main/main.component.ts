@@ -1,5 +1,5 @@
-import {Observable, BehaviorSubject} from 'rxjs';
-import {first, map, tap} from 'rxjs/operators';
+import {Observable, BehaviorSubject, of, concat} from 'rxjs';
+import {first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {
     AfterViewInit,
@@ -63,7 +63,7 @@ export class MainComponent implements OnInit, AfterViewInit {
     readonly layerListVisible$: Observable<boolean>;
     readonly layerDetailViewVisible$: Observable<boolean>;
 
-    readonly addDataConfig = new ReplaySubject<SidenavConfig>(1);
+    readonly addDataConfig = new BehaviorSubject<SidenavConfig | undefined>(undefined);
     readonly navigationButtons = new ReplaySubject<Array<NavigationButton>>(1);
     readonly AddDataComponent = AddDataComponent;
 
@@ -102,14 +102,17 @@ export class MainComponent implements OnInit, AfterViewInit {
         this.middleContainerHeight$ = this.layoutService.getMapHeightStream(totalHeight$).pipe(tap(() => this.mapComponent.resize()));
         this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(totalHeight$);
 
-        this.setupAddDataConfig().subscribe((addDataConfig) => this.addDataConfig.next(addDataConfig));
-        this.setupNavigation().subscribe((navigationButtons) => this.navigationButtons.next(navigationButtons));
+        this.createAddDataConfigStream().subscribe((addDataConfig) => this.addDataConfig.next(addDataConfig));
+        this.createNavigationButtonStream().subscribe((navigationButtons) => {
+            this.navigationButtons.next(navigationButtons);
+            // loading spinners somewhat don't show up without this
+            setTimeout(() => this.changeDetectorRef.detectChanges());
+        });
     }
 
     ngOnInit(): void {
         this.mapService.registerMapComponent(this.mapComponent);
 
-        // TODO: remove if table is back
         this.layoutService.setLayerDetailViewVisibility(false);
     }
 
@@ -153,34 +156,43 @@ export class MainComponent implements OnInit, AfterViewInit {
         return layer.id;
     }
 
-    private setupNavigation(): Observable<Array<NavigationButton>> {
+    private createNavigationButtonStream(): Observable<Array<NavigationButton>> {
         return this.addDataConfig.pipe(
             map((addDataConfig) => [
                 NavigationComponent.createLoginButton(this.userService, this.layoutService, this.config),
-                {
-                    sidenavConfig: addDataConfig,
-                    icon: 'add',
-                    tooltip: 'Add Data',
-                },
+                addDataConfig
+                    ? NavigationComponent.createAddDataButton(addDataConfig)
+                    : NavigationComponent.createLoadingButton('add data'),
                 {
                     sidenavConfig: {component: OperatorListComponent, config: {operators: MainComponent.createOperatorListButtons()}},
-                    icon: '',
-                    svgIcon: 'cogs',
+                    icon: {
+                        type: 'svg',
+                        name: 'cogs',
+                    },
                     tooltip: 'Operators',
                 },
                 {
                     sidenavConfig: {component: PlotListComponent},
-                    icon: 'equalizer',
+                    icon: {
+                        type: 'icon',
+                        name: 'equalizer',
+                    },
                     tooltip: 'Plots',
                 },
                 {
                     sidenavConfig: {component: TimeConfigComponent},
-                    icon: 'access_time',
+                    icon: {
+                        type: 'icon',
+                        name: 'access_time',
+                    },
                     tooltip: 'Time',
                 },
                 {
                     sidenavConfig: {component: WorkspaceSettingsComponent},
-                    icon: 'settings',
+                    icon: {
+                        type: 'icon',
+                        name: 'settings',
+                    },
                     tooltip: 'Workspace',
                 },
                 // {
@@ -192,8 +204,16 @@ export class MainComponent implements OnInit, AfterViewInit {
         );
     }
 
-    private setupAddDataConfig(): Observable<SidenavConfig> {
-        return this.createAddDataListButtons().pipe(map((buttons) => ({component: AddDataComponent, config: {buttons}})));
+    private createAddDataConfigStream(): Observable<SidenavConfig | undefined> {
+        return this.userService.getSessionStream().pipe(
+            mergeMap(() =>
+                concat(
+                    of(undefined), // first emit undefined to show loading indicator
+                    this.createAddDataListButtons(),
+                ),
+            ),
+            map((buttons) => (buttons ? {component: AddDataComponent, config: {buttons}} : undefined)),
+        );
     }
 
     private createAddDataListButtons(): Observable<Array<AddDataButton>> {

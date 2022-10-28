@@ -42,3 +42,7 @@ button {
 button:not(:last-child) {
     margin-bottom: 1rem;
 }
+
+mat-spinner {
+    margin: 0 auto;
+}

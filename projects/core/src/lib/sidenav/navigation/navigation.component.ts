@@ -16,13 +16,34 @@ import {OidcComponent} from '../../users/oidc/oidc.component';
  * upon user-defined events.
  */
 export interface NavigationButton {
-    sidenavConfig: SidenavConfig;
-    icon: string;
-    svgIcon?: string;
+    sidenavConfig?: SidenavConfig;
+    icon: NavigationButtonIconName | NavigationButtonIconNameObservable | NavigationButtonIconSvg | NavigationButtonIconLoading;
     tooltip: string;
     colorObservable?: Observable<ThemePalette>;
-    iconObservable?: Observable<string>;
     tooltipObservable?: Observable<string>;
+}
+
+export interface NavigationButtonIcon {
+    type: string;
+}
+
+export interface NavigationButtonIconName extends NavigationButtonIcon {
+    type: 'icon';
+    name: string;
+}
+
+export interface NavigationButtonIconSvg extends NavigationButtonIcon {
+    type: 'svg';
+    name: string;
+}
+
+export interface NavigationButtonIconNameObservable extends NavigationButtonIcon {
+    type: 'observableIcon';
+    name: Observable<string>;
+}
+
+export interface NavigationButtonIconLoading extends NavigationButtonIcon {
+    type: 'loading';
 }
 
 /**
@@ -71,7 +92,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
     /**
      * Map the sidenavConfig to a theme palette color for the button
      */
-    buttonColor(sidenavConfig: SidenavConfig): ThemePalette {
+    buttonColor(sidenavConfig?: SidenavConfig): ThemePalette {
         if (!sidenavConfig || !this.sidenavConfig) {
             return undefined;
         }
@@ -97,8 +118,10 @@ export class NavigationComponent implements OnInit, OnDestroy {
         loginSidenavConfig = loginSidenavConfig ? loginSidenavConfig : {component: OidcComponent};
         return {
             sidenavConfig: loginSidenavConfig,
-            icon: '',
-            iconObservable: userService.isGuestUserStream().pipe(map((isGuest) => (isGuest ? 'person_outline' : 'person'))),
+            icon: {
+                type: 'observableIcon',
+                name: userService.isGuestUserStream().pipe(map((isGuest) => (isGuest ? 'person_outline' : 'person'))),
+            },
             tooltip: '',
             tooltipObservable: userService.isGuestUserStream().pipe(map((isGuest) => (isGuest ? 'Login' : 'User Account'))),
             colorObservable: combineLatest([userService.isGuestUserStream(), layoutService.getSidenavContentComponentStream()]).pipe(
@@ -125,6 +148,27 @@ export class NavigationComponent implements OnInit, OnDestroy {
                 ),
                 map(([_wasGuest, state]) => state as ThemePalette),
             ),
+        };
+    }
+
+    static createLoadingButton(tooltip: string): NavigationButton {
+        return {
+            sidenavConfig: undefined,
+            icon: {
+                type: 'loading',
+            },
+            tooltip,
+        };
+    }
+
+    static createAddDataButton(addDataConfig: SidenavConfig): NavigationButton {
+        return {
+            sidenavConfig: addDataConfig,
+            icon: {
+                type: 'icon',
+                name: 'add',
+            },
+            tooltip: 'Add Data',
         };
     }
 }
