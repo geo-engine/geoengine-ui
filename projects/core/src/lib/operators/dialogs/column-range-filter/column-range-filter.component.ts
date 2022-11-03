@@ -1,6 +1,6 @@
 import {Component, OnInit, ChangeDetectionStrategy, OnDestroy} from '@angular/core';
 import {ResultTypes} from '../../result-type.model';
-import {FormControl, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap} from 'rxjs/operators';
@@ -19,6 +19,22 @@ import {UserService} from '../../../users/user.service';
 import {extentToBboxDict} from '../../../util/conversions';
 import {VectorData} from '../../../layers/layer-data.model';
 
+interface ColumnRangeFilterForm {
+    layer: FormControl<Layer | null>;
+    name: FormControl<string>;
+    filters: FormArray<FormGroup<FilterForm>>;
+}
+
+interface FilterForm {
+    attribute: FormControl<string>;
+    ranges: FormArray<FormGroup<RangeForm>>;
+}
+
+interface RangeForm {
+    min: FormControl<string>;
+    max: FormControl<string>;
+}
+
 @Component({
     selector: 'geoengine-column-range-filter',
     templateUrl: './column-range-filter.component.html',
@@ -30,7 +46,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
 
     attributes$ = new ReplaySubject<Array<string>>(1);
 
-    form: UntypedFormGroup;
+    form: FormGroup<ColumnRangeFilterForm>;
 
     dataStream: VectorData | undefined;
     histograms = new Map<number, ReplaySubject<VegaChartData>>();
@@ -45,22 +61,23 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
 
     constructor(
         private readonly projectService: ProjectService,
-        private readonly formBuilder: UntypedFormBuilder,
+        private readonly formBuilder: FormBuilder,
         private randomColorService: RandomColorService,
         protected readonly backend: BackendService,
         protected readonly userService: UserService,
         protected readonly mapService: MapService,
     ) {
+        const layerControl = this.formBuilder.control<Layer | null>(null, Validators.required);
         this.form = this.formBuilder.group({
-            layer: [undefined, Validators.required],
-            filters: this.formBuilder.array([]),
-            name: ['Filtered Layer'],
+            layer: layerControl,
+            filters: this.formBuilder.array<FormGroup<FilterForm>>([]),
+            name: this.formBuilder.nonNullable.control<string>('Filtered Layer', [Validators.required]),
         });
         this.addFilter();
         this.subscriptions.push(
             this.form.controls['layer'].valueChanges
                 .pipe(
-                    mergeMap((layer: Layer) => {
+                    mergeMap((layer: Layer | null) => {
                         if (layer) {
                             this.selectLayer(layer);
                         }
@@ -121,14 +138,14 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     }
 
     //control over filters
-    get filters(): UntypedFormArray {
-        return this.form.get('filters') as UntypedFormArray;
+    get filters(): FormArray<FormGroup<FilterForm>> {
+        return this.form.get('filters') as FormArray<FormGroup<FilterForm>>;
     }
 
-    newFilter(): UntypedFormGroup {
+    newFilter(): FormGroup<FilterForm> {
         return this.formBuilder.group({
-            attribute: new FormControl<string>(''),
-            ranges: this.formBuilder.array([]),
+            attribute: this.formBuilder.nonNullable.control<string>(''),
+            ranges: this.formBuilder.array<FormGroup<RangeForm>>([]),
         });
     }
 
@@ -144,14 +161,14 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     }
 
     //control over the ranges
-    ranges(filterIndex: number): UntypedFormArray {
-        return this.filters.at(filterIndex).get('ranges') as UntypedFormArray;
+    ranges(filterIndex: number): FormArray<FormGroup<RangeForm>> {
+        return this.filters.at(filterIndex).get('ranges') as FormArray<FormGroup<RangeForm>>;
     }
 
-    newRange(min: string, max: string): UntypedFormGroup {
+    newRange(min: string, max: string): FormGroup<RangeForm> {
         return this.formBuilder.group({
-            min: new FormControl(min),
-            max: new FormControl(max),
+            min: this.formBuilder.nonNullable.control<string>(min),
+            max: this.formBuilder.nonNullable.control<string>(max),
         });
     }
 
@@ -412,7 +429,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     private createHistogramWorkflowId(attribute: string, filterIndex: number, rangeIndex: number): Observable<UUID> {
         const inputLayer = this.form.controls['layer'].value as Layer;
         const attributeName = attribute;
-        const rangeMinMax = this.ranges(filterIndex).at(rangeIndex).value as {min: number; max: number};
+        const rangeMinMax = this.ranges(filterIndex).at(rangeIndex).value;
         const range = {min: Number(rangeMinMax.min), max: Number(rangeMinMax.max)};
         return this.projectService.getWorkflow(inputLayer.workflowId).pipe(
             mergeMap((workflow) =>
