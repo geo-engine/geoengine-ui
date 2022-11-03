@@ -47,7 +47,11 @@
                     </div>
                     <div fxLayout="row">
                         <mat-form-field>
-                            <mat-select placeholder="Attribute" formControlName="attribute">
+                            <mat-select
+                                placeholder="Attribute"
+                                formControlName="attribute"
+                                (valueChange)="changeValue($event, filterIndex)"
+                            >
                                 <mat-option *ngFor="let attribute of attributes$ | async" [value]="attribute">{{ attribute }}</mat-option>
                             </mat-select>
                         </mat-form-field>
@@ -61,12 +65,11 @@
                                 subtitle="Please select the ranges you want to filter for."
                             ></geoengine-dialog-section-heading>
                             <div fxFlex fxLayout="row" fxLayoutAlign="end">
-                                <button type="button" (click)="addRange(filterIndex)" mat-button color="primary">
+                                <button type="button" (click)="addRange(filterIndex, '', '')" mat-button color="primary">
                                     <mat-icon>add_circle_outline</mat-icon>
                                 </button>
                             </div>
                         </div>
-
                         <div *ngFor="let range of ranges(filterIndex).controls; let rangeIndex = index" fxLayout="column">
                             <div [formGroupName]="rangeIndex" fxLayout="row" fxFlex>
                                 <mat-form-field fxFlex>

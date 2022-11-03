@@ -1,7 +1,7 @@
 import {Component, OnInit, ChangeDetectionStrategy, OnDestroy} from '@angular/core';
 import {ResultTypes} from '../../result-type.model';
-import {UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
-import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
+import {FormControl, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap} from 'rxjs/operators';
 import {Layer, VectorLayer} from '../../../layers/layer.model';
@@ -12,6 +12,10 @@ import {ClusteredPointSymbology, PointSymbology} from '../../../layers/symbology
 import {colorToDict} from '../../../colors/color';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {ColumnRangeFilterDict} from '../../../backend/operator.model';
+import {MapService} from '../../../map/map.service';
+import {BackendService} from '../../../backend/backend.service';
+import {UserService} from '../../../users/user.service';
+import {VectorData} from '../../../layers/layer-data.model';
 
 @Component({
     selector: 'geoengine-column-range-filter',
@@ -26,8 +30,12 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
 
     form: UntypedFormGroup;
 
+    dataStream: VectorData | undefined;
+
     attributeError = false;
     errorHint = 'default error';
+
+    protected layerDataSubscription?: Subscription = undefined;
 
     private subscriptions: Array<Subscription> = [];
     private columnTypes = new Map<string, VectorColumnDataType | undefined>();
@@ -36,6 +44,9 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         private readonly projectService: ProjectService,
         private readonly formBuilder: UntypedFormBuilder,
         private randomColorService: RandomColorService,
+        protected readonly backend: BackendService,
+        protected readonly userService: UserService,
+        protected readonly mapService: MapService,
     ) {
         this.form = this.formBuilder.group({
             layer: [undefined, Validators.required],
@@ -43,11 +54,13 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
             name: ['Filtered Layer'],
         });
         this.addFilter();
-
         this.subscriptions.push(
             this.form.controls['layer'].valueChanges
                 .pipe(
                     mergeMap((layer: Layer) => {
+                        if (layer) {
+                            this.selectLayer(layer);
+                        }
                         if (layer instanceof VectorLayer) {
                             return this.projectService.getVectorLayerMetadata(layer).pipe(
                                 map((metadata: VectorLayerMetadata) => {
@@ -72,6 +85,36 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                 .subscribe((attributes) => this.attributes$.next(attributes)),
         );
     }
+    selectLayer(layer: Layer): void {
+        if (this.layerDataSubscription) {
+            this.layerDataSubscription.unsubscribe();
+        }
+
+        const dataStream = this.projectService.getLayerDataStream(layer);
+        const metadataStream = this.projectService.getLayerMetadata(layer);
+
+        if (!dataStream || !metadataStream) {
+            return;
+        }
+
+        this.layerDataSubscription = combineLatest([dataStream, metadataStream]).subscribe(
+            ([data, metadata]) => {
+                if (layer instanceof VectorLayer) {
+                    this.processVectorLayer(layer, metadata as VectorLayerMetadata, data);
+                }
+            },
+            (_error) => {
+                // TODO: cope with error
+            },
+        );
+    }
+
+    processVectorLayer(_layer: VectorLayer, metadata: VectorLayerMetadata, data: VectorData): void {
+        if (!data.data || (data.data && data.data.length === 0)) {
+            return;
+        }
+        this.dataStream = data;
+    }
 
     //control over filters
     get filters(): UntypedFormArray {
@@ -80,14 +123,14 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
 
     newFilter(): UntypedFormGroup {
         return this.formBuilder.group({
-            attribute: '',
+            attribute: new FormControl<string>(''),
             ranges: this.formBuilder.array([]),
         });
     }
 
     addFilter(): void {
         this.filters.push(this.newFilter());
-        this.addRange(this.filters.length - 1);
+        this.addRange(this.filters.length - 1, '', '');
     }
 
     removeFilter(i: number): void {
@@ -99,21 +142,47 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         return this.filters.at(filterIndex).get('ranges') as UntypedFormArray;
     }
 
-    newRange(): UntypedFormGroup {
+    newRange(min: string, max: string): UntypedFormGroup {
         return this.formBuilder.group({
-            min: '',
-            max: '',
+            min: new FormControl(min),
+            max: new FormControl(max),
         });
     }
 
-    addRange(filterIndex: number): void {
-        this.ranges(filterIndex).push(this.newRange());
+    addRange(filterIndex: number, min: string, max: string): void {
+        this.ranges(filterIndex).push(this.newRange(min, max));
     }
 
+    removeAllRanges(filterIndex: number): void {
+        this.ranges(filterIndex).clear();
+    }
     removeRange(filterIndex: number, rangeIndex: number): void {
         this.ranges(filterIndex).removeAt(rangeIndex);
     }
 
+    updateRange(filterIndex: number, rangeIndex: number, min: number, max: number): void {
+        this.ranges(filterIndex).at(rangeIndex).setValue({min: min.toString(), max: max.toString()});
+    }
+
+    resetFiltersAndRanges(): void {
+        for (let index = 0; index < this.filters.controls.length; index++) {
+            this.removeAllRanges(index);
+        }
+        this.filters.reset();
+    }
+
+    isNumericalAttribute(attribute: string): boolean {
+        if (attribute === '') {
+            return false;
+        } else {
+            const isNum = this.columnTypes.has(attribute) ? this.columnTypes.get(attribute)?.isNumeric : false;
+            if (!isNum || isNum === undefined) {
+                return false;
+            } else {
+                return isNum;
+            }
+        }
+    }
     ngOnInit(): void {}
 
     ngOnDestroy(): void {
@@ -140,6 +209,24 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                 mergeMap((workflowId) => this.createLayer(workflowId, name)),
             )
             .subscribe();
+    }
+
+    changeValue($event: string, filterIndex: number): void {
+        this.removeAllRanges(filterIndex);
+        let minValue = '';
+        let maxValue = '';
+        if (this.isNumericalAttribute($event)) {
+            if (this.dataStream) {
+                const attvalues = this.dataStream.data.map((att) => att.get($event));
+                const min = attvalues.reduce((a, b) => Math.min(a, b));
+                const max = attvalues.reduce((a, b) => Math.max(a, b));
+                minValue = Math.floor(min).toString();
+                maxValue = Math.ceil(max).toString();
+            }
+            this.addRange(filterIndex, minValue, maxValue);
+        } else {
+            this.addRange(filterIndex, minValue, maxValue);
+        }
     }
 
     checkInputErrors(filterValues: any): boolean {
