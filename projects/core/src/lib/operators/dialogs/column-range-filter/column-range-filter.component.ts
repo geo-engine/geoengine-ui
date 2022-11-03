@@ -48,7 +48,6 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
 
     form: FormGroup<ColumnRangeFilterForm>;
 
-    dataStream: VectorData | undefined;
     histograms = new Map<number, ReplaySubject<VegaChartData>>();
 
     attributeError = false;
@@ -58,6 +57,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     protected histogramSubscription?: Subscription;
     private subscriptions: Array<Subscription> = [];
     private columnTypes = new Map<string, VectorColumnDataType | undefined>();
+    private dataStream: VectorData | undefined;
 
     constructor(
         private readonly projectService: ProjectService,
@@ -397,9 +397,6 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
 
     removeHistogram(filterIndex: number): void {
         this.histograms.delete(filterIndex);
-        // if (this.histogramSubscription) {
-        //     this.histogramSubscription.unsubscribe();
-        // }
     }
 
     private createHistogramStream(histogramWorkflowId: ReplaySubject<UUID>): Observable<VegaChartData> {
