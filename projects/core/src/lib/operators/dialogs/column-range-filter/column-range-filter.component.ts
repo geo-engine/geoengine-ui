@@ -7,14 +7,16 @@ import {map, mergeMap} from 'rxjs/operators';
 import {Layer, VectorLayer} from '../../../layers/layer.model';
 import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
 import {VectorColumnDataType, VectorColumnDataTypes} from '../../datatype.model';
-import {WorkflowDict} from '../../../backend/backend.model';
+import {UUID, WorkflowDict} from '../../../backend/backend.model';
 import {ClusteredPointSymbology, PointSymbology} from '../../../layers/symbology/symbology.model';
 import {colorToDict} from '../../../colors/color';
 import {RandomColorService} from '../../../util/services/random-color.service';
-import {ColumnRangeFilterDict} from '../../../backend/operator.model';
+import {ColumnRangeFilterDict, HistogramDict, HistogramParams} from '../../../backend/operator.model';
+import {VegaChartData} from '../../../plots/vega-viewer/vega-viewer.component';
 import {MapService} from '../../../map/map.service';
 import {BackendService} from '../../../backend/backend.service';
 import {UserService} from '../../../users/user.service';
+import {extentToBboxDict} from '../../../util/conversions';
 import {VectorData} from '../../../layers/layer-data.model';
 
 @Component({
@@ -31,12 +33,13 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     form: UntypedFormGroup;
 
     dataStream: VectorData | undefined;
+    histograms = new Map<number, ReplaySubject<VegaChartData>>();
 
     attributeError = false;
     errorHint = 'default error';
 
     protected layerDataSubscription?: Subscription = undefined;
-
+    protected histogramSubscription?: Subscription;
     private subscriptions: Array<Subscription> = [];
     private columnTypes = new Map<string, VectorColumnDataType | undefined>();
 
@@ -62,6 +65,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                             this.selectLayer(layer);
                         }
                         if (layer instanceof VectorLayer) {
+                            this.resetFiltersAndRanges();
                             return this.projectService.getVectorLayerMetadata(layer).pipe(
                                 map((metadata: VectorLayerMetadata) => {
                                     const attribs = metadata.dataTypes
@@ -134,6 +138,8 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     }
 
     removeFilter(i: number): void {
+        //remove histogram
+        this.removeHistogram(i);
         this.filters.removeAt(i);
     }
 
@@ -169,6 +175,10 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
             this.removeAllRanges(index);
         }
         this.filters.reset();
+        this.histograms = new Map<number, ReplaySubject<VegaChartData>>();
+        if (this.histogramSubscription) {
+            this.histogramSubscription.unsubscribe();
+        }
     }
 
     isNumericalAttribute(attribute: string): boolean {
@@ -186,7 +196,22 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     ngOnInit(): void {}
 
     ngOnDestroy(): void {
+        if (this.histogramSubscription) {
+            this.histogramSubscription.unsubscribe();
+        }
+        if (this.layerDataSubscription) {
+            this.layerDataSubscription.unsubscribe();
+        }
         this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    }
+
+    updateBounds(histogramSignal: {binStart: [number, number]} | null, filterIndex: number, rangeIndex: number): void {
+        if (!histogramSignal || !histogramSignal.binStart || histogramSignal.binStart.length !== 2) {
+            return;
+        }
+
+        const [min, max] = histogramSignal.binStart;
+        this.updateRange(filterIndex, rangeIndex, min, max);
     }
 
     /**
@@ -224,8 +249,10 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                 maxValue = Math.ceil(max).toString();
             }
             this.addRange(filterIndex, minValue, maxValue);
+            this.addHistogram(filterIndex, 0, $event);
         } else {
             this.addRange(filterIndex, minValue, maxValue);
+            this.removeHistogram(filterIndex);
         }
     }
 
@@ -336,6 +363,79 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                 isLegendVisible: false,
                 isVisible: true,
             }),
+        );
+    }
+
+    addHistogram(filterIndex: number, rangeIndex: number, attribute: string): void {
+        const histogramWorkflow = new ReplaySubject<UUID>(1);
+        const histogramSubject = new ReplaySubject<VegaChartData>(1);
+        this.createHistogramWorkflowId(attribute, filterIndex, rangeIndex).subscribe((histogramWorkflowId) =>
+            histogramWorkflow.next(histogramWorkflowId),
+        );
+        this.histogramSubscription = this.createHistogramStream(histogramWorkflow).subscribe((histogramData) =>
+            histogramSubject.next(histogramData),
+        );
+        this.histograms.set(filterIndex, histogramSubject);
+    }
+
+    removeHistogram(filterIndex: number): void {
+        this.histograms.delete(filterIndex);
+        // if (this.histogramSubscription) {
+        //     this.histogramSubscription.unsubscribe();
+        // }
+    }
+
+    private createHistogramStream(histogramWorkflowId: ReplaySubject<UUID>): Observable<VegaChartData> {
+        return combineLatest([
+            histogramWorkflowId,
+            this.projectService.getTimeStream(),
+            this.mapService.getViewportSizeStream(),
+            this.userService.getSessionTokenForRequest(),
+            this.projectService.getSpatialReferenceStream(),
+        ]).pipe(
+            mergeMap(([workflowId, time, viewport, sessionToken, sref]) =>
+                this.backend.getPlot(
+                    workflowId,
+                    {
+                        bbox: extentToBboxDict(viewport.extent),
+                        crs: sref.srsString,
+                        spatialResolution: [viewport.resolution, viewport.resolution],
+                        time: time.toDict(),
+                    },
+                    sessionToken,
+                ),
+            ),
+            map((plotData) => plotData.data),
+        );
+    }
+
+    private createHistogramWorkflowId(attribute: string, filterIndex: number, rangeIndex: number): Observable<UUID> {
+        const inputLayer = this.form.controls['layer'].value as Layer;
+        const attributeName = attribute;
+        const rangeMinMax = this.ranges(filterIndex).at(rangeIndex).value as {min: number; max: number};
+        const range = {min: Number(rangeMinMax.min), max: Number(rangeMinMax.max)};
+        return this.projectService.getWorkflow(inputLayer.workflowId).pipe(
+            mergeMap((workflow) =>
+                combineLatest([
+                    of({
+                        type: 'Plot',
+                        operator: {
+                            type: 'Histogram',
+                            params: {
+                                columnName: attributeName,
+                                bounds: range,
+                                interactive: true,
+                            } as HistogramParams,
+                            sources: {
+                                source: workflow.operator,
+                            },
+                        } as HistogramDict,
+                    } as WorkflowDict),
+                    this.userService.getSessionTokenForRequest(),
+                ]),
+            ),
+            mergeMap(([workflow, sessionToken]) => this.backend.registerWorkflow(workflow, sessionToken)),
+            map((workflowRegistration) => workflowRegistration.id),
         );
     }
 }

@@ -24,3 +24,11 @@ mat-form-field {
     color: red;
     white-space: pre-wrap;
 }
+
+.histogram {
+    width: 100%;
+
+    .mat-progress-spinner {
+        margin: 0 auto;
+    }
+}
