@@ -1,5 +1,5 @@
 import {BehaviorSubject, combineLatest, Observable, Observer, of, ReplaySubject, Subject, Subscription} from 'rxjs';
-import {debounceTime, distinctUntilChanged, first, map, mergeMap, skip, switchMap, take, tap} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, first, map, mergeMap, skip, switchMap, tap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
 
@@ -851,9 +851,11 @@ export class ProjectService {
     }
 
     /**
-     * Create a stream that signals whether a running query should be aborted because the results are no longer needed
+     * Create a stream that signals whether a running query should be aborted because the results are no longer needed.
+     * It returns the latest resolution of the map view so the caller can compare it with the resolution at the time of
+     * querying.
      */
-    createQueryAbortStream(): Observable<void> {
+    createQueryAbortStream(): Observable<number> {
         const observables: Array<Observable<any>> = [
             this.getTimeStream(),
             this.mapService.getViewportSizeStream(),
@@ -863,8 +865,7 @@ export class ProjectService {
 
         return combineLatest(observables).pipe(
             skip(1),
-            take(1),
-            map(() => {}),
+            map((a) => a[1].resolution),
         );
     }
 

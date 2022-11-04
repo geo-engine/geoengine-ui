@@ -27,6 +27,8 @@ import {RasterSymbology, Symbology, VectorSymbology} from '../layers/symbology/s
 import {Colorizer} from '../colors/colorizer.model';
 import OlGeometry from 'ol/geom/Geometry';
 import {olExtentToTuple} from '../util/conversions';
+import TileState from 'ol/TileState';
+import {MapService} from './map.service';
 
 type VectorData = any; // TODO: use correct type
 
@@ -55,7 +57,7 @@ export abstract class MapLayerComponent<OL extends OlLayer<OS, any>, OS extends 
     /**
      * Setup of DI
      */
-    protected constructor(protected projectService: ProjectService, source: OS, layer: (_: OS) => OL) {
+    protected constructor(protected projectService: ProjectService, protected mapService: MapService, source: OS, layer: (_: OS) => OL) {
         this.source = source;
         this._mapLayer = layer(source);
     }
@@ -102,9 +104,10 @@ export class OlVectorLayerComponent
 
     protected dataSubscription?: Subscription;
 
-    constructor(protected override projectService: ProjectService) {
+    constructor(protected override projectService: ProjectService, protected override mapService: MapService) {
         super(
             projectService,
+            mapService,
             new OlVectorSource({wrapX: false}),
             (source) =>
                 new OlLayerVector({
@@ -181,9 +184,15 @@ export class OlRasterLayerComponent
     protected spatialReference?: SpatialReference;
     protected time?: Time;
 
-    constructor(protected override projectService: ProjectService, protected backend: BackendService, protected config: Config) {
+    constructor(
+        protected override projectService: ProjectService,
+        protected override mapService: MapService,
+        protected backend: BackendService,
+        protected config: Config,
+    ) {
         super(
             projectService,
+            mapService,
             new OlTileWmsSource({
                 // empty for start
                 params: {},
@@ -311,12 +320,16 @@ export class OlRasterLayerComponent
 
         this.source.setTileLoadFunction((tile, src) => {
             const client = new XMLHttpRequest();
+            const tileZoomLevel: number = (tile as any).getTileCoord()[0];
+            const tileResolution = this.mapService.getView().getResolutionForZoom(tileZoomLevel);
 
-            const sub = this.projectService.createQueryAbortStream().subscribe(() => {
-                (tile as any).getImage().src = 'assets/images/empty_tile.png';
-                client.abort();
-                sub.unsubscribe();
-                this.source.dispatchEvent('tileloaderror');
+            const sub = this.projectService.createQueryAbortStream().subscribe((newResolution) => {
+                if (newResolution !== tileResolution) {
+                    (tile as any).setState(TileState.EMPTY);
+                    client.abort();
+                    sub.unsubscribe();
+                    this.source.dispatchEvent('tileloadend');
+                }
             });
 
             client.open('GET', src);
