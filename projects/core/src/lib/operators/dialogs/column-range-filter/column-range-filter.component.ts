@@ -58,6 +58,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     private subscriptions: Array<Subscription> = [];
     private columnTypes = new Map<string, VectorColumnDataType | undefined>();
     private dataStream: VectorData | undefined;
+    private currentLayerid: number = -1;
 
     constructor(
         private readonly projectService: ProjectService,
@@ -79,10 +80,17 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                 .pipe(
                     mergeMap((layer: Layer | null) => {
                         if (layer instanceof VectorLayer) {
-                            this.layerDataSubscription = this.projectService.getLayerDataStream(layer).pipe(map((data) => {
-                                this.dataStream = data;
-                            })).subscribe();
-                            this.resetFiltersAndRanges();
+                            this.layerDataSubscription = this.projectService
+                                .getLayerDataStream(layer)
+                                .pipe(
+                                    map((data) => {
+                                        this.dataStream = data;
+                                    }),
+                                )
+                                .subscribe();
+                            // reset filters and ranges only when a new Layer is selected
+                            if (this.currentLayerid !== layer.id) this.resetFiltersAndRanges();
+                            this.currentLayerid = layer.id;
                             return this.projectService.getVectorLayerMetadata(layer).pipe(
                                 map((metadata: VectorLayerMetadata) => {
                                     const attribs = metadata.dataTypes
@@ -106,7 +114,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                 .subscribe((attributes) => this.attributes$.next(attributes)),
         );
     }
-   
+
     //control over filters
     get filters(): FormArray<FormGroup<FilterForm>> {
         return this.form.get('filters') as FormArray<FormGroup<FilterForm>>;
@@ -125,7 +133,6 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     }
 
     removeFilter(i: number): void {
-        //remove histogram
         this.removeHistogram(i);
         this.filters.removeAt(i);
     }
