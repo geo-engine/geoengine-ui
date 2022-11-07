@@ -14,7 +14,10 @@ import {
 import {Subject, Subscription} from 'rxjs';
 
 import {Layer as OlLayer, Tile as OlLayerTile, Vector as OlLayerVector} from 'ol/layer';
+import {ImageTile as OlImageTile} from 'ol';
 import {Source as OlSource, TileWMS as OlTileWmsSource, Vector as OlVectorSource} from 'ol/source';
+import {intersects as olIntersects} from 'ol/extent';
+import {get as olGetProj} from 'ol/proj';
 import {Config} from '../config.service';
 import {ProjectService} from '../project/project.service';
 import {LoadingState} from '../project/loading-state.model';
@@ -29,6 +32,7 @@ import OlGeometry from 'ol/geom/Geometry';
 import {olExtentToTuple} from '../util/conversions';
 import TileState from 'ol/TileState';
 import {MapService} from './map.service';
+import {Projection} from 'ol/proj';
 
 type VectorData = any; // TODO: use correct type
 
@@ -318,14 +322,23 @@ export class OlRasterLayerComponent
             wrapX: false,
         });
 
-        this.source.setTileLoadFunction((tile, src) => {
-            const client = new XMLHttpRequest();
-            const tileZoomLevel: number = (tile as any).getTileCoord()[0];
+        const proj = olGetProj(this.spatialReference.srsString) as Projection;
+        const tileGrid = this.source.getTileGridForProjection(proj);
+
+        this.source.setTileLoadFunction((olTile, src) => {
+            const tile = olTile as OlImageTile;
+            const tileCoord = tile.getTileCoord();
+            const tileZoomLevel = tileCoord[0];
+            const tileExtent = tileGrid.getTileCoordExtent(tileCoord);
+
             const tileResolution = this.mapService.getView().getResolutionForZoom(tileZoomLevel);
+            const mapExtent = this.mapService.getViewportSize().extent;
+
+            const client = new XMLHttpRequest();
 
             const sub = this.projectService.createQueryAbortStream().subscribe((newResolution) => {
-                if (newResolution !== tileResolution) {
-                    (tile as any).setState(TileState.EMPTY);
+                if (newResolution !== tileResolution || !olIntersects(mapExtent, tileExtent)) {
+                    tile.setState(TileState.EMPTY);
                     client.abort();
                     sub.unsubscribe();
                     this.source.dispatchEvent('tileloadend');
