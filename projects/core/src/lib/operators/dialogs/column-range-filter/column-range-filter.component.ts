@@ -78,10 +78,10 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
             this.form.controls['layer'].valueChanges
                 .pipe(
                     mergeMap((layer: Layer | null) => {
-                        if (layer) {
-                            this.selectLayer(layer);
-                        }
                         if (layer instanceof VectorLayer) {
+                            this.layerDataSubscription = this.projectService.getLayerDataStream(layer).pipe(map((data) => {
+                                this.dataStream = data;
+                            })).subscribe();
                             this.resetFiltersAndRanges();
                             return this.projectService.getVectorLayerMetadata(layer).pipe(
                                 map((metadata: VectorLayerMetadata) => {
@@ -106,37 +106,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                 .subscribe((attributes) => this.attributes$.next(attributes)),
         );
     }
-    selectLayer(layer: Layer): void {
-        if (this.layerDataSubscription) {
-            this.layerDataSubscription.unsubscribe();
-        }
-
-        const dataStream = this.projectService.getLayerDataStream(layer);
-        const metadataStream = this.projectService.getLayerMetadata(layer);
-
-        if (!dataStream || !metadataStream) {
-            return;
-        }
-
-        this.layerDataSubscription = combineLatest([dataStream, metadataStream]).subscribe(
-            ([data, metadata]) => {
-                if (layer instanceof VectorLayer) {
-                    this.processVectorLayer(layer, metadata as VectorLayerMetadata, data);
-                }
-            },
-            (_error) => {
-                // TODO: cope with error
-            },
-        );
-    }
-
-    processVectorLayer(_layer: VectorLayer, metadata: VectorLayerMetadata, data: VectorData): void {
-        if (!data.data || (data.data && data.data.length === 0)) {
-            return;
-        }
-        this.dataStream = data;
-    }
-
+   
     //control over filters
     get filters(): FormArray<FormGroup<FilterForm>> {
         return this.form.get('filters') as FormArray<FormGroup<FilterForm>>;
