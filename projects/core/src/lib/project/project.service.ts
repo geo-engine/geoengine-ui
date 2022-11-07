@@ -865,7 +865,7 @@ export class ProjectService {
 
         return combineLatest(observables).pipe(
             skip(1),
-            map((a) => a[1].resolution),
+            map(([_t, viewportSize, _session, _sref]) => viewportSize.resolution),
         );
     }
 
