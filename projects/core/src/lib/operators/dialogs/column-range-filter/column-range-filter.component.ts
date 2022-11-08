@@ -17,7 +17,6 @@ import {MapService} from '../../../map/map.service';
 import {BackendService} from '../../../backend/backend.service';
 import {UserService} from '../../../users/user.service';
 import {extentToBboxDict} from '../../../util/conversions';
-import {VectorData} from '../../../layers/layer-data.model';
 
 interface ColumnRangeFilterForm {
     layer: FormControl<Layer | null>;
@@ -53,10 +52,9 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     attributeError = false;
     errorHint = 'default error';
 
-    protected histogramSubscription?: Subscription;
     private subscriptions: Array<Subscription> = [];
     private columnTypes = new Map<string, VectorColumnDataType | undefined>();
-    private currentLayerid: number = -1;
+    private currentLayerid = -1;
 
     constructor(
         private readonly projectService: ProjectService,
@@ -160,9 +158,6 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         }
         this.filters.reset();
         this.histograms = new Map<number, ReplaySubject<VegaChartData>>();
-        if (this.histogramSubscription) {
-            this.histogramSubscription.unsubscribe();
-        }
     }
 
     isNumericalAttribute(attribute: string): boolean {
@@ -180,9 +175,6 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     ngOnInit(): void {}
 
     ngOnDestroy(): void {
-        if (this.histogramSubscription) {
-            this.histogramSubscription.unsubscribe();
-        }
         this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
@@ -221,7 +213,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         this.removeAllRanges(filterIndex);
         this.addRange(filterIndex, '', '');
         if (this.isNumericalAttribute($event)) {
-            this.addHistogram(filterIndex, 0, $event);
+            this.addHistogram(filterIndex, $event);
         } else {
             this.removeHistogram(filterIndex);
         }
@@ -337,15 +329,11 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         );
     }
 
-    addHistogram(filterIndex: number, rangeIndex: number, attribute: string): void {
+    addHistogram(filterIndex: number, attribute: string): void {
         const histogramWorkflow = new ReplaySubject<UUID>(1);
         const histogramSubject = new ReplaySubject<VegaChartData>(1);
-        this.createHistogramWorkflowId(attribute, filterIndex).subscribe((histogramWorkflowId) =>
-            histogramWorkflow.next(histogramWorkflowId),
-        );
-        this.histogramSubscription = this.createHistogramStream(histogramWorkflow).subscribe((histogramData) =>
-            histogramSubject.next(histogramData),
-        );
+        this.createHistogramWorkflowId(attribute).subscribe((histogramWorkflowId) => histogramWorkflow.next(histogramWorkflowId));
+        this.createHistogramStream(histogramWorkflow).subscribe((histogramData) => histogramSubject.next(histogramData));
         this.histograms.set(filterIndex, histogramSubject);
     }
 
@@ -377,7 +365,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         );
     }
 
-    private createHistogramWorkflowId(attribute: string, filterIndex: number): Observable<UUID> {
+    private createHistogramWorkflowId(attribute: string): Observable<UUID> {
         const inputLayer = this.form.controls['layer'].value as Layer;
         const attributeName = attribute;
         return this.projectService.getWorkflow(inputLayer.workflowId).pipe(
