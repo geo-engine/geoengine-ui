@@ -50,7 +50,7 @@
                             <mat-select
                                 placeholder="Attribute"
                                 formControlName="attribute"
-                                (valueChange)="changeValue($event, filterIndex)"
+                                (valueChange)="changeAttributeValue($event, filterIndex)"
                             >
                                 <mat-option *ngFor="let attribute of attributes$ | async" [value]="attribute">{{ attribute }}</mat-option>
                             </mat-select>

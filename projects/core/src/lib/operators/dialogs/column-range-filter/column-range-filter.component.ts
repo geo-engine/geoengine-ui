@@ -53,11 +53,9 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     attributeError = false;
     errorHint = 'default error';
 
-    protected layerDataSubscription?: Subscription = undefined;
     protected histogramSubscription?: Subscription;
     private subscriptions: Array<Subscription> = [];
     private columnTypes = new Map<string, VectorColumnDataType | undefined>();
-    private dataStream: VectorData | undefined;
     private currentLayerid: number = -1;
 
     constructor(
@@ -80,14 +78,6 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                 .pipe(
                     mergeMap((layer: Layer | null) => {
                         if (layer instanceof VectorLayer) {
-                            this.layerDataSubscription = this.projectService
-                                .getLayerDataStream(layer)
-                                .pipe(
-                                    map((data) => {
-                                        this.dataStream = data;
-                                    }),
-                                )
-                                .subscribe();
                             // reset filters and ranges only when a new Layer is selected
                             if (this.currentLayerid !== layer.id) this.resetFiltersAndRanges();
                             this.currentLayerid = layer.id;
@@ -193,9 +183,6 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         if (this.histogramSubscription) {
             this.histogramSubscription.unsubscribe();
         }
-        if (this.layerDataSubscription) {
-            this.layerDataSubscription.unsubscribe();
-        }
         this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
@@ -230,22 +217,12 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
             .subscribe();
     }
 
-    changeValue($event: string, filterIndex: number): void {
+    changeAttributeValue($event: string, filterIndex: number): void {
         this.removeAllRanges(filterIndex);
-        let minValue = '';
-        let maxValue = '';
+        this.addRange(filterIndex, '', '');
         if (this.isNumericalAttribute($event)) {
-            if (this.dataStream) {
-                const attvalues = this.dataStream.data.map((att) => att.get($event));
-                const min = attvalues.reduce((a, b) => Math.min(a, b));
-                const max = attvalues.reduce((a, b) => Math.max(a, b));
-                minValue = Math.floor(min).toString();
-                maxValue = Math.ceil(max).toString();
-            }
-            this.addRange(filterIndex, minValue, maxValue);
             this.addHistogram(filterIndex, 0, $event);
         } else {
-            this.addRange(filterIndex, minValue, maxValue);
             this.removeHistogram(filterIndex);
         }
     }
@@ -363,7 +340,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     addHistogram(filterIndex: number, rangeIndex: number, attribute: string): void {
         const histogramWorkflow = new ReplaySubject<UUID>(1);
         const histogramSubject = new ReplaySubject<VegaChartData>(1);
-        this.createHistogramWorkflowId(attribute, filterIndex, rangeIndex).subscribe((histogramWorkflowId) =>
+        this.createHistogramWorkflowId(attribute, filterIndex).subscribe((histogramWorkflowId) =>
             histogramWorkflow.next(histogramWorkflowId),
         );
         this.histogramSubscription = this.createHistogramStream(histogramWorkflow).subscribe((histogramData) =>
@@ -400,11 +377,9 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         );
     }
 
-    private createHistogramWorkflowId(attribute: string, filterIndex: number, rangeIndex: number): Observable<UUID> {
+    private createHistogramWorkflowId(attribute: string, filterIndex: number): Observable<UUID> {
         const inputLayer = this.form.controls['layer'].value as Layer;
         const attributeName = attribute;
-        const rangeMinMax = this.ranges(filterIndex).at(rangeIndex).value;
-        const range = {min: Number(rangeMinMax.min), max: Number(rangeMinMax.max)};
         return this.projectService.getWorkflow(inputLayer.workflowId).pipe(
             mergeMap((workflow) =>
                 combineLatest([
@@ -414,7 +389,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                             type: 'Histogram',
                             params: {
                                 columnName: attributeName,
-                                bounds: range,
+                                bounds: 'data',
                                 interactive: true,
                             } as HistogramParams,
                             sources: {
