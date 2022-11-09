@@ -1,5 +1,5 @@
 import {BehaviorSubject, combineLatest, Observable, Observer, of, ReplaySubject, Subject, Subscription} from 'rxjs';
-import {debounceTime, distinctUntilChanged, first, map, mergeMap, skip, switchMap, tap} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, filter, first, map, mergeMap, skip, switchMap, take, tap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
 
@@ -29,13 +29,14 @@ import {
 import {UserService} from '../users/user.service';
 import {LayerData, RasterData, VectorData} from '../layers/layer-data.model';
 import {extentToBboxDict} from '../util/conversions';
-import {MapService} from '../map/map.service';
+import {Extent, MapService} from '../map/map.service';
 import {Session} from '../users/session.model';
 import {HasPlotId, Plot} from '../plots/plot.model';
 import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata.model';
 import {Symbology, ClusteredPointSymbology, PointSymbology} from '../layers/symbology/symbology.model';
 import OlFeature from 'ol/Feature';
 import OlGeometry from 'ol/geom/Geometry';
+import {intersects as olIntersects} from 'ol/extent';
 import {getProjectionTarget} from '../util/spatial_reference';
 import {ReprojectionDict, VisualPointClusteringParams} from '../backend/operator.model';
 import {SpatialReferenceService} from '../spatial-references/spatial-reference.service';
@@ -852,10 +853,10 @@ export class ProjectService {
 
     /**
      * Create a stream that signals whether a running query should be aborted because the results are no longer needed.
-     * It returns the latest resolution of the map view so the caller can compare it with the resolution at the time of
-     * querying.
+     * It takes the current resolution and extent of a tile at the time of querying as a parameter in order to determine
+     * whether a change on the map view makes the results obsolete.
      */
-    createQueryAbortStream(): Observable<number> {
+    createQueryAbortStream(tileResolution: number, tileExtent: Extent): Observable<void> {
         const observables: Array<Observable<any>> = [
             this.getTimeStream(),
             this.mapService.getViewportSizeStream(),
@@ -865,7 +866,12 @@ export class ProjectService {
 
         return combineLatest(observables).pipe(
             skip(1),
-            map(([_t, viewportSize, _session, _sref]) => viewportSize.resolution),
+            filter(
+                ([_t, viewportSize, _session, _sref]) =>
+                    viewportSize.resolution !== tileResolution || !olIntersects(tileExtent, viewportSize.extent),
+            ),
+            take(1),
+            map(() => {}),
         );
     }
 

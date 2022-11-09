@@ -16,7 +16,6 @@ import {Subject, Subscription} from 'rxjs';
 import {Layer as OlLayer, Tile as OlLayerTile, Vector as OlLayerVector} from 'ol/layer';
 import {ImageTile as OlImageTile} from 'ol';
 import {Source as OlSource, TileWMS as OlTileWmsSource, Vector as OlVectorSource} from 'ol/source';
-import {intersects as olIntersects} from 'ol/extent';
 import {get as olGetProj} from 'ol/proj';
 import {Config} from '../config.service';
 import {ProjectService} from '../project/project.service';
@@ -31,7 +30,7 @@ import {Colorizer} from '../colors/colorizer.model';
 import OlGeometry from 'ol/geom/Geometry';
 import {olExtentToTuple} from '../util/conversions';
 import TileState from 'ol/TileState';
-import {MapService} from './map.service';
+import {Extent, MapService} from './map.service';
 import {Projection} from 'ol/proj';
 
 type VectorData = any; // TODO: use correct type
@@ -329,31 +328,30 @@ export class OlRasterLayerComponent
             const tile = olTile as OlImageTile;
             const tileCoord = tile.getTileCoord();
             const tileZoomLevel = tileCoord[0];
-            const tileExtent = tileGrid.getTileCoordExtent(tileCoord);
+            const tileExtent = tileGrid.getTileCoordExtent(tileCoord) as Extent;
 
             const tileResolution = this.mapService.getView().getResolutionForZoom(tileZoomLevel);
-            const mapExtent = this.mapService.getViewportSize().extent;
 
             const client = new XMLHttpRequest();
 
-            const sub = this.projectService.createQueryAbortStream().subscribe((newResolution) => {
-                if (newResolution !== tileResolution || !olIntersects(mapExtent, tileExtent)) {
-                    tile.setState(TileState.EMPTY);
-                    client.abort();
-                    sub.unsubscribe();
-                    this.source.dispatchEvent('tileloadend');
-                }
-            });
+            const cancelSub = this.projectService.createQueryAbortStream(tileResolution, tileExtent).subscribe(() => client.abort());
 
             client.open('GET', src);
             client.responseType = 'blob';
             client.setRequestHeader('Authorization', `Bearer ${this.sessionToken}`);
-            client.onload = function (): any {
-                sub.unsubscribe();
-                const data = URL.createObjectURL(client.response);
-                // TODO: proper type cast
-                (tile as any).getImage().src = data;
-            };
+            client.addEventListener('loadend', (_event) => {
+                cancelSub.unsubscribe();
+                const data = client.response;
+
+                if (!data) {
+                    tile.setState(TileState.ERROR);
+                } else {
+                    (tile as any).getImage().src = URL.createObjectURL(data);
+                }
+            });
+            client.addEventListener('error', () => {
+                tile.setState(TileState.ERROR);
+            });
             client.send();
         });
 
