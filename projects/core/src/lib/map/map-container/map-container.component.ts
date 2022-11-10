@@ -537,6 +537,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             constrainResolution: true, // no intermediate zoom levels
             multiWorld: true,
         });
+        this.mapService.setView(this.view);
         this.maps.forEach((map) => map.setView(this.view));
 
         if (focusExtent) {
