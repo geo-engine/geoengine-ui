@@ -853,10 +853,12 @@ export class ProjectService {
 
     /**
      * Create a stream that signals whether a running query should be aborted because the results are no longer needed.
-     * It takes the current resolution and extent of a tile at the time of querying as a parameter in order to determine
+     * It takes the current zoomLevel and extent of a tile at the time of querying as a parameter in order to determine
      * whether a change on the map view makes the results obsolete.
      */
-    createQueryAbortStream(tileResolution: number, tileExtent: Extent): Observable<void> {
+    createQueryAbortStream(tileZoomLevel: number, tileExtent: Extent): Observable<void> {
+        const tileResolution = this.mapService.getView().getResolutionForZoom(tileZoomLevel);
+
         const observables: Array<Observable<any>> = [
             this.getTimeStream(),
             this.mapService.getViewportSizeStream(),

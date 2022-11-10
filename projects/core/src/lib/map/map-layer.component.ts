@@ -30,7 +30,7 @@ import {Colorizer} from '../colors/colorizer.model';
 import OlGeometry from 'ol/geom/Geometry';
 import {olExtentToTuple} from '../util/conversions';
 import TileState from 'ol/TileState';
-import {Extent, MapService} from './map.service';
+import {Extent} from './map.service';
 import {Projection} from 'ol/proj';
 
 type VectorData = any; // TODO: use correct type
@@ -60,7 +60,7 @@ export abstract class MapLayerComponent<OL extends OlLayer<OS, any>, OS extends 
     /**
      * Setup of DI
      */
-    protected constructor(protected projectService: ProjectService, protected mapService: MapService, source: OS, layer: (_: OS) => OL) {
+    protected constructor(protected projectService: ProjectService, source: OS, layer: (_: OS) => OL) {
         this.source = source;
         this._mapLayer = layer(source);
     }
@@ -107,10 +107,9 @@ export class OlVectorLayerComponent
 
     protected dataSubscription?: Subscription;
 
-    constructor(protected override projectService: ProjectService, protected override mapService: MapService) {
+    constructor(protected override projectService: ProjectService) {
         super(
             projectService,
-            mapService,
             new OlVectorSource({wrapX: false}),
             (source) =>
                 new OlLayerVector({
@@ -187,15 +186,9 @@ export class OlRasterLayerComponent
     protected spatialReference?: SpatialReference;
     protected time?: Time;
 
-    constructor(
-        protected override projectService: ProjectService,
-        protected override mapService: MapService,
-        protected backend: BackendService,
-        protected config: Config,
-    ) {
+    constructor(protected override projectService: ProjectService, protected backend: BackendService, protected config: Config) {
         super(
             projectService,
-            mapService,
             new OlTileWmsSource({
                 // empty for start
                 params: {},
@@ -330,11 +323,9 @@ export class OlRasterLayerComponent
             const tileZoomLevel = tileCoord[0];
             const tileExtent = tileGrid.getTileCoordExtent(tileCoord) as Extent;
 
-            const tileResolution = this.mapService.getView().getResolutionForZoom(tileZoomLevel);
-
             const client = new XMLHttpRequest();
 
-            const cancelSub = this.projectService.createQueryAbortStream(tileResolution, tileExtent).subscribe(() => client.abort());
+            const cancelSub = this.projectService.createQueryAbortStream(tileZoomLevel, tileExtent).subscribe(() => client.abort());
 
             client.open('GET', src);
             client.responseType = 'blob';
