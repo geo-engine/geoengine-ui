@@ -1,17 +1,40 @@
 import {Component, OnInit, ChangeDetectionStrategy, OnDestroy} from '@angular/core';
 import {ResultTypes} from '../../result-type.model';
-import {UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
-import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap} from 'rxjs/operators';
 import {Layer, VectorLayer} from '../../../layers/layer.model';
 import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
 import {VectorColumnDataType, VectorColumnDataTypes} from '../../datatype.model';
-import {WorkflowDict} from '../../../backend/backend.model';
+import {UUID, WorkflowDict} from '../../../backend/backend.model';
 import {ClusteredPointSymbology, PointSymbology} from '../../../layers/symbology/symbology.model';
 import {colorToDict} from '../../../colors/color';
 import {RandomColorService} from '../../../util/services/random-color.service';
-import {ColumnRangeFilterDict} from '../../../backend/operator.model';
+import {ColumnRangeFilterDict, HistogramDict, HistogramParams} from '../../../backend/operator.model';
+import {VegaChartData} from '../../../plots/vega-viewer/vega-viewer.component';
+import {MapService} from '../../../map/map.service';
+import {BackendService} from '../../../backend/backend.service';
+import {UserService} from '../../../users/user.service';
+import {extentToBboxDict} from '../../../util/conversions';
+import {geoengineValidators} from '../../../util/form.validators';
+
+interface ColumnRangeFilterForm {
+    layer: FormControl<Layer | null>;
+    name: FormControl<string>;
+    filters: FormArray<FormGroup<FilterForm>>;
+}
+
+interface FilterForm {
+    attribute: FormControl<string>;
+    ranges: FormArray<FormGroup<RangeForm>>;
+    histogram: FormControl<ReplaySubject<VegaChartData> | null>;
+}
+
+interface RangeForm {
+    min: FormControl<string>;
+    max: FormControl<string>;
+}
 
 @Component({
     selector: 'geoengine-column-range-filter',
@@ -24,31 +47,35 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
 
     attributes$ = new ReplaySubject<Array<string>>(1);
 
-    form: UntypedFormGroup;
-
-    attributeError = false;
-    errorHint = 'default error';
+    form: FormGroup<ColumnRangeFilterForm>;
 
     private subscriptions: Array<Subscription> = [];
     private columnTypes = new Map<string, VectorColumnDataType | undefined>();
+    private currentLayerid = -1;
 
     constructor(
         private readonly projectService: ProjectService,
-        private readonly formBuilder: UntypedFormBuilder,
+        private readonly formBuilder: FormBuilder,
         private randomColorService: RandomColorService,
+        protected readonly backend: BackendService,
+        protected readonly userService: UserService,
+        protected readonly mapService: MapService,
     ) {
+        const layerControl = this.formBuilder.control<Layer | null>(null, Validators.required);
         this.form = this.formBuilder.group({
-            layer: [undefined, Validators.required],
-            filters: this.formBuilder.array([]),
-            name: ['Filtered Layer'],
+            layer: layerControl,
+            filters: this.formBuilder.array<FormGroup<FilterForm>>([]),
+            name: this.formBuilder.nonNullable.control<string>('Filtered Layer', [Validators.required]),
         });
         this.addFilter();
-
         this.subscriptions.push(
             this.form.controls['layer'].valueChanges
                 .pipe(
-                    mergeMap((layer: Layer) => {
+                    mergeMap((layer: Layer | null) => {
                         if (layer instanceof VectorLayer) {
+                            // reset filters and ranges only when a new Layer is selected
+                            if (this.currentLayerid !== layer.id) this.resetFiltersAndRanges();
+                            this.currentLayerid = layer.id;
                             return this.projectService.getVectorLayerMetadata(layer).pipe(
                                 map((metadata: VectorLayerMetadata) => {
                                     const attribs = metadata.dataTypes
@@ -74,20 +101,21 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     }
 
     //control over filters
-    get filters(): UntypedFormArray {
-        return this.form.get('filters') as UntypedFormArray;
+    get filters(): FormArray<FormGroup<FilterForm>> {
+        return this.form.get('filters') as FormArray<FormGroup<FilterForm>>;
     }
 
-    newFilter(): UntypedFormGroup {
+    newFilter(): FormGroup<FilterForm> {
         return this.formBuilder.group({
-            attribute: '',
-            ranges: this.formBuilder.array([]),
+            attribute: this.formBuilder.nonNullable.control<string>(''),
+            ranges: this.formBuilder.array<FormGroup<RangeForm>>([]),
+            histogram: this.formBuilder.control<ReplaySubject<VegaChartData> | null>(null),
         });
     }
 
     addFilter(): void {
         this.filters.push(this.newFilter());
-        this.addRange(this.filters.length - 1);
+        this.addRange(this.filters.length - 1, false);
     }
 
     removeFilter(i: number): void {
@@ -95,29 +123,83 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     }
 
     //control over the ranges
-    ranges(filterIndex: number): UntypedFormArray {
-        return this.filters.at(filterIndex).get('ranges') as UntypedFormArray;
+    ranges(filterIndex: number): FormArray<FormGroup<RangeForm>> {
+        return this.filters.at(filterIndex).get('ranges') as FormArray<FormGroup<RangeForm>>;
     }
 
-    newRange(): UntypedFormGroup {
-        return this.formBuilder.group({
-            min: '',
-            max: '',
-        });
+    // validators: [geoengineValidators.conditionalValidator(geoengineValidators.minAndMaxNumOrStr('min', 'max', {checkBothExist: true}), () => enableMinAndMaxValidator)]});
+    newRange(min: string, max: string, enableMinAndMaxValidator: boolean): FormGroup<RangeForm> {
+        return this.formBuilder.group(
+            {
+                min: this.formBuilder.nonNullable.control<string>(min, Validators.required),
+                max: this.formBuilder.nonNullable.control<string>(max, Validators.required),
+            },
+            {
+                validators: [
+                    geoengineValidators.minAndMaxNumOrStr('min', 'max', {checkBothExist: true, checkIsNumber: enableMinAndMaxValidator}),
+                ],
+            },
+        );
     }
 
-    addRange(filterIndex: number): void {
-        this.ranges(filterIndex).push(this.newRange());
+    addRange(filterIndex: number, enableMinAndMaxValidator: boolean | undefined): void {
+        let minAndMaxValidator = false;
+        // when addRange is called from the template
+        if (enableMinAndMaxValidator === undefined) {
+            const att = this.filters.at(filterIndex).get('attribute')?.value;
+            if (this.isNumericalAttribute(att)) {
+                minAndMaxValidator = true;
+            }
+        } else {
+            minAndMaxValidator = enableMinAndMaxValidator;
+        }
+
+        this.ranges(filterIndex).push(this.newRange('', '', minAndMaxValidator));
     }
 
+    removeAllRanges(filterIndex: number): void {
+        this.ranges(filterIndex).clear();
+    }
     removeRange(filterIndex: number, rangeIndex: number): void {
         this.ranges(filterIndex).removeAt(rangeIndex);
     }
 
+    updateRange(filterIndex: number, rangeIndex: number, min: number, max: number): void {
+        this.ranges(filterIndex).at(rangeIndex).setValue({min: min.toString(), max: max.toString()});
+    }
+
+    resetFiltersAndRanges(): void {
+        for (let index = 0; index < this.filters.controls.length; index++) {
+            this.removeAllRanges(index);
+        }
+        this.filters.reset();
+    }
+
+    isNumericalAttribute(attribute: string | undefined): boolean {
+        if (!attribute || attribute === '') {
+            return false;
+        } else {
+            const isNum = this.columnTypes.has(attribute) ? this.columnTypes.get(attribute)?.isNumeric : false;
+            if (!isNum || isNum === undefined) {
+                return false;
+            } else {
+                return isNum;
+            }
+        }
+    }
     ngOnInit(): void {}
 
     ngOnDestroy(): void {
         this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    }
+
+    updateBounds(histogramSignal: {binStart: [number, number]} | null, filterIndex: number, rangeIndex: number): void {
+        if (!histogramSignal || !histogramSignal.binStart || histogramSignal.binStart.length !== 2) {
+            return;
+        }
+
+        const [min, max] = histogramSignal.binStart;
+        this.updateRange(filterIndex, rangeIndex, min, max);
     }
 
     /**
@@ -128,8 +210,6 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         const name = (this.form.get('name')?.value as string) || ('Filtered Layer' as string);
         const inputLayer = this.form.controls['layer'].value as Layer;
         const filterValues = this.filters.value;
-
-        if (this.checkInputErrors(filterValues)) return;
 
         this.projectService
             .getWorkflow(inputLayer.workflowId)
@@ -142,43 +222,15 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
             .subscribe();
     }
 
-    checkInputErrors(filterValues: any): boolean {
-        this.attributeError = false;
-        this.errorHint = '';
-        filterValues.forEach((value: any, index: number) => {
-            if (value.attribute === '') {
-                this.appendErrorMsg(`Filter ${index + 1}: Attribute can't be empty!\n`);
-                return;
-            }
-            value.ranges.forEach((range: any) => {
-                if (range.min === '' || range.max === '') {
-                    this.appendErrorMsg(`Filter ${index + 1} (${value.attribute}): Range can't be empty!\n`);
-                    return;
-                }
-
-                if (
-                    this.columnTypes.get(value.attribute) !== VectorColumnDataTypes.Text &&
-                    (isNaN(Number(range.min)) || isNaN(Number(range.max)))
-                ) {
-                    this.appendErrorMsg(
-                        `Filter ${index + 1} (${value.attribute}): Numeric attributes can't be filtered lexicographically!\n`,
-                    );
-                    return;
-                }
-
-                if (this.columnTypes.get(value.attribute) !== VectorColumnDataTypes.Text && Number(range.min) > Number(range.max)) {
-                    this.appendErrorMsg(`Filter ${index + 1} (${value.attribute}): Minimum must be smaller than maximum!\n`);
-                } else if (range.min > range.max && this.columnTypes.get(value.attribute) === VectorColumnDataTypes.Text) {
-                    this.appendErrorMsg(`Filter ${index + 1} (${value.attribute}): Minimum must be alphabetically before maximum!\n`);
-                }
-            });
-        });
-        return this.attributeError;
-    }
-
-    appendErrorMsg(msg: string): void {
-        this.attributeError = true;
-        this.errorHint = this.errorHint.concat(msg);
+    changeAttributeValue($event: string, filterIndex: number): void {
+        this.removeAllRanges(filterIndex);
+        if (this.isNumericalAttribute($event)) {
+            this.addRange(filterIndex, true);
+            this.addHistogram(filterIndex, $event);
+        } else {
+            this.addRange(filterIndex, false);
+            this.removeHistogram(filterIndex);
+        }
     }
 
     createWorkflow(filterValues: any, index: number, inputWorkflow: WorkflowDict): WorkflowDict {
@@ -249,6 +301,74 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                 isLegendVisible: false,
                 isVisible: true,
             }),
+        );
+    }
+
+    addHistogram(filterIndex: number, attribute: string): void {
+        const histogramWorkflow = new ReplaySubject<UUID>(1);
+        const histogramSubject = new ReplaySubject<VegaChartData>(1);
+        this.createHistogramWorkflowId(attribute).subscribe((histogramWorkflowId) => histogramWorkflow.next(histogramWorkflowId));
+        this.createHistogramStream(histogramWorkflow).subscribe((histogramData) => histogramSubject.next(histogramData));
+        this.filters.at(filterIndex).patchValue({
+            histogram: histogramSubject,
+        });
+    }
+
+    removeHistogram(filterIndex: number): void {
+        this.filters.at(filterIndex).patchValue({
+            histogram: null,
+        });
+    }
+
+    private createHistogramStream(histogramWorkflowId: ReplaySubject<UUID>): Observable<VegaChartData> {
+        return combineLatest([
+            histogramWorkflowId,
+            this.projectService.getTimeStream(),
+            this.mapService.getViewportSizeStream(),
+            this.userService.getSessionTokenForRequest(),
+            this.projectService.getSpatialReferenceStream(),
+        ]).pipe(
+            mergeMap(([workflowId, time, viewport, sessionToken, sref]) =>
+                this.backend.getPlot(
+                    workflowId,
+                    {
+                        bbox: extentToBboxDict(viewport.extent),
+                        crs: sref.srsString,
+                        spatialResolution: [viewport.resolution, viewport.resolution],
+                        time: time.toDict(),
+                    },
+                    sessionToken,
+                ),
+            ),
+            map((plotData) => plotData.data),
+        );
+    }
+
+    private createHistogramWorkflowId(attribute: string): Observable<UUID> {
+        const inputLayer = this.form.controls['layer'].value as Layer;
+        const attributeName = attribute;
+        return this.projectService.getWorkflow(inputLayer.workflowId).pipe(
+            mergeMap((workflow) =>
+                combineLatest([
+                    of({
+                        type: 'Plot',
+                        operator: {
+                            type: 'Histogram',
+                            params: {
+                                columnName: attributeName,
+                                bounds: 'data',
+                                interactive: true,
+                            } as HistogramParams,
+                            sources: {
+                                source: workflow.operator,
+                            },
+                        } as HistogramDict,
+                    } as WorkflowDict),
+                    this.userService.getSessionTokenForRequest(),
+                ]),
+            ),
+            mergeMap(([workflow, sessionToken]) => this.backend.registerWorkflow(workflow, sessionToken)),
+            map((workflowRegistration) => workflowRegistration.id),
         );
     }
 }

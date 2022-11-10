@@ -64,6 +64,64 @@ const minAndMax = (
 };
 
 /**
+ * A validator that validates a form group that contains min/max number or string fields.
+ */
+const minAndMaxNumOrStr = (
+    controlMinName: string,
+    controlMaxName: string,
+    options: {
+        checkBothExist?: boolean;
+        checkIsNumber?: boolean;
+    } = {},
+): ((_: AbstractControl) => ValidationErrors | null) => {
+    if (typeof options.checkBothExist !== 'boolean') {
+        // default
+        options.checkBothExist = false;
+    }
+    if (typeof options.checkIsNumber !== 'boolean') {
+        // default
+        options.checkIsNumber = false;
+    }
+
+    return (control: AbstractControl): ValidationErrors | null => {
+        let min = control.get(controlMinName)?.value;
+        let max = control.get(controlMaxName)?.value;
+
+        const errors: {
+            minOverMax?: boolean;
+            minOverMaxStr?: boolean;
+            minEqualsMax?: boolean;
+            noFilter?: boolean;
+            noFiniteNumber?: boolean;
+        } = {};
+        if (options.checkBothExist && (min === '' || max === '')) {
+            errors.noFilter = true;
+        }
+
+        if (options.checkIsNumber) {
+            min = Number(min);
+            max = Number(max);
+
+            const validMin = isFiniteNumber(min);
+            const validMax = isFiniteNumber(max);
+
+            if ((!validMin && min !== undefined && min !== null) || (!validMax && max !== undefined && max !== null)) {
+                errors.noFiniteNumber = true;
+            }
+            if (max < min) {
+                errors.minOverMax = true;
+            }
+        } else {
+            if (max < min) {
+                errors.minOverMaxStr = true;
+            }
+        }
+
+        return Object.keys(errors).length > 0 ? errors : null;
+    };
+};
+
+/**
  * A validator that invokes the underlying one only if the condition holds.
  */
 const conditionalValidator =
@@ -242,4 +300,5 @@ export const geoengineValidators = {
     largerThan,
     validRasterMetadataKey,
     oneOrBoth,
+    minAndMaxNumOrStr,
 };

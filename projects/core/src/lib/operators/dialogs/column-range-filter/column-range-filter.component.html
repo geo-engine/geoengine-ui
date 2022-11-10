@@ -47,7 +47,11 @@
                     </div>
                     <div fxLayout="row">
                         <mat-form-field>
-                            <mat-select placeholder="Attribute" formControlName="attribute">
+                            <mat-select
+                                placeholder="Attribute"
+                                formControlName="attribute"
+                                (valueChange)="changeAttributeValue($event, filterIndex)"
+                            >
                                 <mat-option *ngFor="let attribute of attributes$ | async" [value]="attribute">{{ attribute }}</mat-option>
                             </mat-select>
                         </mat-form-field>
@@ -61,20 +65,28 @@
                                 subtitle="Please select the ranges you want to filter for."
                             ></geoengine-dialog-section-heading>
                             <div fxFlex fxLayout="row" fxLayoutAlign="end">
-                                <button type="button" (click)="addRange(filterIndex)" mat-button color="primary">
+                                <button type="button" (click)="addRange(filterIndex, undefined)" mat-button color="primary">
                                     <mat-icon>add_circle_outline</mat-icon>
                                 </button>
                             </div>
                         </div>
-
                         <div *ngFor="let range of ranges(filterIndex).controls; let rangeIndex = index" fxLayout="column">
                             <div [formGroupName]="rangeIndex" fxLayout="row" fxFlex>
                                 <mat-form-field fxFlex>
                                     <input matInput type="text" placeholder="Min" formControlName="min" />
+                                    <mat-hint class="error" *ngIf="range.errors?.noFilter || range.errors?.noFiniteNumber">
+                                        Please specify the value.
+                                    </mat-hint>
                                 </mat-form-field>
                                 <div fxFlex="1rem"></div>
                                 <mat-form-field fxFlex>
                                     <input matInput type="text" placeholder="Max" formControlName="max" />
+                                    <mat-hint class="error" *ngIf="range.errors?.minOverMax">
+                                        The maximum must be greater or equal to the minimum.
+                                    </mat-hint>
+                                    <mat-hint class="error" *ngIf="range.errors?.minOverMaxStr">
+                                        The minimum must be alphabetically before the maximum.
+                                    </mat-hint>
                                 </mat-form-field>
                                 <div fxFlex="1rem"></div>
                                 <button
@@ -87,6 +99,12 @@
                                     <mat-icon>remove_circle_outline</mat-icon>
                                 </button>
                             </div>
+                            <ng-container class="histogram" *ngIf="filter.controls.histogram.value | async as histogramData">
+                                <geoengine-vega-viewer
+                                    [chartData]="histogramData"
+                                    (interactionChange)="updateBounds($any($event), filterIndex, rangeIndex)"
+                                ></geoengine-vega-viewer>
+                            </ng-container>
                         </div>
                     </div>
                 </mat-expansion-panel>
@@ -99,8 +117,6 @@
         formControlName="name"
         [suggestion]="'Filtered ' + (form.controls.layer.valueChanges | async)?.name"
     ></geoengine-operator-output-name>
-    <!-- Error Message -->
-    <p *ngIf="attributeError" class="errormsg">{{ errorHint }}</p>
     <!--    Submit Button-->
     <div class="actions">
         <button type="submit" mat-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">Create</button>
