@@ -14,7 +14,9 @@ import {
 import {Subject, Subscription} from 'rxjs';
 
 import {Layer as OlLayer, Tile as OlLayerTile, Vector as OlLayerVector} from 'ol/layer';
+import {ImageTile as OlImageTile} from 'ol';
 import {Source as OlSource, TileWMS as OlTileWmsSource, Vector as OlVectorSource} from 'ol/source';
+import {get as olGetProj} from 'ol/proj';
 import {Config} from '../config.service';
 import {ProjectService} from '../project/project.service';
 import {LoadingState} from '../project/loading-state.model';
@@ -27,6 +29,9 @@ import {RasterSymbology, Symbology, VectorSymbology} from '../layers/symbology/s
 import {Colorizer} from '../colors/colorizer.model';
 import OlGeometry from 'ol/geom/Geometry';
 import {olExtentToTuple} from '../util/conversions';
+import TileState from 'ol/TileState';
+import {Extent} from './map.service';
+import {Projection} from 'ol/proj';
 
 type VectorData = any; // TODO: use correct type
 
@@ -309,25 +314,35 @@ export class OlRasterLayerComponent
             wrapX: false,
         });
 
-        this.source.setTileLoadFunction((tile, src) => {
+        const proj = olGetProj(this.spatialReference.srsString) as Projection;
+        const tileGrid = this.source.getTileGridForProjection(proj);
+
+        this.source.setTileLoadFunction((olTile, src) => {
+            const tile = olTile as OlImageTile;
+            const tileCoord = tile.getTileCoord();
+            const tileZoomLevel = tileCoord[0];
+            const tileExtent = tileGrid.getTileCoordExtent(tileCoord) as Extent;
+
             const client = new XMLHttpRequest();
 
-            const sub = this.projectService.createQueryAbortStream().subscribe(() => {
-                (tile as any).getImage().src = 'assets/images/empty_tile.png';
-                client.abort();
-                sub.unsubscribe();
-                this.source.dispatchEvent('tileloaderror');
-            });
+            const cancelSub = this.projectService.createQueryAbortStream(tileZoomLevel, tileExtent).subscribe(() => client.abort());
 
             client.open('GET', src);
             client.responseType = 'blob';
             client.setRequestHeader('Authorization', `Bearer ${this.sessionToken}`);
-            client.onload = function (): any {
-                sub.unsubscribe();
-                const data = URL.createObjectURL(client.response);
-                // TODO: proper type cast
-                (tile as any).getImage().src = data;
-            };
+            client.addEventListener('loadend', (_event) => {
+                cancelSub.unsubscribe();
+                const data = client.response;
+
+                if (!data) {
+                    tile.setState(TileState.ERROR);
+                } else {
+                    (tile.getImage() as HTMLImageElement).src = URL.createObjectURL(data);
+                }
+            });
+            client.addEventListener('error', () => {
+                tile.setState(TileState.ERROR);
+            });
             client.send();
         });
 

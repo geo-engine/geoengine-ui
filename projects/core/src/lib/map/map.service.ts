@@ -6,6 +6,7 @@ import {containsExtent as olExtentContainsExtent, getIntersection as olExtentGet
 import OlGeometry from 'ol/geom/Geometry';
 import {Vector as OlSourceVector} from 'ol/source';
 import {Type as OlGeometryType} from 'ol/geom/Geometry';
+import OlView from 'ol/View';
 
 import {MapContainerComponent} from './map-container/map-container.component';
 import {olExtentToTuple} from '../util/conversions';
@@ -22,6 +23,8 @@ export interface ViewportSize {
     maxExtent?: [number, number, number, number];
 }
 
+const viewPortsSizesAreSame = (vps1: ViewportSize, vps2: ViewportSize): boolean =>
+    vps1.extent === vps2.extent && vps1.resolution === vps2.resolution && vps1.maxExtent === vps2.maxExtent;
 /**
  * The extent is defined as [min x, min y, max x, max y] map units
  */
@@ -53,6 +56,11 @@ export class MapService {
 
     private mapComponent?: MapContainerComponent;
     private isGridStream = new BehaviorSubject(false);
+    private view$ = new BehaviorSubject<OlView>(
+        new OlView({
+            zoom: 0,
+        }),
+    );
 
     constructor() {}
 
@@ -144,7 +152,7 @@ export class MapService {
      * Initially emits the current viewport
      */
     getViewportSizeStream(): Observable<ViewportSize> {
-        return this.viewportSize$.pipe(distinctUntilChanged());
+        return this.viewportSize$.pipe(distinctUntilChanged(viewPortsSizesAreSame));
     }
 
     /**
@@ -156,5 +164,19 @@ export class MapService {
         }
 
         this.mapComponent.zoomTo(boundingBox);
+    }
+
+    /**
+     * Set the current view
+     */
+    setView(view: OlView): void {
+        this.view$.next(view);
+    }
+
+    /**
+     * Return the current view
+     */
+    getView(): OlView {
+        return this.view$.value;
     }
 }
