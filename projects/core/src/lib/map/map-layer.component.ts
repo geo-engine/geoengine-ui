@@ -337,7 +337,7 @@ export class OlRasterLayerComponent
                 if (!data) {
                     tile.setState(TileState.ERROR);
                 } else {
-                    (tile as any).getImage().src = URL.createObjectURL(data);
+                    (tile.getImage() as HTMLImageElement).src = URL.createObjectURL(data);
                 }
             });
             client.addEventListener('error', () => {
