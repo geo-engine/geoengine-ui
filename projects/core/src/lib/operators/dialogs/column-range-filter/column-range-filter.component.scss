@@ -20,9 +20,8 @@ mat-form-field {
     padding: 1.5rem;
 }
 
-.errormsg {
-    color: red;
-    white-space: pre-wrap;
+.error {
+    color: var(--geoengine-warn-color, red);
 }
 
 .histogram {

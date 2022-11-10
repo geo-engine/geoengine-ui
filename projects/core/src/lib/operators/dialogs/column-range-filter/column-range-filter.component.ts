@@ -17,6 +17,7 @@ import {MapService} from '../../../map/map.service';
 import {BackendService} from '../../../backend/backend.service';
 import {UserService} from '../../../users/user.service';
 import {extentToBboxDict} from '../../../util/conversions';
+import {geoengineValidators} from '../../../util/form.validators';
 
 interface ColumnRangeFilterForm {
     layer: FormControl<Layer | null>;
@@ -48,9 +49,6 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     form: FormGroup<ColumnRangeFilterForm>;
 
     histograms = new Map<number, ReplaySubject<VegaChartData>>();
-
-    attributeError = false;
-    errorHint = 'default error';
 
     private subscriptions: Array<Subscription> = [];
     private columnTypes = new Map<string, VectorColumnDataType | undefined>();
@@ -117,7 +115,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
 
     addFilter(): void {
         this.filters.push(this.newFilter());
-        this.addRange(this.filters.length - 1, '', '');
+        this.addRange(this.filters.length - 1, false);
     }
 
     removeFilter(i: number): void {
@@ -130,15 +128,34 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         return this.filters.at(filterIndex).get('ranges') as FormArray<FormGroup<RangeForm>>;
     }
 
-    newRange(min: string, max: string): FormGroup<RangeForm> {
-        return this.formBuilder.group({
-            min: this.formBuilder.nonNullable.control<string>(min),
-            max: this.formBuilder.nonNullable.control<string>(max),
-        });
+    // validators: [geoengineValidators.conditionalValidator(geoengineValidators.minAndMaxNumOrStr('min', 'max', {checkBothExist: true}), () => enableMinAndMaxValidator)]});
+    newRange(min: string, max: string, enableMinAndMaxValidator: boolean): FormGroup<RangeForm> {
+        return this.formBuilder.group(
+            {
+                min: this.formBuilder.nonNullable.control<string>(min, Validators.required),
+                max: this.formBuilder.nonNullable.control<string>(max, Validators.required),
+            },
+            {
+                validators: [
+                    geoengineValidators.minAndMaxNumOrStr('min', 'max', {checkBothExist: true, checkIsNumber: enableMinAndMaxValidator}),
+                ],
+            },
+        );
     }
 
-    addRange(filterIndex: number, min: string, max: string): void {
-        this.ranges(filterIndex).push(this.newRange(min, max));
+    addRange(filterIndex: number, enableMinAndMaxValidator: boolean | undefined): void {
+        let minAndMaxValidator = false;
+        // when addRange is called from the template
+        if (enableMinAndMaxValidator === undefined) {
+            const att = this.filters.at(filterIndex).get('attribute')?.value;
+            if (this.isNumericalAttribute(att)) {
+                minAndMaxValidator = true;
+            }
+        } else {
+            minAndMaxValidator = enableMinAndMaxValidator;
+        }
+
+        this.ranges(filterIndex).push(this.newRange('', '', minAndMaxValidator));
     }
 
     removeAllRanges(filterIndex: number): void {
@@ -160,8 +177,8 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         this.histograms = new Map<number, ReplaySubject<VegaChartData>>();
     }
 
-    isNumericalAttribute(attribute: string): boolean {
-        if (attribute === '') {
+    isNumericalAttribute(attribute: string | undefined): boolean {
+        if (!attribute || attribute === '') {
             return false;
         } else {
             const isNum = this.columnTypes.has(attribute) ? this.columnTypes.get(attribute)?.isNumeric : false;
@@ -196,8 +213,6 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         const inputLayer = this.form.controls['layer'].value as Layer;
         const filterValues = this.filters.value;
 
-        if (this.checkInputErrors(filterValues)) return;
-
         this.projectService
             .getWorkflow(inputLayer.workflowId)
             .pipe(
@@ -211,51 +226,13 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
 
     changeAttributeValue($event: string, filterIndex: number): void {
         this.removeAllRanges(filterIndex);
-        this.addRange(filterIndex, '', '');
         if (this.isNumericalAttribute($event)) {
+            this.addRange(filterIndex, true);
             this.addHistogram(filterIndex, $event);
         } else {
+            this.addRange(filterIndex, false);
             this.removeHistogram(filterIndex);
         }
-    }
-
-    checkInputErrors(filterValues: any): boolean {
-        this.attributeError = false;
-        this.errorHint = '';
-        filterValues.forEach((value: any, index: number) => {
-            if (value.attribute === '') {
-                this.appendErrorMsg(`Filter ${index + 1}: Attribute can't be empty!\n`);
-                return;
-            }
-            value.ranges.forEach((range: any) => {
-                if (range.min === '' || range.max === '') {
-                    this.appendErrorMsg(`Filter ${index + 1} (${value.attribute}): Range can't be empty!\n`);
-                    return;
-                }
-
-                if (
-                    this.columnTypes.get(value.attribute) !== VectorColumnDataTypes.Text &&
-                    (isNaN(Number(range.min)) || isNaN(Number(range.max)))
-                ) {
-                    this.appendErrorMsg(
-                        `Filter ${index + 1} (${value.attribute}): Numeric attributes can't be filtered lexicographically!\n`,
-                    );
-                    return;
-                }
-
-                if (this.columnTypes.get(value.attribute) !== VectorColumnDataTypes.Text && Number(range.min) > Number(range.max)) {
-                    this.appendErrorMsg(`Filter ${index + 1} (${value.attribute}): Minimum must be smaller than maximum!\n`);
-                } else if (range.min > range.max && this.columnTypes.get(value.attribute) === VectorColumnDataTypes.Text) {
-                    this.appendErrorMsg(`Filter ${index + 1} (${value.attribute}): Minimum must be alphabetically before maximum!\n`);
-                }
-            });
-        });
-        return this.attributeError;
-    }
-
-    appendErrorMsg(msg: string): void {
-        this.attributeError = true;
-        this.errorHint = this.errorHint.concat(msg);
     }
 
     createWorkflow(filterValues: any, index: number, inputWorkflow: WorkflowDict): WorkflowDict {
