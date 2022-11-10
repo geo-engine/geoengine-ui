@@ -28,6 +28,7 @@ interface ColumnRangeFilterForm {
 interface FilterForm {
     attribute: FormControl<string>;
     ranges: FormArray<FormGroup<RangeForm>>;
+    histogram: FormControl<ReplaySubject<VegaChartData> | null>;
 }
 
 interface RangeForm {
@@ -47,8 +48,6 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     attributes$ = new ReplaySubject<Array<string>>(1);
 
     form: FormGroup<ColumnRangeFilterForm>;
-
-    histograms = new Map<number, ReplaySubject<VegaChartData>>();
 
     private subscriptions: Array<Subscription> = [];
     private columnTypes = new Map<string, VectorColumnDataType | undefined>();
@@ -110,6 +109,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         return this.formBuilder.group({
             attribute: this.formBuilder.nonNullable.control<string>(''),
             ranges: this.formBuilder.array<FormGroup<RangeForm>>([]),
+            histogram: this.formBuilder.control<ReplaySubject<VegaChartData> | null>(null),
         });
     }
 
@@ -119,7 +119,6 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     }
 
     removeFilter(i: number): void {
-        this.removeHistogram(i);
         this.filters.removeAt(i);
     }
 
@@ -174,7 +173,6 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
             this.removeAllRanges(index);
         }
         this.filters.reset();
-        this.histograms = new Map<number, ReplaySubject<VegaChartData>>();
     }
 
     isNumericalAttribute(attribute: string | undefined): boolean {
@@ -311,11 +309,15 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         const histogramSubject = new ReplaySubject<VegaChartData>(1);
         this.createHistogramWorkflowId(attribute).subscribe((histogramWorkflowId) => histogramWorkflow.next(histogramWorkflowId));
         this.createHistogramStream(histogramWorkflow).subscribe((histogramData) => histogramSubject.next(histogramData));
-        this.histograms.set(filterIndex, histogramSubject);
+        this.filters.at(filterIndex).patchValue({
+            histogram: histogramSubject,
+        });
     }
 
     removeHistogram(filterIndex: number): void {
-        this.histograms.delete(filterIndex);
+        this.filters.at(filterIndex).patchValue({
+            histogram: null,
+        });
     }
 
     private createHistogramStream(histogramWorkflowId: ReplaySubject<UUID>): Observable<VegaChartData> {

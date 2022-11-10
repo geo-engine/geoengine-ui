@@ -99,7 +99,7 @@
                                     <mat-icon>remove_circle_outline</mat-icon>
                                 </button>
                             </div>
-                            <ng-container class="histogram" *ngIf="histograms.get(filterIndex) | async as histogramData">
+                            <ng-container class="histogram" *ngIf="filter.controls.histogram.value | async as histogramData">
                                 <geoengine-vega-viewer
                                     [chartData]="histogramData"
                                     (interactionChange)="updateBounds($any($event), filterIndex, rangeIndex)"
