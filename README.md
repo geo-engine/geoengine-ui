@@ -9,13 +9,13 @@ You can serve it via any HTTP server, e.g. Apache.
 ## Requirements
 
 You need to have [Node.js](https://nodejs.org) installed.
-Verify that you are running at least `node v14.x.x` and `npm 6.x.x`.
+Verify that you are running at least `node v16.18.x` and `npm 6.x.x`.
 You can check this by running `node -v` and `npm -v` in a terminal or console window.
 
 ### Ubuntu 20.04 LTS and higher
 
 ```
-curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
