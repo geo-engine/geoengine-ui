@@ -1,0 +1,27 @@
+import {Injectable} from '@angular/core';
+import {ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree, Router} from '@angular/router';
+import {Observable, map} from 'rxjs';
+import {UserService} from '../../users/user.service';
+
+@Injectable({
+    providedIn: 'root',
+})
+export class LogInGuard implements CanActivate {
+    constructor(private readonly userService: UserService, private router: Router) {}
+
+    canActivate(
+        _route: ActivatedRouteSnapshot,
+        _state: RouterStateSnapshot,
+    ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+        const loggedInOrRedirect = this.userService.isLoggedIn().pipe(
+            map((loggedIn) => {
+                console.log('LogInGuard: loggedIn = ' + loggedIn);
+                if (loggedIn) {
+                    return true;
+                }
+                return this.router.createUrlTree(['/signin']);
+            }),
+        );
+        return loggedInOrRedirect;
+    }
+}

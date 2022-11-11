@@ -32,11 +32,6 @@ export class UserService {
         this.session$.subscribe((session) => {
             // storage of the session
             this.saveSessionInBrowser(session);
-
-            // redirect to login page if logged out
-            if (!session && this.logoutCallback) {
-                this.logoutCallback();
-            }
         });
 
         // restore old session if possible

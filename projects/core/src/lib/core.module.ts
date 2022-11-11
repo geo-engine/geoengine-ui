@@ -140,6 +140,8 @@ import {MediaviewPlaylistComponent} from './datatable/mediaview/playlist/mediavi
 import {OidcComponent} from './users/oidc/oidc.component';
 import {InterpolationComponent} from './operators/dialogs/interpolation/interpolation.component';
 import {NeighborhoodAggregateComponent} from './operators/dialogs/neighborhood-aggregate/neighborhood-aggregate.component';
+import {NotFoundComponent} from './util/components/not-found/not-found.component';
+import {ErrorPageComponent} from './util/components/error-page/error-page.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -213,6 +215,7 @@ const CORE_COMPONENTS = [
     DialogSplashCheckboxComponent,
     DragAndDropComponent,
     DrawFeaturesComponent,
+    ErrorPageComponent,
     ExpressionOperatorComponent,
     FeatureAttributeOvertimeComponent,
     FullDisplayComponent,
@@ -243,6 +246,7 @@ const CORE_COMPONENTS = [
     NeighborhoodAggregateComponent,
     NewProjectComponent,
     NotificationsComponent,
+    NotFoundComponent,
     NumberParamEditorComponent,
     OidcComponent,
     OlRasterLayerComponent,
