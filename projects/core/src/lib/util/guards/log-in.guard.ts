@@ -15,7 +15,7 @@ export class LogInGuard implements CanActivate {
     ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
         const loggedInOrRedirect = this.userService.isLoggedIn().pipe(
             map((loggedIn) => {
-                console.log('LogInGuard: loggedIn = ' + loggedIn);
+                // console.log('LogInGuard: loggedIn = ' + loggedIn);
                 if (loggedIn) {
                     return true;
                 }
