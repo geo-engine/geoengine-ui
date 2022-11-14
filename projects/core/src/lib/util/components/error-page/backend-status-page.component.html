@@ -1,0 +1,22 @@
+<div *ngIf="backendInfo">
+    <h2>Backend info:</h2>
+
+    <dl>
+        <dt>Backend version:</dt>
+        <dd>{{ backendInfo.version }}</dd>
+        <dt>Backend features:</dt>
+        <dd>{{ backendInfo.features }}</dd>
+        <dt>Build date:</dt>
+        <dd>{{ backendInfo.buildDate }}</dd>
+        <dt>Commit hash:</dt>
+        <dd>{{ backendInfo.commitHash }}</dd>
+    </dl>
+</div>
+
+<div *ngIf="error">
+    <h2>There was an error ...</h2>
+
+    <p>{{ error.status }}</p>
+
+    <p>{{ error.message }}</p>
+</div>

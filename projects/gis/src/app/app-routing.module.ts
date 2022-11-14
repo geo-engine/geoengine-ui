@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {ErrorPageComponent, LogInGuard, NotFoundComponent, BackendAvailableGuard} from '@geoengine/core';
+import {BackendStatusPageComponent, LogInGuard, NotFoundComponent, BackendAvailableGuard} from '@geoengine/core';
 import {CanRegisterGuard} from './guards/can-register.guard';
 import {LoginComponent} from './login/login.component';
 import {MainComponent} from './main/main.component';
@@ -12,7 +12,7 @@ const routes: Routes = [
     {path: 'signin', component: LoginComponent},
     {path: 'register', component: RegisterComponent, canActivate: [CanRegisterGuard]},
     {path: '404', component: NotFoundComponent},
-    {path: 'error', component: ErrorPageComponent},
+    {path: 'backend-status', component: BackendStatusPageComponent},
     // fallback to not found page
     {path: '**', component: NotFoundComponent},
 ];
