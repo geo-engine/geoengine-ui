@@ -140,8 +140,8 @@ import {MediaviewPlaylistComponent} from './datatable/mediaview/playlist/mediavi
 import {OidcComponent} from './users/oidc/oidc.component';
 import {InterpolationComponent} from './operators/dialogs/interpolation/interpolation.component';
 import {NeighborhoodAggregateComponent} from './operators/dialogs/neighborhood-aggregate/neighborhood-aggregate.component';
-import {NotFoundComponent} from './util/components/not-found/not-found.component';
-import {BackendStatusPageComponent} from './util/components/error-page/backend-status-page.component';
+import {NotFoundPageComponent} from './util/components/not-found/not-found-page.component';
+import {BackendStatusPageComponent} from './util/components/backend-status-page/backend-status-page.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -246,7 +246,7 @@ const CORE_COMPONENTS = [
     NeighborhoodAggregateComponent,
     NewProjectComponent,
     NotificationsComponent,
-    NotFoundComponent,
+    NotFoundPageComponent,
     NumberParamEditorComponent,
     OidcComponent,
     OlRasterLayerComponent,

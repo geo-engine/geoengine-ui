@@ -109,8 +109,8 @@ export * from './lib/dialogs/dialog-splash-checkbox/dialog-splash-checkbox.compo
 export * from './lib/datatable/mediaview/mediaview.component';
 export * from './lib/datatable/mediaview/dialog/mediaview.dialog.component';
 export * from './lib/datatable/mediaview/playlist/mediaview.playlist.component';
-export * from './lib/util/components/not-found/not-found.component';
-export * from './lib/util/components/error-page/backend-status-page.component';
+export * from './lib/util/components/not-found/not-found-page.component';
+export * from './lib/util/components/backend-status-page/backend-status-page.component';
 
 // Pipes
 export * from './lib/util/pipes/async-converters.pipe';
