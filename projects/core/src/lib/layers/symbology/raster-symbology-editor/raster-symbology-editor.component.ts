@@ -39,7 +39,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
 
     scale: 'linear' | 'logarithmic' = 'linear';
 
-    unappliedChanges: boolean = false;
+    unappliedChanges = false;
 
     histogramData = new ReplaySubject<VegaChartData>(1);
     histogramLoading = new BehaviorSubject(false);
