@@ -14,9 +14,9 @@
 </div>
 
 <div *ngIf="error">
-    <h2>There was an error ...</h2>
+    <h2>The backend could not be reached.</h2>
 
-    <p>{{ error.status }}</p>
+    <p>{{ error.status }} - {{ error.statusText }}</p>
 
     <p>{{ error.message }}</p>
 </div>
