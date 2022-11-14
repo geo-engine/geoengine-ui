@@ -14,7 +14,7 @@ const routes: Routes = [
     {path: '404', component: NotFoundComponent},
     {path: 'backend-status', component: BackendStatusPageComponent},
     // fallback to not found page
-    {path: '**', component: NotFoundComponent},
+    {path: '**', redirectTo: '404', pathMatch: 'full'},
 ];
 
 @NgModule({
