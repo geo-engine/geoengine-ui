@@ -25,11 +25,11 @@
 </geoengine-dialog-help>
 
 <mat-accordion multi="true">
-    <mat-expansion-panel expanded="true">
+    <mat-expansion-panel expanded="true" [class]="unappliedChanges ? 'attention' : 'default'">
         <mat-expansion-panel-header>
             <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
                 <mat-icon>map</mat-icon>
-                <span fxFlex>Global Layer Properties</span>
+                <span fxFlex>Global Layer Properties</span><span *ngIf="unappliedChanges === true">(unapplied Changes)</span>
             </mat-panel-title>
         </mat-expansion-panel-header>
         <ng-template matExpansionPanelContent>
@@ -60,6 +60,7 @@
             <p fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
                 <span>Colorizer:</span>
                 <mat-button-toggle-group
+                    id="gradientType"
                     fxFlex
                     [multiple]="false"
                     [ngModel]="getColorizerType()"
@@ -71,6 +72,9 @@
                     <mat-button-toggle fxFlex value="palette" [disabled]="true">Palette</mat-button-toggle>
                 </mat-button-toggle-group>
             </p>
+            <button mat-raised-button color="primary" id="applyButton" (click)="applyChanges()" [disabled]="unappliedChanges === false">
+                Apply changes
+            </button>
             <div
                 *ngIf="symbology.colorizer.isGradient()"
                 class="colorizer-preview"

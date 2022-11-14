@@ -39,6 +39,8 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
 
     scale: 'linear' | 'logarithmic' = 'linear';
 
+    unappliedChanges: boolean = false;
+
     histogramData = new ReplaySubject<VegaChartData>(1);
     histogramLoading = new BehaviorSubject(false);
     protected histogramWorkflowId = new ReplaySubject<UUID>(1);
@@ -138,7 +140,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
 
         this.symbology = this.symbology.cloneWith({opacity});
 
-        this.update();
+        this.unappliedChanges = true;
     }
 
     getDefaultColor(): ColorAttributeInput {
@@ -162,6 +164,11 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
             throw new Error('unsupported colorizer type');
         }
 
+        this.unappliedChanges = true;
+    }
+
+    applyChanges(): void {
+        this.unappliedChanges = false;
         this.update();
     }
 
@@ -189,7 +196,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
             throw new Error('unsupported colorizer type');
         }
 
-        this.update();
+        this.unappliedChanges = true;
     }
 
     getColorizerType(): 'linearGradient' | 'logarithmicGradient' | 'palette' {
@@ -263,7 +270,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         }
 
         this.updateScale();
-        this.update();
+        this.unappliedChanges = true;
     }
 
     /**
