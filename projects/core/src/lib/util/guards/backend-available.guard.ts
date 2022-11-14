@@ -15,14 +15,10 @@ export class BackendAvailableGuard implements CanActivate {
         _state: RouterStateSnapshot,
     ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
         const loggedInOrRedirect = this.backendService.getBackendInfo().pipe(
-            map((_backendInfo) => {
-                // console.log('BackendAvailableGuard: backend info = ' + backendInfo);
-                return true;
-            }),
-            catchError((err, _caught) => {
-                // console.log('BackendAvailableGuard: error = ' + err);
-                return of(this.router.createUrlTree(['/error', {error: 'Backend not available', errorDetails: err.message}]));
-            }),
+            map((_backendInfo) => true),
+            catchError((err, _caught) =>
+                of(this.router.createUrlTree(['/error', {error: 'Backend not available', errorDetails: err.message}])),
+            ),
         );
         return loggedInOrRedirect;
     }
