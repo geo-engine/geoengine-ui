@@ -71,7 +71,7 @@ export class AddDataComponent implements OnInit {
     static createUploadButton(): AddDataButton {
         return {
             name: 'Upload',
-            description: 'Upload data from you local computer',
+            description: 'Upload data from your local computer',
             icon: 'publish',
             sidenavConfig: {component: UploadComponent, keepParent: true},
         };
