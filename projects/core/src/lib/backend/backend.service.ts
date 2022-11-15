@@ -174,6 +174,10 @@ export class BackendService {
         return this.http.get<BackendInfoDict>(this.config.API_URL + '/info');
     }
 
+    getBackendAvailable(): Observable<void> {
+        return this.http.get<void>(this.config.API_URL + '/available');
+    }
+
     getWorkflowProvenance(workflowId: UUID, sessionId: UUID): Observable<Array<ProvenanceOutputDict>> {
         return this.http.get<Array<ProvenanceOutputDict>>(this.config.API_URL + `/workflow/${workflowId}/provenance`, {
             headers: BackendService.authorizationHeader(sessionId),

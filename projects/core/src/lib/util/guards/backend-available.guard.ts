@@ -14,8 +14,8 @@ export class BackendAvailableGuard implements CanActivate {
         _route: ActivatedRouteSnapshot,
         _state: RouterStateSnapshot,
     ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-        const loggedInOrRedirect = this.backendService.getBackendInfo().pipe(
-            map((_backendInfo) => true),
+        const loggedInOrRedirect = this.backendService.getBackendAvailable().pipe(
+            map(() => true),
             catchError((_err, _caught) => of(this.router.createUrlTree(['/backend-status']))),
         );
         return loggedInOrRedirect;
