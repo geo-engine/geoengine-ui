@@ -37,7 +37,7 @@ export class UserService {
         this.initializeSessionFromBrowserOrCreateGuest();
     }
 
-    initializeSessionFromBrowserOrCreateGuest() {
+    initializeSessionFromBrowserOrCreateGuest(): void {
         // restore old session if possible
         this.restoreSessionFromBrowser().subscribe({
             next: (session) => this.session$.next(session),
