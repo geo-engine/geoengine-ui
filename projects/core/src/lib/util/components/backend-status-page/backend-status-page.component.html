@@ -1,11 +1,10 @@
 <div class="container" fxLayout="row" fxLayoutAlign="center center">
-    <mat-card class="info" *ngIf="backendInfo">
+    <mat-card class="info" *ngIf="backendAvailable">
         <mat-card-title>
             <mat-icon mat-card-md-image svgIcon="geoengine:logo-alt" aria-label="Geo Engine" [inline]="true"></mat-icon>
-            <mat-card-title>Backend Status</mat-card-title>
-            <mat-card-subtitle>Details about the connected backend</mat-card-subtitle>
+            <mat-card-title>Backend Available</mat-card-title>
         </mat-card-title>
-        <mat-card-content>
+        <mat-card-content *ngIf="backendInfo">
             <mat-list-item>
                 <h3 matLine>backend version</h3>
                 <p matLine>{{ backendInfo.version }}</p>
@@ -25,19 +24,18 @@
         </mat-card-content>
 
         <mat-card-actions>
-            <button mat-button color="primary" (click)="goBack()">go back</button>
-            <button mat-button (click)="refresh()">refresh status</button>
+            <button mat-raised-button color="primary" (click)="goBack()">Go to map</button>
+            <button mat-raised-button (click)="refresh()">Refresh status</button>
         </mat-card-actions>
     </mat-card>
 
-    <mat-card *ngIf="error">
+    <mat-card *ngIf="!backendAvailable">
         <mat-card-title>
             <mat-icon mat-card-md-image svgIcon="geoengine:logo-alt" aria-label="Geo Engine" [inline]="true"></mat-icon>
-            <mat-card-title>Backend Error</mat-card-title>
-            <mat-card-subtitle>The backend is not available!</mat-card-subtitle>
+            <mat-card-title>Backend Not Available</mat-card-title>
         </mat-card-title>
 
-        <mat-card-content>
+        <mat-card-content *ngIf="error">
             <mat-list-item>
                 <h3 matLine>Error status code</h3>
                 <p class="error" matLine>{{ error.status }}</p>
@@ -57,8 +55,8 @@
         </mat-card-content>
 
         <mat-card-actions>
-            <button mat-button color="primary" (click)="goBack()">reload UI</button>
-            <button mat-button (click)="refresh()">refresh status</button>
+            <button mat-raised-button color="primary" (click)="goBack()">Go to map</button>
+            <button mat-raised-button (click)="refresh()">Refresh status</button>
         </mat-card-actions>
     </mat-card>
 </div>
