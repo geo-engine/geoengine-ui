@@ -34,14 +34,18 @@ export class UserService {
             this.saveSessionInBrowser(session);
         });
 
+        this.initializeSessionFromBrowserOrCreateGuest();
+    }
+
+    initializeSessionFromBrowserOrCreateGuest() {
         // restore old session if possible
-        this.restoreSessionFromBrowser().subscribe(
-            (session) => this.session$.next(session),
-            (_error) =>
-                this.createGuestUser().subscribe(
-                    (session) => this.session$.next(session),
+        this.restoreSessionFromBrowser().subscribe({
+            next: (session) => this.session$.next(session),
+            error: (_error) =>
+                this.createGuestUser().subscribe({
+                    next: (session) => this.session$.next(session),
                     // TODO: use error translation
-                    (error) => {
+                    error: (error) => {
                         this.session$.next(undefined);
 
                         // only show error if we did not expect it
@@ -49,8 +53,8 @@ export class UserService {
                             this.notificationService.error(error.error.message);
                         }
                     },
-                ),
-        );
+                }),
+        });
     }
 
     createGuestUser(): Observable<Session> {
