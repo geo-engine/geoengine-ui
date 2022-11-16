@@ -31,25 +31,24 @@ export class BackendStatusPageComponent implements OnInit {
             next: () => {
                 this.backendAvailable = true;
                 this.error = undefined;
+                setTimeout(() => this.changeDetectorRef.markForCheck());
             },
             error: (error: HttpErrorResponse) => {
                 this.error = error;
                 this.backendAvailable = false;
-                this.changeDetectorRef.markForCheck();
-            },
-            complete: () => {
-                this.changeDetectorRef.detectChanges();
+                setTimeout(() => this.changeDetectorRef.markForCheck());
             },
         });
 
         this.backendService.getBackendInfo().subscribe({
             next: (backendInfo) => {
                 this.backendInfo = backendInfo;
+                setTimeout(() => this.changeDetectorRef.markForCheck());
             },
             error: (_err) => {
                 this.backendInfo = undefined;
+                setTimeout(() => this.changeDetectorRef.markForCheck());
             },
-            complete: () => this.changeDetectorRef.markForCheck(),
         });
     }
 
