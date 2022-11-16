@@ -140,6 +140,7 @@ import {MediaviewPlaylistComponent} from './datatable/mediaview/playlist/mediavi
 import {OidcComponent} from './users/oidc/oidc.component';
 import {InterpolationComponent} from './operators/dialogs/interpolation/interpolation.component';
 import {NeighborhoodAggregateComponent} from './operators/dialogs/neighborhood-aggregate/neighborhood-aggregate.component';
+import {RasterizationComponent} from './operators/dialogs/rasterization/rasterization.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -257,6 +258,7 @@ const CORE_COMPONENTS = [
     PolygonIconComponent,
     ProvenanceTableComponent,
     RasterIconComponent,
+    RasterizationComponent,
     RasterLegendComponent,
     RasterLegendComponent,
     RasterSymbologyEditorComponent,

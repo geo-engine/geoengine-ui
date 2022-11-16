@@ -21,6 +21,7 @@ import {RasterTypeConversionComponent} from '../raster-type-conversion/raster-ty
 import {InterpolationComponent} from '../interpolation/interpolation.component';
 import {RasterScalingComponent} from '../raster-scaling/raster-scaling.component';
 import {NeighborhoodAggregateComponent} from '../neighborhood-aggregate/neighborhood-aggregate.component';
+import {RasterizationComponent} from '../rasterization/rasterization.component';
 
 /**
  * This type encapsulates…
@@ -63,6 +64,14 @@ export class OperatorListComponent implements OnInit, OnChanges {
                 ICON_URL: createIconDataUrl('Raster Vector Join'),
             },
             description: 'Attach raster values to multi-point data',
+        },
+        {
+            component: RasterizationComponent,
+            type: {
+                NAME: 'Rasterization',
+                ICON_URL: createIconDataUrl('Rasterization'),
+            },
+            description: 'Rasterize points',
         },
         // {
         //     component: RasterPolygonClipOperatorComponent,

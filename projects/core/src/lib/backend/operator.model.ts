@@ -136,6 +136,35 @@ export interface PointInPolygonFilterDict extends OperatorDict {
     };
 }
 
+export interface RasterizationDict extends OperatorDict {
+    type: 'Rasterization';
+    params: {
+        gridOrDensity: GridRasterizationDict | DensityRasterizationDict;
+    };
+    sources: {
+        vector: SourceOperatorDict | OperatorDict;
+    };
+}
+
+export interface GridRasterizationDict {
+    type: 'grid';
+    spatialResolution: {
+        x: number;
+        y: number;
+    };
+    originCoordinate: {
+        x: number;
+        y: number;
+    };
+    gridSizeMode: 'fixed' | 'relative';
+}
+
+export interface DensityRasterizationDict {
+    type: 'density';
+    radius: number;
+    stddev: number;
+}
+
 export interface ColumnRangeFilterDict extends OperatorDict {
     type: 'ColumnRangeFilter';
     params: {
