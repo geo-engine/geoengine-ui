@@ -58,10 +58,12 @@ export class BackendStatusPageComponent implements OnInit {
     }
 
     goBack(): void {
+        this.userService.getSessionStream().subscribe((_session) => {
+            this.router.navigate(['/map']);
+        });
+
         if (!this.backendAvailable) {
             this.userService.initializeSessionFromBrowserOrCreateGuest();
         }
-
-        this.router.navigate(['/map']);
     }
 }
