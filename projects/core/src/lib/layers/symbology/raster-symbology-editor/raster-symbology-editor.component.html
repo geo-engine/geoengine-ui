@@ -25,11 +25,11 @@
 </geoengine-dialog-help>
 
 <mat-accordion multi="true">
-    <mat-expansion-panel expanded="true" [class]="unappliedChanges ? 'attention' : 'default'">
+    <mat-expansion-panel expanded="true">
         <mat-expansion-panel-header>
             <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
                 <mat-icon>map</mat-icon>
-                <span fxFlex>Global Layer Properties</span><span *ngIf="unappliedChanges === true">(Unapplied Changes)</span>
+                <span fxFlex>Global Layer Properties</span>
             </mat-panel-title>
         </mat-expansion-panel-header>
         <ng-template matExpansionPanelContent>
