@@ -1,8 +1,3 @@
-:host {
-    display: block;
-    padding: 1rem;
-}
-
 mat-divider {
     padding-bottom: 1rem;
 }
@@ -25,12 +20,23 @@ mat-slider {
     }
 }
 
-#applyButton {
-    margin-right: 0rem;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-}
-
 #gradientType {
     flex-wrap: wrap;
+}
+
+.outer {
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.container {
+    overflow-y: auto;
+    padding: 0rem 1rem 1rem 1rem;
+}
+
+.actions {
+    text-align: right;
+    height: 3rem;
+    padding: 1rem;
 }

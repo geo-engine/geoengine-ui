@@ -33,6 +33,11 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
     @Output() breakpointsChange = new EventEmitter<Array<ColorBreakpoint>>();
 
     /**
+     * Informs parent to enable "Apply Changes" button
+     */
+    @Output() changesToForm = new EventEmitter<void>();
+
+    /**
      * Number of breakpoints used in the ColorizerData.
      */
     @Input() defaultNumberOfSteps = 16;
@@ -125,6 +130,10 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
             }
         });
         this.subscriptions.push(subMinMax);
+
+        this.form.valueChanges.subscribe(() => {
+            this.changesToForm.emit();
+        });
     }
 
     ngOnDestroy(): void {
@@ -184,9 +193,9 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     /**
-     * Apply a new color table to the colorizer data.
+     * Apply changes to color table to the colorizer data.
      */
-    applyNewColorTable(_: any): void {
+    applyChanges(): void {
         if (!this.breakpoints) {
             return;
         }

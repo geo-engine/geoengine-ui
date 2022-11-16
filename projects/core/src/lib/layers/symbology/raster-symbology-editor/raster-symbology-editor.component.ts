@@ -1,4 +1,14 @@
-import {Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChanges, OnDestroy, AfterViewInit, OnInit} from '@angular/core';
+import {
+    Component,
+    Input,
+    ChangeDetectionStrategy,
+    OnChanges,
+    SimpleChanges,
+    OnDestroy,
+    AfterViewInit,
+    OnInit,
+    ViewChild,
+} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {RasterSymbology} from '../symbology.model';
@@ -17,6 +27,7 @@ import {UserService} from '../../../users/user.service';
 import {extentToBboxDict} from '../../../util/conversions';
 import {VegaChartData} from '../../../plots/vega-viewer/vega-viewer.component';
 import {Color} from '../../../colors/color';
+import {ColorMapSelectorComponent} from '../../../colors/color-map-selector/color-map-selector.component';
 
 /**
  * An editor for generating raster symbologies.
@@ -28,6 +39,9 @@ import {Color} from '../../../colors/color';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, AfterViewInit, OnInit {
+    @ViewChild(ColorMapSelectorComponent)
+    colorMapSelector!: ColorMapSelectorComponent;
+
     @Input() layer!: RasterLayer;
 
     symbology!: RasterSymbology;
@@ -168,8 +182,13 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     }
 
     applyChanges(): void {
+        this.colorMapSelector.applyChanges();
         this.unappliedChanges = false;
         this.update();
+    }
+
+    getNotified(): void {
+        this.unappliedChanges = true;
     }
 
     getNoDataColor(): ColorAttributeInput {
