@@ -1,9 +1,11 @@
 <div class="container" fxLayout="row" fxLayoutAlign="center center">
-    <mat-card class="info" *ngIf="backendAvailable">
-        <mat-card-title>
-            <mat-icon mat-card-md-image svgIcon="geoengine:logo-alt" aria-label="Geo Engine" [inline]="true"></mat-icon>
-            <mat-card-title>Backend Available</mat-card-title>
-        </mat-card-title>
+    <mat-card class="info">
+        <mat-card-title-group>
+            <mat-card-title *ngIf="backendStatus?.available">Backend Available</mat-card-title>
+            <mat-card-title *ngIf="!backendStatus?.available">Backend Not Available</mat-card-title>
+            <mat-icon mat-card-lg-image svgIcon="geoengine:logo-alt" aria-label="Geo Engine"></mat-icon>
+        </mat-card-title-group>
+
         <mat-card-content *ngIf="backendInfo">
             <mat-list-item>
                 <h3 matLine>backend version</h3>
@@ -23,39 +25,27 @@
             </mat-list-item>
         </mat-card-content>
 
-        <mat-card-actions>
-            <button mat-raised-button color="primary" (click)="goBack()">Go to map</button>
-            <button mat-raised-button (click)="refresh()">Refresh status</button>
-        </mat-card-actions>
-    </mat-card>
-
-    <mat-card *ngIf="!backendAvailable">
-        <mat-card-title>
-            <mat-icon mat-card-md-image svgIcon="geoengine:logo-alt" aria-label="Geo Engine" [inline]="true"></mat-icon>
-            <mat-card-title>Backend Not Available</mat-card-title>
-        </mat-card-title>
-
-        <mat-card-content *ngIf="error">
+        <mat-card-content *ngIf="backendStatus?.httpError">
             <mat-list-item>
                 <h3 matLine>Error status code</h3>
-                <p class="error" matLine>{{ error.status }}</p>
+                <p class="error" matLine>{{ backendStatus?.httpError?.status }}</p>
             </mat-list-item>
             <mat-list-item>
                 <h3 matLine>Error status</h3>
-                <p class="error" matLine>{{ error.statusText }}</p>
+                <p class="error" matLine>{{ backendStatus?.httpError?.statusText }}</p>
             </mat-list-item>
             <mat-list-item>
                 <h3 matLine>Error name</h3>
-                <p class="error" matLine>{{ error.name }}</p>
+                <p class="error" matLine>{{ backendStatus?.httpError?.name }}</p>
             </mat-list-item>
             <mat-list-item>
                 <h3 matLine>Error message</h3>
-                <p class="error" matLine>{{ error.message }}</p>
+                <p class="error" matLine>{{ backendStatus?.httpError?.message }}</p>
             </mat-list-item>
         </mat-card-content>
 
         <mat-card-actions>
-            <button mat-raised-button color="primary" (click)="goBack()">Go to map</button>
+            <button mat-raised-button color="primary" (click)="goBack()" [disabled]="!backendStatus?.available">Go to map</button>
             <button mat-raised-button (click)="refresh()">Refresh status</button>
         </mat-card-actions>
     </mat-card>

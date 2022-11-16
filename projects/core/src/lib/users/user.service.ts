@@ -22,6 +22,7 @@ const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '
 export class UserService {
     protected readonly session$ = new ReplaySubject<Session | undefined>(1);
     protected logoutCallback?: () => void;
+    protected sessionInitialized = false;
 
     constructor(
         protected readonly config: Config,
@@ -34,27 +35,43 @@ export class UserService {
             this.saveSessionInBrowser(session);
         });
 
-        this.initializeSessionFromBrowserOrCreateGuest();
-    }
+        this.backend.getBackendStatus().subscribe((status) => {
+            // if the backend is not ready, we cannot do anything
+            if (status.initial) {
+                return;
+            }
 
-    initializeSessionFromBrowserOrCreateGuest(): void {
-        // restore old session if possible
-        this.restoreSessionFromBrowser().subscribe({
-            next: (session) => this.session$.next(session),
-            error: (_error) =>
-                this.createGuestUser().subscribe({
-                    next: (session) => this.session$.next(session),
-                    // TODO: use error translation
+            if (status.available && !this.sessionInitialized) {
+                this.sessionInitialized = true;
+                // restore old session if possible
+                this.sessionFromBrowserOrCreateGuest().subscribe({
+                    next: (session) => {
+                        this.session$.next(session);
+                    },
                     error: (error) => {
-                        this.session$.next(undefined);
-
                         // only show error if we did not expect it
                         if (error.error.error !== 'AnonymousAccessDisabled') {
                             this.notificationService.error(error.error.message);
                         }
+                        this.session$.next(undefined);
                     },
-                }),
+                });
+            }
+            if (!status.available && this.sessionInitialized) {
+                this.sessionInitialized = false;
+                this.session$.next(undefined);
+                this.notificationService.error('Session close caused by backend shutdown');
+            }
         });
+    }
+
+    sessionFromBrowserOrCreateGuest(): Observable<Session> {
+        return this.restoreSessionFromBrowser().pipe(
+            catchError((error) => {
+                console.error(error);
+                return this.createGuestUser();
+            }),
+        );
     }
 
     createGuestUser(): Observable<Session> {

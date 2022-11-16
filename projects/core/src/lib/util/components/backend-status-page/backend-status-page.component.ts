@@ -1,9 +1,7 @@
-import {HttpErrorResponse} from '@angular/common/http';
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {BackendInfoDict} from '../../../backend/backend.model';
-import {BackendService} from '../../../backend/backend.service';
-import {UserService} from '../../../users/user.service';
+import {BackendService, BackendStatus} from '../../../backend/backend.service';
 
 @Component({
     selector: 'geoengine-backend-status-page',
@@ -11,35 +9,32 @@ import {UserService} from '../../../users/user.service';
     styleUrls: ['./backend-status-page.component.scss'],
 })
 export class BackendStatusPageComponent implements OnInit {
-    public backendAvailable = false;
-    public error: HttpErrorResponse | undefined = undefined;
+    public backendStatus: BackendStatus | undefined = undefined;
     public backendInfo: BackendInfoDict | undefined = undefined;
 
-    constructor(
-        private backendService: BackendService,
-        private changeDetectorRef: ChangeDetectorRef,
-        private router: Router,
-        private userService: UserService,
-    ) {}
-
-    ngOnInit(): void {
+    constructor(private backendService: BackendService, private changeDetectorRef: ChangeDetectorRef, private router: Router) {
         this.fetchBackendState();
     }
 
+    ngOnInit(): void {}
+
     fetchBackendState(): void {
-        this.backendService.getBackendAvailable().subscribe({
-            next: () => {
-                this.backendAvailable = true;
-                this.error = undefined;
-                setTimeout(() => this.changeDetectorRef.markForCheck());
-            },
-            error: (error: HttpErrorResponse) => {
-                this.error = error;
-                this.backendAvailable = false;
+        this.backendService.getBackendStatus().subscribe({
+            next: (status) => {
+                this.backendStatus = status;
+
+                if (status.available) {
+                    this.refreshBackendInfo();
+                } else {
+                    this.backendInfo = undefined;
+                }
+
                 setTimeout(() => this.changeDetectorRef.markForCheck());
             },
         });
+    }
 
+    refreshBackendInfo(): void {
         this.backendService.getBackendInfo().subscribe({
             next: (backendInfo) => {
                 this.backendInfo = backendInfo;
@@ -53,16 +48,13 @@ export class BackendStatusPageComponent implements OnInit {
     }
 
     refresh(): void {
-        this.fetchBackendState();
+        this.backendService.triggerBackendStatusUpdate();
     }
 
     goBack(): void {
-        this.userService.getSessionOrUndefinedStream().subscribe((_session) => {
+        this.refresh();
+        setTimeout(() => {
             this.router.navigate(['/map']);
         });
-
-        if (!this.backendAvailable) {
-            this.userService.initializeSessionFromBrowserOrCreateGuest();
-        }
     }
 }
