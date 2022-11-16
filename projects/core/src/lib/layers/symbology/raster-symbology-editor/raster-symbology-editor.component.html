@@ -145,6 +145,7 @@
     </div>
 
     <div class="actions">
+        <span class="hint" *ngIf="unappliedChanges === true">Changes not reflected in map view!</span>
         <button mat-raised-button color="primary" id="applyButton" (click)="applyChanges()" [disabled]="unappliedChanges === false">
             Apply changes
         </button>
