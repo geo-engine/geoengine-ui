@@ -1,11 +1,11 @@
-import {Observable, ReplaySubject, of} from 'rxjs';
+import {Observable, ReplaySubject, of, BehaviorSubject} from 'rxjs';
 import {catchError, filter, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
 
 import {utc} from 'moment';
 
-import {User} from './user.model';
+import {BackendStatus, User} from './user.model';
 import {Config} from '../config.service';
 import {NotificationService} from '../notification.service';
 import {BackendService} from '../backend/backend.service';
@@ -21,6 +21,8 @@ const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '
 @Injectable()
 export class UserService {
     protected readonly session$ = new ReplaySubject<Session | undefined>(1);
+    protected readonly backendStatus$ = new BehaviorSubject<BackendStatus>({available: false, initial: true});
+
     protected logoutCallback?: () => void;
     protected sessionInitialized = false;
 
@@ -35,7 +37,7 @@ export class UserService {
             this.saveSessionInBrowser(session);
         });
 
-        this.backend.getBackendStatus().subscribe((status) => {
+        this.getBackendStatus().subscribe((status) => {
             // if the backend is not ready, we cannot do anything
             if (status.initial) {
                 return;
@@ -63,6 +65,23 @@ export class UserService {
                 this.notificationService.error('Session close caused by backend shutdown');
             }
         });
+
+        this.triggerBackendStatusUpdate();
+    }
+
+    triggerBackendStatusUpdate(): void {
+        this.backend.getBackendAvailable().subscribe({
+            next: () => {
+                this.backendStatus$.next({available: true});
+            },
+            error: (err) => {
+                this.backendStatus$.next({available: false, httpError: err});
+            },
+        });
+    }
+
+    getBackendStatus(): Observable<BackendStatus> {
+        return this.backendStatus$;
     }
 
     sessionFromBrowserOrCreateGuest(): Observable<Session> {

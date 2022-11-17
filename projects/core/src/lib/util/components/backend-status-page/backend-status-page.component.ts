@@ -1,7 +1,10 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
+import {first, skipWhile, Subscription} from 'rxjs';
 import {BackendInfoDict} from '../../../backend/backend.model';
-import {BackendService, BackendStatus} from '../../../backend/backend.service';
+import {BackendService} from '../../../backend/backend.service';
+import {BackendStatus} from '../../../users/user.model';
+import {UserService} from '../../../users/user.service';
 
 @Component({
     selector: 'geoengine-backend-status-page',
@@ -11,15 +14,21 @@ import {BackendService, BackendStatus} from '../../../backend/backend.service';
 export class BackendStatusPageComponent implements OnInit {
     public backendStatus: BackendStatus | undefined = undefined;
     public backendInfo: BackendInfoDict | undefined = undefined;
+    public goToMapSubscription: Subscription | undefined = undefined;
 
-    constructor(private backendService: BackendService, private changeDetectorRef: ChangeDetectorRef, private router: Router) {
+    constructor(
+        private userService: UserService,
+        private backendService: BackendService,
+        private changeDetectorRef: ChangeDetectorRef,
+        private router: Router,
+    ) {
         this.fetchBackendState();
     }
 
     ngOnInit(): void {}
 
     fetchBackendState(): void {
-        this.backendService.getBackendStatus().subscribe({
+        this.userService.getBackendStatus().subscribe({
             next: (status) => {
                 this.backendStatus = status;
 
@@ -48,13 +57,22 @@ export class BackendStatusPageComponent implements OnInit {
     }
 
     refresh(): void {
-        this.backendService.triggerBackendStatusUpdate();
+        this.goToMapSubscription?.unsubscribe();
+        this.userService.triggerBackendStatusUpdate();
     }
 
     goBack(): void {
-        this.refresh();
-        setTimeout(() => {
-            this.router.navigate(['/map']);
-        });
+        this.goToMapSubscription?.unsubscribe();
+        this.goToMapSubscription = this.userService
+            .getBackendStatus()
+            .pipe(
+                skipWhile((status) => status.available === false),
+                first(),
+            )
+            .subscribe((_status) => {
+                setTimeout(() => this.router.navigate(['/map']));
+            });
+
+        this.userService.triggerBackendStatusUpdate();
     }
 }

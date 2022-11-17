@@ -1,3 +1,5 @@
+import {HttpErrorResponse} from '@angular/common/http';
+
 /**
  * This class represents a geo engine user.
  */
@@ -16,4 +18,13 @@ export class User {
 
         this.isGuest = !config.email || !config.realName;
     }
+}
+
+/**
+ * This interface represents the status of the used geo engine backend.
+ */
+export interface BackendStatus {
+    available: boolean;
+    httpError?: HttpErrorResponse;
+    initial?: boolean;
 }

@@ -1,20 +1,20 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree, Router} from '@angular/router';
+import {UserService} from '../../users/user.service';
 
 import {Observable, map, skipWhile} from 'rxjs';
-import {BackendService} from '../../backend/backend.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class BackendAvailableGuard implements CanActivate {
-    constructor(private readonly backendService: BackendService, private router: Router) {}
+    constructor(private readonly userService: UserService, private router: Router) {}
 
     canActivate(
         _route: ActivatedRouteSnapshot,
         _state: RouterStateSnapshot,
     ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-        const loggedInOrRedirect = this.backendService.getBackendStatus().pipe(
+        const loggedInOrRedirect = this.userService.getBackendStatus().pipe(
             skipWhile((status) => status.initial === true),
             map((status) => {
                 if (status.available) {

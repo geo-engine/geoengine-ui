@@ -1,9 +1,9 @@
 <div class="container" fxLayout="row" fxLayoutAlign="center center">
     <mat-card class="info">
         <mat-card-title-group>
+            <mat-icon matCardTitle svgIcon="geoengine:logo-alt" aria-label="Geo Engine" [inline]="true"></mat-icon>
             <mat-card-title *ngIf="backendStatus?.available">Backend Available</mat-card-title>
             <mat-card-title *ngIf="!backendStatus?.available">Backend Not Available</mat-card-title>
-            <mat-icon mat-card-lg-image svgIcon="geoengine:logo-alt" aria-label="Geo Engine"></mat-icon>
         </mat-card-title-group>
 
         <mat-card-content *ngIf="backendInfo">
@@ -45,7 +45,7 @@
         </mat-card-content>
 
         <mat-card-actions>
-            <button mat-raised-button color="primary" (click)="goBack()" [disabled]="!backendStatus?.available">Go to map</button>
+            <button mat-raised-button color="primary" (click)="goBack()">Go to map</button>
             <button mat-raised-button (click)="refresh()">Refresh status</button>
         </mat-card-actions>
     </mat-card>

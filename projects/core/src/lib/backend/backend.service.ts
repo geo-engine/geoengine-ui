@@ -41,33 +41,13 @@ import {
     BackendInfoDict,
 } from './backend.model';
 
-export interface BackendStatus {
-    available: boolean;
-    httpError?: HttpErrorResponse;
-    initial?: boolean;
-}
-
 @Injectable({
     providedIn: 'root',
 })
 export class BackendService {
     readonly wmsBaseUrl = `${this.config.API_URL}/wms`;
-    protected readonly backendStatus$ = new BehaviorSubject<BackendStatus>({available: false, initial: true});
 
-    constructor(protected readonly http: HttpClient, protected readonly config: Config) {
-        this.triggerBackendStatusUpdate();
-    }
-
-    triggerBackendStatusUpdate(): void {
-        this.getBackendAvailable().subscribe({
-            next: () => {
-                this.backendStatus$.next({available: true});
-            },
-            error: (err) => {
-                this.backendStatus$.next({available: false, httpError: err});
-            },
-        });
-    }
+    constructor(protected readonly http: HttpClient, protected readonly config: Config) {}
 
     registerUser(request: {email: string; password: string; realName: string}): Observable<RegistrationDict> {
         return this.http.post<RegistrationDict>(this.config.API_URL + '/user', request);
@@ -196,10 +176,6 @@ export class BackendService {
 
     getBackendAvailable(): Observable<void> {
         return this.http.get<void>(this.config.API_URL + '/available');
-    }
-
-    getBackendStatus(): Observable<BackendStatus> {
-        return this.backendStatus$;
     }
 
     getWorkflowProvenance(workflowId: UUID, sessionId: UUID): Observable<Array<ProvenanceOutputDict>> {

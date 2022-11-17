@@ -10,3 +10,9 @@
 .error {
     color: var(--geoengine-warn-color);
 }
+
+mat-card-header {
+    ::ng-deep .mat-card-header-text {
+        width: 100%;
+    }
+}
