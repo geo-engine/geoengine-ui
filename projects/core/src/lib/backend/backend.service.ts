@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse, HttpEvent, HttpHeaders, HttpParams} from '@angular/common/http';
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
+import {HttpClient, HttpEvent, HttpHeaders, HttpParams} from '@angular/common/http';
+import {Observable, Subject} from 'rxjs';
 import {Config} from '../config.service';
 import {bboxDictToExtent, unixTimestampToIsoString} from '../util/conversions';
 import {
