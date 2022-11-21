@@ -70,8 +70,9 @@
                         </geoengine-color-attribute-input>
                     </div>
 
+                    <mat-divider></mat-divider>
+                    <span>Colorizer:</span>
                     <p fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
-                        <span>Colorizer:</span>
                         <mat-button-toggle-group
                             id="gradientType"
                             fxFlex
@@ -80,9 +81,9 @@
                             (ngModelChange)="updateColorizerType($event)"
                             [disabled]="getColorizerType() === 'palette'"
                         >
-                            <mat-button-toggle fxFlex value="linearGradient">Linear Gradient</mat-button-toggle>
-                            <mat-button-toggle fxFlex value="logarithmicGradient">Logarithmic Gradient</mat-button-toggle>
-                            <mat-button-toggle fxFlex value="palette" [disabled]="true">Palette</mat-button-toggle>
+                            <mat-button-toggle fxFlexFill value="linearGradient">Linear Gradient</mat-button-toggle>
+                            <mat-button-toggle fxFlexFill value="logarithmicGradient">Logarithmic Gradient</mat-button-toggle>
+                            <mat-button-toggle fxFlexFill value="palette" [disabled]="true">Palette</mat-button-toggle>
                         </mat-button-toggle-group>
                     </p>
                     <div
@@ -111,10 +112,8 @@
                         </ng-container>
                         <mat-progress-bar mode="indeterminate" *ngIf="histogramLoading | async"></mat-progress-bar>
                     </div>
-                    <div>
-                        <mat-slide-toggle [checked]="histogramAutoReload" (change)="histogramAutoReload = $event.checked">
-                            Sync map and histogram
-                        </mat-slide-toggle>
+                    <div class="actions">
+                        <button mat-raised-button class="button" color="primary" (click)="updateHistogram()">Update Histogram</button>
                     </div>
                     <mat-divider></mat-divider>
 
@@ -145,9 +144,12 @@
     </div>
 
     <div class="actions">
-        <span class="hint" *ngIf="unappliedChanges === true">Changes not reflected in map view!</span>
-        <button mat-raised-button color="primary" id="applyButton" (click)="applyChanges()" [disabled]="unappliedChanges === false">
-            Apply changes
+        <button mat-raised-button color="primary" class="button" (click)="applyChanges()" [disabled]="unappliedChanges === false">
+            Apply
+        </button>
+
+        <button mat-raised-button color="accent" class="button" (click)="resetChanges(layer)" [disabled]="unappliedChanges === false">
+            Reset
         </button>
     </div>
 </div>

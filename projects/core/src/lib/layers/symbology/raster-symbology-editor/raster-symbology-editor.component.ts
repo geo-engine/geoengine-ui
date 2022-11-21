@@ -12,7 +12,7 @@ import {
 import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {RasterSymbology} from '../symbology.model';
-import {RasterLayer} from '../../layer.model';
+import {Layer, RasterLayer} from '../../layer.model';
 import {MapService} from '../../../map/map.service';
 import {ProjectService} from '../../../project/project.service';
 import {Config} from '../../../config.service';
@@ -28,6 +28,7 @@ import {extentToBboxDict} from '../../../util/conversions';
 import {VegaChartData} from '../../../plots/vega-viewer/vega-viewer.component';
 import {Color} from '../../../colors/color';
 import {ColorMapSelectorComponent} from '../../../colors/color-map-selector/color-map-selector.component';
+import {LayoutService} from '../../../layout.service';
 
 /**
  * An editor for generating raster symbologies.
@@ -66,6 +67,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     constructor(
         protected readonly projectService: ProjectService,
         protected readonly backend: BackendService,
+        protected readonly layoutService: LayoutService,
         protected readonly userService: UserService,
         protected readonly mapService: MapService,
         protected readonly config: Config,
@@ -84,7 +86,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     }
 
     ngAfterViewInit(): void {
-        this.initializeHistogramDataSubscription();
+        this.updateHistogram();
     }
 
     ngOnDestroy(): void {
@@ -189,6 +191,10 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
 
     getNotified(): void {
         this.unappliedChanges = true;
+    }
+
+    resetChanges(layer: Layer): void {
+        this.layoutService.setSidenavContentComponent({component: RasterSymbologyEditorComponent, config: {layer}});
     }
 
     getNoDataColor(): ColorAttributeInput {
@@ -362,6 +368,14 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         }
 
         this.histogramSubscription = this.createHistogramStream().subscribe((histogramData) => this.histogramData.next(histogramData));
+    }
+
+    updateHistogram(): void {
+        this.histogramSubscription = this.createHistogramStream().subscribe((histogramData) => {
+            this.histogramData.next(histogramData);
+            this.histogramSubscription?.unsubscribe();
+            this.histogramAutoReload = false;
+        });
     }
 
     private createHistogramStream(): Observable<VegaChartData> {
