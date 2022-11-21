@@ -339,6 +339,14 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         this.updateLayerMaxValue(breakpoints[breakpoints.length - 1].value);
     }
 
+    updateHistogram(): void {
+        this.histogramSubscription = this.createHistogramStream().subscribe((histogramData) => {
+            this.histogramData.next(histogramData);
+            this.histogramSubscription?.unsubscribe();
+            this.histogramAutoReload = false;
+        });
+    }
+
     private updateNodataAndDefaultColor(): void {
         this.defaultColor = {
             key: 'Overflow Color',
@@ -368,14 +376,6 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         }
 
         this.histogramSubscription = this.createHistogramStream().subscribe((histogramData) => this.histogramData.next(histogramData));
-    }
-
-    updateHistogram(): void {
-        this.histogramSubscription = this.createHistogramStream().subscribe((histogramData) => {
-            this.histogramData.next(histogramData);
-            this.histogramSubscription?.unsubscribe();
-            this.histogramAutoReload = false;
-        });
     }
 
     private createHistogramStream(): Observable<VegaChartData> {
