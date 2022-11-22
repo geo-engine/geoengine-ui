@@ -85,9 +85,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         this.createHistogramWorkflowId().subscribe((histogramWorkflowId) => this.histogramWorkflowId.next(histogramWorkflowId));
     }
 
-    ngAfterViewInit(): void {
-        this.updateHistogram();
-    }
+    ngAfterViewInit(): void {}
 
     ngOnDestroy(): void {
         if (this.histogramSubscription) {

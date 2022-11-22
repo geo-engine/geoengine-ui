@@ -79,11 +79,10 @@
                             [multiple]="false"
                             [ngModel]="getColorizerType()"
                             (ngModelChange)="updateColorizerType($event)"
-                            [disabled]="getColorizerType() === 'palette'"
                         >
                             <mat-button-toggle fxFlexFill value="linearGradient">Linear Gradient</mat-button-toggle>
                             <mat-button-toggle fxFlexFill value="logarithmicGradient">Logarithmic Gradient</mat-button-toggle>
-                            <mat-button-toggle fxFlexFill value="palette" [disabled]="true">Palette</mat-button-toggle>
+                            <mat-button-toggle fxFlexFill value="palette">Palette</mat-button-toggle>
                         </mat-button-toggle-group>
                     </p>
                     <div
@@ -94,7 +93,7 @@
                 </ng-template>
             </mat-expansion-panel>
 
-            <mat-expansion-panel expanded="true">
+            <mat-expansion-panel *ngIf="getColorizerType() !== 'palette'" expanded="true">
                 <mat-expansion-panel-header>
                     <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
                         <mat-icon>looks</mat-icon>
@@ -113,7 +112,7 @@
                         <mat-progress-bar mode="indeterminate" *ngIf="histogramLoading | async"></mat-progress-bar>
                     </div>
                     <div class="actions">
-                        <button mat-raised-button class="button" color="primary" (click)="updateHistogram()">Update Histogram</button>
+                        <button mat-raised-button class="button" color="primary" (click)="updateHistogram()">Calculate Histogram</button>
                     </div>
                     <mat-divider></mat-divider>
 
@@ -144,12 +143,12 @@
     </div>
 
     <div class="actions">
-        <button mat-raised-button color="primary" class="button" (click)="applyChanges()" [disabled]="unappliedChanges === false">
-            Apply
-        </button>
-
         <button mat-raised-button color="accent" class="button" (click)="resetChanges(layer)" [disabled]="unappliedChanges === false">
             Reset
+        </button>
+
+        <button mat-raised-button color="primary" class="button" (click)="applyChanges()" [disabled]="unappliedChanges === false">
+            Apply
         </button>
     </div>
 </div>
