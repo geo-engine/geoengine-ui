@@ -96,6 +96,13 @@ export class ProjectService {
     createDefaultProject(): Observable<Project> {
         const name = this.config.DEFAULTS.PROJECT.NAME;
         const time = new Time(this.config.DEFAULTS.PROJECT.TIME, this.config.DEFAULTS.PROJECT.TIME);
+
+        if (!time.start.isValid()) {
+            throw new Error(
+                "Couldn't create default project because the configured start time is invalid:" + this.config.DEFAULTS.PROJECT.TIME,
+            );
+        }
+
         const timeStepDuration = this.getDefaultTimeStep();
 
         // TODO: solidify default project creation
