@@ -9,6 +9,7 @@ import {
     RasterResultDescriptorDict,
     VectorResultDescriptorDict,
     SourceOperatorDict,
+    BBoxDict,
 } from '../backend/backend.model';
 import {Measurement} from '../layers/measurement';
 import {Symbology} from '../layers/symbology/symbology.model';
@@ -20,6 +21,7 @@ import {
     VectorDataType,
     VectorDataTypes,
 } from '../operators/datatype.model';
+import {Time} from '../time/time.model';
 
 export class Dataset {
     readonly id: UUID;
@@ -139,13 +141,28 @@ export abstract class ResultDescriptor {
 
 export class RasterResultDescriptor extends ResultDescriptor {
     readonly dataType: RasterDataType;
+    readonly bbox?: BBoxDict;
+    readonly time?: Time;
 
     constructor(config: RasterResultDescriptorDict) {
         super(config.spatialReference);
         this.dataType = RasterDataTypes.fromCode(config.dataType);
+        if (config.bbox) {
+            this.bbox = {
+                lowerLeftCoordinate: {
+                    x: config.bbox.upperLeftCoordinate.x,
+                    y: config.bbox.lowerRightCoordinate.y,
+                },
+                upperRightCoordinate: {
+                    x: config.bbox.lowerRightCoordinate.x,
+                    y: config.bbox.upperLeftCoordinate.y,
+                },
+            };
+        }
+        this.time = config.time ? Time.fromDict(config.time) : undefined;
     }
 
-    static override fromDict(dict: RasterResultDescriptorDict): ResultDescriptor {
+    static override fromDict(dict: RasterResultDescriptorDict): RasterResultDescriptor {
         return new RasterResultDescriptor(dict);
     }
 

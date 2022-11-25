@@ -142,6 +142,7 @@ import {InterpolationComponent} from './operators/dialogs/interpolation/interpol
 import {NeighborhoodAggregateComponent} from './operators/dialogs/neighborhood-aggregate/neighborhood-aggregate.component';
 import {NotFoundPageComponent} from './util/components/not-found/not-found-page.component';
 import {BackendStatusPageComponent} from './util/components/backend-status-page/backend-status-page.component';
+import {SymbologyCreatorComponent} from './layers/symbology/symbology-creator/symbology-creator.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -277,6 +278,7 @@ const CORE_COMPONENTS = [
     SidenavSearchRightDirective,
     SmallTimeInteractionComponent,
     StatisticsPlotComponent,
+    SymbologyCreatorComponent,
     TabsComponent,
     TemporalRasterAggregationComponent,
     TimeConfigComponent,
