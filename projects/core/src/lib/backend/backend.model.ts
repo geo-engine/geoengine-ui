@@ -41,6 +41,11 @@ export interface BBoxDict {
     upperRightCoordinate: CoordinateDict;
 }
 
+export interface SpatialResolution {
+    x: number;
+    y: number;
+}
+
 /**
  * UNIX timestamp in milliseconds.
  *
@@ -305,6 +310,7 @@ export interface PlotDataDict {
 
 export interface ResultDescriptorDict {
     spatialReference: SrsString;
+    time?: TimeIntervalDict;
 }
 
 export type TypedResultDescriptorDict = VectorResultDescriptorDict | RasterResultDescriptorDict;
@@ -313,6 +319,8 @@ export interface RasterResultDescriptorDict extends ResultDescriptorDict {
     type: 'raster';
     dataType: 'U8' | 'U16' | 'U32' | 'U64' | 'I8' | 'I16' | 'I32' | 'I64' | 'F32' | 'F64';
     measurement: MeasurementDict;
+    bbox?: BBoxDict;
+    resolution?: SpatialResolution;
 }
 
 export interface VectorResultDescriptorDict extends ResultDescriptorDict {
@@ -321,6 +329,7 @@ export interface VectorResultDescriptorDict extends ResultDescriptorDict {
     columns: {
         [key: string]: VectorColumnInfoDict;
     };
+    bbox?: BBoxDict;
 }
 
 export interface VectorColumnInfoDict {
@@ -551,7 +560,6 @@ export interface LayerCollectionListingDict extends LayerCollectionItemDict {
 export interface LayerCollectionLayerDict extends LayerCollectionItemDict {
     type: 'layer';
     id: ProviderLayerIdDict;
-    workflow: UUID;
 }
 
 export interface LayerDict {
