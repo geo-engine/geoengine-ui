@@ -38,6 +38,7 @@ import {
     LayerDict,
     LayerCollectionDict,
     AuthCodeRequestURL,
+    BackendInfoDict,
 } from './backend.model';
 
 @Injectable({
@@ -167,6 +168,14 @@ export class BackendService {
         return this.http.get<ResultDescriptorDict>(this.config.API_URL + `/workflow/${workflowId}/metadata`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
+    }
+
+    getBackendInfo(): Observable<BackendInfoDict> {
+        return this.http.get<BackendInfoDict>(this.config.API_URL + '/info');
+    }
+
+    getBackendAvailable(): Observable<void> {
+        return this.http.get<void>(this.config.API_URL + '/available');
     }
 
     getWorkflowProvenance(workflowId: UUID, sessionId: UUID): Observable<Array<ProvenanceOutputDict>> {

@@ -1,11 +1,11 @@
-import {Observable, ReplaySubject, of} from 'rxjs';
+import {Observable, ReplaySubject, of, BehaviorSubject} from 'rxjs';
 import {catchError, filter, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
 
 import {utc} from 'moment';
 
-import {User} from './user.model';
+import {BackendStatus, User} from './user.model';
 import {Config} from '../config.service';
 import {NotificationService} from '../notification.service';
 import {BackendService} from '../backend/backend.service';
@@ -21,7 +21,10 @@ const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '
 @Injectable()
 export class UserService {
     protected readonly session$ = new ReplaySubject<Session | undefined>(1);
+    protected readonly backendStatus$ = new BehaviorSubject<BackendStatus>({available: false, initial: true});
+
     protected logoutCallback?: () => void;
+    protected sessionInitialized = false;
 
     constructor(
         protected readonly config: Config,
@@ -32,29 +35,61 @@ export class UserService {
         this.session$.subscribe((session) => {
             // storage of the session
             this.saveSessionInBrowser(session);
-
-            // redirect to login page if logged out
-            if (!session && this.logoutCallback) {
-                this.logoutCallback();
-            }
         });
 
-        // restore old session if possible
-        this.restoreSessionFromBrowser().subscribe(
-            (session) => this.session$.next(session),
-            (_error) =>
-                this.createGuestUser().subscribe(
-                    (session) => this.session$.next(session),
-                    // TODO: use error translation
-                    (error) => {
-                        this.session$.next(undefined);
+        this.getBackendStatus().subscribe((status) => {
+            // if the backend is not ready, we cannot do anything
+            if (status.initial) {
+                return;
+            }
 
+            if (status.available && !this.sessionInitialized) {
+                this.sessionInitialized = true;
+                // restore old session if possible
+                this.sessionFromBrowserOrCreateGuest().subscribe({
+                    next: (session) => {
+                        this.session$.next(session);
+                    },
+                    error: (error) => {
                         // only show error if we did not expect it
                         if (error.error.error !== 'AnonymousAccessDisabled') {
                             this.notificationService.error(error.error.message);
                         }
+                        this.session$.next(undefined);
                     },
-                ),
+                });
+            }
+            if (!status.available && this.sessionInitialized) {
+                this.sessionInitialized = false;
+                this.session$.next(undefined);
+                this.notificationService.error('Session close caused by backend shutdown');
+            }
+        });
+
+        this.triggerBackendStatusUpdate();
+    }
+
+    triggerBackendStatusUpdate(): void {
+        this.backend.getBackendAvailable().subscribe({
+            next: () => {
+                this.backendStatus$.next({available: true});
+            },
+            error: (err) => {
+                this.backendStatus$.next({available: false, httpError: err});
+            },
+        });
+    }
+
+    getBackendStatus(): Observable<BackendStatus> {
+        return this.backendStatus$;
+    }
+
+    sessionFromBrowserOrCreateGuest(): Observable<Session> {
+        return this.restoreSessionFromBrowser().pipe(
+            catchError((error) => {
+                console.error(error);
+                return this.createGuestUser();
+            }),
         );
     }
 
