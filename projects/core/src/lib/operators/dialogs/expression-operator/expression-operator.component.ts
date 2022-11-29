@@ -49,6 +49,7 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
     readonly fnSignature: Observable<string>;
 
     readonly lastError$ = new BehaviorSubject<string | undefined>(undefined);
+    readonly loading$ = new BehaviorSubject<boolean>(false);
 
     readonly projectHasRasterLayers$: Observable<boolean>;
 
@@ -72,13 +73,13 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
-            name: new FormControl('Expression', {
-                nonNullable: true,
-                validators: [Validators.required, geoengineValidators.notOnlyWhitespace],
-            }),
             mapNoData: new FormControl(false, {
                 nonNullable: true,
                 validators: [Validators.required],
+            }),
+            name: new FormControl('Expression', {
+                nonNullable: true,
+                validators: [Validators.required, geoengineValidators.notOnlyWhitespace],
             }),
             symbologyCreation: new FormControl(SymbologyCreationType.AS_INPUT, {
                 nonNullable: true,
@@ -181,6 +182,10 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
      * The resulting layer is added to the map.
      */
     add(): void {
+        if (this.loading$.value) {
+            return; // don't add while loading
+        }
+
         const name: string = this.form.controls['name'].value;
         const dataType: RasterDataType | undefined = this.form.controls['dataType'].value;
         const expression: string = this.form.controls['expression'].value;
@@ -192,6 +197,8 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         }
 
         const sourceOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers(rasterLayers);
+
+        this.loading$.next(true);
 
         sourceOperators
             .pipe(
@@ -246,11 +253,13 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                     // everything worked well
 
                     this.lastError$.next(undefined);
+                    this.loading$.next(false);
                 },
                 error: (error) => {
                     const errorMsg = error.error.message;
 
                     this.lastError$.next(errorMsg);
+                    this.loading$.next(false);
                 },
             });
     }

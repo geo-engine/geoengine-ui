@@ -1,0 +1,32 @@
+:host {
+    height: 100%;
+}
+
+#container {
+    display: block;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+
+    .specification {
+        overflow-y: auto;
+    }
+
+    .actions {
+        text-align: right;
+        padding: 1rem;
+    }
+}
+
+.operator-dialog-section {
+    border-style: solid;
+    border-width: 1px;
+    border-color: var(--geoengine-divider-color);
+    border-radius: 0.25rem;
+    margin: 1rem;
+    padding: 0rem 1rem 1rem 1rem;
+
+    h3 {
+        color: var(--geoengine-foreground-secondary-text-color);
+    }
+}

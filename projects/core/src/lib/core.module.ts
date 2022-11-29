@@ -143,6 +143,8 @@ import {NeighborhoodAggregateComponent} from './operators/dialogs/neighborhood-a
 import {NotFoundPageComponent} from './util/components/not-found/not-found-page.component';
 import {BackendStatusPageComponent} from './util/components/backend-status-page/backend-status-page.component';
 import {SymbologyCreatorComponent} from './layers/symbology/symbology-creator/symbology-creator.component';
+import {OperatorDialogContainerComponent} from './operators/dialogs/helpers/operator-dialog-container/operator-dialog-container.component';
+import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -252,6 +254,7 @@ const CORE_COMPONENTS = [
     OidcComponent,
     OlRasterLayerComponent,
     OlVectorLayerComponent,
+    OperatorDialogContainerComponent,
     OperatorListComponent,
     OperatorOutputNameComponent,
     PlotDetailViewComponent,
@@ -321,5 +324,6 @@ const CORE_COMPONENTS = [
         ...CORE_PIPES,
         ...CORE_COMPONENTS,
     ],
+    providers: [{provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}}],
 })
 export class CoreModule {}

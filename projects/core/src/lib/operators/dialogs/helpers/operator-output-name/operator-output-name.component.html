@@ -1,6 +1,6 @@
-<geoengine-dialog-section-heading title="Output Name" subtitle="Specify the name of the operator result"></geoengine-dialog-section-heading>
 <mat-form-field>
-    <input matInput type="text" placeholder="Output {{ type }} Name" [(ngModel)]="name" minLength="1" (blur)="onBlur()" />
+    <mat-label>Layer Name</mat-label>
+    <input matInput type="text" placeholder="Output {{ type }} Name" [(ngModel)]="name" minLength="1" (blur)="onBlur()" required />
     <ng-content select="mat-hint"></ng-content>
     <ng-content select="mat-error"></ng-content>
 </mat-form-field>
