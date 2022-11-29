@@ -16,17 +16,8 @@ interface RasterizationForm {
     rasterization: FormGroup<DensityForm> | FormGroup<GridForm>;
 }
 
-// for DROPDOWN UI
-// type RasterizationType = 'grid' | 'density';
-// interface GridOrDensityForm {
-//     gridOrDensity: FormControl<RasterizationType>;
-// }
-
 interface GridForm {
-    // for Tab UI:
     gridOrDensity: FormControl<number>;
-    // for DROPDOWN UI
-    // gridOrDensity: FormControl<'grid'>;
     gridSizeMode: FormControl<'fixed' | 'relative'>;
     resolution: FormGroup<{
         resX: FormControl<number>;
@@ -38,10 +29,7 @@ interface GridForm {
     }>;
 }
 interface DensityForm {
-    // for Tab UI:
     gridOrDensity: FormControl<number>;
-    // for DROPDOWN UI
-    // gridOrDensity: FormControl<'density'>;
     radius: FormControl<number>;
     stddev: FormControl<number>;
 }
@@ -55,7 +43,6 @@ interface DensityForm {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RasterizationComponent implements OnDestroy {
-    // for TAB UI
     selected = new FormControl(0, {validators: [Validators.required], nonNullable: true});
 
     readonly inputTypes = [ResultTypes.POINTS];
@@ -85,10 +72,7 @@ export class RasterizationComponent implements OnDestroy {
         const fb = this.formBuilder.nonNullable;
         const gridMode = fb.control<'fixed' | 'relative'>('fixed');
         return fb.group<GridForm>({
-            // for Tab UI:
             gridOrDensity: this.createRasterizationType(0),
-            // for DROPDOWN UI
-            // gridOrDensity: this.createRasterizationType('grid'),
             gridSizeMode: gridMode,
             resolution: this.formBuilder.group({
                 resX: fb.control<number>(10.0, Validators.required),
@@ -103,10 +87,7 @@ export class RasterizationComponent implements OnDestroy {
 
     initialDensity(): FormGroup<DensityForm> {
         return this.formBuilder.nonNullable.group<DensityForm>({
-            // for Tab UI:
             gridOrDensity: this.createRasterizationType(1),
-            // for DROPDOWN UI
-            // gridOrDensity: this.createRasterizationType('density'),
             radius: this.formBuilder.nonNullable.control<number>(10.0, Validators.required),
             stddev: this.formBuilder.nonNullable.control<number>(10.0, Validators.required),
         });
@@ -166,29 +147,14 @@ export class RasterizationComponent implements OnDestroy {
             .subscribe();
     }
 
-    // for Tab UI:
     protected createRasterizationType(selectedIndex: number): FormControl<number> {
-        // for DROPDOWN UI
-        // protected createRasterizationType<T extends RasterizationType>(name: T): FormControl<T> {
-        const fb = this.formBuilder;
-        // for Tab UI:
-        this.selected = fb.nonNullable.control<number>(selectedIndex);
+        this.selected = this.formBuilder.nonNullable.control<number>(selectedIndex);
         const rasterType = this.selected;
-        // for DROPDOWN UI
-        // const rasterType = fb.control<T>(name, Validators.required);
         this.subscriptions.push(rasterType.valueChanges.subscribe((value) => this.changeRasterization(value)));
         return rasterType;
     }
-    // for Tab UI:
+
     protected changeRasterization(rasterization: number): void {
-        // for DROPDOWN UI
-        // protected changeRasterization(rasterization: string): void {
-        // if (rasterization === 'grid') {
-        //     this.form.setControl('rasterization', this.initialGrid());
-        // } else if (rasterization === 'density') {
-        //     this.form.setControl('rasterization', this.initialDensity());
-        // }
-        // for Tab UI:
         if (rasterization === 0) {
             this.form.setControl('rasterization', this.initialGrid());
         } else if (rasterization === 1) {
@@ -199,8 +165,6 @@ export class RasterizationComponent implements OnDestroy {
     private rasterizationParams(): GridRasterizationDict | DensityRasterizationDict | null {
         let params: GridRasterizationDict | DensityRasterizationDict | null = null;
         let rasterization = this.form.controls.rasterization;
-        // for DROPDOWN UI:
-        // if (rasterization.value.gridOrDensity === 'density') {
 
         if (this.selected.value === 0) {
             rasterization = this.form.controls.rasterization as FormGroup<GridForm>;
@@ -218,9 +182,7 @@ export class RasterizationComponent implements OnDestroy {
                 },
             });
         }
-        // for DROPDOWN UI:
-        // if (rasterization.value.gridOrDensity === 'density') {
-        // for TAB UI:
+
         if (this.selected.value === 1) {
             rasterization = this.form.controls.rasterization as FormGroup<DensityForm>;
 

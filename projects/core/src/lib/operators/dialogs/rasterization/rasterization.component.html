@@ -13,13 +13,6 @@
         <geoengine-dialog-section-heading title="Config" subtitle="Specify the rasterization parameters">
         </geoengine-dialog-section-heading>
         <div formGroupName="rasterization">
-            <!-- <mat-form-field appearance="fill">
-                <mat-label>Grid or density</mat-label>
-                <mat-select formControlName="gridOrDensity">
-                    <mat-option value="grid">Grid</mat-option>
-                    <mat-option value="density">Density</mat-option>
-                </mat-select>
-            </mat-form-field> -->
             <mat-tab-group
                 color="primary"
                 disablePagination
@@ -34,10 +27,7 @@
                 </mat-tab>
             </mat-tab-group>
 
-            <!-- <ng-container *ngIf="form.controls.rasterization.value.gridOrDensity === 'grid'"> -->
-            <!-- <mat-form-field appearance="fill"> -->
             <ng-template #gridTemplate>
-                <!-- <ng-container *ngIf="form.controls.rasterization.controls.gridOrDensity.value === 0"> -->
                 <label id="radio-group-label" class="labelRadioGroup">Size mode:</label>
                 <mat-radio-group color="primary" formControlName="gridSizeMode" aria-labelledby="radio-group-label">
                     <mat-radio-button value="fixed">Fixed</mat-radio-button>
@@ -65,7 +55,6 @@
                 </div>
             </ng-template>
             <ng-template #densityTemplate>
-                <!-- <ng-container *ngIf="form.controls.rasterization.value.gridOrDensity === 'density'"> -->
                 <div class="groupInRow" *ngIf="selected.value === 1">
                     <mat-form-field appearance="fill">
                         <mat-label>Radius</mat-label>
@@ -76,7 +65,6 @@
                         <input matInput type="number" formControlName="stddev" />
                     </mat-form-field>
                 </div>
-                <!-- </ng-container> -->
             </ng-template>
         </div>
         <geoengine-operator-output-name formControlName="name">
