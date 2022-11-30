@@ -109,6 +109,10 @@ You can override any of these default settings by specifying them.
     }
 ```
 
+Note:
+
+-   For dates before the year 0, 6-digit years must be specified., e.g. '-001000-01-01T12:00:00.000Z'
+
 _TODO: specify the options of each parameter in a tabular form._
 
 ## Code-Style and CI

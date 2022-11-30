@@ -214,6 +214,13 @@ export interface StrokeParamDict {
     // TODO: dash
 }
 
+export interface BackendInfoDict {
+    buildDate?: Date;
+    commitHash?: string;
+    version?: string;
+    features?: Array<string>;
+}
+
 export interface BreakpointDict {
     value: number;
     color: RgbaColorDict;
