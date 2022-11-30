@@ -251,14 +251,15 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     }
 
     updateColorizerType(colorizerType: 'linearGradient' | 'logarithmicGradient' | 'palette'): void {
+        // TODO: Remove this once palettes are fully implemented
+        this.paletteSelected = colorizerType === 'linearGradient' || colorizerType === 'logarithmicGradient' ? false : true;
+
         if (this.getColorizerType() === colorizerType) {
-            this.paletteSelected = false;
             return;
         }
 
         if (colorizerType === 'palette' || this.getColorizerType() === 'palette') {
             // TODO: implement palette
-            this.paletteSelected = true;
             return;
         }
 
@@ -266,7 +267,6 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
             const breakpoints = this.symbology.colorizer.getBreakpoints();
             let noDataColor: Color;
             let defaultColor: Color;
-            this.paletteSelected = false;
 
             if (this.symbology.colorizer instanceof LogarithmicGradient) {
                 noDataColor = this.symbology.colorizer.noDataColor;
@@ -282,7 +282,6 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
             const breakpoints = this.symbology.colorizer.getBreakpoints();
             let noDataColor: Color;
             let defaultColor: Color;
-            this.paletteSelected = false;
 
             if (this.symbology.colorizer instanceof LinearGradient) {
                 noDataColor = this.symbology.colorizer.noDataColor;
@@ -296,7 +295,6 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
             this.symbology = this.symbology.cloneWith({colorizer});
         } else if (colorizerType === 'palette') {
             // TODO: implement palette
-            this.paletteSelected = true;
             return;
         }
 
