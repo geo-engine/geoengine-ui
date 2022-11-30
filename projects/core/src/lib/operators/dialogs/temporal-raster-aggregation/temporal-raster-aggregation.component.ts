@@ -22,7 +22,7 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
 
     readonly timeGranularityOptions: Array<TimeStepGranularityDict> = ['millis', 'seconds', 'minutes', 'hours', 'days', 'months', 'years'];
     readonly defaultTimeGranularity: TimeStepGranularityDict = 'months';
-    readonly aggregations = ['Min', 'Max', 'First', 'Last', 'Mean'];
+    readonly aggregations = ['Count', 'First', 'Last', 'Max', 'Mean', 'Min', 'Sum'];
 
     form: UntypedFormGroup;
     disallowSubmit: Observable<boolean>;
