@@ -93,7 +93,7 @@
                 </ng-template>
             </mat-expansion-panel>
 
-            <mat-expansion-panel *ngIf="getColorizerType() !== 'palette'" expanded="true">
+            <mat-expansion-panel *ngIf="paletteSelected === false" expanded="true">
                 <mat-expansion-panel-header>
                     <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
                         <mat-icon>looks</mat-icon>

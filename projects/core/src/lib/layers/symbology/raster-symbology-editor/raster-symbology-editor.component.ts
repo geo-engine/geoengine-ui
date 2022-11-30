@@ -58,6 +58,9 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
 
     histogramData = new ReplaySubject<VegaChartData>(1);
     histogramLoading = new BehaviorSubject(false);
+
+    paletteSelected = false; // TODO: Remove once color palette picker is implemented and switch to "getColorizerType()"
+
     protected histogramWorkflowId = new ReplaySubject<UUID>(1);
     protected histogramSubscription?: Subscription;
 
@@ -249,11 +252,13 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
 
     updateColorizerType(colorizerType: 'linearGradient' | 'logarithmicGradient' | 'palette'): void {
         if (this.getColorizerType() === colorizerType) {
+            this.paletteSelected = false;
             return;
         }
 
         if (colorizerType === 'palette' || this.getColorizerType() === 'palette') {
             // TODO: implement palette
+            this.paletteSelected = true;
             return;
         }
 
@@ -261,6 +266,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
             const breakpoints = this.symbology.colorizer.getBreakpoints();
             let noDataColor: Color;
             let defaultColor: Color;
+            this.paletteSelected = false;
 
             if (this.symbology.colorizer instanceof LogarithmicGradient) {
                 noDataColor = this.symbology.colorizer.noDataColor;
@@ -276,6 +282,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
             const breakpoints = this.symbology.colorizer.getBreakpoints();
             let noDataColor: Color;
             let defaultColor: Color;
+            this.paletteSelected = false;
 
             if (this.symbology.colorizer instanceof LinearGradient) {
                 noDataColor = this.symbology.colorizer.noDataColor;
@@ -289,6 +296,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
             this.symbology = this.symbology.cloneWith({colorizer});
         } else if (colorizerType === 'palette') {
             // TODO: implement palette
+            this.paletteSelected = true;
             return;
         }
 
