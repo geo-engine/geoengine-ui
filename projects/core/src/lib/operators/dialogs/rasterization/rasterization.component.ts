@@ -9,6 +9,7 @@ import {mergeMap} from 'rxjs/operators';
 import {WorkflowDict} from '../../../backend/backend.model';
 import {DensityRasterizationDict, GridRasterizationDict, RasterizationDict} from '../../../backend/operator.model';
 import {Subscription} from 'rxjs';
+import {NotificationService} from '../../../notification.service';
 
 interface RasterizationForm {
     name: FormControl<string>;
@@ -50,7 +51,11 @@ export class RasterizationComponent implements OnDestroy {
     readonly form: FormGroup<RasterizationForm>;
     readonly subscriptions: Array<Subscription> = [];
 
-    constructor(private projectService: ProjectService, private formBuilder: FormBuilder) {
+    constructor(
+        private projectService: ProjectService,
+        private readonly notificationService: NotificationService,
+        private formBuilder: FormBuilder,
+    ) {
         const layerControl = new FormControl<Layer | undefined>(undefined, {
             nonNullable: true,
             validators: [Validators.required],
@@ -144,7 +149,11 @@ export class RasterizationComponent implements OnDestroy {
                     ),
                 ),
             )
-            .subscribe();
+            .subscribe({
+                error: (e) => {
+                    this.notificationService.error(e.error.message);
+                },
+            });
     }
 
     protected createRasterizationType(selectedIndex: number): FormControl<number> {
