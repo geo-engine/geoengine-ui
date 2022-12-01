@@ -30,3 +30,7 @@
         color: var(--geoengine-foreground-secondary-text-color);
     }
 }
+
+.parameters-content:not(:empty) + .parameters-empty {
+    display: none;
+}

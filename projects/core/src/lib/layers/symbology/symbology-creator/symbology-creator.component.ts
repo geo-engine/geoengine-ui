@@ -216,6 +216,11 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
 
                 const min = statistics[rasterName].min;
                 const max = statistics[rasterName].max;
+
+                if (min === null || min === undefined || max === null || max === undefined) {
+                    throw new Error('Sample statistics do not have valid min/max values.');
+                }
+
                 const breakpoints = ColorMapSelectorComponent.createLinearBreakpoints(
                     MPL_COLORMAPS.VIRIDIS,
                     NUMBER_OF_COLOR_STEPS,

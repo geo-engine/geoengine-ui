@@ -48,8 +48,10 @@
                     The name must be non-empty.
                 </mat-error>
             </geoengine-operator-output-name>
+
             <geoengine-symbology-creator #symbologyCreator formControlName="symbologyCreation"></geoengine-symbology-creator>
         </ng-container>
+
         <ng-container actions>
             <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid || (loading$ | async)">Create</button>
         </ng-container>

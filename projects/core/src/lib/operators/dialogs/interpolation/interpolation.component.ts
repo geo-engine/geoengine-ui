@@ -1,16 +1,18 @@
 import {RasterLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormControl, FormBuilder, FormGroup, Validators, ValidatorFn} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {mergeMap, tap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
-import {WorkflowDict} from '../../../backend/backend.model';
-import {Subscription} from 'rxjs';
+import {UUID, WorkflowDict} from '../../../backend/backend.model';
+import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
 import {InputResolutionDict, InterpolationDict} from '../../../backend/operator.model';
 import {RasterDataTypes} from '../../datatype.model';
 import {Layer} from 'ol/layer';
+import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
+import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 
 @Component({
     selector: 'geoengine-interpolation',
@@ -25,6 +27,11 @@ export class InterpolationComponent implements OnInit, AfterViewInit, OnDestroy 
     ];
     readonly inputTypes = [ResultTypes.RASTER];
     readonly rasterDataTypes = RasterDataTypes.ALL_DATATYPES;
+
+    readonly loading$ = new BehaviorSubject<boolean>(false);
+
+    @ViewChild(SymbologyCreatorComponent)
+    readonly symbologyCreator!: SymbologyCreatorComponent;
 
     form: FormGroup;
 
@@ -80,12 +87,18 @@ export class InterpolationComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     add(): void {
+        if (this.loading$.value) {
+            return; // don't add while loading
+        }
+
         const inputLayer: RasterLayer = this.form.controls['layer'].value;
         const outputName: string = this.form.controls['name'].value;
 
         const interpolationMethod: string = this.form.controls['interpolationMethod'].value;
 
         const inputResolution: InputResolutionDict = this.getInputResolution();
+
+        this.loading$.next(true);
 
         this.projectService
             .getWorkflow(inputLayer.workflowId)
@@ -105,24 +118,34 @@ export class InterpolationComponent implements OnInit, AfterViewInit, OnDestroy 
                         } as InterpolationDict,
                     }),
                 ),
-                mergeMap((workflowId) =>
+                mergeMap((workflowId: UUID) => {
+                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator.symbologyForRasterLayer(workflowId, inputLayer);
+                    return combineLatest([of(workflowId), symbology$]);
+                }),
+                mergeMap(([workflowId, symbology]: [UUID, RasterSymbology]) =>
                     this.projectService.addLayer(
                         new RasterLayer({
                             workflowId,
                             name: outputName,
-                            symbology: inputLayer.symbology.clone(),
+                            symbology,
                             isLegendVisible: false,
                             isVisible: true,
                         }),
                     ),
                 ),
             )
-            .subscribe(
-                () => {
+            .subscribe({
+                next: () => {
                     // success
+
+                    this.loading$.next(false);
                 },
-                (error) => this.notificationService.error(error.error.message),
-            );
+                error: (error) => {
+                    this.notificationService.error(error.error ? error.error.message : error);
+
+                    this.loading$.next(false);
+                },
+            });
     }
 
     private getInputResolution(): InputResolutionDict {

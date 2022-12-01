@@ -12,7 +12,10 @@
                 <h3 fxFlex>Parameters</h3>
                 <ng-content select="[operatorParametersIcon]"></ng-content>
             </div>
-            <ng-content select="[operatorParameters]"></ng-content>
+            <div #parametersContent class="parameters-content">
+                <ng-content select="[operatorParameters]"></ng-content>
+            </div>
+            <em class="parameters-empty">No parameters</em>
         </div>
         <div class="operator-dialog-section">
             <div fxLayout="row" fxLayoutGap="1rem" fxLayoutAlign="center center">

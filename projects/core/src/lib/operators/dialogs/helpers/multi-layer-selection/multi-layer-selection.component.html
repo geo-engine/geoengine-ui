@@ -1,5 +1,5 @@
 <div fxLayout="row">
-    <h4>{{ subtitle }}</h4>
+    <h4>Select input {{ title }}</h4>
     <div fxFlex fxLayout="row" fxLayoutAlign="end">
         <button mat-button color="primary" type="button" (click)="add()" *ngIf="max - min > 0" [disabled]="layersAtMax | async">
             <mat-icon>add_circle_outline</mat-icon>

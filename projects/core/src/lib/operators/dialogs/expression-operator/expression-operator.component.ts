@@ -49,9 +49,9 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
     readonly fnSignature: Observable<string>;
 
     readonly lastError$ = new BehaviorSubject<string | undefined>(undefined);
-    readonly loading$ = new BehaviorSubject<boolean>(false);
-
     readonly projectHasRasterLayers$: Observable<boolean>;
+
+    readonly loading$ = new BehaviorSubject<boolean>(false);
 
     @ViewChild(SymbologyCreatorComponent)
     readonly symbologyCreator!: SymbologyCreatorComponent;

@@ -1,15 +1,17 @@
 import {RasterLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
-import {TimeStepGranularityDict, WorkflowDict} from '../../../backend/backend.model';
-import {Observable} from 'rxjs';
+import {TimeStepGranularityDict, UUID, WorkflowDict} from '../../../backend/backend.model';
+import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {TemporalRasterAggregationDict} from '../../../backend/operator.model';
 import moment, {Moment} from 'moment';
+import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
+import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 
 @Component({
     selector: 'geoengine-temporal-raster-aggregation',
@@ -23,6 +25,11 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
     readonly timeGranularityOptions: Array<TimeStepGranularityDict> = ['millis', 'seconds', 'minutes', 'hours', 'days', 'months', 'years'];
     readonly defaultTimeGranularity: TimeStepGranularityDict = 'months';
     readonly aggregations = ['Min', 'Max', 'First', 'Last', 'Mean'];
+
+    readonly loading$ = new BehaviorSubject<boolean>(false);
+
+    @ViewChild(SymbologyCreatorComponent)
+    readonly symbologyCreator!: SymbologyCreatorComponent;
 
     form: UntypedFormGroup;
     disallowSubmit: Observable<boolean>;
@@ -57,6 +64,10 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
     ngOnDestroy(): void {}
 
     add(): void {
+        if (this.loading$.value) {
+            return; // don't add while loading
+        }
+
         const inputLayer: RasterLayer = this.form.controls['layer'].value;
         const outputName: string = this.form.controls['name'].value;
 
@@ -70,6 +81,8 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
         }
 
         const ignoreNoData: boolean = this.form.controls['ignoreNoData'].value;
+
+        this.loading$.next(true);
 
         this.projectService
             .getWorkflow(inputLayer.workflowId)
@@ -96,23 +109,31 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
                         } as TemporalRasterAggregationDict,
                     }),
                 ),
-                mergeMap((workflowId) =>
+                mergeMap((workflowId: UUID) => {
+                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator.symbologyForRasterLayer(workflowId, inputLayer);
+                    return combineLatest([of(workflowId), symbology$]);
+                }),
+                mergeMap(([workflowId, symbology]: [UUID, RasterSymbology]) =>
                     this.projectService.addLayer(
                         new RasterLayer({
                             workflowId,
                             name: outputName,
-                            symbology: inputLayer.symbology.clone(),
+                            symbology,
                             isLegendVisible: false,
                             isVisible: true,
                         }),
                     ),
                 ),
             )
-            .subscribe(
-                () => {
+            .subscribe({
+                next: () => {
                     // success
+                    this.loading$.next(false);
                 },
-                (error) => this.notificationService.error(error),
-            );
+                error: (error) => {
+                    this.notificationService.error(error);
+                    this.loading$.next(false);
+                },
+            });
     }
 }

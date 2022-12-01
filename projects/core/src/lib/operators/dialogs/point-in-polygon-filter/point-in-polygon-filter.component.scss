@@ -4,16 +4,6 @@ form {
     box-sizing: border-box;
 }
 
-.container {
-    overflow-y: auto;
-    padding: 0 1rem 1rem 1rem;
-}
-
-.actions {
-    text-align: right;
-    padding: 1rem;
-}
-
 .error {
     color: var(--geoengine-warn-color, red);
 }
