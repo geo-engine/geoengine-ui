@@ -142,7 +142,9 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
         this.layerService
             .getLayer(layerId.providerId, layerId.layerId)
             .pipe(
-                mergeMap((layer: LayerDict) => combineLatest([of(layer), this.projectService.registerWorkflow(layer.workflow)])),
+                mergeMap((layer: LayerDict) =>
+                    combineLatest([of(layer), this.layerService.registeredWorkflowForLayer(layerId.providerId, layerId.layerId)]),
+                ),
                 mergeMap(([layer, workflowId]: [LayerDict, UUID]) =>
                     combineLatest([of(layer), of(workflowId), this.projectService.getWorkflowMetaData(workflowId)]),
                 ),
@@ -162,6 +164,10 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
                 },
                 (requestError) => this.handleError(requestError.error, layerId.layerId),
             );
+    }
+
+    getWorkflowMetaData(workflowId: UUID): Observable<ResultDescriptorDict> {
+        return this.projectService.getWorkflowMetaData(workflowId);
     }
 
     private addVectorLayer(

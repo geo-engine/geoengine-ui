@@ -142,6 +142,7 @@ import {InterpolationComponent} from './operators/dialogs/interpolation/interpol
 import {NeighborhoodAggregateComponent} from './operators/dialogs/neighborhood-aggregate/neighborhood-aggregate.component';
 import {NotFoundPageComponent} from './util/components/not-found/not-found-page.component';
 import {BackendStatusPageComponent} from './util/components/backend-status-page/backend-status-page.component';
+import {LayerCollectionLayerComponent} from './layer-collections/layer-collection-layer/layer-collection-layer.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -225,6 +226,7 @@ const CORE_COMPONENTS = [
     InterpolationComponent,
     LayerCollectionDropdownComponent,
     LayerCollectionListComponent,
+    LayerCollectionLayerComponent,
     LayerCollectionNavigationComponent,
     LayerListComponent,
     LayerListElementComponent,
