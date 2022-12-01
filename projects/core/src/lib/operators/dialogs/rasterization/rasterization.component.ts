@@ -80,8 +80,8 @@ export class RasterizationComponent implements OnDestroy {
             gridOrDensity: this.createRasterizationType(0),
             gridSizeMode: gridMode,
             resolution: this.formBuilder.group({
-                resX: fb.control<number>(10.0, Validators.required),
-                resY: fb.control<number>(10.0, Validators.required),
+                resX: fb.control<number>(10.0, {validators: [Validators.required, geoengineValidators.largerThan(0)]}),
+                resY: fb.control<number>(10.0, {validators: [Validators.required, geoengineValidators.largerThan(0)]}),
             }),
             origin: this.formBuilder.group({
                 originX: fb.control<number>(0.0, Validators.required),
@@ -93,8 +93,12 @@ export class RasterizationComponent implements OnDestroy {
     initialDensity(): FormGroup<DensityForm> {
         return this.formBuilder.nonNullable.group<DensityForm>({
             gridOrDensity: this.createRasterizationType(1),
-            radius: this.formBuilder.nonNullable.control<number>(10.0, Validators.required),
-            stddev: this.formBuilder.nonNullable.control<number>(10.0, Validators.required),
+            radius: this.formBuilder.nonNullable.control<number>(10.0, {
+                validators: [Validators.required, geoengineValidators.largerThan(0)],
+            }),
+            stddev: this.formBuilder.nonNullable.control<number>(10.0, {
+                validators: [Validators.required, geoengineValidators.largerThan(0)],
+            }),
         });
     }
 
