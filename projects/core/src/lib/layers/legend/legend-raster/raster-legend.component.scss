@@ -1,24 +1,21 @@
-:host {
-    padding-top: 4px;
-    padding-left: 8px;
-    padding-right: 0px;
-    padding-bottom: 8px;
-}
+$icon-size: 1.25rem;
 
-.legend {
-    display: table;
-    font-size: 12px;
-}
-tr {
-    min-height: 20px;
-}
+table {
+    width: 100%;
+    font-size: 0.75rem;
 
-td {
-    padding: 2px;
+    tbody {
+        tr {
+            min-height: $icon-size;
+            td {
+                padding: 0.125rem;
+            }
+        }
+    }
 }
 
 .gradient {
-    min-width: 20px;
+    width: $icon-size;
     border: #000 solid 1px;
 }
 
@@ -29,12 +26,11 @@ td {
 .icon {
     margin-bottom: 1px !important;
     margin-top: 1px !important;
-    min-height: 20px !important;
-    min-width: 20px !important;
+    height: $icon-size !important;
+    width: $icon-size !important;
     border: #000 solid 1px;
 }
 
 .measurement {
-    display: inline-block;
     padding-bottom: 0.5rem;
 }

@@ -131,12 +131,19 @@ export class RasterLegendComponent implements OnInit, OnChanges {
         this.measurement$ = this.projectService.getLayerMetadata(this.layer).pipe(map((m) => (m as RasterLayerMetadata).measurement));
         this.displayedBreakpoints = this.layer.symbology.colorizer.getBreakpoints().map((x) => x.value);
         this.displayedBreakpoints = unifyDecimals(this.displayedBreakpoints);
+        this.calculateDisplayedBreakpoints();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.layer) {
             const symbology = changes.layer.currentValue.symbology;
             this.numberPipeParameters = calculateNumberPipeParameters(symbology.colorizer.getBreakpoints());
+            this.calculateDisplayedBreakpoints();
         }
+    }
+
+    protected calculateDisplayedBreakpoints(): void {
+        this.displayedBreakpoints = this.layer.symbology.colorizer.getBreakpoints().map((x) => x.value);
+        this.displayedBreakpoints = unifyDecimals(this.displayedBreakpoints);
     }
 }

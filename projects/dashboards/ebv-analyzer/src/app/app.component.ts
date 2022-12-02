@@ -1,4 +1,4 @@
-import {Observable, BehaviorSubject} from 'rxjs';
+import {Observable, BehaviorSubject, mergeMap} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {
@@ -91,9 +91,13 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     private reset(): void {
-        this.projectService.clearLayers();
-        this.projectService.clearPlots();
-        this.projectService.setTime(new Time(moment.utc()));
+        this.projectService
+            .clearLayers()
+            .pipe(
+                mergeMap(() => this.projectService.clearPlots()),
+                mergeMap(() => this.projectService.setTime(new Time(moment.utc()))),
+            )
+            .subscribe();
     }
 
     private registerIcons(): void {
