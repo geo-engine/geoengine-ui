@@ -1,10 +1,77 @@
 <ng-container>
     <span class="header">
-        <mat-icon matListIcon>map</mat-icon>
         <span class="header-content">
-            <h4 mat-line>{{ layer?.name }}</h4>
-            <p mat-line>{{ layer?.description }}</p>
+            <mat-icon class="header-icon">map</mat-icon>
+            <span class="header-text">
+                <h4 class="header-text-line">{{ layer?.name }}</h4>
+                <p class="header-text-line">{{ layer?.description }}</p>
+            </span>
+
+            <button mat-icon-button color="primary" aria-label="Example icon button with a home icon" (click)="onAdd()">
+                <mat-icon>add</mat-icon>
+            </button>
+
+            <button mat-icon-button aria-label="Example icon button with a menu icon" (click)="toggleExpand()">
+                <mat-icon *ngIf="!expanded">expand_more</mat-icon>
+                <mat-icon *ngIf="expanded">expand_less</mat-icon>
+            </button>
         </span>
-        <mat-icon matListIcon>arrow_forward</mat-icon>
+    </span>
+</ng-container>
+<ng-container>
+    <mat-progress-bar *ngIf="loading" mode="query"></mat-progress-bar>
+</ng-container>
+<ng-container *ngIf="expanded" class="details">
+    <span *ngIf="rasterResultDescriptor" class="details-content">
+        <span class="details-row">
+            <mat-icon class="details-row-icon">language</mat-icon>
+            <span class="details-row-text">
+                <h4 class="details-row-text-line">SRS</h4>
+                <p class="details-row-text-linw">{{ rasterResultDescriptor.spatialReference }}</p>
+            </span>
+        </span>
+        <span class="details-row">
+            <span class="details-row-text">
+                <h4 class="details-row-text-line">Nat. resolution</h4>
+                <p class="details-row-text-line">{{ rasterResultDescriptor.resolution }}</p>
+            </span>
+        </span>
+        <span class="details-row">
+            <span class="details-row-text">
+                <mat-icon class="details-row-icon">fullscreen</mat-icon>
+                <h4 class="details-row-text-line">BBox</h4>
+                <p class="details-row-text-line">{{ rasterResultDescriptor.bbox }}</p>
+            </span>
+        </span>
+        <span class="details-row">
+            <mat-icon class="details-row-icon">date_range</mat-icon>
+            <span class="details-row-text">
+                <h4 class="details-row-text-line">Time</h4>
+                <p class="details-row-text-line">{{ rasterResultDescriptor.time?.start }} - {{ rasterResultDescriptor.time?.end }}</p>
+            </span>
+        </span>
+    </span>
+    <span *ngIf="vectorResultDescriptor" class="details-content">
+        <span class="details-row">
+            <mat-icon class="details-row-icon">language</mat-icon>
+            <span class="details-row-text">
+                <h4 class="details-row-text-line">SRS</h4>
+                <p class="details-row-text-line">{{ vectorResultDescriptor.spatialReference }}</p>
+            </span>
+        </span>
+        <span class="details-row">
+            <mat-icon class="details-row-icon">fullscreen</mat-icon>
+            <span class="details-row-text">
+                <h4 class="details-row-text-line">BBox</h4>
+                <p class="details-row-text-line">{{ vectorResultDescriptor.bbox }}</p>
+            </span>
+        </span>
+        <span class="details-row">
+            <mat-icon class="details-row-icon">date_range</mat-icon>
+            <span class="details-row-text">
+                <h4 class="details-row-text-line">Time</h4>
+                <p class="details-row-text-line">{{ vectorResultDescriptor.time?.start }} - {{ vectorResultDescriptor.time?.end }}</p>
+            </span>
+        </span>
     </span>
 </ng-container>

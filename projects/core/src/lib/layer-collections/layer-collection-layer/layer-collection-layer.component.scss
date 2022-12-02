@@ -10,9 +10,105 @@
 
 .header-content {
     display: flex;
+    flex-direction: row;
     align-items: center;
-
-    height: inherit;
     padding: 0 16px;
-    box-sizing: border-box;
+    position: relative;
+    height: inherit;
+
+    .header-icon {
+        flex-shrink: 0;
+        width: 24px;
+        height: 24px;
+        font-size: 24px;
+        box-sizing: content-box;
+        border-radius: 50%;
+        padding: 4px;
+    }
+
+    .header-text {
+        display: flex;
+        flex-direction: column;
+        flex: auto;
+        box-sizing: border-box;
+        overflow: hidden;
+        padding: 0;
+        padding-left: 16px;
+
+        .header-text-line {
+            margin: 0;
+            padding: 0;
+            font-weight: normal;
+
+            white-space: nowrap;
+            overflow: hidden;
+            display: block;
+            box-sizing: border-box;
+        }
+
+        :nth-child(n + 2) {
+            font-size: 14px;
+        }
+    }
+}
+
+mat-progres-bar {
+    width: 100%;
+}
+
+.details-content {
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    flex: auto;
+    overflow: auto;
+
+    .details-row {
+        display: flex;
+        flex: auto;
+        flex-direction: row;
+        align-items: center;
+        justify-items: left;
+        padding: 0;
+        margin: 0;
+        margin-left: 16px;
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: normal;
+
+        .details-row-icon {
+            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
+            font-size: 18px;
+            box-sizing: content-box;
+            border-radius: 50%;
+            padding: 4px;
+        }
+
+        .details-row-text {
+            display: flex;
+            flex-direction: column;
+            flex: auto;
+            box-sizing: border-box;
+            overflow: hidden;
+            padding: 0;
+            padding-left: 16px;
+
+            .details-row-text-line {
+                margin: 0;
+                padding: 0;
+                font-weight: normal;
+
+                white-space: nowrap;
+                overflow: hidden;
+                display: block;
+                box-sizing: border-box;
+            }
+
+            :nth-child(n + 2) {
+                font-size: 12px;
+            }
+        }
+    }
 }

@@ -131,6 +131,10 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
         }
     }
 
+    addLayerById(layerId: ProviderLayerIdDict): void {
+        this.addLayer(layerId);
+    }
+
     protected calculateInitialNumberOfElements(): number {
         const element = this.viewport.elementRef.nativeElement;
         const numberOfElements = Math.ceil(element.clientHeight / this.itemSizePx);
