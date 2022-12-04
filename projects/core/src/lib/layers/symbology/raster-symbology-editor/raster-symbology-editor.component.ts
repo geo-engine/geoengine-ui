@@ -86,6 +86,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         this.updateLayerMinMaxFromColorizer();
 
         this.createHistogramWorkflowId().subscribe((histogramWorkflowId) => this.histogramWorkflowId.next(histogramWorkflowId));
+        this.updateColorizerType(this.getColorizerType()); // TODO: Remove after palettes are implemented
     }
 
     ngAfterViewInit(): void {}
