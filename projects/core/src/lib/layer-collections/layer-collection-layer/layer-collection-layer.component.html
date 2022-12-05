@@ -5,7 +5,7 @@
                 <mat-icon class="header-icon">map</mat-icon>
                 <span class="header-text" (click)="onAdd()">
                     <h4 class="header-text-line">{{ layer?.name }}</h4>
-                    <p class="header-text-line">{{ layer?.description }}</p>
+                    <p class="header-text-line" *ngIf="!expanded">{{ layer?.description }}</p>
                 </span>
             </span>
 
@@ -19,35 +19,45 @@
         </span>
     </span>
 </ng-container>
+
 <ng-container>
     <mat-progress-bar *ngIf="loading" mode="query"></mat-progress-bar>
 </ng-container>
-<ng-container *ngIf="expanded" class="details">
-    <span *ngIf="layerMetadata" class="details-content">
-        <span class="details-row">
-            <mat-icon class="details-row-icon">language</mat-icon>
-            <span class="details-row-text">
-                <p class="details-row-text-line">{{ layerMetadata.spatialReference.srsString }}</p>
-            </span>
-        </span>
-        <span class="details-row">
-            <mat-icon class="details-row-icon">fullscreen</mat-icon>
-            <span class="details-row-text">
-                <p class="details-row-text-line">{{ bboxLowerLeftString }}</p>
-                <p class="details-row-text-line">{{ bboxUpperRightString }}</p>
-            </span>
-        </span>
-        <span class="details-row">
-            <mat-icon class="details-row-icon">date_range</mat-icon>
-            <span class="details-row-text">
-                <p class="details-row-text-line">{{ minTimeString }}</p>
-                <p class="details-row-text-line">{{ maxTimeString }}</p>
-            </span>
-        </span>
-    </span>
 
-    <span *ngIf="rasterLayerMetadata" class="details-content">
-        <!--
+<ng-container *ngIf="expanded">
+    <span class="details-content">
+        <span class="details-row">
+            <mat-icon class="details-row-icon">info</mat-icon>
+            <span class="details-row-text">
+                <p class="details-row-text-multi-line">{{ layer?.description }}</p>
+            </span>
+        </span>
+
+        <ng-template [ngIf]="layerMetadata">
+            <span class="details-row">
+                <mat-icon class="details-row-icon">language</mat-icon>
+                <span class="details-row-text">
+                    <p class="details-row-text-line">{{ layerMetadata.spatialReference.srsString }}</p>
+                </span>
+            </span>
+            <span class="details-row">
+                <mat-icon class="details-row-icon">fullscreen</mat-icon>
+                <span class="details-row-text">
+                    <p class="details-row-text-line">{{ bboxLowerLeftString }}</p>
+                    <p class="details-row-text-line">{{ bboxUpperRightString }}</p>
+                </span>
+            </span>
+            <span class="details-row">
+                <mat-icon class="details-row-icon">date_range</mat-icon>
+                <span class="details-row-text">
+                    <p class="details-row-text-line">{{ minTimeString }}</p>
+                    <p class="details-row-text-line">{{ maxTimeString }}</p>
+                </span>
+            </span>
+        </ng-template>
+
+        <ng-template [ngIf]="rasterLayerMetadata">
+            <!--
         <span class="details-row">
             <span class="details-row-text">
                 <h4 class="details-row-text-line">Nat. resolution</h4>
@@ -55,6 +65,7 @@
             </span>
         </span>
         -->
+        </ng-template>
+        <ng-template [ngIf]="vectorLayerMetadata" class="details-content"></ng-template>
     </span>
-    <span *ngIf="vectorLayerMetadata" class="details-content"></span>
 </ng-container>

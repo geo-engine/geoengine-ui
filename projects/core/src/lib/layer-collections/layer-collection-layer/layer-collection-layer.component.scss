@@ -12,11 +12,12 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 0 16px;
+
     position: relative;
     height: inherit;
 
     .header-click {
+        padding: 0 16px;
         align-items: center;
         display: flex;
         cursor: pointer;
@@ -25,6 +26,7 @@
         height: inherit;
         width: inherit;
         flex: 1;
+        overflow: hidden;
 
         &:hover {
             background-color: var(--geoengine-background-hover-color);
@@ -32,6 +34,7 @@
     }
 
     .header-button {
+        padding: 0 16px;
         align-items: center;
         display: flex;
         box-sizing: border-box;
@@ -123,7 +126,17 @@ mat-progres-bar {
                 font-weight: normal;
 
                 white-space: nowrap;
-                overflow: hidden;
+                overflow: ellipsis;
+                display: block;
+                box-sizing: border-box;
+            }
+
+            .details-row-text-multi-line {
+                margin: 0;
+                padding: 0;
+                font-weight: normal;
+
+                overflow: ellipsis;
                 display: block;
                 box-sizing: border-box;
             }
