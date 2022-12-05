@@ -1,0 +1,32 @@
+<div id="container" fxLayout="column">
+    <div class="specification" fxFlex>
+        <div class="operator-dialog-section">
+            <div fxLayout="row" fxLayoutGap="1rem" fxLayoutAlign="center center">
+                <h3 fxFlex>Operator input</h3>
+                <ng-content select="[operatorInputIcon]"></ng-content>
+            </div>
+            <ng-content select="[operatorInput]"></ng-content>
+        </div>
+        <div class="operator-dialog-section">
+            <div fxLayout="row" fxLayoutGap="1rem" fxLayoutAlign="center center">
+                <h3 fxFlex>Parameters</h3>
+                <ng-content select="[operatorParametersIcon]"></ng-content>
+            </div>
+            <div #parametersContent class="parameters-content">
+                <ng-content select="[operatorParameters]"></ng-content>
+            </div>
+            <em class="parameters-empty">No parameters</em>
+        </div>
+        <div class="operator-dialog-section">
+            <div fxLayout="row" fxLayoutGap="1rem" fxLayoutAlign="center center">
+                <h3 fxFlex>Layer specification</h3>
+                <ng-content select="[layerSpecificationIcon]"></ng-content>
+            </div>
+            <ng-content select="[layerSpecification]"></ng-content>
+        </div>
+    </div>
+    <div class="actions">
+        <ng-content select="[actions]"></ng-content>
+    </div>
+    <mat-progress-bar mode="query" *ngIf="loading"></mat-progress-bar>
+</div>

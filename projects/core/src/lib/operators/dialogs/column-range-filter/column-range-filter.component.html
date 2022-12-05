@@ -1,124 +1,136 @@
 <geoengine-sidenav-header>Column Range Filter</geoengine-sidenav-header>
 
-<geoengine-dialog-help>
-    <p>
-        This filter allows you to create a new vector layer where selected attributes have values only inside specified ranges. After
-        selecting your input layer, choose an attribute you wish to filter. Then specify one or more ranges of values. The newly created
-        layer will contain values for that attribute only within the specified ranges.
-    </p>
-    <p>It is possible to filter by numeric values as well as text. In case of text, filtering will be lexicographically.</p>
-    <p>See <a href="https://docs.geoengine.io/operators/columnrangefilter.html">Geo Engine Docs</a> for a more detailed description.</p>
-</geoengine-dialog-help>
+<form [formGroup]="form" (ngSubmit)="$event.preventDefault(); add()">
+    <geoengine-operator-dialog-container>
+        <a mat-icon-button operatorInputIcon href="https://docs.geoengine.io/operators/columnrangefilter.html" target="_blank">
+            <mat-icon>help_center</mat-icon>
+        </a>
 
-<form [formGroup]="form" fxLayout="column" (ngSubmit)="$event.preventDefault(); add()">
-    <!--    Layer Selection-->
-    <geoengine-layer-selection [types]="inputTypes" formControlName="layer"></geoengine-layer-selection>
+        <ng-container operatorInput>
+            <geoengine-layer-selection [types]="inputTypes" formControlName="layer"></geoengine-layer-selection>
+        </ng-container>
 
-    <!--    Filter Selection-->
-    <div formArrayName="filters">
-        <div fxLayout="row">
-            <geoengine-dialog-section-heading
-                title="Filter Selection"
-                subtitle="Please select the filters you want to use."
-            ></geoengine-dialog-section-heading>
-            <div fxFlex fxLayout="row" fxLayoutAlign="end">
-                <button type="button" (click)="addFilter(); accordion.closeAll()" mat-button color="primary">
-                    <mat-icon>add_circle_outline</mat-icon>
-                </button>
-            </div>
-        </div>
+        <a mat-icon-button operatorParametersIcon href="https://docs.geoengine.io/operators/columnrangefilter.html" target="_blank">
+            <mat-icon>help_center</mat-icon>
+        </a>
 
-        <mat-accordion #accordion="matAccordion" multi="true">
-            <div *ngFor="let filter of filters.controls; let filterIndex = index">
-                <mat-expansion-panel expanded="true" [formGroupName]="filterIndex">
-                    <mat-expansion-panel-header>
-                        <mat-panel-title>Filter {{ filterIndex + 1 }}</mat-panel-title>
-                        <button *ngIf="filters.length > 1" type="button" (click)="removeFilter(filterIndex)" mat-button color="primary">
-                            <mat-icon>remove_circle_outline</mat-icon>
+        <ng-container operatorParameters>
+            <!--    Filter Selection-->
+            <div formArrayName="filters">
+                <div fxLayout="row">
+                    <geoengine-dialog-section-heading
+                        title="Filter Selection"
+                        subtitle="Please select the filters you want to use."
+                    ></geoengine-dialog-section-heading>
+                    <div fxFlex fxLayout="row" fxLayoutAlign="end">
+                        <button type="button" (click)="addFilter(); accordion.closeAll()" mat-button color="primary">
+                            <mat-icon>add_circle_outline</mat-icon>
                         </button>
-                    </mat-expansion-panel-header>
-
-                    <!--            Attribut Selection-->
-                    <div fxLayout="row">
-                        <geoengine-dialog-section-heading
-                            title="Attribute Selection"
-                            subtitle="Please select the attribute to filter."
-                        ></geoengine-dialog-section-heading>
                     </div>
-                    <div fxLayout="row">
-                        <mat-form-field>
-                            <mat-select
-                                placeholder="Attribute"
-                                formControlName="attribute"
-                                (valueChange)="changeAttributeValue($event, filterIndex)"
-                            >
-                                <mat-option *ngFor="let attribute of attributes$ | async" [value]="attribute">{{ attribute }}</mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
+                </div>
 
-                    <!--            Range Selection-->
-                    <div formArrayName="ranges">
-                        <div fxLayout="row">
-                            <geoengine-dialog-section-heading
-                                title="Range Selection"
-                                subtitle="Please select the ranges you want to filter for."
-                            ></geoengine-dialog-section-heading>
-                            <div fxFlex fxLayout="row" fxLayoutAlign="end">
-                                <button type="button" (click)="addRange(filterIndex, undefined)" mat-button color="primary">
-                                    <mat-icon>add_circle_outline</mat-icon>
-                                </button>
-                            </div>
-                        </div>
-                        <div *ngFor="let range of ranges(filterIndex).controls; let rangeIndex = index" fxLayout="column">
-                            <div [formGroupName]="rangeIndex" fxLayout="row" fxFlex>
-                                <mat-form-field fxFlex>
-                                    <input matInput type="text" placeholder="Min" formControlName="min" />
-                                    <mat-hint class="error" *ngIf="range.errors?.noFilter || range.errors?.noFiniteNumber">
-                                        Please specify the value.
-                                    </mat-hint>
-                                </mat-form-field>
-                                <div fxFlex="1rem"></div>
-                                <mat-form-field fxFlex>
-                                    <input matInput type="text" placeholder="Max" formControlName="max" />
-                                    <mat-hint class="error" *ngIf="range.errors?.minOverMax">
-                                        The maximum must be greater or equal to the minimum.
-                                    </mat-hint>
-                                    <mat-hint class="error" *ngIf="range.errors?.minOverMaxStr">
-                                        The minimum must be alphabetically before the maximum.
-                                    </mat-hint>
-                                </mat-form-field>
-                                <div fxFlex="1rem"></div>
+                <mat-accordion #accordion="matAccordion" multi="true">
+                    <div *ngFor="let filter of filters.controls; let filterIndex = index">
+                        <mat-expansion-panel expanded="true" [formGroupName]="filterIndex">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>Filter {{ filterIndex + 1 }}</mat-panel-title>
                                 <button
-                                    *ngIf="ranges(filterIndex).length > 1"
+                                    *ngIf="filters.length > 1"
                                     type="button"
-                                    (click)="removeRange(filterIndex, rangeIndex)"
+                                    (click)="removeFilter(filterIndex)"
                                     mat-button
                                     color="primary"
                                 >
                                     <mat-icon>remove_circle_outline</mat-icon>
                                 </button>
-                            </div>
-                            <ng-container class="histogram" *ngIf="filter.controls.histogram.value | async as histogramData">
-                                <geoengine-vega-viewer
-                                    [chartData]="histogramData"
-                                    (interactionChange)="updateBounds($any($event), filterIndex, rangeIndex)"
-                                ></geoengine-vega-viewer>
-                            </ng-container>
-                        </div>
-                    </div>
-                </mat-expansion-panel>
-            </div>
-        </mat-accordion>
-    </div>
+                            </mat-expansion-panel-header>
 
-    <!--    Output Name Selection-->
-    <geoengine-operator-output-name
-        formControlName="name"
-        [suggestion]="'Filtered ' + (form.controls.layer.valueChanges | async)?.name"
-    ></geoengine-operator-output-name>
-    <!--    Submit Button-->
-    <div class="actions">
-        <button type="submit" mat-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">Create</button>
-    </div>
+                            <!--            Attribut Selection-->
+                            <div fxLayout="row">
+                                <geoengine-dialog-section-heading
+                                    title="Attribute Selection"
+                                    subtitle="Please select the attribute to filter."
+                                ></geoengine-dialog-section-heading>
+                            </div>
+                            <div fxLayout="row">
+                                <mat-form-field>
+                                    <mat-select
+                                        placeholder="Attribute"
+                                        formControlName="attribute"
+                                        (valueChange)="changeAttributeValue($event, filterIndex)"
+                                    >
+                                        <mat-option *ngFor="let attribute of attributes$ | async" [value]="attribute">{{
+                                            attribute
+                                        }}</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+
+                            <!--            Range Selection-->
+                            <div formArrayName="ranges">
+                                <div fxLayout="row">
+                                    <geoengine-dialog-section-heading
+                                        title="Range Selection"
+                                        subtitle="Please select the ranges you want to filter for."
+                                    ></geoengine-dialog-section-heading>
+                                    <div fxFlex fxLayout="row" fxLayoutAlign="end">
+                                        <button type="button" (click)="addRange(filterIndex, undefined)" mat-button color="primary">
+                                            <mat-icon>add_circle_outline</mat-icon>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div *ngFor="let range of ranges(filterIndex).controls; let rangeIndex = index" fxLayout="column">
+                                    <div [formGroupName]="rangeIndex" fxLayout="row" fxFlex>
+                                        <mat-form-field fxFlex>
+                                            <input matInput type="text" placeholder="Min" formControlName="min" />
+                                            <mat-hint class="error" *ngIf="range.errors?.noFilter || range.errors?.noFiniteNumber">
+                                                Please specify the value.
+                                            </mat-hint>
+                                        </mat-form-field>
+                                        <div fxFlex="1rem"></div>
+                                        <mat-form-field fxFlex>
+                                            <input matInput type="text" placeholder="Max" formControlName="max" />
+                                            <mat-hint class="error" *ngIf="range.errors?.minOverMax">
+                                                The maximum must be greater or equal to the minimum.
+                                            </mat-hint>
+                                            <mat-hint class="error" *ngIf="range.errors?.minOverMaxStr">
+                                                The minimum must be alphabetically before the maximum.
+                                            </mat-hint>
+                                        </mat-form-field>
+                                        <div fxFlex="1rem"></div>
+                                        <button
+                                            *ngIf="ranges(filterIndex).length > 1"
+                                            type="button"
+                                            (click)="removeRange(filterIndex, rangeIndex)"
+                                            mat-button
+                                            color="primary"
+                                        >
+                                            <mat-icon>remove_circle_outline</mat-icon>
+                                        </button>
+                                    </div>
+                                    <ng-container class="histogram" *ngIf="filter.controls.histogram.value | async as histogramData">
+                                        <geoengine-vega-viewer
+                                            [chartData]="histogramData"
+                                            (interactionChange)="updateBounds($any($event), filterIndex, rangeIndex)"
+                                        ></geoengine-vega-viewer>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </mat-expansion-panel>
+                    </div>
+                </mat-accordion>
+            </div>
+        </ng-container>
+
+        <ng-container layerSpecification>
+            <geoengine-operator-output-name
+                formControlName="name"
+                [suggestion]="'Filtered ' + (form.controls.layer.valueChanges | async)?.name"
+            ></geoengine-operator-output-name>
+        </ng-container>
+
+        <ng-container actions>
+            <button type="submit" mat-raised-button color="primary" [disabled]="(form.statusChanges | async) !== 'VALID'">Create</button>
+        </ng-container>
+    </geoengine-operator-dialog-container>
 </form>

@@ -53,6 +53,7 @@ export * from './lib/layer-collections/layer-collection-navigation/layer-collect
 export * from './lib/layers/symbology/number-param-editor/number-param-editor.component';
 export * from './lib/layers/symbology/raster-symbology-editor/raster-symbology-editor.component';
 export * from './lib/layers/symbology/vector-symbology-editor/vector-symbology-editor.component';
+export * from './lib/layers/symbology/symbology-creator/symbology-creator.component';
 export * from './lib/logo.component';
 export * from './lib/map/map-container/map-container.component';
 export * from './lib/map/map-layer.component';
@@ -63,6 +64,7 @@ export * from './lib/operators/dialogs/expression-operator/expression-operator.c
 export * from './lib/operators/dialogs/feature-attribute-over-time/feature-attribute-over-time.component';
 export * from './lib/operators/dialogs/helpers/layer-selection/layer-selection.component';
 export * from './lib/operators/dialogs/helpers/multi-layer-selection/multi-layer-selection.component';
+export * from './lib/operators/dialogs/helpers/operator-dialog-container/operator-dialog-container.component';
 export * from './lib/operators/dialogs/helpers/operator-output-name/operator-output-name.component';
 export * from './lib/operators/dialogs/histogram-operator/histogram-operator.component';
 export * from './lib/operators/dialogs/interpolation/interpolation.component';
@@ -70,8 +72,8 @@ export * from './lib/operators/dialogs/mean-raster-pixel-values-over-time-dialog
 export * from './lib/operators/dialogs/neighborhood-aggregate/neighborhood-aggregate.component';
 export * from './lib/operators/dialogs/operator-list/operator-list.component';
 export * from './lib/operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
-export * from './lib/operators/dialogs/raster-type-conversion/raster-type-conversion.component';
 export * from './lib/operators/dialogs/raster-scaling/raster-scaling.component';
+export * from './lib/operators/dialogs/raster-type-conversion/raster-type-conversion.component';
 export * from './lib/operators/dialogs/raster-vector-join/raster-vector-join.component';
 export * from './lib/operators/dialogs/scatterplot-operator/scatterplot-operator.component';
 export * from './lib/operators/dialogs/statistics-plot/statistics-plot.component';

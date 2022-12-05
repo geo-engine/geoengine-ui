@@ -142,6 +142,9 @@ import {InterpolationComponent} from './operators/dialogs/interpolation/interpol
 import {NeighborhoodAggregateComponent} from './operators/dialogs/neighborhood-aggregate/neighborhood-aggregate.component';
 import {NotFoundPageComponent} from './util/components/not-found/not-found-page.component';
 import {BackendStatusPageComponent} from './util/components/backend-status-page/backend-status-page.component';
+import {SymbologyCreatorComponent} from './layers/symbology/symbology-creator/symbology-creator.component';
+import {OperatorDialogContainerComponent} from './operators/dialogs/helpers/operator-dialog-container/operator-dialog-container.component';
+import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
 import {LayerCollectionLayerComponent} from './layer-collections/layer-collection-layer/layer-collection-layer.component';
 
 export const MATERIAL_MODULES = [
@@ -253,6 +256,7 @@ const CORE_COMPONENTS = [
     OidcComponent,
     OlRasterLayerComponent,
     OlVectorLayerComponent,
+    OperatorDialogContainerComponent,
     OperatorListComponent,
     OperatorOutputNameComponent,
     PlotDetailViewComponent,
@@ -279,6 +283,7 @@ const CORE_COMPONENTS = [
     SidenavSearchRightDirective,
     SmallTimeInteractionComponent,
     StatisticsPlotComponent,
+    SymbologyCreatorComponent,
     TabsComponent,
     TemporalRasterAggregationComponent,
     TimeConfigComponent,
@@ -321,5 +326,6 @@ const CORE_COMPONENTS = [
         ...CORE_PIPES,
         ...CORE_COMPONENTS,
     ],
+    providers: [{provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}}],
 })
 export class CoreModule {}
