@@ -111,17 +111,16 @@
                         </ng-container>
                         <mat-progress-bar mode="indeterminate" *ngIf="histogramLoading | async"></mat-progress-bar>
                     </div>
-                    <div class="actions" *ngIf="histogramCreated; then createdBlock; else notCreatedBlock"></div>
-                    <!-- Only displayed before any histogram is created -->
-                    <ng-template #createdBlock>
-                        <div class="actions">
-                            <button mat-raised-button class="button" color="primary" (click)="updateHistogram()">Update Histogram</button>
-                        </div>
-                    </ng-template>
-                    <!-- Only displayed after histogram is created -->
-                    <ng-template #notCreatedBlock>
-                        <button mat-raised-button class="button" color="primary" (click)="updateHistogram()">Create Histogram</button>
-                    </ng-template>
+                    <div class="histogram-actions">
+                        <button mat-stroked-button class="button" (click)="updateHistogram()">
+                            <ng-container *ngIf="histogramCreated; then createdBlock; else notCreatedBlock"></ng-container>
+                            <!-- Only displayed before any histogram is created -->
+                            <ng-template #createdBlock>Update Histogram</ng-template>
+                            <!-- Only displayed after histogram is created -->
+                            <ng-template #notCreatedBlock>Create Histogram</ng-template>
+                        </button>
+                    </div>
+
                     <mat-divider></mat-divider>
 
                     <geoengine-color-map-selector
@@ -149,9 +148,7 @@
     </div>
 
     <div class="actions">
-        <button mat-raised-button color="accent" class="button" (click)="resetChanges(layer)" [disabled]="unappliedChanges === false">
-            Reset
-        </button>
+        <button mat-raised-button class="button" (click)="resetChanges(layer)" [disabled]="unappliedChanges === false">Reset</button>
 
         <button mat-raised-button color="primary" class="button" (click)="applyChanges()" [disabled]="unappliedChanges === false">
             Apply
