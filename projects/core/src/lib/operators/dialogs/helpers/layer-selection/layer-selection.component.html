@@ -1,4 +1,6 @@
-<geoengine-dialog-section-heading [title]="title" subtitle="Select Input {{ title }}"></geoengine-dialog-section-heading>
+<div fxLayout="row">
+    <h4>Select input {{ title }}</h4>
+</div>
 <mat-form-field *ngIf="hasLayers | async; else noInputAvailable">
     <mat-select placeholder="Input" [ngModel]="selectedLayer | async" (ngModelChange)="setSelectedLayer($event)" (onBlur)="onBlur()">
         <mat-option *ngFor="let layer of filteredLayers | async" [value]="layer">{{ layer.name }}</mat-option>

@@ -1,6 +1,6 @@
 import {map, mergeMap} from 'rxjs/operators';
-import {BehaviorSubject, Observable, Subscription} from 'rxjs';
-import {AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy} from '@angular/core';
+import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
+import {AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy, ViewChild} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
 import {Layer, RasterLayer} from '../../../layers/layer.model';
@@ -9,6 +9,8 @@ import {UUID, WorkflowDict} from '../../../backend/backend.model';
 import {NeighborhoodAggregateDict} from '../../../backend/operator.model';
 import {LayoutService, SidenavConfig} from '../../../layout.service';
 import {geoengineValidators} from '../../../util/form.validators';
+import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
+import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 
 interface NeighborhoodAggregateForm {
     rasterLayer: FormControl<RasterLayer | undefined>;
@@ -54,6 +56,11 @@ export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy 
     readonly lastError$ = new BehaviorSubject<string | undefined>(undefined);
 
     readonly projectHasRasterLayers$: Observable<boolean>;
+
+    readonly loading$ = new BehaviorSubject<boolean>(false);
+
+    @ViewChild(SymbologyCreatorComponent)
+    readonly symbologyCreator!: SymbologyCreatorComponent;
 
     readonly subscriptions: Array<Subscription> = [];
 
@@ -157,6 +164,10 @@ export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy 
      * The resulting layer is added to the map.
      */
     add(): void {
+        if (this.loading$.value) {
+            return; // don't add while loading
+        }
+
         const name: string = this.form.controls['name'].value;
         const rasterLayer: RasterLayer | undefined = this.form.controls['rasterLayer'].value;
         const neighborhood = this.form.controls.neighborhood.value;
@@ -165,6 +176,8 @@ export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy 
         if (!rasterLayer) {
             return; // checked by form validator
         }
+
+        this.loading$.next(true);
 
         this.projectService
             .getAutomaticallyProjectedOperatorsFromLayers([rasterLayer])
@@ -186,13 +199,16 @@ export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy 
 
                     return this.projectService.registerWorkflow(workflow);
                 }),
-                mergeMap((workflowId: UUID) =>
+                mergeMap((workflowId: UUID) => {
+                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator.symbologyForRasterLayer(workflowId, rasterLayer);
+                    return combineLatest([of(workflowId), symbology$]);
+                }),
+                mergeMap(([workflowId, symbology]: [UUID, RasterSymbology]) =>
                     this.projectService.addLayer(
                         new RasterLayer({
                             workflowId,
                             name,
-                            // copy symbology from input layer
-                            symbology: rasterLayer.symbology,
+                            symbology,
                             isLegendVisible: false,
                             isVisible: true,
                         }),
@@ -204,11 +220,15 @@ export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy 
                     // everything worked well
 
                     this.lastError$.next(undefined);
+
+                    this.loading$.next(false);
                 },
                 error: (error) => {
                     const errorMsg = error.error.message;
 
                     this.lastError$.next(errorMsg);
+
+                    this.loading$.next(false);
                 },
             });
     }
