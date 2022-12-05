@@ -16,6 +16,28 @@
     position: relative;
     height: inherit;
 
+    .header-click {
+        align-items: center;
+        display: flex;
+        cursor: pointer;
+        position: inherit;
+        box-sizing: border-box;
+        height: inherit;
+        width: inherit;
+        flex: 1;
+
+        &:hover {
+            background-color: var(--geoengine-background-hover-color);
+        }
+    }
+
+    .header-button {
+        align-items: center;
+        display: flex;
+        box-sizing: border-box;
+        height: inherit;
+    }
+
     .header-icon {
         flex-shrink: 0;
         width: 24px;
@@ -72,7 +94,7 @@ mat-progres-bar {
         padding: 0;
         margin: 0;
         margin-left: 16px;
-        margin-bottom: 8px;
+        margin-bottom: 16px;
         font-size: 14px;
         font-weight: normal;
 
@@ -104,10 +126,6 @@ mat-progres-bar {
                 overflow: hidden;
                 display: block;
                 box-sizing: border-box;
-            }
-
-            :nth-child(n + 2) {
-                font-size: 12px;
             }
         }
     }

@@ -314,6 +314,7 @@ export interface PlotDataDict {
 }
 
 export interface ResultDescriptorDict {
+    type: 'raster' | 'vector' | 'plot';
     spatialReference: SrsString;
     time?: TimeIntervalDict;
 }

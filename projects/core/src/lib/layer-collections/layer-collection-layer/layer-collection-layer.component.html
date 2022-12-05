@@ -1,20 +1,21 @@
 <ng-container>
     <span class="header">
         <span class="header-content">
-            <mat-icon class="header-icon">map</mat-icon>
-            <span class="header-text">
-                <h4 class="header-text-line">{{ layer?.name }}</h4>
-                <p class="header-text-line">{{ layer?.description }}</p>
+            <span matRipple class="header-click">
+                <mat-icon class="header-icon">map</mat-icon>
+                <span class="header-text" (click)="onAdd()">
+                    <h4 class="header-text-line">{{ layer?.name }}</h4>
+                    <p class="header-text-line">{{ layer?.description }}</p>
+                </span>
             </span>
 
-            <button mat-icon-button color="primary" aria-label="Example icon button with a home icon" (click)="onAdd()">
-                <mat-icon>add</mat-icon>
-            </button>
-
-            <button mat-icon-button aria-label="Example icon button with a menu icon" (click)="toggleExpand()">
-                <mat-icon *ngIf="!expanded">expand_more</mat-icon>
-                <mat-icon *ngIf="expanded">expand_less</mat-icon>
-            </button>
+            <span class="header-button">
+                <button mat-raised-button aria-label="Example icon button with a menu icon" (click)="toggleExpand()">
+                    details
+                    <mat-icon *ngIf="!expanded">expand_more</mat-icon>
+                    <mat-icon *ngIf="expanded">expand_less</mat-icon>
+                </button>
+            </span>
         </span>
     </span>
 </ng-container>
@@ -22,56 +23,38 @@
     <mat-progress-bar *ngIf="loading" mode="query"></mat-progress-bar>
 </ng-container>
 <ng-container *ngIf="expanded" class="details">
-    <span *ngIf="rasterResultDescriptor" class="details-content">
+    <span *ngIf="layerMetadata" class="details-content">
         <span class="details-row">
             <mat-icon class="details-row-icon">language</mat-icon>
             <span class="details-row-text">
-                <h4 class="details-row-text-line">SRS</h4>
-                <p class="details-row-text-linw">{{ rasterResultDescriptor.spatialReference }}</p>
-            </span>
-        </span>
-        <span class="details-row">
-            <span class="details-row-text">
-                <h4 class="details-row-text-line">Nat. resolution</h4>
-                <p class="details-row-text-line">{{ rasterResultDescriptor.resolution }}</p>
-            </span>
-        </span>
-        <span class="details-row">
-            <span class="details-row-text">
-                <mat-icon class="details-row-icon">fullscreen</mat-icon>
-                <h4 class="details-row-text-line">BBox</h4>
-                <p class="details-row-text-line">{{ rasterResultDescriptor.bbox }}</p>
-            </span>
-        </span>
-        <span class="details-row">
-            <mat-icon class="details-row-icon">date_range</mat-icon>
-            <span class="details-row-text">
-                <h4 class="details-row-text-line">Time</h4>
-                <p class="details-row-text-line">{{ rasterResultDescriptor.time?.start }} - {{ rasterResultDescriptor.time?.end }}</p>
-            </span>
-        </span>
-    </span>
-    <span *ngIf="vectorResultDescriptor" class="details-content">
-        <span class="details-row">
-            <mat-icon class="details-row-icon">language</mat-icon>
-            <span class="details-row-text">
-                <h4 class="details-row-text-line">SRS</h4>
-                <p class="details-row-text-line">{{ vectorResultDescriptor.spatialReference }}</p>
+                <p class="details-row-text-line">{{ layerMetadata.spatialReference.srsString }}</p>
             </span>
         </span>
         <span class="details-row">
             <mat-icon class="details-row-icon">fullscreen</mat-icon>
             <span class="details-row-text">
-                <h4 class="details-row-text-line">BBox</h4>
-                <p class="details-row-text-line">{{ vectorResultDescriptor.bbox }}</p>
+                <p class="details-row-text-line">{{ bboxLowerLeftString }}</p>
+                <p class="details-row-text-line">{{ bboxUpperRightString }}</p>
             </span>
         </span>
         <span class="details-row">
             <mat-icon class="details-row-icon">date_range</mat-icon>
             <span class="details-row-text">
-                <h4 class="details-row-text-line">Time</h4>
-                <p class="details-row-text-line">{{ vectorResultDescriptor.time?.start }} - {{ vectorResultDescriptor.time?.end }}</p>
+                <p class="details-row-text-line">{{ minTimeString }}</p>
+                <p class="details-row-text-line">{{ maxTimeString }}</p>
             </span>
         </span>
     </span>
+
+    <span *ngIf="rasterLayerMetadata" class="details-content">
+        <!--
+        <span class="details-row">
+            <span class="details-row-text">
+                <h4 class="details-row-text-line">Nat. resolution</h4>
+                <p class="details-row-text-line">{{ rasterLayerMetadata.resolution }}</p>
+            </span>
+        </span>
+        -->
+    </span>
+    <span *ngIf="vectorLayerMetadata" class="details-content"></span>
 </ng-container>

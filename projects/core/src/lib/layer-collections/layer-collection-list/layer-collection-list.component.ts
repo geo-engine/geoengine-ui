@@ -135,6 +135,10 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
         this.addLayer(layerId);
     }
 
+    getWorkflowMetaData(workflowId: UUID): Observable<ResultDescriptorDict> {
+        return this.projectService.getWorkflowMetaData(workflowId);
+    }
+
     protected calculateInitialNumberOfElements(): number {
         const element = this.viewport.elementRef.nativeElement;
         const numberOfElements = Math.ceil(element.clientHeight / this.itemSizePx);
@@ -147,14 +151,14 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
             .getLayer(layerId.providerId, layerId.layerId)
             .pipe(
                 mergeMap((layer: LayerDict) =>
-                    combineLatest([of(layer), this.layerService.registeredWorkflowForLayer(layerId.providerId, layerId.layerId)]),
+                    combineLatest([of(layer), this.layerService.registerAndGetLayerWorkflowId(layerId.providerId, layerId.layerId)]),
                 ),
                 mergeMap(([layer, workflowId]: [LayerDict, UUID]) =>
                     combineLatest([of(layer), of(workflowId), this.projectService.getWorkflowMetaData(workflowId)]),
                 ),
             )
-            .subscribe(
-                ([layer, workflowId, resultDescriptorDict]: [LayerDict, UUID, ResultDescriptorDict]) => {
+            .subscribe({
+                next: ([layer, workflowId, resultDescriptorDict]: [LayerDict, UUID, ResultDescriptorDict]) => {
                     const keys = Object.keys(resultDescriptorDict);
 
                     if (keys.includes('columns')) {
@@ -166,12 +170,8 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
                         this.notificationService.error('Adding this workflow type is unimplemented, yet');
                     }
                 },
-                (requestError) => this.handleError(requestError.error, layerId.layerId),
-            );
-    }
-
-    getWorkflowMetaData(workflowId: UUID): Observable<ResultDescriptorDict> {
-        return this.projectService.getWorkflowMetaData(workflowId);
+                error: (requestError) => this.handleError(requestError.error, layerId.layerId),
+            });
     }
 
     private addVectorLayer(
