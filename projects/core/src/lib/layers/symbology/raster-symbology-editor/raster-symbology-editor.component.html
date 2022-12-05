@@ -102,7 +102,7 @@
                 </mat-expansion-panel-header>
 
                 <ng-template matExpansionPanelContent>
-                    <div class="histogram">
+                    <div class="histogram" *ngIf="histogramCreated === true">
                         <ng-container *ngIf="histogramData | async as histogramData">
                             <geoengine-vega-viewer
                                 [chartData]="histogramData"
@@ -111,9 +111,17 @@
                         </ng-container>
                         <mat-progress-bar mode="indeterminate" *ngIf="histogramLoading | async"></mat-progress-bar>
                     </div>
-                    <div class="actions">
-                        <button mat-raised-button class="button" color="primary" (click)="updateHistogram()">Calculate Histogram</button>
-                    </div>
+                    <div class="actions" *ngIf="histogramCreated; then createdBlock; else notCreatedBlock"></div>
+                    <!-- Only displayed before any histogram is created -->
+                    <ng-template #createdBlock>
+                        <div class="actions">
+                            <button mat-raised-button class="button" color="primary" (click)="updateHistogram()">Update Histogram</button>
+                        </div>
+                    </ng-template>
+                    <!-- Only displayed after histogram is created -->
+                    <ng-template #notCreatedBlock>
+                        <button mat-raised-button class="button" color="primary" (click)="updateHistogram()">Create Histogram</button>
+                    </ng-template>
                     <mat-divider></mat-divider>
 
                     <geoengine-color-map-selector

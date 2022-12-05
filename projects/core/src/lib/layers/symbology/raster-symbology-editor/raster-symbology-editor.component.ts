@@ -58,6 +58,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
 
     histogramData = new ReplaySubject<VegaChartData>(1);
     histogramLoading = new BehaviorSubject(false);
+    histogramCreated = false;
 
     paletteSelected = false; // TODO: Remove once color palette picker is implemented and switch to "getColorizerType()"
 
@@ -345,6 +346,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     }
 
     updateHistogram(): void {
+        this.histogramCreated = true;
         this.histogramSubscription = this.createHistogramStream().subscribe((histogramData) => {
             this.histogramData.next(histogramData);
             this.histogramSubscription?.unsubscribe();
