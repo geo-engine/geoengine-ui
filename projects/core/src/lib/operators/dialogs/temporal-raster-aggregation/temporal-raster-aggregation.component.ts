@@ -1,17 +1,30 @@
 import {RasterLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {TimeStepGranularityDict, UUID, WorkflowDict} from '../../../backend/backend.model';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {TemporalRasterAggregationDict} from '../../../backend/operator.model';
+import {TemporalRasterAggregationDict, TemporalRasterAggregationDictAgregationType} from '../../../backend/operator.model';
 import moment, {Moment} from 'moment';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 import {RasterSymbology} from '../../../layers/symbology/symbology.model';
+import {RasterDataType, RasterDataTypes} from '../../datatype.model';
+
+interface TemporalRasterAggregationForm {
+    name: FormControl<string>;
+    layer: FormControl<RasterLayer | undefined>;
+    granularity: FormControl<TimeStepGranularityDict>;
+    windowSize: FormControl<number>;
+    windowReferenceChecked: FormControl<boolean>;
+    windowReference: FormControl<Moment>;
+    aggregation: FormControl<TemporalRasterAggregationDictAgregationType>;
+    ignoreNoData: FormControl<boolean>;
+    dataType: FormControl<RasterDataType | undefined>;
+}
 
 @Component({
     selector: 'geoengine-temporal-raster-aggregation',
@@ -21,35 +34,57 @@ import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 })
 export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly inputTypes = [ResultTypes.RASTER];
+    readonly rasterDataTypes = RasterDataTypes.ALL_DATATYPES;
 
     readonly timeGranularityOptions: Array<TimeStepGranularityDict> = ['millis', 'seconds', 'minutes', 'hours', 'days', 'months', 'years'];
     readonly defaultTimeGranularity: TimeStepGranularityDict = 'months';
-    readonly aggregations = ['Count', 'First', 'Last', 'Max', 'Mean', 'Min', 'Sum'];
+    readonly aggregations: Array<TemporalRasterAggregationDictAgregationType> = ['count', 'first', 'last', 'max', 'mean', 'min', 'sum'];
+    readonly defaultAggregation: TemporalRasterAggregationDictAgregationType = 'mean';
+
+    readonly inputDataTypeDisplay$: Observable<string>;
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
 
     @ViewChild(SymbologyCreatorComponent)
     readonly symbologyCreator!: SymbologyCreatorComponent;
 
-    form: UntypedFormGroup;
+    form: FormGroup<TemporalRasterAggregationForm>;
     disallowSubmit: Observable<boolean>;
 
     constructor(
         private readonly projectService: ProjectService,
         private readonly notificationService: NotificationService,
-        private readonly formBuilder: UntypedFormBuilder,
+        private readonly formBuilder: FormBuilder,
     ) {
-        this.form = this.formBuilder.group({
+        this.form = this.formBuilder.nonNullable.group({
             name: ['', [Validators.required, geoengineValidators.notOnlyWhitespace]],
-            layer: [undefined, Validators.required],
-            granularity: [this.defaultTimeGranularity, Validators.required],
-            windowSize: [1, Validators.required], // TODO: check > 0
-            windowReferenceChecked: [false],
-            windowReference: [moment.utc(0)],
-            aggregation: [this.aggregations[0], Validators.required],
-            ignoreNoData: [false],
+            layer: new FormControl<RasterLayer | undefined>(undefined, {nonNullable: true, validators: [Validators.required]}),
+            granularity: [this.defaultTimeGranularity, [Validators.required]],
+            windowSize: [1, [Validators.required, Validators.min(1)]],
+            windowReferenceChecked: [false, [Validators.required]],
+            windowReference: [moment.utc(0), [Validators.required]],
+            aggregation: [this.defaultAggregation, [Validators.required]],
+            ignoreNoData: [false, [Validators.required]],
+            dataType: new FormControl<RasterDataType | undefined>(undefined, {nonNullable: true}),
         });
         this.disallowSubmit = this.form.statusChanges.pipe(map((status) => status !== 'VALID'));
+
+        this.inputDataTypeDisplay$ = this.form.controls['layer'].valueChanges.pipe(
+            mergeMap((layer) => {
+                if (!layer) {
+                    return of(undefined);
+                }
+
+                return this.projectService.getRasterLayerMetadata(layer);
+            }),
+            map((metadata) => {
+                if (!metadata) {
+                    return '';
+                }
+
+                return `(${metadata.dataType})`;
+            }),
+        );
     }
 
     ngOnInit(): void {}
@@ -68,12 +103,18 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
             return; // don't add while loading
         }
 
-        const inputLayer: RasterLayer = this.form.controls['layer'].value;
+        const inputLayer: RasterLayer | undefined = this.form.controls['layer'].value;
+
+        if (!inputLayer) {
+            return;
+        }
+
         const outputName: string = this.form.controls['name'].value;
 
-        const aggregation: string = this.form.controls['aggregation'].value;
+        const aggregation: TemporalRasterAggregationDictAgregationType = this.form.controls['aggregation'].value;
         const granularity: string = this.form.controls['granularity'].value;
         const step: number = this.form.controls['windowSize'].value;
+        const dataType: RasterDataType | undefined = this.form.controls['dataType'].value;
 
         let stepReference: undefined | Moment;
         if (this.form.controls['windowReferenceChecked'].value) {
@@ -94,7 +135,7 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
                             type: 'TemporalRasterAggregation',
                             params: {
                                 aggregation: {
-                                    type: aggregation.toLowerCase(),
+                                    type: aggregation,
                                     ignoreNoData,
                                 },
                                 window: {
@@ -102,6 +143,7 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
                                     step,
                                 },
                                 windowReference: stepReference,
+                                outputType: dataType?.getCode(),
                             },
                             sources: {
                                 raster: inputWorkflow.operator,
