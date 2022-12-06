@@ -1,0 +1,69 @@
+<geoengine-sidenav-header>Temporal Raster Aggregation</geoengine-sidenav-header>
+
+<form [formGroup]="form" (ngSubmit)="add()">
+    <geoengine-operator-dialog-container [loading]="loading$ | async | valueDefault: false">
+        <a mat-icon-button operatorInputIcon href="https://docs.geoengine.io/operators/timeshift.html" target="_blank">
+            <mat-icon>help_center</mat-icon>
+        </a>
+
+        <ng-container operatorInput>
+            <geoengine-layer-selection [types]="inputTypes" formControlName="source"></geoengine-layer-selection>
+        </ng-container>
+
+        <a mat-icon-button operatorParametersIcon href="https://docs.geoengine.io/operators/timeshift.html" target="_blank">
+            <mat-icon>help_center</mat-icon>
+        </a>
+
+        <ng-container operatorParameters>
+            <mat-form-field>
+                <mat-label>Time Shift Type</mat-label>
+                <mat-select formControlName="type" (valueChange)="changeShiftType($event)">
+                    <mat-option [value]="'relative'">Relative</mat-option>
+                    <mat-option [value]="'absolute'">Absolute</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <ng-container *ngIf="form.controls.type.value === 'relative'">
+                <mat-form-field>
+                    <mat-label>Time Granularity</mat-label>
+                    <mat-select formControlName="granularity">
+                        <mat-option *ngFor="let granularity of timeGranularityOptions" [value]="granularity">{{ granularity }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>Step Size</mat-label>
+                    <input matInput type="number" formControlName="value" />
+                </mat-form-field>
+            </ng-container>
+
+            <ng-container *ngIf="form.controls.type.value === 'absolute'">
+                <h5>Start</h5>
+                <geoengine-time-input formControlName="timeIntervalStart"></geoengine-time-input>
+                <h5>End</h5>
+                <geoengine-time-input formControlName="timeIntervalEnd"></geoengine-time-input>
+            </ng-container>
+        </ng-container>
+
+        <ng-container layerSpecification>
+            <geoengine-operator-output-name
+                formControlName="name"
+                [suggestion]="'Time Shift of ' + (form.controls.source.valueChanges | async)?.name"
+            >
+                <mat-hint
+                    align="end"
+                    class="error"
+                    *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
+                >
+                    The name must be non-empty.
+                </mat-hint>
+            </geoengine-operator-output-name>
+        </ng-container>
+
+        <ng-container actions>
+            <button type="submit" mat-raised-button color="primary" [disabled]="(disallowSubmit | async) || (loading$ | async)">
+                Create
+            </button>
+        </ng-container>
+    </geoengine-operator-dialog-container>
+</form>
