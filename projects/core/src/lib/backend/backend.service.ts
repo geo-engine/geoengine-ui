@@ -405,7 +405,7 @@ export class BackendService {
             // do nothing
         }
 
-        return this.http.post<UUID>(this.config.API_URL + `/layers/workflowId/${provider}/${layer}`, {
+        return this.http.post<UUID>(this.config.API_URL + `/layers/${provider}/${layer}/workflowId`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
