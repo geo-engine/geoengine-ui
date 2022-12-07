@@ -131,10 +131,6 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
         }
     }
 
-    addLayerById(layerId: ProviderLayerIdDict): void {
-        this.addLayer(layerId);
-    }
-
     getWorkflowMetaData(workflowId: UUID): Observable<ResultDescriptorDict> {
         return this.projectService.getWorkflowMetaData(workflowId);
     }
@@ -146,7 +142,7 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
         return numberOfElements + 1;
     }
 
-    private addLayer(layerId: ProviderLayerIdDict): void {
+    addLayer(layerId: ProviderLayerIdDict): void {
         this.layerService
             .getLayer(layerId.providerId, layerId.layerId)
             .pipe(
