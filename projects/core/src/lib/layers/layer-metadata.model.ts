@@ -18,12 +18,12 @@ import {BoundingBox2D} from '../spatial-bounds/bounding-box';
 export abstract class LayerMetadata implements HasLayerType {
     abstract readonly layerType: LayerType;
     readonly spatialReference: SpatialReference;
-    readonly time: Time | undefined;
-    readonly bbox: BoundingBox2D | undefined;
+    readonly time?: Time;
+    readonly bbox?: BoundingBox2D;
 
     public abstract get resultType(): ResultType;
 
-    constructor(spatialReference: SpatialReference, time: Time | undefined, bbox: BoundingBox2D | undefined) {
+    constructor(spatialReference: SpatialReference, time?: Time, bbox?: BoundingBox2D) {
         this.spatialReference = spatialReference;
         this.time = time;
         this.bbox = bbox;
@@ -55,8 +55,8 @@ export class VectorLayerMetadata extends LayerMetadata {
         spatialReference: SpatialReference,
         dataTypes: {[index: string]: VectorColumnDataType},
         measurements: {[index: string]: Measurement},
-        time: Time | undefined = undefined,
-        bbox: BoundingBox2D | undefined = undefined,
+        time?: Time,
+        bbox?: BoundingBox2D,
     ) {
         super(spatialReference, time, bbox);
 
@@ -95,13 +95,7 @@ export class RasterLayerMetadata extends LayerMetadata {
     readonly dataType: RasterDataType;
     readonly measurement: Measurement;
 
-    constructor(
-        dataType: RasterDataType,
-        spatialReference: SpatialReference,
-        measurement: Measurement,
-        time: Time | undefined = undefined,
-        bbox: BoundingBox2D | undefined = undefined,
-    ) {
+    constructor(dataType: RasterDataType, spatialReference: SpatialReference, measurement: Measurement, time?: Time, bbox?: BoundingBox2D) {
         super(spatialReference, time, bbox);
 
         this.dataType = dataType;
