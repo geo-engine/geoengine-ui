@@ -197,7 +197,10 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     }
 
     resetChanges(layer: Layer): void {
-        this.layoutService.setSidenavContentComponent({component: RasterSymbologyEditorComponent, config: {layer}});
+        this.layoutService.setSidenavContentComponent({
+            component: RasterSymbologyEditorComponent,
+            config: {layer, histogramData: this.histogramData, histogramCreated: this.histogramCreated},
+        });
     }
 
     getNoDataColor(): ColorAttributeInput {
