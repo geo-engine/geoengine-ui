@@ -1,5 +1,6 @@
 import {Extent} from 'ol/extent';
-import {BBoxDict} from '../backend/backend.model';
+import {BBoxDict, SpatialPartitionDict} from '../backend/backend.model';
+import {Coordinate2D} from '../spatial-features/coordinate.model';
 
 export class BoundingBox2D {
     private readonly inner: [number, number, number, number];
@@ -20,32 +21,20 @@ export class BoundingBox2D {
         return this.inner[3];
     }
 
-    public get upperLeftCoordinate(): {x: number; y: number} {
-        return {
-            x: this.xmin,
-            y: this.ymax,
-        };
+    public get upperLeftCoordinate(): Coordinate2D {
+        return new Coordinate2D([this.xmin, this.ymax]);
     }
 
-    public get lowerRightCoordinate(): {x: number; y: number} {
-        return {
-            x: this.xmax,
-            y: this.ymin,
-        };
+    public get lowerRightCoordinate(): Coordinate2D {
+        return new Coordinate2D([this.xmax, this.ymin]);
     }
 
-    public get upperRightCoordinate(): {x: number; y: number} {
-        return {
-            x: this.xmax,
-            y: this.ymax,
-        };
+    public get upperRightCoordinate(): Coordinate2D {
+        return new Coordinate2D([this.xmax, this.ymax]);
     }
 
-    public get lowerLeftCoordinate(): {x: number; y: number} {
-        return {
-            x: this.xmin,
-            y: this.ymin,
-        };
+    public get lowerLeftCoordinate(): Coordinate2D {
+        return new Coordinate2D([this.xmin, this.ymin]);
     }
 
     /**
@@ -74,18 +63,38 @@ export class BoundingBox2D {
     }
 
     /**
+     * Creates a new BoundingBox from the given coordinates.
+     *
+     * @param upperLeft - The upper left coordinate.
+     * @param lowerRight - The lower right coordinate.
+     * @returns - A new BoundingBox.
+     */
+    public static fromCoordinates(upperLeft: Coordinate2D, lowerRight: Coordinate2D): BoundingBox2D {
+        return BoundingBox2D.fromNumbers(upperLeft.x, lowerRight.y, lowerRight.x, upperLeft.y);
+    }
+
+    /**
      * Creates a new BoundingBox from a `BBoxDict`.
      *
      * @param dict - The input dict.
      * @returns - A new BoundingBox.
      */
     public static fromDict(dict: BBoxDict): BoundingBox2D {
-        return BoundingBox2D.fromNumbers(
-            dict.lowerLeftCoordinate.x,
-            dict.lowerLeftCoordinate.y,
-            dict.upperRightCoordinate.x,
-            dict.upperRightCoordinate.y,
-        );
+        const ll = Coordinate2D.fromDict(dict.lowerLeftCoordinate);
+        const ur = Coordinate2D.fromDict(dict.upperRightCoordinate);
+        return BoundingBox2D.fromCoordinates(ll, ur);
+    }
+
+    /**
+     * Creates a new BoundingBox from a `SpatialPartitionDict`.
+     *
+     * @param dict - The input dict.
+     * @returns - A new BoundingBox.
+     */
+    public static fromSpatialPartitionDict(dict: SpatialPartitionDict): BoundingBox2D {
+        const ul = Coordinate2D.fromDict(dict.upperLeftCoordinate);
+        const lr = Coordinate2D.fromDict(dict.lowerRightCoordinate);
+        return BoundingBox2D.fromNumbers(ul.x, lr.y, lr.x, ul.y);
     }
 
     /**
@@ -117,14 +126,8 @@ export class BoundingBox2D {
      */
     public toDict(): BBoxDict {
         return {
-            lowerLeftCoordinate: {
-                x: this.xmin,
-                y: this.ymin,
-            },
-            upperRightCoordinate: {
-                x: this.xmax,
-                y: this.ymax,
-            },
+            lowerLeftCoordinate: this.lowerLeftCoordinate.toDict(),
+            upperRightCoordinate: this.upperRightCoordinate.toDict(),
         };
     }
 }

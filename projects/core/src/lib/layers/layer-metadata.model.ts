@@ -106,14 +106,7 @@ export class RasterLayerMetadata extends LayerMetadata {
         const dataType = RasterDataTypes.fromCode(dict.dataType);
         const measurement = Measurement.fromDict(dict.measurement);
         const time = dict.time ? Time.fromDict(dict.time) : undefined;
-        const bbox = dict.bbox
-            ? BoundingBox2D.fromNumbers(
-                  dict.bbox.lowerRightCoordinate.x,
-                  dict.bbox.upperLeftCoordinate.y,
-                  dict.bbox.lowerRightCoordinate.x,
-                  dict.bbox.upperLeftCoordinate.y,
-              )
-            : undefined;
+        const bbox = dict.bbox ? BoundingBox2D.fromSpatialPartitionDict(dict.bbox) : undefined;
 
         return new RasterLayerMetadata(dataType, SpatialReference.fromSrsString(dict.spatialReference), measurement, time, bbox);
     }
