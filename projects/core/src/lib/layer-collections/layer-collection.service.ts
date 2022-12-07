@@ -11,7 +11,7 @@ import {
     UUID,
     VectorResultDescriptorDict,
 } from '../backend/backend.model';
-import {RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata.model';
+import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata.model';
 
 @Injectable({
     providedIn: 'root',
@@ -46,14 +46,7 @@ export class LayerCollectionService {
     getWorkflowIdMetadata(workflowId: UUID): Observable<VectorLayerMetadata | RasterLayerMetadata> {
         return this.getWorkflowIdMetadataDict(workflowId).pipe(
             map((workflowMetadataDict) => {
-                switch (workflowMetadataDict.type) {
-                    case 'vector':
-                        return VectorLayerMetadata.fromDict(workflowMetadataDict as VectorResultDescriptorDict);
-                    case 'raster':
-                        return RasterLayerMetadata.fromDict(workflowMetadataDict as RasterResultDescriptorDict);
-                    default:
-                        throw Error(`Unknown workflow type: ${workflowMetadataDict.type}`);
-                }
+                return LayerMetadata.fromDict(workflowMetadataDict);
             }),
         );
     }

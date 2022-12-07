@@ -1143,12 +1143,7 @@ export class ProjectService {
                 tap(() => loadingState$.next(LoadingState.LOADING)),
                 mergeMap((sessionToken) => this.backend.getWorkflowMetadata(layer.workflowId, sessionToken)),
                 map((workflowMetadataDict) => {
-                    switch (layer.layerType) {
-                        case 'vector':
-                            return VectorLayerMetadata.fromDict(workflowMetadataDict as VectorResultDescriptorDict);
-                        case 'raster':
-                            return RasterLayerMetadata.fromDict(workflowMetadataDict as RasterResultDescriptorDict);
-                    }
+                    return LayerMetadata.fromDict(workflowMetadataDict);
                 }),
                 tap({
                     next: () => loadingState$.next(LoadingState.OK),

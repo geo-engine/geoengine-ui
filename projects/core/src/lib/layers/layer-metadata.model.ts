@@ -1,5 +1,5 @@
 import {HasLayerType, LayerType} from './layer.model';
-import {RasterResultDescriptorDict, VectorResultDescriptorDict} from '../backend/backend.model';
+import {RasterResultDescriptorDict, ResultDescriptorDict, VectorResultDescriptorDict} from '../backend/backend.model';
 import {
     RasterDataType,
     RasterDataTypes,
@@ -28,6 +28,19 @@ export abstract class LayerMetadata implements HasLayerType {
         this.time = time;
         this.bbox = bbox;
     }
+
+    public static fromDict(
+        dict: RasterResultDescriptorDict | VectorResultDescriptorDict | ResultDescriptorDict,
+    ): RasterLayerMetadata | VectorLayerMetadata {
+        switch (dict.type) {
+            case 'raster':
+                return RasterLayerMetadata.fromDict(dict as RasterResultDescriptorDict);
+            case 'vector':
+                return VectorLayerMetadata.fromDict(dict as VectorResultDescriptorDict);
+            default:
+                throw Error(`Unknown result type: ${dict.type}`);
+        }
+    }
 }
 
 export class VectorLayerMetadata extends LayerMetadata {
@@ -52,7 +65,7 @@ export class VectorLayerMetadata extends LayerMetadata {
         this.measurements = Immutable.Map(measurements);
     }
 
-    static fromDict(dict: VectorResultDescriptorDict): VectorLayerMetadata {
+    static override fromDict(dict: VectorResultDescriptorDict): VectorLayerMetadata {
         const dataType = VectorDataTypes.fromCode(dict.dataType);
 
         const columns: {[index: string]: VectorColumnDataType} = {};
@@ -95,7 +108,7 @@ export class RasterLayerMetadata extends LayerMetadata {
         this.measurement = measurement;
     }
 
-    static fromDict(dict: RasterResultDescriptorDict): RasterLayerMetadata {
+    static override fromDict(dict: RasterResultDescriptorDict): RasterLayerMetadata {
         const dataType = RasterDataTypes.fromCode(dict.dataType);
         const measurement = Measurement.fromDict(dict.measurement);
         const time = dict.time ? Time.fromDict(dict.time) : undefined;
