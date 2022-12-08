@@ -1,0 +1,17 @@
+<ng-container>
+    <mat-form-field appearance="fill">
+        <mat-label>Symbology</mat-label>
+        <mat-select [formControl]="value">
+            <mat-option [value]="AS_INPUT">Same as input</mat-option>
+            <mat-option [value]="COMPUTE_LINEAR_GRADIENT">Compute linear gradient</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <div class="description">
+        <mat-hint [ngSwitch]="value.value">
+            <span *ngSwitchCase="AS_INPUT" class="mat-caption">Use the symbology of the input for the new layer.</span>
+            <span *ngSwitchCase="COMPUTE_LINEAR_GRADIENT" class="mat-caption">
+                Compute a linear gradient by calculating min/max for a sample of the output. Uses the currently selected point in time.
+            </span>
+        </mat-hint>
+    </div>
+</ng-container>

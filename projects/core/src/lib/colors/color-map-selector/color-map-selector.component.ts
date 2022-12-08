@@ -203,6 +203,33 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
         this.breakpointsChange.emit(this.breakpoints);
     }
 
+    public static createLinearBreakpoints(
+        colorMap: Array<RgbaTuple>,
+        colorMapSteps: number,
+        colorMapReverseColors: boolean,
+        bounds: {min: number; max: number},
+    ): Array<ColorBreakpoint> {
+        const breakpoints = new Array<ColorBreakpoint>();
+
+        const stepSize = 1 / (colorMapSteps - 1);
+        for (let frac = 0; frac <= 1; frac += stepSize) {
+            const value = bounds.min + frac * (bounds.max - bounds.min);
+
+            let colorMapIndex = Math.round(frac * (colorMap.length - 1));
+            if (colorMapReverseColors) {
+                colorMapIndex = colorMap.length - colorMapIndex - 1;
+            }
+            const color = Color.fromRgbaLike(colorMap[colorMapIndex]);
+
+            breakpoints.push(new ColorBreakpoint(value, color));
+        }
+
+        // override last because of rounding errors
+        breakpoints[breakpoints.length - 1] = breakpoints[breakpoints.length - 1].cloneWithValue(bounds.max);
+
+        return breakpoints;
+    }
+
     protected updateColorizerData(): void {
         if (!this.checkValidConfig()) {
             this.breakpoints = undefined;
@@ -247,35 +274,8 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
             return this.createLogarithmicBreakpoints(colorMap, colorMapSteps, colorMapReverseColors, bounds);
         } else {
             // `this.scale === 'linear'`
-            return this.createLinearBreakpoints(colorMap, colorMapSteps, colorMapReverseColors, bounds);
+            return ColorMapSelectorComponent.createLinearBreakpoints(colorMap, colorMapSteps, colorMapReverseColors, bounds);
         }
-    }
-
-    protected createLinearBreakpoints(
-        colorMap: Array<RgbaTuple>,
-        colorMapSteps: number,
-        colorMapReverseColors: boolean,
-        bounds: {min: number; max: number},
-    ): Array<ColorBreakpoint> {
-        const breakpoints = new Array<ColorBreakpoint>();
-
-        const stepSize = 1 / (colorMapSteps - 1);
-        for (let frac = 0; frac <= 1; frac += stepSize) {
-            const value = bounds.min + frac * (bounds.max - bounds.min);
-
-            let colorMapIndex = Math.round(frac * (colorMap.length - 1));
-            if (colorMapReverseColors) {
-                colorMapIndex = colorMap.length - colorMapIndex - 1;
-            }
-            const color = Color.fromRgbaLike(colorMap[colorMapIndex]);
-
-            breakpoints.push(new ColorBreakpoint(value, color));
-        }
-
-        // override last because of rounding errors
-        breakpoints[breakpoints.length - 1] = breakpoints[breakpoints.length - 1].cloneWithValue(bounds.max);
-
-        return breakpoints;
     }
 
     protected createLogarithmicBreakpoints(

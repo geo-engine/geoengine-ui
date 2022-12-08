@@ -1,6 +1,6 @@
 import {map, mergeMap, tap} from 'rxjs/operators';
-import {BehaviorSubject, combineLatest, EMPTY, Observable} from 'rxjs';
-import {AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy} from '@angular/core';
+import {BehaviorSubject, combineLatest, EMPTY, Observable, of} from 'rxjs';
+import {AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy, ViewChild} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
 import {RasterDataType, RasterDataTypes} from '../../datatype.model';
@@ -12,6 +12,8 @@ import {RasterLayerMetadata} from '../../../layers/layer-metadata.model';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {ExpressionDict} from '../../../backend/operator.model';
 import {LayoutService, SidenavConfig} from '../../../layout.service';
+import {SymbologyCreationType, SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
+import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 
 interface ExpressionForm {
     rasterLayers: FormControl<Array<RasterLayer> | undefined>;
@@ -19,6 +21,7 @@ interface ExpressionForm {
     dataType: FormControl<RasterDataType | undefined>;
     name: FormControl<string>;
     mapNoData: FormControl<boolean>;
+    symbologyCreation: FormControl<SymbologyCreationType>;
 }
 
 /**
@@ -46,8 +49,12 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
     readonly fnSignature: Observable<string>;
 
     readonly lastError$ = new BehaviorSubject<string | undefined>(undefined);
-
     readonly projectHasRasterLayers$: Observable<boolean>;
+
+    readonly loading$ = new BehaviorSubject<boolean>(false);
+
+    @ViewChild(SymbologyCreatorComponent)
+    readonly symbologyCreator!: SymbologyCreatorComponent;
 
     /**
      * DI of services and setup of observables for the template
@@ -66,11 +73,15 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
+            mapNoData: new FormControl(false, {
+                nonNullable: true,
+                validators: [Validators.required],
+            }),
             name: new FormControl('Expression', {
                 nonNullable: true,
                 validators: [Validators.required, geoengineValidators.notOnlyWhitespace],
             }),
-            mapNoData: new FormControl(false, {
+            symbologyCreation: new FormControl(SymbologyCreationType.AS_INPUT, {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
@@ -171,6 +182,10 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
      * The resulting layer is added to the map.
      */
     add(): void {
+        if (this.loading$.value) {
+            return; // don't add while loading
+        }
+
         const name: string = this.form.controls['name'].value;
         const dataType: RasterDataType | undefined = this.form.controls['dataType'].value;
         const expression: string = this.form.controls['expression'].value;
@@ -182,6 +197,8 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         }
 
         const sourceOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers(rasterLayers);
+
+        this.loading$.next(true);
 
         sourceOperators
             .pipe(
@@ -212,13 +229,19 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
 
                     return this.projectService.registerWorkflow(workflow);
                 }),
-                mergeMap((workflowId: UUID) =>
+                mergeMap((workflowId: UUID) => {
+                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator.symbologyForRasterLayer(
+                        workflowId,
+                        rasterLayers[0],
+                    );
+                    return combineLatest([of(workflowId), symbology$]);
+                }),
+                mergeMap(([workflowId, symbology]: [UUID, RasterSymbology]) =>
                     this.projectService.addLayer(
                         new RasterLayer({
                             workflowId,
                             name,
-                            // copy symbolog from first layer
-                            symbology: rasterLayers[0].symbology,
+                            symbology,
                             isLegendVisible: false,
                             isVisible: true,
                         }),
@@ -230,11 +253,13 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
                     // everything worked well
 
                     this.lastError$.next(undefined);
+                    this.loading$.next(false);
                 },
                 error: (error) => {
                     const errorMsg = error.error.message;
 
                     this.lastError$.next(errorMsg);
+                    this.loading$.next(false);
                 },
             });
     }

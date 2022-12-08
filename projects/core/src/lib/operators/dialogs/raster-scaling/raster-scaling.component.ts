@@ -1,15 +1,17 @@
 import {RasterLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormControl, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
-import {WorkflowDict} from '../../../backend/backend.model';
-import {Observable} from 'rxjs';
+import {UUID, WorkflowDict} from '../../../backend/backend.model';
+import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {RasterMetadataKey, RasterUnScalingDict} from '../../../backend/operator.model';
 import {RasterDataTypes} from '../../datatype.model';
+import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
+import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 
 interface RasterScalingForm {
     name: FormControl<string>;
@@ -45,6 +47,11 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
 
     readonly validRasterMetadataKeyValidator = geoengineValidators.validRasterMetadataKey;
     readonly isNumberValidator = geoengineValidators.isNumber;
+
+    readonly loading$ = new BehaviorSubject<boolean>(false);
+
+    @ViewChild(SymbologyCreatorComponent)
+    readonly symbologyCreator!: SymbologyCreatorComponent;
 
     form: FormGroup<RasterScalingForm>;
     disallowSubmit: Observable<boolean>;
@@ -138,6 +145,10 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     add(): void {
+        if (this.loading$.value) {
+            return; // don't add while loading
+        }
+
         const inputLayer: RasterLayer | undefined = this.form.controls['layer'].value;
         const outputName: string = this.form.controls['name'].value;
 
@@ -149,6 +160,8 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
         if (!inputLayer) {
             return; // checked by form validator
         }
+
+        this.loading$.next(true);
 
         this.projectService
             .getWorkflow(inputLayer.workflowId)
@@ -169,23 +182,33 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
                         } as RasterUnScalingDict,
                     }),
                 ),
-                mergeMap((workflowId) =>
+                mergeMap((workflowId: UUID) => {
+                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator.symbologyForRasterLayer(workflowId, inputLayer);
+                    return combineLatest([of(workflowId), symbology$]);
+                }),
+                mergeMap(([workflowId, symbology]: [UUID, RasterSymbology]) =>
                     this.projectService.addLayer(
                         new RasterLayer({
                             workflowId,
                             name: outputName,
-                            symbology: inputLayer.symbology.clone(),
+                            symbology,
                             isLegendVisible: false,
                             isVisible: true,
                         }),
                     ),
                 ),
             )
-            .subscribe(
-                () => {
+            .subscribe({
+                next: () => {
                     // success
+
+                    this.loading$.next(false);
                 },
-                (error) => this.notificationService.error(error),
-            );
+                error: (error) => {
+                    this.notificationService.error(error);
+
+                    this.loading$.next(false);
+                },
+            });
     }
 }

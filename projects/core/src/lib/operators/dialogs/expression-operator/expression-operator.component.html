@@ -1,69 +1,61 @@
 <geoengine-sidenav-header>Calculate Expression on Raster</geoengine-sidenav-header>
 
-<geoengine-dialog-help>
-    <p>The <i>Expression Operator</i> allows applying mathematical calculations on one or more raster layers.</p>
-    <p>
-        For the expression, each raster is referred to as an alphabetic character, e.g., A for the first raster. It is possible to use basic
-        operations like <code>+</code>, <code>-</code>, <code>*</code> and <code>/</code>, e.g., <code>A + B</code>. You can find more
-        information at <a href="https://docs.geoengine.io/operators/expression.html">docs.geoengine.io</a>.
-    </p>
-    <p>
-        The option <em>Map No-Data</em> determines wether No-Data values are input to the expression. If unselected, the pixel output is
-        No-Data if any input pixel value is No-Data.
-    </p>
-    <p>
-        It is necessary to specify the output datatype for the expression. The list indicates the data type of the input. Furthermore, it is
-        required to specify the number range of the data in the form of min and max values. The system will choose an appropriate NO DATA
-        value automatically.
-    </p>
-    <p>
-        There is the option to specify an output unit for the expression result, e.g. <i>temperature</i> in <i>°C</i>. This will be shown in
-        the legend and automatically used in plots, etc.
-    </p>
-    <p>
-        Since the input rasters can be in differing projections, it is required to specify the output projection. This projection is used
-        when applying the operator.
-    </p>
-</geoengine-dialog-help>
+<form [formGroup]="form" (ngSubmit)="add()" *ngIf="projectHasRasterLayers$ | async; else noDataInfo">
+    <geoengine-operator-dialog-container [loading]="loading$ | async | valueDefault: false">
+        <a mat-icon-button operatorInputIcon href="https://docs.geoengine.io/operators/expression.html" target="_blank">
+            <mat-icon>help_center</mat-icon>
+        </a>
 
-<form [formGroup]="form" (ngSubmit)="add()" fxLayout="column" *ngIf="projectHasRasterLayers$ | async; else noDataInfo">
-    <div fxFlex class="container">
-        <geoengine-multi-layer-selection
-            [types]="RASTER_TYPE"
-            formControlName="rasterLayers"
-            [min]="1"
-            [max]="8"
-        ></geoengine-multi-layer-selection>
-        <geoengine-dialog-section-heading title="Configuration" subtitle="Specify the operator"></geoengine-dialog-section-heading>
-        <p>Use A to reference the existing pixel of the first raster, B for the second one, etc.</p>
+        <ng-container operatorInput>
+            <geoengine-multi-layer-selection
+                [types]="RASTER_TYPE"
+                formControlName="rasterLayers"
+                [min]="1"
+                [max]="8"
+            ></geoengine-multi-layer-selection>
+        </ng-container>
 
-        <geoengine-code-editor
-            formControlName="expression"
-            [prefixLine]="fnSignature | async | stringSanitizer"
-            suffixLine="}"
-        ></geoengine-code-editor>
+        <a mat-icon-button operatorParametersIcon href="https://docs.geoengine.io/operators/expression.html" target="_blank">
+            <mat-icon>help_center</mat-icon>
+        </a>
 
-        <p *ngIf="lastError$ | async as lastError" class="error">{{ lastError }}</p>
+        <ng-container operatorParameters>
+            <p>Use A to reference the existing pixel of the first raster, B for the second one, etc.</p>
 
-        <mat-form-field appearance="fill">
-            <mat-label>Output Data Type</mat-label>
-            <mat-select formControlName="dataType">
-                <mat-option *ngFor="let dataType of outputDataTypes$ | async" [value]="dataType[0]">
-                    {{ dataType[0] }} {{ dataType[1] }}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
+            <geoengine-code-editor
+                formControlName="expression"
+                [prefixLine]="fnSignature | async | stringSanitizer"
+                suffixLine="}"
+            ></geoengine-code-editor>
 
-        <mat-checkbox formControlName="mapNoData">Map No-Data with expression</mat-checkbox>
-        <geoengine-operator-output-name formControlName="name">
-            <mat-error *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace">
-                The name must be non-empty.
-            </mat-error>
-        </geoengine-operator-output-name>
-    </div>
-    <div class="actions">
-        <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid">Create</button>
-    </div>
+            <p *ngIf="lastError$ | async as lastError" class="error">{{ lastError }}</p>
+
+            <mat-form-field>
+                <mat-label>Output Data Type</mat-label>
+                <mat-select formControlName="dataType">
+                    <mat-option *ngFor="let dataType of outputDataTypes$ | async" [value]="dataType[0]">
+                        {{ dataType[0] }} {{ dataType[1] }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-checkbox formControlName="mapNoData">Map No-Data with expression</mat-checkbox>
+        </ng-container>
+
+        <ng-container layerSpecification>
+            <geoengine-operator-output-name formControlName="name">
+                <mat-error *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace">
+                    The name must be non-empty.
+                </mat-error>
+            </geoengine-operator-output-name>
+
+            <geoengine-symbology-creator #symbologyCreator formControlName="symbologyCreation"></geoengine-symbology-creator>
+        </ng-container>
+
+        <ng-container actions>
+            <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid || (loading$ | async)">Create</button>
+        </ng-container>
+    </geoengine-operator-dialog-container>
 </form>
 
 <ng-template #noDataInfo>
