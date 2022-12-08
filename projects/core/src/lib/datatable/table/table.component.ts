@@ -249,12 +249,9 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         if (!result) {
             return undefined;
         }
-        try {
-            const timeInstant = new Time(result);
-            return timeInstant.startStringOrNegInf();
-        } catch (e) {
-            return result;
-        }
+
+        const timeInstant = new Time(result);
+        return timeInstant.startStringOrNegInf();
     }
 
     readTimePropertyEnd(geometry: OlFeature): string | undefined {
@@ -262,12 +259,9 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         if (!result) {
             return undefined;
         }
-        try {
-            const timeInstant = new Time(result);
-            return timeInstant.endStringOrPosInf();
-        } catch (e) {
-            return result;
-        }
+
+        const timeInstant = new Time(result);
+        return timeInstant.endStringOrPosInf();
     }
 
     select(feature: OlFeature<OlGeometry>, select: boolean): void {
