@@ -5,7 +5,10 @@ form {
 
 mat-form-field {
     width: 100%;
-    margin: 1rem 0;
+}
+
+mat-slide-toggle {
+    margin-bottom: 1rem;
 }
 
 .error {

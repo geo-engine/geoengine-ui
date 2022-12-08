@@ -34,14 +34,21 @@
                 <mat-form-field>
                     <mat-label>Step Size</mat-label>
                     <input matInput type="number" formControlName="value" />
+                    <mat-hint align="end" class="error" *ngIf="form.controls.value?.errors?.valueIsZero">
+                        The step size must not be zero.
+                    </mat-hint>
                 </mat-form-field>
             </ng-container>
 
-            <ng-container *ngIf="form.controls.type.value === 'absolute'">
+            <ng-container *ngIf="form.controls.type.value === 'absolute'" formGroupName="timeInterval">
                 <h5>Start</h5>
-                <geoengine-time-input formControlName="timeIntervalStart"></geoengine-time-input>
+                <geoengine-time-input formControlName="start"></geoengine-time-input>
                 <h5>End</h5>
-                <geoengine-time-input formControlName="timeIntervalEnd"></geoengine-time-input>
+                <mat-slide-toggle #timeAsPoint formControlName="timeAsPoint">same as start</mat-slide-toggle>
+                <geoengine-time-input [isDisabled]="timeAsPoint.checked" formControlName="end"></geoengine-time-input>
+                <mat-hint align="end" class="error" *ngIf="form.controls.timeInterval?.errors?.valid">
+                    The start must be before the end.
+                </mat-hint>
             </ng-container>
         </ng-container>
 

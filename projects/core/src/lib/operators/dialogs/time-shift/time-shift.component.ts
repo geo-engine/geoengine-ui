@@ -19,16 +19,9 @@ interface TimeShiftForm {
     name: FormControl<string>;
     source: FormControl<Layer | undefined>;
     type: FormControl<TimeShiftFormType>;
-}
-
-interface AbsoluteTimeShiftForm extends TimeShiftForm {
-    type: FormControl<'absolute'>;
-    timeIntervalStart: FormControl<moment.Moment>;
-    timeIntervalEnd: FormControl<moment.Moment>;
-}
-
-interface RelativeTimeShiftForm extends TimeShiftForm {
-    type: FormControl<'relative'>;
+    // for absolute
+    timeInterval: FormGroup<{start: FormControl<moment.Moment>; end: FormControl<moment.Moment>; timeAsPoint: FormControl<boolean>}>;
+    // for relative
     granularity: FormControl<TimeStepGranularityDict>;
     value: FormControl<number>;
 }
@@ -49,19 +42,27 @@ export class TimeShiftComponent implements OnInit, AfterViewInit, OnDestroy {
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
 
-    form: FormGroup<AbsoluteTimeShiftForm> | FormGroup<RelativeTimeShiftForm>;
+    form: FormGroup<TimeShiftForm>;
     disallowSubmit: Observable<boolean>;
 
     constructor(private readonly projectService: ProjectService, private readonly notificationService: NotificationService) {
-        const form: FormGroup<RelativeTimeShiftForm> = new FormGroup({
+        const form: FormGroup<TimeShiftForm> = new FormGroup({
             name: new FormControl('Time Shift', {
                 validators: [Validators.required, geoengineValidators.notOnlyWhitespace],
                 nonNullable: true,
             }),
             source: new FormControl<Layer | undefined>(undefined, {validators: Validators.required, nonNullable: true}),
-            type: new FormControl('relative', {validators: Validators.required, nonNullable: true}),
+            type: new FormControl<TimeShiftFormType>('relative', {validators: Validators.required, nonNullable: true}),
             granularity: new FormControl(this.defaultTimeGranularity, {validators: Validators.required, nonNullable: true}),
-            value: new FormControl(-1, {validators: Validators.required, nonNullable: true}),
+            value: new FormControl(-1, {validators: [Validators.required, geoengineValidators.notZero], nonNullable: true}),
+            timeInterval: new FormGroup(
+                {
+                    start: new FormControl(moment.utc('2014-01-01'), {validators: Validators.required, nonNullable: true}),
+                    end: new FormControl(moment.utc('2014-01-01'), {validators: Validators.required, nonNullable: true}),
+                    timeAsPoint: new FormControl(true, {validators: Validators.required, nonNullable: true}),
+                },
+                {validators: geoengineValidators.startBeforeEndValidator},
+            ),
         });
         this.form = form;
         this.disallowSubmit = this.form.statusChanges.pipe(map((status) => status !== 'VALID'));
@@ -87,31 +88,21 @@ export class TimeShiftComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     changeToRelative(): void {
-        const typeControl: FormControl<TimeShiftFormType> = this.form.controls['type'];
+        this.form.controls['type'].setValue('relative');
 
-        this.form = new FormGroup<RelativeTimeShiftForm>({
-            name: this.form.controls['name'],
-            source: this.form.controls['source'],
-            type: typeControl as FormControl<'relative'>,
-            granularity: new FormControl(this.defaultTimeGranularity, {validators: Validators.required, nonNullable: true}),
-            value: new FormControl(-1, {validators: Validators.required, nonNullable: true}),
-        });
+        this.form.controls['granularity'].enable();
+        this.form.controls['value'].enable();
 
-        typeControl.setValue('relative');
+        this.form.controls['timeInterval'].disable();
     }
 
     changeToAbsolute(): void {
-        const typeControl: FormControl<TimeShiftFormType> = this.form.controls['type'];
+        this.form.controls['type'].setValue('absolute');
 
-        this.form = new FormGroup<AbsoluteTimeShiftForm>({
-            name: this.form.controls['name'],
-            source: this.form.controls['source'],
-            type: typeControl as FormControl<'absolute'>,
-            timeIntervalStart: new FormControl(moment.utc('2014-01-01'), {validators: Validators.required, nonNullable: true}),
-            timeIntervalEnd: new FormControl(moment.utc('2014-01-01'), {validators: Validators.required, nonNullable: true}),
-        });
+        this.form.controls['granularity'].disable();
+        this.form.controls['value'].disable();
 
-        typeControl.setValue('absolute');
+        this.form.controls['timeInterval'].enable();
     }
 
     add(): void {
@@ -131,18 +122,24 @@ export class TimeShiftComponent implements OnInit, AfterViewInit, OnDestroy {
         let params: AbsoluteTimeShiftDictParams | RelativeTimeShiftDictParams;
 
         if (type === 'absolute') {
-            const form: FormGroup<AbsoluteTimeShiftForm> = this.form as FormGroup<AbsoluteTimeShiftForm>;
-            const time = new Time(form.controls['timeIntervalStart'].value, form.controls['timeIntervalEnd'].value);
+            const timeInput = this.form.controls['timeInterval'].value;
+
+            let time: Time;
+            if (timeInput.timeAsPoint) {
+                time = new Time(timeInput.start);
+            } else {
+                time = new Time(timeInput.start, timeInput.end);
+            }
+
             params = {
                 type,
                 timeInterval: time.toDict(),
             } as AbsoluteTimeShiftDictParams;
         } else if (type === 'relative') {
-            const form: FormGroup<RelativeTimeShiftForm> = this.form as FormGroup<RelativeTimeShiftForm>;
             params = {
                 type,
-                granularity: form.controls['granularity'].value,
-                value: form.controls['value'].value,
+                granularity: this.form.controls['granularity'].value,
+                value: this.form.controls['value'].value,
             } as RelativeTimeShiftDictParams;
         } else {
             throw Error(`Invalid time shift type ${type}`);
