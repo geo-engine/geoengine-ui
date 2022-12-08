@@ -71,7 +71,7 @@ export class OperatorListComponent implements OnInit, OnChanges {
                 NAME: 'Time Shift',
                 ICON_URL: createIconDataUrl('Time Shift'),
             },
-            description: 'Shift the time dimension of the input layer',
+            description: 'Shift the time validity of the input layer',
         },
 
         // {
