@@ -3,14 +3,7 @@ import {BackendService} from '../backend/backend.service';
 import {Observable} from 'rxjs';
 import {UserService} from '../users/user.service';
 import {map, mergeMap} from 'rxjs/operators';
-import {
-    LayerCollectionDict,
-    LayerDict,
-    RasterResultDescriptorDict,
-    ResultDescriptorDict,
-    UUID,
-    VectorResultDescriptorDict,
-} from '../backend/backend.model';
+import {LayerCollectionDict, LayerDict, ResultDescriptorDict, UUID} from '../backend/backend.model';
 import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata.model';
 
 @Injectable({
@@ -44,11 +37,7 @@ export class LayerCollectionService {
     }
 
     getWorkflowIdMetadata(workflowId: UUID): Observable<VectorLayerMetadata | RasterLayerMetadata> {
-        return this.getWorkflowIdMetadataDict(workflowId).pipe(
-            map((workflowMetadataDict) => {
-                return LayerMetadata.fromDict(workflowMetadataDict);
-            }),
-        );
+        return this.getWorkflowIdMetadataDict(workflowId).pipe(map((workflowMetadataDict) => LayerMetadata.fromDict(workflowMetadataDict)));
     }
 
     getWorkflowIdMetadataDict(workflowId: UUID): Observable<ResultDescriptorDict> {

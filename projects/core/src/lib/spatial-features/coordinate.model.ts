@@ -1,4 +1,4 @@
-import {CoordinateDict} from '../backend/backend.model';
+import {CoordinateDict, ToDict} from '../backend/backend.model';
 
 /**
  * A 2D coordinate.
@@ -6,7 +6,7 @@ import {CoordinateDict} from '../backend/backend.model';
  * The coordinate is immutable.
  *(x, y) is the same as (longitude, latitude).
  */
-export class Coordinate2D {
+export class Coordinate2D implements ToDict<CoordinateDict> {
     private readonly inner: [number, number];
 
     /**

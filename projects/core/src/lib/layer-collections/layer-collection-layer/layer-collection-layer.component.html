@@ -1,9 +1,9 @@
 <ng-container>
     <span class="header">
         <span class="header-content" fxLayout="row" fxLayoutAlign="space-between center" fxFill>
-            <span matRipple class="header-click" fxLayout="row" fxLayoutAlign="start center">
+            <span matRipple class="header-click" fxLayout="row" fxLayoutAlign="start center" (click)="onAdd()">
                 <mat-icon class="header-icon">map</mat-icon>
-                <span class="header-text" (click)="onAdd()" fxLayout="column" fxLayoutAlign="center start">
+                <span class="header-text" fxLayout="column" fxLayoutAlign="center start">
                     <h4 class="header-text-line">{{ layer?.name }}</h4>
                     <p class="header-text-line" *ngIf="!expanded">{{ layer?.description }}</p>
                 </span>

@@ -18,12 +18,10 @@ import {
     OperatorDict,
     PlotDict,
     ProvenanceOutputDict,
-    RasterResultDescriptorDict,
     ResultDescriptorDict,
     SourceOperatorDict,
     ToDict,
     UUID,
-    VectorResultDescriptorDict,
     WorkflowDict,
 } from '../backend/backend.model';
 import {UserService} from '../users/user.service';
@@ -1142,9 +1140,7 @@ export class ProjectService {
             .pipe(
                 tap(() => loadingState$.next(LoadingState.LOADING)),
                 mergeMap((sessionToken) => this.backend.getWorkflowMetadata(layer.workflowId, sessionToken)),
-                map((workflowMetadataDict) => {
-                    return LayerMetadata.fromDict(workflowMetadataDict);
-                }),
+                map((workflowMetadataDict) => LayerMetadata.fromDict(workflowMetadataDict)),
                 tap({
                     next: () => loadingState$.next(LoadingState.OK),
                     error: (reason: Response) => {

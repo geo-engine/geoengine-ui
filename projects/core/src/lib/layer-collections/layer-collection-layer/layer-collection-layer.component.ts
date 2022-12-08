@@ -90,10 +90,11 @@ export class LayerCollectionLayerComponent implements OnInit, OnChanges {
             return undefined;
         }
 
-        if (this.layerMetadata.time && this.layerMetadata.time.start.year() > -262144) {
-            return this.layerMetadata.time.start.toString();
+        if (!this.layerMetadata.time) {
+            return undefined;
         }
-        return '-∞';
+
+        return this.layerMetadata.time.startStringOrNegInf();
     }
 
     get maxTimeString(): string | undefined {
@@ -101,10 +102,11 @@ export class LayerCollectionLayerComponent implements OnInit, OnChanges {
             return undefined;
         }
 
-        if (this.layerMetadata.time && this.layerMetadata.time.end.year() < 262144) {
-            return this.layerMetadata.time.end.toString();
+        if (!this.layerMetadata.time) {
+            return undefined;
         }
-        return '∞';
+
+        return this.layerMetadata.time.endStringOrPosInf();
     }
 
     get bboxLowerLeftString(): string | undefined {

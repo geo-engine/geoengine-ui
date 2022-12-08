@@ -1,8 +1,8 @@
 import {Extent} from 'ol/extent';
-import {BBoxDict, SpatialPartitionDict} from '../backend/backend.model';
+import {BBoxDict, SpatialPartitionDict, ToDict} from '../backend/backend.model';
 import {Coordinate2D} from '../spatial-features/coordinate.model';
 
-export class BoundingBox2D {
+export class BoundingBox2D implements ToDict<BBoxDict> {
     private readonly inner: [number, number, number, number];
 
     public get xmin(): number {

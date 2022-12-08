@@ -26,6 +26,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {FullDisplayComponent} from './full-display/full-display.component';
 import {MediaviewComponent} from '../mediaview/mediaview.component';
 import {VectorColumnDataType, VectorColumnDataTypes} from '../../operators/datatype.model';
+import {Time} from '../../time/time.model';
 
 @Component({
     selector: 'geoengine-datatable',
@@ -243,16 +244,30 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         this.dialog.open(FullDisplayComponent, {data: {xStrings: coords[0], yStrings: coords[1], geometry: output.getGeometry()}});
     }
 
-    readTimePropertyStart(geometry: OlFeature): string {
-        const minimum = '-262144-01-01T00:00:00+00:00';
+    readTimePropertyStart(geometry: OlFeature): string | undefined {
         const result = geometry['values_']['_____table__start'];
-        return result === minimum ? '-∞' : result;
+        if (!result) {
+            return undefined;
+        }
+        try {
+            const timeInstant = new Time(result);
+            return timeInstant.startStringOrNegInf();
+        } catch (e) {
+            return result;
+        }
     }
 
-    readTimePropertyEnd(geometry: OlFeature): string {
-        const maximum = '+262143-12-31T23:59:59.999+00:00';
+    readTimePropertyEnd(geometry: OlFeature): string | undefined {
         const result: string = geometry['values_']['_____table__end'];
-        return result === maximum ? '∞' : result;
+        if (!result) {
+            return undefined;
+        }
+        try {
+            const timeInstant = new Time(result);
+            return timeInstant.endStringOrPosInf();
+        } catch (e) {
+            return result;
+        }
     }
 
     select(feature: OlFeature<OlGeometry>, select: boolean): void {

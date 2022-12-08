@@ -135,13 +135,6 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
         return this.projectService.getWorkflowMetaData(workflowId);
     }
 
-    protected calculateInitialNumberOfElements(): number {
-        const element = this.viewport.elementRef.nativeElement;
-        const numberOfElements = Math.ceil(element.clientHeight / this.itemSizePx);
-        // add one such that scrolling happens
-        return numberOfElements + 1;
-    }
-
     addLayer(layerId: ProviderLayerIdDict): void {
         this.layerService
             .getLayer(layerId.providerId, layerId.layerId)
@@ -168,6 +161,13 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
                 },
                 error: (requestError) => this.handleError(requestError.error, layerId.layerId),
             });
+    }
+
+    protected calculateInitialNumberOfElements(): number {
+        const element = this.viewport.elementRef.nativeElement;
+        const numberOfElements = Math.ceil(element.clientHeight / this.itemSizePx);
+        // add one such that scrolling happens
+        return numberOfElements + 1;
     }
 
     private addVectorLayer(
