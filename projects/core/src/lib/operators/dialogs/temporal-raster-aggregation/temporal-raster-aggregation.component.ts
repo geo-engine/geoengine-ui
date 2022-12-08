@@ -12,6 +12,7 @@ import {TemporalRasterAggregationDict} from '../../../backend/operator.model';
 import moment, {Moment} from 'moment';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 import {RasterSymbology} from '../../../layers/symbology/symbology.model';
+import {timeStepGranularityOptions} from '../../../time/time.model';
 
 @Component({
     selector: 'geoengine-temporal-raster-aggregation',
@@ -22,7 +23,7 @@ import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly inputTypes = [ResultTypes.RASTER];
 
-    readonly timeGranularityOptions: Array<TimeStepGranularityDict> = ['millis', 'seconds', 'minutes', 'hours', 'days', 'months', 'years'];
+    readonly timeGranularityOptions: Array<TimeStepGranularityDict> = timeStepGranularityOptions;
     readonly defaultTimeGranularity: TimeStepGranularityDict = 'months';
     readonly aggregations = ['Min', 'Max', 'First', 'Last', 'Mean'];
 

@@ -11,7 +11,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {AbsoluteTimeShiftDictParams, RelativeTimeShiftDictParams, TimeShiftDict} from '../../../backend/operator.model';
 import moment from 'moment';
 import {RasterSymbology, VectorSymbology} from '../../../layers/symbology/symbology.model';
-import {Time} from '../../../time/time.model';
+import {Time, timeStepGranularityOptions} from '../../../time/time.model';
 
 type TimeShiftFormType = 'relative' | 'absolute';
 
@@ -42,7 +42,7 @@ interface RelativeTimeShiftForm extends TimeShiftForm {
 export class TimeShiftComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly inputTypes = [ResultTypes.RASTER, ...ResultTypes.VECTOR_TYPES];
 
-    readonly timeGranularityOptions: Array<TimeStepGranularityDict> = ['millis', 'seconds', 'minutes', 'hours', 'days', 'months', 'years'];
+    readonly timeGranularityOptions: Array<TimeStepGranularityDict> = timeStepGranularityOptions;
     readonly defaultTimeGranularity: TimeStepGranularityDict = 'months';
 
     readonly defaultTimeShiftType: TimeShiftFormType = 'relative';

@@ -20,6 +20,7 @@ import {
 } from '../../backend/backend.model';
 import {NotificationService} from '../../notification.service';
 import {ProjectService} from '../../project/project.service';
+import {timeStepGranularityOptions} from '../../time/time.model';
 import {DatasetService} from '../dataset.service';
 
 @Component({
@@ -35,7 +36,7 @@ export class UploadComponent {
     timeFormats = ['auto', 'unixTimeStamp', 'custom'];
     timestampTypes = ['epochSeconds', 'epochMilliseconds'];
     errorHandlings = ['ignore', 'abort'];
-    readonly timeGranularityOptions: Array<TimeStepGranularityDict> = ['millis', 'seconds', 'minutes', 'hours', 'days', 'months', 'years'];
+    readonly timeGranularityOptions: Array<TimeStepGranularityDict> = timeStepGranularityOptions;
     readonly defaultTimeGranularity: TimeStepGranularityDict = 'seconds';
 
     @ViewChild(MatStepper) stepper!: MatStepper;
