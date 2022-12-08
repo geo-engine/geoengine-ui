@@ -56,7 +56,31 @@
             </span>
         </ng-template>
 
-        <ng-template [ngIf]="rasterLayerMetadata"></ng-template>
-        <ng-template [ngIf]="vectorLayerMetadata"></ng-template>
+        <ng-template [ngIf]="rasterLayerMetadata">
+            <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon class="details-row-icon"><geoengine-raster-icon></geoengine-raster-icon></mat-icon>
+                <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
+                    <p class="details-row-text-line">Raster: {{ rasterLayerMetadata.dataType.toString() }}</p>
+                </span>
+            </span>
+        </ng-template>
+        <ng-template [ngIf]="vectorLayerMetadata">
+            <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
+                <ng-container [ngSwitch]="vectorLayerMetadata.dataType">
+                    <mat-icon *ngSwitchCase="VectorDataTypes.MultiPoint" class="details-row-icon"
+                        ><geoengine-point-icon></geoengine-point-icon
+                    ></mat-icon>
+                    <mat-icon *ngSwitchCase="VectorDataTypes.MultiLineString" class="details-row-icon"
+                        ><geoengine-line-icon></geoengine-line-icon
+                    ></mat-icon>
+                    <mat-icon *ngSwitchCase="VectorDataTypes.MultiPolygon" class="details-row-icon"
+                        ><geoengine-polygon-icon></geoengine-polygon-icon
+                    ></mat-icon>
+                </ng-container>
+                <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
+                    <p class="details-row-text-line">Vector: {{ vectorLayerMetadata.dataType.toString() }}</p>
+                </span>
+            </span>
+        </ng-template>
     </span>
 </ng-container>

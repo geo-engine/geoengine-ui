@@ -12,6 +12,7 @@ import {
 import {mergeMap} from 'rxjs';
 import {LayerCollectionLayerDict, ProviderLayerIdDict} from '../../backend/backend.model';
 import {RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metadata.model';
+import {VectorDataTypes} from '../../operators/datatype.model';
 import {LayerCollectionService} from '../layer-collection.service';
 
 @Component({
@@ -26,6 +27,8 @@ export class LayerCollectionLayerComponent implements OnInit, OnChanges {
     @Output() isExpanded: EventEmitter<boolean> = new EventEmitter();
 
     expanded = false;
+
+    readonly VectorDataTypes = VectorDataTypes;
 
     protected layerMetadata: RasterLayerMetadata | VectorLayerMetadata | undefined = undefined;
 
@@ -106,14 +109,14 @@ export class LayerCollectionLayerComponent implements OnInit, OnChanges {
 
     get bboxLowerLeftString(): string | undefined {
         if (this.layerMetadata && this.layerMetadata.bbox) {
-            return `xy_min: ${this.layerMetadata.bbox.xmin} : ${this.layerMetadata.bbox.ymin}`;
+            return `Min: ${this.layerMetadata.bbox.xmin} : ${this.layerMetadata.bbox.ymin}`;
         }
         return undefined;
     }
 
     get bboxUpperRightString(): string | undefined {
         if (this.layerMetadata && this.layerMetadata.bbox) {
-            return `xy_max: ${this.layerMetadata.bbox.xmax} : ${this.layerMetadata.bbox.ymax}`;
+            return `Max: ${this.layerMetadata.bbox.xmax} : ${this.layerMetadata.bbox.ymax}`;
         }
         return undefined;
     }
