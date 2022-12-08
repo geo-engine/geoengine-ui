@@ -56,16 +56,7 @@
             </span>
         </ng-template>
 
-        <ng-template [ngIf]="rasterLayerMetadata">
-            <!--
-        <span class="details-row">
-            <span class="details-row-text">
-                <h4 class="details-row-text-line">Nat. resolution</h4>
-                <p class="details-row-text-line">{{ rasterLayerMetadata.resolution }}</p>
-            </span>
-        </span>
-        -->
-        </ng-template>
-        <ng-template [ngIf]="vectorLayerMetadata" class="details-content"></ng-template>
+        <ng-template [ngIf]="rasterLayerMetadata"></ng-template>
+        <ng-template [ngIf]="vectorLayerMetadata"></ng-template>
     </span>
 </ng-container>
