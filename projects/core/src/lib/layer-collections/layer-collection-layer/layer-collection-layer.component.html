@@ -1,16 +1,16 @@
 <ng-container>
     <span class="header">
-        <span class="header-content">
-            <span matRipple class="header-click">
+        <span class="header-content" fxLayout="row" fxLayoutAlign="space-between center" fxFill>
+            <span matRipple class="header-click" fxLayout="row" fxLayoutAlign="start center">
                 <mat-icon class="header-icon">map</mat-icon>
-                <span class="header-text" (click)="onAdd()">
+                <span class="header-text" (click)="onAdd()" fxLayout="column" fxLayoutAlign="center start">
                     <h4 class="header-text-line">{{ layer?.name }}</h4>
                     <p class="header-text-line" *ngIf="!expanded">{{ layer?.description }}</p>
                 </span>
             </span>
 
-            <span class="header-button">
-                <button mat-raised-button aria-label="Example icon button with a menu icon" (click)="toggleExpand()">
+            <span class="header-button" fxLayoutAlign="center center">
+                <button mat-stroked-button aria-label="Example icon button with a menu icon" (click)="toggleExpand()">
                     details
                     <mat-icon *ngIf="!expanded">expand_more</mat-icon>
                     <mat-icon *ngIf="expanded">expand_less</mat-icon>
@@ -25,31 +25,31 @@
 </ng-container>
 
 <ng-container *ngIf="expanded">
-    <span class="details-content">
-        <span class="details-row">
+    <span class="details-content" fxLayout="column" fxLayoutAlign="center start " fxFill>
+        <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
             <mat-icon class="details-row-icon">info</mat-icon>
-            <span class="details-row-text">
+            <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
                 <p class="details-row-text-multi-line">{{ layer?.description }}</p>
             </span>
         </span>
 
         <ng-template [ngIf]="layerMetadata">
-            <span class="details-row">
+            <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
                 <mat-icon class="details-row-icon">language</mat-icon>
-                <span class="details-row-text">
+                <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
                     <p class="details-row-text-line">{{ layerMetadata.spatialReference.srsString }}</p>
                 </span>
             </span>
-            <span class="details-row">
+            <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
                 <mat-icon class="details-row-icon">fullscreen</mat-icon>
-                <span class="details-row-text">
+                <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
                     <p class="details-row-text-line">{{ bboxLowerLeftString }}</p>
                     <p class="details-row-text-line">{{ bboxUpperRightString }}</p>
                 </span>
             </span>
-            <span class="details-row">
+            <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
                 <mat-icon class="details-row-icon">date_range</mat-icon>
-                <span class="details-row-text">
+                <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
                     <p class="details-row-text-line">{{ minTimeString }}</p>
                     <p class="details-row-text-line">{{ maxTimeString }}</p>
                 </span>

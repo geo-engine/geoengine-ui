@@ -4,28 +4,22 @@
 }
 
 .header {
+    display: block;
     height: 72px;
     width: 100%;
 }
 
 .header-content {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-
     position: relative;
     height: inherit;
 
     .header-click {
-        padding: 0 2rem;
-        align-items: center;
-        display: flex;
+        padding: 0 1rem;
         cursor: pointer;
-        position: inherit;
         box-sizing: border-box;
         height: inherit;
         width: inherit;
-        flex: 1;
+
         overflow: hidden;
 
         &:hover {
@@ -35,14 +29,11 @@
 
     .header-button {
         padding: 0 16px;
-        align-items: center;
-        display: flex;
         box-sizing: border-box;
         height: inherit;
     }
 
     .header-icon {
-        flex-shrink: 0;
         width: 24px;
         height: 24px;
         font-size: 24px;
@@ -52,9 +43,6 @@
     }
 
     .header-text {
-        display: flex;
-        flex-direction: column;
-        flex: auto;
         box-sizing: border-box;
         overflow: hidden;
         padding: 0;
@@ -82,18 +70,10 @@ mat-progres-bar {
 }
 
 .details-content {
-    padding: 0 16px;
-    display: flex;
-    flex-direction: column;
-    flex: auto;
+    padding: 0 1rem;
     overflow: auto;
 
     .details-row {
-        display: flex;
-        flex: auto;
-        flex-direction: row;
-        align-items: center;
-        justify-items: left;
         padding: 0;
         margin: 0;
         margin-left: 16px;
@@ -112,9 +92,6 @@ mat-progres-bar {
         }
 
         .details-row-text {
-            display: flex;
-            flex-direction: column;
-            flex: auto;
             box-sizing: border-box;
             overflow: hidden;
             padding: 0;

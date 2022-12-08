@@ -69,8 +69,8 @@ export class BoundingBox2D {
      * @param lowerRight - The lower right coordinate.
      * @returns - A new BoundingBox.
      */
-    public static fromCoordinates(upperLeft: Coordinate2D, lowerRight: Coordinate2D): BoundingBox2D {
-        return BoundingBox2D.fromNumbers(upperLeft.x, lowerRight.y, lowerRight.x, upperLeft.y);
+    public static fromCoordinates(lowerLeft: Coordinate2D, upperRight: Coordinate2D): BoundingBox2D {
+        return BoundingBox2D.fromNumbers(lowerLeft.x, lowerLeft.y, upperRight.x, upperRight.y);
     }
 
     /**
