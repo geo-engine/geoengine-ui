@@ -109,6 +109,16 @@ export const timeStepDictTotimeStepDuration = (timeStepDict: TimeStepDict): Time
     };
 };
 
+export const timeStepGranularityOptions: Array<TimeStepGranularityDict> = [
+    'millis',
+    'seconds',
+    'minutes',
+    'hours',
+    'days',
+    'months',
+    'years',
+];
+
 export class Time implements ToDict<TimeIntervalDict> {
     readonly start: Moment;
     readonly end: Moment;

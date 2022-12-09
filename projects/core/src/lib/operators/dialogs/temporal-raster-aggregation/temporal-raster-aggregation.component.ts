@@ -13,6 +13,7 @@ import moment, {Moment} from 'moment';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 import {RasterDataType, RasterDataTypes} from '../../datatype.model';
+import {timeStepGranularityOptions} from '../../../time/time.model';
 
 interface TemporalRasterAggregationForm {
     name: FormControl<string>;
@@ -36,7 +37,7 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
     readonly inputTypes = [ResultTypes.RASTER];
     readonly rasterDataTypes = RasterDataTypes.ALL_DATATYPES;
 
-    readonly timeGranularityOptions: Array<TimeStepGranularityDict> = ['millis', 'seconds', 'minutes', 'hours', 'days', 'months', 'years'];
+    readonly timeGranularityOptions: Array<TimeStepGranularityDict> = timeStepGranularityOptions;
     readonly defaultTimeGranularity: TimeStepGranularityDict = 'months';
     readonly aggregations: Array<TemporalRasterAggregationDictAgregationType> = ['count', 'first', 'last', 'max', 'mean', 'min', 'sum'];
     readonly defaultAggregation: TemporalRasterAggregationDictAgregationType = 'mean';

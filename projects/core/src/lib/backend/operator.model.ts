@@ -6,7 +6,9 @@ import {
     SourceOperatorDict,
     SrsString,
     TimeInstanceDict,
+    TimeIntervalDict,
     TimeStepDict,
+    TimeStepGranularityDict,
 } from './backend.model';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -241,6 +243,22 @@ export interface TimeProjectionDict extends OperatorDict {
         step: TimeStepDict;
         stepReference?: TimeInstanceDict;
     };
+}
+
+export interface TimeShiftDict extends OperatorDict {
+    type: 'TimeShift';
+    params: AbsoluteTimeShiftDictParams | RelativeTimeShiftDictParams;
+}
+
+export interface AbsoluteTimeShiftDictParams extends OperatorParams {
+    type: 'absolute';
+    timeInterval: TimeIntervalDict;
+}
+
+export interface RelativeTimeShiftDictParams extends OperatorParams {
+    type: 'relative';
+    granularity: TimeStepGranularityDict;
+    value: number;
 }
 
 export interface InterpolationDict extends OperatorDict {

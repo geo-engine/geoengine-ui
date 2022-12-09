@@ -145,6 +145,7 @@ import {BackendStatusPageComponent} from './util/components/backend-status-page/
 import {SymbologyCreatorComponent} from './layers/symbology/symbology-creator/symbology-creator.component';
 import {OperatorDialogContainerComponent} from './operators/dialogs/helpers/operator-dialog-container/operator-dialog-container.component';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
+import {TimeShiftComponent} from './operators/dialogs/time-shift/time-shift.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -200,6 +201,7 @@ const CORE_COMPONENTS = [
     AddDataComponent,
     AddWorkflowComponent,
     AutocompleteSelectDirective,
+    BackendStatusPageComponent,
     BoxPlotOperatorComponent,
     ChangeSpatialReferenceComponent,
     ClassHistogramOperatorComponent,
@@ -218,7 +220,6 @@ const CORE_COMPONENTS = [
     DialogSplashCheckboxComponent,
     DragAndDropComponent,
     DrawFeaturesComponent,
-    BackendStatusPageComponent,
     ExpressionOperatorComponent,
     FeatureAttributeOvertimeComponent,
     FullDisplayComponent,
@@ -248,8 +249,8 @@ const CORE_COMPONENTS = [
     NavigationComponent,
     NeighborhoodAggregateComponent,
     NewProjectComponent,
-    NotificationsComponent,
     NotFoundPageComponent,
+    NotificationsComponent,
     NumberParamEditorComponent,
     OidcComponent,
     OlRasterLayerComponent,
@@ -267,10 +268,10 @@ const CORE_COMPONENTS = [
     RasterIconComponent,
     RasterLegendComponent,
     RasterLegendComponent,
-    RasterSymbologyEditorComponent,
     RasterScalingComponent,
-    RasterVectorJoinComponent,
+    RasterSymbologyEditorComponent,
     RasterTypeConversionComponent,
+    RasterVectorJoinComponent,
     RasterVectorJoinComponent,
     RenameLayerComponent,
     SaveProjectAsComponent,
@@ -286,6 +287,7 @@ const CORE_COMPONENTS = [
     TemporalRasterAggregationComponent,
     TimeConfigComponent,
     TimeInputComponent,
+    TimeShiftComponent,
     TimeSliderComponent,
     TimeStepSelectorComponent,
     TokenLoginComponent,
