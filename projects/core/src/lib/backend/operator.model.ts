@@ -6,7 +6,9 @@ import {
     SourceOperatorDict,
     SrsString,
     TimeInstanceDict,
+    TimeIntervalDict,
     TimeStepDict,
+    TimeStepGranularityDict,
 } from './backend.model';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -189,13 +191,16 @@ export interface TemporalRasterAggregationDict extends OperatorDict {
     type: 'TemporalRasterAggregation';
     params: {
         aggregation: {
-            type: 'min' | 'max' | 'first' | 'last';
+            type: TemporalRasterAggregationDictAgregationType;
             ignoreNoData?: boolean;
         };
         window: TimeStepDict;
         windowReference?: TimeInstanceDict;
+        outputType?: 'U8' | 'U16' | 'U32' | 'U64' | 'I8' | 'I16' | 'I32' | 'I64' | 'F32' | 'F64';
     };
 }
+
+export type TemporalRasterAggregationDictAgregationType = 'min' | 'max' | 'first' | 'last' | 'mean' | 'sum' | 'count';
 
 export interface RasterTypeConversionDict extends OperatorDict {
     type: 'RasterTypeConversion';
@@ -238,6 +243,22 @@ export interface TimeProjectionDict extends OperatorDict {
         step: TimeStepDict;
         stepReference?: TimeInstanceDict;
     };
+}
+
+export interface TimeShiftDict extends OperatorDict {
+    type: 'TimeShift';
+    params: AbsoluteTimeShiftDictParams | RelativeTimeShiftDictParams;
+}
+
+export interface AbsoluteTimeShiftDictParams extends OperatorParams {
+    type: 'absolute';
+    timeInterval: TimeIntervalDict;
+}
+
+export interface RelativeTimeShiftDictParams extends OperatorParams {
+    type: 'relative';
+    granularity: TimeStepGranularityDict;
+    value: number;
 }
 
 export interface InterpolationDict extends OperatorDict {

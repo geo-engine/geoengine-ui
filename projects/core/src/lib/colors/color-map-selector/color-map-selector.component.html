@@ -1,5 +1,5 @@
 <div class="component_container">
-    <form [formGroup]="form" (ngSubmit)="applyNewColorTable($event)" fxLayout="column">
+    <form [formGroup]="form" (ngSubmit)="applyChanges()" fxLayout="column">
         <div
             formGroupName="bounds"
             class="flex-container"
@@ -72,8 +72,9 @@
             </table>
         </div>
 
-        <mat-action-row>
+        <!-- TODO: This will be instantiated to populate the color table -->
+        <!-- <mat-action-row>
             <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid">Create color table</button>
-        </mat-action-row>
+        </mat-action-row> -->
     </form>
 </div>

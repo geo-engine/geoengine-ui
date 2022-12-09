@@ -113,6 +113,16 @@ const MIN_TIME_MOMENT = utc(-8_334_632_851_200_001 + 1, true);
 const MAX_TIME_MOMENT = utc(8_210_298_412_800_000 - 1, true);
 const DEFAULT_TIMEFORMAT = 'YYYY-MM-DDTHH:mm:ssZ';
 
+export const timeStepGranularityOptions: Array<TimeStepGranularityDict> = [
+    'millis',
+    'seconds',
+    'minutes',
+    'hours',
+    'days',
+    'months',
+    'years',
+];
+
 export class Time implements ToDict<TimeIntervalDict> {
     readonly start: Moment;
     readonly end: Moment;

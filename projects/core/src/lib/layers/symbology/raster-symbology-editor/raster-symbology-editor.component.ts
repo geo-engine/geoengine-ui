@@ -1,8 +1,18 @@
-import {Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChanges, OnDestroy, AfterViewInit, OnInit} from '@angular/core';
+import {
+    Component,
+    Input,
+    ChangeDetectionStrategy,
+    OnChanges,
+    SimpleChanges,
+    OnDestroy,
+    AfterViewInit,
+    OnInit,
+    ViewChild,
+} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {RasterSymbology} from '../symbology.model';
-import {RasterLayer} from '../../layer.model';
+import {Layer, RasterLayer} from '../../layer.model';
 import {MapService} from '../../../map/map.service';
 import {ProjectService} from '../../../project/project.service';
 import {Config} from '../../../config.service';
@@ -17,6 +27,8 @@ import {UserService} from '../../../users/user.service';
 import {extentToBboxDict} from '../../../util/conversions';
 import {VegaChartData} from '../../../plots/vega-viewer/vega-viewer.component';
 import {Color} from '../../../colors/color';
+import {ColorMapSelectorComponent} from '../../../colors/color-map-selector/color-map-selector.component';
+import {LayoutService} from '../../../layout.service';
 
 /**
  * An editor for generating raster symbologies.
@@ -28,6 +40,9 @@ import {Color} from '../../../colors/color';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, AfterViewInit, OnInit {
+    @ViewChild(ColorMapSelectorComponent)
+    colorMapSelector!: ColorMapSelectorComponent;
+
     @Input() layer!: RasterLayer;
 
     symbology!: RasterSymbology;
@@ -39,8 +54,14 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
 
     scale: 'linear' | 'logarithmic' = 'linear';
 
+    unappliedChanges = false;
+
     histogramData = new ReplaySubject<VegaChartData>(1);
     histogramLoading = new BehaviorSubject(false);
+    histogramCreated = false;
+
+    paletteSelected = false; // TODO: Remove once color palette picker is implemented and switch to "getColorizerType()"
+
     protected histogramWorkflowId = new ReplaySubject<UUID>(1);
     protected histogramSubscription?: Subscription;
 
@@ -50,6 +71,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     constructor(
         protected readonly projectService: ProjectService,
         protected readonly backend: BackendService,
+        protected readonly layoutService: LayoutService,
         protected readonly userService: UserService,
         protected readonly mapService: MapService,
         protected readonly config: Config,
@@ -65,11 +87,10 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         this.updateLayerMinMaxFromColorizer();
 
         this.createHistogramWorkflowId().subscribe((histogramWorkflowId) => this.histogramWorkflowId.next(histogramWorkflowId));
+        this.updateColorizerType(this.getColorizerType()); // TODO: Remove after palettes are implemented
     }
 
-    ngAfterViewInit(): void {
-        this.initializeHistogramDataSubscription();
-    }
+    ngAfterViewInit(): void {}
 
     ngOnDestroy(): void {
         if (this.histogramSubscription) {
@@ -138,7 +159,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
 
         this.symbology = this.symbology.cloneWith({opacity});
 
-        this.update();
+        this.unappliedChanges = true;
     }
 
     getDefaultColor(): ColorAttributeInput {
@@ -162,7 +183,24 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
             throw new Error('unsupported colorizer type');
         }
 
+        this.unappliedChanges = true;
+    }
+
+    applyChanges(): void {
+        this.colorMapSelector.applyChanges();
+        this.unappliedChanges = false;
         this.update();
+    }
+
+    getNotified(): void {
+        this.unappliedChanges = true;
+    }
+
+    resetChanges(layer: Layer): void {
+        this.layoutService.setSidenavContentComponent({
+            component: RasterSymbologyEditorComponent,
+            config: {layer, histogramData: this.histogramData, histogramCreated: this.histogramCreated},
+        });
     }
 
     getNoDataColor(): ColorAttributeInput {
@@ -189,7 +227,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
             throw new Error('unsupported colorizer type');
         }
 
-        this.update();
+        this.unappliedChanges = true;
     }
 
     getColorizerType(): 'linearGradient' | 'logarithmicGradient' | 'palette' {
@@ -218,6 +256,9 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     }
 
     updateColorizerType(colorizerType: 'linearGradient' | 'logarithmicGradient' | 'palette'): void {
+        // TODO: Remove this once palettes are fully implemented
+        this.paletteSelected = colorizerType === 'linearGradient' || colorizerType === 'logarithmicGradient' ? false : true;
+
         if (this.getColorizerType() === colorizerType) {
             return;
         }
@@ -263,7 +304,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         }
 
         this.updateScale();
-        this.update();
+        this.unappliedChanges = true;
     }
 
     /**
@@ -305,6 +346,15 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         const breakpoints = this.symbology.colorizer.getBreakpoints();
         this.updateLayerMinValue(breakpoints[0].value);
         this.updateLayerMaxValue(breakpoints[breakpoints.length - 1].value);
+    }
+
+    updateHistogram(): void {
+        this.histogramCreated = true;
+        this.histogramSubscription = this.createHistogramStream().subscribe((histogramData) => {
+            this.histogramData.next(histogramData);
+            this.histogramSubscription?.unsubscribe();
+            this.histogramAutoReload = false;
+        });
     }
 
     private updateNodataAndDefaultColor(): void {

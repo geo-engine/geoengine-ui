@@ -18,7 +18,17 @@
             <mat-form-field>
                 <mat-label>Aggregation Type</mat-label>
                 <mat-select formControlName="aggregation">
-                    <mat-option *ngFor="let aggregation of aggregations" [value]="aggregation">{{ aggregation }}</mat-option>
+                    <mat-option *ngFor="let aggregation of aggregations" [value]="aggregation">{{ aggregation | titlecase }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>Output Data Type</mat-label>
+                <mat-select formControlName="dataType" placeholder="Same as input {{ inputDataTypeDisplay$ | async }}">
+                    <mat-option [value]="undefined">Same as input {{ inputDataTypeDisplay$ | async }}</mat-option>
+                    <mat-option *ngFor="let dataType of rasterDataTypes" [value]="dataType">
+                        {{ dataType }}
+                    </mat-option>
                 </mat-select>
             </mat-form-field>
 

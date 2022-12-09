@@ -1,6 +1,7 @@
 import {Observable, Observer} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {AbstractControl, AsyncValidatorFn, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidatorFn, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
+import {Moment} from 'moment';
 
 const isFiniteNumber = (value: any): boolean => value !== null && value !== undefined && !isNaN(value) && isFinite(value);
 
@@ -289,6 +290,47 @@ const largerThan =
         return Object.keys(errors).length > 0 ? errors : null;
     };
 
+/**
+ * A validator that checks that a value is not zero.
+ */
+const notZero = (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+
+    const errors: {
+        valueIsZero?: boolean;
+    } = {};
+
+    if (value === 0) {
+        errors.valueIsZero = true;
+    }
+
+    return Object.keys(errors).length > 0 ? errors : null;
+};
+
+/**
+ * A validator that checks that the start value is before the end value.
+ *
+ * The field must be a `FormGroup` with the fields `start` and `end` of type `Moment`.
+ */
+const startBeforeEndValidator = (control: AbstractControl): ValidationErrors | null => {
+    if (!(control instanceof FormGroup<{start: FormControl<Moment>; end: FormControl<Moment>; timeAsPoint: FormControl<boolean>}>)) {
+        throw Error('The field must be a FormGroup with the fields `start` and `end` of type Moment and `timeAsPoint` of type boolean.');
+    }
+    if (!control.controls.start || !control.controls.end) {
+        throw Error('The field must be a FormGroup with the fields `start` and `end` of type Moment and `timeAsPoint` of type boolean.');
+    }
+
+    const start = control.controls.start.value as Moment;
+    const end = control.controls.end.value as Moment;
+    const timeAsPoint = control.controls.timeAsPoint.value as boolean;
+
+    if (timeAsPoint || start.isBefore(end)) {
+        return null;
+    } else {
+        return {valid: false};
+    }
+};
+
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const geoengineValidators = {
     conditionalValidator,
@@ -301,4 +343,6 @@ export const geoengineValidators = {
     validRasterMetadataKey,
     oneOrBoth,
     minAndMaxNumOrStr,
+    notZero,
+    startBeforeEndValidator,
 };

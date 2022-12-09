@@ -21,6 +21,7 @@ import {RasterTypeConversionComponent} from '../raster-type-conversion/raster-ty
 import {InterpolationComponent} from '../interpolation/interpolation.component';
 import {RasterScalingComponent} from '../raster-scaling/raster-scaling.component';
 import {NeighborhoodAggregateComponent} from '../neighborhood-aggregate/neighborhood-aggregate.component';
+import {TimeShiftComponent} from '../time-shift/time-shift.component';
 
 /**
  * This type encapsulates…
@@ -64,6 +65,15 @@ export class OperatorListComponent implements OnInit, OnChanges {
             },
             description: 'Attach raster values to multi-point data',
         },
+        {
+            component: TimeShiftComponent,
+            type: {
+                NAME: 'Time Shift',
+                ICON_URL: createIconDataUrl('Time Shift'),
+            },
+            description: 'Shift the time validity of the input layer',
+        },
+
         // {
         //     component: RasterPolygonClipOperatorComponent,
         //     type: {
