@@ -1,8 +1,3 @@
-:host {
-    display: block;
-    padding: 1rem;
-}
-
 mat-divider {
     padding-bottom: 1rem;
 }
@@ -23,4 +18,38 @@ mat-slider {
     .mat-progress-spinner {
         margin: 0 auto;
     }
+}
+
+.histogram-actions {
+    text-align: center;
+}
+
+#gradientType {
+    flex-wrap: wrap;
+}
+
+.outer {
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.container {
+    overflow-y: auto;
+    padding: 0rem 1rem 1rem 1rem;
+}
+
+.actions {
+    text-align: right;
+    height: 3rem;
+    padding: 1rem;
+}
+
+.hint {
+    text-align: left;
+    padding: 1rem;
+}
+
+.button {
+    margin: 0.5rem;
 }
