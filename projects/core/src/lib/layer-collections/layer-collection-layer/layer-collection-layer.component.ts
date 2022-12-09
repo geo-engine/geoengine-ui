@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import {mergeMap} from 'rxjs';
 import {LayerCollectionLayerDict, ProviderLayerIdDict} from '../../backend/backend.model';
+import {Colorizer} from '../../colors/colorizer.model';
 import {RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metadata.model';
 import {VectorDataTypes} from '../../operators/datatype.model';
 import {LayerCollectionService} from '../layer-collection.service';
@@ -29,6 +30,16 @@ export class LayerCollectionLayerComponent implements OnInit, OnChanges {
     expanded = false;
 
     readonly VectorDataTypes = VectorDataTypes;
+
+    readonly rasterColorizer = Colorizer.fromDict({
+        type: 'linearGradient',
+        breakpoints: [
+            {value: 0, color: [122, 122, 122, 255]},
+            {value: 1, color: [255, 255, 255, 255]},
+        ],
+        defaultColor: [0, 0, 0, 0],
+        noDataColor: [0, 0, 0, 0],
+    });
 
     protected layerMetadata: RasterLayerMetadata | VectorLayerMetadata | undefined = undefined;
 
@@ -91,7 +102,7 @@ export class LayerCollectionLayerComponent implements OnInit, OnChanges {
         }
 
         if (!this.layerMetadata.time) {
-            return undefined;
+            return 'undefined';
         }
 
         return this.layerMetadata.time.startStringOrNegInf();
@@ -103,10 +114,25 @@ export class LayerCollectionLayerComponent implements OnInit, OnChanges {
         }
 
         if (!this.layerMetadata.time) {
-            return undefined;
+            return 'undefined';
         }
 
         return this.layerMetadata.time.endStringOrPosInf();
+    }
+
+    get timeString(): string {
+        if (!this.layerMetadata) {
+            return 'undefined';
+        }
+
+        if (!this.layerMetadata.time) {
+            return 'undefined';
+        }
+
+        const min = this.layerMetadata.time.startStringOrNegInf() || 'undefined';
+        const max = this.layerMetadata.time.endStringOrPosInf() || 'undefined';
+
+        return '[ ' + min + ' ,  ' + max + ' )';
     }
 
     get bboxLowerLeftString(): string | undefined {
