@@ -54,7 +54,10 @@ export class TimeShiftComponent implements OnInit, AfterViewInit, OnDestroy {
             source: new FormControl<Layer | undefined>(undefined, {validators: Validators.required, nonNullable: true}),
             type: new FormControl<TimeShiftFormType>('relative', {validators: Validators.required, nonNullable: true}),
             granularity: new FormControl(this.defaultTimeGranularity, {validators: Validators.required, nonNullable: true}),
-            value: new FormControl(-1, {validators: [Validators.required, geoengineValidators.notZero], nonNullable: true}),
+            value: new FormControl(-1, {
+                validators: [Validators.required, geoengineValidators.notZero, Validators.pattern(/^-?\d+$/)],
+                nonNullable: true,
+            }),
             timeInterval: new FormGroup(
                 {
                     start: new FormControl(moment.utc('2014-01-01'), {validators: Validators.required, nonNullable: true}),
