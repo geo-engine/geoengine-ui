@@ -14,6 +14,7 @@ import {PieChartCountParams, PieChartDict} from '../../../backend/operator.model
 
 interface PieChartForm {
     name: FormControl<string>;
+    type: FormControl<'count'>;
     layer: FormControl<VectorLayer | undefined>;
     attribute: FormControl<string | undefined>;
     donut: FormControl<boolean>;
@@ -53,6 +54,10 @@ export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy {
                 validators: [Validators.required],
                 nonNullable: true,
             }),
+            type: new FormControl('count', {
+                validators: [Validators.required, geoengineValidators.notOnlyWhitespace],
+                nonNullable: true,
+            }),
             attribute: new FormControl<string | undefined>(undefined, {
                 validators: [Validators.required, geoengineValidators.notOnlyWhitespace],
                 nonNullable: true,
@@ -62,6 +67,8 @@ export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy {
                 nonNullable: true,
             }),
         });
+
+        this.form.controls['type'].disable(); // TODO: remove when other options are available
 
         this.subscriptions.push(
             this.form.controls['layer'].valueChanges
@@ -106,6 +113,7 @@ export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy {
             return;
         }
 
+        const pieChartType = this.form.controls['type'].value;
         const donut = this.form.controls['donut'].value;
         const outputName: string = this.form.controls['name'].value;
 
@@ -118,7 +126,7 @@ export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy {
                         operator: {
                             type: 'PieChart',
                             params: {
-                                type: 'count',
+                                type: pieChartType,
                                 columnName,
                                 donut,
                             } as PieChartCountParams,

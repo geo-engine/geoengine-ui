@@ -6,6 +6,7 @@ import {createIconDataUrl} from '../../util/icons';
 import {ProjectService} from '../../project/project.service';
 import {PlotDetailViewComponent} from '../plot-detail-view/plot-detail-view.component';
 import {MatDialog} from '@angular/material/dialog';
+import {GeoEngineError} from '../../util/errors';
 
 @Component({
     selector: 'geoengine-plot-list-entry',
@@ -22,6 +23,9 @@ export class PlotListEntryComponent implements OnInit, OnChanges {
 
     @Input()
     plotData?: PlotDataDict;
+
+    @Input()
+    plotError?: GeoEngineError;
 
     @Input()
     width?: number;

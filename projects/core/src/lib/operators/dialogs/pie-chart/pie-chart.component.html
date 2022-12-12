@@ -16,7 +16,14 @@
 
         <ng-container operatorParameters>
             <mat-form-field>
-                <mat-select placeholder="Attribute" formControlName="attribute">
+                <mat-label>Pie Chart Type</mat-label>
+                <mat-select formControlName="type">
+                    <mat-option [value]="'count'">Count</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Attribute</mat-label>
+                <mat-select formControlName="attribute">
                     <mat-option *ngFor="let attribute of attributes$ | async" [value]="attribute">{{ attribute }}</mat-option>
                 </mat-select>
             </mat-form-field>
