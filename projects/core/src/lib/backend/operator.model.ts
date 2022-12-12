@@ -78,6 +78,20 @@ export interface HistogramDict extends OperatorDict {
     };
 }
 
+export interface PieChartDict extends OperatorDict {
+    type: 'PieChart';
+    params: PieChartCountParams;
+    sources: {
+        vector: SourceOperatorDict | OperatorDict;
+    };
+}
+
+export interface PieChartCountParams extends OperatorParams {
+    type: 'count';
+    columnName: string;
+    donut?: boolean;
+}
+
 export interface ClassHistogramParams extends OperatorParams {
     columnName?: string;
 }

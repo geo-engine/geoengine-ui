@@ -146,6 +146,7 @@ import {SymbologyCreatorComponent} from './layers/symbology/symbology-creator/sy
 import {OperatorDialogContainerComponent} from './operators/dialogs/helpers/operator-dialog-container/operator-dialog-container.component';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
 import {TimeShiftComponent} from './operators/dialogs/time-shift/time-shift.component';
+import {PieChartComponent} from './operators/dialogs/pie-chart/pie-chart.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -258,6 +259,7 @@ const CORE_COMPONENTS = [
     OperatorDialogContainerComponent,
     OperatorListComponent,
     OperatorOutputNameComponent,
+    PieChartComponent,
     PlotDetailViewComponent,
     PlotListComponent,
     PlotListEntryComponent,

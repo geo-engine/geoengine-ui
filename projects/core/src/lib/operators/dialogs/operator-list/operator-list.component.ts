@@ -22,6 +22,7 @@ import {InterpolationComponent} from '../interpolation/interpolation.component';
 import {RasterScalingComponent} from '../raster-scaling/raster-scaling.component';
 import {NeighborhoodAggregateComponent} from '../neighborhood-aggregate/neighborhood-aggregate.component';
 import {TimeShiftComponent} from '../time-shift/time-shift.component';
+import {PieChartComponent} from '../pie-chart/pie-chart.component';
 
 /**
  * This type encapsulates…
@@ -101,11 +102,14 @@ export class OperatorListComponent implements OnInit, OnChanges {
             },
             description: 'Create a class histogram from categorical vector or raster data',
         },
-        //     {
-        //         component: PieChartComponent,
-        //         type: PieChartType,
-        //         description: 'Plot your data as a pie chart',
-        //     },
+        {
+            component: PieChartComponent,
+            type: {
+                NAME: 'Pie Chart',
+                ICON_URL: createIconDataUrl('Pie Chart'),
+            },
+            description: 'Plot your data as a pie chart',
+        },
         {
             component: ScatterplotOperatorComponent,
             type: {
