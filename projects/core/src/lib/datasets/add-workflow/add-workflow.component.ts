@@ -1,6 +1,6 @@
 import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormGroup, UntypedFormControl, Validators} from '@angular/forms';
-import {GeoEngineError, RasterResultDescriptorDict, UUID, VectorResultDescriptorDict} from '../../backend/backend.model';
+import {GeoEngineErrorDict, RasterResultDescriptorDict, UUID, VectorResultDescriptorDict} from '../../backend/backend.model';
 import {colorToDict} from '../../colors/color';
 import {RasterLayer, VectorLayer} from '../../layers/layer.model';
 import {
@@ -130,7 +130,7 @@ export class AddWorkflowComponent implements OnInit {
         this.projectService.addLayer(layer);
     }
 
-    private handleError(error: GeoEngineError, workflowId: UUID): void {
+    private handleError(error: GeoEngineErrorDict, workflowId: UUID): void {
         let errorMessage = `No workflow found for id: ${workflowId}`;
 
         if (error.error !== 'NoWorkflowForGivenId') {
