@@ -1,5 +1,5 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
-import {concatMap, first, Observable, range, reduce, take, takeWhile} from 'rxjs';
+import {concatMap, first, Observable, range, reduce, takeWhile} from 'rxjs';
 import {LayerCollectionNavigationComponent} from '../../layer-collections/layer-collection-navigation/layer-collection-navigation.component';
 import {LayerCollectionService} from '../../layer-collections/layer-collection.service';
 import {LayoutService, SidenavConfig} from '../../layout.service';
