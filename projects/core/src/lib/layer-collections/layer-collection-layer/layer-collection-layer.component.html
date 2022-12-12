@@ -1,0 +1,97 @@
+<ng-container>
+    <span class="header">
+        <span class="header-content" fxLayout="row" fxLayoutAlign="space-between center" fxFill>
+            <span matRipple class="header-click" fxLayout="row" fxLayoutAlign="start center" (click)="onAdd()">
+                <mat-icon class="header-icon">map</mat-icon>
+                <span class="header-text" fxLayout="column" fxLayoutAlign="center start">
+                    <h4 class="header-text-line">{{ layer?.name }}</h4>
+                    <p class="header-text-line" *ngIf="!expanded">{{ layer?.description }}</p>
+                </span>
+            </span>
+
+            <span class="header-button" fxLayoutAlign="center center">
+                <button mat-icon-button aria-label="Example icon button with a menu icon" (click)="toggleExpand()">
+                    <mat-icon *ngIf="!expanded">expand_more</mat-icon>
+                    <mat-icon *ngIf="expanded">expand_less</mat-icon>
+                </button>
+            </span>
+        </span>
+    </span>
+</ng-container>
+
+<ng-container>
+    <mat-progress-bar *ngIf="loading" mode="query"></mat-progress-bar>
+</ng-container>
+
+<ng-container *ngIf="expanded">
+    <span class="details-content" fxLayout="column" fxLayoutAlign="center start " fxFill>
+        <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
+            <mat-icon class="details-row-icon">info</mat-icon>
+            <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
+                <p class="details-row-text-line">Description</p>
+                <p class="details-row-text-multi-line">{{ layer?.description }}</p>
+            </span>
+        </span>
+
+        <ng-template [ngIf]="layerMetadata">
+            <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon class="details-row-icon">language</mat-icon>
+                <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
+                    <p class="details-row-text-line">SRS</p>
+                    <p class="details-row-text-line">{{ layerMetadata.spatialReference.srsString }}</p>
+                </span>
+            </span>
+            <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon class="details-row-icon">fullscreen</mat-icon>
+                <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
+                    <p class="details-row-text-line">Spatial bounds</p>
+                    <ng-template [ngIf]="bboxLowerLeftString">
+                        <p class="details-row-text-line">{{ bboxLowerLeftString }}</p>
+                        <p class="details-row-text-line">{{ bboxUpperRightString }}</p>
+                    </ng-template>
+                    <ng-template [ngIf]="!bboxLowerLeftString">
+                        <p class="details-row-text-line">undefined</p>
+                    </ng-template>
+                </span>
+            </span>
+            <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon class="details-row-icon">date_range</mat-icon>
+                <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
+                    <p class="details-row-text-line">Temporal bounds</p>
+                    <p class="details-row-text-line">{{ timeString }}</p>
+                </span>
+            </span>
+        </ng-template>
+
+        <ng-template [ngIf]="rasterLayerMetadata">
+            <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon class="details-row-icon"
+                    ><geoengine-raster-icon [xCells]="4" [yCells]="4" [colorizer]="rasterColorizer"></geoengine-raster-icon
+                ></mat-icon>
+                <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
+                    <p class="details-row-text-line">Raster type</p>
+                    <p class="details-row-text-line">{{ rasterLayerMetadata.dataType.toString() }}</p>
+                </span>
+            </span>
+        </ng-template>
+        <ng-template [ngIf]="vectorLayerMetadata">
+            <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
+                <ng-container [ngSwitch]="vectorLayerMetadata.dataType">
+                    <mat-icon *ngSwitchCase="VectorDataTypes.MultiPoint" class="details-row-icon"
+                        ><geoengine-point-icon></geoengine-point-icon
+                    ></mat-icon>
+                    <mat-icon *ngSwitchCase="VectorDataTypes.MultiLineString" class="details-row-icon"
+                        ><geoengine-line-icon></geoengine-line-icon
+                    ></mat-icon>
+                    <mat-icon *ngSwitchCase="VectorDataTypes.MultiPolygon" class="details-row-icon"
+                        ><geoengine-polygon-icon></geoengine-polygon-icon
+                    ></mat-icon>
+                </ng-container>
+                <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
+                    <p class="details-row-text-line">Vector type</p>
+                    <p class="details-row-text-line">{{ vectorLayerMetadata.dataType.toString() }}</p>
+                </span>
+            </span>
+        </ng-template>
+    </span>
+</ng-container>

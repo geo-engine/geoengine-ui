@@ -1,12 +1,21 @@
 <cdk-virtual-scroll-viewport [itemSize]="itemSizePx" (scrolledIndexChange)="onScrolledIndexChange($event)">
     <mat-nav-list>
-        <div *cdkVirtualFor="let item of source; trackBy: trackById">
-            <mat-list-item (click)="select(item)">
-                <img mat-list-icon [src]="icon(item)" />
-                <h4 mat-line>{{ item.name }}</h4>
-                <p mat-line>{{ item.description }}</p>
-            </mat-list-item>
-        </div>
+        <ng-container *cdkVirtualFor="let item of source; trackBy: trackById">
+            <ng-template [ngIf]="item.type === 'collection'">
+                <mat-list-item (click)="select(item)">
+                    <mat-icon mat-list-icon>layers</mat-icon>
+                    <h4 mat-line>{{ item.name }}</h4>
+                    <p mat-line>{{ item.description }}</p>
+                </mat-list-item>
+            </ng-template>
+            <ng-template [ngIf]="item.type === 'layer'">
+                <geoengine-layer-collection-layer
+                    mat-list-item
+                    [layer]="item"
+                    (addClick)="addLayer($event)"
+                ></geoengine-layer-collection-layer>
+            </ng-template>
+        </ng-container>
     </mat-nav-list>
 
     <mat-spinner [diameter]="loadingSpinnerDiameterPx" *ngIf="source?.loading$ | async"></mat-spinner>

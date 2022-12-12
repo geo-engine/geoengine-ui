@@ -1,4 +1,4 @@
-import {DurationInputArg1, DurationInputArg2, Moment, MomentInput, utc} from 'moment';
+import {DurationInputArg1, DurationInputArg2, Moment, MomentFormatSpecification, MomentInput, utc} from 'moment';
 import {TimeIntervalDict, TimeStepDict, TimeStepGranularityDict, ToDict} from '../backend/backend.model';
 
 export type TimeType = 'TimePoint' | 'TimeInterval';
@@ -109,6 +109,10 @@ export const timeStepDictTotimeStepDuration = (timeStepDict: TimeStepDict): Time
     };
 };
 
+const MIN_TIME_MOMENT = utc(-8_334_632_851_200_001 + 1, true);
+const MAX_TIME_MOMENT = utc(8_210_298_412_800_000 - 1, true);
+const DEFAULT_TIMEFORMAT = 'YYYY-MM-DDTHH:mm:ssZ';
+
 export const timeStepGranularityOptions: Array<TimeStepGranularityDict> = [
     'millis',
     'seconds',
@@ -123,10 +127,10 @@ export class Time implements ToDict<TimeIntervalDict> {
     readonly start: Moment;
     readonly end: Moment;
 
-    constructor(start: MomentInput, end?: MomentInput) {
-        this.start = utc(start);
+    constructor(start: MomentInput, end?: MomentInput, format?: MomentFormatSpecification) {
+        this.start = utc(start, format, true);
         if (end) {
-            this.end = utc(end);
+            this.end = utc(end, format, true);
         } else {
             this.end = this.start.clone();
         }
@@ -182,6 +186,14 @@ export class Time implements ToDict<TimeIntervalDict> {
         return this.start < other.start && this.end < other.end;
     }
 
+    isStartMin(): boolean {
+        return this.start.isSame(MIN_TIME_MOMENT);
+    }
+
+    isEndMax(): boolean {
+        return this.end.isSame(MAX_TIME_MOMENT);
+    }
+
     asRequestString(): string {
         switch (this.type) {
             case 'TimePoint':
@@ -191,14 +203,40 @@ export class Time implements ToDict<TimeIntervalDict> {
         }
     }
 
-    toString(): string {
+    toString(format = DEFAULT_TIMEFORMAT): string {
         switch (this.type) {
             case 'TimePoint':
-                return this.start.format('DD.MM.YYYY HH:mm:ss');
+                return this.startString(format);
             case 'TimeInterval':
-                const start = this.start.format('DD.MM.YYYY HH:mm:ss');
-                const end = this.end.format('DD.MM.YYYY HH:mm:ss');
+                const start = this.startString(format);
+                const end = this.endString(format);
                 return `${start} - ${end}`;
         }
+    }
+
+    startString(format = DEFAULT_TIMEFORMAT): string {
+        return this.start.format(format);
+    }
+
+    endString(format = DEFAULT_TIMEFORMAT): string {
+        return this.end.format(format);
+    }
+
+    public startStringOrNegInf(format = DEFAULT_TIMEFORMAT): string {
+        if (this.isStartMin()) {
+            return '-∞';
+        }
+        return this.startString(format);
+    }
+
+    public endStringOrPosInf(format = DEFAULT_TIMEFORMAT): string {
+        if (this.isEndMax()) {
+            return '∞';
+        }
+        return this.endString(format);
+    }
+
+    timeBounds(): Time {
+        return new Time(MIN_TIME_MOMENT, MAX_TIME_MOMENT);
     }
 }

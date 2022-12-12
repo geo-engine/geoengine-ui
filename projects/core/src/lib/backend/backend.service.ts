@@ -395,6 +395,20 @@ export class BackendService {
     public static authorizationHeader(sessionId: UUID): HttpHeaders {
         return new HttpHeaders().set('Authorization', `Bearer ${sessionId}`);
     }
+
+    registerWorkflowForLayer(sessionId: UUID, provider: UUID, layer: string): Observable<UUID> {
+        // URI encode the layer id if it is a JSON string
+        try {
+            JSON.parse(layer);
+            layer = encodeURIComponent(layer);
+        } catch (e) {
+            // do nothing
+        }
+
+        return this.http.post<UUID>(this.config.API_URL + `/layers/${provider}/${layer}/workflowId`, {
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
 }
 
 /**

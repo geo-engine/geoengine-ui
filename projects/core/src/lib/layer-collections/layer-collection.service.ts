@@ -2,8 +2,9 @@ import {Injectable} from '@angular/core';
 import {BackendService} from '../backend/backend.service';
 import {Observable} from 'rxjs';
 import {UserService} from '../users/user.service';
-import {mergeMap} from 'rxjs/operators';
-import {LayerCollectionDict, LayerDict, UUID} from '../backend/backend.model';
+import {map, mergeMap} from 'rxjs/operators';
+import {LayerCollectionDict, LayerDict, ResultDescriptorDict, UUID} from '../backend/backend.model';
+import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata.model';
 
 @Injectable({
     providedIn: 'root',
@@ -27,5 +28,21 @@ export class LayerCollectionService {
         return this.userService
             .getSessionStream()
             .pipe(mergeMap((session) => this.backend.getLayerCollectionLayer(session.sessionToken, provider, layer)));
+    }
+
+    registerAndGetLayerWorkflowId(providerId: UUID, layerId: string): Observable<UUID> {
+        return this.userService
+            .getSessionStream()
+            .pipe(mergeMap((session) => this.backend.registerWorkflowForLayer(session.sessionToken, providerId, layerId)));
+    }
+
+    getWorkflowIdMetadata(workflowId: UUID): Observable<VectorLayerMetadata | RasterLayerMetadata> {
+        return this.getWorkflowIdMetadataDict(workflowId).pipe(map((workflowMetadataDict) => LayerMetadata.fromDict(workflowMetadataDict)));
+    }
+
+    getWorkflowIdMetadataDict(workflowId: UUID): Observable<ResultDescriptorDict> {
+        return this.userService
+            .getSessionStream()
+            .pipe(mergeMap((session) => this.backend.getWorkflowMetadata(workflowId, session.sessionToken)));
     }
 }

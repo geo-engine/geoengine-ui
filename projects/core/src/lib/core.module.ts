@@ -145,6 +145,7 @@ import {BackendStatusPageComponent} from './util/components/backend-status-page/
 import {SymbologyCreatorComponent} from './layers/symbology/symbology-creator/symbology-creator.component';
 import {OperatorDialogContainerComponent} from './operators/dialogs/helpers/operator-dialog-container/operator-dialog-container.component';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
+import {LayerCollectionLayerComponent} from './layer-collections/layer-collection-layer/layer-collection-layer.component';
 import {TimeShiftComponent} from './operators/dialogs/time-shift/time-shift.component';
 
 export const MATERIAL_MODULES = [
@@ -229,6 +230,7 @@ const CORE_COMPONENTS = [
     InterpolationComponent,
     LayerCollectionDropdownComponent,
     LayerCollectionListComponent,
+    LayerCollectionLayerComponent,
     LayerCollectionNavigationComponent,
     LayerListComponent,
     LayerListElementComponent,
