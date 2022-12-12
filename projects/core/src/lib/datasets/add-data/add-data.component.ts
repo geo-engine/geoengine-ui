@@ -1,5 +1,5 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
-import {mergeMap, Observable, range, reduce, takeWhile} from 'rxjs';
+import {concatMap, first, Observable, range, reduce, takeWhile} from 'rxjs';
 import {LayerCollectionNavigationComponent} from '../../layer-collections/layer-collection-navigation/layer-collection-navigation.component';
 import {LayerCollectionService} from '../../layer-collections/layer-collection.service';
 import {LayoutService, SidenavConfig} from '../../layout.service';
@@ -47,9 +47,9 @@ export class AddDataComponent implements OnInit {
         const MAX_NUMBER_OF_QUERIES = 10;
         const BATCH_SIZE = 20;
         return range(0, MAX_NUMBER_OF_QUERIES).pipe(
-            mergeMap((i) => {
+            concatMap((i) => {
                 const start = i * BATCH_SIZE;
-                return layerService.getRootLayerCollectionItems(start, BATCH_SIZE);
+                return layerService.getRootLayerCollectionItems(start, BATCH_SIZE).pipe(first());
             }),
             takeWhile((collection) => collection.items.length > 0),
             reduce((acc, collection) => {
