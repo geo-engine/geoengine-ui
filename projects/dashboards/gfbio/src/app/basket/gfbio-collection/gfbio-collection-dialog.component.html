@@ -4,23 +4,19 @@
     <p>Here is a summary of the imported datasets from your basket!</p>
 
     <div class="entry-container">
-        <mat-table #table [dataSource]="result.basket.content">
-            <!-- Name Column -->
-            <ng-container matColumnDef="title">
+        <mat-table #table [dataSource]="collection.items">
+            <ng-container matColumnDef="name">
                 <mat-header-cell *matHeaderCellDef>Dataset</mat-header-cell>
-                <mat-cell *matCellDef="let element"> {{ element.title }} </mat-cell>
+                <mat-cell *matCellDef="let element"> {{ element.name }} </mat-cell>
             </ng-container>
 
-            <!-- Statius Column -->
             <ng-container matColumnDef="status">
                 <mat-header-cell *matHeaderCellDef>Status </mat-header-cell>
-                <mat-cell *matCellDef="let element"
-                    ><span class="{{ element.status }}">{{ element.status }}</span></mat-cell
-                >
+                <mat-cell *matCellDef="let element"><span class="{{ element.name }}">TODO</span></mat-cell>
             </ng-container>
 
-            <mat-header-row *matHeaderRowDef="['title', 'status']"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: ['title', 'status']"></mat-row>
+            <mat-header-row *matHeaderRowDef="['name', 'status']"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: ['name', 'status']"></mat-row>
         </mat-table>
     </div>
     <div class="actions">

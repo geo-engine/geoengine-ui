@@ -48,7 +48,7 @@ import {AppConfig} from './app-config.service';
 import {HelpComponent} from './help/help.component';
 import {SplashDialogComponent} from './splash-dialog/splash-dialog.component';
 import {BasketService} from './basket/basket.service';
-import {BasketDialogComponent} from './basket/basket-dialog/basket-dialog.component';
+import {GfBioCollectionDialogComponent as GfBioCollectionDialogComponent} from './basket/gfbio-collection/gfbio-collection-dialog.component';
 
 @Component({
     selector: 'geoengine-root',
@@ -78,6 +78,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     mapIsGrid$: Observable<boolean>;
 
     private windowHeight$ = new BehaviorSubject<number>(window.innerHeight);
+
+    private GFBIO_COLLECTIONS_DATA_PROVIDER_ID = 'f64e2d5b-3b80-476a-83f5-c330956b2909';
 
     constructor(
         @Inject(Config) readonly config: AppConfig,
@@ -279,11 +281,16 @@ export class AppComponent implements OnInit, AfterViewInit {
         }
 
         const handleBasketSubscription: (p: ParamMap) => void = (p: ParamMap) => {
-            const basketId = p.get('basket_id');
-            if (basketId != null) {
-                this.basketService.handleBasket(basketId).subscribe((result) => {
-                    this.dialog.open(BasketDialogComponent, {data: {result}});
-                });
+            const collectionId = p.get('collectionId');
+            if (collectionId != null) {
+                // this.basketService.handleBasket(collectionId).subscribe((result) => {
+                //     this.dialog.open(BasketDialogComponent, {data: {result}});
+                // });
+                this.layerService
+                    .getLayerCollectionItems(this.GFBIO_COLLECTIONS_DATA_PROVIDER_ID, `collections/${collectionId}`)
+                    .subscribe((result) => {
+                        this.dialog.open(GfBioCollectionDialogComponent, {data: {result}});
+                    });
             } else {
                 const showSplash = this.userService.getSettingFromLocalStorage(SplashDialogComponent.SPLASH_DIALOG_NAME);
                 if (showSplash === null || JSON.parse(showSplash)) {
