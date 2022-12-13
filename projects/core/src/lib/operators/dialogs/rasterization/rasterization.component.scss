@@ -1,0 +1,94 @@
+:host {
+    display: block;
+    overflow-y: auto;
+    padding: 0 1rem 1rem 1rem;
+}
+
+form {
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.container {
+    .custom-unit {
+        margin-bottom: 1rem;
+    }
+}
+
+.densityContainer {
+    padding: 0 0 1rem 0;
+}
+
+.labelRadioGroup {
+    padding: 1rem 0.5rem 0 0;
+}
+
+.mat-radio-group {
+    display: inline-flex;
+    padding: 1rem 0 0 0;
+}
+.mat-radio-button {
+    margin-left: 16px;
+}
+
+mat-form-field {
+    width: 100%;
+}
+
+.mat-tab {
+    background-color: var(--geoengine-card-background-color);
+    color: var(--geoengine-foreground-secondary-text-color);
+}
+.mat-tab-group {
+    background-color: var(--geoengine-card-background-color);
+    color: var(--geoengine-foreground-secondary-text-color);
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    min-width: 100%;
+    flex-shrink: 0;
+
+    ::ng-deep.mat-tab-label,
+    ::ng-deep.mat-tab-label-active {
+        min-width: 50%;
+    }
+    ::ng-deep.mat-tab-header {
+        width: 100%;
+    }
+
+    ::ng-deep.mat-tab-header-pagination {
+        display: none !important;
+    }
+    ::ng-deep.mat-tab-body-wrapper {
+        width: 100%;
+        overflow: hidden;
+    }
+}
+
+.groupInRow {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding-top: 1rem;
+
+    ::ng-deep .mat-form-field-infix {
+        width: unset;
+    }
+}
+
+.actions {
+    text-align: right;
+    padding: 1rem;
+}
+
+.sizeModeHint {
+    font-size: 0.8rem;
+    padding-bottom: 1rem;
+}
+
+.error {
+    color: var(--geoengine-warn-color, red);
+}
