@@ -35,7 +35,7 @@ interface DensityForm {
     stddev: FormControl<number>;
 }
 /**
- * This component allows creating the point in polygon filter operator.
+ * This component allows creating the rasterization operator.
  */
 @Component({
     selector: 'geoengine-rasterization',
