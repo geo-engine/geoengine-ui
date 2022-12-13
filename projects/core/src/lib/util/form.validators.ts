@@ -291,6 +291,36 @@ const largerThan =
     };
 
 /**
+ * A validator that checks if values are in the given value range.
+ */
+const inRange =
+    (
+        lowerBound: number,
+        upperBound: number,
+        lowerInclusive: boolean,
+        upperInclusive: boolean,
+    ): ((_: AbstractControl) => ValidationErrors | null) =>
+    (control: AbstractControl): ValidationErrors | null => {
+        const value = control.value;
+
+        const errors: {
+            valueNotInRange?: boolean;
+        } = {};
+
+        if (
+            isFiniteNumber(value) &&
+            (value < lowerBound ||
+                (value == lowerBound && !lowerInclusive) ||
+                value > upperBound ||
+                (value == upperBound && !upperInclusive))
+        ) {
+            errors.valueNotInRange = true;
+        }
+
+        return Object.keys(errors).length > 0 ? errors : null;
+    };
+
+/**
  * A validator that checks that a value is not zero.
  */
 const notZero = (control: AbstractControl): ValidationErrors | null => {
@@ -340,6 +370,7 @@ export const geoengineValidators = {
     notOnlyWhitespace,
     uniqueProjectName: uniqueProjectNameValidator,
     largerThan,
+    inRange,
     validRasterMetadataKey,
     oneOrBoth,
     minAndMaxNumOrStr,

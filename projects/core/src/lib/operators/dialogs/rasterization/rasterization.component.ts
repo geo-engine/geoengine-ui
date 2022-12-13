@@ -94,7 +94,7 @@ export class RasterizationComponent implements OnDestroy {
         return this.formBuilder.nonNullable.group<DensityForm>({
             gridOrDensity: this.createRasterizationType(1),
             cutoff: this.formBuilder.nonNullable.control<number>(10.0, {
-                validators: [Validators.required, geoengineValidators.largerThan(0)],
+                validators: [Validators.required, geoengineValidators.inRange(0, 1, true, false)],
             }),
             stddev: this.formBuilder.nonNullable.control<number>(10.0, {
                 validators: [Validators.required, geoengineValidators.largerThan(0)],
