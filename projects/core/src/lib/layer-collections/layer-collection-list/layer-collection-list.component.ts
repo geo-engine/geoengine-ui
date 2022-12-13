@@ -14,7 +14,7 @@ import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {concatMap, filter, first, map, mergeMap, scan, tap} from 'rxjs/operators';
 import {LayoutService} from '../../layout.service';
 import {
-    GeoEngineError,
+    GeoEngineErrorDict,
     LayerCollectionItemDict,
     LayerCollectionLayerDict,
     LayerCollectionListingDict,
@@ -265,7 +265,7 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
         this.projectService.addLayer(layer);
     }
 
-    private handleError(error: GeoEngineError, workflowId: UUID): void {
+    private handleError(error: GeoEngineErrorDict, workflowId: UUID): void {
         let errorMessage = `No workflow found for id: ${workflowId}`;
 
         if (error.error !== 'NoWorkflowForGivenId') {
