@@ -310,9 +310,9 @@ const inRange =
         if (
             isFiniteNumber(value) &&
             (value < lowerBound ||
-                (value == lowerBound && !lowerInclusive) ||
+                (value === lowerBound && !lowerInclusive) ||
                 value > upperBound ||
-                (value == upperBound && !upperInclusive))
+                (value === upperBound && !upperInclusive))
         ) {
             errors.valueNotInRange = true;
         }
