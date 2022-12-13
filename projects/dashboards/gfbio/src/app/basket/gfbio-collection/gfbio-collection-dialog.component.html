@@ -12,7 +12,9 @@
 
             <ng-container matColumnDef="status">
                 <mat-header-cell *matHeaderCellDef>Status </mat-header-cell>
-                <mat-cell *matCellDef="let element"><span class="{{ element.name }}">TODO</span></mat-cell>
+                <mat-cell *matCellDef="let element"
+                    ><span class="{{ layerStatus(element) }}">{{ layerStatus(element) }}</span></mat-cell
+                >
             </ng-container>
 
             <mat-header-row *matHeaderRowDef="['name', 'status']"></mat-header-row>
