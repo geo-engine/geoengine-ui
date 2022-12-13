@@ -149,6 +149,10 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                 mergeMap<RasterLayer | undefined, Observable<RasterLayer>>((layer) => (layer ? of(layer) : of())),
                 mergeMap((rasterLayer) => this.projectService.getWorkflow(rasterLayer.workflowId)),
             ),
+            this.dataSelectionService.rasterLayer.pipe(
+                mergeMap<RasterLayer | undefined, Observable<RasterLayer>>((layer) => (layer ? of(layer) : of())),
+                mergeMap((rasterLayer) => this.projectService.getRasterLayerMetadata(rasterLayer)),
+            ),
             this.countryProviderService
                 .getSelectedCountryStream()
                 .pipe(mergeMap<Country | undefined, Observable<Country>>((country) => (country ? of(country) : of()))),
@@ -160,7 +164,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                     this.plotLoading.next(true);
                     this.plotData.next(undefined);
                 }),
-                mergeMap(([rasterWorkflow, selectedCountry, sessionToken]) =>
+                mergeMap(([rasterWorkflow, rasterWorkflowMetaData, selectedCountry, sessionToken]) =>
                     combineLatest([
                         this.projectService.registerWorkflow({
                             type: 'Plot',
@@ -194,12 +198,23 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                                 },
                             } as MeanRasterPixelValuesOverTimeDict,
                         }),
+                        of(rasterWorkflowMetaData),
                         of(selectedCountry),
                         of(sessionToken),
                     ]),
                 ),
                 first(),
-                mergeMap(([workflowId, selectedCountry, sessionToken]) => {
+                mergeMap(([workflowId, rasterWorkflowMetaData, selectedCountry, sessionToken]) => {
+                    let spatialResolution: [number, number] = [0.1, 0.1];
+                    if (
+                        rasterWorkflowMetaData.resolution &&
+                        rasterWorkflowMetaData.resolution.x > 0.1 &&
+                        rasterWorkflowMetaData.resolution.y > 0.1
+                    ) {
+                        // TODO: communicate upper limit or think about long-running plot requests
+                        spatialResolution = [rasterWorkflowMetaData.resolution.x, rasterWorkflowMetaData.resolution.y];
+                    }
+
                     if (!this.time) {
                         throw new Error('No time selected');
                     }
@@ -208,7 +223,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                         {
                             time: {
                                 start: this.time.start.unix() * 1_000,
-                                end: this.time.end.unix() * 1_000,
+                                end: this.time.end.unix() * 1_000 + 1 /* add one millisecond to include the end time */,
                             },
                             bbox: extentToBboxDict([
                                 selectedCountry.minx,
@@ -218,8 +233,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                             ]),
                             // always use WGS 84 for computing the plot
                             crs: WGS_84.spatialReference.srsString,
-                            // TODO: set reasonable size
-                            spatialResolution: [0.1, 0.1],
+                            spatialResolution,
                         },
                         sessionToken,
                     );
