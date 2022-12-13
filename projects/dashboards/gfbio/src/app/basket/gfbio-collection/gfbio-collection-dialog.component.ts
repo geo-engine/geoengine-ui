@@ -1,9 +1,14 @@
 import {Component, Inject} from '@angular/core';
-import {BasketResult} from '../basket-model';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {LayerCollectionDict, LayerCollectionService, ProjectService} from '@geoengine/core';
+import {LayerCollectionDict, LayerCollectionItemDict, LayerCollectionService, ProjectService} from '@geoengine/core';
 import {map, mergeMap} from 'rxjs/operators';
 import {Observable, of} from 'rxjs';
+
+enum LayerStatus {
+    Ok = 'ok',
+    Unavailable = 'unavailable',
+    Error = 'error',
+}
 
 @Component({
     selector: 'geoengine-gfbio-basket-dialog',
@@ -24,16 +29,47 @@ export class GfBioCollectionDialogComponent {
         this.hasLayers$ = this.projectService.getLayerStream().pipe(map((layers) => layers.length > 0));
     }
 
+    layerStatus(item: LayerCollectionItemDict): LayerStatus {
+        const status = item.properties.find(([a, _]) => a === 'status');
+
+        if (status) {
+            return this.statusFromString(status[1]);
+        } else {
+            return LayerStatus.Error;
+        }
+    }
+
     appendLayers(): void {
-        this.layerService.addCollectionLayersToProject(this.collection);
+        const filteredCollection = this.collection;
+        this.collection.items = this.getOkLayers();
+
+        this.layerService.addCollectionLayersToProject(filteredCollection);
         this.dialogRef.close();
     }
 
     replaceLayers(): void {
+        const filteredCollection = this.collection;
+        this.collection.items = this.getOkLayers();
+
         this.projectService
             .clearLayers()
-            .pipe(mergeMap(() => of(this.layerService.addCollectionLayersToProject(this.collection))))
+            .pipe(mergeMap(() => of(this.layerService.addCollectionLayersToProject(filteredCollection))))
             .subscribe();
         this.dialogRef.close();
+    }
+
+    private getOkLayers(): LayerCollectionItemDict[] {
+        return this.collection.items.filter((item) => this.layerStatus(item) === LayerStatus.Ok);
+    }
+
+    private statusFromString(status: string): LayerStatus {
+        switch (status) {
+            case 'ok':
+                return LayerStatus.Ok;
+            case 'unavailable':
+                return LayerStatus.Unavailable;
+            default:
+                return LayerStatus.Error;
+        }
     }
 }

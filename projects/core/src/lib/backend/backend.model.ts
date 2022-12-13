@@ -546,6 +546,7 @@ export interface LayerCollectionItemDict {
     id: ProviderLayerIdDict | ProviderLayerCollectionIdDict;
     name: string;
     description: string;
+    properties: [string, string][];
 }
 
 export interface ProviderLayerIdDict {
