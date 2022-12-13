@@ -31,7 +31,7 @@ interface GridForm {
 }
 interface DensityForm {
     gridOrDensity: FormControl<number>;
-    radius: FormControl<number>;
+    cutoff: FormControl<number>;
     stddev: FormControl<number>;
 }
 /**
@@ -93,7 +93,7 @@ export class RasterizationComponent implements OnDestroy {
     initialDensity(): FormGroup<DensityForm> {
         return this.formBuilder.nonNullable.group<DensityForm>({
             gridOrDensity: this.createRasterizationType(1),
-            radius: this.formBuilder.nonNullable.control<number>(10.0, {
+            cutoff: this.formBuilder.nonNullable.control<number>(10.0, {
                 validators: [Validators.required, geoengineValidators.largerThan(0)],
             }),
             stddev: this.formBuilder.nonNullable.control<number>(10.0, {
@@ -201,7 +201,7 @@ export class RasterizationComponent implements OnDestroy {
 
             return (params = {
                 type: 'density',
-                radius: rasterization?.value.radius ?? 10,
+                cutoff: rasterization?.value.cutoff ?? 10,
                 stddev: rasterization?.value.stddev ?? 10,
             });
         }

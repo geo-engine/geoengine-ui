@@ -64,9 +64,9 @@
             <ng-template #densityTemplate>
                 <div class="groupInRow" *ngIf="selected.value === 1">
                     <mat-form-field appearance="fill" class="densityContainer">
-                        <mat-label>Radius</mat-label>
-                        <input matInput type="number" formControlName="radius" />
-                        <mat-hint class="error" *ngIf="form.getError('valueNotLarger', 'rasterization.radius') as error">
+                        <mat-label>Cutoff</mat-label>
+                        <input matInput type="number" formControlName="cutoff" />
+                        <mat-hint class="error" *ngIf="form.getError('valueNotLarger', 'rasterization.cutoff') as error">
                             The value must be greater than zero.
                         </mat-hint>
                     </mat-form-field>

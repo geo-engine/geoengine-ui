@@ -177,7 +177,7 @@ export interface GridRasterizationDict {
 
 export interface DensityRasterizationDict {
     type: 'density';
-    radius: number;
+    cutoff: number;
     stddev: number;
 }
 
