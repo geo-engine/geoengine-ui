@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, OnDestroy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnDestroy, ViewChild} from '@angular/core';
 import {Layer, RasterLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {RasterSymbology} from '../../../layers/symbology/symbology.model';
@@ -6,14 +6,32 @@ import {Validators, FormControl, FormGroup, FormBuilder} from '@angular/forms';
 import {geoengineValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
 import {mergeMap} from 'rxjs/operators';
-import {WorkflowDict} from '../../../backend/backend.model';
-import {DensityRasterizationDict, GridRasterizationDict, RasterizationDict} from '../../../backend/operator.model';
-import {Subscription} from 'rxjs';
+import {BBoxDict, RasterResultDescriptorDict, SrsString, TimeIntervalDict, UUID, WorkflowDict} from '../../../backend/backend.model';
+import {
+    DensityRasterizationDict,
+    GridRasterizationDict,
+    RasterizationDict,
+    StatisticsDict,
+    StatisticsParams,
+} from '../../../backend/operator.model';
+import {combineLatest, first, map, Observable, of, Subscription} from 'rxjs';
 import {NotificationService} from '../../../notification.service';
+import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
+import {RasterResultDescriptor} from '../../../datasets/dataset.model';
+import {extentToBboxDict} from '../../../util/conversions';
+import {Time} from '../../../time/time.model';
+import {ColorMapSelectorComponent} from '../../../colors/color-map-selector/color-map-selector.component';
+import {MPL_COLORMAPS} from '../../../colors/color-map-selector/mpl-colormaps';
+import {LinearGradient} from '../../../colors/colorizer.model';
+import {TRANSPARENT} from '../../../colors/color';
+import {SpatialReferenceService} from '../../../spatial-references/spatial-reference.service';
+import {UserService} from '../../../users/user.service';
+import {BackendService} from '../../../backend/backend.service';
 
 interface RasterizationForm {
     name: FormControl<string>;
     layer: FormControl<Layer | undefined>;
+    computeSymbology: FormControl<boolean>;
     rasterization: FormGroup<DensityForm> | FormGroup<GridForm>;
 }
 
@@ -54,6 +72,9 @@ export class RasterizationComponent implements OnDestroy {
     constructor(
         private projectService: ProjectService,
         private readonly notificationService: NotificationService,
+        private readonly spatialReferenceService: SpatialReferenceService,
+        private readonly userService: UserService,
+        private readonly backendService: BackendService,
         private formBuilder: FormBuilder,
     ) {
         const layerControl = new FormControl<Layer | undefined>(undefined, {
@@ -62,6 +83,7 @@ export class RasterizationComponent implements OnDestroy {
         });
         this.form = new FormGroup<RasterizationForm>({
             name: this.formBuilder.nonNullable.control<string>('Rasterized', [Validators.required, geoengineValidators.notOnlyWhitespace]),
+            computeSymbology: this.formBuilder.nonNullable.control<boolean>(true, []),
             layer: layerControl,
             rasterization: this.initialGrid(),
         });
@@ -105,6 +127,7 @@ export class RasterizationComponent implements OnDestroy {
     add(): void {
         const pointsLayer = this.form.controls['layer'].value as Layer;
         const layerName: string = this.form.controls['name'].value;
+        const computeSymbology: boolean = this.form.controls['computeSymbology'].value;
         const params = this.rasterizationParams();
 
         if (!params) {
@@ -129,24 +152,18 @@ export class RasterizationComponent implements OnDestroy {
                     } as WorkflowDict;
                     return this.projectService.registerWorkflow(workflow);
                 }),
-                mergeMap((workflowId) =>
+                mergeMap((workflowId: UUID) => {
+                    const symbology$: Observable<RasterSymbology> = computeSymbology
+                        ? this.computeSymbologyForRasterLayer(workflowId)
+                        : this.defaultSymbology();
+                    return combineLatest([of(workflowId), symbology$]);
+                }),
+                mergeMap(([workflowId, symbology]: [UUID, RasterSymbology]) =>
                     this.projectService.addLayer(
                         new RasterLayer({
                             workflowId,
                             name: layerName,
-                            symbology: RasterSymbology.fromRasterSymbologyDict({
-                                type: 'raster',
-                                opacity: 0.8,
-                                colorizer: {
-                                    type: 'linearGradient',
-                                    breakpoints: [
-                                        {value: 0, color: [0, 0, 0, 255]},
-                                        {value: 255, color: [255, 255, 255, 255]},
-                                    ],
-                                    defaultColor: [0, 0, 0, 255],
-                                    noDataColor: [0, 0, 0, 255],
-                                },
-                            }),
+                            symbology,
                             isLegendVisible: false,
                             isVisible: true,
                         }),
@@ -158,6 +175,133 @@ export class RasterizationComponent implements OnDestroy {
                     this.notificationService.error(e.error.message);
                 },
             });
+    }
+
+    private defaultSymbology(): Observable<RasterSymbology> {
+        return of(
+            RasterSymbology.fromRasterSymbologyDict({
+                type: 'raster',
+                opacity: 0.8,
+                colorizer: {
+                    type: 'linearGradient',
+                    breakpoints: [
+                        {value: 0, color: [0, 0, 0, 255]},
+                        {value: 255, color: [255, 255, 255, 255]},
+                    ],
+                    defaultColor: [0, 0, 0, 255],
+                    noDataColor: [0, 0, 0, 255],
+                },
+            }),
+        );
+    }
+
+    private computeSymbologyForRasterLayer(workflowId: UUID): Observable<RasterSymbology> {
+        const rasterName = 'raster';
+
+        const statisticsWorkflow$ = this.projectService.getWorkflow(workflowId).pipe(
+            mergeMap((workflow) =>
+                this.projectService.registerWorkflow({
+                    type: 'Plot',
+                    operator: {
+                        type: 'Statistics',
+                        params: {
+                            columnNames: [rasterName],
+                        } as StatisticsParams,
+                        sources: {
+                            source: [workflow['operator']],
+                        },
+                    } as StatisticsDict,
+                }),
+            ),
+        );
+
+        const queryParams$: Observable<{
+            bbox: BBoxDict;
+            crs: SrsString;
+            time: TimeIntervalDict;
+            spatialResolution: [number, number];
+        }> = combineLatest([
+            this.projectService
+                .getWorkflowMetaData(workflowId)
+                .pipe(map((resultDescriptor) => RasterResultDescriptor.fromDict(resultDescriptor as RasterResultDescriptorDict))),
+            this.projectService.getTimeOnce(),
+        ]).pipe(
+            mergeMap(([resultDescriptor, time]) =>
+                combineLatest([
+                    // if we don't know the bbox of the dataset, we use the projection's whole bbox for guessing the symbology
+                    // TODO: better use the screen extent?
+                    resultDescriptor.bbox
+                        ? of(resultDescriptor.bbox)
+                        : this.spatialReferenceService
+                              .getSpatialReferenceSpecification(resultDescriptor.spatialReference)
+                              .pipe(map((spatialReferenceSpecification) => extentToBboxDict(spatialReferenceSpecification.extent))),
+                    of(resultDescriptor.spatialReference),
+                    of(time),
+                ]),
+            ),
+            map(([bbox, crs, time]: [BBoxDict, SrsString, Time]) => {
+                // for sampling, we choose a reasonable resolution
+                const NUM_PIXELS = 1024;
+                const xResolution = (bbox.upperRightCoordinate.x - bbox.lowerLeftCoordinate.x) / NUM_PIXELS;
+                const yResolution = (bbox.upperRightCoordinate.y - bbox.lowerLeftCoordinate.y) / NUM_PIXELS;
+                return {
+                    bbox,
+                    crs,
+                    time: time.toDict(),
+                    spatialResolution: [xResolution, yResolution],
+                };
+            }),
+        );
+
+        return combineLatest([statisticsWorkflow$, queryParams$, this.userService.getSessionOnce()]).pipe(
+            first(),
+            mergeMap(([statisticsWorkflow, queryParams, session]) =>
+                this.backendService.getPlot(statisticsWorkflow, queryParams, session.sessionToken),
+            ),
+            map((plot) => {
+                if (plot.plotType !== 'Statistics') {
+                    throw new Error('Expected `Statistics` plot.');
+                }
+
+                return plot.data as {
+                    [name: string]: {
+                        valueCount: number;
+                        validCount: number;
+                        min: number;
+                        max: number;
+                        mean: number;
+                        stddev: number;
+                    };
+                };
+            }),
+            map((statistics) => {
+                const NUMBER_OF_COLOR_STEPS = 16;
+                const REVERSE_COLORS = false;
+
+                const min = statistics[rasterName].min;
+                const max = statistics[rasterName].max;
+
+                if (min === null || min === undefined || max === null || max === undefined) {
+                    throw new Error('Sample statistics do not have valid min/max values.');
+                }
+
+                const breakpoints = ColorMapSelectorComponent.createLinearBreakpoints(
+                    MPL_COLORMAPS.INFERNO,
+                    NUMBER_OF_COLOR_STEPS,
+                    REVERSE_COLORS,
+                    {
+                        min,
+                        max,
+                    },
+                );
+                const colorizer = new LinearGradient(
+                    breakpoints,
+                    TRANSPARENT,
+                    TRANSPARENT, // TODO: set under/over color to first and last breakpoint when avaialble
+                );
+                return new RasterSymbology(1.0, colorizer);
+            }),
+        );
     }
 
     protected createRasterizationType(selectedIndex: number): FormControl<number> {
