@@ -326,7 +326,7 @@ export class RasterizationComponent implements OnDestroy {
                     TRANSPARENT,
                     TRANSPARENT, // TODO: set under/over color to first and last breakpoint when avaialble
                 );
-                return new RasterSymbology(1.0, colorizer);
+                return new RasterSymbology(0.8, colorizer);
             }),
         );
     }
