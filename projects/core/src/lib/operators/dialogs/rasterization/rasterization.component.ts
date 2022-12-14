@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, OnDestroy, ViewChild} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnDestroy} from '@angular/core';
 import {Layer, RasterLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {RasterSymbology} from '../../../layers/symbology/symbology.model';
@@ -14,9 +14,8 @@ import {
     StatisticsDict,
     StatisticsParams,
 } from '../../../backend/operator.model';
-import {combineLatest, first, map, Observable, of, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, first, map, Observable, of, Subscription} from 'rxjs';
 import {NotificationService} from '../../../notification.service';
-import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 import {RasterResultDescriptor} from '../../../datasets/dataset.model';
 import {extentToBboxDict} from '../../../util/conversions';
 import {Time} from '../../../time/time.model';
@@ -68,6 +67,8 @@ export class RasterizationComponent implements OnDestroy {
 
     readonly form: FormGroup<RasterizationForm>;
     readonly subscriptions: Array<Subscription> = [];
+
+    readonly loading$ = new BehaviorSubject<boolean>(false);
 
     constructor(
         private projectService: ProjectService,
@@ -125,6 +126,10 @@ export class RasterizationComponent implements OnDestroy {
     }
 
     add(): void {
+        if (this.loading$.value) {
+            return; // don't add while loading
+        }
+
         const pointsLayer = this.form.controls['layer'].value as Layer;
         const layerName: string = this.form.controls['name'].value;
         const computeSymbology: boolean = this.form.controls['computeSymbology'].value;
@@ -133,6 +138,8 @@ export class RasterizationComponent implements OnDestroy {
         if (!params) {
             return;
         }
+
+        this.loading$.next(true);
 
         this.projectService
             .getAutomaticallyProjectedOperatorsFromLayers([pointsLayer])
@@ -171,10 +178,30 @@ export class RasterizationComponent implements OnDestroy {
                 ),
             )
             .subscribe({
-                error: (e) => {
-                    this.notificationService.error(e.error.message);
+                next: () => {
+                    // success
+                    this.loading$.next(false);
+                },
+                error: (error) => {
+                    this.notificationService.error(error);
+                    this.loading$.next(false);
                 },
             });
+    }
+
+    protected createRasterizationType(selectedIndex: number): FormControl<number> {
+        this.selected = this.formBuilder.nonNullable.control<number>(selectedIndex);
+        const rasterType = this.selected;
+        this.subscriptions.push(rasterType.valueChanges.subscribe((value) => this.changeRasterization(value)));
+        return rasterType;
+    }
+
+    protected changeRasterization(rasterization: number): void {
+        if (rasterization === 0) {
+            this.form.setControl('rasterization', this.initialGrid());
+        } else if (rasterization === 1) {
+            this.form.setControl('rasterization', this.initialDensity());
+        }
     }
 
     private defaultSymbology(): Observable<RasterSymbology> {
@@ -302,21 +329,6 @@ export class RasterizationComponent implements OnDestroy {
                 return new RasterSymbology(1.0, colorizer);
             }),
         );
-    }
-
-    protected createRasterizationType(selectedIndex: number): FormControl<number> {
-        this.selected = this.formBuilder.nonNullable.control<number>(selectedIndex);
-        const rasterType = this.selected;
-        this.subscriptions.push(rasterType.valueChanges.subscribe((value) => this.changeRasterization(value)));
-        return rasterType;
-    }
-
-    protected changeRasterization(rasterization: number): void {
-        if (rasterization === 0) {
-            this.form.setControl('rasterization', this.initialGrid());
-        } else if (rasterization === 1) {
-            this.form.setControl('rasterization', this.initialDensity());
-        }
     }
 
     private rasterizationParams(): GridRasterizationDict | DensityRasterizationDict | null {

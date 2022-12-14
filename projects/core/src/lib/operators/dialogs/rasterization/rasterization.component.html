@@ -86,8 +86,9 @@
             </mat-hint>
         </geoengine-operator-output-name>
         <mat-checkbox formControlName="computeSymbology">Compute symbology</mat-checkbox>
+        <mat-progress-bar mode="query" *ngIf="loading$ | async"></mat-progress-bar>
     </div>
     <div class="actions">
-        <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid">Create</button>
+        <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid || (loading$ | async)">Create</button>
     </div>
 </form>
