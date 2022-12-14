@@ -148,6 +148,7 @@ import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
 import {LayerCollectionLayerComponent} from './layer-collections/layer-collection-layer/layer-collection-layer.component';
 import {TimeShiftComponent} from './operators/dialogs/time-shift/time-shift.component';
 import {PieChartComponent} from './operators/dialogs/pie-chart/pie-chart.component';
+import { ColorPaletteEditorComponent } from './colors/color-palette-editor/color-palette-editor.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -305,7 +306,7 @@ const CORE_COMPONENTS = [
 ];
 
 @NgModule({
-    declarations: [...CORE_PIPES, ...CORE_COMPONENTS],
+    declarations: [...CORE_PIPES, ...CORE_COMPONENTS, ColorPaletteEditorComponent],
     imports: [
         ...MATERIAL_MODULES,
         ColorPickerModule,

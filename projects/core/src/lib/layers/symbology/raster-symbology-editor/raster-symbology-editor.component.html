@@ -143,6 +143,10 @@
                     </mat-panel-title>
                 </mat-expansion-panel-header>
                 <ng-template matExpansionPanelContent> </ng-template>
+                <geoengine-color-palette-editor
+                    [symbology]="symbology"
+                    (symbologyChanged)="symbologyChangeHandler($event)"
+                ></geoengine-color-palette-editor>
             </mat-expansion-panel>
         </mat-accordion>
     </div>

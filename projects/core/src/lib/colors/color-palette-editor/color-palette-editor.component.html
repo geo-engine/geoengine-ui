@@ -1,0 +1,20 @@
+<button (click)="debugClick()">Debug</button>
+<br />
+<div *ngFor="let c of allColors; let i = index">
+    <geoengine-color-attribute-input [ngModel]="c" (ngModelChange)="updateColor(i, $event)"></geoengine-color-attribute-input>
+</div>
+
+<!--  Examples of color attribute input parameters
+                        <geoengine-color-attribute-input
+                            [ngModel]="getNoDataColor()"
+                            (ngModelChange)="updateNoDataColor($event)"
+                            attributePlaceholder=""
+                            [readonlyAttribute]="true"
+                        >
+                        </geoengine-color-attribute-input>
+                        <geoengine-color-attribute-input
+                            [ngModel]="getDefaultColor()"
+                            (ngModelChange)="updateDefaultColor($event)"
+                            attributePlaceholder=""
+                            [readonlyAttribute]="true"
+                        > -->
