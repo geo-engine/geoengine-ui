@@ -85,7 +85,7 @@
                 The name must be non-empty.
             </mat-hint>
         </geoengine-operator-output-name>
-        <mat-checkbox formControlName="computeSymbology">Compute symbology</mat-checkbox>
+        <geoengine-symbology-creator [enableCopyInputSymbology]="false" [opacity]="0.8" [colorMapName]="'inferno'"></geoengine-symbology-creator>
         <mat-progress-bar mode="query" *ngIf="loading$ | async"></mat-progress-bar>
     </div>
     <div class="actions">
