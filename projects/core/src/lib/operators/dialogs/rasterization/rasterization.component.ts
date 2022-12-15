@@ -149,7 +149,7 @@ export class RasterizationComponent implements OnDestroy {
                         type: 'Raster',
                         operator: {
                             type: 'Rasterization',
-                            params: params,
+                            params,
                             sources: {
                                 vector: points,
                             },
