@@ -154,15 +154,13 @@ export interface PointInPolygonFilterDict extends OperatorDict {
 
 export interface RasterizationDict extends OperatorDict {
     type: 'Rasterization';
-    params: {
-        gridOrDensity: GridRasterizationDict | DensityRasterizationDict;
-    };
+    params: GridRasterizationDict | DensityRasterizationDict;
     sources: {
         vector: SourceOperatorDict | OperatorDict;
     };
 }
 
-export interface GridRasterizationDict {
+export interface GridRasterizationDict extends OperatorParams {
     type: 'grid';
     spatialResolution: {
         x: number;
@@ -175,7 +173,7 @@ export interface GridRasterizationDict {
     gridSizeMode: 'fixed' | 'relative';
 }
 
-export interface DensityRasterizationDict {
+export interface DensityRasterizationDict extends OperatorParams {
     type: 'density';
     cutoff: number;
     stddev: number;
