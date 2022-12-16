@@ -29,8 +29,10 @@
         <mat-form-field class="flex-item" fxFlex *ngIf="value.getRawValue() === LINEAR_GRADIENT_FROM_MIN_MAX">
             <mat-label>Max</mat-label>
             <input matInput type="number" step="any" placeholder="Max" [formControl]="max" />
-            <mat-hint [ngClass]="{'mat-error': true, 'mat-hint': false}"
-                      *ngIf="min.getRawValue() !== null && max.getRawValue() !== null && max.getRawValue() < min.getRawValue()">
+            <mat-hint
+                [ngClass]="{'mat-error': true, 'mat-hint': false}"
+                *ngIf="min.getRawValue() !== null && max.getRawValue() !== null && max.getRawValue() < min.getRawValue()"
+            >
                 The maximum must be greater than or equal to the minimum.
             </mat-hint>
         </mat-form-field>
