@@ -10,9 +10,6 @@ import {UUID, WorkflowDict} from '../../../backend/backend.model';
 import {DensityRasterizationDict, GridRasterizationDict, RasterizationDict} from '../../../backend/operator.model';
 import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
 import {NotificationService} from '../../../notification.service';
-import {SpatialReferenceService} from '../../../spatial-references/spatial-reference.service';
-import {UserService} from '../../../users/user.service';
-import {BackendService} from '../../../backend/backend.service';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 
 interface RasterizationForm {
@@ -63,9 +60,6 @@ export class RasterizationComponent implements OnDestroy {
     constructor(
         private projectService: ProjectService,
         private readonly notificationService: NotificationService,
-        private readonly spatialReferenceService: SpatialReferenceService,
-        private readonly userService: UserService,
-        private readonly backendService: BackendService,
         private formBuilder: FormBuilder,
     ) {
         const layerControl = new FormControl<Layer | undefined>(undefined, {
