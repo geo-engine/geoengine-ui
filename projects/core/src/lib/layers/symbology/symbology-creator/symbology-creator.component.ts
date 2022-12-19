@@ -1,5 +1,5 @@
-import {ChangeDetectionStrategy, Component, forwardRef, HostListener, OnDestroy, OnInit} from '@angular/core';
-import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, Validators} from '@angular/forms';
+import {ChangeDetectionStrategy, Component, forwardRef, HostListener, Input, OnDestroy, OnInit} from '@angular/core';
+import {ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, Validators} from '@angular/forms';
 import {combineLatest, first, map, mergeMap, Observable, of, Subject, takeUntil} from 'rxjs';
 import {BBoxDict, RasterResultDescriptorDict, SrsString, TimeIntervalDict, UUID} from '../../../backend/backend.model';
 import {BackendService} from '../../../backend/backend.service';
@@ -7,7 +7,7 @@ import {StatisticsDict, StatisticsParams} from '../../../backend/operator.model'
 import {TRANSPARENT} from '../../../colors/color';
 import {ColorMapSelectorComponent} from '../../../colors/color-map-selector/color-map-selector.component';
 import {MPL_COLORMAPS} from '../../../colors/color-map-selector/mpl-colormaps';
-import {LinearGradient} from '../../../colors/colorizer.model';
+import {Colorizer, LinearGradient} from '../../../colors/colorizer.model';
 import {RasterResultDescriptor} from '../../../datasets/dataset.model';
 import {ProjectService} from '../../../project/project.service';
 import {SpatialReferenceService} from '../../../spatial-references/spatial-reference.service';
@@ -20,6 +20,7 @@ import {RasterSymbology} from '../symbology.model';
 export enum SymbologyCreationType {
     AS_INPUT = 'AS_INPUT',
     COMPUTE_LINEAR_GRADIENT = 'COMPUTE_LINEAR_GRADIENT',
+    LINEAR_GRADIENT_FROM_MIN_MAX = 'LINEAR_GRADIENT_FROM_MIN_MAX',
 }
 
 @Component({
@@ -38,11 +39,30 @@ export enum SymbologyCreationType {
 export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValueAccessor {
     AS_INPUT = SymbologyCreationType.AS_INPUT;
     COMPUTE_LINEAR_GRADIENT = SymbologyCreationType.COMPUTE_LINEAR_GRADIENT;
+    LINEAR_GRADIENT_FROM_MIN_MAX = SymbologyCreationType.LINEAR_GRADIENT_FROM_MIN_MAX;
+
+    @Input() enableCopyInputSymbology = true;
+    @Input() colorMapName = 'viridis';
+    @Input() opacity = 1.0;
+
+    min = new FormControl(0, {validators: [Validators.required], nonNullable: true});
+    max = new FormControl(255, {validators: [Validators.required], nonNullable: true});
 
     value = new FormControl<SymbologyCreationType>(SymbologyCreationType.AS_INPUT, {
         nonNullable: false,
         validators: [Validators.required],
     });
+
+    form = new FormGroup([this.min, this.max, this.value], (_) => {
+        if (
+            this.value.getRawValue() !== SymbologyCreationType.LINEAR_GRADIENT_FROM_MIN_MAX ||
+            (this.min.getRawValue() !== null && this.max.getRawValue() !== null && this.max.getRawValue() > this.min.getRawValue())
+        ) {
+            return null;
+        } else return {valid: false};
+    });
+
+    private colorMap = MPL_COLORMAPS.VIRIDIS;
 
     private _onChange?: (value: SymbologyCreationType | null) => void;
     private _onTouched?: () => void;
@@ -65,7 +85,34 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
         });
     }
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        if (!this.enableCopyInputSymbology) {
+            this.value.setValue(this.COMPUTE_LINEAR_GRADIENT);
+        }
+        switch (this.colorMapName) {
+            case 'magma': {
+                this.colorMap = MPL_COLORMAPS.MAGMA;
+                break;
+            }
+            case 'inferno': {
+                this.colorMap = MPL_COLORMAPS.INFERNO;
+                break;
+            }
+            case 'plasma': {
+                this.colorMap = MPL_COLORMAPS.PLASMA;
+                break;
+            }
+            case 'viridis': {
+                this.colorMap = MPL_COLORMAPS.VIRIDIS;
+                break;
+            }
+            default:
+                throw new Error('Unsupported color map name ' + this.colorMapName);
+        }
+        if (this.opacity < 0 || this.opacity > 1) {
+            throw new Error('The opacity needs to be in [0, 1]');
+        }
+    }
 
     ngOnDestroy(): void {
         this.unsubscribe$.next();
@@ -114,7 +161,7 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
         }
     }
 
-    symbologyForRasterLayer(workflowId: UUID, inputLayer: RasterLayer): Observable<RasterSymbology> {
+    symbologyForRasterLayer(workflowId: UUID, inputLayer?: RasterLayer): Observable<RasterSymbology> {
         const value = this.value.getRawValue();
 
         if (!value) {
@@ -123,10 +170,15 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
 
         switch (value) {
             case SymbologyCreationType.AS_INPUT: {
-                return of(inputLayer.symbology);
+                if (inputLayer) {
+                    return of(inputLayer.symbology);
+                } else throw new Error('Input raster layer parameter is missing');
             }
             case SymbologyCreationType.COMPUTE_LINEAR_GRADIENT: {
                 return this.computeSymbologyForRasterLayer(workflowId);
+            }
+            case SymbologyCreationType.LINEAR_GRADIENT_FROM_MIN_MAX: {
+                return of(new RasterSymbology(this.opacity, this.colorizerForMinMax(this.min.getRawValue(), this.max.getRawValue())));
             }
         }
     }
@@ -211,9 +263,6 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
                 };
             }),
             map((statistics) => {
-                const NUMBER_OF_COLOR_STEPS = 16;
-                const REVERSE_COLORS = false;
-
                 const min = statistics[rasterName].min;
                 const max = statistics[rasterName].max;
 
@@ -221,22 +270,24 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
                     throw new Error('Sample statistics do not have valid min/max values.');
                 }
 
-                const breakpoints = ColorMapSelectorComponent.createLinearBreakpoints(
-                    MPL_COLORMAPS.VIRIDIS,
-                    NUMBER_OF_COLOR_STEPS,
-                    REVERSE_COLORS,
-                    {
-                        min,
-                        max,
-                    },
-                );
-                const colorizer = new LinearGradient(
-                    breakpoints,
-                    TRANSPARENT,
-                    TRANSPARENT, // TODO: set under/over color to first and last breakpoint when avaialble
-                );
-                return new RasterSymbology(1.0, colorizer);
+                return new RasterSymbology(this.opacity, this.colorizerForMinMax(min, max));
             }),
+        );
+    }
+
+    private colorizerForMinMax(min: number, max: number): Colorizer {
+        const NUMBER_OF_COLOR_STEPS = 16;
+        const REVERSE_COLORS = false;
+
+        const breakpoints = ColorMapSelectorComponent.createLinearBreakpoints(this.colorMap, NUMBER_OF_COLOR_STEPS, REVERSE_COLORS, {
+            min,
+            max,
+        });
+
+        return new LinearGradient(
+            breakpoints,
+            TRANSPARENT,
+            TRANSPARENT, // TODO: set under/over color to first and last breakpoint when avaialble
         );
     }
 }
