@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, forwardRef, HostListener, Input, OnDestroy, OnInit} from '@angular/core';
-import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, Validators} from '@angular/forms';
+import {ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, Validators} from '@angular/forms';
 import {combineLatest, first, map, mergeMap, Observable, of, Subject, takeUntil} from 'rxjs';
 import {BBoxDict, RasterResultDescriptorDict, SrsString, TimeIntervalDict, UUID} from '../../../backend/backend.model';
 import {BackendService} from '../../../backend/backend.service';
@@ -51,6 +51,15 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
     value = new FormControl<SymbologyCreationType>(SymbologyCreationType.AS_INPUT, {
         nonNullable: false,
         validators: [Validators.required],
+    });
+
+    form = new FormGroup([this.min, this.max, this.value], (_) => {
+        if (
+            this.value.getRawValue() !== SymbologyCreationType.LINEAR_GRADIENT_FROM_MIN_MAX ||
+            (this.min.getRawValue() !== null && this.max.getRawValue() !== null && this.max.getRawValue() > this.min.getRawValue())
+        ) {
+            return null;
+        } else return {valid: false};
     });
 
     private colorMap = MPL_COLORMAPS.VIRIDIS;

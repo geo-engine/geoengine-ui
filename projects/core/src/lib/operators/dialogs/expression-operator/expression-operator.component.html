@@ -53,7 +53,14 @@
         </ng-container>
 
         <ng-container actions>
-            <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid || (loading$ | async)">Create</button>
+            <button
+                type="submit"
+                mat-raised-button
+                color="primary"
+                [disabled]="form.invalid || symbologyCreator.form.invalid || (loading$ | async)"
+            >
+                Create
+            </button>
         </ng-container>
     </geoengine-operator-dialog-container>
 </form>
