@@ -47,8 +47,7 @@ import {ActivatedRoute, ParamMap} from '@angular/router';
 import {AppConfig} from './app-config.service';
 import {HelpComponent} from './help/help.component';
 import {SplashDialogComponent} from './splash-dialog/splash-dialog.component';
-import {BasketService} from './basket/basket.service';
-import {GfBioCollectionDialogComponent as GfBioCollectionDialogComponent} from './basket/gfbio-collection/gfbio-collection-dialog.component';
+import {GfBioCollectionDialogComponent as GfBioCollectionDialogComponent} from './gfbio-collection/gfbio-collection-dialog.component';
 
 @Component({
     selector: 'geoengine-root',
@@ -96,7 +95,6 @@ export class AppComponent implements OnInit, AfterViewInit {
         private readonly notificationService: NotificationService,
         private readonly mapService: MapService,
         private readonly spatialReferenceService: SpatialReferenceService,
-        private readonly basketService: BasketService,
         private readonly sanitizer: DomSanitizer,
     ) {
         this.registerIcons();

@@ -24,8 +24,7 @@ import {
 import {AppConfig} from './app-config.service';
 import {HelpComponent} from './help/help.component';
 import {SplashDialogComponent} from './splash-dialog/splash-dialog.component';
-import {GfBioCollectionDialogComponent} from './basket/gfbio-collection/gfbio-collection-dialog.component';
-import {BasketService} from './basket/basket.service';
+import {GfBioCollectionDialogComponent} from './gfbio-collection/gfbio-collection-dialog.component';
 
 @NgModule({
     declarations: [AppComponent, HelpComponent, SplashDialogComponent, GfBioCollectionDialogComponent],
@@ -46,7 +45,6 @@ import {BasketService} from './basket/basket.service';
             deps: [Config],
             multi: true,
         },
-        BasketService,
         DatasetService,
         LayoutService,
         MapService,
