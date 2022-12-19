@@ -99,7 +99,7 @@
                 </mat-error>
             </geoengine-operator-output-name>
 
-            <geoengine-symbology-creator #symbologyCreator formControlName="symbologyCreation"></geoengine-symbology-creator>
+            <geoengine-symbology-creator #symbologyCreator></geoengine-symbology-creator>
 
             <p *ngIf="lastError$ | async as lastError" class="error">{{ lastError }}</p>
         </ng-container>
