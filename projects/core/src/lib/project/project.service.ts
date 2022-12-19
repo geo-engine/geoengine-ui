@@ -1,4 +1,4 @@
-import {BehaviorSubject, combineLatest, forkJoin, Observable, Observer, of, ReplaySubject, Subject, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, Observer, of, ReplaySubject, Subject, Subscription} from 'rxjs';
 import {debounceTime, distinctUntilChanged, filter, first, map, mergeMap, skip, switchMap, take, tap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
@@ -23,8 +23,6 @@ import {
     ToDict,
     UUID,
     WorkflowDict,
-    LayerCollectionDict,
-    LayerCollectionLayerDict,
 } from '../backend/backend.model';
 import {UserService} from '../users/user.service';
 import {LayerData, RasterData, VectorData} from '../layers/layer-data.model';
@@ -424,7 +422,6 @@ export class ProjectService {
      * Add a set of new layers to the project.
      */
     addLayers(layers: Array<Layer>, notify = true): Observable<void> {
-        console.log('addLayers');
         layers.forEach((layer) => {
             this.createLayerChangesStream(layer);
             this.createLayerMetadataStreams(layer);
@@ -447,24 +444,6 @@ export class ProjectService {
 
         return ProjectService.subscribeAndProvide(result);
     }
-
-    // /**
-    //  * Add all layers (directly) contained in a layer collection to the project.
-    //  */
-    // addLayersFromLayerCollection(collection: LayerCollectionDict): Observable<void> {
-    //     const layers = collection.items
-    //         .filter((layer) => layer.type === 'layer')
-    //         .map((layer) => layer as LayerCollectionLayerDict)
-    //         .map((layer) =>
-    //             this.layerService
-    //                 .getLayer(layer.id.providerId, layer.id.layerId)
-    //                 .pipe(map((layerDict) => if (layerDict. new Layer({id: layer.id, workflowId: layerDict.workflowId}))),
-    //         );
-
-    //     // forkJoin(layers);
-
-    //     return this.addLayers(layers);
-    // }
 
     /**
      * Add a plot to the project.

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BackendService} from '../backend/backend.service';
-import {combineLatest, forkJoin, Observable, of, zip} from 'rxjs';
+import {combineLatest, Observable, of, zip} from 'rxjs';
 import {UserService} from '../users/user.service';
 import {map, mergeMap} from 'rxjs/operators';
 import {
@@ -87,6 +87,7 @@ export class LayerCollectionService {
             .map((layer) => layer as LayerCollectionLayerDict)
             .map((layer) => this.resolveLayer(layer.id));
 
+        // TODO: lookup in parallel
         zip(layersObservable)
             .pipe(map((layers) => this.projectService.addLayers(layers)))
             .subscribe();
@@ -144,7 +145,7 @@ export class LayerCollectionService {
                               }),
                     });
                 } else {
-                    // plots, etc.
+                    // TODO: implement plots, etc.
                     throw new Error('Adding this workflow type is unimplemented, yet');
                 }
             }),
