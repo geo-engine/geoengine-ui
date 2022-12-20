@@ -27,6 +27,9 @@ import {
     ReprojectionDict,
     WGS_84,
     SpatialReferenceService,
+    ExpressionDict,
+    PieChartDict,
+    PieChartCountParams,
 } from '@geoengine/core';
 import {BehaviorSubject, combineLatest, combineLatestWith, first, mergeMap, Observable, of, Subscription, tap} from 'rxjs';
 import {DataSelectionService} from '../data-selection.service';
@@ -36,6 +39,7 @@ interface EnvironmentLayer {
     id: UUID;
     name: string;
     dataRange: [number, number];
+    plotType?: 'pieChart';
 }
 
 const START_YEAR = 1991;
@@ -378,6 +382,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             id: 'bde4f21f-b935-4cd3-b7ed-1675aedfa026',
             name: 'Anteil Gebiete „Natur- und Artenschutz“ an Gebietsfläche',
             dataRange: [0, 100],
+            plotType: 'pieChart',
         },
     ];
 
@@ -748,7 +753,206 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             .subscribe();
     }
 
-    computePlot(): void {
+    computePieChart(): void {
+        if (
+            (!this.selectedFishSpecies && !this.selectDragonflySpecies) ||
+            !this.selectedEnvironmentLayer ||
+            !this.selectedEnvironmentDataset
+        ) {
+            return;
+        }
+
+        let speciesLayer$: Observable<VectorLayer | undefined>;
+        let selectedSpecies: string | undefined;
+
+        if (!this.selectedDragonflySpecies) {
+            speciesLayer$ = this.dataSelectionService.speciesLayer2;
+            selectedSpecies = this.selectedFishSpecies;
+        } else if (!this.selectFishSpecies) {
+            speciesLayer$ = this.dataSelectionService.speciesLayer1;
+            selectedSpecies = this.selectedDragonflySpecies;
+        } else if (this.plotLayerSelection === 'dragonfly') {
+            speciesLayer$ = this.dataSelectionService.speciesLayer1;
+            selectedSpecies = this.selectedDragonflySpecies;
+        } /* if (this.plotLayerSelection === 'fish') */ else {
+            speciesLayer$ = this.dataSelectionService.speciesLayer2;
+            selectedSpecies = this.selectedFishSpecies;
+        }
+
+        const environmentColumnName = 'environment';
+
+        const computationCrs = WGS_84;
+
+        combineLatest([
+            this.dataSelectionService.rasterLayer.pipe(
+                mergeMap<RasterLayer | undefined, Observable<RasterLayer>>((layer) => (layer ? of(layer) : of())),
+            ),
+            speciesLayer$.pipe(mergeMap<VectorLayer | undefined, Observable<VectorLayer>>((layer) => (layer ? of(layer) : of()))),
+        ])
+            .pipe(
+                first(),
+                tap(() => {
+                    this.plotLoading.next(true);
+                    this.plotData.next(undefined);
+
+                    this.plotSpecies = selectedSpecies ?? '';
+                    this.plotEnvironmentLayer = this.selectedEnvironmentLayer ? this.selectedEnvironmentLayer.name : '';
+                }),
+                mergeMap(([rasterLayer, speciesLayer]) =>
+                    combineLatest([
+                        this.projectService.getWorkflow(rasterLayer.workflowId),
+                        this.projectService.getWorkflow(speciesLayer.workflowId),
+                        this.projectService.getLayerMetadata(rasterLayer),
+                        this.projectService.getLayerMetadata(speciesLayer),
+                    ]),
+                ),
+                mergeMap(([rasterWorkflow, speciesWorkflow, rasterMetadata, vectorMetadata]) => {
+                    let rasterOperator = rasterWorkflow.operator;
+                    if (!rasterMetadata.spatialReference.equals(computationCrs.spatialReference)) {
+                        rasterOperator = {
+                            type: 'Reprojection',
+                            params: {
+                                targetSpatialReference: computationCrs.spatialReference.srsString,
+                            },
+                            sources: {
+                                source: rasterOperator,
+                            },
+                        } as ReprojectionDict;
+                    }
+
+                    let vectorOperator = speciesWorkflow.operator;
+                    if (!vectorMetadata.spatialReference.equals(computationCrs.spatialReference)) {
+                        vectorOperator = {
+                            type: 'Reprojection',
+                            params: {
+                                targetSpatialReference: computationCrs.spatialReference.srsString,
+                            },
+                            sources: {
+                                source: vectorOperator,
+                            },
+                        } as ReprojectionDict;
+                    }
+
+                    return this.projectService.registerWorkflow({
+                        type: 'Vector',
+                        operator: {
+                            type: 'RasterVectorJoin',
+                            params: {
+                                names: [environmentColumnName],
+                                temporalAggregation: 'none',
+                                featureAggregation: 'first',
+                            },
+                            sources: {
+                                rasters: [
+                                    {
+                                        type: 'Expression',
+                                        params: {
+                                            expression: 'if A > 50 { 1 } else { 0 }',
+                                            outputType: 'U8',
+                                            outputMeasurement: {
+                                                type: 'classification',
+                                                measurement: 'Naturschutzgebiete',
+                                                classes: {
+                                                    '0': 'Nicht-Naturschutzgebiet',
+                                                    '1': 'Naturschutzgebiet',
+                                                },
+                                            },
+                                            mapNoData: false,
+                                        },
+                                        sources: {
+                                            a: rasterOperator,
+                                        },
+                                    } as ExpressionDict,
+                                ],
+                                vector: vectorOperator,
+                            },
+                        } as RasterVectorJoinDict,
+                    });
+                }),
+                mergeMap((workflowId) =>
+                    combineLatest([
+                        this.projectService.getWorkflow(workflowId),
+                        this.projectService.getWorkflowMetaData(workflowId) as Observable<VectorResultDescriptorDict>,
+                        this.dataSelectionService.dataRange,
+                    ]),
+                ),
+                mergeMap(([workflow, metadata, dataRange]) => {
+                    let plotWorkflow: OperatorDict;
+
+                    if (
+                        environmentColumnName in metadata.columns &&
+                        metadata.columns[environmentColumnName].measurement.type === 'classification'
+                    ) {
+                        plotWorkflow = {
+                            type: 'PieChart',
+                            params: {
+                                type: 'count',
+                                columnName: environmentColumnName,
+                                donut: false,
+                            } as PieChartCountParams,
+                            sources: {
+                                vector: workflow.operator,
+                            },
+                        } as PieChartDict;
+                    } else {
+                        plotWorkflow = {
+                            type: 'Histogram',
+                            params: {
+                                // TODO: get params from selected data
+                                buckets: 20,
+                                bounds: dataRange,
+                                columnName: environmentColumnName,
+                            } as HistogramParams,
+                            sources: {
+                                source: workflow.operator,
+                            },
+                        } as HistogramDict;
+                    }
+
+                    return this.projectService.registerWorkflow({
+                        type: 'Plot',
+                        operator: plotWorkflow,
+                    });
+                }),
+                mergeMap((workflowId) =>
+                    combineLatest([
+                        of(workflowId),
+                        this.userService.getSessionTokenForRequest(),
+                        this.projectService.getTimeOnce(),
+                        this.mapService.getViewportSizeStream(),
+                        this.projectService.getSpatialReferenceStream(),
+                    ]),
+                ),
+                mergeMap(([workflowId, sessionToken, time, viewport, crs]) =>
+                    this.backend.getPlot(
+                        workflowId,
+                        {
+                            time: time.toDict(),
+                            bbox: extentToBboxDict(
+                                this.spatialReferenceService.reprojectExtent(viewport.extent, crs, computationCrs.spatialReference),
+                            ),
+                            crs: computationCrs.spatialReference.srsString,
+                            // TODO: set reasonable size
+                            spatialResolution: [0.1, 0.1],
+                        },
+                        sessionToken,
+                    ),
+                ),
+                first(),
+            )
+            .subscribe({
+                next: (plotData) => {
+                    this.plotData.next(plotData.data);
+                    this.plotLoading.next(false);
+                },
+                error: () => {
+                    // TODO: react on error?
+                    this.plotLoading.next(false);
+                },
+            });
+    }
+
+    computeHistogram(): void {
         if (
             (!this.selectedFishSpecies && !this.selectDragonflySpecies) ||
             !this.selectedEnvironmentLayer ||

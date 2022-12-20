@@ -39,6 +39,7 @@ import {getProjectionTarget} from '../util/spatial_reference';
 import {ReprojectionDict, VisualPointClusteringParams} from '../backend/operator.model';
 import {SpatialReferenceService} from '../spatial-references/spatial-reference.service';
 import {VectorColumnDataTypes} from '../operators/datatype.model';
+import {GeoEngineError} from '../util/errors';
 
 export type FeatureId = string | number;
 
@@ -67,6 +68,7 @@ export class ProjectService {
     private readonly newLayer$ = new Subject<void>();
 
     private readonly plotData$ = new Map<number, ReplaySubject<any>>();
+    private readonly plotError$ = new Map<number, ReplaySubject<GeoEngineError | undefined>>();
     private readonly plotDataState$ = new Map<number, ReplaySubject<LoadingState>>();
     private readonly plotDataSubscriptions = new Map<number, Subscription>();
     private readonly newPlot$ = new Subject<void>();
@@ -523,9 +525,10 @@ export class ProjectService {
      */
     reloadPlot(plot: Plot): void {
         const plotData$ = this.plotData$.get(plot.id);
+        const plotError$ = this.plotError$.get(plot.id);
         const loadingState$ = this.plotDataState$.get(plot.id);
 
-        if (!plotData$ || !loadingState$) {
+        if (!plotData$ || !plotError$ || !loadingState$) {
             return;
         }
 
@@ -534,7 +537,7 @@ export class ProjectService {
         this.plotDataSubscriptions.get(plot.id)?.unsubscribe();
         this.plotDataSubscriptions.delete(plot.id);
 
-        const subscription = this.createPlotSubscription(plot, plotData$, loadingState$);
+        const subscription = this.createPlotSubscription(plot, plotData$, plotError$, loadingState$);
 
         this.plotDataSubscriptions.set(plot.id, subscription);
     }
@@ -639,6 +642,19 @@ export class ProjectService {
         }
 
         return data;
+    }
+
+    /**
+     * Retrieve the data of the plot as a stream.
+     */
+    getPlotErrorStream(plot: HasPlotId): Observable<GeoEngineError | undefined> {
+        const error = this.plotError$.get(plot.id);
+
+        if (!error) {
+            throw Error(`plot data for plot with id ${plot.id} is undefined`);
+        }
+
+        return error;
     }
 
     /**
@@ -883,6 +899,29 @@ export class ProjectService {
     }
 
     /**
+     * Creates a projected operator if the layer has not the target spatial reference.
+     */
+    createProjectedOperator(
+        inputOperator: OperatorDict | SourceOperatorDict,
+        metadata: LayerMetadata,
+        targetSpatialReference: SpatialReference,
+    ): OperatorDict | SourceOperatorDict {
+        if (metadata.spatialReference.equals(targetSpatialReference)) {
+            return inputOperator;
+        }
+
+        return {
+            type: 'Reprojection',
+            params: {
+                targetSpatialReference: targetSpatialReference.srsString,
+            },
+            sources: {
+                source: inputOperator,
+            },
+        } as ReprojectionDict;
+    }
+
+    /**
      * Subscribes to the observable and consumes it completely.
      * Returns a new observable to listen to the values.
      */
@@ -963,7 +1002,7 @@ export class ProjectService {
 
     protected removePlotSubscriptions(plot: HasPlotId): void {
         // subjects
-        for (const subjectMap of [this.plotData$, this.plotDataState$]) {
+        for (const subjectMap of [this.plotData$, this.plotError$, this.plotDataState$]) {
             subjectMap.get(plot.id)?.complete();
             subjectMap.delete(plot.id);
         }
@@ -1217,26 +1256,6 @@ export class ProjectService {
         );
     }
 
-    private createProjectedOperator(
-        inputOperator: OperatorDict | SourceOperatorDict,
-        metadata: VectorLayerMetadata,
-        mapSpatialReference: SpatialReference,
-    ): OperatorDict | SourceOperatorDict {
-        if (metadata.spatialReference.equals(mapSpatialReference)) {
-            return inputOperator;
-        }
-
-        return {
-            type: 'Reprojection',
-            params: {
-                targetSpatialReference: mapSpatialReference.srsString,
-            },
-            sources: {
-                source: inputOperator,
-            },
-        } as ReprojectionDict;
-    }
-
     /**
      * For point data, we need to react on symbology changes.
      * Thus, we introduce a new layer of observables that react on changes of the symbology
@@ -1359,18 +1378,25 @@ export class ProjectService {
     private createPlotDataStreams(plot: Plot): void {
         const loadingState$ = new ReplaySubject<LoadingState>(1);
         const data$ = new ReplaySubject<any>(1);
+        const error$ = new ReplaySubject<GeoEngineError | undefined>(1);
 
-        const subscription = this.createPlotSubscription(plot, data$, loadingState$);
+        const subscription = this.createPlotSubscription(plot, data$, error$, loadingState$);
         this.plotDataSubscriptions.set(plot.id, subscription);
 
         this.plotDataState$.set(plot.id, loadingState$);
         this.plotData$.set(plot.id, data$);
+        this.plotError$.set(plot.id, error$);
     }
 
     /**
      * Create a subscription for plot data with loading state checks and error handling
      */
-    private createPlotSubscription(plot: Plot, data$: Observer<any>, loadingState$: Observer<LoadingState>): Subscription {
+    private createPlotSubscription(
+        plot: Plot,
+        data$: Observer<any>,
+        error$: Observer<GeoEngineError | undefined>,
+        loadingState$: Observer<LoadingState>,
+    ): Subscription {
         const observables: Array<Observable<any>> = [
             this.getTimeStream(),
             this.mapService.getViewportSizeStream(),
@@ -1398,8 +1424,27 @@ export class ProjectService {
                 ),
                 tap({
                     next: () => loadingState$.next(LoadingState.OK),
-                    error: (reason: Response) => {
-                        this.notificationService.error(`${plot.name}: ${reason.status} ${reason.statusText}`);
+                    error: (errorResponse: HttpErrorResponse) => {
+                        const errorDict = errorResponse.error;
+                        let error: GeoEngineError | undefined;
+                        let errorMessage: string;
+
+                        if (
+                            'error' in errorDict &&
+                            'message' in errorDict &&
+                            typeof errorDict['error'] === 'string' &&
+                            typeof errorDict['message'] === 'string'
+                        ) {
+                            error = GeoEngineError.fromDict(errorDict as {error: string; message: string});
+                            errorMessage = `${error.name} ${error.message}`;
+                        } else {
+                            // fallback error notice
+                            errorMessage = `${errorResponse.status} ${errorResponse.statusText}`;
+                        }
+
+                        this.notificationService.error(`${plot.name}: ${errorMessage}`);
+
+                        error$.next(error);
                         loadingState$.next(LoadingState.ERROR);
                     },
                 }),
