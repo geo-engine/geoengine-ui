@@ -20,11 +20,13 @@ import {
     ProviderLayerCollectionIdDict,
     LayerCollectionService,
     NotificationService,
+    PlotDataDict,
+    RasterResultDescriptorDict,
 } from '@geoengine/core';
-import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
+import {BehaviorSubject, combineLatest, firstValueFrom, from, Observable, of} from 'rxjs';
 import {AppConfig} from '../app-config.service';
-import {filter, first, map, mergeMap, tap} from 'rxjs/operators';
-import {Country, CountryProviderService} from '../country-provider.service';
+import {filter, first, map, mergeMap} from 'rxjs/operators';
+import {CountryProviderService} from '../country-provider.service';
 import {DataSelectionService, DataRange} from '../data-selection.service';
 import {ActivatedRoute} from '@angular/router';
 import {COUNTRY_DATA_LIST} from '../country-selector/country-data.model';
@@ -93,6 +95,15 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         });
     }
 
+    layerSelected(id?: ProviderLayerIdDict): void {
+        this.layerId = id;
+
+        if (this.autoShowEbv) {
+            this.autoShowEbv = false;
+            this.showEbv();
+        }
+    }
+
     showEbv(): void {
         if (!this.layerId) {
             return;
@@ -144,107 +155,120 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
     }
 
     plot(): void {
-        combineLatest([
-            this.dataSelectionService.rasterLayer.pipe(
-                mergeMap<RasterLayer | undefined, Observable<RasterLayer>>((layer) => (layer ? of(layer) : of())),
-                mergeMap((rasterLayer) => this.projectService.getWorkflow(rasterLayer.workflowId)),
-            ),
-            this.countryProviderService
-                .getSelectedCountryStream()
-                .pipe(mergeMap<Country | undefined, Observable<Country>>((country) => (country ? of(country) : of()))),
-            this.userService.getSessionTokenForRequest(),
-        ])
-            .pipe(
-                first(),
-                tap(() => {
-                    this.plotLoading.next(true);
-                    this.plotData.next(undefined);
-                }),
-                mergeMap(([rasterWorkflow, selectedCountry, sessionToken]) =>
-                    combineLatest([
-                        this.projectService.registerWorkflow({
-                            type: 'Plot',
-                            operator: {
-                                type: 'MeanRasterPixelValuesOverTime',
-                                params: {
-                                    timePosition: 'start',
-                                    area: false,
-                                },
-                                sources: {
-                                    raster: {
-                                        type: 'Expression',
-                                        params: {
-                                            expression: 'if B IS NODATA { NODATA } else { A }',
-                                            outputType: RasterDataTypes.Float64.getCode(),
-                                            mapNoData: false,
-                                        },
-                                        sources: {
-                                            a: rasterWorkflow.operator,
-                                            b: {
-                                                type: 'GdalSource',
-                                                params: {
-                                                    data: {
-                                                        type: 'internal',
-                                                        datasetId: COUNTRY_DATA_LIST[selectedCountry.name].raster,
-                                                    },
-                                                },
-                                            },
-                                        },
-                                    } as ExpressionDict,
-                                },
-                            } as MeanRasterPixelValuesOverTimeDict,
-                        }),
-                        of(selectedCountry),
-                        of(sessionToken),
-                    ]),
-                ),
-                first(),
-                mergeMap(([workflowId, selectedCountry, sessionToken]) => {
-                    if (!this.time) {
-                        throw new Error('No time selected');
-                    }
-                    return this.backend.getPlot(
-                        workflowId,
-                        {
-                            time: {
-                                start: this.time.start.unix() * 1_000,
-                                end: this.time.end.unix() * 1_000,
-                            },
-                            bbox: extentToBboxDict([
-                                selectedCountry.minx,
-                                selectedCountry.miny,
-                                selectedCountry.maxx,
-                                selectedCountry.maxy,
-                            ]),
-                            // always use WGS 84 for computing the plot
-                            crs: WGS_84.spatialReference.srsString,
-                            // TODO: set reasonable size
-                            spatialResolution: [0.1, 0.1],
-                        },
-                        sessionToken,
-                    );
-                }),
-                first(),
-            )
-            .subscribe({
-                next: (plotData) => {
-                    this.plotData.next(plotData.data);
-                    this.plotLoading.next(false);
-                },
-                error: () => {
-                    // TODO: react on error?
-                    this.plotLoading.next(false);
-                },
-            });
+        from(this.computePlot()).subscribe({
+            next: (plotData) => {
+                this.plotData.next(plotData.data);
+                this.plotLoading.next(false);
+            },
+            error: () => {
+                // TODO: react on error?
+                this.plotLoading.next(false);
+            },
+        });
     }
 
-    layerSelected(id?: ProviderLayerIdDict): void {
-        this.layerId = id;
+    protected async computePlot(): Promise<PlotDataDict> {
+        const rasterLayer = await firstValueFrom(this.dataSelectionService.rasterLayer);
+        const selectedCountry = await firstValueFrom(this.countryProviderService.getSelectedCountryStream());
+        const selectedTime = this.time;
 
-        if (this.autoShowEbv) {
-            this.autoShowEbv = false;
-            this.showEbv();
+        if (!rasterLayer || !selectedCountry || !selectedTime) {
+            throw Error('No raster layer or country or time selected');
         }
+
+        this.plotLoading.next(true);
+        this.plotData.next(undefined);
+
+        const rasterLayerMetadata = await firstValueFrom(this.projectService.getRasterLayerMetadata(rasterLayer));
+
+        const sessionToken = await firstValueFrom(this.userService.getSessionTokenForRequest());
+
+        const rasterWorkflow = await firstValueFrom(this.projectService.getWorkflow(rasterLayer.workflowId));
+
+        // TODO: use native CRS from raster layer for plot -> determine resolution in this CRS
+        const projectedRasterWorkflow = this.projectService.createProjectedOperator(
+            rasterWorkflow.operator,
+            rasterLayerMetadata,
+            // always use WGS 84 for computing the plot
+            WGS_84.spatialReference,
+        );
+
+        const projectedRasterWorkflowMetadata$ = this.projectService
+            .registerWorkflow({
+                type: 'Raster',
+                operator: projectedRasterWorkflow,
+            })
+            .pipe(
+                mergeMap(
+                    (projectedRasterWorkflowId) =>
+                        this.backend.getWorkflowMetadata(projectedRasterWorkflowId, sessionToken) as Observable<RasterResultDescriptorDict>,
+                ),
+            );
+
+        const plotWorkflowId$ = this.projectService.registerWorkflow({
+            type: 'Plot',
+            operator: {
+                type: 'MeanRasterPixelValuesOverTime',
+                params: {
+                    timePosition: 'start',
+                    area: false,
+                },
+                sources: {
+                    raster: {
+                        type: 'Expression',
+                        params: {
+                            expression: 'if B IS NODATA { NODATA } else { A }',
+                            outputType: RasterDataTypes.Float64.getCode(),
+                            mapNoData: false,
+                        },
+                        sources: {
+                            a: projectedRasterWorkflow,
+                            b: {
+                                type: 'GdalSource',
+                                params: {
+                                    data: {
+                                        type: 'internal',
+                                        //  use WGS 84 for computing the plot
+                                        datasetId: COUNTRY_DATA_LIST[selectedCountry.name].raster,
+                                    },
+                                },
+                            },
+                        },
+                    } as ExpressionDict,
+                },
+            } as MeanRasterPixelValuesOverTimeDict,
+        });
+
+        const [projectedRasterWorkflowMetadata, plotWorkflowId] = await firstValueFrom(
+            combineLatest([projectedRasterWorkflowMetadata$, plotWorkflowId$]),
+        );
+
+        let spatialResolution: [number, number] = [0.1, 0.1];
+        if (
+            projectedRasterWorkflowMetadata.resolution &&
+            projectedRasterWorkflowMetadata.resolution.x > 0.1 &&
+            projectedRasterWorkflowMetadata.resolution.y > 0.1
+        ) {
+            // TODO: communicate upper limit or think about long-running plot requests
+            spatialResolution = [projectedRasterWorkflowMetadata.resolution.x, projectedRasterWorkflowMetadata.resolution.y];
+        }
+
+        return firstValueFrom(
+            this.backend.getPlot(
+                plotWorkflowId,
+                {
+                    time: {
+                        start: selectedTime.start.unix() * 1_000,
+                        end: selectedTime.end.unix() * 1_000 + 1 /* add one millisecond to include the end time */,
+                    },
+                    bbox: extentToBboxDict([selectedCountry.minx, selectedCountry.miny, selectedCountry.maxx, selectedCountry.maxy]),
+                    // always use WGS 84 for computing the plot
+                    crs: WGS_84.spatialReference.srsString,
+                    spatialResolution,
+                },
+                sessionToken,
+            ),
+        );
     }
 
     private handleQueryParams(): void {
@@ -273,6 +297,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
             });
     }
 }
+
 interface EbvDatasetResponse {
     code: number;
     data: [
