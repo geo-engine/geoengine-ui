@@ -377,7 +377,9 @@ export interface DatasetIdResponseDict {
 }
 
 export interface CreateDatasetDict {
-    upload: UUID;
+    dataPath: {
+        upload: UUID;
+    };
     definition: DatasetDefinitionDict;
 }
 
@@ -536,7 +538,7 @@ export interface DataSetProviderListingDict {
     name: string;
 }
 
-export interface GeoEngineError {
+export interface GeoEngineErrorDict {
     readonly error: string;
     readonly message: string;
 }

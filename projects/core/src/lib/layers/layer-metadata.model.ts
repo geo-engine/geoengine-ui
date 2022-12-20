@@ -1,5 +1,5 @@
 import {HasLayerType, LayerType} from './layer.model';
-import {RasterResultDescriptorDict, ResultDescriptorDict, VectorResultDescriptorDict} from '../backend/backend.model';
+import {RasterResultDescriptorDict, ResultDescriptorDict, SpatialResolution, VectorResultDescriptorDict} from '../backend/backend.model';
 import {
     RasterDataType,
     RasterDataTypes,
@@ -95,11 +95,22 @@ export class RasterLayerMetadata extends LayerMetadata {
     readonly dataType: RasterDataType;
     readonly measurement: Measurement;
 
-    constructor(dataType: RasterDataType, spatialReference: SpatialReference, measurement: Measurement, time?: Time, bbox?: BoundingBox2D) {
+    readonly resolution?: SpatialResolution;
+
+    constructor(
+        dataType: RasterDataType,
+        spatialReference: SpatialReference,
+        measurement: Measurement,
+        time?: Time,
+        bbox?: BoundingBox2D,
+        resolution?: SpatialResolution,
+    ) {
         super(spatialReference, time, bbox);
 
         this.dataType = dataType;
         this.measurement = measurement;
+
+        this.resolution = resolution;
     }
 
     static override fromDict(dict: RasterResultDescriptorDict): RasterLayerMetadata {
@@ -108,7 +119,14 @@ export class RasterLayerMetadata extends LayerMetadata {
         const time = dict.time ? Time.fromDict(dict.time) : undefined;
         const bbox = dict.bbox ? BoundingBox2D.fromSpatialPartitionDict(dict.bbox) : undefined;
 
-        return new RasterLayerMetadata(dataType, SpatialReference.fromSrsString(dict.spatialReference), measurement, time, bbox);
+        return new RasterLayerMetadata(
+            dataType,
+            SpatialReference.fromSrsString(dict.spatialReference),
+            measurement,
+            time,
+            bbox,
+            dict.resolution,
+        );
     }
 
     public get resultType(): ResultType {

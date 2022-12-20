@@ -20,7 +20,7 @@
                     class="gradient"
                     *ngIf="isFirst"
                     [rowSpan]="layer.symbology.colorizer.getBreakpoints().length"
-                    [style.background]="layer.symbology.colorizer | geoengineColorizerCssGradient"
+                    [style.background]="layer.symbology.colorizer | geoengineColorizerCssGradient: gradientAngle"
                 ></td>
                 <td>{{ breakpoint }}</td>
             </tr>
@@ -28,7 +28,7 @@
 
         <ng-container *ngIf="layer.symbology.colorizer.isDiscrete()">
             <ng-container *ngIf="!(measurement$ | async | classificationMeasurement)">
-                <tr *ngFor="let breakpoint of layer.symbology.colorizer.getBreakpoints()">
+                <tr *ngFor="let breakpoint of colorizerBreakpoints">
                     <td class="classes">
                         <div class="icon" [style.background-color]="breakpoint | breakpointToCssStringPipe"></div>
                     </td>
@@ -37,7 +37,7 @@
             </ng-container>
 
             <ng-container *ngIf="measurement$ | async | classificationMeasurement as measurement">
-                <tr *ngFor="let breakpoint of layer.symbology.colorizer.getBreakpoints(); let isFirst = first">
+                <tr *ngFor="let breakpoint of colorizerBreakpoints; let isFirst = first">
                     <td class="classes">
                         <div class="icon" [style.background-color]="breakpoint | breakpointToCssStringPipe"></div>
                     </td>

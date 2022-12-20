@@ -78,6 +78,20 @@ export interface HistogramDict extends OperatorDict {
     };
 }
 
+export interface PieChartDict extends OperatorDict {
+    type: 'PieChart';
+    params: PieChartCountParams;
+    sources: {
+        vector: SourceOperatorDict | OperatorDict;
+    };
+}
+
+export interface PieChartCountParams extends OperatorParams {
+    type: 'count';
+    columnName: string;
+    donut?: boolean;
+}
+
 export interface ClassHistogramParams extends OperatorParams {
     columnName?: string;
 }
@@ -136,6 +150,33 @@ export interface PointInPolygonFilterDict extends OperatorDict {
         points: SourceOperatorDict | OperatorDict;
         polygons: SourceOperatorDict | OperatorDict;
     };
+}
+
+export interface RasterizationDict extends OperatorDict {
+    type: 'Rasterization';
+    params: GridRasterizationDict | DensityRasterizationDict;
+    sources: {
+        vector: SourceOperatorDict | OperatorDict;
+    };
+}
+
+export interface GridRasterizationDict extends OperatorParams {
+    type: 'grid';
+    spatialResolution: {
+        x: number;
+        y: number;
+    };
+    originCoordinate: {
+        x: number;
+        y: number;
+    };
+    gridSizeMode: 'fixed' | 'relative';
+}
+
+export interface DensityRasterizationDict extends OperatorParams {
+    type: 'density';
+    cutoff: number;
+    stddev: number;
 }
 
 export interface ColumnRangeFilterDict extends OperatorDict {

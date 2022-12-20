@@ -125,6 +125,9 @@ export class RasterLegendComponent implements OnInit, OnChanges {
     @Input()
     numberPipeParameters = '1.0-0';
 
+    @Input()
+    orderValuesDescending = false;
+
     constructor(public projectService: ProjectService) {}
 
     ngOnInit(): void {
@@ -133,7 +136,7 @@ export class RasterLegendComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.layer) {
+        if (changes.layer || changes.orderValuesDescending) {
             const symbology = changes.layer.currentValue.symbology;
             this.numberPipeParameters = calculateNumberPipeParameters(symbology.colorizer.getBreakpoints());
             this.calculateDisplayedBreakpoints();
@@ -143,5 +146,21 @@ export class RasterLegendComponent implements OnInit, OnChanges {
     protected calculateDisplayedBreakpoints(): void {
         this.displayedBreakpoints = this.layer.symbology.colorizer.getBreakpoints().map((x) => x.value);
         this.displayedBreakpoints = unifyDecimals(this.displayedBreakpoints);
+
+        if (this.orderValuesDescending) {
+            this.displayedBreakpoints = this.displayedBreakpoints.reverse();
+        }
+    }
+
+    get gradientAngle(): number {
+        return this.orderValuesDescending ? 0 : 180;
+    }
+
+    get colorizerBreakpoints(): Array<ColorBreakpoint> {
+        if (this.orderValuesDescending) {
+            return this.layer.symbology.colorizer.getBreakpoints().slice().reverse();
+        } else {
+            return this.layer.symbology.colorizer.getBreakpoints();
+        }
     }
 }

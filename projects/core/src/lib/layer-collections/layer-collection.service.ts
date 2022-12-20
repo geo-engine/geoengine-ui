@@ -4,7 +4,6 @@ import {combineLatest, Observable, of, zip} from 'rxjs';
 import {UserService} from '../users/user.service';
 import {map, mergeMap} from 'rxjs/operators';
 import {
-    GeoEngineError,
     LayerCollectionDict,
     LayerCollectionLayerDict,
     LayerDict,
@@ -258,15 +257,5 @@ export class LayerCollectionService {
         });
 
         this.projectService.addLayer(layer);
-    }
-
-    private handleError(error: GeoEngineError, workflowId: UUID): void {
-        let errorMessage = `No workflow found for id: ${workflowId}`;
-
-        if (error.error !== 'NoWorkflowForGivenId') {
-            errorMessage = `Unknown error -> ${error.error}: ${error.message}`;
-        }
-
-        this.notificationService.error(errorMessage);
     }
 }
