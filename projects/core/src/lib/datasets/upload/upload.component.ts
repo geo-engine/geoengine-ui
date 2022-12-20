@@ -348,7 +348,9 @@ export class UploadComponent {
         };
 
         const create: CreateDatasetDict = {
-            upload: this.uploadId,
+            dataPath: {
+                upload: this.uploadId,
+            },
             definition,
         };
 

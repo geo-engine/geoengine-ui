@@ -377,7 +377,9 @@ export interface DatasetIdResponseDict {
 }
 
 export interface CreateDatasetDict {
-    upload: UUID;
+    dataPath: {
+        upload: UUID;
+    };
     definition: DatasetDefinitionDict;
 }
 
