@@ -899,6 +899,29 @@ export class ProjectService {
     }
 
     /**
+     * Creates a projected operator if the layer has not the target spatial reference.
+     */
+    createProjectedOperator(
+        inputOperator: OperatorDict | SourceOperatorDict,
+        metadata: LayerMetadata,
+        targetSpatialReference: SpatialReference,
+    ): OperatorDict | SourceOperatorDict {
+        if (metadata.spatialReference.equals(targetSpatialReference)) {
+            return inputOperator;
+        }
+
+        return {
+            type: 'Reprojection',
+            params: {
+                targetSpatialReference: targetSpatialReference.srsString,
+            },
+            sources: {
+                source: inputOperator,
+            },
+        } as ReprojectionDict;
+    }
+
+    /**
      * Subscribes to the observable and consumes it completely.
      * Returns a new observable to listen to the values.
      */
@@ -1231,26 +1254,6 @@ export class ProjectService {
             ),
             map((registerWorkflowResult) => registerWorkflowResult.id),
         );
-    }
-
-    private createProjectedOperator(
-        inputOperator: OperatorDict | SourceOperatorDict,
-        metadata: VectorLayerMetadata,
-        mapSpatialReference: SpatialReference,
-    ): OperatorDict | SourceOperatorDict {
-        if (metadata.spatialReference.equals(mapSpatialReference)) {
-            return inputOperator;
-        }
-
-        return {
-            type: 'Reprojection',
-            params: {
-                targetSpatialReference: mapSpatialReference.srsString,
-            },
-            sources: {
-                source: inputOperator,
-            },
-        } as ReprojectionDict;
     }
 
     /**
