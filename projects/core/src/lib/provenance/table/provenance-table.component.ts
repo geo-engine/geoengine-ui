@@ -9,7 +9,7 @@ import {
     SimpleChanges,
     ChangeDetectorRef,
 } from '@angular/core';
-import {MatPaginator} from '@angular/material/paginator';
+import {MatLegacyPaginator as MatPaginator} from '@angular/material/legacy-paginator';
 import {Layer} from '../../layers/layer.model';
 import {ProjectService} from '../../project/project.service';
 import {ProvenanceDict} from '../../backend/backend.model';

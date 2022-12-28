@@ -2,7 +2,7 @@ import {Observable, Subscription} from 'rxjs';
 import {Component, OnDestroy, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnChanges} from '@angular/core';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import {Clipboard} from '@angular/cdk/clipboard';
-import {MatDialog} from '@angular/material/dialog';
+import {MatLegacyDialog as MatDialog} from '@angular/material/legacy-dialog';
 import {LayoutService, SidenavConfig} from '../../layout.service';
 import {MapService} from '../../map/map.service';
 import {Layer} from '../layer.model';

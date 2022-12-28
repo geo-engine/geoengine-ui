@@ -1,6 +1,6 @@
 import {Component, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, OnChanges, SimpleChanges, Input} from '@angular/core';
 import {Clipboard} from '@angular/cdk/clipboard';
-import {MatDialog} from '@angular/material/dialog';
+import {MatLegacyDialog as MatDialog} from '@angular/material/legacy-dialog';
 import {Layer, RasterLayer, VectorLayer} from '../../layer.model';
 import {TabsService} from '../../../tabs/tabs.service';
 import {Config} from '../../../config.service';

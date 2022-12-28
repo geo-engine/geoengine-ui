@@ -1,7 +1,7 @@
 import {HttpEventType} from '@angular/common/http';
 import {Component, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
-import {MatChipInputEvent} from '@angular/material/chips';
+import {MatLegacyChipInputEvent as MatChipInputEvent} from '@angular/material/legacy-chips';
 import {MatStepper} from '@angular/material/stepper';
 import {Subject} from 'rxjs';
 import {mergeMap} from 'rxjs/operators';

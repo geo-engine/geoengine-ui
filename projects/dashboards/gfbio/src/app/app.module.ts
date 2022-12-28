@@ -2,8 +2,8 @@ import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserModule} from '@angular/platform-browser';
 import {HttpClientModule} from '@angular/common/http';
-import {MatTableModule} from '@angular/material/table';
-import {MatButtonModule} from '@angular/material/button';
+import {MatLegacyTableModule as MatTableModule} from '@angular/material/legacy-table';
+import {MatLegacyButtonModule as MatButtonModule} from '@angular/material/legacy-button';
 import {RouterModule} from '@angular/router';
 
 import {AppComponent} from './app.component';

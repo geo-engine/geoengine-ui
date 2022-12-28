@@ -1,6 +1,6 @@
 import {Component, Inject} from '@angular/core';
 import {BasketResult} from '../basket-model';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialogRef as MatDialogRef} from '@angular/material/legacy-dialog';
 import {ProjectService} from '@geoengine/core';
 import {map, mergeMap} from 'rxjs/operators';
 import {Observable} from 'rxjs';
