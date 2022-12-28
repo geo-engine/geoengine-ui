@@ -119,12 +119,6 @@
                     },
                     "configurations": {
                         "production": {
-                            "fileReplacements": [
-                                {
-                                    "replace": "projects/gis/src/environments/environment.ts",
-                                    "with": "projects/gis/src/environments/environment.prod.ts"
-                                }
-                            ],
                             "optimization": true,
                             "outputHashing": "all",
                             "sourceMap": false,
@@ -268,12 +262,6 @@
                     },
                     "configurations": {
                         "production": {
-                            "fileReplacements": [
-                                {
-                                    "replace": "projects/dashboards/data-atlas/src/environments/environment.ts",
-                                    "with": "projects/dashboards/data-atlas/src/environments/environment.prod.ts"
-                                }
-                            ],
                             "optimization": true,
                             "outputHashing": "all",
                             "sourceMap": false,
@@ -417,12 +405,6 @@
                     },
                     "configurations": {
                         "production": {
-                            "fileReplacements": [
-                                {
-                                    "replace": "projects/dashboards/ebv-analyzer/src/environments/environment.ts",
-                                    "with": "projects/dashboards/ebv-analyzer/src/environments/environment.prod.ts"
-                                }
-                            ],
                             "optimization": true,
                             "outputHashing": "all",
                             "sourceMap": false,
@@ -567,12 +549,6 @@
                     },
                     "configurations": {
                         "production": {
-                            "fileReplacements": [
-                                {
-                                    "replace": "projects/dashboards/nfdi-gdo/src/environments/environment.ts",
-                                    "with": "projects/dashboards/nfdi-gdo/src/environments/environment.prod.ts"
-                                }
-                            ],
                             "optimization": true,
                             "outputHashing": "all",
                             "sourceMap": false,
@@ -716,12 +692,6 @@
                     },
                     "configurations": {
                         "production": {
-                            "fileReplacements": [
-                                {
-                                    "replace": "projects/dashboards/gfbio/src/environments/environment.ts",
-                                    "with": "projects/dashboards/gfbio/src/environments/environment.prod.ts"
-                                }
-                            ],
                             "optimization": true,
                             "outputHashing": "all",
                             "sourceMap": false,
