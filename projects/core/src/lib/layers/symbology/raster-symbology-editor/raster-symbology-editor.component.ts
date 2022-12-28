@@ -17,7 +17,7 @@ import {MapService} from '../../../map/map.service';
 import {ProjectService} from '../../../project/project.service';
 import {Config} from '../../../config.service';
 import {BackendService} from '../../../backend/backend.service';
-import {MatSliderChange} from '@angular/material/slider';
+import {MatLegacySliderChange as MatSliderChange} from '@angular/material/legacy-slider';
 import {HistogramDict, HistogramParams} from '../../../backend/operator.model';
 import {LinearGradient, LogarithmicGradient, PaletteColorizer} from '../../../colors/colorizer.model';
 import {ColorAttributeInput} from '../../../colors/color-attribute-input/color-attribute-input.component';

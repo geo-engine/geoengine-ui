@@ -1,5 +1,5 @@
 import {Component, OnInit, ChangeDetectionStrategy, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA} from '@angular/material/legacy-dialog';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {Geometry} from 'ol/geom';
 import OlFormatGeoJson from 'ol/format/GeoJSON';

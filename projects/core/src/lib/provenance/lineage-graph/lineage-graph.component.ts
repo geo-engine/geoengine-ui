@@ -3,7 +3,7 @@ import {map} from 'rxjs/operators';
 import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit, Inject} from '@angular/core';
 import * as dagreD3 from 'dagre-d3';
 import * as d3 from 'd3';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialogRef as MatDialogRef} from '@angular/material/legacy-dialog';
 import {Layer} from '../../layers/layer.model';
 import {OperatorDict, OperatorParams, SourceOperatorDict} from '../../backend/backend.model';
 import {LayoutService} from '../../layout.service';

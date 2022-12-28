@@ -5,7 +5,7 @@ import {LoadingState} from '../../project/loading-state.model';
 import {createIconDataUrl} from '../../util/icons';
 import {ProjectService} from '../../project/project.service';
 import {PlotDetailViewComponent} from '../plot-detail-view/plot-detail-view.component';
-import {MatDialog} from '@angular/material/dialog';
+import {MatLegacyDialog as MatDialog} from '@angular/material/legacy-dialog';
 import {GeoEngineError} from '../../util/errors';
 
 @Component({

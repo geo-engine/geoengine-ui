@@ -7,7 +7,7 @@ import {Config} from '../../config.service';
 import {geoengineValidators} from '../../util/form.validators';
 import {User} from '../user.model';
 import {Session} from '../session.model';
-import {MatDialogRef} from '@angular/material/dialog';
+import {MatLegacyDialogRef as MatDialogRef} from '@angular/material/legacy-dialog';
 
 enum FormStatus {
     LoggedOut,

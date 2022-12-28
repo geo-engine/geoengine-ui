@@ -13,9 +13,9 @@ import {
     ViewChild,
     ViewContainerRef,
 } from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
+import {MatLegacyDialog as MatDialog} from '@angular/material/legacy-dialog';
 import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
-import {MatTabGroup} from '@angular/material/tabs';
+import {MatLegacyTabGroup as MatTabGroup} from '@angular/material/legacy-tabs';
 import {
     AddDataComponent,
     AddDataButton,
