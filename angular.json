@@ -38,9 +38,9 @@
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "main": "projects/core/src/test.ts",
+                        "polyfills": ["zone.js", "zone.js/testing"],
                         "tsConfig": "projects/core/tsconfig.spec.json",
-                        "karmaConfig": "projects/core/karma.conf.js"
+                        "inlineStyleLanguage": "scss"
                     }
                 },
                 "lint": {
@@ -89,7 +89,7 @@
                         "outputPath": "dist/gis",
                         "index": "projects/gis/src/index.html",
                         "main": "projects/gis/src/main.ts",
-                        "polyfills": "projects/gis/src/polyfills.ts",
+                        "polyfills": ["zone.js"],
                         "tsConfig": "projects/gis/tsconfig.app.json",
                         "assets": [
                             "projects/gis/src/favicon.ico",
@@ -171,10 +171,9 @@
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "main": "projects/gis/src/test.ts",
-                        "polyfills": "projects/gis/src/polyfills.ts",
+                        "polyfills": ["zone.js", "zone.js/testing"],
                         "tsConfig": "projects/gis/tsconfig.spec.json",
-                        "karmaConfig": "projects/gis/karma.conf.js",
+                        "inlineStyleLanguage": "scss",
                         "assets": ["projects/gis/src/favicon.ico", "projects/gis/src/assets"],
                         "styles": ["projects/gis/src/styles.scss"],
                         "scripts": []
@@ -240,7 +239,7 @@
                         "outputPath": "dist/dashboards/data-atlas",
                         "index": "projects/dashboards/data-atlas/src/index.html",
                         "main": "projects/dashboards/data-atlas/src/main.ts",
-                        "polyfills": "projects/dashboards/data-atlas/src/polyfills.ts",
+                        "polyfills": ["zone.js"],
                         "tsConfig": "projects/dashboards/data-atlas/tsconfig.app.json",
                         "assets": [
                             "projects/dashboards/data-atlas/src/favicon.ico",
@@ -321,10 +320,9 @@
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "main": "projects/dashboards/data-atlas/src/test.ts",
-                        "polyfills": "projects/dashboards/data-atlas/src/polyfills.ts",
+                        "polyfills": ["zone.js", "zone.js/testing"],
                         "tsConfig": "projects/dashboards/data-atlas/tsconfig.spec.json",
-                        "karmaConfig": "projects/dashboards/data-atlas/karma.conf.js",
+                        "inlineStyleLanguage": "scss",
                         "assets": ["projects/dashboards/data-atlas/src/favicon.ico", "projects/dashboards/data-atlas/src/assets"],
                         "styles": ["projects/dashboards/data-atlas/src/styles.scss"],
                         "scripts": []
@@ -390,7 +388,7 @@
                         "outputPath": "dist/dashboards/ebv-analyzer",
                         "index": "projects/dashboards/ebv-analyzer/src/index.html",
                         "main": "projects/dashboards/ebv-analyzer/src/main.ts",
-                        "polyfills": "projects/dashboards/ebv-analyzer/src/polyfills.ts",
+                        "polyfills": ["zone.js"],
                         "tsConfig": "projects/dashboards/ebv-analyzer/tsconfig.app.json",
                         "assets": [
                             "projects/dashboards/ebv-analyzer/src/favicon.ico",
@@ -471,10 +469,9 @@
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "main": "projects/dashboards/ebv-analyzer/src/test.ts",
-                        "polyfills": "projects/dashboards/ebv-analyzer/src/polyfills.ts",
+                        "polyfills": ["zone.js", "zone.js/testing"],
                         "tsConfig": "projects/dashboards/ebv-analyzer/tsconfig.spec.json",
-                        "karmaConfig": "projects/dashboards/ebv-analyzer/karma.conf.js",
+                        "inlineStyleLanguage": "scss",
                         "assets": ["projects/dashboards/ebv-analyzer/src/favicon.ico", "projects/dashboards/ebv-analyzer/src/assets"],
                         "styles": ["projects/dashboards/ebv-analyzer/src/styles.scss"],
                         "scripts": []
@@ -541,7 +538,7 @@
                         "outputPath": "dist/dashboards/nfdi-gdo",
                         "index": "projects/dashboards/nfdi-gdo/src/index.html",
                         "main": "projects/dashboards/nfdi-gdo/src/main.ts",
-                        "polyfills": "projects/dashboards/nfdi-gdo/src/polyfills.ts",
+                        "polyfills": ["zone.js"],
                         "tsConfig": "projects/dashboards/nfdi-gdo/tsconfig.app.json",
                         "assets": [
                             "projects/dashboards/nfdi-gdo/src/favicon.ico",
@@ -622,11 +619,10 @@
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "main": "projects/dashboards/nfdi-gdo/src/test.ts",
-                        "polyfills": "projects/dashboards/nfdi-gdo/src/polyfills.ts",
+                        "polyfills": ["zone.js", "zone.js/testing"],
                         "tsConfig": "projects/dashboards/nfdi-gdo/tsconfig.spec.json",
-                        "karmaConfig": "projects/dashboards/nfdi-gdo/karma.conf.js",
                         "assets": ["projects/dashboards/nfdi-gdo/src/favicon.ico", "projects/dashboards/nfdi-gdo/src/assets"],
+                        "inlineStyleLanguage": "scss",
                         "styles": ["projects/dashboards/nfdi-gdo/src/styles.scss"],
                         "scripts": []
                     }
@@ -691,7 +687,7 @@
                         "outputPath": "dist/dashboards/gfbio",
                         "index": "projects/dashboards/gfbio/src/index.html",
                         "main": "projects/dashboards/gfbio/src/main.ts",
-                        "polyfills": "projects/dashboards/gfbio/src/polyfills.ts",
+                        "polyfills": ["zone.js"],
                         "tsConfig": "projects/dashboards/gfbio/tsconfig.app.json",
                         "assets": [
                             "projects/dashboards/gfbio/src/favicon.ico",
@@ -772,11 +768,10 @@
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "main": "projects/dashboards/gfbio/src/test.ts",
-                        "polyfills": "projects/dashboards/gfbio/src/polyfills.ts",
+                        "polyfills": ["zone.js", "zone.js/testing"],
                         "tsConfig": "projects/dashboards/gfbio/tsconfig.spec.json",
-                        "karmaConfig": "projects/dashboards/gfbio/karma.conf.js",
                         "assets": ["projects/dashboards/gfbio/src/favicon.ico", "projects/dashboards/gfbio/src/assets"],
+                        "inlineStyleLanguage": "scss",
                         "styles": ["projects/dashboards/gfbio/src/styles.scss"],
                         "scripts": []
                     }
