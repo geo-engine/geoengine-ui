@@ -42,7 +42,7 @@
         <ng-template matExpansionPanelContent>
             <geoengine-color-param-editor
                 [(ngModel)]="fillColor"
-                [attributes]="numericAttributes | async | valueDefault: []"
+                [attributes]="numericAttributes | async | valueDefault : []"
             ></geoengine-color-param-editor>
         </ng-template>
     </mat-expansion-panel>
@@ -58,13 +58,13 @@
             <h3 class="mat-subheading-2">Color</h3>
             <geoengine-color-param-editor
                 [(ngModel)]="strokeColor"
-                [attributes]="numericAttributes | async | valueDefault: []"
+                [attributes]="numericAttributes | async | valueDefault : []"
             ></geoengine-color-param-editor>
             <h3 class="mat-subheading-2">Width</h3>
             <geoengine-number-param-editor
                 [(ngModel)]="strokeWidth"
                 [min]="1"
-                [attributes]="numericAttributes | async | valueDefault: []"
+                [attributes]="numericAttributes | async | valueDefault : []"
             ></geoengine-number-param-editor>
         </ng-template>
     </mat-expansion-panel>
@@ -81,7 +81,7 @@
             <geoengine-number-param-editor
                 [(ngModel)]="radius"
                 [min]="1"
-                [attributes]="numericAttributes | async | valueDefault: []"
+                [attributes]="numericAttributes | async | valueDefault : []"
             ></geoengine-number-param-editor>
         </ng-template>
     </mat-expansion-panel>
@@ -107,20 +107,20 @@
                 <h3 class="mat-subheading-2">Fill Color</h3>
                 <geoengine-color-param-editor
                     [(ngModel)]="textFillColor"
-                    [attributes]="numericAttributes | async | valueDefault: []"
+                    [attributes]="numericAttributes | async | valueDefault : []"
                 ></geoengine-color-param-editor>
 
                 <h3 class="mat-subheading-2">Stroke Color</h3>
                 <geoengine-color-param-editor
                     [(ngModel)]="textStrokeColor"
-                    [attributes]="numericAttributes | async | valueDefault: []"
+                    [attributes]="numericAttributes | async | valueDefault : []"
                 ></geoengine-color-param-editor>
 
                 <h3 class="mat-subheading-2">Stroke Width</h3>
                 <geoengine-number-param-editor
                     [(ngModel)]="textStrokeWidth"
                     [min]="1"
-                    [attributes]="numericAttributes | async | valueDefault: []"
+                    [attributes]="numericAttributes | async | valueDefault : []"
                 ></geoengine-number-param-editor>
             </ng-template>
         </ng-template>

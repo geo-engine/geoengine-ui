@@ -6,8 +6,14 @@
         <ng-template ngFor let-operator [ngForOf]="group.list">
             <mat-list-item (click)="load(operator.component, operator.config)">
                 <img mat-list-icon [src]="operator.type.ICON_URL" [alt]="operator.type.NAME" />
-                <h4 mat-line bind-innerHtml="operator.type.NAME | geoengineHighlightPipe: (searchString$ | async) | geoengineSafeHtml"></h4>
-                <p mat-line bind-innerHtml="operator.description | geoengineHighlightPipe: (searchString$ | async) | geoengineSafeHtml"></p>
+                <h4
+                    mat-line
+                    bind-innerHtml="operator.type.NAME | geoengineHighlightPipe : (searchString$ | async) | geoengineSafeHtml"
+                ></h4>
+                <p
+                    mat-line
+                    bind-innerHtml="operator.description | geoengineHighlightPipe : (searchString$ | async) | geoengineSafeHtml"
+                ></p>
             </mat-list-item>
         </ng-template>
     </ng-template>
