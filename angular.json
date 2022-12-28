@@ -76,6 +76,7 @@
                             "clone",
                             "codemirror",
                             "dagre-d3",
+                            "earcut",
                             "fast-deep-equal",
                             "fast-json-stable-stringify",
                             "lru-cache",
@@ -226,6 +227,7 @@
                         "allowedCommonJsDependencies": [
                             "codemirror",
                             "dagre-d3",
+                            "earcut",
                             "moment",
                             "xml-utils",
                             "lru-cache",
@@ -375,6 +377,7 @@
                         "allowedCommonJsDependencies": [
                             "codemirror",
                             "dagre-d3",
+                            "earcut",
                             "moment",
                             "xml-utils",
                             "lru-cache",
@@ -525,6 +528,7 @@
                             "clone",
                             "codemirror",
                             "dagre-d3",
+                            "earcut",
                             "fast-deep-equal",
                             "fast-json-stable-stringify",
                             "lru-cache",
@@ -674,6 +678,7 @@
                         "allowedCommonJsDependencies": [
                             "codemirror",
                             "dagre-d3",
+                            "earcut",
                             "moment",
                             "xml-utils",
                             "lru-cache",
