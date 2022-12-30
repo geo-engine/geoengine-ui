@@ -25,17 +25,19 @@ import {MainComponent} from './main/main.component';
 import {LoginComponent} from './login/login.component';
 import {AppRoutingModule} from './app-routing.module';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
+import {FormsModule} from '@angular/forms';
 
 @NgModule({
     declarations: [AppComponent, AttributionsComponent, LegendComponent, SpeciesSelectorComponent, MainComponent, LoginComponent],
     imports: [
+        AppRoutingModule,
         BrowserAnimationsModule,
         BrowserModule,
-        HttpClientModule,
-        AppRoutingModule,
         CoreModule,
-        PortalModule,
+        FormsModule,
+        HttpClientModule,
         NgxMatSelectSearchModule,
+        PortalModule,
     ],
     providers: [
         {provide: Config, useClass: AppConfig},

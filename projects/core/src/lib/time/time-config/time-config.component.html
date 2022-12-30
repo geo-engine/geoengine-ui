@@ -1,40 +1,42 @@
 <geoengine-sidenav-header>Time Config</geoengine-sidenav-header>
 
-<mat-accordion multi="true">
-    <mat-expansion-panel expanded="true">
-        <mat-expansion-panel-header>
-            <mat-panel-title>Display Time</mat-panel-title>
-            <mat-panel-description>Specify a time selection for the current data</mat-panel-description>
-        </mat-expansion-panel-header>
+<form [formGroup]="timeForm" (ngSubmit)="$event.preventDefault(); applyTime()">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>Display Time</mat-card-title>
+            <mat-card-subtitle>Specify a time selection for the current data</mat-card-subtitle>
+        </mat-card-header>
 
-        <form [formGroup]="timeForm" (ngSubmit)="$event.preventDefault(); applyTime()">
-            <h3 class="mat-subheading-2" *ngIf="config.TIME.ALLOW_RANGES">Start</h3>
+        <mat-card-content>
+            <h3 class="mat-subtitle-1" *ngIf="config.TIME.ALLOW_RANGES">Start</h3>
 
             <geoengine-time-input formControlName="start"></geoengine-time-input>
 
             <ng-template [ngIf]="config.TIME.ALLOW_RANGES">
-                <h3 class="mat-subheading-2" fxLayout="row" fxLayoutAlign="space-between center">
+                <h3 class="mat-subtitle-1" fxLayout="row" fxLayoutAlign="space-between center">
                     End
-                    <mat-slide-toggle #timeAsPoint formControlName="timeAsPoint" class="mat-subheading-1">same as start</mat-slide-toggle>
+                    <mat-slide-toggle #timeAsPoint formControlName="timeAsPoint" class="mat-body-1">same as start</mat-slide-toggle>
                 </h3>
 
                 <geoengine-time-input formControlName="end" [isDisabled]="timeAsPoint.checked"></geoengine-time-input>
             </ng-template>
+        </mat-card-content>
 
-            <mat-action-row class="actions" fxLayout="row" fxLayoutAlign="end">
-                <span class="error" *ngIf="!timeForm.valid">Start must be before End.</span>
-                <button mat-raised-button (click)="reset()" [disabled]="isNotResettable()">Reset</button>
-                <button mat-raised-button color="primary" type="submit" [disabled]="timeForm.invalid">Apply</button>
-            </mat-action-row>
-        </form>
-    </mat-expansion-panel>
+        <mat-card-actions align="end">
+            <span class="error" *ngIf="!timeForm.valid">Start must be before End.</span>
+            <button mat-raised-button (click)="reset()" [disabled]="isNotResettable()">Reset</button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="timeForm.invalid">Apply</button>
+        </mat-card-actions>
+    </mat-card>
+</form>
 
-    <mat-expansion-panel expanded="true">
-        <mat-expansion-panel-header>
-            <mat-panel-title>Time Step</mat-panel-title>
-            <mat-panel-description>Specify a time step for the time component on top of the map</mat-panel-description>
-        </mat-expansion-panel-header>
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>Time Step</mat-card-title>
+        <mat-card-subtitle>Specify a time step for the time component on top of the map</mat-card-subtitle>
+    </mat-card-header>
 
+    <mat-card-content>
         <mat-form-field>
             <mat-select
                 placeholder="Time step"
@@ -47,12 +49,12 @@
                 </mat-option>
             </mat-select>
         </mat-form-field>
-    </mat-expansion-panel>
+    </mat-card-content>
+</mat-card>
 
-    <mat-expansion-panel expanded="true">
+<!-- <mat-expansion-panel expanded="true">
         <mat-expansion-panel-header>
             <mat-panel-title>Time Slider</mat-panel-title>
         </mat-expansion-panel-header>
         <geoengine-time-slider [height]="150"></geoengine-time-slider>
-    </mat-expansion-panel>
-</mat-accordion>
+    </mat-expansion-panel> -->

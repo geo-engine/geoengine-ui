@@ -1,7 +1,7 @@
 import {Component, OnInit, ChangeDetectionStrategy, ViewChild, AfterViewInit, OnDestroy} from '@angular/core';
 import {UntypedFormControl} from '@angular/forms';
 import {ReplaySubject, Subject} from 'rxjs';
-import {MatLegacySelect as MatSelect} from '@angular/material/legacy-select';
+import {MatSelect} from '@angular/material/select';
 import {takeUntil, take} from 'rxjs/operators';
 import {CountryProviderService, Country} from '../country-provider.service';
 

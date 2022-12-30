@@ -1,30 +1,42 @@
 <div id="container" fxLayout="column">
     <div class="specification" fxFlex>
-        <div class="operator-dialog-section">
-            <div fxLayout="row" fxLayoutGap="1rem" fxLayoutAlign="center center">
-                <h3 fxFlex>Operator input</h3>
-                <ng-content select="[operatorInputIcon]"></ng-content>
-            </div>
-            <ng-content select="[operatorInput]"></ng-content>
-        </div>
-        <div class="operator-dialog-section">
-            <div fxLayout="row" fxLayoutGap="1rem" fxLayoutAlign="center center">
-                <h3 fxFlex>Parameters</h3>
-                <ng-content select="[operatorParametersIcon]"></ng-content>
-            </div>
-            <div #parametersContent class="parameters-content">
-                <ng-content select="[operatorParameters]"></ng-content>
-            </div>
-            <em class="parameters-empty">No parameters</em>
-        </div>
-        <div class="operator-dialog-section">
-            <div fxLayout="row" fxLayoutGap="1rem" fxLayoutAlign="center center">
-                <h3 fxFlex>Layer specification</h3>
-                <ng-content select="[layerSpecificationIcon]"></ng-content>
-            </div>
-            <ng-content select="[layerSpecification]"></ng-content>
-        </div>
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title-group>
+                    <mat-card-title>Operator input</mat-card-title>
+                    <mat-card-subtitle>Specify the input sources of the operator</mat-card-subtitle>
+                    <ng-content mat-card-sm-image select="[operatorInputIcon]"></ng-content>
+                </mat-card-title-group>
+            </mat-card-header>
+            <mat-card-content><ng-content select="[operatorInput]"></ng-content></mat-card-content>
+        </mat-card>
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title-group>
+                    <mat-card-title>Parameters</mat-card-title>
+                    <mat-card-subtitle>Set the parameters of the operator</mat-card-subtitle>
+                    <ng-content mat-card-sm-image select="[operatorParametersIcon]"></ng-content>
+                </mat-card-title-group>
+            </mat-card-header>
+            <mat-card-content>
+                <div #parametersContent class="parameters-content">
+                    <ng-content select="[operatorParameters]"></ng-content>
+                </div>
+                <em class="parameters-empty">No parameters</em>
+            </mat-card-content>
+        </mat-card>
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title-group>
+                    <mat-card-title>Layer specification</mat-card-title>
+                    <mat-card-subtitle>Define layer-specific settings</mat-card-subtitle>
+                    <ng-content mat-card-sm-image select="[layerSpecificationIcon]"></ng-content>
+                </mat-card-title-group>
+            </mat-card-header>
+            <mat-card-content><ng-content select="[layerSpecification]"></ng-content></mat-card-content>
+        </mat-card>
     </div>
+
     <div class="actions">
         <ng-content select="[actions]"></ng-content>
     </div>

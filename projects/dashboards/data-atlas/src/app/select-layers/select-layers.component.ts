@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {mergeMap} from 'rxjs/operators';
 import {ProjectService, RasterLayer, RasterSymbology, RgbaColorDict, Time, UUID, WorkflowDict} from '@geoengine/core';
 import {DataSelectionService} from '../data-selection.service';
-import {MatLegacySelectionListChange as MatSelectionListChange} from '@angular/material/legacy-list';
+import {MatSelectionListChange} from '@angular/material/list';
 import moment from 'moment';
 
 @Component({

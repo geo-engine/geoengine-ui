@@ -1,7 +1,3 @@
-mat-list-item {
-    cursor: pointer;
-}
-
 img {
     width: 100%;
     height: 100%;
@@ -9,22 +5,4 @@ img {
 
 p {
     color: var(--geoengine-foreground-secondary-text-color, grey);
-}
-
-.disabled {
-    ::ng-deep .mat-list-item-content {
-        cursor: auto;
-    }
-
-    h4 {
-        color: var(--geoengine-foreground-secondary-text-color, grey);
-    }
-
-    img {
-        filter: grayscale(100%);
-    }
-
-    mat-icon {
-        color: var(--geoengine-foreground-secondary-text-color, grey);
-    }
 }

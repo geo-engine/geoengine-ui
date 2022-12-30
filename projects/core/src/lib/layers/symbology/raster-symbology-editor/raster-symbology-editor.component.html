@@ -37,20 +37,12 @@
                     </mat-panel-title>
                 </mat-expansion-panel-header>
                 <ng-template matExpansionPanelContent>
-                    <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
+                    <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="1rem">
                         <span>Opacity</span>
-                        <mat-slider
-                            fxFlex
-                            #slo
-                            (change)="updateOpacity($event)"
-                            [value]="getOpacity()"
-                            max="100"
-                            min="1"
-                            step="1"
-                            thumbLabel
-                        >
+                        <mat-slider fxFlex max="100" min="1" step="1" thumbLabel discrete>
+                            <input matSliderThumb #opacitySliderInput [ngModel]="getOpacity()" (ngModelChange)="updateOpacity($event)" />
                         </mat-slider>
-                        <span>{{ slo.displayValue }} %</span>
+                        <span>{{ opacitySliderInput.value }} %</span>
                     </div>
                     <mat-divider></mat-divider>
                     <div>

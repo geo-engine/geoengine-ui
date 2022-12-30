@@ -3,17 +3,13 @@
         <ng-container *cdkVirtualFor="let item of source; trackBy: trackById">
             <ng-template [ngIf]="item.type === 'collection'">
                 <mat-list-item (click)="select(item)">
-                    <mat-icon mat-list-icon>layers</mat-icon>
-                    <h4 mat-line>{{ item.name }}</h4>
-                    <p mat-line>{{ item.description }}</p>
+                    <mat-icon matListItemIcon>layers</mat-icon>
+                    <h4 matListItemTitle>{{ item.name }}</h4>
+                    <p matListItemLine>{{ item.description }}</p>
                 </mat-list-item>
             </ng-template>
             <ng-template [ngIf]="item.type === 'layer'">
-                <geoengine-layer-collection-layer
-                    mat-list-item
-                    [layer]="item"
-                    (addClick)="addLayer($event)"
-                ></geoengine-layer-collection-layer>
+                <geoengine-layer-collection-layer [layer]="item" (addClick)="addLayer($event)"></geoengine-layer-collection-layer>
             </ng-template>
         </ng-container>
     </mat-nav-list>

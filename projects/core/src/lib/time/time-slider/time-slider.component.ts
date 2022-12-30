@@ -139,6 +139,8 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
 
     //changes the Timestream of the project according to the Timebars
     changeTime(): void {
+        // TODO: Angular recognizes inifinite loop here --> FIX
+
         this.projectService.getTimeOnce().subscribe(() => {
             const updatedTime = new Time(moment(this.startTime), moment(this.endTime));
             this.projectService.setTime(updatedTime);

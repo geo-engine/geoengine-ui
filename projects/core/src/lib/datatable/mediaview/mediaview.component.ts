@@ -1,6 +1,6 @@
 import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {MediaviewDialogComponent} from './dialog/mediaview.dialog.component';
-import {MatLegacyDialog as MatDialog} from '@angular/material/legacy-dialog';
+import {MatDialog} from '@angular/material/dialog';
 import {VectorColumnDataType, VectorColumnDataTypes} from '../../operators/datatype.model';
 
 @Component({
