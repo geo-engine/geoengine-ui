@@ -28,15 +28,15 @@ const LANGUAGES = ['Rust'];
     template: ` <textarea #editor></textarea> `,
     styles: [
         `
-                    :host {
-                        display: block;
-                    }
-        
-                    div {
-                        height: 100%;
-                        width: 100%;
-                    }
-                `,
+            :host {
+                display: block;
+            }
+
+            div {
+                height: 100%;
+                width: 100%;
+            }
+        `,
     ],
     providers: [
         {
