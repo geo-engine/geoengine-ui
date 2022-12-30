@@ -17,12 +17,6 @@
     width: 40rem;
 }
 
-mat-card-header {
-    ::ng-deep .mat-card-header-text {
-        width: 100%;
-    }
-}
-
 mat-card-content {
     mat-form-field {
         width: 100%;

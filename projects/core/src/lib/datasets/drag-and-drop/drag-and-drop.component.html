@@ -1,11 +1,11 @@
-<mat-card class="dropzone">
+<mat-card appearance="outlined" class="dropzone">
     <input class="input-dropzone" type="file" #fileInput id="file" multiple (change)="selectFiles($any($event.target))" />
     <h3>Drag and drop file here</h3>
     <h3>or</h3>
     <button class="browse-button" type="button" mat-raised-button color="primary" (click)="fileInput.click()">Browse for file</button>
 </mat-card>
 
-<mat-card *ngIf="selectedFiles?.length" class="files-list">
+<mat-card appearance="outlined" *ngIf="selectedFiles?.length" class="files-list">
     <mat-list *ngFor="let file of selectedFiles" dense>
         <mat-list-item>
             <button class="deleteIcon" mat-icon-button (click)="removeFile(file)">

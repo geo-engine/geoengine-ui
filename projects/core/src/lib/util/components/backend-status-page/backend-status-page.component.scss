@@ -11,8 +11,6 @@
     color: var(--geoengine-warn-color);
 }
 
-mat-card-header {
-    ::ng-deep .mat-card-header-text {
-        width: 100%;
-    }
+mat-card-actions button:not(:last-child) {
+    margin-right: 1rem;
 }

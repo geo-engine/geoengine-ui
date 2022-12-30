@@ -47,13 +47,8 @@
                 <tr>
                     <td><span>Color steps</span></td>
                     <td class="fill_width">
-                        <mat-slider
-                            formControlName="colorMapSteps"
-                            [min]="2"
-                            [max]="maxColormapSteps"
-                            [tickInterval]="1"
-                            [thumbLabel]="true"
-                        >
+                        <mat-slider [min]="2" [max]="maxColormapSteps" [step]="1" [discrete]="true">
+                            <input matSliderThumb formControlName="colorMapSteps" />
                         </mat-slider>
                     </td>
                     <td>{{ form.controls.colorMapSteps.value }}</td>

@@ -78,6 +78,10 @@ export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, 
             return;
         }
 
+        if (this.time.get(timeUnit) === value) {
+            return; // don't update if there is nothing to update
+        }
+
         this.time.set(timeUnit, value);
         this.propagateChange();
     }
@@ -85,6 +89,10 @@ export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, 
     updateDate(value?: number): void {
         if (typeof value !== 'number') {
             return;
+        }
+
+        if (this.time.date() === value) {
+            return; // don't update if there is nothing to update
         }
 
         this.time.date(value);

@@ -162,15 +162,9 @@
     <p [innerText]="selectedEnvironmentCitation | async" class="mat-caption"></p>
 
     <div class="container mat-typography" fxLayout="row" fxLayoutAlign="space-between center">
-        <mat-slider
-            thumbLabel="true"
-            [min]="1"
-            [max]="12"
-            [step]="1"
-            [tickInterval]="1"
-            (change)="setMonth($event.value)"
-            fxFlex
-        ></mat-slider>
+        <mat-slider showTickMarks discrete [min]="1" [max]="12" [step]="1" fxFlex>
+            <input matSliderThumb [ngModel]="1" (ngModelChange)="setMonth($event)" />
+        </mat-slider>
         <span fxFlex="1rem"></span>
         <span fxFlex="4rem">{{ thumbLabelMonthDisplay(currentMonth) }}</span>
     </div>

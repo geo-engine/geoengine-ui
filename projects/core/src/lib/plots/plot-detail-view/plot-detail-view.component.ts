@@ -1,5 +1,5 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit} from '@angular/core';
-import {MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA} from '@angular/material/legacy-dialog';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {BehaviorSubject, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../project/project.service';
 import {Plot} from '../plot.model';

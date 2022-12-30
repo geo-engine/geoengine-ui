@@ -13,10 +13,10 @@ import {
     ViewChild,
     ViewContainerRef,
 } from '@angular/core';
-import {MatLegacyDialog as MatDialog} from '@angular/material/legacy-dialog';
+import {MatDialog} from '@angular/material/dialog';
 import {MatIconRegistry} from '@angular/material/icon';
 import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
-import {MatLegacyTabGroup as MatTabGroup} from '@angular/material/legacy-tabs';
+import {MatTabGroup} from '@angular/material/tabs';
 import {
     AddDataButton,
     AddDataComponent,

@@ -15,7 +15,7 @@
     </button>
 </mat-toolbar>
 <mat-toolbar *ngIf="sidenavRef.hasSearchComponentStream() | async">
-    <mat-form-field fxFlex floatLabel="never">
+    <mat-form-field class="search-form" subscriptSizing="dynamic">
         <mat-icon matPrefix>search</mat-icon>
         <mat-label>Search</mat-label>
         <input matInput type="text" [(ngModel)]="searchTerm" (ngModelChange)="sidenavRef.searchTerm($event)" />

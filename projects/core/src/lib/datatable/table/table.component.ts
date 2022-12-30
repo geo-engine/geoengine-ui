@@ -11,7 +11,7 @@ import {
     SimpleChanges,
     ChangeDetectorRef,
 } from '@angular/core';
-import {MatLegacyPaginator as MatPaginator} from '@angular/material/legacy-paginator';
+import {MatPaginator} from '@angular/material/paginator';
 import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
 import {RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metadata.model';
 import {Layer, RasterLayer, VectorLayer} from '../../layers/layer.model';
@@ -22,7 +22,7 @@ import {VectorData} from '../../layers/layer-data.model';
 import {DataSource} from '@angular/cdk/collections';
 import OlGeometry from 'ol/geom/Geometry';
 import OlPolygon from 'ol/geom/Polygon';
-import {MatLegacyDialog as MatDialog} from '@angular/material/legacy-dialog';
+import {MatDialog} from '@angular/material/dialog';
 import {FullDisplayComponent} from './full-display/full-display.component';
 import {MediaviewComponent} from '../mediaview/mediaview.component';
 import {VectorColumnDataType, VectorColumnDataTypes} from '../../operators/datatype.model';

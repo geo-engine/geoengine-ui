@@ -17,7 +17,6 @@ import {MapService} from '../../../map/map.service';
 import {ProjectService} from '../../../project/project.service';
 import {Config} from '../../../config.service';
 import {BackendService} from '../../../backend/backend.service';
-import {MatLegacySliderChange as MatSliderChange} from '@angular/material/legacy-slider';
 import {HistogramDict, HistogramParams} from '../../../backend/operator.model';
 import {LinearGradient, LogarithmicGradient, PaletteColorizer} from '../../../colors/colorizer.model';
 import {ColorAttributeInput} from '../../../colors/color-attribute-input/color-attribute-input.component';
@@ -150,12 +149,8 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     /**
      * Set the opacity value from a slider change event
      */
-    updateOpacity(event: MatSliderChange): void {
-        if (!event || !event.value) {
-            return;
-        }
-
-        const opacity = event.value / 100;
+    updateOpacity(value: number): void {
+        const opacity = value / 100;
 
         this.symbology = this.symbology.cloneWith({opacity});
 
