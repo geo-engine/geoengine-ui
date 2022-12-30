@@ -172,6 +172,8 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
 
     symbologyChangeHandler(rasterSymbology: RasterSymbology) {
         console.log('Event was emitted by child');
+        console.log(rasterSymbology);
+        this.symbology = rasterSymbology;
     }
 
     updateDefaultColor(defaultColorInput: ColorAttributeInput): void {

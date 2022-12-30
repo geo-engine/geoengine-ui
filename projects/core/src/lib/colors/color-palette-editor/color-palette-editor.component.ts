@@ -25,12 +25,10 @@ export class ColorPaletteEditorComponent implements OnInit {
         const newColor: ColorAttributeInput = {key: 'test', value: this.getPaletteColorizer().getColorAtIndex(0)};
         this.testColor = newColor;
         this.allColors = this.createColorAttributeInputs();
-        console.log(this.colorMap);
     }
 
     debugClick(): void {
         console.log('Number:');
-
         console.log(this.getPaletteColorizer().getNumberOfColors());
         console.log('Individuals:');
         console.log(this.allColors);
@@ -51,8 +49,6 @@ export class ColorPaletteEditorComponent implements OnInit {
     }
 
     updateColor(pos: number, color: ColorAttributeInput): void {
-        console.log('Changing pos' + pos + ' to:');
-        console.log(color.value);
         this.colorMap.set(pos, color.value);
         const colors = this.colorMap;
         const colorizer = this.getPaletteColorizer().cloneWith({colors}); // must be named 'colors'?
