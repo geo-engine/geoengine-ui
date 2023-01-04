@@ -281,9 +281,6 @@ export class AppComponent implements OnInit, AfterViewInit {
         const handleBasketSubscription: (p: ParamMap) => void = (p: ParamMap) => {
             const collectionId = p.get('collectionId');
             if (collectionId != null) {
-                // this.basketService.handleBasket(collectionId).subscribe((result) => {
-                //     this.dialog.open(BasketDialogComponent, {data: {result}});
-                // });
                 this.layerService
                     .getLayerCollectionItems(this.GFBIO_COLLECTIONS_DATA_PROVIDER_ID, `collections/${collectionId}`)
                     .subscribe((result) => {
