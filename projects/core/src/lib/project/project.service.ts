@@ -26,7 +26,7 @@ import {
 } from '../backend/backend.model';
 import {UserService} from '../users/user.service';
 import {LayerData, RasterData, VectorData} from '../layers/layer-data.model';
-import {extentToBboxDict} from '../util/conversions';
+import {extentToBboxDict, subscribeAndProvide} from '../util/conversions';
 import {Extent, MapService} from '../map/map.service';
 import {Session} from '../users/session.model';
 import {HasPlotId, Plot} from '../plots/plot.model';
@@ -274,7 +274,7 @@ export class ProjectService {
             }),
         );
 
-        return ProjectService.subscribeAndProvide(result);
+        return subscribeAndProvide(result);
     }
 
     /**
@@ -305,7 +305,7 @@ export class ProjectService {
             }),
         );
 
-        return ProjectService.subscribeAndProvide(result);
+        return subscribeAndProvide(result);
     }
 
     /**
@@ -444,7 +444,7 @@ export class ProjectService {
             }),
         );
 
-        return ProjectService.subscribeAndProvide(result);
+        return subscribeAndProvide(result);
     }
 
     /**
@@ -466,7 +466,7 @@ export class ProjectService {
             }),
         );
 
-        return ProjectService.subscribeAndProvide(result);
+        return subscribeAndProvide(result);
     }
 
     /**
@@ -563,7 +563,7 @@ export class ProjectService {
             tap(() => this.removePlotSubscriptions(plot)),
         );
 
-        return ProjectService.subscribeAndProvide(result);
+        return subscribeAndProvide(result);
     }
 
     /**
@@ -731,7 +731,7 @@ export class ProjectService {
             }),
         );
 
-        return ProjectService.subscribeAndProvide(result);
+        return subscribeAndProvide(result);
     }
 
     /**
@@ -757,7 +757,7 @@ export class ProjectService {
             }),
         );
 
-        return ProjectService.subscribeAndProvide(result);
+        return subscribeAndProvide(result);
     }
 
     /**
@@ -777,7 +777,7 @@ export class ProjectService {
             tap(() => removedPlots.forEach((plot) => this.removePlotSubscriptions(plot))),
         );
 
-        return ProjectService.subscribeAndProvide(result);
+        return subscribeAndProvide(result);
     }
 
     /**
@@ -802,7 +802,7 @@ export class ProjectService {
         },
     ): Observable<void> {
         if (Object.keys(changes).length === 0) {
-            return ProjectService.subscribeAndProvide(of(undefined));
+            return subscribeAndProvide(of(undefined));
         }
 
         layer = layer.updateFields(changes);
@@ -816,7 +816,7 @@ export class ProjectService {
             }),
         );
 
-        return ProjectService.subscribeAndProvide(result);
+        return subscribeAndProvide(result);
     }
 
     /**
@@ -854,7 +854,7 @@ export class ProjectService {
             tap((project) => this.setProject(project)),
         );
 
-        return ProjectService.subscribeAndProvide(result);
+        return subscribeAndProvide(result);
     }
 
     /**
@@ -919,22 +919,6 @@ export class ProjectService {
                 source: inputOperator,
             },
         } as ReprojectionDict;
-    }
-
-    /**
-     * Subscribes to the observable and consumes it completely.
-     * Returns a new observable to listen to the values.
-     */
-    protected static subscribeAndProvide<T>(observable: Observable<T>): Observable<T> {
-        const subject = new ReplaySubject<T>();
-
-        observable.subscribe({
-            next: (value) => subject.next(value),
-            error: (error) => subject.error(error),
-            complete: () => subject.complete(),
-        });
-
-        return subject.asObservable();
     }
 
     protected loadMostRecentProject(session: Session): Observable<Project> {
@@ -1035,7 +1019,7 @@ export class ProjectService {
     }): Observable<void> {
         // don't request the server if there are no changes
         if (Object.keys(changes).length === 0) {
-            return ProjectService.subscribeAndProvide(of(undefined));
+            return subscribeAndProvide(of(undefined));
         }
 
         const result = combineLatest([this.getProjectOnce(), this.userService.getSessionTokenForRequest()]).pipe(
@@ -1068,7 +1052,7 @@ export class ProjectService {
             }),
         );
 
-        return ProjectService.subscribeAndProvide(result);
+        return subscribeAndProvide(result);
     }
 
     private createCombinedLoadingState(layer: HasLayerId): void {

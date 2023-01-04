@@ -21,8 +21,12 @@
             <mat-row *matRowDef="let row; columns: ['name', 'status']"></mat-row>
         </mat-table>
     </div>
-    <div class="actions">
+    <div class="actions" *ngIf="(addingLayers$ | async) === false">
         <button *ngIf="hasLayers$ | async" mat-raised-button color="primary" (click)="replaceLayers()">Replace Layers</button>
         <button mat-raised-button color="primary" (click)="appendLayers()">Add Layers</button>
     </div>
+
+    <ng-container>
+        <mat-progress-bar *ngIf="addingLayers$ | async" mode="query"></mat-progress-bar>
+    </ng-container>
 </mat-dialog-content>

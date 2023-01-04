@@ -2,7 +2,7 @@ import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {LayerCollectionDict, LayerCollectionItemDict, LayerCollectionService, ProjectService} from '@geoengine/core';
 import {map, mergeMap} from 'rxjs/operators';
-import {Observable, of} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 
 enum LayerStatus {
     Ok = 'ok',
@@ -18,6 +18,8 @@ enum LayerStatus {
 export class GfBioCollectionDialogComponent {
     collection: LayerCollectionDict;
     hasLayers$: Observable<boolean>;
+
+    readonly addingLayers$ = new BehaviorSubject(false);
 
     constructor(
         private readonly projectService: ProjectService,
@@ -40,22 +42,24 @@ export class GfBioCollectionDialogComponent {
     }
 
     appendLayers(): void {
+        this.addingLayers$.next(true);
+
         const filteredCollection = this.collection;
         this.collection.items = this.getOkLayers();
 
-        this.layerService.addCollectionLayersToProject(filteredCollection);
-        this.dialogRef.close();
+        this.layerService.addCollectionLayersToProject(filteredCollection).subscribe(() => this.dialogRef.close());
     }
 
     replaceLayers(): void {
+        this.addingLayers$.next(true);
+
         const filteredCollection = this.collection;
         this.collection.items = this.getOkLayers();
 
         this.projectService
             .clearLayers()
-            .pipe(mergeMap(() => of(this.layerService.addCollectionLayersToProject(filteredCollection))))
-            .subscribe();
-        this.dialogRef.close();
+            .pipe(mergeMap(() => this.layerService.addCollectionLayersToProject(filteredCollection)))
+            .subscribe(() => this.dialogRef.close());
     }
 
     private getOkLayers(): LayerCollectionItemDict[] {
