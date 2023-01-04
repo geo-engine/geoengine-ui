@@ -30,6 +30,7 @@ import {
 } from '../layers/symbology/symbology.model';
 import {colorToDict} from '../colors/color';
 import {RandomColorService} from '../util/services/random-color.service';
+import {subscribeAndProvide} from '../util/conversions';
 
 @Injectable({
     providedIn: 'root',
@@ -80,25 +81,21 @@ export class LayerCollectionService {
     /**
      * Add all layers (directly) contained in a layer collection to the current project.
      */
-    addCollectionLayersToProject(collection: LayerCollectionDict): void {
+    addCollectionLayersToProject(collection: LayerCollectionDict): Observable<void> {
         const layersObservable = collection.items
             .filter((layer) => layer.type === 'layer')
             .map((layer) => layer as LayerCollectionLayerDict)
             .map((layer) => this.resolveLayer(layer.id));
 
         // TODO: lookup in parallel
-        zip(layersObservable)
-            .pipe(map((layers) => this.projectService.addLayers(layers)))
-            .subscribe();
+        return subscribeAndProvide(zip(layersObservable).pipe(mergeMap((layers) => this.projectService.addLayers(layers))));
     }
 
     /**
      * Add a layer to the current project.
      */
-    addLayerToProject(layerId: ProviderLayerIdDict): void {
-        this.resolveLayer(layerId).subscribe((layer: Layer) => {
-            this.projectService.addLayer(layer);
-        });
+    addLayerToProject(layerId: ProviderLayerIdDict): Observable<void> {
+        return subscribeAndProvide(this.resolveLayer(layerId).pipe(mergeMap((layer: Layer) => this.projectService.addLayer(layer))));
     }
 
     private resolveLayer(layerId: ProviderLayerIdDict): Observable<Layer> {

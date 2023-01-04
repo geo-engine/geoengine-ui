@@ -4,6 +4,7 @@ import {Feature as OlFeature} from 'ol';
 import OlFormatGeoJson from 'ol/format/GeoJSON';
 import OlGeometry from 'ol/geom/Geometry';
 import {Extent as OlExtent} from 'ol/extent';
+import {Observable, ReplaySubject} from 'rxjs';
 
 /**
  * Converts an `OlExtent` to an extent as a tuple of four numbers.
@@ -68,4 +69,20 @@ export function featureToHash(feature: OlFeature<OlGeometry>): number {
     const json = JSON.stringify(jsonObj);
 
     return hashCode(json);
+}
+
+/**
+ * Subscribes to the observable and consumes it completely.
+ * Returns a new observable to listen to the values.
+ */
+export function subscribeAndProvide<T>(observable: Observable<T>): Observable<T> {
+    const subject = new ReplaySubject<T>();
+
+    observable.subscribe({
+        next: (value) => subject.next(value),
+        error: (error) => subject.error(error),
+        complete: () => subject.complete(),
+    });
+
+    return subject.asObservable();
 }
