@@ -19,6 +19,7 @@
     </mat-toolbar>
 </div>
 
+<!-- TODO: use default font size for layer menu -->
 <mat-menu #layerListMenu="matMenu">
     <button
         mat-menu-item
@@ -28,19 +29,19 @@
     >
         <mat-icon *ngSwitchCase="true">expand_less</mat-icon>
         <mat-icon *ngSwitchCase="false">expand_more</mat-icon>
-        <span>Show/Hide Layer List</span>
+        <span class="mat-body-2">Show/Hide Layer List</span>
     </button>
     <button mat-menu-item *ngIf="(mapIsGrid$ | async) === false" (click)="mapService.setGrid(true)">
         <mat-icon>view_module</mat-icon>
-        <span>Switch to Grid View</span>
+        <span class="mat-body-2">Switch to Grid View</span>
     </button>
     <button mat-menu-item *ngIf="mapIsGrid$ | async" (click)="mapService.setGrid(false)">
         <mat-icon>aspect_ratio</mat-icon>
-        <span>Switch to Mono Map View</span>
+        <span class="mat-body-2">Switch to Mono Map View</span>
     </button>
     <button mat-menu-item (click)="projectService.clearLayers()">
         <mat-icon>delete_sweep</mat-icon>
-        <span>Remove All Layers</span>
+        <span class="mat-body-2">Remove All Layers</span>
     </button>
     <ng-content select=".menu-buttons"></ng-content>
 </mat-menu>
