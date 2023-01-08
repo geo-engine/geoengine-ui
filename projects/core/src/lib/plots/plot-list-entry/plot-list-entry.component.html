@@ -22,11 +22,11 @@
         </ng-template>
     </mat-card-content>
     <mat-card-actions *ngIf="isOk" fxLayout="row">
-        <button mat-button (click)="showFullscreen()">
+        <button mat-icon-button (click)="showFullscreen()">
             <mat-icon>fullscreen</mat-icon>
         </button>
         <span fxFlex></span>
-        <button mat-button (click)="removePlot()">
+        <button mat-icon-button (click)="removePlot()">
             <mat-icon>delete</mat-icon>
         </button>
     </mat-card-actions>
@@ -34,11 +34,11 @@
         <em>{{ plotError?.message }}</em>
     </mat-card-content>
     <mat-card-actions *ngIf="isError" fxLayout="row">
-        <button mat-button (click)="reloadPlot()" class="error">
+        <button mat-icon-button (click)="reloadPlot()" class="error">
             <mat-icon>replay</mat-icon>
         </button>
         <span fxFlex></span>
-        <button mat-button (click)="removePlot()">
+        <button mat-icon-button (click)="removePlot()">
             <mat-icon>delete</mat-icon>
         </button>
     </mat-card-actions>
