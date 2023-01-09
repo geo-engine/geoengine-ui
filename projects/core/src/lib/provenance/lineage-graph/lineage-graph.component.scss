@@ -116,16 +116,16 @@ $operator-border-height: 1px;
     stroke-dasharray: 5, 5;
 }
 
-::ng-deep .mat-list .mat-list-item .mat-line {
+::ng-deep .mat-mdc-list .mat-mdc-list-item .mat-line {
     word-wrap: break-word;
     white-space: pre-wrap;
 }
 
-::ng-deep .mat-list .mat-list-item {
+::ng-deep .mat-mdc-list .mat-mdc-list-item {
     height: initial !important;
 }
 
-::ng-deep .mat-list .mat-list-item code {
+::ng-deep .mat-mdc-list .mat-mdc-list-item code {
     font-size: smaller !important;
 }
 

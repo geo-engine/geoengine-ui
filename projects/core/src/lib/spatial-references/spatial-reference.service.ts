@@ -152,7 +152,7 @@ export class SpatialReferenceService {
                     new OlProjection({
                         code: spec.spatialReference.srsString,
                         extent: spec.extent,
-                        units: '', // TODO: get units from proj or backend
+                        units: undefined, // TODO: get units from proj or backend
                     }),
                 );
 

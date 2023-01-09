@@ -18,17 +18,12 @@
     }
 }
 
-.operator-dialog-section {
-    border-style: solid;
-    border-width: 1px;
-    border-color: var(--geoengine-divider-color);
-    border-radius: 0.25rem;
+mat-card {
     margin: 1rem;
-    padding: 0rem 1rem 1rem 1rem;
+}
 
-    h3 {
-        color: var(--geoengine-foreground-secondary-text-color);
-    }
+mat-card-content {
+    margin-top: 1rem;
 }
 
 .parameters-content:not(:empty) + .parameters-empty {

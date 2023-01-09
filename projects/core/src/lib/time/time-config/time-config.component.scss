@@ -7,12 +7,16 @@
     color: var(--geoengine-warn-color, red);
 }
 
-mat-card-header ::ng-deep .mat-card-header-text {
-    margin: 0;
+mat-card {
+    margin-bottom: 1rem;
 }
 
-.actions button {
-    margin-left: 1rem;
+mat-card-content {
+    margin-top: 1rem;
+}
+
+mat-card-actions :not(:last-child) {
+    margin-right: 1rem;
 }
 
 mat-form-field {

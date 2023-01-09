@@ -1,14 +1,7 @@
 <div *ngIf="displayTimeSlider()" class="container mat-typography" fxLayout="row" fxLayoutAlign="space-between center">
-    <mat-slider
-        thumbLabel="true"
-        [min]="min"
-        [max]="max"
-        [(value)]="currentTimeIndex"
-        [step]="step"
-        [tickInterval]="tickInterval"
-        [displayWith]="thumbLabelDisplay()"
-        (change)="setTime($event)"
-    ></mat-slider>
+    <mat-slider [min]="min" [max]="max" [step]="step" showTickMarks discrete [displayWith]="thumbLabelDisplay()">
+        <input matSliderThumb (ngModelChange)="setTime($event)" [(ngModel)]="currentTimeIndex" />
+    </mat-slider>
     <span>{{ currentTimeFormatted | async }}</span>
 </div>
 
