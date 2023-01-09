@@ -3,7 +3,7 @@ img {
     height: auto;
 }
 
-img.mat-card-avatar {
+img[mat-card-avatar] {
     height: 40px;
     width: auto;
     border-radius: 50%;

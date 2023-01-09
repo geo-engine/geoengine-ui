@@ -1,16 +1,21 @@
 <geoengine-sidenav-header>Notifications</geoengine-sidenav-header>
 <p *ngIf="notifications.length === 0" class="no-notifications">no notifications available</p>
-<mat-card *ngIf="notifications.length">
-    <mat-list *ngFor="let notification of notifications" dense>
-        <mat-list-item>
-            <button class="deleteIcon" mat-icon-button (click)="removeCurrentNotification(notification)">
-                <mat-icon>delete</mat-icon>
-            </button>
-            <mat-icon *ngIf="notification.type" matListIcon color="warn">error</mat-icon>
-            <mat-icon *ngIf="!notification.type" matListIcon>notifications</mat-icon>
-            <h3 matLine>{{ notification.message }}</h3>
-        </mat-list-item>
-        <mat-divider></mat-divider>
+<mat-card appearance="outlined" *ngIf="notifications.length">
+    <mat-list dense>
+        <ng-container *ngFor="let notification of notifications; last as isLast">
+            <mat-list-item>
+                <mat-icon *ngIf="notification.type" matListItemIcon color="warn">error</mat-icon>
+                <mat-icon *ngIf="!notification.type" matListItemIcon>notifications</mat-icon>
+
+                <p>{{ notification.message }}</p>
+
+                <button class="deleteIcon" mat-icon-button matListItemMeta (click)="removeCurrentNotification(notification)">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </mat-list-item>
+
+            <mat-divider *ngIf="!isLast"></mat-divider>
+        </ng-container>
     </mat-list>
 </mat-card>
 <div class="actions">

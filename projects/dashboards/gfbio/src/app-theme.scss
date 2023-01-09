@@ -1,6 +1,15 @@
 @use '@angular/material' as mat;
 
 // Material Base Styles
+// TODO(v15): As of v15 mat.legacy-core no longer includes default typography styles.
+//  The following line adds:
+//    1. Default typography styles for all components
+//    2. Styles for typography hierarchy classes (e.g. .mat-headline-1)
+//  If you specify typography styles for the components you use elsewhere, you should delete this line.
+//  If you don't need the default component typographies but still want the hierarchy styles,
+//  you can delete this line and instead use:
+//    `@include mat.legacy-typography-hierarchy(mat.define-typography-config());`
+@include mat.all-component-typographies();
 @include mat.core();
 
 // Define Colors
@@ -75,8 +84,18 @@ $geoengine-primary: mat.define-palette($gfbio-darkblue);
 $geoengine-accent: mat.define-palette($gfbio-green, A200, A100, A400);
 $geoengine-warn: mat.define-palette(mat.$red-palette);
 
-// Create the theme object (a Sass map containing all of the palettes).
-$geoengine-theme: mat.define-light-theme($geoengine-primary, $geoengine-accent, $geoengine-warn);
+// Create the theme object
+$geoengine-theme: mat.define-light-theme(
+    (
+        color: (
+            primary: $geoengine-primary,
+            accent: $geoengine-accent,
+            warn: $geoengine-warn,
+        ),
+        typography: mat.define-typography-config(),
+        density: 0,
+    )
+);
 
 // Apply Angular Material Mixin to Color Theme
 @include mat.all-component-themes($geoengine-theme);

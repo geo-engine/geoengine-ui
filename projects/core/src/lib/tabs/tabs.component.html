@@ -10,7 +10,7 @@
     <mat-icon *ngSwitchCase="false">expand_less</mat-icon>
     <mat-icon *ngSwitchCase="true">expand_more</mat-icon>
 </button>
-<nav mat-tab-nav-bar>
+<nav mat-tab-nav-bar [tabPanel]="tabPanel" mat-stretch-tabs="false">
     <a
         mat-tab-link
         class="tab-link"
@@ -20,9 +20,10 @@
         [active]="tabContent === tabsService.activeTab"
     >
         <span fxFlex *ngIf="tabContent.name | async as tabContentName" [matTooltip]="tabContentName">{{ tabContentName }}</span>
-        <mat-icon class="close-button" (click)="closeTab(tabContent)">close</mat-icon>
+        <mat-icon class="close-button" style="pointer-events: auto" (click)="closeTab(tabContent)">close</mat-icon>
     </a>
 </nav>
+<mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
 <div [style.height.px]="contentHeight">
     <ng-template cdkPortalOutlet></ng-template>
 </div>

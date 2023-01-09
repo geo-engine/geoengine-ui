@@ -17,4 +17,9 @@ mat-list-item {
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+
+    mat-icon {
+        color: black;
+        margin-top: 1.5rem !important;
+    }
 }

@@ -51,7 +51,7 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
                 )
                 .subscribe(() => {
                     setTimeout(() => {
-                        const cardContent = this.elementRef.nativeElement.querySelector('mat-card');
+                        const cardContent = this.elementRef.nativeElement.querySelector('mat-card-content');
                         const width = parseInt(getComputedStyle(cardContent).width, 10);
                         this.cardWidth$.next(width);
                     });

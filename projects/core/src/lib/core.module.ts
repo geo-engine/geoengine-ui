@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
-import {MatCardModule} from '@angular/material/card';
+import {MatCardModule, MAT_CARD_CONFIG} from '@angular/material/card';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatDatepickerModule} from '@angular/material/datepicker';
@@ -332,6 +332,9 @@ const CORE_COMPONENTS = [
         ...CORE_PIPES,
         ...CORE_COMPONENTS,
     ],
-    providers: [{provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}}],
+    providers: [
+        {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}},
+        {provide: MAT_CARD_CONFIG, useValue: {appearance: 'outlined'}},
+    ],
 })
 export class CoreModule {}

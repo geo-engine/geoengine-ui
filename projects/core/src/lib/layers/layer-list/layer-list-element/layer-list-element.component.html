@@ -1,55 +1,56 @@
 <div class="container">
     <div class="layer-list-element" [class.list-item-extended]="layer.isLegendVisible">
+        <!-- TODO: use default font size for layer menu -->
         <mat-menu #layerMenu="matMenu" [hidden]="menu">
             <button mat-menu-item *ngIf="layer.isVisible" (click)="projectService.changeLayer(layer, {isVisible: false})">
                 <mat-icon>visibility_off</mat-icon>
-                <span>Hide Layer</span>
+                <span class="mat-body-2">Hide Layer</span>
             </button>
             <button mat-menu-item *ngIf="!layer.isVisible" (click)="projectService.changeLayer(layer, {isVisible: true})">
                 <mat-icon>visibility</mat-icon>
-                <span>Show Layer</span>
+                <span class="mat-body-2">Show Layer</span>
             </button>
 
             <button mat-menu-item *ngIf="!layer.isLegendVisible" (click)="toggleLegend(layer)">
                 <mat-icon>expand_more</mat-icon>
-                <span>Show Legend</span>
+                <span class="mat-body-2">Show Legend</span>
             </button>
             <button mat-menu-item *ngIf="layer.isLegendVisible" (click)="toggleLegend(layer)">
                 <mat-icon>expand_less</mat-icon>
-                <span>Hide Legend</span>
+                <span class="mat-body-2">Hide Legend</span>
             </button>
 
             <button mat-menu-item (click)="dialog.open(LineageGraphComponent, {data: {layer: layer}})">
                 <mat-icon>merge_type</mat-icon>
-                <span>Lineage</span>
+                <span class="mat-body-2">Lineage</span>
             </button>
             <button mat-menu-item (click)="projectService.removeLayer(layer)">
                 <mat-icon>delete</mat-icon>
-                <span>Remove</span>
+                <span class="mat-body-2">Remove</span>
             </button>
             <button mat-menu-item (click)="dialog.open(RenameLayerComponent, {data: {layer: layer}})">
                 <mat-icon>mode_edit</mat-icon>
-                <span>Rename</span>
+                <span class="mat-body-2">Rename</span>
             </button>
             <button mat-menu-item (click)="showSymbologyEditor(layer)">
                 <mat-icon>color_lens</mat-icon>
-                <span>Edit Symbology</span>
+                <span class="mat-body-2">Edit Symbology</span>
             </button>
             <button mat-menu-item (click)="showProvenance(layer)">
                 <mat-icon>description</mat-icon>
-                <span>Show Provenance</span>
+                <span class="mat-body-2">Show Provenance</span>
             </button>
             <button mat-menu-item (click)="showDatatable(layer)">
                 <mat-icon>table</mat-icon>
-                <span>Show Datatable</span>
+                <span class="mat-body-2">Show Datatable</span>
             </button>
             <button mat-menu-item (click)="copyWorkflowIdToClipboard(layer)">
                 <mat-icon>content_copy</mat-icon>
-                <span>Copy Workflow Id to Clipboard</span>
+                <span class="mat-body-2">Copy Workflow Id to Clipboard</span>
             </button>
             <button mat-menu-item (click)="downloadMetadata(layer)">
                 <mat-icon>file_download</mat-icon>
-                <span>Download Metadata</span>
+                <span class="mat-body-2">Download Metadata</span>
             </button>
             <!--                                    <button mat-menu-item (click)="dialog.open(LayerExportComponent, {data: {layer: layer}})">-->
             <!--                                        <mat-icon>file_download</mat-icon>-->
