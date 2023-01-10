@@ -1,10 +1,10 @@
 <div fxLayout="row">
     <h4>Select input {{ title }}</h4>
     <div fxFlex fxLayout="row" fxLayoutAlign="end">
-        <button mat-button color="primary" type="button" (click)="add()" *ngIf="max - min > 0" [disabled]="layersAtMax | async">
+        <button mat-icon-button color="primary" type="button" (click)="add()" *ngIf="max - min > 0" [disabled]="layersAtMax | async">
             <mat-icon>add_circle_outline</mat-icon>
         </button>
-        <button mat-button color="primary" type="button" (click)="remove()" *ngIf="max - min > 0" [disabled]="layersAtMin | async">
+        <button mat-icon-button color="primary" type="button" (click)="remove()" *ngIf="max - min > 0" [disabled]="layersAtMin | async">
             <mat-icon>remove_circle_outline</mat-icon>
         </button>
     </div>

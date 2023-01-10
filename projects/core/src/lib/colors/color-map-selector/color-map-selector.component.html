@@ -34,7 +34,7 @@
             <mat-label>Colormap name</mat-label>
             <mat-select formControlName="colorMap">
                 <mat-option *ngFor="let colorMap of colorMaps | keyvalue" [value]="colorMap.value">
-                    <span class="colorizer_option_preview" [style.background]="colorMap.value | geoengineRgbaTuplesCssGradient: 90"></span>
+                    <span class="colorizer_option_preview" [style.background]="colorMap.value | geoengineRgbaTuplesCssGradient : 90"></span>
                     {{ colorMap.key }}
                 </mat-option>
             </mat-select>
@@ -47,13 +47,8 @@
                 <tr>
                     <td><span>Color steps</span></td>
                     <td class="fill_width">
-                        <mat-slider
-                            formControlName="colorMapSteps"
-                            [min]="2"
-                            [max]="maxColormapSteps"
-                            [tickInterval]="1"
-                            [thumbLabel]="true"
-                        >
+                        <mat-slider [min]="2" [max]="maxColormapSteps" [step]="1" [discrete]="true">
+                            <input matSliderThumb formControlName="colorMapSteps" />
                         </mat-slider>
                     </td>
                     <td>{{ form.controls.colorMapSteps.value }}</td>
@@ -65,7 +60,7 @@
                         <div
                             *ngIf="!!breakpoints"
                             class="colorizer_preview fill_width"
-                            [style.background]="breakpoints | geoengineColorBreakpointsCssGradient: 90"
+                            [style.background]="breakpoints | geoengineColorBreakpointsCssGradient : 90"
                         ></div>
                     </td>
                 </tr>
