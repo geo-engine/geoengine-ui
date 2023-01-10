@@ -26,7 +26,7 @@
     </mat-form-field>
 
     <mat-progress-bar
-        [mode]="dataSelectionService.species1LoadingState$ | async | valueDefault: 'determinate'"
+        [mode]="dataSelectionService.species1LoadingState$ | async | valueDefault : 'determinate'"
         [value]="100"
         color="accent"
     ></mat-progress-bar>
@@ -71,7 +71,7 @@
     </mat-form-field>
 
     <mat-progress-bar
-        [mode]="dataSelectionService.species2LoadingState$ | async | valueDefault: 'determinate'"
+        [mode]="dataSelectionService.species2LoadingState$ | async | valueDefault : 'determinate'"
         [value]="100"
         color="accent"
     ></mat-progress-bar>
@@ -106,7 +106,7 @@
     <geoengine-time-step-selector
         class="mat-elevation-z4"
         timeFormat="YYYY"
-        [timeSteps]="dataSelectionService.timeSteps | async | valueDefault: []"
+        [timeSteps]="dataSelectionService.timeSteps | async | valueDefault : []"
     ></geoengine-time-step-selector>
     <div fxLayout="row" class="startEndYears mat-caption">
         <span>{{ startYear }}</span>
@@ -162,15 +162,9 @@
     <p [innerText]="selectedEnvironmentCitation | async" class="mat-caption"></p>
 
     <div class="container mat-typography" fxLayout="row" fxLayoutAlign="space-between center">
-        <mat-slider
-            thumbLabel="true"
-            [min]="1"
-            [max]="12"
-            [step]="1"
-            [tickInterval]="1"
-            (change)="setMonth($event.value)"
-            fxFlex
-        ></mat-slider>
+        <mat-slider showTickMarks discrete [min]="1" [max]="12" [step]="1" fxFlex>
+            <input matSliderThumb [ngModel]="1" (ngModelChange)="setMonth($event)" />
+        </mat-slider>
         <span fxFlex="1rem"></span>
         <span fxFlex="4rem">{{ thumbLabelMonthDisplay(currentMonth) }}</span>
     </div>

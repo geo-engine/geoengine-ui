@@ -159,35 +159,35 @@
 
             <mat-form-field class="example-chip-list">
                 <mat-label>Text Columns</mat-label>
-                <mat-chip-list #columnTextList formControlName="columnsText">
-                    <mat-chip *ngFor="let column of formMetaData.controls.columnsText.value" (removed)="removeText(column)">
+                <mat-chip-grid #columnTextList formControlName="columnsText">
+                    <mat-chip-row *ngFor="let column of formMetaData.controls.columnsText.value" (removed)="removeText(column)">
                         {{ column }}
                         <mat-icon matChipRemove>cancel</mat-icon>
-                    </mat-chip>
+                    </mat-chip-row>
                     <input placeholder="New column..." [matChipInputFor]="columnTextList" (matChipInputTokenEnd)="addText($event)" />
-                </mat-chip-list>
+                </mat-chip-grid>
             </mat-form-field>
 
             <mat-form-field class="example-chip-list">
                 <mat-label>Float Columns</mat-label>
-                <mat-chip-list #columnNumericList formControlName="columnsFloat">
-                    <mat-chip *ngFor="let column of formMetaData.controls.columnsFloat.value" (removed)="removeFloat(column)">
+                <mat-chip-grid #columnNumericList formControlName="columnsFloat">
+                    <mat-chip-row *ngFor="let column of formMetaData.controls.columnsFloat.value" (removed)="removeFloat(column)">
                         {{ column }}
                         <mat-icon matChipRemove>cancel</mat-icon>
-                    </mat-chip>
+                    </mat-chip-row>
                     <input placeholder="New column..." [matChipInputFor]="columnNumericList" (matChipInputTokenEnd)="addFloat($event)" />
-                </mat-chip-list>
+                </mat-chip-grid>
             </mat-form-field>
 
             <mat-form-field class="example-chip-list">
                 <mat-label>Integer Columns</mat-label>
-                <mat-chip-list #columnDecimalList formControlName="columnsInt">
-                    <mat-chip *ngFor="let column of formMetaData.controls.columnsInt.value" (removed)="removeInt(column)">
+                <mat-chip-grid #columnDecimalList formControlName="columnsInt">
+                    <mat-chip-row *ngFor="let column of formMetaData.controls.columnsInt.value" (removed)="removeInt(column)">
                         {{ column }}
                         <mat-icon matChipRemove>cancel</mat-icon>
-                    </mat-chip>
+                    </mat-chip-row>
                     <input placeholder="New column..." [matChipInputFor]="columnDecimalList" (matChipInputTokenEnd)="addInt($event)" />
-                </mat-chip-list>
+                </mat-chip-grid>
             </mat-form-field>
 
             <mat-form-field appearance="fill">

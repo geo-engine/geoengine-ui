@@ -34,7 +34,7 @@
     }
 }
 
-:host ::ng-deep .mat-tab-header {
+:host ::ng-deep .mat-mdc-tab-header {
     height: 3rem;
 
     margin-left: 3rem;
@@ -47,7 +47,7 @@
 }
 
 @media (max-width: 960px) and (orientation: landscape) {
-    ::ng-deep .mat-tab-header {
+    ::ng-deep .mat-mdc-tab-header {
         height: 2rem;
     }
     ::ng-deep .mat-tab-label {
@@ -55,7 +55,7 @@
     }
 }
 @media (max-width: 600px) and (orientation: portrait) {
-    ::ng-deep .mat-tab-header {
+    ::ng-deep .mat-mdc-tab-header {
         height: 2.5rem;
     }
     ::ng-deep .mat-tab-label {

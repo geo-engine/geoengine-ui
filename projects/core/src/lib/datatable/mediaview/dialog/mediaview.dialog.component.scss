@@ -4,10 +4,6 @@
     }
 }
 
-.mat-dialog-content {
-    max-height: calc(80vh - 68px);
-}
-
 .mediaContainer {
     display: grid;
     grid-template-columns: 60px 50vw 60px minmax(20vw, auto);

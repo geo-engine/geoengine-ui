@@ -1,10 +1,10 @@
 <div class="container" fxLayout="row" fxLayoutAlign="center center">
-    <mat-card class="info">
-        <mat-card-title-group>
+    <mat-card appearance="outlined" class="info">
+        <mat-card-header>
             <mat-icon matCardTitle svgIcon="geoengine:logo-alt" aria-label="Geo Engine" [inline]="true"></mat-icon>
             <mat-card-title *ngIf="backendStatus?.available">Backend Available</mat-card-title>
             <mat-card-title *ngIf="!backendStatus?.available">Backend Not Available</mat-card-title>
-        </mat-card-title-group>
+        </mat-card-header>
 
         <mat-card-content *ngIf="backendInfo">
             <mat-list-item>
