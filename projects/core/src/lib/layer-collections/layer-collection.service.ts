@@ -148,43 +148,6 @@ export class LayerCollectionService {
         );
     }
 
-    private doAddLayerToProject(layer: LayerDict, workflowId: UUID, resultDescriptorDict: ResultDescriptorDict): void {
-        const keys = Object.keys(resultDescriptorDict);
-
-        if (keys.includes('columns')) {
-            this.addVectorLayer(layer.name, workflowId, resultDescriptorDict as VectorResultDescriptorDict, layer.symbology);
-        } else if (keys.includes('measurement')) {
-            this.addRasterLayer(layer.name, workflowId, resultDescriptorDict as RasterResultDescriptorDict, layer.symbology);
-        } else {
-            // TODO: implement plots, etc.
-            this.notificationService.error('Adding this workflow type is unimplemented, yet');
-        }
-    }
-
-    private addVectorLayer(
-        layerName: string,
-        workflowId: UUID,
-        resultDescriptor: VectorResultDescriptorDict,
-        symbology?: SymbologyDict,
-    ): void {
-        let vectorSymbology: VectorSymbology;
-        if (symbology && symbology.type !== 'raster') {
-            vectorSymbology = VectorSymbology.fromVectorSymbologyDict(symbology as VectorSymbologyDict);
-        } else {
-            vectorSymbology = this.createVectorSymbology(resultDescriptor.dataType);
-        }
-
-        const layer = new VectorLayer({
-            name: layerName,
-            workflowId,
-            isVisible: true,
-            isLegendVisible: false,
-            symbology: vectorSymbology,
-        });
-
-        this.projectService.addLayer(layer);
-    }
-
     private createVectorSymbology(dataType: 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon'): VectorSymbology {
         switch (dataType) {
             case 'Data':
@@ -218,41 +181,5 @@ export class LayerCollectionService {
                     fillColor: {type: 'static', color: colorToDict(this.randomColorService.getRandomColorRgba())},
                 });
         }
-    }
-
-    private addRasterLayer(
-        layerName: string,
-        workflowId: UUID,
-        _resultDescriptor: RasterResultDescriptorDict,
-        symbology?: SymbologyDict,
-    ): void {
-        let rasterSymbologyDict: RasterSymbologyDict;
-        if (symbology && symbology.type === 'raster') {
-            rasterSymbologyDict = symbology as RasterSymbologyDict;
-        } else {
-            rasterSymbologyDict = {
-                type: 'raster',
-                opacity: 1.0,
-                colorizer: {
-                    type: 'linearGradient',
-                    breakpoints: [
-                        {value: 1, color: [0, 0, 0, 255]},
-                        {value: 255, color: [255, 255, 255, 255]},
-                    ],
-                    defaultColor: [0, 0, 0, 0],
-                    noDataColor: [0, 0, 0, 0],
-                },
-            };
-        }
-
-        const layer = new RasterLayer({
-            name: layerName,
-            workflowId,
-            isVisible: true,
-            isLegendVisible: false,
-            symbology: RasterSymbology.fromRasterSymbologyDict(rasterSymbologyDict),
-        });
-
-        this.projectService.addLayer(layer);
     }
 }
