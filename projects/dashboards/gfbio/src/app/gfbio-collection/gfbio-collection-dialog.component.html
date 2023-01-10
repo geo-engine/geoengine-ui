@@ -22,8 +22,18 @@
         </mat-table>
     </div>
     <div class="actions" *ngIf="(addingLayers$ | async) === false">
-        <button *ngIf="hasLayers$ | async" mat-raised-button color="primary" (click)="replaceLayers()">Replace Layers</button>
-        <button mat-raised-button color="primary" (click)="appendLayers()">Add Layers</button>
+        <button
+            *ngIf="projectHasLayers$ | async"
+            [disabled]="(okLayersInCollection$ | async) === 0"
+            mat-raised-button
+            color="primary"
+            (click)="replaceLayers()"
+        >
+            Replace Layers
+        </button>
+        <button mat-raised-button color="primary" [disabled]="(okLayersInCollection$ | async) === 0" (click)="appendLayers()">
+            Add Layers
+        </button>
     </div>
 
     <ng-container>

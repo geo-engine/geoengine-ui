@@ -17,8 +17,9 @@ enum LayerStatus {
 })
 export class GfBioCollectionDialogComponent {
     collection: LayerCollectionDict;
-    hasLayers$: Observable<boolean>;
+    projectHasLayers$: Observable<boolean>;
 
+    readonly okLayersInCollection$ = new BehaviorSubject(0);
     readonly addingLayers$ = new BehaviorSubject(false);
 
     constructor(
@@ -28,7 +29,8 @@ export class GfBioCollectionDialogComponent {
         @Inject(MAT_DIALOG_DATA) private config: {result: LayerCollectionDict},
     ) {
         this.collection = config.result;
-        this.hasLayers$ = this.projectService.getLayerStream().pipe(map((layers) => layers.length > 0));
+        this.projectHasLayers$ = this.projectService.getLayerStream().pipe(map((layers) => layers.length > 0));
+        this.okLayersInCollection$.next(this.getOkLayers().length);
     }
 
     layerStatus(item: LayerCollectionItemDict): LayerStatus {
