@@ -1,6 +1,6 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {LayerCollectionDict, LayerCollectionItemDict, LayerCollectionService, ProjectService} from '@geoengine/core';
+import {LayerCollectionDict, LayerCollectionItemDict, LayerCollectionService, NotificationService, ProjectService} from '@geoengine/core';
 import {map, mergeMap} from 'rxjs/operators';
 import {BehaviorSubject, Observable} from 'rxjs';
 
@@ -25,12 +25,19 @@ export class GfBioCollectionDialogComponent {
     constructor(
         private readonly projectService: ProjectService,
         private readonly layerService: LayerCollectionService,
-        private dialogRef: MatDialogRef<GfBioCollectionDialogComponent>,
+        private readonly dialogRef: MatDialogRef<GfBioCollectionDialogComponent>,
+        private readonly notificationService: NotificationService,
         @Inject(MAT_DIALOG_DATA) private config: {result: LayerCollectionDict},
     ) {
         this.collection = config.result;
         this.projectHasLayers$ = this.projectService.getLayerStream().pipe(map((layers) => layers.length > 0));
         this.okLayersInCollection$.next(this.getOkLayers().length);
+
+        for (const layer of this.getErrorLayers()) {
+            this.notificationService.error(
+                `The layer "${layer.name}" is supported by VAT, but could not be loaded. Please contact us, so we can fix this.`,
+            );
+        }
     }
 
     layerStatus(item: LayerCollectionItemDict): LayerStatus {
@@ -66,6 +73,10 @@ export class GfBioCollectionDialogComponent {
 
     private getOkLayers(): LayerCollectionItemDict[] {
         return this.collection.items.filter((item) => this.layerStatus(item) === LayerStatus.Ok);
+    }
+
+    private getErrorLayers(): LayerCollectionItemDict[] {
+        return this.collection.items.filter((item) => this.layerStatus(item) === LayerStatus.Error);
     }
 
     private statusFromString(status: string): LayerStatus {
