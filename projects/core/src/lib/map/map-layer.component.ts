@@ -32,6 +32,7 @@ import {olExtentToTuple} from '../util/conversions';
 import TileState from 'ol/TileState';
 import {Extent} from './map.service';
 import {Projection} from 'ol/proj';
+import {NotificationService} from '../notification.service';
 
 type VectorData = any; // TODO: use correct type
 
@@ -186,7 +187,12 @@ export class OlRasterLayerComponent
     protected spatialReference?: SpatialReference;
     protected time?: Time;
 
-    constructor(protected override projectService: ProjectService, protected backend: BackendService, protected config: Config) {
+    constructor(
+        protected override projectService: ProjectService,
+        protected backend: BackendService,
+        protected config: Config,
+        protected notificationService: NotificationService,
+    ) {
         super(
             projectService,
             new OlTileWmsSource({
@@ -309,6 +315,7 @@ export class OlRasterLayerComponent
                 layers: this.workflow,
                 time: this.time.asRequestString(),
                 STYLES: this.stylesFromColorizer(this.symbology.colorizer),
+                EXCEPTIONS: 'application/json',
             },
             projection: this.spatialReference.srsString,
             wrapX: false,
@@ -337,7 +344,12 @@ export class OlRasterLayerComponent
                 if (!data) {
                     tile.setState(TileState.ERROR);
                 } else {
-                    (tile.getImage() as HTMLImageElement).src = URL.createObjectURL(data);
+                    if (data.type === 'image/png') {
+                        (tile.getImage() as HTMLImageElement).src = URL.createObjectURL(data);
+                    } else {
+                        tile.setState(TileState.ERROR);
+                        data.text().then((m: string) => this.notificationService.error(JSON.parse(m)['message']));
+                    }
                 }
             });
             client.addEventListener('error', () => {
