@@ -24,11 +24,10 @@ import {
 import {AppConfig} from './app-config.service';
 import {HelpComponent} from './help/help.component';
 import {SplashDialogComponent} from './splash-dialog/splash-dialog.component';
-import {BasketDialogComponent} from './basket/basket-dialog/basket-dialog.component';
-import {BasketService} from './basket/basket.service';
+import {GfBioCollectionDialogComponent} from './gfbio-collection/gfbio-collection-dialog.component';
 
 @NgModule({
-    declarations: [AppComponent, HelpComponent, SplashDialogComponent, BasketDialogComponent],
+    declarations: [AppComponent, HelpComponent, SplashDialogComponent, GfBioCollectionDialogComponent],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,
@@ -46,7 +45,6 @@ import {BasketService} from './basket/basket.service';
             deps: [Config],
             multi: true,
         },
-        BasketService,
         DatasetService,
         LayoutService,
         MapService,
