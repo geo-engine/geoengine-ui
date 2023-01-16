@@ -5,6 +5,7 @@ import {UserService} from '../users/user.service';
 import {map, mergeMap} from 'rxjs/operators';
 import {
     LayerCollectionDict,
+    LayerCollectionItemDict,
     LayerCollectionLayerDict,
     LayerDict,
     ProviderLayerIdDict,
@@ -79,8 +80,8 @@ export class LayerCollectionService {
     /**
      * Add all layers (directly) contained in a layer collection to the current project.
      */
-    addCollectionLayersToProject(collection: LayerCollectionDict): Observable<void> {
-        const layersObservable = collection.items
+    addCollectionLayersToProject(collectionItems: Array<LayerCollectionItemDict>): Observable<void> {
+        const layersObservable = collectionItems
             .filter((layer) => layer.type === 'layer')
             .map((layer) => layer as LayerCollectionLayerDict)
             .map((layer) => this.resolveLayer(layer.id));
