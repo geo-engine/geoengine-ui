@@ -1,20 +1,15 @@
-.entry-container {
-    display: flex;
-    flex-direction: column;
-    min-width: 600px;
-    max-height: 500px;
-}
+table {
+    width: 100%;
 
-.mat-mdc-table {
-    overflow: auto;
-    max-height: 500px;
-}
-
-.mat-column-status {
-    flex: 0 0 100px !important;
-    width: 100px !important;
-    alignment: center;
-    padding-left: 10px;
+    th,
+    td {
+        white-space: nowrap;
+        padding: 0 0.5rem 0 0.5rem;
+        min-width: 2rem;
+    }
+    .selectColumn {
+        min-width: 1rem;
+    }
 }
 
 span.ok {
@@ -39,4 +34,5 @@ span.error {
 
 .actions button {
     margin-left: 10px;
+    margin-bottom: 10px;
 }
