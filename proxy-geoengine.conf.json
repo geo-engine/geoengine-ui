@@ -1,10 +1,7 @@
 {
     "/api/*": {
-        "target": "https://nightly.peter.geoengine.io/api",
+        "target": "https://nightly.peter.geoengine.io/",
         "changeOrigin": true,
-        "pathRewrite": {
-            "^/api": ""
-        },
         "secure": false,
         "logLevel": "debug"
     },
