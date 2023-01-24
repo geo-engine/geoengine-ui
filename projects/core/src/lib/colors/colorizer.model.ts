@@ -13,6 +13,7 @@ export abstract class Colorizer {
         } else if (dict.type === 'palette') {
             return PaletteColorizer.fromPaletteDict(dict);
         }
+
         throw new Error('Unimplemented or invalid colorizer');
     }
 
@@ -42,11 +43,20 @@ export abstract class Colorizer {
 export class LinearGradient extends Colorizer {
     readonly breakpoints: Array<ColorBreakpoint>;
     readonly noDataColor: Color;
+    readonly overColor: Color;
+    readonly underColor: Color;
+
+    // TODO: refactor
     readonly defaultColor: Color;
 
-    constructor(breakpoints: Array<ColorBreakpoint>, noDataColor: Color, defaultColor: Color) {
+    constructor(breakpoints: Array<ColorBreakpoint>, noDataColor: Color, overColor: Color, underColor: Color) {
         super();
-        this.defaultColor = defaultColor;
+        this.overColor = overColor;
+        this.underColor = underColor;
+
+        // TODO: refactor
+        this.defaultColor = overColor;
+
         this.noDataColor = noDataColor;
         this.breakpoints = breakpoints;
     }
@@ -55,7 +65,8 @@ export class LinearGradient extends Colorizer {
         return new LinearGradient(
             dict.breakpoints.map((b) => ColorBreakpoint.fromDict(b)),
             Color.fromRgbaLike(rgbaColorFromDict(dict.noDataColor)),
-            Color.fromRgbaLike(rgbaColorFromDict(dict.defaultColor)),
+            Color.fromRgbaLike(rgbaColorFromDict(dict.overColor)),
+            Color.fromRgbaLike(rgbaColorFromDict(dict.underColor)),
         );
     }
 
@@ -104,7 +115,8 @@ export class LinearGradient extends Colorizer {
         return new LinearGradient(
             this.breakpoints.map((b) => b.clone()),
             this.noDataColor.clone(),
-            this.defaultColor.clone(),
+            this.overColor.clone(),
+            this.underColor.clone(),
         );
     }
 
@@ -116,6 +128,8 @@ export class LinearGradient extends Colorizer {
         return new LinearGradient(
             updates.breakpoints ?? this.breakpoints.map((b) => b.clone()),
             updates.noDataColor ?? this.noDataColor.clone(),
+            // TODO: refactor
+            updates.defaultColor ?? this.defaultColor.clone(),
             updates.defaultColor ?? this.defaultColor.clone(),
         );
     }
@@ -125,7 +139,8 @@ export class LinearGradient extends Colorizer {
             type: 'linearGradient',
             breakpoints: this.breakpoints.map((b) => b.toDict()),
             noDataColor: colorToDict(this.noDataColor),
-            defaultColor: colorToDict(this.defaultColor),
+            overColor: colorToDict(this.defaultColor),
+            underColor: colorToDict(this.defaultColor),
         };
     }
 
@@ -153,11 +168,20 @@ export class LinearGradient extends Colorizer {
 export class LogarithmicGradient extends Colorizer {
     readonly breakpoints: Array<ColorBreakpoint>;
     readonly noDataColor: Color;
+    readonly overColor: Color;
+    readonly underColor: Color;
+
+    // TODO: refactor
     readonly defaultColor: Color;
 
-    constructor(breakpoints: Array<ColorBreakpoint>, noDataColor: Color, defaultColor: Color) {
+    constructor(breakpoints: Array<ColorBreakpoint>, noDataColor: Color, overColor: Color, underColor: Color) {
         super();
-        this.defaultColor = defaultColor;
+        this.overColor = overColor;
+        this.underColor = underColor;
+
+        // TODO: refactor
+        this.defaultColor = overColor;
+
         this.noDataColor = noDataColor;
         this.breakpoints = breakpoints;
     }
@@ -166,7 +190,8 @@ export class LogarithmicGradient extends Colorizer {
         return new LogarithmicGradient(
             dict.breakpoints.map((b) => ColorBreakpoint.fromDict(b)),
             Color.fromRgbaLike(rgbaColorFromDict(dict.noDataColor)),
-            Color.fromRgbaLike(rgbaColorFromDict(dict.defaultColor)),
+            Color.fromRgbaLike(rgbaColorFromDict(dict.overColor)),
+            Color.fromRgbaLike(rgbaColorFromDict(dict.underColor)),
         );
     }
 
@@ -215,7 +240,8 @@ export class LogarithmicGradient extends Colorizer {
         return new LogarithmicGradient(
             this.breakpoints.map((b) => b.clone()),
             this.noDataColor.clone(),
-            this.defaultColor.clone(),
+            this.overColor.clone(),
+            this.underColor.clone(),
         );
     }
 
@@ -227,6 +253,8 @@ export class LogarithmicGradient extends Colorizer {
         return new LogarithmicGradient(
             updates.breakpoints ?? this.breakpoints.map((b) => b.clone()),
             updates.noDataColor ?? this.noDataColor.clone(),
+            // TODO: refactor
+            updates.defaultColor ?? this.defaultColor.clone(),
             updates.defaultColor ?? this.defaultColor.clone(),
         );
     }
@@ -236,7 +264,8 @@ export class LogarithmicGradient extends Colorizer {
             type: 'logarithmicGradient',
             breakpoints: this.breakpoints.map((b) => b.toDict()),
             noDataColor: colorToDict(this.noDataColor),
-            defaultColor: colorToDict(this.defaultColor),
+            overColor: colorToDict(this.defaultColor),
+            underColor: colorToDict(this.defaultColor),
         };
     }
 

@@ -134,14 +134,16 @@ export interface LinearGradientDict {
     type: 'linearGradient';
     breakpoints: Array<BreakpointDict>;
     noDataColor: RgbaColorDict;
-    defaultColor: RgbaColorDict;
+    overColor: RgbaColorDict;
+    underColor: RgbaColorDict;
 }
 
 export interface LogarithmitGradientDict {
     type: 'logarithmicGradient';
     breakpoints: Array<BreakpointDict>;
     noDataColor: RgbaColorDict;
-    defaultColor: RgbaColorDict;
+    overColor: RgbaColorDict;
+    underColor: RgbaColorDict;
 }
 
 export interface PaletteDict {
