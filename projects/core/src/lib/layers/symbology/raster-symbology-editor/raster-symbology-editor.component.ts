@@ -276,7 +276,8 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
                 return;
             }
 
-            const colorizer = new LinearGradient(breakpoints, noDataColor, defaultColor);
+            // TODO: refactor default color -> over/under color
+            const colorizer = new LinearGradient(breakpoints, noDataColor, defaultColor, defaultColor);
             this.symbology = this.symbology.cloneWith({colorizer});
         } else if (colorizerType === 'logarithmicGradient') {
             const breakpoints = this.symbology.colorizer.getBreakpoints();
@@ -291,7 +292,8 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
                 return;
             }
 
-            const colorizer = new LogarithmicGradient(breakpoints, noDataColor, defaultColor);
+            // TODO: refactor default color -> over/under color
+            const colorizer = new LogarithmicGradient(breakpoints, noDataColor, defaultColor, defaultColor);
             this.symbology = this.symbology.cloneWith({colorizer});
         } else if (colorizerType === 'palette') {
             // TODO: implement palette

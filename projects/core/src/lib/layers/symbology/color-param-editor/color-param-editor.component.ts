@@ -229,7 +229,8 @@ export class ColorParamEditorComponent implements OnChanges, OnDestroy, AfterVie
     }): Colorizer {
         switch (this.colorizerType) {
             case 'linearGradient':
-                return new LinearGradient(params.colorizerBreakpoints, params.defaultColor, params.defaultColor);
+                // TODO: refactor default color -> over/under color
+                return new LinearGradient(params.colorizerBreakpoints, params.defaultColor, params.defaultColor, params.defaultColor);
             case 'palette': {
                 return new PaletteColorizer(
                     new Map(params.colorizerBreakpoints.map((breakpoint) => [breakpoint.value, breakpoint.color])),
