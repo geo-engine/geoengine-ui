@@ -78,17 +78,21 @@ export class ColorParamEditorComponent implements OnChanges, OnDestroy, AfterVie
             this._colorAttributeName = value.attribute;
 
             let colorizerType: 'linearGradient' | 'palette';
+            let defaultColor: Color;
             if (value.colorizer instanceof LinearGradient) {
                 colorizerType = 'linearGradient';
+                // TODO: refactor over/under color
+                defaultColor = value.colorizer.underColor;
             } else if (value.colorizer instanceof PaletteColorizer) {
                 colorizerType = 'palette';
+                defaultColor = value.colorizer.defaultColor;
             } else {
                 throw Error('Unexpected Colorizer Type');
             }
 
             this.update(
                 {
-                    defaultColor: value.colorizer.defaultColor,
+                    defaultColor,
                     colorAttributeName: value.attribute,
                     colorizerType,
                     colorizerBreakpoints: value.colorizer.getBreakpoints(),
