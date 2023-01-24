@@ -1,10 +1,7 @@
 {
     "/api/*": {
-        "target": "https://ebv.app.geoengine.io/api",
+        "target": "https://ebv.app.geoengine.io/",
         "changeOrigin": true,
-        "pathRewrite": {
-            "^/api": ""
-        },
         "secure": false,
         "logLevel": "debug"
     },
