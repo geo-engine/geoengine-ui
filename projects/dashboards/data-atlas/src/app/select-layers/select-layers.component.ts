@@ -175,7 +175,8 @@ export class SelectLayersComponent implements OnInit {
                                 colorizer: {
                                     type: 'linearGradient',
                                     breakpoints,
-                                    defaultColor: [0, 0, 0, 0],
+                                    overColor: breakpoints[breakpoints.length - 1].color,
+                                    underColor: breakpoints[0].color,
                                     noDataColor: [0, 0, 0, 0],
                                 },
                             }),
