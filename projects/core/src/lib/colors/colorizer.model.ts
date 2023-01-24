@@ -137,7 +137,6 @@ export class LinearGradient extends Colorizer {
         return new LinearGradient(
             updates.breakpoints ?? this.breakpoints.map((b) => b.clone()),
             updates.noDataColor ?? this.noDataColor.clone(),
-            // TODO: refactor
             updates.overColor ?? this.overColor.clone(),
             updates.underColor ?? this.underColor.clone(),
         );
