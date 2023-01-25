@@ -169,7 +169,8 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         const defaultColor = defaultColorInput.value;
 
         if (this.symbology.colorizer instanceof LinearGradient || this.symbology.colorizer instanceof LogarithmicGradient) {
-            const colorizer = this.symbology.colorizer.cloneWith({defaultColor});
+            // TODO: refactor over/under color
+            const colorizer = this.symbology.colorizer.cloneWith({overColor: defaultColor, underColor: defaultColor});
             this.symbology = this.symbology.cloneWith({colorizer});
         } else if (this.symbology.colorizer instanceof PaletteColorizer) {
             const colorizer = this.symbology.colorizer.cloneWith({defaultColor});
@@ -266,32 +267,37 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         if (colorizerType === 'linearGradient') {
             const breakpoints = this.symbology.colorizer.getBreakpoints();
             let noDataColor: Color;
-            let defaultColor: Color;
+            let overColor: Color;
+            let underColor: Color;
 
             if (this.symbology.colorizer instanceof LogarithmicGradient) {
                 noDataColor = this.symbology.colorizer.noDataColor;
-                defaultColor = this.symbology.colorizer.defaultColor;
+                overColor = this.symbology.colorizer.overColor;
+                underColor = this.symbology.colorizer.underColor;
             } else {
                 // TODO: implement palette
                 return;
             }
 
-            const colorizer = new LinearGradient(breakpoints, noDataColor, defaultColor);
+            const colorizer = new LinearGradient(breakpoints, noDataColor, overColor, underColor);
             this.symbology = this.symbology.cloneWith({colorizer});
         } else if (colorizerType === 'logarithmicGradient') {
             const breakpoints = this.symbology.colorizer.getBreakpoints();
             let noDataColor: Color;
-            let defaultColor: Color;
+            let overColor: Color;
+            let underColor: Color;
 
             if (this.symbology.colorizer instanceof LinearGradient) {
                 noDataColor = this.symbology.colorizer.noDataColor;
-                defaultColor = this.symbology.colorizer.defaultColor;
+                overColor = this.symbology.colorizer.overColor;
+                underColor = this.symbology.colorizer.underColor;
             } else {
                 // TODO: implement palette
                 return;
             }
 
-            const colorizer = new LogarithmicGradient(breakpoints, noDataColor, defaultColor);
+            // TODO: refactor default color -> over/under color
+            const colorizer = new LogarithmicGradient(breakpoints, noDataColor, overColor, underColor);
             this.symbology = this.symbology.cloneWith({colorizer});
         } else if (colorizerType === 'palette') {
             // TODO: implement palette
@@ -353,10 +359,22 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     }
 
     private updateNodataAndDefaultColor(): void {
-        this.defaultColor = {
-            key: 'Overflow Color',
-            value: this.symbology.colorizer.defaultColor,
-        };
+        if (this.symbology.colorizer instanceof LinearGradient || this.symbology.colorizer instanceof LogarithmicGradient) {
+            // TODO: refactor over/under color
+            this.defaultColor = {
+                key: 'Overflow Color',
+                value: this.symbology.colorizer.underColor,
+            };
+        } else if (this.symbology.colorizer instanceof PaletteColorizer) {
+            this.defaultColor = {
+                key: 'Overflow Color',
+                value: this.symbology.colorizer.defaultColor,
+            };
+        } else {
+            // TODO: refactor over/under color
+            this.defaultColor = undefined;
+        }
+
         if (
             this.symbology.colorizer instanceof LinearGradient ||
             this.symbology.colorizer instanceof LogarithmicGradient ||

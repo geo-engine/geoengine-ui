@@ -78,17 +78,21 @@ export class ColorParamEditorComponent implements OnChanges, OnDestroy, AfterVie
             this._colorAttributeName = value.attribute;
 
             let colorizerType: 'linearGradient' | 'palette';
+            let defaultColor: Color;
             if (value.colorizer instanceof LinearGradient) {
                 colorizerType = 'linearGradient';
+                // TODO: refactor over/under color
+                defaultColor = value.colorizer.underColor;
             } else if (value.colorizer instanceof PaletteColorizer) {
                 colorizerType = 'palette';
+                defaultColor = value.colorizer.defaultColor;
             } else {
                 throw Error('Unexpected Colorizer Type');
             }
 
             this.update(
                 {
-                    defaultColor: value.colorizer.defaultColor,
+                    defaultColor,
                     colorAttributeName: value.attribute,
                     colorizerType,
                     colorizerBreakpoints: value.colorizer.getBreakpoints(),
@@ -229,7 +233,8 @@ export class ColorParamEditorComponent implements OnChanges, OnDestroy, AfterVie
     }): Colorizer {
         switch (this.colorizerType) {
             case 'linearGradient':
-                return new LinearGradient(params.colorizerBreakpoints, params.defaultColor, params.defaultColor);
+                // TODO: refactor default color -> over/under color
+                return new LinearGradient(params.colorizerBreakpoints, params.defaultColor, params.defaultColor, params.defaultColor);
             case 'palette': {
                 return new PaletteColorizer(
                     new Map(params.colorizerBreakpoints.map((breakpoint) => [breakpoint.value, breakpoint.color])),
