@@ -24,8 +24,7 @@ jobs:
                     node-version: ${{ matrix.node-version }}
                     # cache: 'npm' # can be used only with a lockfile
             #            -   run: npm ci    # use instead of install if we choose to commit the `package-lock.json`
-            # TODO: remove `--force` when @angular/flex-layout is removed
-            -   run: npm install --force
+            -   run: npm install
             -   name: Build core
                 run: npm run build-prod:core
             -   name: Build app ${{ matrix.app }}
@@ -41,8 +40,7 @@ jobs:
             -   name: Checkout
                 uses: actions/checkout@v3
             -   name: Install Dependencies
-                # TODO: remove `--force` when @angular/flex-layout is removed
-                run: npm install --force
+                run: npm install
             -   name: Code Format Check with Prettier
                 run: npm run prettier -- --check .
             -   name: Check with Linter
