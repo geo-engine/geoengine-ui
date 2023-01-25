@@ -3,7 +3,7 @@ import {Color, colorToDict, rgbaColorFromDict} from './color';
 import {ColorBreakpoint} from './color-breakpoint.model';
 
 export abstract class Colorizer {
-    abstract readonly defaultColor: Color;
+    abstract readonly noDataColor: Color;
 
     static fromDict(dict: ColorizerDict): Colorizer {
         if (dict.type === 'linearGradient') {
@@ -13,6 +13,7 @@ export abstract class Colorizer {
         } else if (dict.type === 'palette') {
             return PaletteColorizer.fromPaletteDict(dict);
         }
+
         throw new Error('Unimplemented or invalid colorizer');
     }
 
@@ -42,12 +43,17 @@ export abstract class Colorizer {
 export class LinearGradient extends Colorizer {
     readonly breakpoints: Array<ColorBreakpoint>;
     readonly noDataColor: Color;
-    readonly defaultColor: Color;
+    readonly overColor: Color;
+    readonly underColor: Color;
 
-    constructor(breakpoints: Array<ColorBreakpoint>, noDataColor: Color, defaultColor: Color) {
+    constructor(breakpoints: Array<ColorBreakpoint>, noDataColor: Color, overColor: Color, underColor: Color) {
         super();
-        this.defaultColor = defaultColor;
+
+        this.overColor = overColor;
+        this.underColor = underColor;
+
         this.noDataColor = noDataColor;
+
         this.breakpoints = breakpoints;
     }
 
@@ -55,7 +61,8 @@ export class LinearGradient extends Colorizer {
         return new LinearGradient(
             dict.breakpoints.map((b) => ColorBreakpoint.fromDict(b)),
             Color.fromRgbaLike(rgbaColorFromDict(dict.noDataColor)),
-            Color.fromRgbaLike(rgbaColorFromDict(dict.defaultColor)),
+            Color.fromRgbaLike(rgbaColorFromDict(dict.overColor)),
+            Color.fromRgbaLike(rgbaColorFromDict(dict.underColor)),
         );
     }
 
@@ -64,8 +71,16 @@ export class LinearGradient extends Colorizer {
             return this.noDataColor;
         }
 
-        if (!this.breakpoints.length || value < this.breakpoints[0].value || value > this.breakpoints[this.breakpoints.length - 1].value) {
-            return this.defaultColor;
+        if (!this.breakpoints.length) {
+            return this.underColor; // TODO: maybe return an error?
+        }
+
+        if (value < this.breakpoints[0].value) {
+            return this.underColor;
+        }
+
+        if (value > this.breakpoints[this.breakpoints.length - 1].value) {
+            return this.overColor;
         }
 
         const index = this.breakpoints.findIndex((b) => value >= b.value);
@@ -94,7 +109,11 @@ export class LinearGradient extends Colorizer {
                 }
             }
 
-            return this.defaultColor.equals(other.defaultColor) && this.noDataColor.equals(other.noDataColor);
+            return (
+                this.overColor.equals(other.overColor) &&
+                this.underColor.equals(other.underColor) &&
+                this.noDataColor.equals(other.noDataColor)
+            );
         }
 
         return false;
@@ -104,19 +123,22 @@ export class LinearGradient extends Colorizer {
         return new LinearGradient(
             this.breakpoints.map((b) => b.clone()),
             this.noDataColor.clone(),
-            this.defaultColor.clone(),
+            this.overColor.clone(),
+            this.underColor.clone(),
         );
     }
 
     cloneWith(updates: {
         readonly breakpoints?: Array<ColorBreakpoint>;
         readonly noDataColor?: Color;
-        readonly defaultColor?: Color;
+        readonly overColor?: Color;
+        readonly underColor?: Color;
     }): LinearGradient {
         return new LinearGradient(
             updates.breakpoints ?? this.breakpoints.map((b) => b.clone()),
             updates.noDataColor ?? this.noDataColor.clone(),
-            updates.defaultColor ?? this.defaultColor.clone(),
+            updates.overColor ?? this.overColor.clone(),
+            updates.underColor ?? this.underColor.clone(),
         );
     }
 
@@ -125,7 +147,8 @@ export class LinearGradient extends Colorizer {
             type: 'linearGradient',
             breakpoints: this.breakpoints.map((b) => b.toDict()),
             noDataColor: colorToDict(this.noDataColor),
-            defaultColor: colorToDict(this.defaultColor),
+            overColor: colorToDict(this.overColor),
+            underColor: colorToDict(this.overColor),
         };
     }
 
@@ -144,20 +167,21 @@ export class LinearGradient extends Colorizer {
     getNumberOfColors(): number {
         return this.breakpoints.length;
     }
-
-    getDefaultColor(): Color {
-        return this.defaultColor;
-    }
 }
 
 export class LogarithmicGradient extends Colorizer {
     readonly breakpoints: Array<ColorBreakpoint>;
     readonly noDataColor: Color;
-    readonly defaultColor: Color;
+    readonly overColor: Color;
+    readonly underColor: Color;
 
-    constructor(breakpoints: Array<ColorBreakpoint>, noDataColor: Color, defaultColor: Color) {
+    constructor(breakpoints: Array<ColorBreakpoint>, noDataColor: Color, overColor: Color, underColor: Color) {
         super();
-        this.defaultColor = defaultColor;
+
+        this.overColor = overColor;
+
+        this.underColor = underColor;
+
         this.noDataColor = noDataColor;
         this.breakpoints = breakpoints;
     }
@@ -166,7 +190,8 @@ export class LogarithmicGradient extends Colorizer {
         return new LogarithmicGradient(
             dict.breakpoints.map((b) => ColorBreakpoint.fromDict(b)),
             Color.fromRgbaLike(rgbaColorFromDict(dict.noDataColor)),
-            Color.fromRgbaLike(rgbaColorFromDict(dict.defaultColor)),
+            Color.fromRgbaLike(rgbaColorFromDict(dict.overColor)),
+            Color.fromRgbaLike(rgbaColorFromDict(dict.underColor)),
         );
     }
 
@@ -175,8 +200,16 @@ export class LogarithmicGradient extends Colorizer {
             return this.noDataColor;
         }
 
-        if (!this.breakpoints.length || value < this.breakpoints[0].value || value > this.breakpoints[this.breakpoints.length - 1].value) {
-            return this.defaultColor;
+        if (!this.breakpoints.length) {
+            return this.underColor; // TODO: maybe return an error?
+        }
+
+        if (value < this.breakpoints[0].value) {
+            return this.underColor;
+        }
+
+        if (value > this.breakpoints[this.breakpoints.length - 1].value) {
+            return this.overColor;
         }
 
         const index = this.breakpoints.findIndex((b) => value >= b.value);
@@ -208,26 +241,31 @@ export class LogarithmicGradient extends Colorizer {
             }
         }
 
-        return this.defaultColor.equals(other.defaultColor) && this.noDataColor.equals(other.noDataColor);
+        return (
+            this.overColor.equals(other.overColor) && this.underColor.equals(other.underColor) && this.noDataColor.equals(other.noDataColor)
+        );
     }
 
     clone(): Colorizer {
         return new LogarithmicGradient(
             this.breakpoints.map((b) => b.clone()),
             this.noDataColor.clone(),
-            this.defaultColor.clone(),
+            this.overColor.clone(),
+            this.underColor.clone(),
         );
     }
 
     cloneWith(updates: {
         readonly breakpoints?: Array<ColorBreakpoint>;
         readonly noDataColor?: Color;
-        readonly defaultColor?: Color;
+        readonly overColor?: Color;
+        readonly underColor?: Color;
     }): LogarithmicGradient {
         return new LogarithmicGradient(
             updates.breakpoints ?? this.breakpoints.map((b) => b.clone()),
             updates.noDataColor ?? this.noDataColor.clone(),
-            updates.defaultColor ?? this.defaultColor.clone(),
+            updates.overColor ?? this.overColor.clone(),
+            updates.underColor ?? this.underColor.clone(),
         );
     }
 
@@ -236,7 +274,8 @@ export class LogarithmicGradient extends Colorizer {
             type: 'logarithmicGradient',
             breakpoints: this.breakpoints.map((b) => b.toDict()),
             noDataColor: colorToDict(this.noDataColor),
-            defaultColor: colorToDict(this.defaultColor),
+            overColor: colorToDict(this.overColor),
+            underColor: colorToDict(this.underColor),
         };
     }
 
@@ -254,10 +293,6 @@ export class LogarithmicGradient extends Colorizer {
 
     getNumberOfColors(): number {
         return this.breakpoints.length;
-    }
-
-    getDefaultColor(): Color {
-        return this.defaultColor;
     }
 }
 

@@ -284,10 +284,6 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
             max,
         });
 
-        return new LinearGradient(
-            breakpoints,
-            TRANSPARENT,
-            TRANSPARENT, // TODO: set under/over color to first and last breakpoint when avaialble
-        );
+        return new LinearGradient(breakpoints, TRANSPARENT, breakpoints[breakpoints.length - 1].color, breakpoints[0].color);
     }
 }

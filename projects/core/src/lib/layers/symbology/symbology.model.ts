@@ -16,7 +16,7 @@ import {
 } from '../../backend/backend.model';
 import {Circle as OlStyleCircle, Fill as OlStyleFill, Stroke as OlStyleStroke, Style as OlStyle, Text as OlStyleText} from 'ol/style';
 import {StyleFunction as OlStyleFunction} from 'ol/style/Style';
-import {Colorizer} from '../../colors/colorizer.model';
+import {Colorizer, LinearGradient, LogarithmicGradient, PaletteColorizer} from '../../colors/colorizer.model';
 import {PointIconStyle} from '../layer-icons/point-icon/point-icon.component';
 import {LineIconStyle} from '../layer-icons/line-icon/line-icon.component';
 import {PolygonIconStyle} from '../layer-icons/polygon-icon/polygon-icon.component';
@@ -777,7 +777,14 @@ export class DerivedColor implements ColorParam {
     }
 
     getDefault(): Color {
-        return this.colorizer.defaultColor;
+        if (this.colorizer instanceof LinearGradient || this.colorizer instanceof LogarithmicGradient) {
+            // TODO: refactor over/under color
+            return this.colorizer.underColor;
+        } else if (this.colorizer instanceof PaletteColorizer) {
+            return this.colorizer.defaultColor;
+        } else {
+            throw Error('unknown colorizer type');
+        }
     }
 }
 
