@@ -59,11 +59,13 @@ export class ProvenanceTableComponent implements OnInit, OnChanges {
 
             for (const item of provenance) {
                 if (item.provenance) {
-                    table.push({
-                        citation: item.provenance.citation,
-                        license: item.provenance.license,
-                        uri: item.provenance.uri,
-                    });
+                    for (const provenance of item.provenance) {
+                        table.push({
+                            citation: provenance.citation,
+                            license: provenance.license,
+                            uri: provenance.uri,
+                        });
+                    }
                 }
             }
 

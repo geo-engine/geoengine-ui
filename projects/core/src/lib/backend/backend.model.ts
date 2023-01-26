@@ -523,7 +523,7 @@ export interface ProvenanceDict {
 
 export interface ProvenanceOutputDict {
     data: DataIdDict;
-    provenance: ProvenanceDict;
+    provenance: Array<ProvenanceDict>;
 }
 
 export interface SpatialReferenceSpecificationDict {
