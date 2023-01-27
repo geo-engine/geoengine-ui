@@ -323,8 +323,8 @@ const SPECIES_INFO: {[key: string]: SpeciesInfo} = {
     'Abramis brama': {
         text: `Im Alter von acht Jahren erreichen Brachsen eine Länge von ca. 30 bis 50 cm. Bei einer Länge von 60 cm wiegen sie im Durchschnitt 3 bis 3,5 kg.
         Unter idealen Bedingungen können Brachsen maximal 85 cm und über 8 kg schwer werden, so auch der deutsche Rekordfisch, gefangen im Jahr 2000.[1] Brachsen
-        können ein Alter von etwa 16 Jahren erreichen. Brachsen sind seitlich sehr stark abgeflacht und hochrückig. Bei schlechter Ernährung kommt es bei
-        den Brachsen zum sogenannten Messerrücken, der Bildung einer sehr scharfen Rückenkante. Das stumpfe Maul ist leicht unterständig, die Augen verhältnismäßig
+        können ein Alter von etwa 16 Jahren erreichen. Brachsen sind seitlich sehr stark abgeflacht und hochrückig. Bei schlechter Ernährung kommt es bei 
+        den Brachsen zum sogenannten Messerrücken, der Bildung einer sehr scharfen Rückenkante. Das stumpfe Maul ist leicht unterständig, die Augen verhältnismäßig 
         klein. Auffällig ist die grünlich glänzende, schwarze bis bleigraue oder bleiblaue Färbung auf dem Rücken, der die Fische den Namen Blei verdanken.
         Die Seiten glänzen metallisch, der Bauch ist weißlich mit Perlmuttglanz. Bei älteren Brachsen kommt ein lichter Bronze- oder goldgrüner Ton durch.
         Die Schuppen sind stark mit Schleim bedeckt. Die Rückenflosse ist 12-, die Afterflosse 26- bis 31-strahlig. Bis auf die Brustflossen sind die Flossen
@@ -665,9 +665,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                         .getSessionTokenForRequest()
                         .pipe(mergeMap((token) => this.backend.getWorkflowProvenance(workflowId, token)))
                         .subscribe((provenance) => {
-                            this.selectedEnvironmentCitation.next(
-                                provenance.flatMap((p) => p.provenance.map((p1) => p1.citation)).join(','),
-                            );
+                            this.selectedEnvironmentCitation.next(provenance.map((p) => p.provenance.citation).join(','));
                         });
                 }),
                 mergeMap(([workflowId, dataset]) => {
