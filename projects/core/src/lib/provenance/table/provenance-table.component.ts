@@ -58,15 +58,11 @@ export class ProvenanceTableComponent implements OnInit, OnChanges {
             const table = [];
 
             for (const item of provenance) {
-                if (item.provenance) {
-                    for (const entry of item.provenance) {
-                        table.push({
-                            citation: entry.citation,
-                            license: entry.license,
-                            uri: entry.uri,
-                        });
-                    }
-                }
+                table.push({
+                    citation: item.provenance.citation,
+                    license: item.provenance.license,
+                    uri: item.provenance.uri,
+                });
             }
 
             this.dataSource = table;
