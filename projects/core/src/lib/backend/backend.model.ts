@@ -521,9 +521,9 @@ export interface ProvenanceDict {
     uri: string;
 }
 
-export interface ProvenanceOutputDict {
-    data: DataIdDict;
-    provenance: Array<ProvenanceDict>;
+export interface ProvenanceEntryDict {
+    provenance: ProvenanceDict;
+    data: Array<DataIdDict>;
 }
 
 export interface SpatialReferenceSpecificationDict {
