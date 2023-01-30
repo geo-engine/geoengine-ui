@@ -27,20 +27,14 @@
 }
 
 .only-large {
+    width: 40px;
+
     @media (max-width: 1480px) {
         display: none;
     }
 }
 
-.mat-toolbar {
-    padding: 0 0 0 1rem !important;
-}
-
-mat-toolbar div:first-child,
-button {
-    width: 40px;
-}
-
-mat-toolbar ::ng-deep mat-toolbar-row:first-child {
-    display: none !important;
+.menu-btn {
+    padding: 0.25rem 0 0 0 !important;
+    margin-right: -1rem;
 }

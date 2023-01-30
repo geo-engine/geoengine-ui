@@ -37,7 +37,8 @@ export class LayerCollectionLayerComponent implements OnInit, OnChanges {
             {value: 0, color: [122, 122, 122, 255]},
             {value: 1, color: [255, 255, 255, 255]},
         ],
-        defaultColor: [0, 0, 0, 0],
+        overColor: [255, 255, 255, 127],
+        underColor: [122, 122, 122, 127],
         noDataColor: [0, 0, 0, 0],
     });
 

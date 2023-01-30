@@ -17,7 +17,6 @@ import {MapService} from '../../../map/map.service';
 import {ProjectService} from '../../../project/project.service';
 import {Config} from '../../../config.service';
 import {BackendService} from '../../../backend/backend.service';
-import {MatSliderChange} from '@angular/material/slider';
 import {HistogramDict, HistogramParams} from '../../../backend/operator.model';
 import {LinearGradient, LogarithmicGradient, PaletteColorizer} from '../../../colors/colorizer.model';
 import {ColorAttributeInput} from '../../../colors/color-attribute-input/color-attribute-input.component';
@@ -154,12 +153,8 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     /**
      * Set the opacity value from a slider change event
      */
-    updateOpacity(event: MatSliderChange): void {
-        if (!event || !event.value) {
-            return;
-        }
-
-        const opacity = event.value / 100;
+    updateOpacity(value: number): void {
+        const opacity = value / 100;
 
         this.symbology = this.symbology.cloneWith({opacity});
 
@@ -187,7 +182,8 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         const defaultColor = defaultColorInput.value;
 
         if (this.symbology.colorizer instanceof LinearGradient || this.symbology.colorizer instanceof LogarithmicGradient) {
-            const colorizer = this.symbology.colorizer.cloneWith({defaultColor});
+            // TODO: refactor over/under color
+            const colorizer = this.symbology.colorizer.cloneWith({overColor: defaultColor, underColor: defaultColor});
             this.symbology = this.symbology.cloneWith({colorizer});
         } else if (this.symbology.colorizer instanceof PaletteColorizer) {
             const colorizer = this.symbology.colorizer.cloneWith({defaultColor});
@@ -286,26 +282,29 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
 
         const breakpoints = this.symbology.colorizer.getBreakpoints();
         let noDataColor: Color;
-        let defaultColor: Color;
+        let overColor: Color;
+        let underColor: Color;
         let colorizer;
 
         if (this.symbology.colorizer instanceof LogarithmicGradient || this.symbology.colorizer instanceof LinearGradient) {
             noDataColor = this.symbology.colorizer.noDataColor;
-            defaultColor = this.symbology.colorizer.defaultColor;
+            overColor = this.symbology.colorizer.overColor;
+            underColor = this.symbology.colorizer.underColor;
         } else {
             noDataColor = this.noDataColor!.value; // Must be a palette then, so use values from the color selectors
-            defaultColor = this.defaultColor!.value;
+            overColor = this.defaultColor!.value;
+            underColor = this.defaultColor!.value;
         }
 
         switch (colorizerType) {
             case 'linearGradient':
-                colorizer = new LinearGradient(breakpoints, noDataColor, defaultColor);
+                colorizer = new LinearGradient(breakpoints, noDataColor, overColor, underColor);
                 break;
             case 'logarithmicGradient':
-                colorizer = new LogarithmicGradient(breakpoints, noDataColor, defaultColor);
+                colorizer = new LogarithmicGradient(breakpoints, noDataColor, overColor, underColor);
                 break;
             case 'palette':
-                colorizer = new PaletteColorizer(this.colorPaletteEditor.getColors(), noDataColor, defaultColor);
+                colorizer = new PaletteColorizer(this.colorPaletteEditor.getColors(), noDataColor, overColor);
                 break;
         }
         this.symbology = this.symbology.cloneWith({colorizer});
@@ -369,10 +368,22 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     }
 
     private updateNodataAndDefaultColor(): void {
-        this.defaultColor = {
-            key: 'Overflow Color',
-            value: this.symbology.colorizer.defaultColor,
-        };
+        if (this.symbology.colorizer instanceof LinearGradient || this.symbology.colorizer instanceof LogarithmicGradient) {
+            // TODO: refactor over/under color
+            this.defaultColor = {
+                key: 'Overflow Color',
+                value: this.symbology.colorizer.underColor,
+            };
+        } else if (this.symbology.colorizer instanceof PaletteColorizer) {
+            this.defaultColor = {
+                key: 'Overflow Color',
+                value: this.symbology.colorizer.defaultColor,
+            };
+        } else {
+            // TODO: refactor over/under color
+            this.defaultColor = undefined;
+        }
+
         if (
             this.symbology.colorizer instanceof LinearGradient ||
             this.symbology.colorizer instanceof LogarithmicGradient ||

@@ -1,7 +1,7 @@
 <geoengine-sidenav-header>Interpolation</geoengine-sidenav-header>
 
 <form [formGroup]="form" (ngSubmit)="add()">
-    <geoengine-operator-dialog-container [loading]="loading$ | async | valueDefault: false">
+    <geoengine-operator-dialog-container [loading]="loading$ | async | valueDefault : false">
         <a mat-icon-button operatorInputIcon href="https://docs.geoengine.io/operators/interpolation.html" target="_blank">
             <mat-icon>help_center</mat-icon>
         </a>
@@ -71,11 +71,13 @@
                 </mat-hint>
             </geoengine-operator-output-name>
 
-            <geoengine-symbology-creator #symbologyCreator formControlName="symbologyCreation"></geoengine-symbology-creator>
+            <geoengine-symbology-creator #symbologyCreator></geoengine-symbology-creator>
         </ng-container>
 
         <ng-container actions>
-            <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid">Create</button>
+            <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid || symbologyCreator.form.invalid">
+                Create
+            </button>
         </ng-container>
     </geoengine-operator-dialog-container>
 </form>

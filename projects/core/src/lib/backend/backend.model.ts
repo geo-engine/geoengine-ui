@@ -134,14 +134,16 @@ export interface LinearGradientDict {
     type: 'linearGradient';
     breakpoints: Array<BreakpointDict>;
     noDataColor: RgbaColorDict;
-    defaultColor: RgbaColorDict;
+    overColor: RgbaColorDict;
+    underColor: RgbaColorDict;
 }
 
 export interface LogarithmitGradientDict {
     type: 'logarithmicGradient';
     breakpoints: Array<BreakpointDict>;
     noDataColor: RgbaColorDict;
-    defaultColor: RgbaColorDict;
+    overColor: RgbaColorDict;
+    underColor: RgbaColorDict;
 }
 
 export interface PaletteDict {
@@ -377,7 +379,9 @@ export interface DatasetIdResponseDict {
 }
 
 export interface CreateDatasetDict {
-    upload: UUID;
+    dataPath: {
+        upload: UUID;
+    };
     definition: DatasetDefinitionDict;
 }
 
@@ -517,9 +521,9 @@ export interface ProvenanceDict {
     uri: string;
 }
 
-export interface ProvenanceOutputDict {
-    data: DataIdDict;
+export interface ProvenanceEntryDict {
     provenance: ProvenanceDict;
+    data: Array<DataIdDict>;
 }
 
 export interface SpatialReferenceSpecificationDict {
@@ -546,6 +550,7 @@ export interface LayerCollectionItemDict {
     id: ProviderLayerIdDict | ProviderLayerCollectionIdDict;
     name: string;
     description: string;
+    properties: Array<[string, string]>;
 }
 
 export interface ProviderLayerIdDict {
@@ -585,6 +590,6 @@ export interface LayerCollectionDict {
     name: string;
     description: string;
     items: LayerCollectionItemDict[];
-    properties: [string, string][];
+    properties: Array<[string, string]>;
     entryLabel?: string;
 }

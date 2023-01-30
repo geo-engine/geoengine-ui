@@ -1,5 +1,4 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
-import {MatSliderChange} from '@angular/material/slider';
 import {Observable, combineLatest, BehaviorSubject} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ProjectService} from '../../project/project.service';
@@ -74,11 +73,10 @@ export class TimeStepSelectorComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * On a slider event, calculate the timestamp and set the new time for the app layers
      */
-    setTime(event: MatSliderChange): void {
-        if (!this.timeSteps || event.value === null) {
+    setTime(tick: number): void {
+        if (!this.timeSteps) {
             return;
         }
-        const tick: number = event.value;
         const timeStep = this.timeSteps[tick];
         this.projectService.setTime(timeStep);
     }

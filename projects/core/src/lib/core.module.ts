@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
-import {MatCardModule} from '@angular/material/card';
+import {MatCardModule, MAT_CARD_CONFIG} from '@angular/material/card';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatDatepickerModule} from '@angular/material/datepicker';
@@ -148,7 +148,8 @@ import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
 import {LayerCollectionLayerComponent} from './layer-collections/layer-collection-layer/layer-collection-layer.component';
 import {TimeShiftComponent} from './operators/dialogs/time-shift/time-shift.component';
 import {PieChartComponent} from './operators/dialogs/pie-chart/pie-chart.component';
-import { ColorPaletteEditorComponent } from './colors/color-palette-editor/color-palette-editor.component';
+import {ColorPaletteEditorComponent} from './colors/color-palette-editor/color-palette-editor.component';
+import {RasterizationComponent} from './operators/dialogs/rasterization/rasterization.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -271,6 +272,7 @@ const CORE_COMPONENTS = [
     PolygonIconComponent,
     ProvenanceTableComponent,
     RasterIconComponent,
+    RasterizationComponent,
     RasterLegendComponent,
     RasterLegendComponent,
     RasterScalingComponent,
@@ -331,6 +333,9 @@ const CORE_COMPONENTS = [
         ...CORE_PIPES,
         ...CORE_COMPONENTS,
     ],
-    providers: [{provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}}],
+    providers: [
+        {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}},
+        {provide: MAT_CARD_CONFIG, useValue: {appearance: 'outlined'}},
+    ],
 })
 export class CoreModule {}

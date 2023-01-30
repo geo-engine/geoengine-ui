@@ -33,7 +33,7 @@ import {
     ResultDescriptorDict,
     SpatialReferenceSpecificationDict,
     DataSetProviderListingDict,
-    ProvenanceOutputDict,
+    ProvenanceEntryDict,
     DatasetOrderByDict,
     LayerDict,
     LayerCollectionDict,
@@ -178,8 +178,8 @@ export class BackendService {
         return this.http.get<void>(this.config.API_URL + '/available');
     }
 
-    getWorkflowProvenance(workflowId: UUID, sessionId: UUID): Observable<Array<ProvenanceOutputDict>> {
-        return this.http.get<Array<ProvenanceOutputDict>>(this.config.API_URL + `/workflow/${workflowId}/provenance`, {
+    getWorkflowProvenance(workflowId: UUID, sessionId: UUID): Observable<Array<ProvenanceEntryDict>> {
+        return this.http.get<Array<ProvenanceEntryDict>>(this.config.API_URL + `/workflow/${workflowId}/provenance`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
@@ -353,18 +353,13 @@ export class BackendService {
         params.setMapped('offset', offset, (r) => r.toString());
         params.setMapped('limit', limit, (r) => r.toString());
 
-        // URI encode the collection id if it is a JSON string
-        try {
-            JSON.parse(collection);
-            collection = encodeURIComponent(collection);
-        } catch (e) {
-            // do nothing
-        }
-
-        return this.http.get<LayerCollectionDict>(this.config.API_URL + `/layers/collections/${provider}/${collection}`, {
-            params: params.httpParams,
-            headers: BackendService.authorizationHeader(sessionId),
-        });
+        return this.http.get<LayerCollectionDict>(
+            this.config.API_URL + `/layers/collections/${provider}/${encodeURIComponent(collection)}`,
+            {
+                params: params.httpParams,
+                headers: BackendService.authorizationHeader(sessionId),
+            },
+        );
     }
 
     getRootLayerCollectionItems(sessionId: UUID, offset: number = 0, limit: number = 20): Observable<LayerCollectionDict> {
@@ -379,15 +374,7 @@ export class BackendService {
     }
 
     getLayerCollectionLayer(sessionId: UUID, provider: UUID, layer: string): Observable<LayerDict> {
-        // URI encode the layer id if it is a JSON string
-        try {
-            JSON.parse(layer);
-            layer = encodeURIComponent(layer);
-        } catch (e) {
-            // do nothing
-        }
-
-        return this.http.get<LayerDict>(this.config.API_URL + `/layers/${provider}/${layer}`, {
+        return this.http.get<LayerDict>(this.config.API_URL + `/layers/${provider}/${encodeURIComponent(layer)}`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
@@ -397,15 +384,7 @@ export class BackendService {
     }
 
     registerWorkflowForLayer(sessionId: UUID, provider: UUID, layer: string): Observable<UUID> {
-        // URI encode the layer id if it is a JSON string
-        try {
-            JSON.parse(layer);
-            layer = encodeURIComponent(layer);
-        } catch (e) {
-            // do nothing
-        }
-
-        return this.http.post<UUID>(this.config.API_URL + `/layers/${provider}/${layer}/workflowId`, {
+        return this.http.post<UUID>(this.config.API_URL + `/layers/${provider}/${encodeURIComponent(layer)}/workflowId`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }

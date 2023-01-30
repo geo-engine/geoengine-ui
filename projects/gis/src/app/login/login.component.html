@@ -1,6 +1,6 @@
 <form [formGroup]="loginForm" (ngSubmit)="login()">
     <div class="container" fxLayout="column" fxLayoutAlign="space-around">
-        <mat-card class="login">
+        <mat-card appearance="outlined" class="login">
             <mat-card-header>
                 <mat-icon matCardTitle svgIcon="geoengine:logo-alt" aria-label="Geo Engine" [inline]="true"></mat-icon>
                 <mat-card-subtitle [ngSwitch]="formStatus$ | async">

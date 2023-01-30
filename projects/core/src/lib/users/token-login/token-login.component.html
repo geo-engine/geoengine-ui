@@ -1,6 +1,6 @@
 <form [formGroup]="loginForm" (ngSubmit)="login()">
     <div class="container" [ngClass]="{'accent-color': color === 'accent'}" fxLayout="column" fxLayoutAlign="space-around">
-        <mat-card class="login">
+        <mat-card appearance="outlined" class="login">
             <ng-content select="mat-card-header"></ng-content>
 
             <mat-card-content [ngSwitch]="formStatus$ | async">
