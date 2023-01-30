@@ -17,7 +17,7 @@ import {
     ProjectLayerDict,
     OperatorDict,
     PlotDict,
-    ProvenanceOutputDict,
+    ProvenanceEntryDict,
     ResultDescriptorDict,
     SourceOperatorDict,
     ToDict,
@@ -364,7 +364,7 @@ export class ProjectService {
             .pipe(mergeMap((sessionToken) => this.backend.getWorkflowMetadata(workflowId, sessionToken)));
     }
 
-    getWorkflowProvenance(workflowId: UUID): Observable<Array<ProvenanceOutputDict>> {
+    getWorkflowProvenance(workflowId: UUID): Observable<Array<ProvenanceEntryDict>> {
         return this.userService
             .getSessionTokenForRequest()
             .pipe(mergeMap((sessionToken) => this.backend.getWorkflowProvenance(workflowId, sessionToken)));

@@ -33,7 +33,7 @@ import {
     ResultDescriptorDict,
     SpatialReferenceSpecificationDict,
     DataSetProviderListingDict,
-    ProvenanceOutputDict,
+    ProvenanceEntryDict,
     DatasetOrderByDict,
     LayerDict,
     LayerCollectionDict,
@@ -178,8 +178,8 @@ export class BackendService {
         return this.http.get<void>(this.config.API_URL + '/available');
     }
 
-    getWorkflowProvenance(workflowId: UUID, sessionId: UUID): Observable<Array<ProvenanceOutputDict>> {
-        return this.http.get<Array<ProvenanceOutputDict>>(this.config.API_URL + `/workflow/${workflowId}/provenance`, {
+    getWorkflowProvenance(workflowId: UUID, sessionId: UUID): Observable<Array<ProvenanceEntryDict>> {
+        return this.http.get<Array<ProvenanceEntryDict>>(this.config.API_URL + `/workflow/${workflowId}/provenance`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
