@@ -134,8 +134,8 @@
                 </ng-template>
             </mat-expansion-panel>
 
-            <!-- TODO: implement palette editor -->
-            <mat-expansion-panel expanded="false" *ngIf="symbology.colorizer.isDiscrete()">
+            <!-- TODO: implement palette editor, find a good *ngIf condition to hide this (i.e. logarithmic or linear gradient selected) -->
+            <mat-expansion-panel expanded="false">
                 <mat-expansion-panel-header>
                     <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
                         <mat-icon>color_lens</mat-icon>

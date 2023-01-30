@@ -29,6 +29,7 @@ import {VegaChartData} from '../../../plots/vega-viewer/vega-viewer.component';
 import {Color} from '../../../colors/color';
 import {ColorMapSelectorComponent} from '../../../colors/color-map-selector/color-map-selector.component';
 import {LayoutService} from '../../../layout.service';
+import {ColorPaletteEditorComponent} from '../../../colors/color-palette-editor/color-palette-editor.component';
 
 /**
  * An editor for generating raster symbologies.
@@ -42,6 +43,9 @@ import {LayoutService} from '../../../layout.service';
 export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, AfterViewInit, OnInit {
     @ViewChild(ColorMapSelectorComponent)
     colorMapSelector!: ColorMapSelectorComponent;
+
+    @ViewChild(ColorPaletteEditorComponent)
+    colorPaletteEditor!: ColorPaletteEditorComponent;
 
     @Input() layer!: RasterLayer;
 
@@ -170,10 +174,13 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         return this.defaultColor;
     }
 
+    /**
+     * Called from HTML template when a new value is emitted by the ColorPaletteEditor child component
+     * @param rasterSymbology The new rastersymbology to use
+     */
     symbologyChangeHandler(rasterSymbology: RasterSymbology) {
-        console.log('Event was emitted by child');
-        console.log(rasterSymbology);
         this.symbology = rasterSymbology;
+        this.unappliedChanges = true;
     }
 
     updateDefaultColor(defaultColorInput: ColorAttributeInput): void {
@@ -193,7 +200,15 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     }
 
     applyChanges(): void {
-        this.colorMapSelector.applyChanges();
+        if (this.colorMapSelector !== undefined) {
+            this.colorMapSelector.applyChanges();
+        }
+
+        if (this.colorPaletteEditor !== undefined) {
+            this.colorPaletteEditor.setSymbology(this.symbology);
+            this.colorPaletteEditor.updateColorCards();
+        }
+
         this.unappliedChanges = false;
         this.update();
     }
@@ -269,46 +284,31 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
             return;
         }
 
-        if (colorizerType === 'palette' || this.getColorizerType() === 'palette') {
-            // TODO: implement palette
-            return;
+        const breakpoints = this.symbology.colorizer.getBreakpoints();
+        let noDataColor: Color;
+        let defaultColor: Color;
+        let colorizer;
+
+        if (this.symbology.colorizer instanceof LogarithmicGradient || this.symbology.colorizer instanceof LinearGradient) {
+            noDataColor = this.symbology.colorizer.noDataColor;
+            defaultColor = this.symbology.colorizer.defaultColor;
+        } else {
+            noDataColor = this.noDataColor!.value; // Must be a palette then, so use values from the color selectors
+            defaultColor = this.defaultColor!.value;
         }
 
-        if (colorizerType === 'linearGradient') {
-            const breakpoints = this.symbology.colorizer.getBreakpoints();
-            let noDataColor: Color;
-            let defaultColor: Color;
-
-            if (this.symbology.colorizer instanceof LogarithmicGradient) {
-                noDataColor = this.symbology.colorizer.noDataColor;
-                defaultColor = this.symbology.colorizer.defaultColor;
-            } else {
-                // TODO: implement palette
-                return;
-            }
-
-            const colorizer = new LinearGradient(breakpoints, noDataColor, defaultColor);
-            this.symbology = this.symbology.cloneWith({colorizer});
-        } else if (colorizerType === 'logarithmicGradient') {
-            const breakpoints = this.symbology.colorizer.getBreakpoints();
-            let noDataColor: Color;
-            let defaultColor: Color;
-
-            if (this.symbology.colorizer instanceof LinearGradient) {
-                noDataColor = this.symbology.colorizer.noDataColor;
-                defaultColor = this.symbology.colorizer.defaultColor;
-            } else {
-                // TODO: implement palette
-                return;
-            }
-
-            const colorizer = new LogarithmicGradient(breakpoints, noDataColor, defaultColor);
-            this.symbology = this.symbology.cloneWith({colorizer});
-        } else if (colorizerType === 'palette') {
-            // TODO: implement palette
-            return;
+        switch (colorizerType) {
+            case 'linearGradient':
+                colorizer = new LinearGradient(breakpoints, noDataColor, defaultColor);
+                break;
+            case 'logarithmicGradient':
+                colorizer = new LogarithmicGradient(breakpoints, noDataColor, defaultColor);
+                break;
+            case 'palette':
+                colorizer = new PaletteColorizer(this.colorPaletteEditor.getColors(), noDataColor, defaultColor);
+                break;
         }
-
+        this.symbology = this.symbology.cloneWith({colorizer});
         this.updateScale();
         this.unappliedChanges = true;
     }
@@ -321,7 +321,12 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
             return;
         }
 
-        if (!(this.symbology.colorizer instanceof LinearGradient) && !(this.symbology.colorizer instanceof LogarithmicGradient)) {
+        // if (!(this.symbology.colorizer instanceof LinearGradient) && !(this.symbology.colorizer instanceof LogarithmicGradient)) {
+        if (
+            // try with palette
+            !(this.symbology.colorizer instanceof LinearGradient) &&
+            !(this.symbology.colorizer instanceof LogarithmicGradient && !(this.symbology.colorizer instanceof PaletteColorizer))
+        ) {
             return;
             // TODO: implement other variants
         }

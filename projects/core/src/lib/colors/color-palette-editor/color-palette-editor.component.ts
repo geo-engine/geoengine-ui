@@ -14,17 +14,30 @@ export class ColorPaletteEditorComponent implements OnInit {
     @Input() symbology!: RasterSymbology;
     @Output() symbologyChanged: EventEmitter<RasterSymbology> = new EventEmitter();
 
-    testColor?: ColorAttributeInput;
     allColors?: ColorAttributeInput[];
 
-    colorMap = new Map<number, Color>();
+    colorMap = new Map<number, Color>(); // HTML Template will use these to display the color cards
 
     constructor() {}
 
     ngOnInit(): void {
-        const newColor: ColorAttributeInput = {key: 'test', value: this.getPaletteColorizer().getColorAtIndex(0)};
-        this.testColor = newColor;
         this.allColors = this.createColorAttributeInputs();
+    }
+
+    /**
+     * Used to initalize the color cards as well as update them when a linear or logarithmic gradient is applied
+     */
+    updateColorCards(): void {
+        console.log('Updating colors cards...');
+        this.allColors = this.createColorAttributeInputs();
+    }
+
+    setSymbology(newSymbology: RasterSymbology): void {
+        this.symbology = newSymbology;
+    }
+
+    getColors(): Map<number, Color> {
+        return this.colorMap;
     }
 
     debugClick(): void {
@@ -47,11 +60,16 @@ export class ColorPaletteEditorComponent implements OnInit {
         }
         return inputs;
     }
+    /*
+    TODO (?):
+    Get layerMaxValue and layerMinValue from parent component. The map indexes must be spread between min and max value.
+    Perhaps it's possible to use the gradient breakpoints for this?
+    */
 
     updateColor(pos: number, color: ColorAttributeInput): void {
         this.colorMap.set(pos, color.value);
         const colors = this.colorMap;
-        const colorizer = this.getPaletteColorizer().cloneWith({colors}); // must be named 'colors'?
+        const colorizer = this.getPaletteColorizer().cloneWith({colors}); // must be named 'colors' .. TODO: Get no data color and overflow data from parent and pass it along here
         this.symbology = this.symbology.cloneWith({colorizer});
 
         // emit the change event to the parent component
