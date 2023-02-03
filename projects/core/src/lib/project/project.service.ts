@@ -874,10 +874,10 @@ export class ProjectService {
 
     /**
      * Create a stream that signals whether a running query should be aborted because the results are no longer needed.
-     * It takes the current zoomLevel and extent of a tile at the time of querying as a parameter in order to determine
-     * whether a change on the map view makes the results obsolete.
+     * It takes the layerId, current zoomLevel and extent of a tile at the time of querying as a parameter in order to
+     * determine whether a change in the layer list or on the map view makes the results obsolete.
      */
-    createQueryAbortStream(tileZoomLevel: number, tileExtent: Extent): Observable<void> {
+    createQueryAbortStream(layerId: number, tileZoomLevel: number, tileExtent: Extent): Observable<void> {
         const tileResolution = this.mapService.getView().getResolutionForZoom(tileZoomLevel);
 
         const observables: Array<Observable<any>> = [
@@ -885,13 +885,16 @@ export class ProjectService {
             this.mapService.getViewportSizeStream(),
             this.userService.getSessionTokenForRequest(),
             this.getSpatialReferenceStream(),
+            this.getLayerStream(),
         ];
 
         return combineLatest(observables).pipe(
             skip(1),
             filter(
-                ([_t, viewportSize, _session, _sref]) =>
-                    viewportSize.resolution !== tileResolution || !olIntersects(tileExtent, viewportSize.extent),
+                ([_t, viewportSize, _session, _sref, layers]) =>
+                    viewportSize.resolution !== tileResolution ||
+                    !olIntersects(tileExtent, viewportSize.extent) ||
+                    !layers.some((l: Layer) => l.id === layerId),
             ),
             take(1),
             map(() => {}),
