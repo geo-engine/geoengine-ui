@@ -880,21 +880,30 @@ export class ProjectService {
     createQueryAbortStream(layerId: number, tileZoomLevel: number, tileExtent: Extent): Observable<void> {
         const tileResolution = this.mapService.getView().getResolutionForZoom(tileZoomLevel);
 
+        // create an observable that emits when the layer is removed
+        const layerStream = this.layers.get(layerId);
+        if (!layerStream) {
+            throw Error(`No layer stream found for layer id ${layerId}`);
+        }
+        const layerRemovedSubject = new ReplaySubject<boolean>();
+        layerStream.subscribe({
+            next: () => layerRemovedSubject.next(false),
+            complete: () => layerRemovedSubject.next(true),
+        });
+
         const observables: Array<Observable<any>> = [
             this.getTimeStream(),
             this.mapService.getViewportSizeStream(),
             this.userService.getSessionTokenForRequest(),
             this.getSpatialReferenceStream(),
-            this.getLayerStream(),
+            layerRemovedSubject,
         ];
 
         return combineLatest(observables).pipe(
             skip(1),
             filter(
-                ([_t, viewportSize, _session, _sref, layers]) =>
-                    viewportSize.resolution !== tileResolution ||
-                    !olIntersects(tileExtent, viewportSize.extent) ||
-                    !layers.some((l: Layer) => l.id === layerId),
+                ([_t, viewportSize, _session, _sref, layerRemoved]) =>
+                    viewportSize.resolution !== tileResolution || !olIntersects(tileExtent, viewportSize.extent) || layerRemoved,
             ),
             take(1),
             map(() => {}),
