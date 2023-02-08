@@ -27,7 +27,7 @@ import {
 import {UserService} from '../users/user.service';
 import {LayerData, RasterData, VectorData} from '../layers/layer-data.model';
 import {extentToBboxDict, subscribeAndProvide} from '../util/conversions';
-import {Extent, MapService} from '../map/map.service';
+import {Extent, MapService, ViewportSize} from '../map/map.service';
 import {Session} from '../users/session.model';
 import {HasPlotId, Plot} from '../plots/plot.model';
 import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata.model';
@@ -893,7 +893,13 @@ export class ProjectService {
             },
         });
 
-        const observables: Array<Observable<any>> = [
+        const observables: [
+            Observable<Time>,
+            Observable<ViewportSize>,
+            Observable<string>,
+            Observable<SpatialReference>,
+            Observable<boolean>,
+        ] = [
             this.getTimeStream(),
             this.mapService.getViewportSizeStream(),
             this.userService.getSessionTokenForRequest(),
@@ -901,11 +907,33 @@ export class ProjectService {
             layerRemovedSubject,
         ];
 
+        let initialTime: Time | undefined;
+        let initialSref: SpatialReference | undefined;
+        let initialSession: string | undefined;
+
         return combineLatest(observables).pipe(
+            tap(([time, _viewportSize, session, sref, _layerRemoved]) => {
+                // capture the initial values at the start of the query
+                // s.t. we can detect a change later
+                if (!initialTime) {
+                    initialTime = time;
+                }
+                if (!initialSref) {
+                    initialSref = sref;
+                }
+                if (!initialSession) {
+                    initialSession = session;
+                }
+            }),
             skip(1),
             filter(
-                ([_t, viewportSize, _session, _sref, layerRemoved]) =>
-                    viewportSize.resolution !== tileResolution || !olIntersects(tileExtent, viewportSize.extent) || layerRemoved,
+                ([time, viewportSize, session, sref, layerRemoved]) =>
+                    !time.isSame(initialTime as Time) ||
+                    viewportSize.resolution !== tileResolution ||
+                    !olIntersects(tileExtent, viewportSize.extent) ||
+                    session !== initialSession ||
+                    sref !== initialSref ||
+                    layerRemoved,
             ),
             take(1),
             map(() => {}),
