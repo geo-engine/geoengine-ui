@@ -888,7 +888,10 @@ export class ProjectService {
         const layerRemovedSubject = new ReplaySubject<boolean>();
         layerStream.subscribe({
             next: () => layerRemovedSubject.next(false),
-            complete: () => layerRemovedSubject.next(true),
+            complete: () => {
+                layerRemovedSubject.next(true);
+                layerRemovedSubject.complete();
+            },
         });
 
         const observables: Array<Observable<any>> = [
