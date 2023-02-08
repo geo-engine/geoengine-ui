@@ -935,6 +935,7 @@ export class ProjectService {
                     sref !== initialSref ||
                     layerRemoved,
             ),
+            tap((_) => layerStream.unsubscribe()),
             take(1),
             map(() => {}),
         );
