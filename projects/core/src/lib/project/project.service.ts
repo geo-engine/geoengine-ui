@@ -885,9 +885,8 @@ export class ProjectService {
         if (!layerStream) {
             throw Error(`No layer stream found for layer id ${layerId}`);
         }
-        const layerRemovedSubject = new ReplaySubject<boolean>();
+        const layerRemovedSubject = new BehaviorSubject<boolean>(false);
         layerStream.subscribe({
-            next: () => layerRemovedSubject.next(false),
             complete: () => {
                 layerRemovedSubject.next(true);
                 layerRemovedSubject.complete();
