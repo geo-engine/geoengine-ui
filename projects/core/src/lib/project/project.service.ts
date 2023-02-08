@@ -886,7 +886,7 @@ export class ProjectService {
             throw Error(`No layer stream found for layer id ${layerId}`);
         }
         const layerRemovedSubject = new BehaviorSubject<boolean>(false);
-        layerStream.subscribe({
+        const layerStreamSub = layerStream.subscribe({
             complete: () => {
                 layerRemovedSubject.next(true);
                 layerRemovedSubject.complete();
@@ -935,7 +935,7 @@ export class ProjectService {
                     sref !== initialSref ||
                     layerRemoved,
             ),
-            tap((_) => layerStream.unsubscribe()),
+            tap((_) => layerStreamSub.unsubscribe()),
             take(1),
             map(() => {}),
         );
