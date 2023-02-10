@@ -42,7 +42,6 @@ export class QuotaInfoComponent implements OnDestroy {
                 } else {
                     this.sessionQuota = undefined;
                 }
-                console.log('this.sessionQuota', this.sessionQuota);
                 this.changeDetectorRef.markForCheck();
             });
 
