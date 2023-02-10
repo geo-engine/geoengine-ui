@@ -39,6 +39,7 @@ import {
     LayerCollectionDict,
     AuthCodeRequestURL,
     BackendInfoDict,
+    QuotaDict,
 } from './backend.model';
 
 @Injectable({
@@ -385,6 +386,12 @@ export class BackendService {
 
     registerWorkflowForLayer(sessionId: UUID, provider: UUID, layer: string): Observable<UUID> {
         return this.http.post<UUID>(this.config.API_URL + `/layers/${provider}/${encodeURIComponent(layer)}/workflowId`, {
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    getQuota(sessionId: UUID): Observable<QuotaDict> {
+        return this.http.get<QuotaDict>(this.config.API_URL + '/quota', {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
