@@ -106,6 +106,7 @@ export * from './lib/users/login/login.component';
 export * from './lib/users/modal-login/modal-login.component';
 export * from './lib/users/oidc/oidc.component';
 export * from './lib/users/token-login/token-login.component';
+export * from './lib/users/user-session/user-session.component';
 export * from './lib/util/components/code-editor.component';
 export * from './lib/util/directives/autocomplete-select.directive';
 export * from './lib/time/time-slider/time-slider.component';

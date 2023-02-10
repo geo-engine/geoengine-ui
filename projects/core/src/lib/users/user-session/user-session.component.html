@@ -1,0 +1,8 @@
+<ng-container>
+    <dl>
+        <dt>Session token</dt>
+        <dd>{{ session?.sessionToken }} <button mat-stroked-button>copy</button></dd>
+        <dt>Valid until</dt>
+        <dd>{{ session?.validUntil?.toISOString() }}</dd>
+    </dl>
+</ng-container>
