@@ -18,8 +18,8 @@ export class Quota {
     }
 
     get total(): number {
-        const clamp_avail = this.available > 0 ? this.available : 0;
-        return clamp_avail + this.used;
+        const clampAvail = this.available > 0 ? this.available : 0;
+        return clampAvail + this.used;
     }
 
     get fractionUsed(): number {
