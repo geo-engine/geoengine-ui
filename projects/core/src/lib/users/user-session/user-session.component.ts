@@ -3,6 +3,7 @@ import {Subscription} from 'rxjs';
 import {Session} from '../session.model';
 import {UserService} from '../user.service';
 import {Clipboard} from '@angular/cdk/clipboard';
+import {NotificationService} from '../../notification.service';
 
 @Component({
     selector: 'geoengine-user-session',
@@ -13,7 +14,11 @@ export class UserSessionComponent implements OnDestroy {
     protected session: Session | undefined;
     private sessionStreamSubscription: Subscription;
 
-    constructor(protected readonly userService: UserService, protected clipboard: Clipboard) {
+    constructor(
+        protected readonly userService: UserService,
+        protected clipboard: Clipboard,
+        protected readonly notificationService: NotificationService,
+    ) {
         const subs = this.userService.getSessionStream().subscribe((session) => {
             this.session = session;
         });
@@ -28,6 +33,7 @@ export class UserSessionComponent implements OnDestroy {
     copySessionTokenToClipboard(): void {
         if (this.session) {
             this.clipboard.copy(this.session.sessionToken);
+            this.notificationService.info('Session token copied to clipboard: ' + this.session.sessionToken);
         }
     }
 }
