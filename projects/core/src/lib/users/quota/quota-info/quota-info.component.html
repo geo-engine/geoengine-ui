@@ -1,0 +1,23 @@
+<ng-container *ngIf="hasQuota()">
+    <span class="pair">
+        <span class="label">Available credits</span>
+        <span class="value">{{ sessionQuota?.available }} of {{ sessionQuota?.total }}</span>
+    </span>
+    <span class="pair">
+        <span class="label">Used credits (total)</span>
+        <span class="value">{{ sessionQuota?.used }} of {{ sessionQuota?.total }} </span>
+    </span>
+    <span class="pair">
+        <span class="label">Used credits (percent)</span>
+        <span class="value">{{ sessionQuota?.percentUsed }}%</span>
+        <mat-progress-bar mode="determinate" [value]="sessionQuota?.percentUsed" [color]="progressColor"></mat-progress-bar>
+    </span>
+
+    <span class="sync">
+        <button mat-icon-button (click)="refreshQuota()"><mat-icon>sync</mat-icon></button>
+    </span>
+</ng-container>
+
+<ng-container *ngIf="!hasQuota()">
+    <p>No quota information available.</p>
+</ng-container>

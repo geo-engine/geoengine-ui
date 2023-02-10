@@ -9,7 +9,7 @@ import {BackendStatus, User} from './user.model';
 import {Config} from '../config.service';
 import {NotificationService} from '../notification.service';
 import {BackendService} from '../backend/backend.service';
-import {AuthCodeRequestURL, SessionDict, UUID} from '../backend/backend.model';
+import {AuthCodeRequestURL, BackendInfoDict, QuotaDict, SessionDict, UUID} from '../backend/backend.model';
 import {Session} from './session.model';
 import {Router} from '@angular/router';
 
@@ -22,6 +22,7 @@ const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '
 export class UserService {
     protected readonly session$ = new ReplaySubject<Session | undefined>(1);
     protected readonly backendStatus$ = new BehaviorSubject<BackendStatus>({available: false, initial: true});
+    protected readonly backendInfo$ = new BehaviorSubject<BackendInfoDict | undefined>(undefined);
 
     protected logoutCallback?: () => void;
     protected sessionInitialized = false;
@@ -63,6 +64,15 @@ export class UserService {
                 this.sessionInitialized = false;
                 this.session$.next(undefined);
                 this.notificationService.error('Session close caused by backend shutdown');
+            }
+        });
+
+        // update backend info when backend is available
+        this.getBackendStatus().subscribe((status) => {
+            if (status.available) {
+                this.backend.getBackendInfo().subscribe((info) => {
+                    this.backendInfo$.next(info);
+                });
             }
         });
 
@@ -118,6 +128,28 @@ export class UserService {
 
     getSessionTokenForRequest(): Observable<UUID> {
         return this.getSessionTokenStream().pipe(first());
+    }
+
+    getSessionQuota(): Observable<QuotaDict> {
+        return this.getSessionTokenStream().pipe(mergeMap((sessionToken) => this.backend.getQuota(sessionToken)));
+    }
+
+    getBackendInfoStream(): Observable<BackendInfoDict | undefined> {
+        return this.backendInfo$;
+    }
+
+    isBackendFeatureEnabled(feature: string): Observable<boolean> {
+        return this.getBackendInfoStream().pipe(
+            map((backendInfo) => {
+                if (!backendInfo) {
+                    return false;
+                }
+                if (!backendInfo.features) {
+                    return false;
+                }
+                return backendInfo.features.includes(feature);
+            }),
+        );
     }
 
     isGuestUserStream(): Observable<boolean> {
