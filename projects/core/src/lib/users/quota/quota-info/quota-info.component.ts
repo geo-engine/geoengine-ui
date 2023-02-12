@@ -74,6 +74,6 @@ export class QuotaInfoComponent implements OnDestroy {
     }
 
     protected refreshQuota(): void {
-        this.updateQuota$.next(undefined);
+        this.updateQuota$.next();
     }
 }
