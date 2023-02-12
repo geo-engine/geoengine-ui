@@ -4,6 +4,7 @@ import {BehaviorSubject, combineLatest, mergeMap, of, Subscription} from 'rxjs';
 import {UserService} from '../../user.service';
 import {Quota} from '../quota.model';
 import {BackendService} from '../../../backend/backend.service';
+import {ThemePalette} from '@angular/material/core';
 
 @Component({
     selector: 'geoengine-quota-info',
@@ -59,9 +60,9 @@ export class QuotaInfoComponent implements OnDestroy {
         this.plotSubscription?.unsubscribe();
     }
 
-    get progressColor(): string {
+    get progressColor(): ThemePalette {
         if (!this.sessionQuota) {
-            return 'gray';
+            return undefined;
         }
         if (this.sessionQuota.fractionUsed > 0.9) {
             return 'warn';
