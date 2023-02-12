@@ -5,6 +5,7 @@ import {UserService} from '../../user.service';
 import {Quota} from '../quota.model';
 import {BackendService} from '../../../backend/backend.service';
 import {ThemePalette} from '@angular/material/core';
+import {MapService} from '../../../map/map.service';
 
 @Component({
     selector: 'geoengine-quota-info',
@@ -23,14 +24,16 @@ export class QuotaInfoComponent implements OnDestroy {
         protected readonly projectService: ProjectService,
         protected readonly backendService: BackendService,
         protected readonly changeDetectorRef: ChangeDetectorRef,
+        protected readonly mapService: MapService,
     ) {
         this.sessionSubscription = combineLatest([
             this.userService.isBackendFeatureEnabled('pro'),
             this.userService.getSessionStream(),
+            this.mapService.getViewportSizeStream(),
             this.updateQuota$,
         ])
             .pipe(
-                mergeMap(([isPro, _session, _update]) => {
+                mergeMap(([isPro, _session, _viewport, _update]) => {
                     if (!isPro) {
                         return of(undefined);
                     }
@@ -46,12 +49,9 @@ export class QuotaInfoComponent implements OnDestroy {
                 this.changeDetectorRef.markForCheck();
             });
 
-        this.layerSubscription = this.projectService.getLayerStream().subscribe((_layer) => {
+        setInterval(() => {
             this.refreshQuota();
-        });
-        this.plotSubscription = this.projectService.getPlotStream().subscribe((_plot) => {
-            this.refreshQuota();
-        });
+        }, 3000);
     }
 
     ngOnDestroy(): void {
