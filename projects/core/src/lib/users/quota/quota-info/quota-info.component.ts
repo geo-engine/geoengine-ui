@@ -63,7 +63,7 @@ export class QuotaInfoComponent implements OnDestroy {
         if (!this.sessionQuota) {
             return 'gray';
         }
-        if (this.sessionQuota.percentUsed > 90) {
+        if (this.sessionQuota.fractionUsed > 0.9) {
             return 'warn';
         }
         return 'primary';

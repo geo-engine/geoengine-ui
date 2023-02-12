@@ -9,8 +9,8 @@
     </span>
     <span class="pair">
         <span class="label">Used credits (percent)</span>
-        <span class="value">{{ sessionQuota?.percentUsed }}%</span>
-        <mat-progress-bar mode="determinate" [value]="sessionQuota?.percentUsed" [color]="progressColor"></mat-progress-bar>
+        <span class="value">{{ sessionQuota?.fractionUsed | percent }} </span>
+        <mat-progress-bar mode="determinate" [value]="sessionQuota?.fractionUsed | percent" [color]="progressColor"></mat-progress-bar>
     </span>
 
     <span class="sync">
