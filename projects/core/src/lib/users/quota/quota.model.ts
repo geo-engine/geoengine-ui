@@ -24,13 +24,9 @@ export class Quota {
 
     get fractionUsed(): number {
         if (this.total === 0) {
-            return 1;
+            return 1.0;
         }
-        return Math.round(this.used / this.total);
-    }
-
-    get percentUsed(): number {
-        return this.fractionUsed * 100;
+        return this.used / this.total;
     }
 
     static fromDict(dict: QuotaDict): Quota {
