@@ -1,53 +1,24 @@
-import {ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
-import {ProjectService} from '../../../project/project.service';
-import {BehaviorSubject, combineLatest, mergeMap, of, Subscription} from 'rxjs';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {Subscription} from 'rxjs';
 import {UserService} from '../../user.service';
 import {Quota} from '../quota.model';
-import {BackendService} from '../../../backend/backend.service';
-import {ThemePalette} from '@angular/material/core';
-import {MapService} from '../../../map/map.service';
 
 @Component({
     selector: 'geoengine-quota-info',
     templateUrl: './quota-info.component.html',
     styleUrls: ['./quota-info.component.scss'],
 })
-export class QuotaInfoComponent implements OnDestroy {
+export class QuotaInfoComponent implements OnDestroy, OnInit {
     sessionQuota: Quota | undefined;
-    updateQuota$: BehaviorSubject<void> = new BehaviorSubject<void>(undefined);
-    sessionSubscription: Subscription | undefined;
-    layerSubscription: Subscription | undefined;
-    plotSubscription: Subscription | undefined;
+    sessionQuotaSubscription: Subscription | undefined;
 
-    constructor(
-        protected readonly userService: UserService,
-        protected readonly projectService: ProjectService,
-        protected readonly backendService: BackendService,
-        protected readonly changeDetectorRef: ChangeDetectorRef,
-        protected readonly mapService: MapService,
-    ) {
-        this.sessionSubscription = combineLatest([
-            this.userService.isBackendFeatureEnabled('pro'),
-            this.userService.getSessionStream(),
-            this.mapService.getViewportSizeStream(),
-            this.updateQuota$,
-        ])
-            .pipe(
-                mergeMap(([isPro, _session, _viewport, _update]) => {
-                    if (!isPro) {
-                        return of(undefined);
-                    }
-                    return this.userService.getSessionQuota();
-                }),
-            )
-            .subscribe((quota) => {
-                if (quota) {
-                    this.sessionQuota = Quota.fromDict(quota);
-                } else {
-                    this.sessionQuota = undefined;
-                }
-                this.changeDetectorRef.markForCheck();
-            });
+    constructor(protected readonly userService: UserService, protected readonly changeDetectorRef: ChangeDetectorRef) {}
+
+    ngOnInit(): void {
+        this.sessionQuotaSubscription = this.userService.getSessionQuotaStream().subscribe((quota) => {
+            this.sessionQuota = quota;
+            this.changeDetectorRef.detectChanges();
+        });
 
         setInterval(() => {
             this.refreshQuota();
@@ -55,19 +26,7 @@ export class QuotaInfoComponent implements OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.sessionSubscription?.unsubscribe();
-        this.layerSubscription?.unsubscribe();
-        this.plotSubscription?.unsubscribe();
-    }
-
-    get progressColor(): ThemePalette {
-        if (!this.sessionQuota) {
-            return undefined;
-        }
-        if (this.sessionQuota.fractionUsed > 0.9) {
-            return 'warn';
-        }
-        return 'primary';
+        this.sessionQuotaSubscription?.unsubscribe();
     }
 
     protected hasQuota(): boolean {
@@ -75,6 +34,6 @@ export class QuotaInfoComponent implements OnDestroy {
     }
 
     protected refreshQuota(): void {
-        this.updateQuota$.next();
+        this.userService.refreshSessionQuota();
     }
 }

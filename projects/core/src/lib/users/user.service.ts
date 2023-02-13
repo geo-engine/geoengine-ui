@@ -1,4 +1,4 @@
-import {Observable, ReplaySubject, of, BehaviorSubject} from 'rxjs';
+import {Observable, ReplaySubject, of, BehaviorSubject, combineLatest} from 'rxjs';
 import {catchError, filter, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
@@ -9,9 +9,10 @@ import {BackendStatus, User} from './user.model';
 import {Config} from '../config.service';
 import {NotificationService} from '../notification.service';
 import {BackendService} from '../backend/backend.service';
-import {AuthCodeRequestURL, BackendInfoDict, QuotaDict, SessionDict, UUID} from '../backend/backend.model';
+import {AuthCodeRequestURL, BackendInfoDict, SessionDict, UUID} from '../backend/backend.model';
 import {Session} from './session.model';
 import {Router} from '@angular/router';
+import {Quota} from './quota/quota.model';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
@@ -23,6 +24,8 @@ export class UserService {
     protected readonly session$ = new ReplaySubject<Session | undefined>(1);
     protected readonly backendStatus$ = new BehaviorSubject<BackendStatus>({available: false, initial: true});
     protected readonly backendInfo$ = new BehaviorSubject<BackendInfoDict | undefined>(undefined);
+    protected readonly sessionQuota$ = new BehaviorSubject<Quota | undefined>(undefined);
+    protected readonly refreshSessionQuota$ = new BehaviorSubject<void>(undefined);
 
     protected logoutCallback?: () => void;
     protected sessionInitialized = false;
@@ -75,6 +78,9 @@ export class UserService {
                 });
             }
         });
+
+        // update quota when session changes or update is triggered
+        this.createSessionQuotaStream();
 
         this.triggerBackendStatusUpdate();
     }
@@ -130,26 +136,28 @@ export class UserService {
         return this.getSessionTokenStream().pipe(first());
     }
 
-    getSessionQuota(): Observable<QuotaDict> {
-        return this.getSessionTokenStream().pipe(mergeMap((sessionToken) => this.backend.getQuota(sessionToken)));
+    /**
+     * Returns a stream that notifies about the current session quota.
+     * May be undefined if there is no current session or the backend does not use quotas.
+     *
+     * @returns Observable<Quota | undefined>
+     **/
+    getSessionQuotaStream(): Observable<Quota | undefined> {
+        this.refreshSessionQuota();
+        return this.sessionQuota$;
+    }
+
+    /**
+     * triggers a refresh of the session quota
+     *
+     * @returns void
+     **/
+    refreshSessionQuota(): void {
+        this.refreshSessionQuota$.next();
     }
 
     getBackendInfoStream(): Observable<BackendInfoDict | undefined> {
         return this.backendInfo$;
-    }
-
-    isBackendFeatureEnabled(feature: string): Observable<boolean> {
-        return this.getBackendInfoStream().pipe(
-            map((backendInfo) => {
-                if (!backendInfo) {
-                    return false;
-                }
-                if (!backendInfo.features) {
-                    return false;
-                }
-                return backendInfo.features.includes(feature);
-            }),
-        );
     }
 
     isGuestUserStream(): Observable<boolean> {
@@ -301,6 +309,21 @@ export class UserService {
         };
 
         return of(session);
+    }
+
+    private createSessionQuotaStream(): void {
+        combineLatest([this.getSessionOrUndefinedStream(), this.refreshSessionQuota$])
+            .pipe(
+                mergeMap(([session, _update]) => {
+                    if (!session) return of(undefined);
+                    return this.backend.getQuota(session.sessionToken);
+                }),
+                catchError(() => of(undefined)),
+                map((quota) => (quota ? Quota.fromDict(quota) : undefined)),
+            )
+            .subscribe((quota) => {
+                this.sessionQuota$.next(quota);
+            });
     }
 }
 
