@@ -4,13 +4,8 @@
         <span class="value">{{ sessionQuota?.available }}</span>
     </span>
     <span class="pair">
-        <span class="label">Used credits (total)</span>
-        <span class="value">{{ sessionQuota?.used }} of {{ sessionQuota?.total }} </span>
-    </span>
-    <span class="pair">
-        <span class="label">Used credits (percent)</span>
-        <span class="value">{{ sessionQuota?.fractionUsed | percent }} </span>
-        <mat-progress-bar mode="determinate" [value]="sessionQuota?.fractionUsed | percent" [color]="progressColor"></mat-progress-bar>
+        <span class="label">Used credits</span>
+        <span class="value">{{ sessionQuota?.used }}</span>
     </span>
 
     <span class="sync">

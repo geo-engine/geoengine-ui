@@ -17,18 +17,6 @@ export class Quota {
         return this._available;
     }
 
-    get total(): number {
-        const clampAvail = this.available > 0 ? this.available : 0;
-        return clampAvail + this.used;
-    }
-
-    get fractionUsed(): number {
-        if (this.total === 0) {
-            return 1.0;
-        }
-        return this.used / this.total;
-    }
-
     static fromDict(dict: QuotaDict): Quota {
         return new Quota(dict.used, dict.available);
     }
