@@ -52,6 +52,10 @@
                 <mat-icon>file_download</mat-icon>
                 <span class="mat-body-2">Download Metadata</span>
             </button>
+            <button mat-menu-item *ngIf="layer.layerType === 'raster'" (click)="showRasterDownload(layer)">
+                <mat-icon>file_download</mat-icon>
+                <span class="mat-body-2">Download Layer</span>
+            </button>
             <!--                                    <button mat-menu-item (click)="dialog.open(LayerExportComponent, {data: {layer: layer}})">-->
             <!--                                        <mat-icon>file_download</mat-icon>-->
             <!--                                        <span>Export</span>-->

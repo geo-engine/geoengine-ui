@@ -318,6 +318,13 @@ export class ProjectService {
         );
     }
 
+    getSpatialReferenceOnce(): Observable<SpatialReference> {
+        return this.project$.pipe(
+            first(),
+            map((project: Project) => project.spatialReference),
+        );
+    }
+
     /**
      * Get a stream of the projects time.
      */

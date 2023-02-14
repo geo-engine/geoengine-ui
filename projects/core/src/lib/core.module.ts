@@ -150,6 +150,8 @@ import {TimeShiftComponent} from './operators/dialogs/time-shift/time-shift.comp
 import {PieChartComponent} from './operators/dialogs/pie-chart/pie-chart.component';
 import {RasterizationComponent} from './operators/dialogs/rasterization/rasterization.component';
 import {UserSessionComponent} from './users/user-session/user-session.component';
+import {DownloadRasterLayerComponent} from './download-raster-layer/download-raster-layer.component';
+import {TimeIntervalInputComponent} from './time/time-interval-input/time-interval-input.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -222,6 +224,7 @@ const CORE_COMPONENTS = [
     DialogHelpComponent,
     DialogSectionHeadingComponent,
     DialogSplashCheckboxComponent,
+    DownloadRasterLayerComponent,
     DragAndDropComponent,
     DrawFeaturesComponent,
     ExpressionOperatorComponent,
@@ -294,6 +297,7 @@ const CORE_COMPONENTS = [
     TemporalRasterAggregationComponent,
     TimeConfigComponent,
     TimeInputComponent,
+    TimeIntervalInputComponent,
     TimeShiftComponent,
     TimeSliderComponent,
     TimeStepSelectorComponent,
