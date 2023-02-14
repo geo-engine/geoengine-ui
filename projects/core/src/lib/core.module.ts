@@ -150,6 +150,7 @@ import {TimeShiftComponent} from './operators/dialogs/time-shift/time-shift.comp
 import {PieChartComponent} from './operators/dialogs/pie-chart/pie-chart.component';
 import {RasterizationComponent} from './operators/dialogs/rasterization/rasterization.component';
 import {UserSessionComponent} from './users/user-session/user-session.component';
+import {QuotaInfoComponent} from './users/quota/quota-info/quota-info.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -271,6 +272,7 @@ const CORE_COMPONENTS = [
     PointInPolygonFilterOperatorComponent,
     PolygonIconComponent,
     ProvenanceTableComponent,
+    QuotaInfoComponent,
     RasterIconComponent,
     RasterizationComponent,
     RasterLegendComponent,

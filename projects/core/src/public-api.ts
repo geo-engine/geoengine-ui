@@ -118,6 +118,7 @@ export * from './lib/datatable/mediaview/playlist/mediaview.playlist.component';
 export * from './lib/util/components/not-found/not-found-page.component';
 export * from './lib/util/components/backend-status-page/backend-status-page.component';
 export * from './lib/layer-collections/layer-collection-layer/layer-collection-layer.component';
+export * from './lib/users/quota/quota-info/quota-info.component';
 
 // Pipes
 export * from './lib/util/pipes/async-converters.pipe';
