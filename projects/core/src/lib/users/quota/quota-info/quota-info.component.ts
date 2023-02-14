@@ -11,6 +11,9 @@ import {Quota} from '../quota.model';
 export class QuotaInfoComponent implements OnDestroy, OnInit {
     sessionQuota: Quota | undefined;
     sessionQuotaSubscription: Subscription | undefined;
+    timerId: NodeJS.Timeout | undefined;
+
+    static readonly refreshTime: number = 30000;
 
     constructor(protected readonly userService: UserService, protected readonly changeDetectorRef: ChangeDetectorRef) {}
 
@@ -20,12 +23,13 @@ export class QuotaInfoComponent implements OnDestroy, OnInit {
             this.changeDetectorRef.detectChanges();
         });
 
-        setInterval(() => {
+        this.timerId = setInterval(() => {
             this.refreshQuota();
-        }, 3000);
+        }, QuotaInfoComponent.refreshTime);
     }
 
     ngOnDestroy(): void {
+        clearInterval(this.timerId);
         this.sessionQuotaSubscription?.unsubscribe();
     }
 
