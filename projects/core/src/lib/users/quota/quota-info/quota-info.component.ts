@@ -1,5 +1,5 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {Subscription} from 'rxjs';
+import {Subscription, timer} from 'rxjs';
 import {UserService} from '../../user.service';
 import {Quota} from '../quota.model';
 
@@ -11,7 +11,7 @@ import {Quota} from '../quota.model';
 export class QuotaInfoComponent implements OnDestroy, OnInit {
     sessionQuota: Quota | undefined;
     sessionQuotaSubscription: Subscription | undefined;
-    timerId: NodeJS.Timeout | undefined;
+    timerSubscription: Subscription | undefined;
 
     static readonly refreshTime: number = 30000;
 
@@ -22,14 +22,13 @@ export class QuotaInfoComponent implements OnDestroy, OnInit {
             this.sessionQuota = quota;
             this.changeDetectorRef.detectChanges();
         });
-
-        this.timerId = setInterval(() => {
+        this.timerSubscription = timer(0, QuotaInfoComponent.refreshTime).subscribe(() => {
             this.refreshQuota();
-        }, QuotaInfoComponent.refreshTime);
+        });
     }
 
     ngOnDestroy(): void {
-        clearInterval(this.timerId);
+        this.timerSubscription?.unsubscribe();
         this.sessionQuotaSubscription?.unsubscribe();
     }
 
