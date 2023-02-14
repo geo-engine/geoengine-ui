@@ -230,7 +230,7 @@ export interface BackendInfoDict {
     buildDate?: Date;
     commitHash?: string;
     version?: string;
-    features?: Array<string>;
+    features?: string;
 }
 
 export interface BreakpointDict {
@@ -608,4 +608,9 @@ export interface WcsParamsDict {
     gridoffsets: string;
     time: string;
     nodatavalue?: string;
+}
+
+export interface QuotaDict {
+    available: number;
+    used: number;
 }

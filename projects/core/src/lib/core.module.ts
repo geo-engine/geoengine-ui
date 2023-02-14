@@ -152,6 +152,7 @@ import {RasterizationComponent} from './operators/dialogs/rasterization/rasteriz
 import {UserSessionComponent} from './users/user-session/user-session.component';
 import {DownloadRasterLayerComponent} from './download-raster-layer/download-raster-layer.component';
 import {TimeIntervalInputComponent} from './time/time-interval-input/time-interval-input.component';
+import {QuotaInfoComponent} from './users/quota/quota-info/quota-info.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -274,6 +275,7 @@ const CORE_COMPONENTS = [
     PointInPolygonFilterOperatorComponent,
     PolygonIconComponent,
     ProvenanceTableComponent,
+    QuotaInfoComponent,
     RasterIconComponent,
     RasterizationComponent,
     RasterLegendComponent,
