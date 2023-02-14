@@ -23,6 +23,7 @@ import {BackendService} from '../../../backend/backend.service';
 import {UserService} from '../../../users/user.service';
 import {HttpEventType} from '@angular/common/http';
 import {filenameFromHttpHeaders} from '../../../util/http';
+import {DownloadRasterLayerComponent} from '../../../download-raster-layer/download-raster-layer.component';
 /**
  * The layer list component displays active layers, legends and other controlls.
  */
@@ -44,6 +45,7 @@ export class LayerListElementComponent implements OnDestroy, OnChanges {
     readonly LoadingState = LoadingState;
     readonly RenameLayerComponent = RenameLayerComponent;
     readonly LineageGraphComponent = LineageGraphComponent;
+    readonly DownloadRasterLayerComponent = DownloadRasterLayerComponent;
 
     /**
      * The component constructor. It injects angular and geoengine services.
@@ -194,5 +196,9 @@ export class LayerListElementComponent implements OnDestroy, OnChanges {
                     this.notificationService.error(`File download failed: ${error.message}`);
                 },
             });
+    }
+
+    showRasterDownload(layer: Layer): void {
+        this.layoutService.setSidenavContentComponent({component: DownloadRasterLayerComponent, config: {layer}});
     }
 }
