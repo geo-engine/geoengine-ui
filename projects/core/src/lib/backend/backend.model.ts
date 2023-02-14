@@ -230,7 +230,7 @@ export interface BackendInfoDict {
     buildDate?: Date;
     commitHash?: string;
     version?: string;
-    features?: Array<string>;
+    features?: string;
 }
 
 export interface BreakpointDict {
@@ -592,4 +592,9 @@ export interface LayerCollectionDict {
     items: LayerCollectionItemDict[];
     properties: Array<[string, string]>;
     entryLabel?: string;
+}
+
+export interface QuotaDict {
+    available: number;
+    used: number;
 }
