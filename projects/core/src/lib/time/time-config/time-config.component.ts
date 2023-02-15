@@ -101,7 +101,6 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     protected formToTime(): Time {
-        // TODO: this should automatically be non-null because of the NonNullableFormBuilder
         const timeInterval = this.form.get('timeInterval')?.value as TimeInterval;
 
         const start = timeInterval.start;
