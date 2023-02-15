@@ -125,7 +125,7 @@ export class TimeIntervalInputComponent implements ControlValueAccessor, Validat
         this.onTouched = fn;
     }
 
-    validate(control: AbstractControl): ValidationErrors | null {
-        return startBeforeEndValidator(control);
+    validate(_control: AbstractControl): ValidationErrors | null {
+        return this.form.valid ? null : {valid: false};
     }
 }

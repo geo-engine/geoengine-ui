@@ -1,7 +1,7 @@
-<geoengine-sidenav-header>Symbology Editor</geoengine-sidenav-header>
+<geoengine-sidenav-header>Download Raster Layer</geoengine-sidenav-header>
 
-<mat-dialog-content>
-    <form [formGroup]="form">
+<form [formGroup]="form" (ngSubmit)="download()">
+    <mat-dialog-content>
         <mat-card>
             <mat-card-header>
                 <mat-card-title>Area</mat-card-title>
@@ -42,7 +42,7 @@
             </mat-card-header>
 
             <mat-card-content>
-                <geoengine-time-interval-input #timeInterval></geoengine-time-interval-input>
+                <geoengine-time-interval-input formControlName="timeInterval"></geoengine-time-interval-input>
             </mat-card-content>
         </mat-card>
 
@@ -87,6 +87,6 @@
             </mat-card-content>
         </mat-card>
 
-        <button mat-raised-button color="primary" type="submit" (click)="download()">Download</button>
-    </form>
-</mat-dialog-content>
+        <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid">Download</button>
+    </mat-dialog-content>
+</form>
