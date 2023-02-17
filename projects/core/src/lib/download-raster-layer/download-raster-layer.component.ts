@@ -18,6 +18,20 @@ import {olExtentToTuple} from '../util/conversions';
 import {geoengineValidators} from '../util/form.validators';
 import {bboxAsOgcString, gridOffsetsAsOgcString, gridOriginAsOgcString} from '../util/spatial_reference';
 
+export interface DownloadRasterLayerForm {
+    bboxMinX: FormControl<number>;
+    bboxMaxX: FormControl<number>;
+    bboxMinY: FormControl<number>;
+    bboxMaxY: FormControl<number>;
+
+    timeInterval: FormControl<TimeInterval>;
+
+    interpolationMethod: FormControl<string>;
+    inputResolution: FormControl<string>;
+    inputResolutionX: FormControl<number>;
+    inputResolutionY: FormControl<number>;
+}
+
 @Component({
     selector: 'geoengine-download-raster-layer',
     templateUrl: './download-raster-layer.component.html',
@@ -32,7 +46,7 @@ export class DownloadRasterLayerComponent implements OnInit, OnDestroy {
         ['Bilinear', 'biLinear'],
     ];
 
-    form: FormGroup;
+    form: FormGroup<DownloadRasterLayerForm>;
 
     private projectTimeSubscription?: Subscription;
     private viewportSizeSubscription?: Subscription;
@@ -150,8 +164,7 @@ export class DownloadRasterLayerComponent implements OnInit, OnDestroy {
                         return;
                     }
 
-                    // TODO: derive file name from layer name?
-                    const tiffFile = new File([event.body], 'download.tiff');
+                    const tiffFile = new File([event.body], `${this.layer.name}.tiff`);
                     const url = window.URL.createObjectURL(tiffFile);
 
                     // trigger download
