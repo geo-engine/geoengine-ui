@@ -1,6 +1,6 @@
 <geoengine-sidenav-header>Download Raster Layer</geoengine-sidenav-header>
 
-<form [formGroup]="form" (ngSubmit)="download()">
+<form [formGroup]="form">
     <mat-dialog-content>
         <mat-card>
             <mat-card-header>
@@ -87,6 +87,6 @@
             </mat-card-content>
         </mat-card>
 
-        <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid">Download</button>
+        <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid" (click)="download()">Download</button>
     </mat-dialog-content>
 </form>

@@ -14,6 +14,7 @@ import {SpatialReferenceService} from '../spatial-references/spatial-reference.s
 import {TimeInterval} from '../time/time-interval-input/time-interval-input.component';
 import {Time} from '../time/time.model';
 import {UserService} from '../users/user.service';
+import {olExtentToTuple} from '../util/conversions';
 import {geoengineValidators} from '../util/form.validators';
 import {bboxAsOgcString, gridOffsetsAsOgcString, gridOriginAsOgcString} from '../util/spatial_reference';
 
@@ -34,6 +35,7 @@ export class DownloadRasterLayerComponent implements OnInit, OnDestroy {
     form: FormGroup;
 
     private projectTimeSubscription?: Subscription;
+    private viewportSizeSubscription?: Subscription;
 
     constructor(
         protected backend: BackendService,
@@ -85,6 +87,8 @@ export class DownloadRasterLayerComponent implements OnInit, OnDestroy {
                 validators: [this.resolutionValidator()],
             }),
         });
+
+        this.updateRegionByExtent(olExtentToTuple(this.mapService.getViewportSize().extent));
     }
 
     ngOnInit(): void {
@@ -97,10 +101,17 @@ export class DownloadRasterLayerComponent implements OnInit, OnDestroy {
                 timeAsPoint: time.start.isSame(time.end),
             });
         });
+
+        this.viewportSizeSubscription = this.mapService.getViewportSizeStream().subscribe((viewport) => {
+            const extent = olExtentToTuple(viewport.extent);
+
+            this.updateRegionByExtent(extent);
+        });
     }
 
     ngOnDestroy(): void {
         this.projectTimeSubscription?.unsubscribe();
+        this.viewportSizeSubscription?.unsubscribe();
     }
 
     selectBox(): void {
@@ -153,6 +164,13 @@ export class DownloadRasterLayerComponent implements OnInit, OnDestroy {
                     this.notificationService.error(`File download failed: ${error.message}`);
                 },
             });
+    }
+
+    private updateRegionByExtent(extent: [number, number, number, number]): void {
+        this.form.controls['bboxMinX'].setValue(extent[0]);
+        this.form.controls['bboxMinY'].setValue(extent[1]);
+        this.form.controls['bboxMaxX'].setValue(extent[2]);
+        this.form.controls['bboxMaxY'].setValue(extent[3]);
     }
 
     private makeWcsParams(sref: SpatialReference, resultDescriptor: ResultDescriptorDict): WcsParamsDict {
