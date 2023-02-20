@@ -2,25 +2,14 @@ import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, On
 import {ProjectService} from '../../project/project.service';
 import {Observable, Subscription} from 'rxjs';
 import {Time, TimeStepDuration} from '../time.model';
-import moment, {Moment} from 'moment';
-import {AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators} from '@angular/forms';
+import {FormControl, FormGroup, NonNullableFormBuilder, Validators} from '@angular/forms';
 import {Config} from '../../config.service';
+import moment from 'moment';
+import {TimeInterval} from '../time-interval-input/time-interval-input.component';
 
-const startBeforeEndValidator = (control: AbstractControl): ValidationErrors | null => {
-    if (!(control instanceof UntypedFormGroup)) {
-        return null;
-    }
-
-    const start = control.controls.start.value as Moment;
-    const end = control.controls.end.value as Moment;
-    const timeAsPoint = control.controls.timeAsPoint.value as boolean;
-
-    if (start && end && (timeAsPoint || start.isBefore(end))) {
-        return null;
-    } else {
-        return {valid: false};
-    }
-};
+export interface TimeConfigForm {
+    timeInterval: FormControl<TimeInterval>;
+}
 
 @Component({
     selector: 'geoengine-time-config',
@@ -29,7 +18,7 @@ const startBeforeEndValidator = (control: AbstractControl): ValidationErrors | n
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
-    timeForm: UntypedFormGroup;
+    form: FormGroup<TimeConfigForm>;
 
     timeStepDuration$: Observable<TimeStepDuration>;
     timeStepDurations: Array<TimeStepDuration> = [
@@ -43,24 +32,21 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     ];
 
     protected time: Time;
+
     private projectTimeSubscription?: Subscription;
 
     constructor(
         private projectService: ProjectService,
         private changeDetectorRef: ChangeDetectorRef,
-        private formBuilder: UntypedFormBuilder,
+        private formBuilder: NonNullableFormBuilder,
         public config: Config,
     ) {
         // initialize with the current time to have a defined value
         this.time = new Time(moment.utc(), moment.utc());
 
-        this.timeForm = this.formBuilder.group({
-            start: [this.time.start.clone(), Validators.required],
-            timeAsPoint: [this.config.TIME.ALLOW_RANGES, Validators.required],
-            end: [this.time.end.clone(), Validators.required],
+        this.form = this.formBuilder.group({
+            timeInterval: [{start: this.time.start, timeAsPoint: true, end: this.time.end}, [Validators.required]],
         });
-
-        this.timeForm.setValidators(startBeforeEndValidator);
 
         this.timeStepDuration$ = this.projectService.getTimeStepDurationStream();
     }
@@ -87,45 +73,45 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     applyTime(): void {
-        if (!this.timeForm.valid) {
+        if (!this.form.valid) {
             return;
         }
 
-        this.updateTime(this.timeOfForm());
+        const time = this.formToTime();
+
+        this.updateTime(time);
     }
 
     reset(): void {
-        this.timeForm.controls['timeAsPoint'].setValue(this.time.type === 'TimePoint');
-        this.timeForm.controls['start'].setValue(this.time.start.clone());
-        this.timeForm.controls['end'].setValue(this.time.end.clone());
+        const reset = this.time.clone();
+
+        this.form.controls['timeInterval'].setValue({
+            start: reset.start,
+            end: reset.end,
+            timeAsPoint: reset.start.isSame(reset.end),
+        });
     }
 
     isNotResettable(): boolean {
-        return this.time.isSame(this.timeOfForm());
+        return this.formToTime().isSame(this.time);
     }
 
     updateTimeStepDuration(timeStep: TimeStepDuration): void {
         this.projectService.setTimeStepDuration(timeStep);
     }
 
-    protected getFormStartTime(): Moment {
-        return this.timeForm.get('start')?.value;
-    }
+    protected formToTime(): Time {
+        const timeInterval = this.form.get('timeInterval')?.value as TimeInterval;
 
-    protected getFormEndTime(): Moment {
-        return this.timeForm.get('end')?.value;
-    }
+        const start = timeInterval.start;
+        const timeAsPoint = timeInterval.timeAsPoint;
+        let end = timeInterval.end;
 
-    protected isFormTimePoint(): boolean {
-        return this.timeForm.get('timeAsPoint')?.value;
-    }
-
-    protected timeOfForm(): Time {
-        if (this.isFormTimePoint()) {
-            return new Time(this.getFormStartTime());
-        } else {
-            return new Time(this.getFormStartTime(), this.getFormEndTime());
+        if (timeAsPoint) {
+            end = start;
         }
+
+        return new Time(start, end);
     }
 
     protected updateTime(time: Time): void {

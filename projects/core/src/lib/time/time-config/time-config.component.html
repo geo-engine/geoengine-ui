@@ -1,34 +1,22 @@
 <geoengine-sidenav-header>Time Config</geoengine-sidenav-header>
 
-<form [formGroup]="timeForm" (ngSubmit)="$event.preventDefault(); applyTime()">
-    <mat-card>
-        <mat-card-header>
-            <mat-card-title>Display Time</mat-card-title>
-            <mat-card-subtitle>Specify a time selection for the current data</mat-card-subtitle>
-        </mat-card-header>
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>Display Time</mat-card-title>
+        <mat-card-subtitle>Specify a time selection for the current data</mat-card-subtitle>
+    </mat-card-header>
 
-        <mat-card-content>
-            <h3 class="mat-subtitle-1" *ngIf="config.TIME.ALLOW_RANGES">Start</h3>
+    <mat-card-content>
+        <form [formGroup]="form">
+            <geoengine-time-interval-input formControlName="timeInterval"></geoengine-time-interval-input>
 
-            <geoengine-time-input formControlName="start"></geoengine-time-input>
-
-            <ng-template [ngIf]="config.TIME.ALLOW_RANGES">
-                <h3 class="mat-subtitle-1" fxLayout="row" fxLayoutAlign="space-between center">
-                    End
-                    <mat-slide-toggle #timeAsPoint formControlName="timeAsPoint" class="mat-body-1">same as start</mat-slide-toggle>
-                </h3>
-
-                <geoengine-time-input formControlName="end" [isDisabled]="timeAsPoint.checked"></geoengine-time-input>
-            </ng-template>
-        </mat-card-content>
-
-        <mat-card-actions align="end">
-            <span class="error" *ngIf="!timeForm.valid">Start must be before End.</span>
-            <button mat-raised-button (click)="reset()" [disabled]="isNotResettable()">Reset</button>
-            <button mat-raised-button color="primary" type="submit" [disabled]="timeForm.invalid">Apply</button>
-        </mat-card-actions>
-    </mat-card>
-</form>
+            <mat-card-actions align="end">
+                <button mat-raised-button (click)="reset()" [disabled]="isNotResettable()">Reset</button>
+                <button mat-raised-button color="primary" type="submit" [disabled]="!form.valid" (click)="applyTime()">Apply</button>
+            </mat-card-actions>
+        </form>
+    </mat-card-content>
+</mat-card>
 
 <mat-card>
     <mat-card-header>

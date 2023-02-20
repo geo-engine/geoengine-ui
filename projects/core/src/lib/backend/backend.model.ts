@@ -594,6 +594,22 @@ export interface LayerCollectionDict {
     entryLabel?: string;
 }
 
+export interface WcsParamsDict {
+    service: 'WCS';
+    request: 'GetCoverage';
+    version: '1.1.1';
+    identifier: string;
+    boundingbox: string;
+    format: 'image/tiff';
+    gridbasecrs: string;
+    gridcs: 'urn:ogc:def:cs:OGC:0.0:Grid2dSquareCS';
+    gridtype: 'urn:ogc:def:method:WCS:1.1:2dSimpleGrid';
+    gridorigin: string;
+    gridoffsets: string;
+    time: string;
+    nodatavalue?: string;
+}
+
 export interface QuotaDict {
     available: number;
     used: number;
