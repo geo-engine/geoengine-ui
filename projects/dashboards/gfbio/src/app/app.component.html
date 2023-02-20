@@ -1,44 +1,39 @@
+<mat-toolbar color="" class="navbar mat-elevation-z4" #topToolbar>
+    <!-- <img src="assets/vat_logo.svg" class="logo" /> -->
+    <div class="logo">
+        <mat-icon mat-list-icon svgIcon="vat:logo" aria-label="VAT"></mat-icon>
+        <span class="title">VAT</span>
+        <span class="subtitle mat-small">powered by<br />Geo Engine</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <a href="https://www.gfbio.org" mat-flat-button color="primary" class="back-button">
+        <mat-icon>keyboard_return</mat-icon>
+        <span></span>
+        <img src="assets/logo_gfbio.png" alt="GFBio Portal" matTooltip="Back to GFBio Portal" />
+    </a>
+
+    <div class="divider"></div>
+
+    <geoengine-zoom-handles (zoomIn)="map.zoomIn()" (zoomOut)="map.zoomOut()"></geoengine-zoom-handles>
+
+    <div class="divider"></div>
+
+    <geoengine-small-time-interaction></geoengine-small-time-interaction>
+
+    <div class="divider"></div>
+
+    <div class="space"></div>
+
+    <geoengine-navigation [buttons]="navigationButtons | async | valueDefault : []"></geoengine-navigation>
+</mat-toolbar>
+
 <mat-sidenav-container fullscreen>
-    <mat-toolbar color="primary" class="mat-elevation-z4" #topToolbar>
-        <geoengine-layer-list-menu class="box">
-            <div class="logo">
-                <mat-icon mat-list-icon svgIcon="vat:logo" aria-label="VAT"></mat-icon>
-                <span class="title">VAT</span>
-            </div>
-        </geoengine-layer-list-menu>
-
-        <div class="navbar">
-            <div class="small-box">
-                <geoengine-layer-list-menu>
-                    <div class="logo">
-                        <mat-icon mat-list-icon svgIcon="vat:logo" aria-label="VAT"></mat-icon>
-                    </div>
-                </geoengine-layer-list-menu>
-            </div>
-            <div class="space"></div>
-            <div class="navbar-element">
-                <geoengine-zoom-handles (zoomIn)="map.zoomIn()" (zoomOut)="map.zoomOut()"></geoengine-zoom-handles>
-            </div>
-            <div class="space"></div>
-            <div class="navbar-element">
-                <geoengine-small-time-interaction></geoengine-small-time-interaction>
-            </div>
-            <div class="space"></div>
-            <div class="navbar-element">
-                <a href="https://www.gfbio.org" mat-flat-button color="default" class="back-button">
-                    <mat-icon>keyboard_return</mat-icon>
-                    <span></span>
-                    <img src="assets/logo_gfbio.png" alt="GFBio Portal" matTooltip="Back to GFBio Portal" />
-                </a>
-            </div>
-        </div>
-    </mat-toolbar>
-
     <mat-sidenav position="end" mode="side" (openedChange)="mapComponent.resize()">
         <geoengine-sidenav-container></geoengine-sidenav-container>
     </mat-sidenav>
 
-    <geoengine-navigation [buttons]="navigationButtons | async | valueDefault : []"></geoengine-navigation>
     <geoengine-layer-list
         class="mat-elevation-z4"
         [height]="middleContainerHeight$ | async | numberSanitizer"
