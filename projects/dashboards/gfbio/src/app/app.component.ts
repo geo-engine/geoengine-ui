@@ -15,7 +15,7 @@ import {
 } from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatIconRegistry} from '@angular/material/icon';
-import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
+import {MatDrawerToggleResult, MatSidenav, MatSidenavContainer} from '@angular/material/sidenav';
 import {MatTabGroup} from '@angular/material/tabs';
 import {
     AddDataButton,
@@ -60,9 +60,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MatTabGroup, {static: true}) bottomTabs!: MatTabGroup;
 
     @ViewChild(MatSidenav, {static: true}) rightSidenav!: MatSidenav;
+    @ViewChild(MatSidenavContainer, {static: true, read: ElementRef}) sidenavContainerElement!: ElementRef;
     @ViewChild(SidenavContainerComponent, {static: true}) rightSidenavContainer!: SidenavContainerComponent;
-
-    @ViewChild('topToolbar', {static: true, read: ElementRef}) topToolbar!: ElementRef;
 
     readonly layersReverse$: Observable<Array<Layer>>;
     readonly layerListVisible$: Observable<boolean>;
@@ -108,7 +107,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         this.mapIsGrid$ = this.mapService.isGrid$;
 
-        const totalHeight$ = this.windowHeight$.pipe(map((height) => height - this.topToolbar.nativeElement.offsetHeight));
+        const totalHeight$ = this.windowHeight$.pipe(map((_height) => this.sidenavContainerElement.nativeElement.offsetHeight));
 
         this.middleContainerHeight$ = this.layoutService.getMapHeightStream(totalHeight$).pipe(tap(() => this.mapComponent.resize()));
         this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(totalHeight$);
