@@ -1,46 +1,21 @@
 mat-sidenav-container {
-    // @media (max-width: 600px) and (orientation: portrait) {
-    //     top: 3.5rem !important;
-    // }
-    // @media (max-width: 960px) and (orientation: landscape) {
-    //     top: 4rem !important;
-    // }
-
-    // top: 4rem !important;
-
-    top: 3.5rem !important;
+    top: 4rem !important;
 
     z-index: 0; // put the map behind the toolbar
 }
-
-// geoengine-navigation {
-//     z-index: 10;
-// }
 
 mat-toolbar.navbar {
     padding: 0;
     position: relative;
     z-index: 1;
 
-    height: 100%;
+    height: 4rem;
 
     img.logo {
         height: 2rem;
         width: auto;
         margin: 0 1rem;
     }
-
-    // geoengine-navigation {
-    //     position: static;
-    //     height: 75%;
-
-    //     ::ng-deep button {
-    //         display: inline-block;
-    //         margin: 0 0.5rem 0 0;
-    //         box-shadow: none;
-    //         background-color: whitesmoke;
-    //     }
-    // }
 
     geoengine-layer-list-menu {
         width: 3rem;
