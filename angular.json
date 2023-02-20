@@ -102,7 +102,7 @@
                         ],
                         "styles": [
                             "projects/gis/src/styles.scss",
-                            "dist/core/assets/fonts/roboto/roboto.css",
+                            "dist/core/assets/fonts/poppins/poppins.css",
                             "dist/core/assets/fonts/pacifico/pacifico.css",
                             "dist/core/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/codemirror/lib/codemirror.css",
@@ -246,7 +246,7 @@
                         ],
                         "styles": [
                             "projects/dashboards/data-atlas/src/styles.scss",
-                            "dist/core/assets/fonts/roboto/roboto.css",
+                            "dist/core/assets/fonts/poppins/poppins.css",
                             "dist/core/assets/fonts/pacifico/pacifico.css",
                             "dist/core/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/codemirror/lib/codemirror.css",
@@ -389,7 +389,7 @@
                         ],
                         "styles": [
                             "projects/dashboards/ebv-analyzer/src/styles.scss",
-                            "dist/core/assets/fonts/roboto/roboto.css",
+                            "dist/core/assets/fonts/poppins/poppins.css",
                             "dist/core/assets/fonts/pacifico/pacifico.css",
                             "dist/core/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/codemirror/lib/codemirror.css",
@@ -533,7 +533,7 @@
                         ],
                         "styles": [
                             "projects/dashboards/nfdi-gdo/src/styles.scss",
-                            "dist/core/assets/fonts/roboto/roboto.css",
+                            "dist/core/assets/fonts/poppins/poppins.css",
                             "dist/core/assets/fonts/pacifico/pacifico.css",
                             "dist/core/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/codemirror/lib/codemirror.css",
@@ -676,7 +676,7 @@
                         ],
                         "styles": [
                             "projects/dashboards/gfbio/src/styles.scss",
-                            "dist/core/assets/fonts/roboto/roboto.css",
+                            "dist/core/assets/fonts/poppins/poppins.css",
                             "dist/core/assets/fonts/pacifico/pacifico.css",
                             "dist/core/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/codemirror/lib/codemirror.css",

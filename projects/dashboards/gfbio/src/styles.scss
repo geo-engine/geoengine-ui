@@ -15,8 +15,15 @@
     --geoengine-background-hover-color: #{mat.get-color-from-palette(map-get($geoengine-theme, background), hover)};
     --geoengine-card-background-color: #{map-get(map-get($geoengine-theme, background), card)};
 
-    font-family: Roboto, 'Helvetica Neue', sans-serif;
+    --geoengine-divider-color: #{mat.get-color-from-palette(map-get($geoengine-theme, foreground), dividers)};
+
+    font-family: Poppins, sans-serif;
     font-size: 16px;
+}
+
+body {
+    margin: 0;
+    padding: 0;
 }
 
 a {
