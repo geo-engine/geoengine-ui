@@ -1,20 +1,6 @@
-:host {
-    position: absolute;
-    display: block;
-    right: 0;
-
-    top: 5rem;
-    //@media (max-width: 600px) and (orientation: portrait) {
-    //    top: 4.5rem;
-    //}
-    //@media (max-width: 960px) and (orientation: landscape) {
-    //    top: 4rem;
-    //}
-}
-
 button {
-    display: block;
-    padding: 0;
+    display: inline-block;
+    // padding: 0;
     line-height: 100%;
 
     $width: 3rem;
@@ -24,33 +10,14 @@ button {
     min-height: $width;
     height: $width;
 
-    @media (max-width: 600px) and (orientation: portrait) {
-        $width: 2.5rem;
-
-        min-width: $width;
-        width: $width;
-        min-height: $width;
-        height: $width;
-    }
-    @media (max-width: 960px) and (orientation: landscape) {
-        $width: 2rem;
-
-        min-width: $width;
-        width: $width;
-        min-height: $width;
-        height: $width;
-    }
+    margin-right: 0.5rem;
 
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 
     mat-icon {
-        margin-left: 0.5rem;
+        margin-right: 0;
     }
-}
-
-button:not(:last-child) {
-    margin-bottom: 1rem;
 }
 
 mat-spinner {

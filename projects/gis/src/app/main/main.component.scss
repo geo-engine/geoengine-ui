@@ -1,78 +1,67 @@
-geoengine-navigation {
-    z-index: 10;
+mat-sidenav-container {
+    // @media (max-width: 600px) and (orientation: portrait) {
+    //     top: 3.5rem !important;
+    // }
+    // @media (max-width: 960px) and (orientation: landscape) {
+    //     top: 4rem !important;
+    // }
+
+    // top: 4rem !important;
+
+    top: 3.5rem !important;
+
+    z-index: 0; // put the map behind the toolbar
 }
 
-mat-toolbar {
+// geoengine-navigation {
+//     z-index: 10;
+// }
+
+mat-toolbar.navbar {
     padding: 0;
     position: relative;
     z-index: 1;
 
-    .box {
-        max-height: inherit;
-        height: inherit;
-        .logo .mat-icon {
-            width: 100%;
+    height: 100%;
 
-            ::ng-deep svg {
-                border: none;
-                border-radius: unset;
-            }
-        }
-        @media (max-width: 550px) {
-            display: none;
-        }
+    img.logo {
+        height: 2rem;
+        width: auto;
+        margin: 0 1rem;
     }
 
-    .navbar {
-        width: 68vw;
-        @media (max-width: 550px) {
-            width: 100vw;
-        }
-        display: flex;
-        justify-content: center;
+    // geoengine-navigation {
+    //     position: static;
+    //     height: 75%;
 
-        .small-box {
-            ::ng-deep .container {
-                border-right: none;
-                width: 10vw;
-                min-width: 70px;
-            }
-            .logo .mat-icon {
-                vertical-align: middle;
-                transform: scale(1.3);
+    //     ::ng-deep button {
+    //         display: inline-block;
+    //         margin: 0 0.5rem 0 0;
+    //         box-shadow: none;
+    //         background-color: whitesmoke;
+    //     }
+    // }
 
-                ::ng-deep svg {
-                    border: none;
-                    border-radius: unset;
-                }
-            }
-            @media (min-width: 550px) {
-                display: none;
-            }
-        }
-        .navbar-element {
-            @media (max-width: 550px) {
-                padding-top: 0.4rem;
-            }
-        }
+    geoengine-layer-list-menu {
+        width: 3rem;
+    }
 
-        .space {
-            width: 2rem;
-        }
+    .space {
+        flex: 1;
+    }
+
+    .divider {
+        height: 2rem;
+        border-right: 1px solid var(--geoengine-divider-color);
     }
 }
 
 geoengine-layer-list {
     position: absolute;
     z-index: 2;
-    left: 0;
-    top: 4rem;
-    background-color: rgba(255, 255, 255, 0.87);
+    left: 0.5rem;
+    top: 0.5rem;
     border-bottom-right-radius: 2px;
-
-    @media (max-width: 600px) {
-        top: 3.5rem;
-    }
 
     ::ng-deep svg {
         border: none;
