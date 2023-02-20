@@ -1,23 +1,13 @@
-<div class="container">
-    <mat-toolbar color="primary">
-        <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
-            <div class="only-large"></div>
-
-            <ng-content select=".logo"></ng-content>
-
-            <button
-                class="menu-btn"
-                mat-icon-button
-                [matMenuTriggerFor]="layerListMenu"
-                matTooltip="Actions for all layers"
-                matTooltipPosition="after"
-                [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
-            >
-                <mat-icon>more_vert</mat-icon>
-            </button>
-        </div>
-    </mat-toolbar>
-</div>
+<button
+    class="menu-btn"
+    mat-icon-button
+    [matMenuTriggerFor]="layerListMenu"
+    matTooltip="Actions for all layers"
+    matTooltipPosition="after"
+    [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
+>
+    <mat-icon>layers</mat-icon>
+</button>
 
 <!-- TODO: use default font size for layer menu -->
 <mat-menu #layerListMenu="matMenu">

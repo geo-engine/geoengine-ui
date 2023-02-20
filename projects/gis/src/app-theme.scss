@@ -1,66 +1,48 @@
 @use '@angular/material' as mat;
 
 // Material Base Styles
-// TODO(v15): As of v15 mat.legacy-core no longer includes default typography styles.
-//  The following line adds:
-//    1. Default typography styles for all components
-//    2. Styles for typography hierarchy classes (e.g. .mat-headline-1)
-//  If you specify typography styles for the components you use elsewhere, you should delete this line.
-//  If you don't need the default component typographies but still want the hierarchy styles,
-//  you can delete this line and instead use:
-//    `@include mat.legacy-typography-hierarchy(mat.define-typography-config());`
 @include mat.all-component-typographies();
 @include mat.core();
 
 // Define Colors
-$geoengine-dark-green: (
-    50: #e7f1e8,
-    100: #c3ddc5,
-    200: #9cc79e,
-    300: #74b077,
-    400: #569f59,
-    500: #388e3c,
-    600: #328636,
-    700: #2b7b2e,
-    800: #247127,
-    900: #175f1a,
-    A100: #9aff9d,
-    A200: #67ff6b,
-    A400: #34ff3a,
-    A700: #1aff21,
+$geoengine-main-green: (
+    50: #e7f5e7,
+    100: #c6e5c3,
+    200: #a1d49d,
+    300: #7ac476,
+    400: #5db858,
+    // main color
+    500: #3fab39,
+    600: #359c31,
+    700: #298a26,
+    800: #1c7a1b,
+    900: #005b04,
     contrast: (
         50: #000000,
         100: #000000,
         200: #000000,
         300: #000000,
         400: #000000,
-        500: #ffffff,
+        500: #000000,
         600: #ffffff,
         700: #ffffff,
         800: #ffffff,
         900: #ffffff,
-        A100: #000000,
-        A200: #000000,
-        A400: #000000,
-        A700: #000000,
     ),
 );
 
-$geoengine-light-green: (
-    50: #edf7ed,
-    100: #d2ecd2,
-    200: #b5dfb4,
-    300: #97d296,
-    400: #80c980,
-    500: #6abf69,
-    600: #62b961,
-    700: #57b156,
-    800: #4da94c,
-    900: #3c9b3b,
-    A100: #ebffeb,
-    A200: #b8ffb8,
-    A400: #86ff85,
-    A700: #6dff6b,
+$geoengine-mid-blue: (
+    50: #e1f5fa,
+    100: #b3e4f3,
+    200: #83d3eb,
+    300: #56c1e4,
+    400: #36b4e0,
+    500: #18a7dd,
+    600: #0e99cf,
+    // main color
+    700: #0087bc,
+    800: #0176a9,
+    900: #005687,
     contrast: (
         50: #000000,
         100: #000000,
@@ -70,19 +52,19 @@ $geoengine-light-green: (
         500: #000000,
         600: #000000,
         700: #000000,
-        800: #000000,
+        800: #ffffff,
         900: #ffffff,
-        A100: #000000,
-        A200: #000000,
-        A400: #000000,
-        A700: #000000,
     ),
 );
 
 // Define App Theme
-$geoengine-primary: mat.define-palette($geoengine-dark-green);
-$geoengine-accent: mat.define-palette($geoengine-light-green, A200, A100, A400);
+$geoengine-primary: mat.define-palette($geoengine-main-green, 500, 300, 900);
+$geoengine-accent: mat.define-palette($geoengine-mid-blue, 700, 300, 900);
 $geoengine-warn: mat.define-palette(mat.$red-palette);
+
+$geoengine-typography: mat.define-typography-config(
+    $font-family: 'Poppins',
+);
 
 // Create the theme object
 $geoengine-theme: mat.define-light-theme(
@@ -92,7 +74,7 @@ $geoengine-theme: mat.define-light-theme(
             accent: $geoengine-accent,
             warn: $geoengine-warn,
         ),
-        typography: mat.define-typography-config(),
+        typography: $geoengine-typography,
         density: 0,
     )
 );

@@ -34,9 +34,9 @@ const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CONFIG, {
         },
     },
     BRANDING: {
-        LOGO_URL: 'assets/geoengine-white.svg',
+        LOGO_URL: 'assets/geoengine.svg',
         LOGO_ICON_URL: 'assets/geoengine-favicon-white.svg',
-        LOGO_ALT_URL: 'assets/geoengine.svg',
+        LOGO_ALT_URL: 'assets/geoengine-white.svg',
         PAGE_TITLE: 'Geo Engine',
     },
 }) as AppConfigStructure;
