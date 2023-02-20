@@ -1,6 +1,6 @@
 <div>
     <button
-        mat-button
+        mat-icon-button
         *ngFor="let button of buttons"
         [color]="button.colorObservable ? (button.colorObservable | async) : buttonColor(button.sidenavConfig)"
         (click)="button.sidenavConfig ? setComponent(button.sidenavConfig) : undefined"
