@@ -7,9 +7,11 @@ import OlGeometry from 'ol/geom/Geometry';
 import {Vector as OlSourceVector} from 'ol/source';
 import {Type as OlGeometryType} from 'ol/geom/Geometry';
 import OlView from 'ol/View';
+import OlFeature from 'ol/Feature';
 
 import {MapContainerComponent} from './map-container/map-container.component';
 import {olExtentToTuple} from '../util/conversions';
+import {createBox} from 'ol/interaction/Draw';
 
 /**
  * The viewport combines…
@@ -91,6 +93,13 @@ export class MapService {
             throw new Error('no MapComponent registered');
         }
         this.mapComponent.startDrawInteraction(drawType);
+    }
+
+    public startBoxDrawInteraction(endDrawCallback?: (feature: OlFeature<OlGeometry>) => void): void {
+        if (!this.mapComponent) {
+            throw new Error('no MapComponent registered');
+        }
+        this.mapComponent.startDrawInteraction('Circle', createBox(), endDrawCallback);
     }
 
     /**

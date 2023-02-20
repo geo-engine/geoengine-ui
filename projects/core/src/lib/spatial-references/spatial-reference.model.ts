@@ -39,6 +39,14 @@ export class SpatialReference {
     equals(other: SpatialReference): boolean {
         return this.srsString === other.srsString;
     }
+
+    wcsUrn(): string | undefined {
+        if (this.srsString.startsWith('EPSG:')) {
+            return `urn:ogc:def:crs:EPSG::${this.srsString.substring(5)}`;
+        }
+
+        return undefined;
+    }
 }
 
 export class NamedSpatialReference {
