@@ -12,9 +12,6 @@ export class FxFlexDirective implements OnChanges {
     constructor(private el: ElementRef) {}
 
     ngOnChanges(): void {
-        // TODO: remove
-        // this.el.nativeElement.style.backgroundColor = 'yellow';
-
         if (this.fxFlex === '') {
             this.el.nativeElement.style.flex = '1 1 0%';
         } else if (this.fxFlex === 'grow') {
@@ -31,14 +28,11 @@ export class FxFlexDirective implements OnChanges {
     selector: '[fxLayout]',
 })
 export class FxLayoutDirective implements OnChanges {
-    @Input() fxLayout: 'row' | 'row wrap' | 'column' = 'row';
+    @Input() fxLayout: 'row' | 'row wrap' | 'column' | 'row-reverse' = 'row';
 
     constructor(private el: ElementRef) {}
 
     ngOnChanges(): void {
-        // TODO: remove
-        // this.el.nativeElement.style.backgroundColor = 'ocre';
-
         this.el.nativeElement.style.display = 'flex';
 
         switch (this.fxLayout) {
@@ -48,6 +42,9 @@ export class FxLayoutDirective implements OnChanges {
             case 'row wrap':
                 this.el.nativeElement.style.flexDirection = 'row';
                 this.el.nativeElement.style.flexWrap = 'wrap';
+                break;
+            case 'row-reverse':
+                this.el.nativeElement.style.flexDirection = 'row-reverse';
                 break;
             case 'column':
                 this.el.nativeElement.style.flexDirection = 'column';
@@ -65,9 +62,6 @@ export class FxLayoutGapDirective implements OnChanges {
     constructor(private el: ElementRef) {}
 
     ngOnChanges(): void {
-        // TODO: remove
-        // this.el.nativeElement.style.backgroundColor = 'mint';
-
         switch (this.fxLayoutGap) {
             case '0.5rem':
                 this.el.nativeElement.style.columnGap = '0.5rem';
@@ -98,9 +92,6 @@ export class FxLayoutAlignDirective implements OnChanges {
     constructor(private el: ElementRef) {}
 
     ngOnChanges(): void {
-        // TODO: remove
-        // this.el.nativeElement.style.backgroundColor = 'orange';
-
         switch (this.fxLayoutAlign) {
             case 'start center':
                 this.el.nativeElement.style.justifyContent = 'flex-start';
