@@ -29,7 +29,6 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {ColorPickerModule} from 'ngx-color-picker';
 import {DragDropModule} from '@angular/cdk/drag-drop';
-import {FlexLayoutModule} from '@angular/flex-layout';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {DialogHeaderComponent} from './dialogs/dialog-header/dialog-header.component';
@@ -153,6 +152,7 @@ import {UserSessionComponent} from './users/user-session/user-session.component'
 import {DownloadRasterLayerComponent} from './download-raster-layer/download-raster-layer.component';
 import {TimeIntervalInputComponent} from './time/time-interval-input/time-interval-input.component';
 import {QuotaInfoComponent} from './users/quota/quota-info/quota-info.component';
+import {FxFlexDirective, FxLayoutAlignDirective, FxLayoutDirective, FxLayoutGapDirective} from './util/directives/flexbox-legacy.directive';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -314,14 +314,15 @@ const CORE_COMPONENTS = [
     ZoomHandlesComponent,
 ];
 
+const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGapDirective, FxLayoutAlignDirective];
+
 @NgModule({
-    declarations: [...CORE_PIPES, ...CORE_COMPONENTS],
+    declarations: [...CORE_PIPES, ...CORE_COMPONENTS, ...FXFLEX_LEGACY_DIRECTIVES],
     imports: [
         ...MATERIAL_MODULES,
         ColorPickerModule,
         CommonModule,
         DragDropModule,
-        FlexLayoutModule,
         FormsModule,
         HttpClientModule,
         NgxMatSelectSearchModule,
@@ -332,7 +333,6 @@ const CORE_COMPONENTS = [
     exports: [
         /* re-exports */
         ...MATERIAL_MODULES,
-        FlexLayoutModule,
         PortalModule,
         ReactiveFormsModule,
         ScrollingModule,
