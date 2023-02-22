@@ -22,7 +22,7 @@
         </mat-select>
     </mat-form-field>
 
-    <div *ngFor="let breakpoint of colorizerBreakpoints; let i = index" fxLayoutAlign="column">
+    <div *ngFor="let breakpoint of colorizerBreakpoints; let i = index">
         <geoengine-color-breakpoint
             [ngModel]="breakpoint"
             (ngModelChange)="updateBreakpointAt(i, $event)"
