@@ -12,6 +12,7 @@
 .header-content {
     position: relative;
     height: inherit;
+    width: 100%;
 
     .header-click {
         padding: 0 1rem;
@@ -71,6 +72,7 @@ mat-progres-bar {
 .details-content {
     padding: 0 1rem;
     overflow: auto;
+    width: 100%;
 
     .details-row {
         padding: 0;

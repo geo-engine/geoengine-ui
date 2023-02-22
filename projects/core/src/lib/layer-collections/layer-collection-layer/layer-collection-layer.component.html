@@ -1,6 +1,6 @@
 <ng-container>
     <span class="header">
-        <span class="header-content" fxLayout="row" fxLayoutAlign="space-between center" fxFill>
+        <span class="header-content" fxLayout="row" fxLayoutAlign="space-between center">
             <span matRipple class="header-click" fxLayout="row" fxLayoutAlign="start center" (click)="onAdd()">
                 <mat-icon class="header-icon">map</mat-icon>
                 <span class="header-text" fxLayout="column" fxLayoutAlign="center start">
@@ -24,7 +24,7 @@
 </ng-container>
 
 <ng-container *ngIf="expanded">
-    <span class="details-content" fxLayout="column" fxLayoutAlign="center start" fxFill>
+    <span class="details-content" fxLayout="column" fxLayoutAlign="center start">
         <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
             <mat-icon class="details-row-icon">info</mat-icon>
             <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
