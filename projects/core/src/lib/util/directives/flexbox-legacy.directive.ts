@@ -18,8 +18,12 @@ export class FxFlexDirective implements OnChanges {
             this.el.nativeElement.style.flex = '1 1 100%';
         } else if (this.fxFlex === '0.5rem') {
             this.el.nativeElement.style.flex = '0.5rem';
+            this.el.nativeElement.style.maxWidth = '0.5rem';
+            this.el.nativeElement.style.minWidth = '0.5rem';
         } else if (this.fxFlex === '1rem') {
             this.el.nativeElement.style.flex = '1rem';
+            this.el.nativeElement.style.maxWidth = '1rem';
+            this.el.nativeElement.style.minWidth = '1rem';
         }
     }
 }
