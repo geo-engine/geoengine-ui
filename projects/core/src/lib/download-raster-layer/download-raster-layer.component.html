@@ -31,7 +31,7 @@
                     </mat-form-field>
                 </div>
 
-                <button mat-raised-button color="accent" (click)="selectBox()">Select region on the map</button>
+                <button mat-raised-button color="accent" (click)="selectBox()" [disabled]="isSelectingBox">Select region on the map</button>
             </mat-card-content>
         </mat-card>
 
