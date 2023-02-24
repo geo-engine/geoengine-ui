@@ -99,7 +99,7 @@ export class MapService {
         if (!this.mapComponent) {
             throw new Error('no MapComponent registered');
         }
-        this.mapComponent.startDrawInteraction('Circle', createBox(), endDrawCallback);
+        this.mapComponent.startDrawInteraction('Circle', true, createBox(), endDrawCallback);
     }
 
     /**

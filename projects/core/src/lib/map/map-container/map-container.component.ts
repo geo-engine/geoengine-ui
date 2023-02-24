@@ -116,6 +116,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     private drawInteractionSource?: OlSourceVector<OlGeometry>;
     private drawType: OlGeometryType = 'Point';
     private drawGeometryFunction?: GeometryFunction;
+    private drawSingleFeature = false;
     private drawInteractions: Array<OlInteractionDraw> = [];
     private drawInteractionLayers: Array<OlLayerVector<OlSourceVector<OlGeometry>>> = [];
     private endDrawCallback?: (feature: OlFeature<OlGeometry>) => void;
@@ -229,6 +230,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
      */
     public startDrawInteraction(
         drawType: OlGeometryType,
+        drawSingleFeature: boolean = false,
         geometryFunction?: GeometryFunction,
         endDrawCallback?: (feature: OlFeature<OlGeometry>) => void,
     ): void {
@@ -238,19 +240,9 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
 
         this.drawType = drawType;
         this.drawGeometryFunction = geometryFunction;
+        this.drawSingleFeature = drawSingleFeature;
         this.drawInteractionSource = new OlSourceVector({wrapX: false});
         this.endDrawCallback = endDrawCallback;
-
-        this.reattachDrawInteractions();
-    }
-
-    public startBoxDrawInteraction(): void {
-        if (this.isDrawInteractionAttached()) {
-            throw new Error('only one draw interaction can be active!');
-        }
-
-        this.drawType = 'Circle';
-        this.drawInteractionSource = new OlSourceVector({wrapX: false});
 
         this.reattachDrawInteractions();
     }
@@ -334,7 +326,10 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 const self = this;
 
                 drawInteraction.on('drawend', function (event) {
-                    self.endDrawInteraction();
+                    if (self.drawSingleFeature) {
+                        self.endDrawInteraction();
+                    }
+
                     self.endDrawCallback?.(event.feature);
                 });
             });
