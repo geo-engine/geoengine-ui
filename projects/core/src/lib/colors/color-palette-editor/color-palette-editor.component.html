@@ -1,16 +1,23 @@
-<button (click)="debugClick()">Debug</button>
+<button (click)="debugClick()">Print Debuginfo</button>
 <br />
-<div *ngFor="let c of colorMap | keyvalue">
-    <geoengine-color-attribute-input [ngModel]="colorAttributeInputFromColorMapEntry(c.value, c.key)"></geoengine-color-attribute-input>
+
+<!-- COMMENTED OUT SECTION: Try iterating over map...-->
+<!-- <div *ngFor="let c of colorMap | keyvalue"> -->
+    <!-- <geoengine-color-attribute-input [ngModel]="colorAttributeInputFromColorMapEntry(c.value, c.key)"></geoengine-color-attribute-input> -->
     <!-- <geoengine-color-attribute-input [ngModel]="anAttributeInput"></geoengine-color-attribute-input> -->
     <!-- <button mat-mini-fab (click)="removeColorTab(c.key)">-</button> -->
-</div>
+<!-- </div> -->
+
 <br>
-<!-- <div *ngFor="let c of allColors; let i = index">
-    <geoengine-color-attribute-input [ngModel]="c" (ngModelChange)="updateColor(i, $event)"></geoengine-color-attribute-input>
+<div *ngFor="let c of allColors; let i = index">
+    <geoengine-color-attribute-input [ngModel]="c" (ngModelChange)="rebuildColorMap(i, $event)"></geoengine-color-attribute-input>
     <button mat-mini-fab (click)="removeColorTab(i)">-</button>
-</div> -->
-<!-- <button mat-raised-button color="accent" (click)="addColorTab()">Add color tab</button> -->
+</div>
+<mat-divider></mat-divider>
+<br>
+Add a new color:
+<geoengine-color-attribute-input [ngModel]="newTab"></geoengine-color-attribute-input>
+<button mat-raised-button color="accent" (click)="addColorTab()">Add color tab</button>
 
 <!--  Examples of color attribute input parameters
                         <geoengine-color-attribute-input
