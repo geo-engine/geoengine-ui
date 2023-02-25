@@ -29,7 +29,6 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {ColorPickerModule} from 'ngx-color-picker';
 import {DragDropModule} from '@angular/cdk/drag-drop';
-import {FlexLayoutModule} from '@angular/flex-layout';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {DialogHeaderComponent} from './dialogs/dialog-header/dialog-header.component';
@@ -150,6 +149,11 @@ import {TimeShiftComponent} from './operators/dialogs/time-shift/time-shift.comp
 import {PieChartComponent} from './operators/dialogs/pie-chart/pie-chart.component';
 import {ColorPaletteEditorComponent} from './colors/color-palette-editor/color-palette-editor.component';
 import {RasterizationComponent} from './operators/dialogs/rasterization/rasterization.component';
+import {UserSessionComponent} from './users/user-session/user-session.component';
+import {DownloadRasterLayerComponent} from './download-raster-layer/download-raster-layer.component';
+import {TimeIntervalInputComponent} from './time/time-interval-input/time-interval-input.component';
+import {QuotaInfoComponent} from './users/quota/quota-info/quota-info.component';
+import {FxFlexDirective, FxLayoutAlignDirective, FxLayoutDirective, FxLayoutGapDirective} from './util/directives/flexbox-legacy.directive';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -214,6 +218,7 @@ const CORE_COMPONENTS = [
     ColorBreakpointInputComponent,
     ColorMapSelectorComponent,
     ColorParamEditorComponent,
+    ColorPaletteEditorComponent,
     ColumnRangeFilterComponent,
     DatasetComponent,
     DatasetListComponent,
@@ -222,6 +227,7 @@ const CORE_COMPONENTS = [
     DialogHelpComponent,
     DialogSectionHeadingComponent,
     DialogSplashCheckboxComponent,
+    DownloadRasterLayerComponent,
     DragAndDropComponent,
     DrawFeaturesComponent,
     ExpressionOperatorComponent,
@@ -271,6 +277,7 @@ const CORE_COMPONENTS = [
     PointInPolygonFilterOperatorComponent,
     PolygonIconComponent,
     ProvenanceTableComponent,
+    QuotaInfoComponent,
     RasterIconComponent,
     RasterizationComponent,
     RasterLegendComponent,
@@ -294,11 +301,13 @@ const CORE_COMPONENTS = [
     TemporalRasterAggregationComponent,
     TimeConfigComponent,
     TimeInputComponent,
+    TimeIntervalInputComponent,
     TimeShiftComponent,
     TimeSliderComponent,
     TimeStepSelectorComponent,
     TokenLoginComponent,
     UploadComponent,
+    UserSessionComponent,
     VatLogoComponent,
     VectorLegendComponent,
     VectorSymbologyEditorComponent,
@@ -307,14 +316,15 @@ const CORE_COMPONENTS = [
     ZoomHandlesComponent,
 ];
 
+const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGapDirective, FxLayoutAlignDirective];
+
 @NgModule({
-    declarations: [...CORE_PIPES, ...CORE_COMPONENTS, ColorPaletteEditorComponent],
+    declarations: [...CORE_PIPES, ...CORE_COMPONENTS, ...FXFLEX_LEGACY_DIRECTIVES],
     imports: [
         ...MATERIAL_MODULES,
         ColorPickerModule,
         CommonModule,
         DragDropModule,
-        FlexLayoutModule,
         FormsModule,
         HttpClientModule,
         NgxMatSelectSearchModule,
@@ -325,7 +335,6 @@ const CORE_COMPONENTS = [
     exports: [
         /* re-exports */
         ...MATERIAL_MODULES,
-        FlexLayoutModule,
         PortalModule,
         ReactiveFormsModule,
         ScrollingModule,

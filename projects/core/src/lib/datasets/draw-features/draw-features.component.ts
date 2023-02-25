@@ -103,6 +103,11 @@ export class DrawFeaturesComponent implements OnDestroy, OnInit {
         this.mapService.startDrawInteraction(this.olGeometryType);
     }
 
+    startBoxDrawing(): void {
+        this.mapService.startBoxDrawInteraction();
+        this.notificationService.info('Start Box drawing…');
+    }
+
     submitCreate(): void {
         const olSource = this.mapService.endDrawInteraction();
 

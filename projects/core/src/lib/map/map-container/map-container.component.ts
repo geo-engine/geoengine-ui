@@ -43,7 +43,7 @@ import OlStyleFill from 'ol/style/Fill';
 import OlStyleStroke from 'ol/style/Stroke';
 import OlStyleStyle, {StyleLike as OlStyleLike} from 'ol/style/Style';
 
-import OlInteractionDraw from 'ol/interaction/Draw';
+import OlInteractionDraw, {GeometryFunction} from 'ol/interaction/Draw';
 import OlInteractionSelect from 'ol/interaction/Select';
 import {SelectEvent as OlSelectEvent} from 'ol/interaction/Select';
 import OlGeometry from 'ol/geom/Geometry';
@@ -115,8 +115,10 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
 
     private drawInteractionSource?: OlSourceVector<OlGeometry>;
     private drawType: OlGeometryType = 'Point';
+    private drawGeometryFunction?: GeometryFunction;
     private drawInteractions: Array<OlInteractionDraw> = [];
     private drawInteractionLayers: Array<OlLayerVector<OlSourceVector<OlGeometry>>> = [];
+    private endDrawCallback?: (feature: OlFeature<OlGeometry>) => void;
 
     private subscriptions: Array<Subscription> = [];
 
@@ -225,12 +227,29 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     /**
      * Enable user input (hand drawn) for the map
      */
-    public startDrawInteraction(drawType: OlGeometryType): void {
+    public startDrawInteraction(
+        drawType: OlGeometryType,
+        geometryFunction?: GeometryFunction,
+        endDrawCallback?: (feature: OlFeature<OlGeometry>) => void,
+    ): void {
         if (this.isDrawInteractionAttached()) {
             throw new Error('only one draw interaction can be active!');
         }
 
         this.drawType = drawType;
+        this.drawGeometryFunction = geometryFunction;
+        this.drawInteractionSource = new OlSourceVector({wrapX: false});
+        this.endDrawCallback = endDrawCallback;
+
+        this.reattachDrawInteractions();
+    }
+
+    public startBoxDrawInteraction(): void {
+        if (this.isDrawInteractionAttached()) {
+            throw new Error('only one draw interaction can be active!');
+        }
+
+        this.drawType = 'Circle';
         this.drawInteractionSource = new OlSourceVector({wrapX: false});
 
         this.reattachDrawInteractions();
@@ -278,6 +297,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         return new OlInteractionDraw({
             source: this.drawInteractionSource,
             type: this.drawType,
+            geometryFunction: this.drawGeometryFunction,
         });
     }
 
@@ -310,6 +330,13 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 const drawInteraction = this.createDrawInteraction();
                 this.drawInteractions.push(drawInteraction);
                 map.addInteraction(drawInteraction);
+
+                const self = this;
+
+                drawInteraction.on('drawend', function (event) {
+                    self.endDrawInteraction();
+                    self.endDrawCallback?.(event.feature);
+                });
             });
         }
     }

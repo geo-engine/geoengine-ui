@@ -332,7 +332,9 @@ export class OlRasterLayerComponent
 
             const client = new XMLHttpRequest();
 
-            const cancelSub = this.projectService.createQueryAbortStream(tileZoomLevel, tileExtent).subscribe(() => client.abort());
+            const cancelSub = this.projectService
+                .createQueryAbortStream(this.layerId, tileZoomLevel, tileExtent)
+                .subscribe(() => client.abort());
 
             client.open('GET', src);
             client.responseType = 'blob';

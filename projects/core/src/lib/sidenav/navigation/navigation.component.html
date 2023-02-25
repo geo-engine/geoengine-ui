@@ -1,11 +1,11 @@
 <div>
     <button
-        mat-raised-button
+        mat-icon-button
         *ngFor="let button of buttons"
         [color]="button.colorObservable ? (button.colorObservable | async) : buttonColor(button.sidenavConfig)"
         (click)="button.sidenavConfig ? setComponent(button.sidenavConfig) : undefined"
         [matTooltip]="(button.tooltipObservable ? (button.tooltipObservable | async) : button.tooltip) | stringSanitizer"
-        matTooltipPosition="before"
+        matTooltipPosition="below"
     >
         <!-- we don't use switch-case because type narrowing is not yet supported: https://github.com/angular/angular/issues/20780 -->
 

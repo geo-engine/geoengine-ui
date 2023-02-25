@@ -27,7 +27,7 @@ import {
 import {UserService} from '../users/user.service';
 import {LayerData, RasterData, VectorData} from '../layers/layer-data.model';
 import {extentToBboxDict, subscribeAndProvide} from '../util/conversions';
-import {Extent, MapService} from '../map/map.service';
+import {Extent, MapService, ViewportSize} from '../map/map.service';
 import {Session} from '../users/session.model';
 import {HasPlotId, Plot} from '../plots/plot.model';
 import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata.model';
@@ -315,6 +315,13 @@ export class ProjectService {
         return this.project$.pipe(
             map((project: Project) => project.spatialReference),
             distinctUntilChanged((x, y) => x.srsString === y.srsString),
+        );
+    }
+
+    getSpatialReferenceOnce(): Observable<SpatialReference> {
+        return this.project$.pipe(
+            first(),
+            map((project: Project) => project.spatialReference),
         );
     }
 
@@ -874,25 +881,68 @@ export class ProjectService {
 
     /**
      * Create a stream that signals whether a running query should be aborted because the results are no longer needed.
-     * It takes the current zoomLevel and extent of a tile at the time of querying as a parameter in order to determine
-     * whether a change on the map view makes the results obsolete.
+     * It takes the layerId, current zoomLevel and extent of a tile at the time of querying as a parameter in order to
+     * determine whether a change in the layer list or on the map view makes the results obsolete.
      */
-    createQueryAbortStream(tileZoomLevel: number, tileExtent: Extent): Observable<void> {
+    createQueryAbortStream(layerId: number, tileZoomLevel: number, tileExtent: Extent): Observable<void> {
         const tileResolution = this.mapService.getView().getResolutionForZoom(tileZoomLevel);
 
-        const observables: Array<Observable<any>> = [
+        // create an observable that emits when the layer is removed
+        const layerStream = this.layers.get(layerId);
+        if (!layerStream) {
+            throw Error(`No layer stream found for layer id ${layerId}`);
+        }
+        const layerRemovedSubject = new BehaviorSubject<boolean>(false);
+        const layerStreamSub = layerStream.subscribe({
+            complete: () => {
+                layerRemovedSubject.next(true);
+                layerRemovedSubject.complete();
+            },
+        });
+
+        const observables: [
+            Observable<Time>,
+            Observable<ViewportSize>,
+            Observable<string>,
+            Observable<SpatialReference>,
+            Observable<boolean>,
+        ] = [
             this.getTimeStream(),
             this.mapService.getViewportSizeStream(),
             this.userService.getSessionTokenForRequest(),
             this.getSpatialReferenceStream(),
+            layerRemovedSubject,
         ];
 
+        let initialTime: Time | undefined;
+        let initialSref: SpatialReference | undefined;
+        let initialSession: string | undefined;
+
         return combineLatest(observables).pipe(
+            tap(([time, _viewportSize, session, sref, _layerRemoved]) => {
+                // capture the initial values at the start of the query
+                // s.t. we can detect a change later
+                if (!initialTime) {
+                    initialTime = time;
+                }
+                if (!initialSref) {
+                    initialSref = sref;
+                }
+                if (!initialSession) {
+                    initialSession = session;
+                }
+            }),
             skip(1),
             filter(
-                ([_t, viewportSize, _session, _sref]) =>
-                    viewportSize.resolution !== tileResolution || !olIntersects(tileExtent, viewportSize.extent),
+                ([time, viewportSize, session, sref, layerRemoved]) =>
+                    !time.isSame(initialTime as Time) ||
+                    viewportSize.resolution !== tileResolution ||
+                    !olIntersects(tileExtent, viewportSize.extent) ||
+                    session !== initialSession ||
+                    sref !== initialSref ||
+                    layerRemoved,
             ),
+            tap((_) => layerStreamSub.unsubscribe()),
             take(1),
             map(() => {}),
         );

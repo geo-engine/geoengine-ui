@@ -39,6 +39,8 @@ import {
     LayerCollectionDict,
     AuthCodeRequestURL,
     BackendInfoDict,
+    WcsParamsDict,
+    QuotaDict,
 } from './backend.model';
 
 @Injectable({
@@ -46,6 +48,7 @@ import {
 })
 export class BackendService {
     readonly wmsBaseUrl = `${this.config.API_URL}/wms`;
+    readonly wcsBaseUrl = `${this.config.API_URL}/wcs`;
 
     constructor(protected readonly http: HttpClient, protected readonly config: Config) {}
 
@@ -187,6 +190,32 @@ export class BackendService {
     downloadWorkflowMetadata(workflowId: UUID, sessionId: UUID): Observable<HttpEvent<Blob>> {
         return this.http.get(this.config.API_URL + `/workflow/${workflowId}/allMetadata/zip`, {
             headers: BackendService.authorizationHeader(sessionId),
+            responseType: 'blob',
+            reportProgress: true,
+            observe: 'events',
+        });
+    }
+
+    downloadRasterLayer(workflowId: UUID, sessionId: UUID, wcsParams: WcsParamsDict): Observable<HttpEvent<Blob>> {
+        const params = new NullDiscardingHttpParams();
+
+        params.set('service', wcsParams.service);
+        params.set('request', wcsParams.request);
+        params.set('version', wcsParams.version);
+        params.set('identifier', wcsParams.identifier);
+        params.set('boundingbox', wcsParams.boundingbox);
+        params.set('format', wcsParams.format);
+        params.set('gridbasecrs', wcsParams.gridbasecrs);
+        params.set('gridcs', wcsParams.gridcs);
+        params.set('gridtype', wcsParams.gridtype);
+        params.set('gridorigin', wcsParams.gridorigin);
+        params.set('gridoffsets', wcsParams.gridoffsets);
+        params.set('time', wcsParams.time);
+        params.set('nodatavalue', wcsParams.nodatavalue);
+
+        return this.http.get(this.config.API_URL + `/wcs/${workflowId}`, {
+            headers: BackendService.authorizationHeader(sessionId),
+            params: params.httpParams,
             responseType: 'blob',
             reportProgress: true,
             observe: 'events',
@@ -385,6 +414,12 @@ export class BackendService {
 
     registerWorkflowForLayer(sessionId: UUID, provider: UUID, layer: string): Observable<UUID> {
         return this.http.post<UUID>(this.config.API_URL + `/layers/${provider}/${encodeURIComponent(layer)}/workflowId`, {
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    getQuota(sessionId: UUID): Observable<QuotaDict> {
+        return this.http.get<QuotaDict>(this.config.API_URL + '/quota', {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
