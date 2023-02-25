@@ -151,12 +151,13 @@ export class ColorPaletteEditorComponent implements OnInit {
         });
     }
 
-    // Commented out for now (DEBUGGING)
+    changeNewTab(newColor: ColorAttributeInput): void {
+        this.newTab = newColor;
+    }
 
     addColorTab(): void {
-        console.log(this.newTab);
-
-        this.emitSymbology();
+        const newRasterValue: number = parseInt(this.newTab.key);
+        this.rebuildColorMap(this.allColors.length, this.newTab);
     }
 
     removeColorTab(index: number): void {

@@ -16,7 +16,7 @@
 <mat-divider></mat-divider>
 <br>
 Add a new color:
-<geoengine-color-attribute-input [ngModel]="newTab"></geoengine-color-attribute-input>
+<geoengine-color-attribute-input [ngModel]="newTab" (ngModelChange)="changeNewTab($event)"></geoengine-color-attribute-input>
 <button mat-raised-button color="accent" (click)="addColorTab()">Add color tab</button>
 
 <!--  Examples of color attribute input parameters
