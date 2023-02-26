@@ -6,7 +6,6 @@
     <geoengine-color-attribute-input [ngModel]="c" (ngModelChange)="rebuildColorMap(i, $event)"></geoengine-color-attribute-input>
     <button mat-mini-fab (click)="removeColorTab(i)">-</button>
 </div>
-<mat-divider></mat-divider>
 <br />
 Add a new color:
 <geoengine-color-attribute-input [ngModel]="newTab" (ngModelChange)="changeNewTab($event)"></geoengine-color-attribute-input>
