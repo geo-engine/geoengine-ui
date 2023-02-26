@@ -171,9 +171,10 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
 
     /**
      * Called from HTML template when a new value is emitted by the ColorPaletteEditor child component
+     *
      * @param rasterSymbology The new rastersymbology to use
      */
-    symbologyChangeHandler(rasterSymbology: RasterSymbology) {
+    symbologyChangeHandler(rasterSymbology: RasterSymbology): void {
         this.symbology = rasterSymbology;
         this.unappliedChanges = true;
     }
@@ -202,7 +203,6 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
 
         if (this.colorPaletteEditor !== undefined) {
             this.colorPaletteEditor.setSymbology(this.symbology);
-            this.colorPaletteEditor.updateColorCards();
             this.colorPaletteEditor.sortColorAttributeInputs();
         }
 
@@ -292,9 +292,11 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
             overColor = this.symbology.colorizer.overColor;
             underColor = this.symbology.colorizer.underColor;
         } else {
-            noDataColor = this.noDataColor!.value; // Must be a palette then, so use values from the color selectors
-            overColor = this.defaultColor!.value;
-            underColor = this.defaultColor!.value;
+            // Must be a palette then, so use values from the color selectors or RGBA 0, 0, 0, 0 as a fallback
+            const defaultColor: Color = this.defaultColor ? this.defaultColor.value : new Color({r: 0, g: 0, b: 0, a: 0});
+            noDataColor = this.noDataColor ? this.noDataColor.value : new Color({r: 0, g: 0, b: 0, a: 0});
+            overColor = defaultColor;
+            underColor = defaultColor;
         }
 
         switch (colorizerType) {

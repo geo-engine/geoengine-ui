@@ -2,7 +2,6 @@ import {ChangeDetectionStrategy, Component, OnInit, Input, Output, EventEmitter}
 import {RasterSymbology} from '../../layers/symbology/symbology.model';
 import {Color} from '../color';
 import {ColorAttributeInput} from '../color-attribute-input/color-attribute-input.component';
-import {ColorBreakpoint} from '../color-breakpoint.model';
 import {PaletteColorizer} from '../colorizer.model';
 
 @Component({
@@ -30,21 +29,12 @@ export class ColorPaletteEditorComponent implements OnInit {
         for (let i = 0; i < this.getPaletteColorizer().getNumberOfColors(); i++) {
             this.colorMap.set(i, this.getPaletteColorizer().getColorAtIndex(i));
         }
-        console.log(this.colorMap);
 
         // Fill allColors List with ColorAttributeInputs based on breakpoints
-        for (let bp of this.getPaletteColorizer().getBreakpoints()) {
+        for (const bp of this.getPaletteColorizer().getBreakpoints()) {
             const newInput = {key: bp.value.toString(), value: bp.color};
             this.allColors.push(newInput);
         }
-    }
-
-    /**
-     * Used to initalize the color cards as well as update them when a linear or logarithmic gradient is applied
-     */
-    updateColorCards(): void {
-        console.log('Updating colors cards...');
-        // this.allColors = this.createColorAttributeInputs();
     }
 
     setSymbology(newSymbology: RasterSymbology): void {
@@ -56,85 +46,44 @@ export class ColorPaletteEditorComponent implements OnInit {
     }
 
     debugClick(): void {
-        // console.log('Number:');
-        // console.log(this.getPaletteColorizer().getNumberOfColors());
-        // console.log('Individuals:');
         // console.log(this.allColors);
-        console.log(this.allColors);
     }
 
     getPaletteColorizer(): PaletteColorizer {
         return this.symbology.colorizer as PaletteColorizer;
     }
 
-    // createInputsFromMap(): ColorAttributeInput[] {
-    //     let newInputs: ColorAttributeInput[] = [];
-    //     this.colorMap.forEach((v: Color, k: number) => {
-    //         const newColor: ColorAttributeInput = {key: k.toString(), value: v};
-    //         newInputs.push(newColor);
-    //     });
-    //     return newInputs;
-    // }
-
     createColorAttributeInputs(): ColorAttributeInput[] {
-        let inputs: ColorAttributeInput[] = [];
+        const inputs: ColorAttributeInput[] = [];
         for (let i = 0; i < this.getPaletteColorizer().getNumberOfColors(); i++) {
             const newColor: ColorAttributeInput = {key: i.toString(), value: this.getPaletteColorizer().getColorAtIndex(i)};
-            inputs.push(newColor); // array --> remove this, switch to iterating over map in HTML template (TODO)
+            inputs.push(newColor);
             this.colorMap.set(i, newColor.value);
         }
         return inputs;
     }
 
-    /**
-     * Creates a single ColorAttributeInput for display in the HTML template.
-     * @param color The color for the tab
-     * @param index The value in the raster layer that the color is meant to represent
-     */
-    // colorAttributeInputFromColorMapEntry(color: Color, index: Number): ColorAttributeInput {
-    //     // console.log('Creating at index ' + index + ':');
-    //     // console.log(color);
-    //     const attributeInput: ColorAttributeInput = {key: index.toString(), value: color};
-    //     // return attributeInput;
-    //     return this.anAttributeInput!; // works...
-    // }
-
-    /*
-    TODO (?):
-    Get layerMaxValue and layerMinValue from parent component. The map indexes must be spread between min and max value.
-    Perhaps it's possible to use the gradient breakpoints for this?
-    */
-
+    // Currently not used ... everything is done by rebuildColorMap, can be deleted...
     updateColor(pos: number, color: ColorAttributeInput): void {
-        this.allColors[pos] = color;
-        const colorKey: string = color.key;
-        const colorValue: Color = color.value;
-        this.colorMap.set(parseInt(color.key), color.value); // Sets the key/value in the map according to the ColorAttributeInput. Old map value still exists after this!
+        this.allColors[pos] = color; // because else, changes to HTML won't affect allColors
+        this.colorMap.set(parseInt(color.key, 10), color.value); // Sets the key/value in the map according to the ColorAttributeInput. Old map value still exists after this!
 
-        // this.rebuildColorMap();
-
-        // Create a new symbology to emit
-        const colorizer = this.getPaletteColorizer().cloneWith({colors: this.colorMap}); // TODO: Get no data color and overflow data from parent and pass it along here
-        this.symbology = this.symbology.cloneWith({colorizer});
-
-        // emit the change event to the parent component
-        this.symbologyChanged.emit(this.symbology);
-        console.log(this.allColors);
+        this.emitSymbology();
     }
 
     /**
      * Recreate the color map so that only values for which a ColorAttributeInput exists
      * are contained within the map. This is necessary because the $event that gets
-     * passed to updateColor won't contain the old rasterValue to delete in manually at
+     * passed to updateColor won't contain the previous rasterValue to delete in manually at
      * the time of updating.
      */
     rebuildColorMap(pos: number, color: ColorAttributeInput): void {
-        this.allColors[pos] = color; // because else, changes to HTML won't affect allColors
+        this.allColors[pos] = color; // need this, or changes to HTML won't affect allColors
 
         // Recreate the map
         this.colorMap = new Map<number, Color>();
         this.allColors.forEach((input: ColorAttributeInput) => {
-            const colorKey: number = parseInt(input.key);
+            const colorKey: number = parseInt(input.key, 10);
             const colorValue: Color = input.value;
             this.colorMap.set(colorKey, colorValue);
         });
@@ -146,9 +95,7 @@ export class ColorPaletteEditorComponent implements OnInit {
      * Only called by parent when apply is pressed, so Inputs don't jump around while user is editing.
      */
     sortColorAttributeInputs(): void {
-        this.allColors.sort((a: ColorAttributeInput, b: ColorAttributeInput) => {
-            return Math.sign(parseInt(a.key) - parseInt(b.key));
-        });
+        this.allColors.sort((a: ColorAttributeInput, b: ColorAttributeInput) => Math.sign(parseInt(a.key, 10) - parseInt(b.key, 10)));
     }
 
     changeNewTab(newColor: ColorAttributeInput): void {
@@ -156,26 +103,23 @@ export class ColorPaletteEditorComponent implements OnInit {
     }
 
     addColorTab(): void {
-        const newRasterValue: number = parseInt(this.newTab.key);
         this.rebuildColorMap(this.allColors.length, this.newTab);
+        this.sortColorAttributeInputs();
     }
 
     removeColorTab(index: number): void {
-        const rasterValue: number = parseInt(this.allColors[index].key);
-        // this.allColors.
+        const rasterValue: number = parseInt(this.allColors[index].key, 10);
         this.colorMap.delete(rasterValue);
-
         this.allColors.splice(index, 1);
-
         this.emitSymbology();
     }
 
-    emitSymbology() {
+    emitSymbology(): void {
         // Create a new symbology to emit
-        const colorizer = this.getPaletteColorizer().cloneWith({colors: this.colorMap}); // TODO: Get no data color and overflow data from parent and pass it along here
+        const colorizer = this.getPaletteColorizer().cloneWith({colors: this.colorMap});
         this.symbology = this.symbology.cloneWith({colorizer});
 
-        // emit the change event to the parent component
+        // Emit the change event to the parent component
         this.symbologyChanged.emit(this.symbology);
     }
 }
