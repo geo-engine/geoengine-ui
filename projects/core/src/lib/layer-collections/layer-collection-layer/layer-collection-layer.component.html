@@ -1,22 +1,18 @@
 <ng-container>
-    <span class="header">
-        <span class="header-content" fxLayout="row" fxLayoutAlign="space-between center">
-            <span matRipple class="header-click" fxLayout="row" fxLayoutAlign="start center" (click)="onAdd()">
-                <mat-icon class="header-icon">map</mat-icon>
-                <span class="header-text" fxLayout="column" fxLayoutAlign="center start">
-                    <h4 class="header-text-line">{{ layer?.name }}</h4>
-                    <p class="header-text-line" *ngIf="!expanded">{{ layer?.description }}</p>
-                </span>
-            </span>
+    <div class="header">
+        <div matRipple class="header-click" (click)="onAdd()">
+            <mat-icon class="header-icon">map</mat-icon>
+            <div class="header-text">
+                <h4 class="header-text-line">{{ layer?.name }}</h4>
+                <p class="header-text-line secondary-text" *ngIf="!expanded">{{ layer?.description }}</p>
+            </div>
+        </div>
 
-            <span class="header-button" fxLayoutAlign="center center">
-                <button mat-icon-button aria-label="Example icon button with a menu icon" (click)="toggleExpand()">
-                    <mat-icon *ngIf="!expanded">expand_more</mat-icon>
-                    <mat-icon *ngIf="expanded">expand_less</mat-icon>
-                </button>
-            </span>
-        </span>
-    </span>
+        <button class="header-button" mat-icon-button (click)="toggleExpand()">
+            <mat-icon *ngIf="!expanded">expand_more</mat-icon>
+            <mat-icon *ngIf="expanded">expand_less</mat-icon>
+        </button>
+    </div>
 </ng-container>
 
 <ng-container>
