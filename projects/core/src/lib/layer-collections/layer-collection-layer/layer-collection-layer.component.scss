@@ -78,7 +78,7 @@ mat-progres-bar {
 
 .details-content {
     padding: 0 1rem;
-    overflow: auto;
+    overflow: hidden;
     width: 100%;
 
     .details-row {
@@ -107,8 +107,7 @@ mat-progres-bar {
             .details-row-text-line {
                 margin: 0;
                 padding: 0;
-                white-space: nowrap;
-                overflow: ellipsis;
+                text-overflow: ellipsis;
                 display: block;
                 box-sizing: border-box;
             }
