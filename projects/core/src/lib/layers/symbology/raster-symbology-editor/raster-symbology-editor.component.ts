@@ -323,7 +323,6 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
             return;
         }
 
-        // if (!(this.symbology.colorizer instanceof LinearGradient) && !(this.symbology.colorizer instanceof LogarithmicGradient)) {
         if (
             // try with palette
             !(this.symbology.colorizer instanceof LinearGradient) &&

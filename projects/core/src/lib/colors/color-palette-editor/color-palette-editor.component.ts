@@ -18,9 +18,6 @@ export class ColorPaletteEditorComponent implements OnInit {
 
     allColors: ColorAttributeInput[] = new Array<ColorAttributeInput>(); // HTML Template will use these to display the color cards
 
-    colorWhite: Color = new Color({r: 255, g: 255, b: 255, a: 1});
-    newTab: ColorAttributeInput = {key: '0', value: this.colorWhite};
-
     colorMap = new Map<number, Color>(); // Returned to the parent component as parameter for the colorizer
 
     constructor() {}
@@ -96,10 +93,6 @@ export class ColorPaletteEditorComponent implements OnInit {
      */
     sortColorAttributeInputs(): void {
         this.allColors.sort((a: ColorAttributeInput, b: ColorAttributeInput) => Math.sign(parseInt(a.key, 10) - parseInt(b.key, 10)));
-    }
-
-    changeNewTab(newColor: ColorAttributeInput): void {
-        this.newTab = newColor;
     }
 
     addColorTab(): void {
