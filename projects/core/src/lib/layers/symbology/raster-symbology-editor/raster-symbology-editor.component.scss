@@ -49,3 +49,16 @@ mat-slider {
 .button {
     margin: 0.5rem;
 }
+
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+}
+
+.mat-button-toggle {
+    flex: 0 0 100%;
+    // margin: 0.5rem 0;
+}

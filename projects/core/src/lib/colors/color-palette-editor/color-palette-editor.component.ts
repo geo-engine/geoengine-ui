@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, Component, OnInit, Input, Output, EventEmitter}
 import {RasterSymbology} from '../../layers/symbology/symbology.model';
 import {Color} from '../color';
 import {ColorAttributeInput} from '../color-attribute-input/color-attribute-input.component';
+import {ColorBreakpoint} from '../color-breakpoint.model';
 import {PaletteColorizer} from '../colorizer.model';
 
 @Component({
@@ -17,7 +18,7 @@ export class ColorPaletteEditorComponent implements OnInit {
 
     allColors: ColorAttributeInput[] = new Array<ColorAttributeInput>(); // HTML Template will use these to display the color cards
 
-    colorWhite: Color = new Color({r: 255, g: 255, b: 255, a: 1}); //  {r: 255, g: 255, b: 255, a: 1}
+    colorWhite: Color = new Color({r: 255, g: 255, b: 255, a: 1});
     newTab: ColorAttributeInput = {key: '0', value: this.colorWhite};
 
     colorMap = new Map<number, Color>(); // Returned to the parent component as parameter for the colorizer
@@ -25,7 +26,6 @@ export class ColorPaletteEditorComponent implements OnInit {
     constructor() {}
 
     ngOnInit(): void {
-        // this.allColors = this.createColorAttributeInputs();
         for (let i = 0; i < this.getPaletteColorizer().getNumberOfColors(); i++) {
             this.colorMap.set(i, this.getPaletteColorizer().getColorAtIndex(i));
         }
@@ -103,7 +103,12 @@ export class ColorPaletteEditorComponent implements OnInit {
     }
 
     addColorTab(): void {
-        this.rebuildColorMap(this.allColors.length, this.newTab);
+        const breakpoints: ColorBreakpoint[] = this.getPaletteColorizer().getBreakpoints();
+        // Determine a value so that the new tab will appear at the bottom of the list.
+        const afterLast: string = (breakpoints[breakpoints.length - 1].value + 1).toString();
+        const colorWhite: Color = new Color({r: 255, g: 255, b: 255, a: 1});
+        const newTab: ColorAttributeInput = {key: afterLast, value: colorWhite};
+        this.rebuildColorMap(this.allColors.length, newTab);
         this.sortColorAttributeInputs();
     }
 

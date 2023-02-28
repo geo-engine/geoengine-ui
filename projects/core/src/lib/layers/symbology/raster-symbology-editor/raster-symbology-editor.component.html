@@ -64,19 +64,20 @@
 
                     <mat-divider></mat-divider>
                     <span>Colorizer:</span>
-                    <p fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
+
+                    <div class="button-group">
                         <mat-button-toggle-group
                             id="gradientType"
-                            fxFlex
                             [multiple]="false"
                             [ngModel]="getColorizerType()"
                             (ngModelChange)="updateColorizerType($event)"
                         >
-                            <mat-button-toggle fxFlexFill value="linearGradient">Linear Gradient</mat-button-toggle>
-                            <mat-button-toggle fxFlexFill value="logarithmicGradient">Logarithmic Gradient</mat-button-toggle>
-                            <mat-button-toggle fxFlexFill value="palette">Palette</mat-button-toggle>
+                            <mat-button-toggle value="linearGradient">Linear Gradient</mat-button-toggle>
+                            <mat-button-toggle value="logarithmicGradient">Logarithmic Gradient</mat-button-toggle>
+                            <mat-button-toggle value="palette">Palette</mat-button-toggle>
                         </mat-button-toggle-group>
-                    </p>
+                    </div>
+
                     <div
                         *ngIf="symbology.colorizer.isGradient()"
                         class="colorizer-preview"

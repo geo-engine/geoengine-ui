@@ -328,9 +328,6 @@ export class PaletteColorizer extends Colorizer {
         return color;
     }
 
-    // Idea: Get color in Range. Parameters: min, max, toGet
-    // Gets the color from existing colors that is closest to toGet on the scale from min to max.
-
     getBreakpoints(): Array<ColorBreakpoint> {
         const breakpoints: Array<ColorBreakpoint> = [];
         this.colors.forEach((value, key) => {
