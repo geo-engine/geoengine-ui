@@ -378,6 +378,10 @@ export interface DatasetIdResponseDict {
     id: UUID;
 }
 
+export interface WorkflowIdResponseDict {
+    id: UUID;
+}
+
 export interface CreateDatasetDict {
     dataPath: {
         upload: UUID;
