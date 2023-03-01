@@ -41,6 +41,7 @@ import {
     BackendInfoDict,
     WcsParamsDict,
     QuotaDict,
+    WorkflowIdResponseDict,
 } from './backend.model';
 
 @Injectable({
@@ -412,8 +413,8 @@ export class BackendService {
         return new HttpHeaders().set('Authorization', `Bearer ${sessionId}`);
     }
 
-    registerWorkflowForLayer(sessionId: UUID, provider: UUID, layer: string): Observable<UUID> {
-        return this.http.post<UUID>(this.config.API_URL + `/layers/${provider}/${encodeURIComponent(layer)}/workflowId`, {
+    registerWorkflowForLayer(sessionId: UUID, provider: UUID, layer: string): Observable<WorkflowIdResponseDict> {
+        return this.http.post<WorkflowIdResponseDict>(this.config.API_URL + `/layers/${provider}/${encodeURIComponent(layer)}/workflowId`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }

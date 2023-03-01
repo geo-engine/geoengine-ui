@@ -62,9 +62,10 @@ export class LayerCollectionService {
     }
 
     registerAndGetLayerWorkflowId(providerId: UUID, layerId: string): Observable<UUID> {
-        return this.userService
-            .getSessionTokenForRequest()
-            .pipe(mergeMap((session) => this.backend.registerWorkflowForLayer(session, providerId, layerId)));
+        return this.userService.getSessionTokenForRequest().pipe(
+            mergeMap((session) => this.backend.registerWorkflowForLayer(session, providerId, layerId)),
+            map((workflowIdDict) => workflowIdDict.id as UUID),
+        );
     }
 
     getWorkflowIdMetadata(workflowId: UUID): Observable<VectorLayerMetadata | RasterLayerMetadata> {
