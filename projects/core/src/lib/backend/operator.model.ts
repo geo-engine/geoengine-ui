@@ -315,8 +315,8 @@ export type InputResolutionDict = {type: 'source'} | {type: 'value'; x: number; 
 export interface RasterUnScalingDict extends OperatorDict {
     type: 'RasterScaling';
     params: {
-        slope?: RasterMetadataKey | {type: 'constant'; value: number};
-        offset?: RasterMetadataKey | {type: 'constant'; value: number};
+        slopeKeyOrValue?: RasterMetadataKey | {type: 'constant'; value: number};
+        offsetKeyOrValue?: RasterMetadataKey | {type: 'constant'; value: number};
         outputMeasurement?: string;
         scalingMode: 'scale' | 'unscale';
     };
