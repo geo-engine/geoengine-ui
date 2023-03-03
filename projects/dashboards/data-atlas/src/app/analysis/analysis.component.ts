@@ -179,7 +179,10 @@ export class AnalysisComponent implements OnInit {
                             type: 'Histogram',
                             params: {
                                 // TODO: get params from selected data
-                                buckets: 20,
+                                buckets: {
+                                    type: 'number',
+                                    value: 20,
+                                },
                                 bounds: dataRange,
                             } as HistogramParams,
                             sources: {
