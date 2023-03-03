@@ -159,8 +159,8 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
         const inputLayer: RasterLayer | undefined = this.form.controls['layer'].value;
         const outputName: string = this.form.controls['name'].value;
 
-        const slope = this.formGroupToDict(this.form.controls.slope);
-        const offset = this.formGroupToDict(this.form.controls.offset);
+        const slopeKeyOrValue = this.formGroupToDict(this.form.controls.slope);
+        const offsetKeyOrValue = this.formGroupToDict(this.form.controls.offset);
 
         const scaleType = this.form.controls.scaleType.value;
 
@@ -179,8 +179,8 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
                         operator: {
                             type: 'RasterScaling',
                             params: {
-                                slope,
-                                offset,
+                                slopeKeyOrValue,
+                                offsetKeyOrValue,
                                 scalingMode: scaleType.type,
                             },
                             sources: {
@@ -191,6 +191,7 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
                 ),
                 mergeMap((workflowId: UUID) => {
                     const symbology$: Observable<RasterSymbology> = this.symbologyCreator.symbologyForRasterLayer(workflowId, inputLayer);
+
                     return combineLatest([of(workflowId), symbology$]);
                 }),
                 mergeMap(([workflowId, symbology]: [UUID, RasterSymbology]) =>
