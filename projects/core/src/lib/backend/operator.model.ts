@@ -66,7 +66,15 @@ export interface HistogramParams extends OperatorParams {
               max: number;
           }
         | 'data';
-    buckets?: number;
+    buckets:
+        | {
+              type: 'number';
+              value: number;
+          }
+        | {
+              type: 'squareRootChoiceRule';
+              maxNumberOfBuckets: number;
+          };
     interactive?: boolean;
 }
 
