@@ -413,7 +413,7 @@ export class BackendService {
     }
 
     registerWorkflowForLayer(sessionId: UUID, provider: UUID, layer: string): Observable<UUID> {
-        return this.http.post<UUID>(this.config.API_URL + `/layers/${provider}/${encodeURIComponent(layer)}/workflowId`, {
+        return this.http.post<UUID>(this.config.API_URL + `/layers/${provider}/${encodeURIComponent(layer)}/workflowId`, null, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
