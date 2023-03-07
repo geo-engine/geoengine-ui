@@ -81,7 +81,7 @@ export class ColorPaletteEditorComponent implements OnInit {
     // Currently not used ... everything is done by rebuildColorMap, can be deleted...
     updateColor(pos: number, color: ColorAttributeInput): void {
         this.allColors[pos] = color; // because else, changes to HTML won't affect allColors
-        this.colorMap.set(parseInt(color.key, 10), color.value); // Sets the key/value in the map according to the ColorAttributeInput. Old map value still exists after this!
+        this.colorMap.set(parseFloat(color.key), color.value); // Sets the key/value in the map according to the ColorAttributeInput. Old map value still exists after this!
 
         this.emitSymbology();
     }
@@ -98,7 +98,7 @@ export class ColorPaletteEditorComponent implements OnInit {
         // Recreate the map
         this.colorMap = new Map<number, Color>();
         this.allColors.forEach((input: ColorAttributeInput) => {
-            const colorKey: number = parseInt(input.key, 10);
+            const colorKey: number = parseFloat(input.key);
             const colorValue: Color = input.value;
             this.colorMap.set(colorKey, colorValue);
         });
@@ -110,7 +110,7 @@ export class ColorPaletteEditorComponent implements OnInit {
      * Only called by parent when apply is pressed, so Inputs don't jump around while user is editing.
      */
     sortColorAttributeInputs(): void {
-        this.allColors.sort((a: ColorAttributeInput, b: ColorAttributeInput) => Math.sign(parseInt(a.key, 10) - parseInt(b.key, 10)));
+        this.allColors.sort((a: ColorAttributeInput, b: ColorAttributeInput) => Math.sign(parseFloat(a.key) - parseFloat(b.key)));
     }
 
     addColorTab(): void {
@@ -124,7 +124,7 @@ export class ColorPaletteEditorComponent implements OnInit {
     }
 
     removeColorTab(index: number): void {
-        const rasterValue: number = parseInt(this.allColors[index].key, 10);
+        const rasterValue: number = parseFloat(this.allColors[index].key);
         this.colorMap.delete(rasterValue);
         this.allColors.splice(index, 1);
         this.emitSymbology();
