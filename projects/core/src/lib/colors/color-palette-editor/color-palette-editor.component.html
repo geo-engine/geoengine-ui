@@ -3,7 +3,11 @@
 
 <br />
 <div *ngFor="let c of allColors; let i = index">
-    <geoengine-color-attribute-input [ngModel]="c" (ngModelChange)="rebuildColorMap(i, $event)"></geoengine-color-attribute-input>
+    <geoengine-color-attribute-input
+        *ngIf="showTabs === true"
+        [ngModel]="c"
+        (ngModelChange)="rebuildColorMap(i, $event)"
+    ></geoengine-color-attribute-input>
     <button mat-mini-fab (click)="removeColorTab(i)" class="removeButton">-</button>
 </div>
 <br />

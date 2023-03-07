@@ -203,6 +203,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
 
         if (this.colorPaletteEditor !== undefined) {
             this.colorPaletteEditor.setSymbology(this.symbology);
+            this.colorPaletteEditor.initColorInputs();
             this.colorPaletteEditor.sortColorAttributeInputs();
         }
 

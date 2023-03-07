@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef} from '@angular/core';
 import {RasterSymbology} from '../../layers/symbology/symbology.model';
 import {Color} from '../color';
 import {ColorAttributeInput} from '../color-attribute-input/color-attribute-input.component';
@@ -17,21 +17,39 @@ export class ColorPaletteEditorComponent implements OnInit {
     @Output() symbologyChanged: EventEmitter<RasterSymbology> = new EventEmitter();
 
     allColors: ColorAttributeInput[] = new Array<ColorAttributeInput>(); // HTML Template will use these to display the color cards
+    showTabs = false;
 
     colorMap = new Map<number, Color>(); // Returned to the parent component as parameter for the colorizer
 
-    constructor() {}
+    constructor(private ref: ChangeDetectorRef) {}
 
     ngOnInit(): void {
-        for (let i = 0; i < this.getPaletteColorizer().getNumberOfColors(); i++) {
-            this.colorMap.set(i, this.getPaletteColorizer().getColorAtIndex(i));
-        }
+        this.initColorInputs();
+    }
 
-        // Fill allColors List with ColorAttributeInputs based on breakpoints
-        for (const bp of this.getPaletteColorizer().getBreakpoints()) {
-            const newInput = {key: bp.value.toString(), value: bp.color};
-            this.allColors.push(newInput);
-        }
+    ngAfterViewInit() {
+        // A workaround for the time it takes to initialize the many ColorAttributeInputs on certain raster layers
+        // Prevents the UI from halting while the context menu is still open.
+        setTimeout(() => {
+            this.showTabs = true;
+            this.ref.detectChanges();
+        }, 200);
+    }
+
+    /**
+     * (re)creates the ColorMap as well as the ColorAttributeInputs based on the current layer
+     */
+    initColorInputs() {
+        this.colorMap = new Map<number, Color>();
+        this.allColors = new Array<ColorAttributeInput>();
+
+        this.getPaletteColorizer()
+            .getBreakpoints()
+            .forEach((bp, index) => {
+                const newInput = {key: bp.value.toString(), value: bp.color};
+                this.allColors.push(newInput);
+                this.colorMap.set(bp.value, this.getPaletteColorizer().getColorAtIndex(index));
+            });
     }
 
     setSymbology(newSymbology: RasterSymbology): void {
@@ -43,7 +61,7 @@ export class ColorPaletteEditorComponent implements OnInit {
     }
 
     debugClick(): void {
-        // console.log(this.allColors);
+        console.log(this.showTabs);
     }
 
     getPaletteColorizer(): PaletteColorizer {
