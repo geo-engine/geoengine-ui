@@ -4,17 +4,18 @@
 }
 
 .header {
-    display: block;
     height: 4.5rem;
     width: 100%;
-}
 
-.header-content {
-    position: relative;
-    height: inherit;
-    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 
     .header-click {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
         padding: 0 1rem;
         cursor: pointer;
         box-sizing: border-box;
@@ -29,18 +30,18 @@
     }
 
     .header-button {
-        padding: 0 1rem;
         box-sizing: border-box;
-        height: inherit;
+        margin: 0 0.5rem;
     }
 
     .header-icon {
+        flex-shrink: 0;
+
         width: 1.5rem;
         height: 1.5rem;
         font-size: 1.5rem;
         box-sizing: content-box;
         border-radius: 50%;
-        padding: 0.25rem;
     }
 
     .header-text {
@@ -57,11 +58,17 @@
             overflow: hidden;
             display: block;
             box-sizing: border-box;
+
+            text-overflow: ellipsis;
         }
 
         :nth-child(n + 2) {
             font-size: 0.875rem;
         }
+    }
+
+    .secondary-text {
+        color: var(--geoengine-foreground-secondary-text-color);
     }
 }
 
@@ -71,7 +78,7 @@ mat-progres-bar {
 
 .details-content {
     padding: 0 1rem;
-    overflow: auto;
+    overflow: hidden;
     width: 100%;
 
     .details-row {
@@ -100,8 +107,7 @@ mat-progres-bar {
             .details-row-text-line {
                 margin: 0;
                 padding: 0;
-                white-space: nowrap;
-                overflow: ellipsis;
+                text-overflow: ellipsis;
                 display: block;
                 box-sizing: border-box;
             }

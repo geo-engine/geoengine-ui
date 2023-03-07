@@ -48,6 +48,8 @@ export class DownloadRasterLayerComponent implements OnInit, OnDestroy {
 
     form: FormGroup<DownloadRasterLayerForm>;
 
+    isSelectingBox = false;
+
     private projectTimeSubscription?: Subscription;
     private viewportSizeSubscription?: Subscription;
 
@@ -129,6 +131,7 @@ export class DownloadRasterLayerComponent implements OnInit, OnDestroy {
     }
 
     selectBox(): void {
+        this.isSelectingBox = true;
         this.notificationService.info('Select region on the map');
         this.mapService.startBoxDrawInteraction((feature) => {
             const b = feature.getGeometry()?.getExtent();
@@ -138,6 +141,7 @@ export class DownloadRasterLayerComponent implements OnInit, OnDestroy {
                 this.form.controls['bboxMinY'].setValue(b[1]);
                 this.form.controls['bboxMaxY'].setValue(b[3]);
             }
+            this.isSelectingBox = false;
         });
     }
 
