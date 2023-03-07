@@ -18,11 +18,11 @@ interface RasterScalingForm {
     layer: FormControl<RasterLayer | undefined>;
     slope: FormGroup<MetadataKeyOrConstantForm>;
     offset: FormGroup<MetadataKeyOrConstantForm>;
-    scaleType: FormControl<{formula: string; type: 'scale' | 'unscale'}>;
+    scaleType: FormControl<{formula: string; type: 'checkedMulThenAdd' | 'checkedSubThenDiv'}>;
 }
 
 interface MetadataKeyOrConstantForm {
-    metadataKeyOrConstant: FormControl<'Default' | 'MetadataKey' | 'Constant'>;
+    metadataKeyOrConstant: FormControl<'DeriveFromData' | 'MetadataKey' | 'Constant'>;
     domain: FormControl<string>;
     key: FormControl<string>;
     constant: FormControl<number>;
@@ -38,12 +38,12 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
     readonly inputTypes = [ResultTypes.RASTER];
     readonly rasterDataTypes = RasterDataTypes.ALL_DATATYPES;
 
-    readonly scaleTypes: Array<{formula: string; type: 'scale' | 'unscale'}> = [
-        {formula: 'p_new = (p_old - offset)/slope', type: 'scale'},
-        {formula: 'p_new = p_old * slope + offset', type: 'unscale'},
+    readonly scaleTypes: Array<{formula: string; type: 'checkedMulThenAdd' | 'checkedSubThenDiv'}> = [
+        {formula: 'p_new = (p_old - offset)/slope', type: 'checkedSubThenDiv'},
+        {formula: 'p_new = p_old * slope + offset', type: 'checkedMulThenAdd'},
     ];
 
-    readonly metadataOrKeyTypes: Array<'Default' | 'Constant' | 'MetadataKey'> = ['Default', 'Constant', 'MetadataKey'];
+    readonly metadataOrKeyTypes: Array<'DeriveFromData' | 'Constant' | 'MetadataKey'> = ['DeriveFromData', 'Constant', 'MetadataKey'];
 
     readonly validRasterMetadataKeyValidator = geoengineValidators.validRasterMetadataKey;
     readonly isNumberValidator = geoengineValidators.isNumber;
@@ -65,7 +65,7 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
             layer: new FormControl<RasterLayer | undefined>(undefined, {validators: Validators.required, nonNullable: true}),
             slope: new FormGroup<MetadataKeyOrConstantForm>(
                 {
-                    metadataKeyOrConstant: new FormControl<'Default' | 'MetadataKey' | 'Constant'>('Default', {
+                    metadataKeyOrConstant: new FormControl<'DeriveFromData' | 'MetadataKey' | 'Constant'>('DeriveFromData', {
                         validators: [Validators.required],
                         nonNullable: true,
                     }),
@@ -83,7 +83,7 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
             ),
             offset: new FormGroup<MetadataKeyOrConstantForm>(
                 {
-                    metadataKeyOrConstant: new FormControl<'Default' | 'MetadataKey' | 'Constant'>('Default', {
+                    metadataKeyOrConstant: new FormControl<'DeriveFromData' | 'MetadataKey' | 'Constant'>('DeriveFromData', {
                         validators: [Validators.required],
                         nonNullable: true,
                     }),
@@ -108,8 +108,8 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     numberOrMetadataKeyValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-        const isByDefault = control.get('metadataKeyOrConstant')?.value === 'Default';
-        if (isByDefault) {
+        const isDeriveFromData = control.get('metadataKeyOrConstant')?.value === 'DeriveFromData';
+        if (isDeriveFromData) {
             return null;
         }
 
@@ -139,9 +139,9 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
 
     ngOnDestroy(): void {}
 
-    formGroupToDict(fg: AbstractControl): RasterMetadataKey | {type: 'constant'; value: number} | undefined {
-        if (fg.get('metadataKeyOrConstant')?.value === 'Default') {
-            return undefined;
+    formGroupToDict(fg: AbstractControl): RasterMetadataKey | {type: 'constant'; value: number} | {type: 'deriveFromData'} {
+        if (fg.get('metadataKeyOrConstant')?.value === 'DeriveFromData') {
+            return {type: 'deriveFromData'};
         } else if (fg.get('metadataKeyOrConstant')?.value === 'MetadataKey') {
             const key = fg.get('key')?.value;
             const domain = fg.get('domain')?.value;
@@ -159,8 +159,8 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
         const inputLayer: RasterLayer | undefined = this.form.controls['layer'].value;
         const outputName: string = this.form.controls['name'].value;
 
-        const slopeKeyOrValue = this.formGroupToDict(this.form.controls.slope);
-        const offsetKeyOrValue = this.formGroupToDict(this.form.controls.offset);
+        const slope = this.formGroupToDict(this.form.controls.slope);
+        const offset = this.formGroupToDict(this.form.controls.offset);
 
         const scaleType = this.form.controls.scaleType.value;
 
@@ -179,8 +179,8 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
                         operator: {
                             type: 'RasterScaling',
                             params: {
-                                slopeKeyOrValue,
-                                offsetKeyOrValue,
+                                slope,
+                                offset,
                                 scalingMode: scaleType.type,
                             },
                             sources: {

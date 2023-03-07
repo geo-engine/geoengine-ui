@@ -112,7 +112,10 @@
             <geoengine-operator-output-name
                 formControlName="name"
                 [suggestion]="
-                    (form.controls.layer.valueChanges | async)?.name + ' ' + (form.controls.scaleType.valueChanges | async)?.type + 'd'
+                    (form.controls.layer.valueChanges | async)?.name +
+                    ' scaled [' +
+                    (form.controls.scaleType.valueChanges | async)?.type +
+                    ']'
                 "
             >
                 <mat-hint
