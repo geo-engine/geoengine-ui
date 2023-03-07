@@ -436,7 +436,10 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
                         operator: {
                             type: 'Histogram',
                             params: {
-                                buckets: 20,
+                                buckets: {
+                                    type: 'number',
+                                    value: 20,
+                                },
                                 bounds: 'data',
                                 interactive: true,
                             } as HistogramParams,
