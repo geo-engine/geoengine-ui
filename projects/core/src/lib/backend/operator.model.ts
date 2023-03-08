@@ -318,7 +318,7 @@ export interface RasterUnScalingDict extends OperatorDict {
         slope: RasterMetadataKey | {type: 'constant'; value: number} | {type: 'deriveFromData'};
         offset: RasterMetadataKey | {type: 'constant'; value: number} | {type: 'deriveFromData'};
         outputMeasurement?: string;
-        scalingMode: 'checkedMulThenAdd' | 'checkedSubThenDiv';
+        scalingMode: 'mulSlopeAddOffset' | 'subOffsetDivSlope';
     };
 }
 

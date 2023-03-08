@@ -18,7 +18,7 @@ interface RasterScalingForm {
     layer: FormControl<RasterLayer | undefined>;
     slope: FormGroup<MetadataKeyOrConstantForm>;
     offset: FormGroup<MetadataKeyOrConstantForm>;
-    scaleType: FormControl<{formula: string; type: 'checkedMulThenAdd' | 'checkedSubThenDiv'}>;
+    scaleType: FormControl<{formula: string; type: 'mulSlopeAddOffset' | 'subOffsetDivSlope'}>;
 }
 
 interface MetadataKeyOrConstantForm {
@@ -38,9 +38,9 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
     readonly inputTypes = [ResultTypes.RASTER];
     readonly rasterDataTypes = RasterDataTypes.ALL_DATATYPES;
 
-    readonly scaleTypes: Array<{formula: string; type: 'checkedMulThenAdd' | 'checkedSubThenDiv'}> = [
-        {formula: 'p_new = (p_old - offset)/slope', type: 'checkedSubThenDiv'},
-        {formula: 'p_new = p_old * slope + offset', type: 'checkedMulThenAdd'},
+    readonly scaleTypes: Array<{formula: string; type: 'mulSlopeAddOffset' | 'subOffsetDivSlope'}> = [
+        {formula: 'p_new = (p_old - offset)/slope', type: 'subOffsetDivSlope'},
+        {formula: 'p_new = p_old * slope + offset', type: 'mulSlopeAddOffset'},
     ];
 
     readonly metadataOrKeyTypes: Array<'DeriveFromData' | 'Constant' | 'MetadataKey'> = ['DeriveFromData', 'Constant', 'MetadataKey'];
