@@ -357,6 +357,10 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                             params: {
                                 columnName: attributeName,
                                 bounds: 'data',
+                                buckets: {
+                                    type: 'squareRootChoiceRule',
+                                    maxNumberOfBuckets: 100,
+                                },
                                 interactive: true,
                             } as HistogramParams,
                             sources: {

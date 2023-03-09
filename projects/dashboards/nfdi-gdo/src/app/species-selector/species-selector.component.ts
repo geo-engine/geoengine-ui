@@ -899,7 +899,10 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                             type: 'Histogram',
                             params: {
                                 // TODO: get params from selected data
-                                buckets: 20,
+                                buckets: {
+                                    type: 'number',
+                                    value: 20,
+                                },
                                 bounds: dataRange,
                                 columnName: environmentColumnName,
                             } as HistogramParams,
@@ -1076,7 +1079,10 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                             type: 'Histogram',
                             params: {
                                 // TODO: get params from selected data
-                                buckets: 20,
+                                buckets: {
+                                    type: 'number',
+                                    value: 20,
+                                },
                                 bounds: dataRange,
                                 columnName: environmentColumnName,
                             } as HistogramParams,

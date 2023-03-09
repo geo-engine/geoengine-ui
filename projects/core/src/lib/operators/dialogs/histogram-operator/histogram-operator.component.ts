@@ -136,9 +136,26 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
             range = this.form.controls['range'].value as {min: number; max: number};
         }
 
-        let buckets: number;
+        let buckets:
+            | {
+                  type: 'number';
+                  value: number;
+              }
+            | {
+                  type: 'squareRootChoiceRule';
+                  maxNumberOfBuckets: number;
+              };
         if (!this.form.controls['autoBuckets'].value) {
-            buckets = this.form.controls['numberOfBuckets'].value as number;
+            buckets = {
+                type: 'number',
+                value: this.form.controls['numberOfBuckets'].value as number,
+            };
+        } else {
+            const MAX_NUMBER_OF_AUTO_BUCKETS = 100;
+            buckets = {
+                type: 'squareRootChoiceRule',
+                maxNumberOfBuckets: MAX_NUMBER_OF_AUTO_BUCKETS,
+            };
         }
 
         const outputName: string = this.form.controls['name'].value;
