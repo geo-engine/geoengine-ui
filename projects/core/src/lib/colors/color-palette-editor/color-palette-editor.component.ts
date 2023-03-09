@@ -17,8 +17,6 @@ export class ColorPaletteEditorComponent implements OnInit {
     @Output() symbologyChanged: EventEmitter<RasterSymbology> = new EventEmitter();
 
     allColors: ColorAttributeInput[] = new Array<ColorAttributeInput>(); // HTML Template will use these to display the color cards
-    showTabs = false;
-
     colorMap = new Map<number, Color>(); // Returned to the parent component as parameter for the colorizer
 
     constructor(private ref: ChangeDetectorRef) {}
@@ -27,14 +25,7 @@ export class ColorPaletteEditorComponent implements OnInit {
         this.initColorInputs();
     }
 
-    ngAfterViewInit() {
-        // A workaround for the time it takes to initialize the many ColorAttributeInputs on certain raster layers
-        // Prevents the UI from halting while the context menu is still open.
-        setTimeout(() => {
-            this.showTabs = true;
-            this.ref.detectChanges();
-        }, 200);
-    }
+    ngAfterViewInit() {}
 
     /**
      * (re)creates the ColorMap as well as the ColorAttributeInputs based on the current layer
@@ -60,9 +51,7 @@ export class ColorPaletteEditorComponent implements OnInit {
         return this.colorMap;
     }
 
-    debugClick(): void {
-        console.log(this.showTabs);
-    }
+    debugClick(): void {}
 
     getPaletteColorizer(): PaletteColorizer {
         return this.symbology.colorizer as PaletteColorizer;
@@ -121,12 +110,15 @@ export class ColorPaletteEditorComponent implements OnInit {
         const newTab: ColorAttributeInput = {key: afterLast, value: colorWhite};
         this.rebuildColorMap(this.allColors.length, newTab);
         this.sortColorAttributeInputs();
+        this.allColors = this.allColors.filter((x) => true); // Logically this does nothing, but it reassigns a different reference to this.allColors, which is required for angular to notice the change and update the view. markForCheck or detectChanges don't work here, apparently because they check for changes to the reference, not for changes to the array itself.
     }
 
     removeColorTab(index: number): void {
         const rasterValue: number = parseFloat(this.allColors[index].key);
         this.colorMap.delete(rasterValue);
-        this.allColors.splice(index, 1);
+
+        this.allColors = this.allColors.filter((val, ind) => index !== ind); // Must be done with filter instead of splice, or there won't be any change to the reference for angular to detect. This applies only to elements inside a virtual scroll...
+
         this.emitSymbology();
     }
 

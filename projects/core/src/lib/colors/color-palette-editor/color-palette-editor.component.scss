@@ -11,3 +11,13 @@ div {
     -ms-transform: translateY(-20%);
     transform: translateY(-20%);
 }
+
+.tabs-viewport {
+    height: 20rem;
+    width: 100%;
+    border: 1px solid black;
+}
+
+.tabs-item {
+    height: 5rem;
+}
