@@ -16,13 +16,13 @@ import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 interface RasterScalingForm {
     name: FormControl<string>;
     layer: FormControl<RasterLayer | undefined>;
-    slope: FormGroup<MetadataKeyOrConstantForm>;
-    offset: FormGroup<MetadataKeyOrConstantForm>;
+    slope: FormGroup<ScaleOffsetForm>;
+    offset: FormGroup<ScaleOffsetForm>;
     scaleType: FormControl<{formula: string; type: 'mulSlopeAddOffset' | 'subOffsetDivSlope'}>;
 }
 
-interface MetadataKeyOrConstantForm {
-    metadataKeyOrConstant: FormControl<'auto' | 'metadataKey' | 'constant'>;
+interface ScaleOffsetForm {
+    scaleOffsetSelection: FormControl<'auto' | 'metadataKey' | 'constant'>;
     domain: FormControl<string>;
     key: FormControl<string>;
     constant: FormControl<number>;
@@ -43,7 +43,7 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
         {formula: 'p_new = p_old * slope + offset', type: 'mulSlopeAddOffset'},
     ];
 
-    readonly metadataOrKeyTypes: Array<'auto' | 'constant' | 'metadataKey'> = ['auto', 'constant', 'metadataKey'];
+    readonly scaleOffsetSelectionTypes: Array<'auto' | 'constant' | 'metadataKey'> = ['auto', 'constant', 'metadataKey'];
 
     readonly validRasterMetadataKeyValidator = geoengineValidators.validRasterMetadataKey;
     readonly isNumberValidator = geoengineValidators.isNumber;
@@ -63,9 +63,9 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
                 validators: [Validators.required, geoengineValidators.notOnlyWhitespace],
             }),
             layer: new FormControl<RasterLayer | undefined>(undefined, {validators: Validators.required, nonNullable: true}),
-            slope: new FormGroup<MetadataKeyOrConstantForm>(
+            slope: new FormGroup<ScaleOffsetForm>(
                 {
-                    metadataKeyOrConstant: new FormControl<'auto' | 'metadataKey' | 'constant'>('auto', {
+                    scaleOffsetSelection: new FormControl<'auto' | 'metadataKey' | 'constant'>('auto', {
                         validators: [Validators.required],
                         nonNullable: true,
                     }),
@@ -81,9 +81,9 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
                 },
                 {validators: [this.numberOrMetadataKeyValidator]},
             ),
-            offset: new FormGroup<MetadataKeyOrConstantForm>(
+            offset: new FormGroup<ScaleOffsetForm>(
                 {
-                    metadataKeyOrConstant: new FormControl<'auto' | 'metadataKey' | 'constant'>('auto', {
+                    scaleOffsetSelection: new FormControl<'auto' | 'metadataKey' | 'constant'>('auto', {
                         validators: [Validators.required],
                         nonNullable: true,
                     }),
@@ -108,12 +108,12 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     numberOrMetadataKeyValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-        const isauto = control.get('metadataKeyOrConstant')?.value === 'auto';
+        const isauto = control.get('scaleOffsetSelection')?.value === 'auto';
         if (isauto) {
             return null;
         }
 
-        const isByKey = control.get('metadataKeyOrConstant')?.value === 'MetadataKey';
+        const isByKey = control.get('scaleOffsetSelection')?.value === 'metadataKey';
         const key = control.get('key');
         const constant = control.get('constant');
 
@@ -140,9 +140,9 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
     ngOnDestroy(): void {}
 
     formGroupToDict(fg: AbstractControl): RasterMetadataKey | {type: 'constant'; value: number} | {type: 'auto'} {
-        if (fg.get('metadataKeyOrConstant')?.value === 'auto') {
+        if (fg.get('scaleOffsetSelection')?.value === 'auto') {
             return {type: 'auto'};
-        } else if (fg.get('metadataKeyOrConstant')?.value === 'metadataKey') {
+        } else if (fg.get('scaleOffsetSelection')?.value === 'metadataKey') {
             const key = fg.get('key')?.value;
             const domain = fg.get('domain')?.value;
             return {type: 'metadataKey', domain, key};
