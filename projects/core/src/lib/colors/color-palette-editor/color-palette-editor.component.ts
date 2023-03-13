@@ -25,12 +25,10 @@ export class ColorPaletteEditorComponent implements OnInit {
         this.initColorInputs();
     }
 
-    ngAfterViewInit() {}
-
     /**
      * (re)creates the ColorMap as well as the ColorAttributeInputs based on the current layer
      */
-    initColorInputs() {
+    initColorInputs(): void {
         this.colorMap = new Map<number, Color>();
         this.allColors = new Array<ColorAttributeInput>();
 
