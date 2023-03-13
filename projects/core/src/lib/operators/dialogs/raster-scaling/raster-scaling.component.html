@@ -20,13 +20,13 @@
 
                 <mat-form-field appearance="fill">
                     <mat-label>Slope value from </mat-label>
-                    <mat-select formControlName="scaleOffsetSelection">
-                        <mat-option *ngFor="let mk of scaleOffsetSelectionTypes" [value]="mk">
+                    <mat-select formControlName="slopeOffsetSelection">
+                        <mat-option *ngFor="let mk of slopeOffsetSelectionTypes" [value]="mk">
                             {{ mk }}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
-                <ng-container [ngSwitch]="form.controls.slope.controls.scaleOffsetSelection.value">
+                <ng-container [ngSwitch]="form.controls.slope.controls.slopeOffsetSelection.value">
                     <div
                         *ngSwitchCase="'metadataKey'"
                         fxLayout="row"
@@ -58,13 +58,13 @@
                 <p>Offset</p>
                 <mat-form-field appearance="fill">
                     <mat-label>Offset value from </mat-label>
-                    <mat-select formControlName="scaleOffsetSelection">
-                        <mat-option *ngFor="let mk of scaleOffsetSelectionTypes" [value]="mk">
+                    <mat-select formControlName="slopeOffsetSelection">
+                        <mat-option *ngFor="let mk of slopeOffsetSelectionTypes" [value]="mk">
                             {{ mk }}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
-                <ng-container [ngSwitch]="form.controls.offset.controls.scaleOffsetSelection.value">
+                <ng-container [ngSwitch]="form.controls.offset.controls.slopeOffsetSelection.value">
                     <div
                         *ngSwitchCase="'metadataKey'"
                         fxLayout="row"
