@@ -31,9 +31,9 @@
         <mat-accordion multi="true">
             <mat-expansion-panel expanded="true">
                 <mat-expansion-panel-header>
-                    <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
-                        <mat-icon>map</mat-icon>
-                        <span fxFlex>Global Layer Properties</span>
+                    <mat-panel-title>
+                        <mat-icon class="icon">map</mat-icon>
+                        <span class="panelTitleText">Global Layer Properties</span>
                     </mat-panel-title>
                 </mat-expansion-panel-header>
                 <ng-template matExpansionPanelContent>
@@ -127,12 +127,11 @@
                 </ng-template>
             </mat-expansion-panel>
 
-            <!-- TODO: implement palette editor, find a good *ngIf condition to hide this (i.e. logarithmic or linear gradient selected) -->
             <mat-expansion-panel expanded="false">
                 <mat-expansion-panel-header>
-                    <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
-                        <mat-icon>color_lens</mat-icon>
-                        <span fxFlex>Color Table</span>
+                    <mat-panel-title>
+                        <mat-icon class="icon">color_lens</mat-icon>
+                        <span class="panelTitleText">Color Table</span>
                     </mat-panel-title>
                 </mat-expansion-panel-header>
                 <ng-template matExpansionPanelContent> </ng-template>
