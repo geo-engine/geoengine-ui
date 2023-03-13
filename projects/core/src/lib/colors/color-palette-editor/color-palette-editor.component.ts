@@ -49,8 +49,6 @@ export class ColorPaletteEditorComponent implements OnInit {
         return this.colorMap;
     }
 
-    debugClick(): void {}
-
     getPaletteColorizer(): PaletteColorizer {
         return this.symbology.colorizer as PaletteColorizer;
     }
