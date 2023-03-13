@@ -403,6 +403,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
 
     private update(): void {
         this.projectService.changeLayer(this.layer, {symbology: this.symbology});
+        this.colorPaletteEditor.sortColorAttributeInputs();
     }
 
     private initializeHistogramDataSubscription(): void {

@@ -99,7 +99,10 @@ export class ColorPaletteEditorComponent implements OnInit {
      * Only called by parent when apply is pressed, so Inputs don't jump around while user is editing.
      */
     sortColorAttributeInputs(): void {
-        this.allColors.sort((a: ColorAttributeInput, b: ColorAttributeInput) => Math.sign(parseFloat(a.key) - parseFloat(b.key)));
+        this.allColors = this.allColors.sort((a: ColorAttributeInput, b: ColorAttributeInput) =>
+            Math.sign(parseFloat(a.key) - parseFloat(b.key)),
+        );
+        this.ref.markForCheck();
     }
 
     addColorTab(): void {
@@ -110,14 +113,14 @@ export class ColorPaletteEditorComponent implements OnInit {
         const newTab: ColorAttributeInput = {key: afterLast, value: colorWhite};
         this.rebuildColorMap(this.allColors.length, newTab);
         this.sortColorAttributeInputs();
-        this.allColors = this.allColors.filter((x) => true); // Logically this does nothing, but it reassigns a different reference to this.allColors, which is required for angular to notice the change and update the view. markForCheck or detectChanges don't work here, apparently because they check for changes to the reference, not for changes to the array itself.
+        this.allColors = [...this.allColors]; // Recreate array to force redraw after values changed
     }
 
     removeColorTab(index: number): void {
         const rasterValue: number = parseFloat(this.allColors[index].key);
         this.colorMap.delete(rasterValue);
 
-        this.allColors = this.allColors.filter((val, ind) => index !== ind); // Must be done with filter instead of splice, or there won't be any change to the reference for angular to detect. This applies only to elements inside a virtual scroll...
+        this.allColors = this.allColors.filter((val, ind) => index !== ind); // Must reassign the array, so filter instead of splice
 
         this.emitSymbology();
     }
