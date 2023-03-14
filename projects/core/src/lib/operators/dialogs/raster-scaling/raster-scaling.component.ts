@@ -16,13 +16,13 @@ import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 interface RasterScalingForm {
     name: FormControl<string>;
     layer: FormControl<RasterLayer | undefined>;
-    slope: FormGroup<MetadataKeyOrConstantForm>;
-    offset: FormGroup<MetadataKeyOrConstantForm>;
-    scaleType: FormControl<{formula: string; type: 'scale' | 'unscale'}>;
+    slope: FormGroup<SlopeOffsetForm>;
+    offset: FormGroup<SlopeOffsetForm>;
+    scaleType: FormControl<{formula: string; type: 'mulSlopeAddOffset' | 'subOffsetDivSlope'}>;
 }
 
-interface MetadataKeyOrConstantForm {
-    metadataKeyOrConstant: FormControl<'Default' | 'MetadataKey' | 'Constant'>;
+interface SlopeOffsetForm {
+    slopeOffsetSelection: FormControl<'auto' | 'metadataKey' | 'constant'>;
     domain: FormControl<string>;
     key: FormControl<string>;
     constant: FormControl<number>;
@@ -38,12 +38,12 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
     readonly inputTypes = [ResultTypes.RASTER];
     readonly rasterDataTypes = RasterDataTypes.ALL_DATATYPES;
 
-    readonly scaleTypes: Array<{formula: string; type: 'scale' | 'unscale'}> = [
-        {formula: 'p_new = (p_old - offset)/slope', type: 'scale'},
-        {formula: 'p_new = p_old * slope + offset', type: 'unscale'},
+    readonly scaleTypes: Array<{formula: string; type: 'mulSlopeAddOffset' | 'subOffsetDivSlope'}> = [
+        {formula: 'p_new = (p_old - offset)/slope', type: 'subOffsetDivSlope'},
+        {formula: 'p_new = p_old * slope + offset', type: 'mulSlopeAddOffset'},
     ];
 
-    readonly metadataOrKeyTypes: Array<'Default' | 'Constant' | 'MetadataKey'> = ['Default', 'Constant', 'MetadataKey'];
+    readonly slopeOffsetSelectionTypes: Array<'auto' | 'constant' | 'metadataKey'> = ['auto', 'constant', 'metadataKey'];
 
     readonly validRasterMetadataKeyValidator = geoengineValidators.validRasterMetadataKey;
     readonly isNumberValidator = geoengineValidators.isNumber;
@@ -63,9 +63,9 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
                 validators: [Validators.required, geoengineValidators.notOnlyWhitespace],
             }),
             layer: new FormControl<RasterLayer | undefined>(undefined, {validators: Validators.required, nonNullable: true}),
-            slope: new FormGroup<MetadataKeyOrConstantForm>(
+            slope: new FormGroup<SlopeOffsetForm>(
                 {
-                    metadataKeyOrConstant: new FormControl<'Default' | 'MetadataKey' | 'Constant'>('Default', {
+                    slopeOffsetSelection: new FormControl<'auto' | 'metadataKey' | 'constant'>('auto', {
                         validators: [Validators.required],
                         nonNullable: true,
                     }),
@@ -81,9 +81,9 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
                 },
                 {validators: [this.numberOrMetadataKeyValidator]},
             ),
-            offset: new FormGroup<MetadataKeyOrConstantForm>(
+            offset: new FormGroup<SlopeOffsetForm>(
                 {
-                    metadataKeyOrConstant: new FormControl<'Default' | 'MetadataKey' | 'Constant'>('Default', {
+                    slopeOffsetSelection: new FormControl<'auto' | 'metadataKey' | 'constant'>('auto', {
                         validators: [Validators.required],
                         nonNullable: true,
                     }),
@@ -108,12 +108,12 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     numberOrMetadataKeyValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-        const isByDefault = control.get('metadataKeyOrConstant')?.value === 'Default';
-        if (isByDefault) {
+        const isauto = control.get('slopeOffsetSelection')?.value === 'auto';
+        if (isauto) {
             return null;
         }
 
-        const isByKey = control.get('metadataKeyOrConstant')?.value === 'MetadataKey';
+        const isByKey = control.get('slopeOffsetSelection')?.value === 'metadataKey';
         const key = control.get('key');
         const constant = control.get('constant');
 
@@ -139,10 +139,10 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
 
     ngOnDestroy(): void {}
 
-    formGroupToDict(fg: AbstractControl): RasterMetadataKey | {type: 'constant'; value: number} | undefined {
-        if (fg.get('metadataKeyOrConstant')?.value === 'Default') {
-            return undefined;
-        } else if (fg.get('metadataKeyOrConstant')?.value === 'MetadataKey') {
+    formGroupToDict(fg: AbstractControl): RasterMetadataKey | {type: 'constant'; value: number} | {type: 'auto'} {
+        if (fg.get('slopeOffsetSelection')?.value === 'auto') {
+            return {type: 'auto'};
+        } else if (fg.get('slopeOffsetSelection')?.value === 'metadataKey') {
             const key = fg.get('key')?.value;
             const domain = fg.get('domain')?.value;
             return {type: 'metadataKey', domain, key};
@@ -159,8 +159,8 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
         const inputLayer: RasterLayer | undefined = this.form.controls['layer'].value;
         const outputName: string = this.form.controls['name'].value;
 
-        const slopeKeyOrValue = this.formGroupToDict(this.form.controls.slope);
-        const offsetKeyOrValue = this.formGroupToDict(this.form.controls.offset);
+        const slope = this.formGroupToDict(this.form.controls.slope);
+        const offset = this.formGroupToDict(this.form.controls.offset);
 
         const scaleType = this.form.controls.scaleType.value;
 
@@ -179,8 +179,8 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
                         operator: {
                             type: 'RasterScaling',
                             params: {
-                                slopeKeyOrValue,
-                                offsetKeyOrValue,
+                                slope,
+                                offset,
                                 scalingMode: scaleType.type,
                             },
                             sources: {
