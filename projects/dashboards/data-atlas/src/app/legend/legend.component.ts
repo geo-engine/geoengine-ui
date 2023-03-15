@@ -1,5 +1,5 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges, ChangeDetectorRef} from '@angular/core';
-import {RasterLayer} from '@geoengine/core';
+import {RasterLayer, VectorLayer} from '@geoengine/core';
 
 @Component({
     selector: 'geoengine-legend', // eslint-disable-line @angular-eslint/component-selector
@@ -8,7 +8,7 @@ import {RasterLayer} from '@geoengine/core';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LegendComponent implements OnInit, OnChanges {
-    @Input() layer?: RasterLayer = undefined;
+    @Input() layer?: VectorLayer | RasterLayer = undefined;
 
     constructor(readonly changeDetectorRef: ChangeDetectorRef) {}
 
@@ -17,4 +17,12 @@ export class LegendComponent implements OnInit, OnChanges {
     }
 
     ngOnInit(): void {}
+
+    get asRasterLayer(): RasterLayer | undefined {
+        return this.layer instanceof RasterLayer ? this.layer : undefined;
+    }
+
+    get asVectorLayer(): VectorLayer | undefined {
+        return this.layer instanceof VectorLayer ? this.layer : undefined;
+    }
 }

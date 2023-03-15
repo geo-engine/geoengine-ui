@@ -102,22 +102,6 @@ mat-sidenav {
     width: $sidenav-width;
 }
 
-mat-card.dataset {
-    margin-bottom: 1rem;
-
-    button {
-        margin-bottom: 0.5rem;
-        margin-right: 0.5rem;
-        max-width: 100%;
-
-        ::ng-deep .mat-button-wrapper {
-            overflow: hidden;
-            display: block;
-            text-overflow: ellipsis;
-        }
-    }
-}
-
 mat-card-content .striped {
     &:nth-of-type(odd) {
         background-color: var(--geoengine-background-hover-color);

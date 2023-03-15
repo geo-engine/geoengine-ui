@@ -1,4 +1,4 @@
-import {Observable, BehaviorSubject, ReplaySubject, first, filter, map} from 'rxjs';
+import {Observable, BehaviorSubject, first, filter, map, combineLatest} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {
@@ -14,18 +14,20 @@ import {
     RasterSymbologyEditorComponent,
     SidenavContainerComponent,
     LayerCollectionService,
-    ProviderLayerIdDict,
     LayerCollectionListingDict,
 } from '@geoengine/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AppConfig} from '../app-config.service';
-import {SelectLayersComponent} from '../select-layers/select-layers.component';
-import {ComponentPortal} from '@angular/cdk/portal';
 import moment from 'moment';
 import {DataSelectionService} from '../data-selection.service';
 import {AppDatasetService} from '../app-dataset.service';
-import {TerraNovaGroup, EbvHierarchy} from '../select-layers/available-layers';
 import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
+
+interface LayerCollectionBiListing {
+    name: string;
+    raster?: LayerCollectionListingDict;
+    vector?: LayerCollectionListingDict;
+}
 
 @Component({
     selector: 'geoengine-main',
@@ -39,21 +41,15 @@ export class MainComponent implements OnInit, AfterViewInit {
     @ViewChild(MatSidenav, {static: true}) leftSidenav!: MatSidenav;
     @ViewChild(SidenavContainerComponent, {static: true}) leftSidenavContainer!: SidenavContainerComponent;
 
-    readonly topLevelCollections$ = new BehaviorSubject<Array<LayerCollectionListingDict>>([]);
-
-    readonly selectedLayers$ = new BehaviorSubject<Array<ProviderLayerIdDict | undefined>>([]);
+    readonly topLevelCollections$ = new BehaviorSubject<Array<LayerCollectionBiListing>>([]);
 
     readonly layersReverse$: Observable<Array<Layer>>;
     readonly analysisVisible$ = new BehaviorSubject(false);
     readonly windowHeight$ = new BehaviorSubject<number>(window.innerHeight);
 
-    readonly layerGroups: ReplaySubject<Map<TerraNovaGroup, Array<EbvHierarchy>>> = new ReplaySubject(1);
-
     readonly isSymbologyButtonVisible: Observable<boolean> = this.dataSelectionService.rasterLayer.pipe(
         map((rasterLayer) => !!rasterLayer),
     );
-
-    datasetPortal = new ComponentPortal(SelectLayersComponent);
 
     constructor(
         @Inject(Config) readonly config: AppConfig,
@@ -72,14 +68,41 @@ export class MainComponent implements OnInit, AfterViewInit {
 
         this.layersReverse$ = this.dataSelectionService.layers;
 
-        this.layerCollectionService.getLayerCollectionItems('1690c483-b17f-4d98-95c8-00a64849cd0b', 'root').subscribe((collection) => {
-            const collections = [];
-            for (const item of collection.items) {
-                if (item.type === 'collection') {
-                    collections.push(item as LayerCollectionListingDict);
+        combineLatest([
+            this.layerCollectionService.getLayerCollectionItems('1690c483-b17f-4d98-95c8-00a64849cd0b', 'root'),
+            this.layerCollectionService.getLayerCollectionItems(
+                'ce5e84db-cbf9-48a2-9a32-d4b7cc56ea74',
+                'c6f78d3b-609b-454f-8ad5-ed6ec12a9ac0c',
+            ),
+        ]).subscribe(([raster, vector]) => {
+            const collections: Array<LayerCollectionBiListing> = [];
+
+            // create initial groups
+            for (const item of raster.items) {
+                if (item.type !== 'collection') {
+                    continue;
                 }
+                collections.push({
+                    name: item.name,
+                    raster: item as LayerCollectionListingDict,
+                });
             }
-            this.selectedLayers$.next(new Array(collections.length).fill(false));
+
+            // add vector layers to groups
+            for (const item of vector.items) {
+                if (item.type !== 'collection') {
+                    continue;
+                }
+
+                const collection = collections.find((c) => c.name === item.name);
+
+                if (!collection) {
+                    continue; // could not find matching name
+                }
+
+                collection.vector = item as LayerCollectionListingDict;
+            }
+
             this.topLevelCollections$.next(collections);
         });
     }

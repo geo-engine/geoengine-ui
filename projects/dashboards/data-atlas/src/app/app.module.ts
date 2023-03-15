@@ -18,7 +18,6 @@ import {
     CoreModule,
 } from '@geoengine/core';
 import {AppConfig} from './app-config.service';
-import {SelectLayersComponent} from './select-layers/select-layers.component';
 import {PortalModule} from '@angular/cdk/portal';
 import {LegendComponent} from './legend/legend.component';
 import {AnalysisComponent} from './analysis/analysis.component';
@@ -29,17 +28,20 @@ import {MainComponent} from './main/main.component';
 import {AppRoutingModule} from './app-routing.module';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {AccordionEntryComponent} from './accordion-entry/accordion-entry.component';
+import {AccordionVectorEntryComponent} from './accordion-vector-entry/accordion-vector-entry.component';
+import {DataPointComponent} from './data-point/data-point.component';
 
 @NgModule({
     declarations: [
-        AppComponent,
-        SelectLayersComponent,
-        LegendComponent,
-        AnalysisComponent,
         AboutComponent,
+        AccordionEntryComponent,
+        AccordionVectorEntryComponent,
+        AnalysisComponent,
+        AppComponent,
+        DataPointComponent,
+        LegendComponent,
         LoginComponent,
         MainComponent,
-        AccordionEntryComponent,
     ],
     imports: [
         BrowserAnimationsModule,

@@ -1,0 +1,14 @@
+<ng-container *ngIf="tableData$ | async as tableData">
+    <ng-container *ngIf="tableData.length > 0; else noData">
+        <table>
+            <tr *ngFor="let row of tableData">
+                <th>{{ row.key }}</th>
+                <td>{{ row.value }}</td>
+            </tr>
+        </table>
+    </ng-container>
+    <ng-template #noData>
+        <p>No data available</p>
+        <p>Click on a point on the map to see the data</p>
+    </ng-template>
+</ng-container>

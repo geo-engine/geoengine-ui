@@ -1,13 +1,15 @@
 <mat-form-field appearance="fill">
     <mat-label>Country</mat-label>
     <mat-select (valueChange)="selectCountry($event)">
-        <ngx-mat-select-search
-            [formControl]="geoengineAutocompleteSelect.filterFormControl"
-            geoengineAutocompleteSelect
-            [geoengineAutocompleteSelectAllValues]="countries"
-            [geoengineAutocompleteSelectSearchPredicate]="countryPredicate"
-            #geoengineAutocompleteSelect="geoengineAutocompleteSelect"
-        ></ngx-mat-select-search>
+        <mat-option>
+            <ngx-mat-select-search
+                [formControl]="geoengineAutocompleteSelect.filterFormControl"
+                geoengineAutocompleteSelect
+                [geoengineAutocompleteSelectAllValues]="countries"
+                [geoengineAutocompleteSelectSearchPredicate]="countryPredicate"
+                #geoengineAutocompleteSelect="geoengineAutocompleteSelect"
+            ></ngx-mat-select-search>
+        </mat-option>
         <mat-option *ngFor="let country of geoengineAutocompleteSelect.filteredValues | async" [value]="country">{{ country }}</mat-option>
     </mat-select>
 </mat-form-field>

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Layer, LoadingState, ProjectService, RasterLayer, Time, VectorLayer} from '@geoengine/core';
 import {first, map, mergeMap, tap} from 'rxjs/operators';
-import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
+import {BehaviorSubject, combineLatest, forkJoin, Observable, of} from 'rxjs';
 import moment from 'moment';
 
 export interface DataRange {
@@ -18,6 +18,8 @@ export class DataSelectionService {
     readonly rasterLayer: Observable<RasterLayer | undefined>;
     readonly polygonLayer: Observable<VectorLayer | undefined>;
 
+    readonly vectorLayer: Observable<VectorLayer | undefined>;
+
     readonly rasterLayerLoading: Observable<boolean>;
 
     readonly timeSteps = new BehaviorSubject<Array<Time>>([new Time(moment.utc())]);
@@ -27,6 +29,8 @@ export class DataSelectionService {
 
     protected readonly _rasterLayer = new BehaviorSubject<RasterLayer | undefined>(undefined);
     protected readonly _polygonLayer = new BehaviorSubject<VectorLayer | undefined>(undefined);
+
+    protected readonly _vectorLayer = new BehaviorSubject<VectorLayer | undefined>(undefined);
 
     constructor(private readonly projectService: ProjectService) {
         this.rasterLayer = this._rasterLayer.pipe(
@@ -40,11 +44,20 @@ export class DataSelectionService {
             ),
         );
 
-        this.layers = combineLatest([this.rasterLayer, this.polygonLayer]).pipe(
-            map(([rasterLayer, polygonLayer]) => {
+        this.vectorLayer = this._vectorLayer.pipe(
+            mergeMap((vectorLayer) =>
+                vectorLayer ? (projectService.getLayerChangesStream(vectorLayer) as Observable<VectorLayer>) : of(undefined),
+            ),
+        );
+
+        this.layers = combineLatest([this.rasterLayer, this.polygonLayer, this.vectorLayer]).pipe(
+            map(([rasterLayer, polygonLayer, vectorLayer]) => {
                 const layers = [];
                 if (rasterLayer) {
                     layers.push(rasterLayer);
+                }
+                if (vectorLayer) {
+                    layers.push(vectorLayer);
                 }
                 if (polygonLayer) {
                     layers.push(polygonLayer);
@@ -65,21 +78,18 @@ export class DataSelectionService {
         );
     }
 
+    get hasSelectedLayer(): Observable<boolean> {
+        return combineLatest([this.rasterLayer, this.vectorLayer]).pipe(
+            map(([rasterLayer, vectorLayer]) => !!rasterLayer || !!vectorLayer),
+        );
+    }
+
     setRasterLayer(layer: RasterLayer, timeSteps: Array<Time>, dataRange: DataRange): Observable<void> {
         if (!timeSteps.length) {
             throw Error('`timeSteps` are required when setting a raster');
         }
 
-        return this._rasterLayer.pipe(
-            first(),
-            mergeMap((currentLayer) => {
-                if (currentLayer) {
-                    return this.projectService.removeLayer(currentLayer);
-                } else {
-                    return of(undefined);
-                }
-            }),
-            tap(() => this._rasterLayer.next(undefined)),
+        return forkJoin([this.unsetVectorLayer(), this.unsetRasterLayer()]).pipe(
             mergeMap(() => this.projectService.addLayer(layer)),
             tap(() => {
                 this._rasterLayer.next(layer);
@@ -90,7 +100,57 @@ export class DataSelectionService {
         );
     }
 
+    unsetRasterLayer(): Observable<void> {
+        return this._rasterLayer.pipe(
+            first(),
+            mergeMap((currentLayer) => {
+                if (currentLayer) {
+                    return this.projectService.removeLayer(currentLayer);
+                } else {
+                    return of(undefined);
+                }
+            }),
+            tap(() => this._rasterLayer.next(undefined)),
+        );
+    }
+
+    setVectorLayer(layer: VectorLayer, timeSteps: Array<Time>): Observable<void> {
+        if (!timeSteps.length) {
+            throw Error('`timeSteps` are required when setting a raster');
+        }
+
+        return forkJoin([this.unsetVectorLayer(), this.unsetRasterLayer(), this.unsetPolygonLayer()]).pipe(
+            mergeMap(() => this.projectService.addLayer(layer)),
+            tap(() => {
+                this._vectorLayer.next(layer);
+                this.timeSteps.next(timeSteps);
+                this.projectService.setTime(timeSteps[0]);
+            }),
+        );
+    }
+
+    unsetVectorLayer(): Observable<void> {
+        return this._vectorLayer.pipe(
+            first(),
+            mergeMap((currentLayer) => {
+                if (currentLayer) {
+                    return this.projectService.removeLayer(currentLayer);
+                } else {
+                    return of(undefined);
+                }
+            }),
+            tap(() => this._vectorLayer.next(undefined)),
+        );
+    }
+
     setPolygonLayer(layer: VectorLayer): Observable<void> {
+        return this.unsetPolygonLayer().pipe(
+            mergeMap(() => this.projectService.addLayer(layer)),
+            tap(() => this._polygonLayer.next(layer)),
+        );
+    }
+
+    unsetPolygonLayer(): Observable<void> {
         return this._polygonLayer.pipe(
             first(),
             mergeMap((currentLayer) => {
@@ -101,8 +161,6 @@ export class DataSelectionService {
                 }
             }),
             tap(() => this._polygonLayer.next(undefined)),
-            mergeMap(() => this.projectService.addLayer(layer)),
-            tap(() => this._polygonLayer.next(layer)),
         );
     }
 }
