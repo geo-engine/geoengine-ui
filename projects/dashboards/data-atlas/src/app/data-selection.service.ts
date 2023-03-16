@@ -21,6 +21,7 @@ export class DataSelectionService {
     readonly vectorLayer: Observable<VectorLayer | undefined>;
 
     readonly rasterLayerLoading: Observable<boolean>;
+    readonly vectorLayerLoading: Observable<boolean>;
 
     readonly timeSteps = new BehaviorSubject<Array<Time>>([new Time(moment.utc())]);
     readonly timeFormat = new BehaviorSubject<string>('YYYY'); // TODO: make configurable
@@ -67,6 +68,17 @@ export class DataSelectionService {
         );
 
         this.rasterLayerLoading = this._rasterLayer.pipe(
+            mergeMap((layer) => {
+                if (!layer) {
+                    return of(LoadingState.OK);
+                }
+
+                return projectService.getLayerStatusStream(layer);
+            }),
+            map((loadingState) => loadingState === LoadingState.LOADING),
+        );
+
+        this.vectorLayerLoading = this._vectorLayer.pipe(
             mergeMap((layer) => {
                 if (!layer) {
                     return of(LoadingState.OK);

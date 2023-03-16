@@ -105,4 +105,8 @@
     </mat-sidenav>
 </mat-sidenav-container>
 
-<mat-progress-bar class="loading-indicator" mode="query" *ngIf="dataSelectionService.rasterLayerLoading | async"></mat-progress-bar>
+<mat-progress-bar
+    class="loading-indicator"
+    mode="query"
+    *ngIf="(dataSelectionService.rasterLayerLoading | async) || (dataSelectionService.vectorLayerLoading | async)"
+></mat-progress-bar>
