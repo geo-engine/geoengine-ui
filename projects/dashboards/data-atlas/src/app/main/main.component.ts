@@ -69,11 +69,8 @@ export class MainComponent implements OnInit, AfterViewInit {
         this.layersReverse$ = this.dataSelectionService.layers;
 
         combineLatest([
-            this.layerCollectionService.getLayerCollectionItems('1690c483-b17f-4d98-95c8-00a64849cd0b', 'root'),
-            this.layerCollectionService.getLayerCollectionItems(
-                'ce5e84db-cbf9-48a2-9a32-d4b7cc56ea74',
-                'c6f78d3b-609b-454f-8ad5-ed6ec12a9ac0c',
-            ),
+            this.layerCollectionService.getLayerCollectionItems(this.config.DATA.RASTER.PROVIDER, this.config.DATA.RASTER.COLLECTION),
+            this.layerCollectionService.getLayerCollectionItems(this.config.DATA.VECTOR.PROVIDER, this.config.DATA.VECTOR.COLLECTION),
         ]).subscribe(([raster, vector]) => {
             const collections: Array<LayerCollectionBiListing> = [];
 
