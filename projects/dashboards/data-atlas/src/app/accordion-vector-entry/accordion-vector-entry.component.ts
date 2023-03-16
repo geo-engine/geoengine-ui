@@ -74,7 +74,7 @@ export class AccordionVectorEntryComponent implements OnInit {
                         return of(); // is not a vector layer
                     }
 
-                    console.log(layer.metadata, layerListing.properties);
+                    // console.log(layer.metadata, layerListing.properties);
 
                     if (!('timeSteps' in layer.metadata)) {
                         // TODO: get time
