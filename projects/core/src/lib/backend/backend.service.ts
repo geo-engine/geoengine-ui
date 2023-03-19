@@ -414,9 +414,13 @@ export class BackendService {
     }
 
     registerWorkflowForLayer(sessionId: UUID, provider: UUID, layer: string): Observable<WorkflowIdResponseDict> {
-        return this.http.post<WorkflowIdResponseDict>(this.config.API_URL + `/layers/${provider}/${encodeURIComponent(layer)}/workflowId`, {
-            headers: BackendService.authorizationHeader(sessionId),
-        });
+        return this.http.post<WorkflowIdResponseDict>(
+            this.config.API_URL + `/layers/${provider}/${encodeURIComponent(layer)}/workflowId`,
+            null,
+            {
+                headers: BackendService.authorizationHeader(sessionId),
+            },
+        );
     }
 
     getQuota(sessionId: UUID): Observable<QuotaDict> {
