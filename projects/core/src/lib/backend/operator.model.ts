@@ -323,10 +323,10 @@ export type InputResolutionDict = {type: 'source'} | {type: 'value'; x: number; 
 export interface RasterUnScalingDict extends OperatorDict {
     type: 'RasterScaling';
     params: {
-        slopeKeyOrValue?: RasterMetadataKey | {type: 'constant'; value: number};
-        offsetKeyOrValue?: RasterMetadataKey | {type: 'constant'; value: number};
+        slope: RasterMetadataKey | {type: 'constant'; value: number} | {type: 'auto'};
+        offset: RasterMetadataKey | {type: 'constant'; value: number} | {type: 'auto'};
         outputMeasurement?: string;
-        scalingMode: 'scale' | 'unscale';
+        scalingMode: 'mulSlopeAddOffset' | 'subOffsetDivSlope';
     };
 }
 
