@@ -74,17 +74,19 @@ export class AccordionVectorEntryComponent implements OnInit {
                         return of(); // is not a vector layer
                     }
 
-                    // console.log(layer.metadata, layerListing.properties);
-
                     if (!('timeSteps' in layer.metadata)) {
-                        // TODO: get time
-                        // throw new Error('Layer has no timeSteps');
+                        throw new Error('Layer has no timeSteps');
                     }
 
-                    // const timeSteps: Array<Time> = JSON.parse(layer.metadata['timeSteps']).map((t: number) => new Time(t));
-
-                    // TODO: read from metadata
-                    const timeSteps: Array<Time> = [new Time(moment.utc())];
+                    const timeSteps: Array<Time> = JSON.parse(layer.metadata['timeSteps']).map((t: string | number) => {
+                        if (typeof t === 'string') {
+                            // we try to parse it as an ISO timestamp string
+                            return new Time(moment(t));
+                        } else {
+                            // we try to parse it as a unix timestamp
+                            return new Time(t);
+                        }
+                    });
 
                     const vectorResultDescriptorDict = resultDescriptorDict as VectorResultDescriptorDict;
                     let symbology: VectorSymbology;

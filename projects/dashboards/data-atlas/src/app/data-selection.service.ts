@@ -128,7 +128,7 @@ export class DataSelectionService {
 
     setVectorLayer(layer: VectorLayer, timeSteps: Array<Time>): Observable<void> {
         if (!timeSteps.length) {
-            throw Error('`timeSteps` are required when setting a raster');
+            throw Error('`timeSteps` are required when setting a vector');
         }
 
         return forkJoin([this.unsetVectorLayer(), this.unsetRasterLayer(), this.unsetPolygonLayer()]).pipe(
