@@ -72,14 +72,15 @@ export class MainComponent implements OnInit, AfterViewInit {
             this.layerCollectionService.getLayerCollectionItems(this.config.DATA.RASTER.PROVIDER, this.config.DATA.RASTER.COLLECTION),
             this.layerCollectionService.getLayerCollectionItems(this.config.DATA.VECTOR.PROVIDER, this.config.DATA.VECTOR.COLLECTION),
         ]).subscribe(([raster, vector]) => {
-            const collections: Array<LayerCollectionBiListing> = [];
+            const collections = new Map<string, LayerCollectionBiListing>();
 
             // create initial groups
             for (const item of raster.items) {
                 if (item.type !== 'collection') {
                     continue;
                 }
-                collections.push({
+
+                collections.set(item.name, {
                     name: item.name,
                     raster: item as LayerCollectionListingDict,
                 });
@@ -91,16 +92,19 @@ export class MainComponent implements OnInit, AfterViewInit {
                     continue;
                 }
 
-                const collection = collections.find((c) => c.name === item.name);
+                const collection = collections.get(item.name);
 
-                if (!collection) {
-                    continue; // could not find matching name
+                if (collection) {
+                    collection.vector = item as LayerCollectionListingDict;
+                } else {
+                    collections.set(item.name, {
+                        name: item.name,
+                        vector: item as LayerCollectionListingDict,
+                    });
                 }
-
-                collection.vector = item as LayerCollectionListingDict;
             }
 
-            this.topLevelCollections$.next(collections);
+            this.topLevelCollections$.next(Array.from(collections.values()).sort((a, b) => a.name.localeCompare(b.name)));
         });
     }
 
