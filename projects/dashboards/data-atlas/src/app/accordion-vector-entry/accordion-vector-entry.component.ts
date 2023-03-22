@@ -1,5 +1,5 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef} from '@angular/core';
-import {mergeMap, BehaviorSubject, combineLatest, of} from 'rxjs';
+import {mergeMap, BehaviorSubject, of, forkJoin} from 'rxjs';
 import {
     ClusteredPointSymbology,
     colorToDict,
@@ -61,14 +61,19 @@ export class AccordionVectorEntryComponent implements OnInit {
     loadData(layerListing: LayerCollectionLayerDict): void {
         const id = layerListing.id;
 
-        this.layerCollectionService
-            .getLayer(id.providerId, id.layerId)
+        forkJoin({
+            layer: this.layerCollectionService.getLayer(id.providerId, id.layerId),
+            workflowId: this.layerCollectionService.registerAndGetLayerWorkflowId(id.providerId, id.layerId),
+        })
             .pipe(
-                mergeMap((layer) => combineLatest([of(layer), this.projectService.registerWorkflow(layer.workflow)])),
-                mergeMap(([layer, workflowId]: [LayerDict, UUID]) =>
-                    combineLatest([of(layer), of(workflowId), this.projectService.getWorkflowMetaData(workflowId)]),
+                mergeMap(({layer, workflowId}: {layer: LayerDict; workflowId: UUID}) =>
+                    forkJoin({
+                        layer: of(layer),
+                        workflowId: of(workflowId),
+                        resultDescriptorDict: this.projectService.getWorkflowMetaData(workflowId),
+                    }),
                 ),
-                mergeMap(([layer, workflowId, resultDescriptorDict]) => {
+                mergeMap(({layer, workflowId, resultDescriptorDict}) => {
                     const keys = Object.keys(resultDescriptorDict);
                     if (!keys.includes('columns')) {
                         return of(); // is not a vector layer
