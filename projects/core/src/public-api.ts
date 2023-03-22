@@ -140,6 +140,7 @@ export * from './lib/colors/color-breakpoint.model';
 export * from './lib/colors/color';
 export * from './lib/colors/colorizer.model';
 export * from './lib/datasets/dataset.model';
+export * from './lib/layers/layer-data.model';
 export * from './lib/layers/layer-metadata.model';
 export * from './lib/layers/layer.model';
 export * from './lib/layers/measurement';

@@ -119,12 +119,6 @@ export class RasterLegendComponent implements OnInit, OnChanges {
     measurement$?: Observable<Measurement>;
     displayedBreakpoints: number[] = [];
 
-    /**
-     * Parameters to use with the number pipe in the template.
-     */
-    @Input()
-    numberPipeParameters = '1.0-0';
-
     @Input()
     orderValuesDescending = false;
 
@@ -137,8 +131,6 @@ export class RasterLegendComponent implements OnInit, OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.layer || changes.orderValuesDescending) {
-            const symbology = changes.layer.currentValue.symbology;
-            this.numberPipeParameters = calculateNumberPipeParameters(symbology.colorizer.getBreakpoints());
             this.calculateDisplayedBreakpoints();
         }
     }
