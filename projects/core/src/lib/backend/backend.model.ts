@@ -184,6 +184,7 @@ export interface LineSymbologyDict {
     type: 'line';
     stroke: StrokeParamDict;
     text?: TextSymbologyDict;
+    autoSimplified: boolean;
 }
 
 export interface PolygonSymbologyDict {
@@ -191,6 +192,7 @@ export interface PolygonSymbologyDict {
     fillColor: ColorParamDict;
     stroke: StrokeParamDict;
     text?: TextSymbologyDict;
+    autoSimplified: boolean;
 }
 
 export type NumberParamDict = StaticNumberDict | DerivedNumberDict;

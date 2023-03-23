@@ -93,6 +93,7 @@ export class AddWorkflowComponent implements OnInit {
                         width: {type: 'static', value: 1},
                         color: {type: 'static', color: [0, 0, 0, 255]},
                     },
+                    autoSimplified: true,
                 });
             case 'MultiPolygon':
                 return PolygonSymbology.fromPolygonSymbologyDict({
@@ -102,6 +103,7 @@ export class AddWorkflowComponent implements OnInit {
                         color: {type: 'static', color: [0, 0, 0, 255]},
                     },
                     fillColor: {type: 'static', color: colorToDict(this.randomColorService.getRandomColorRgba())},
+                    autoSimplified: true,
                 });
         }
     }

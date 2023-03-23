@@ -335,3 +335,11 @@ export interface RasterMetadataKey {
     domain?: string;
     key: string;
 }
+
+export interface LineSimplificationDict extends OperatorDict {
+    type: 'LineSimplification';
+    params: {
+        algorithm: 'douglasPeucker' | 'visvalingam';
+        epsilon: number | undefined;
+    };
+}

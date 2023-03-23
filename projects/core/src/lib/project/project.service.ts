@@ -31,12 +31,12 @@ import {Extent, MapService, ViewportSize} from '../map/map.service';
 import {Session} from '../users/session.model';
 import {HasPlotId, Plot} from '../plots/plot.model';
 import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata.model';
-import {Symbology, ClusteredPointSymbology, PointSymbology} from '../layers/symbology/symbology.model';
+import {Symbology, ClusteredPointSymbology, PointSymbology, LineSymbology, PolygonSymbology} from '../layers/symbology/symbology.model';
 import OlFeature from 'ol/Feature';
 import OlGeometry from 'ol/geom/Geometry';
 import {intersects as olIntersects} from 'ol/extent';
 import {getProjectionTarget} from '../util/spatial_reference';
-import {ReprojectionDict, VisualPointClusteringParams} from '../backend/operator.model';
+import {LineSimplificationDict, ReprojectionDict, VisualPointClusteringParams} from '../backend/operator.model';
 import {SpatialReferenceService} from '../spatial-references/spatial-reference.service';
 import {VectorColumnDataTypes} from '../operators/datatype.model';
 import {GeoEngineError} from '../util/errors';
@@ -1230,7 +1230,7 @@ export class ProjectService {
 
     /**
      * In order to visually cluster points depending on the symbology, we need to create a temporary workflow
-     * the puts a new operator on top of the actual workflow.
+     * This puts a new operator on top of the actual workflow.
      */
     private createClusteredPointLayerQueryWorkflow(workflowId: UUID, metadata: VectorLayerMetadata): Observable<UUID> {
         const columnAggregates: {
@@ -1312,6 +1312,62 @@ export class ProjectService {
     }
 
     /**
+     * In order to visualize simplified lines and polygons, we need to create a temporary workflow.
+     * This puts a new operator on top of the actual workflow.
+     */
+    private createSimplifiedLinesOrPolygonsLayerQueryWorkflow(workflowId: UUID, metadata: VectorLayerMetadata): Observable<UUID> {
+        return this.userService.getSessionTokenForRequest().pipe(
+            mergeMap((sessionToken) =>
+                combineLatest([of(sessionToken), this.backend.getWorkflow(workflowId, sessionToken), this.getSpatialReferenceStream()]),
+            ),
+            mergeMap(([sessionToken, workflow, mapSpatialReference]) =>
+                this.backend.registerWorkflow(
+                    {
+                        type: 'Vector',
+                        operator: {
+                            type: 'LineSimplification',
+                            params: {
+                                algorithm: 'douglasPeucker',
+                                epsilon: undefined, // derived by query resolution
+                            },
+                            sources: {
+                                vector: this.createProjectedOperator(workflow.operator, metadata, mapSpatialReference),
+                            },
+                        } as LineSimplificationDict,
+                    },
+                    sessionToken,
+                ),
+            ),
+            map((registerWorkflowResult) => registerWorkflowResult.id),
+        );
+    }
+
+    /**
+     * For line and polygon data, we need to react on symbology changes.
+     * Thus, we introduce a new layer of observables that react on changes of the symbology
+     * between simplified and normal.
+     */
+    private createLinesOrPolygonsLayerQueryWorkflow(layer: VectorLayer): Observable<UUID> {
+        return this.getLayerChangesStream(layer).pipe(
+            map(
+                (changedLayer) =>
+                    (changedLayer.symbology instanceof LineSymbology || changedLayer.symbology instanceof PolygonSymbology) &&
+                    changedLayer.symbology.autoSimplified,
+            ),
+            distinctUntilChanged(),
+            mergeMap((isSimplified) => {
+                if (!isSimplified) {
+                    return of(layer.workflowId);
+                }
+
+                return this.getVectorLayerMetadata(layer).pipe(
+                    mergeMap((metadata) => this.createSimplifiedLinesOrPolygonsLayerQueryWorkflow(layer.workflowId, metadata)),
+                );
+            }),
+        );
+    }
+
+    /**
      * Create a subscription for layer data, symbology and provenance with loading state checks and error handling
      */
     private createVectorLayerDataSubscription(
@@ -1323,6 +1379,10 @@ export class ProjectService {
 
         if (layer.symbology instanceof PointSymbology || layer.symbology instanceof ClusteredPointSymbology) {
             workflowIdOnce = this.createPointLayerQueryWorkflow(layer);
+        }
+
+        if (layer.symbology instanceof LineSymbology || layer.symbology instanceof PolygonSymbology) {
+            workflowIdOnce = this.createLinesOrPolygonsLayerQueryWorkflow(layer);
         }
 
         return combineLatest([
