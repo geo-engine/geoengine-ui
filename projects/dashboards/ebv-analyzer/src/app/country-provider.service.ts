@@ -75,6 +75,7 @@ export class CountryProviderService {
                                     type: 'static',
                                     color: [0, 0, 0, 0],
                                 },
+                                autoSimplified: true,
                             }),
                             isLegendVisible: false,
                             isVisible: true,
