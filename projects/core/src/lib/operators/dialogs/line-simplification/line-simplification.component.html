@@ -2,7 +2,7 @@
 
 <form [formGroup]="form" (ngSubmit)="$event.preventDefault(); add()">
     <geoengine-operator-dialog-container [loading]="loading$ | async | valueDefault : false">
-        <a mat-icon-button operatorInputIcon href="https://docs.geoengine.io/operators/rasterization.html" target="_blank">
+        <a mat-icon-button operatorInputIcon href="https://docs.geoengine.io/operators/linesimplification.html" target="_blank">
             <mat-icon>help_center</mat-icon>
         </a>
 
@@ -10,7 +10,7 @@
             <geoengine-layer-selection [types]="inputTypes" formControlName="layer"></geoengine-layer-selection>
         </ng-container>
 
-        <a mat-icon-button operatorParametersIcon href="https://docs.geoengine.io/operators/rasterization.html" target="_blank">
+        <a mat-icon-button operatorParametersIcon href="https://docs.geoengine.io/operators/linesimplification.html" target="_blank">
             <mat-icon>help_center</mat-icon>
         </a>
 
