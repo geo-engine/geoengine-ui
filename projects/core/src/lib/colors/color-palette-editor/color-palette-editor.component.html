@@ -1,7 +1,8 @@
 <cdk-virtual-scroll-viewport appendOnly itemSize="10" class="tabs-viewport">
     <div class="virtual" *cdkVirtualFor="let c of allColors; let i = index" class="tabs-item">
         <geoengine-color-attribute-input [ngModel]="c" (ngModelChange)="rebuildColorMap(i, $event)"></geoengine-color-attribute-input>
-        <button mat-mini-fab (click)="removeColorTab(i)" class="removeButton">-</button>
+        <!-- <button mat-mini-fab (click)="removeColorTab(i)" class="removeButton">-</button> -->
+        <button mat-icon-button (click)="removeColorTab(i)" class="removeButton"><mat-icon>remove</mat-icon></button>
     </div>
 </cdk-virtual-scroll-viewport>
 <br />
