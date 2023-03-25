@@ -1,0 +1,29 @@
+.tabs-viewport {
+    display: flex;
+    height: 20rem;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.virtual {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.tabs-item {
+    display: flex;
+    height: 5rem;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.geoengine-color-attribute-input {
+    margin-right: 10px;
+}
+
+.removeButton {
+    margin-left: 10px;
+    -ms-transform: translateY(-20%);
+    transform: translateY(-20%);
+}

@@ -24,6 +24,7 @@ export * from './lib/util/services/random-color.service';
 export * from './lib/colors/color-attribute-input/color-attribute-input.component';
 export * from './lib/colors/color-breakpoint-input/color-breakpoint-input.component';
 export * from './lib/colors/color-map-selector/color-map-selector.component';
+export * from './lib/colors/color-palette-editor/color-palette-editor.component';
 export * from './lib/datasets/add-data/add-data.component';
 export * from './lib/datasets/add-workflow/add-workflow.component';
 export * from './lib/datasets/dataset-list/dataset-list.component';
