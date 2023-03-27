@@ -64,12 +64,12 @@ export class ColorPaletteEditorComponent implements OnInit {
     }
 
     // Currently not used ... everything is done by rebuildColorMap, can be deleted...
-    updateColor(pos: number, color: ColorAttributeInput): void {
-        this.allColors[pos] = color; // because else, changes to HTML won't affect allColors
-        this.colorMap.set(parseFloat(color.key), color.value); // Sets the key/value in the map according to the ColorAttributeInput. Old map value still exists after this!
+    // updateColor(pos: number, color: ColorAttributeInput): void {
+    //     this.allColors[pos] = color; // because else, changes to HTML won't affect allColors
+    //     this.colorMap.set(parseFloat(color.key), color.value); // Sets the key/value in the map according to the ColorAttributeInput. Old map value still exists after this!
 
-        this.emitSymbology();
-    }
+    //     this.emitSymbology();
+    // }
 
     /**
      * Recreate the color map so that only values for which a ColorAttributeInput exists
@@ -119,6 +119,10 @@ export class ColorPaletteEditorComponent implements OnInit {
         this.allColors = this.allColors.filter((val, ind) => index !== ind); // Must reassign the array, so filter instead of splice
 
         this.emitSymbology();
+    }
+
+    notFloat(index: number): boolean {
+        return isNaN(parseFloat(this.allColors[index].key));
     }
 
     emitSymbology(): void {
