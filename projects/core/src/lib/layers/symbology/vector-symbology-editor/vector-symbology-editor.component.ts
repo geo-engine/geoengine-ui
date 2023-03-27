@@ -89,6 +89,14 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         return this.symbology instanceof ClusteredPointSymbology;
     }
 
+    get isLineLayer(): boolean {
+        return this.symbology.symbologyType === SymbologyType.LINE;
+    }
+
+    get isPolygonLayer(): boolean {
+        return this.symbology.symbologyType === SymbologyType.POLYGON;
+    }
+
     setClusterSymbology(clustered: boolean): void {
         if (clustered && this.symbology instanceof PointSymbology) {
             this.symbology = new ClusteredPointSymbology(this.symbology.fillColor, this.symbology.stroke);
@@ -388,6 +396,14 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         }
     }
 
+    get isAutoSimplified(): boolean {
+        if (!(this.symbology instanceof LineSymbology || this.symbology instanceof PolygonSymbology)) {
+            return false;
+        }
+
+        return this.symbology.autoSimplified;
+    }
+
     updatePointSymbology(params: {radius?: NumberParam; fillColor?: ColorParam; stroke?: Stroke; text?: TextSymbology | null}): void {
         if (!(this.symbology instanceof PointSymbology)) {
             return;
@@ -420,7 +436,7 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         });
     }
 
-    updateLineSymbology(params: {stroke?: Stroke; text?: TextSymbology | null}): void {
+    updateLineSymbology(params: {stroke?: Stroke; text?: TextSymbology | null; autoSimplified?: boolean}): void {
         if (!(this.symbology instanceof LineSymbology)) {
             return;
         }
@@ -428,14 +444,18 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         // unsetting with null
         const text = params.text === null ? undefined : params.text ?? this.symbology.text;
 
-        this.symbology = new LineSymbology(params.stroke ?? this.symbology.stroke, text);
+        this.symbology = new LineSymbology(
+            params.stroke ?? this.symbology.stroke,
+            text,
+            params.autoSimplified ?? this.symbology.autoSimplified,
+        );
 
         this.projectService.changeLayer(this.layer, {
             symbology: this.symbology,
         });
     }
 
-    updatePolygonSymbology(params: {fillColor?: ColorParam; stroke?: Stroke; text?: TextSymbology | null}): void {
+    updatePolygonSymbology(params: {fillColor?: ColorParam; stroke?: Stroke; text?: TextSymbology | null; autoSimplified?: boolean}): void {
         if (!(this.symbology instanceof PolygonSymbology)) {
             return;
         }
@@ -443,7 +463,12 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         // unsetting with null
         const text = params.text === null ? undefined : params.text ?? this.symbology.text;
 
-        this.symbology = new PolygonSymbology(params.fillColor ?? this.symbology.fillColor, params.stroke ?? this.symbology.stroke, text);
+        this.symbology = new PolygonSymbology(
+            params.fillColor ?? this.symbology.fillColor,
+            params.stroke ?? this.symbology.stroke,
+            text,
+            params.autoSimplified ?? this.symbology.autoSimplified,
+        );
 
         this.projectService.changeLayer(this.layer, {
             symbology: this.symbology,

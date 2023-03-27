@@ -153,6 +153,7 @@ import {DownloadRasterLayerComponent} from './download-raster-layer/download-ras
 import {TimeIntervalInputComponent} from './time/time-interval-input/time-interval-input.component';
 import {QuotaInfoComponent} from './users/quota/quota-info/quota-info.component';
 import {FxFlexDirective, FxLayoutAlignDirective, FxLayoutDirective, FxLayoutGapDirective} from './util/directives/flexbox-legacy.directive';
+import {LineSimplificationComponent} from './operators/dialogs/line-simplification/line-simplification.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -236,8 +237,8 @@ const CORE_COMPONENTS = [
     IfLoggedInDirective,
     InterpolationComponent,
     LayerCollectionDropdownComponent,
-    LayerCollectionListComponent,
     LayerCollectionLayerComponent,
+    LayerCollectionListComponent,
     LayerCollectionNavigationComponent,
     LayerListComponent,
     LayerListElementComponent,
@@ -246,6 +247,7 @@ const CORE_COMPONENTS = [
     LineageGraphComponent,
     LineageGraphComponent,
     LineIconComponent,
+    LineSimplificationComponent,
     LoadProjectComponent,
     LoginComponent,
     MapContainerComponent,

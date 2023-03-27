@@ -98,6 +98,7 @@ export class AnalysisComponent implements OnInit {
                                     type: 'static',
                                     color: [54, 154, 203, 0],
                                 },
+                                autoSimplified: true,
                             }),
                             isLegendVisible: false,
                             isVisible: true,

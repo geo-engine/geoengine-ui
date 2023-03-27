@@ -469,11 +469,13 @@ export class ClusteredPointSymbology extends VectorSymbology {
 export class LineSymbology extends VectorSymbology {
     stroke: Stroke;
     text?: TextSymbology;
+    autoSimplified: boolean;
 
-    constructor(stroke: Stroke, text?: TextSymbology) {
+    constructor(stroke: Stroke, text?: TextSymbology, autoSimplified: boolean = true) {
         super();
         this.stroke = stroke;
         this.text = text;
+        this.autoSimplified = autoSimplified;
     }
 
     static fromLineSymbologyDict(dict: LineSymbologyDict): LineSymbology {
@@ -500,6 +502,7 @@ export class LineSymbology extends VectorSymbology {
             type: 'line',
             stroke: this.stroke.toDict(),
             text: this.text ? this.text.toDict() : undefined,
+            autoSimplified: this.autoSimplified,
         };
     }
 
@@ -522,11 +525,15 @@ export class PolygonSymbology extends VectorSymbology {
 
     text?: TextSymbology;
 
-    constructor(fillColor: ColorParam, stroke: Stroke, text?: TextSymbology) {
+    autoSimplified: boolean;
+
+    constructor(fillColor: ColorParam, stroke: Stroke, text?: TextSymbology, autoSimplified: boolean = true) {
         super();
         this.fillColor = fillColor;
         this.stroke = stroke;
         this.text = text;
+
+        this.autoSimplified = autoSimplified;
     }
 
     static fromPolygonSymbologyDict(dict: PolygonSymbologyDict): PolygonSymbology {
@@ -564,6 +571,7 @@ export class PolygonSymbology extends VectorSymbology {
             fillColor: this.fillColor.toDict(),
             stroke: this.stroke.toDict(),
             text: this.text ? this.text.toDict() : undefined,
+            autoSimplified: this.autoSimplified,
         };
     }
 
