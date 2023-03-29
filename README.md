@@ -24,8 +24,8 @@ sudo apt-get install -y nodejs
 ### Production
 
 ```
-rm -rf node_modules package-lock.json
-npm install
+rm -rf node_modules
+npm ci
 npm run build-prod:core && npm run build-prod:gis
 ```
 
@@ -40,14 +40,14 @@ For instance, here is what you need to do to run the default app with a locally 
 For the first time:
 
 ```
-rm -rf node_modules package-lock.json
-npm install
+rm -rf node_modules
+npm ci
 ```
 
 Then:
 
 ```
-npm install
+npm ci
 npm run build-watch:core
 npm run serve:gis:local
 ```
