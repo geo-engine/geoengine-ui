@@ -47,7 +47,7 @@ npm install
 Then:
 
 ```
-npm ci
+npm install
 npm run build-watch:core
 npm run serve:gis:local
 ```
