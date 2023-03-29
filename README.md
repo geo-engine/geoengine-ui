@@ -41,7 +41,7 @@ For the first time:
 
 ```
 rm -rf node_modules
-npm ci
+npm install
 ```
 
 Then:
