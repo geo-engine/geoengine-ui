@@ -20,7 +20,7 @@ const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CONFIG, {
     DATA: {
         RASTER: {
             PROVIDER: '1690c483-b17f-4d98-95c8-00a64849cd0b',
-            COLLECTION: 'root',
+            COLLECTION: '.',
         },
         VECTOR: {
             PROVIDER: 'ce5e84db-cbf9-48a2-9a32-d4b7cc56ea74',
