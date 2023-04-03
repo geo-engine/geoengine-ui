@@ -10,7 +10,6 @@ const routes: Routes = [
     {path: '', redirectTo: 'map', pathMatch: 'full'},
     {path: 'map', component: MainComponent, canActivate: [BackendAvailableGuard, LogInGuard]},
     {path: 'signin', component: LoginComponent, canActivate: [BackendAvailableGuard]},
-    {path: 'signin', component: LoginComponent, canActivate: [BackendAvailableGuard]},
     {path: 'register', component: RegisterComponent, canActivate: [BackendAvailableGuard, CanRegisterGuard]},
     {path: '404', component: NotFoundPageComponent},
     {path: 'backend-status', component: BackendStatusPageComponent},

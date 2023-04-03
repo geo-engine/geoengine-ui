@@ -157,7 +157,6 @@ export * from './lib/users/session.model';
 export * from './lib/users/user.model';
 
 // Guards
-export * from './lib/util/guards/is-logged-in.guard';
 export * from './lib/util/guards/log-in.guard';
 export * from './lib/util/guards/backend-available.guard';
 
