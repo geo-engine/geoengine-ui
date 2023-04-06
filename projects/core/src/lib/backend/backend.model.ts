@@ -620,3 +620,36 @@ export interface QuotaDict {
     available: number;
     used: number;
 }
+
+export type TaskStatusType = 'running' | 'completed' | 'aborted' | 'failed';
+
+export interface TaskStatusDict {
+    taskId: UUID;
+    status: TaskStatusType;
+}
+
+export interface TaskRunningDict extends TaskStatusDict {
+    status: 'running';
+    timeStarted: string;
+    estimatedTimeRemaining: string;
+    pctComplete: string;
+    info: any; // TODO: better type in backend
+}
+
+export interface TaskCompletedDict extends TaskStatusDict {
+    status: 'completed';
+    timeStarted: string;
+    timeTotal: string;
+    info: any; // TODO: better type in backend
+}
+
+export interface TaskAbortedDict extends TaskStatusDict {
+    status: 'aborted';
+    cleanUp: any; // TODO: better type in backend
+}
+
+export interface TaskFailedDict extends TaskStatusDict {
+    status: 'failed';
+    cleanUp: any; // TODO: better type in backend
+    error: any; // TODO: better type in backend
+}

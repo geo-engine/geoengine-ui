@@ -39,6 +39,7 @@ import {
     SidenavConfig,
     SpatialReferenceService,
     LayerCollectionService,
+    TaskListComponent,
 } from '@geoengine/core';
 import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from '../app-config.service';
@@ -177,6 +178,14 @@ export class MainComponent implements OnInit, AfterViewInit {
                         name: 'equalizer',
                     },
                     tooltip: 'Plots',
+                },
+                {
+                    sidenavConfig: {component: TaskListComponent},
+                    icon: {
+                        type: 'icon',
+                        name: 'assignment',
+                    },
+                    tooltip: 'Tasks',
                 },
                 {
                     sidenavConfig: {component: TimeConfigComponent},

@@ -42,6 +42,8 @@ import {
     WcsParamsDict,
     QuotaDict,
     WorkflowIdResponseDict,
+    TaskStatusDict,
+    TaskStatusType,
 } from './backend.model';
 
 @Injectable({
@@ -426,6 +428,28 @@ export class BackendService {
     getQuota(sessionId: UUID): Observable<QuotaDict> {
         return this.http.get<QuotaDict>(this.config.API_URL + '/quota', {
             headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    getTasksList(sessionId: UUID, filter: TaskStatusType | undefined, offset: number, limit: number): Observable<Array<TaskStatusDict>> {
+        const params = new NullDiscardingHttpParams();
+        params.set('filter', filter);
+        params.setMapped('offset', offset, (r) => r.toString());
+        params.setMapped('limit', limit, (r) => r.toString());
+
+        return this.http.get<Array<TaskStatusDict>>(this.config.API_URL + '/tasks/list', {
+            headers: BackendService.authorizationHeader(sessionId),
+            params: params.httpParams,
+        });
+    }
+
+    abortTask(sessionId: UUID, taskId: UUID, force: boolean = false): Observable<void> {
+        const params = new NullDiscardingHttpParams();
+        params.setMapped('force', force, (r) => r.toString());
+
+        return this.http.delete<void>(this.config.API_URL + `/tasks/${taskId}`, {
+            headers: BackendService.authorizationHeader(sessionId),
+            params: params.httpParams,
         });
     }
 }
