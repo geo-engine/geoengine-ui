@@ -622,6 +622,7 @@ export interface QuotaDict {
 }
 
 export type TaskStatusType = 'running' | 'completed' | 'aborted' | 'failed';
+export type TaskCleanUpStatusType = 'noCleanUp' | 'running' | 'completed' | 'aborted' | 'failed';
 
 export interface TaskStatusDict {
     taskId: UUID;
@@ -652,4 +653,23 @@ export interface TaskFailedDict extends TaskStatusDict {
     status: 'failed';
     cleanUp: any; // TODO: better type in backend
     error: any; // TODO: better type in backend
+}
+
+export interface TaskCleanUpDict {
+    status: TaskCleanUpStatusType;
+}
+
+export interface TaskCleanUpCompletedDict extends TaskCleanUpDict {
+    status: 'completed';
+    info: any; // TODO: better type in backend
+}
+
+export interface TaskCleanUpAbortedDict extends TaskCleanUpDict {
+    status: 'aborted';
+    info: any; // TODO: better type in backend
+}
+
+export interface TaskCleanUpFailedDict extends TaskCleanUpDict {
+    status: 'failed';
+    error: string;
 }
