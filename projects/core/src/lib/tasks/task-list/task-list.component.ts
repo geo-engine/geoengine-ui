@@ -1,16 +1,51 @@
-import {Component, OnInit, ChangeDetectionStrategy, ViewChild, AfterViewInit, OnDestroy, ChangeDetectorRef} from '@angular/core';
-import {MatPaginator, PageEvent} from '@angular/material/paginator';
-import {combineLatest, forkJoin, map, mergeMap, of, startWith, Subscription, switchMap} from 'rxjs';
+import {
+    Component,
+    OnInit,
+    ChangeDetectionStrategy,
+    ViewChild,
+    AfterViewInit,
+    OnDestroy,
+    ChangeDetectorRef,
+    Injectable,
+} from '@angular/core';
+import {MatPaginator, MatPaginatorIntl, PageEvent} from '@angular/material/paginator';
+import {combineLatest, forkJoin, map, mergeMap, of, startWith, Subject, Subscription, switchMap} from 'rxjs';
 import {TaskStatusDict, TaskStatusType, UUID} from '../../backend/backend.model';
 import {BackendService} from '../../backend/backend.service';
 import {UserService} from '../../users/user.service';
 import {NotificationService} from '../../notification.service';
+
+@Injectable()
+export class MyCustomPaginatorIntl implements MatPaginatorIntl {
+    changes = new Subject<void>();
+
+    // For internationalization, the `$localize` function from
+    // the `@angular/localize` package can be used.
+    firstPageLabel = `First page`;
+    itemsPerPageLabel = `Items per page:`;
+    lastPageLabel = `Last page`;
+
+    // You can set labels to an arbitrary string too, or dynamically compute
+    // it through other third-party internationalization libraries.
+    nextPageLabel = 'Next page';
+    previousPageLabel = 'Previous page';
+
+    getRangeLabel(page: number, pageSize: number, length: number): string {
+        if (length === 0) {
+            return `Page 1 of 1`;
+        }
+        const amountPages = Math.ceil(length / pageSize);
+        const plusPages = Number.isInteger(length) ? '' : '+';
+        return `Page ${page + 1} of ${amountPages}${plusPages}`;
+    }
+}
 
 @Component({
     selector: 'geoengine-task-list',
     templateUrl: './task-list.component.html',
     styleUrls: ['./task-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [{provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl}],
 })
 export class TaskListComponent implements OnInit, AfterViewInit, OnDestroy {
     taskStatusOptions: Array<TaskStatusType> = ['running', 'completed', 'aborted', 'failed'];
@@ -69,7 +104,11 @@ export class TaskListComponent implements OnInit, AfterViewInit, OnDestroy {
                     // Flip flag to show that loading has finished.
                     this.isLoading = false;
 
-                    const newTotalResults = pageEvent.pageSize * pageEvent.pageIndex + tasks.length;
+                    let newTotalResults = pageEvent.pageSize * pageEvent.pageIndex + tasks.length;
+                    if (tasks.length > pageEvent.pageSize) {
+                        // indicate that there is a next page
+                        newTotalResults -= 0.5;
+                    }
                     this.paginator.length = Math.max(this.paginator.length, newTotalResults);
 
                     // shrink to page since, since we queried one more
