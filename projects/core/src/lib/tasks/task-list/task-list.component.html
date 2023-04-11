@@ -3,6 +3,7 @@
     <mat-form-field subscriptSizing="dynamic">
         <mat-label>Status filter</mat-label>
         <mat-select [(value)]="filter" (valueChange)="setFilter($event)">
+            <mat-option><em>No Filter</em></mat-option>
             <mat-option *ngFor="let taskStatus of taskStatusOptions" [value]="taskStatus">
                 {{ taskStatus | titlecase }}
             </mat-option>
