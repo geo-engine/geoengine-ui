@@ -114,4 +114,8 @@ export class TaskListComponent implements OnInit, AfterViewInit, OnDestroy {
                 },
             });
     }
+
+    localTime(time: string): string {
+        return new Date(time).toLocaleString();
+    }
 }
