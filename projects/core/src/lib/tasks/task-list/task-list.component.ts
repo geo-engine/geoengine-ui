@@ -4,6 +4,7 @@ import {combineLatest, forkJoin, map, mergeMap, of, startWith, Subscription, swi
 import {TaskStatusDict, TaskStatusType, UUID} from '../../backend/backend.model';
 import {BackendService} from '../../backend/backend.service';
 import {UserService} from '../../users/user.service';
+import {NotificationService} from '../../notification.service';
 
 @Component({
     selector: 'geoengine-task-list',
@@ -28,7 +29,8 @@ export class TaskListComponent implements OnInit, AfterViewInit, OnDestroy {
     constructor(
         protected readonly userService: UserService,
         protected readonly backend: BackendService,
-        protected changeDetectorRef: ChangeDetectorRef,
+        protected readonly changeDetectorRef: ChangeDetectorRef,
+        protected readonly notificationService: NotificationService,
     ) {}
 
     ngOnInit(): void {}
@@ -111,6 +113,11 @@ export class TaskListComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe({
                 next: () => {
                     this.refreshPage();
+                },
+                error: (error) => {
+                    if (error.message) {
+                        this.notificationService.error(error.message);
+                    }
                 },
             });
     }
