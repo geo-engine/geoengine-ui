@@ -118,6 +118,7 @@ export class TaskListComponent implements OnInit, AfterViewInit, OnDestroy {
                     if (error.message) {
                         this.notificationService.error(error.message);
                     }
+                    this.refreshPage();
                 },
             });
     }
