@@ -302,7 +302,13 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
 
         switch (colorizerType) {
             case 'linearGradient':
-                colorizer = new LinearGradient(breakpoints, noDataColor, overColor, underColor);
+                // colorizer = new LinearGradient(breakpoints, noDataColor, overColor, underColor);
+                colorizer = new LinearGradient(
+                    this.colorMapToBreakpoints(this.colorPaletteEditor.getColors()),
+                    noDataColor,
+                    overColor,
+                    underColor,
+                );
                 break;
             case 'logarithmicGradient':
                 colorizer = new LogarithmicGradient(breakpoints, noDataColor, overColor, underColor);
@@ -314,6 +320,16 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         this.symbology = this.symbology.cloneWith({colorizer});
         this.updateScale();
         this.unappliedChanges = true;
+    }
+
+    /**
+     * Transform a map of <number, Color> i.e. the colorMap to an Array of ColorBreakpoint, which have a value : number and color
+     * This is needed to provide the breakpoints for LinearGradient and LogarithmicGradient from the colorPalette
+     */
+    colorMapToBreakpoints(colorMap: Map<number, Color>): ColorBreakpoint[] {
+        const breakpoints: ColorBreakpoint[] = [];
+        colorMap.forEach((color, value) => breakpoints.push(new ColorBreakpoint(value, color)));
+        return breakpoints;
     }
 
     /**
