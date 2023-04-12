@@ -154,6 +154,7 @@ import {TimeIntervalInputComponent} from './time/time-interval-input/time-interv
 import {QuotaInfoComponent} from './users/quota/quota-info/quota-info.component';
 import {FxFlexDirective, FxLayoutAlignDirective, FxLayoutDirective, FxLayoutGapDirective} from './util/directives/flexbox-legacy.directive';
 import {LineSimplificationComponent} from './operators/dialogs/line-simplification/line-simplification.component';
+import {TaskListComponent} from './tasks/task-list/task-list.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -298,6 +299,7 @@ const CORE_COMPONENTS = [
     StatisticsPlotComponent,
     SymbologyCreatorComponent,
     TabsComponent,
+    TaskListComponent,
     TemporalRasterAggregationComponent,
     TimeConfigComponent,
     TimeInputComponent,
