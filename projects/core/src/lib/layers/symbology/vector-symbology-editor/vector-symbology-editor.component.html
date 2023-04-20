@@ -15,114 +15,132 @@
     </p>
 </geoengine-dialog-help>
 
-<mat-accordion multi="true">
-    <!-- For points -->
-    <mat-expansion-panel expanded="true" *ngIf="isPointLayer">
-        <mat-expansion-panel-header>
-            <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
-                <mat-icon>map</mat-icon>
-                <span fxFlex>Symbology Type</span>
-            </mat-panel-title>
-        </mat-expansion-panel-header>
-        <ng-template matExpansionPanelContent>
-            <mat-slide-toggle [checked]="isClustered" (change)="setClusterSymbology($event.checked)"
-                >Visually clustered points</mat-slide-toggle
-            >
-        </ng-template>
-    </mat-expansion-panel>
+<!-- For points -->
+<mat-card *ngIf="isPointLayer">
+    <mat-card-header>
+        <div class="icon-continer" mat-card-avatar>
+            <mat-icon>map</mat-icon>
+        </div>
+        <mat-card-title>Symbology Type</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <mat-slide-toggle [checked]="isClustered" (change)="setClusterSymbology($event.checked)"
+            >Visually clustered points</mat-slide-toggle
+        >
+    </mat-card-content>
+</mat-card>
 
-    <!-- For points and polygons -->
-    <mat-expansion-panel expanded="true" *ngIf="showFillColorEditor">
-        <mat-expansion-panel-header>
-            <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
-                <mat-icon>map</mat-icon>
-                <span fxFlex>Fill Color</span>
-            </mat-panel-title>
-        </mat-expansion-panel-header>
-        <ng-template matExpansionPanelContent>
+<!-- For lines and polygons -->
+<mat-card *ngIf="isLineLayer || isPolygonLayer">
+    <mat-card-header>
+        <div class="icon-continer" mat-card-avatar>
+            <mat-icon>map</mat-icon>
+        </div>
+        <mat-card-title>Visualization Options</mat-card-title>
+    </mat-card-header>
+    <mat-card-content *ngIf="isLineLayer">
+        <mat-slide-toggle [checked]="isAutoSimplified" (change)="updateLineSymbology({autoSimplified: $event.checked})">
+            Simplify lines
+        </mat-slide-toggle>
+    </mat-card-content>
+    <mat-card-content *ngIf="isPolygonLayer">
+        <mat-slide-toggle [checked]="isAutoSimplified" (change)="updatePolygonSymbology({autoSimplified: $event.checked})">
+            Simplify lines
+        </mat-slide-toggle>
+    </mat-card-content>
+</mat-card>
+
+<!-- For points and polygons -->
+<mat-card *ngIf="showFillColorEditor">
+    <mat-card-header>
+        <div class="icon-continer" mat-card-avatar>
+            <mat-icon>map</mat-icon>
+        </div>
+        <mat-card-title>Fill Color</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <geoengine-color-param-editor
+            [(ngModel)]="fillColor"
+            [attributes]="numericAttributes | async | valueDefault : []"
+        ></geoengine-color-param-editor>
+    </mat-card-content>
+</mat-card>
+
+<mat-card expanded="true">
+    <mat-card-header>
+        <div class="icon-continer" mat-card-avatar>
+            <mat-icon>map</mat-icon>
+        </div>
+        <mat-card-title>Stroke</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <h3 class="mat-subtitle-1">Color</h3>
+        <geoengine-color-param-editor
+            [(ngModel)]="strokeColor"
+            [attributes]="numericAttributes | async | valueDefault : []"
+        ></geoengine-color-param-editor>
+        <h3 class="mat-subtitle-1">Width</h3>
+        <geoengine-number-param-editor
+            [(ngModel)]="strokeWidth"
+            [min]="1"
+            [attributes]="numericAttributes | async | valueDefault : []"
+        ></geoengine-number-param-editor>
+    </mat-card-content>
+</mat-card>
+
+<!-- Points only -->
+<mat-card expanded="true" *ngIf="showRadiusEditor">
+    <mat-card-header>
+        <div class="icon-continer" mat-card-avatar>
+            <mat-icon>map</mat-icon>
+        </div>
+        <mat-card-title>Radius</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <geoengine-number-param-editor
+            [(ngModel)]="radius"
+            [min]="1"
+            [attributes]="numericAttributes | async | valueDefault : []"
+        ></geoengine-number-param-editor>
+    </mat-card-content>
+</mat-card>
+
+<!-- Optional -->
+<mat-card expanded="true" *ngIf="supportsText">
+    <mat-card-header>
+        <div class="icon-continer" mat-card-avatar>
+            <mat-icon>map</mat-icon>
+        </div>
+        <mat-card-title>Label</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <mat-form-field appearance="fill">
+            <mat-label>Derive label from attribute</mat-label>
+            <mat-select placeholder="Attribute" [(ngModel)]="textAttribute">
+                <mat-option [value]="undefined"><em>None</em></mat-option>
+                <mat-option *ngFor="let attribute of allAttributes | async" [value]="attribute">{{ attribute }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <ng-template [ngIf]="hasText">
+            <h3 class="mat-subtitle-1">Fill Color</h3>
             <geoengine-color-param-editor
-                [(ngModel)]="fillColor"
+                [(ngModel)]="textFillColor"
                 [attributes]="numericAttributes | async | valueDefault : []"
             ></geoengine-color-param-editor>
-        </ng-template>
-    </mat-expansion-panel>
 
-    <mat-expansion-panel expanded="true">
-        <mat-expansion-panel-header>
-            <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
-                <mat-icon>map</mat-icon>
-                <span fxFlex>Stroke</span>
-            </mat-panel-title>
-        </mat-expansion-panel-header>
-        <ng-template matExpansionPanelContent>
-            <h3 class="mat-subtitle-1">Color</h3>
+            <h3 class="mat-subtitle-1">Stroke Color</h3>
             <geoengine-color-param-editor
-                [(ngModel)]="strokeColor"
+                [(ngModel)]="textStrokeColor"
                 [attributes]="numericAttributes | async | valueDefault : []"
             ></geoengine-color-param-editor>
-            <h3 class="mat-subtitle-1">Width</h3>
+
+            <h3 class="mat-subtitle-1">Stroke Width</h3>
             <geoengine-number-param-editor
-                [(ngModel)]="strokeWidth"
+                [(ngModel)]="textStrokeWidth"
                 [min]="1"
                 [attributes]="numericAttributes | async | valueDefault : []"
             ></geoengine-number-param-editor>
         </ng-template>
-    </mat-expansion-panel>
-
-    <!-- Points only -->
-    <mat-expansion-panel expanded="true" *ngIf="showRadiusEditor">
-        <mat-expansion-panel-header>
-            <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
-                <mat-icon>map</mat-icon>
-                <span fxFlex>Radius</span>
-            </mat-panel-title>
-        </mat-expansion-panel-header>
-        <ng-template matExpansionPanelContent>
-            <geoengine-number-param-editor
-                [(ngModel)]="radius"
-                [min]="1"
-                [attributes]="numericAttributes | async | valueDefault : []"
-            ></geoengine-number-param-editor>
-        </ng-template>
-    </mat-expansion-panel>
-
-    <!-- Optional -->
-    <mat-expansion-panel expanded="true" *ngIf="supportsText">
-        <mat-expansion-panel-header>
-            <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
-                <mat-icon>map</mat-icon>
-                <span fxFlex>Label</span>
-            </mat-panel-title>
-        </mat-expansion-panel-header>
-        <ng-template matExpansionPanelContent>
-            <mat-form-field appearance="fill">
-                <mat-label>Derive label from attribute</mat-label>
-                <mat-select placeholder="Attribute" [(ngModel)]="textAttribute">
-                    <mat-option [value]="undefined"><em>None</em></mat-option>
-                    <mat-option *ngFor="let attribute of allAttributes | async" [value]="attribute">{{ attribute }}</mat-option>
-                </mat-select>
-            </mat-form-field>
-
-            <ng-template [ngIf]="hasText">
-                <h3 class="mat-subtitle-1">Fill Color</h3>
-                <geoengine-color-param-editor
-                    [(ngModel)]="textFillColor"
-                    [attributes]="numericAttributes | async | valueDefault : []"
-                ></geoengine-color-param-editor>
-
-                <h3 class="mat-subtitle-1">Stroke Color</h3>
-                <geoengine-color-param-editor
-                    [(ngModel)]="textStrokeColor"
-                    [attributes]="numericAttributes | async | valueDefault : []"
-                ></geoengine-color-param-editor>
-
-                <h3 class="mat-subtitle-1">Stroke Width</h3>
-                <geoengine-number-param-editor
-                    [(ngModel)]="textStrokeWidth"
-                    [min]="1"
-                    [attributes]="numericAttributes | async | valueDefault : []"
-                ></geoengine-number-param-editor>
-            </ng-template>
-        </ng-template>
-    </mat-expansion-panel>
-</mat-accordion>
+    </mat-card-content>
+</mat-card>

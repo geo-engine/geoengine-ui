@@ -154,6 +154,8 @@ import {TimeIntervalInputComponent} from './time/time-interval-input/time-interv
 import {QuotaInfoComponent} from './users/quota/quota-info/quota-info.component';
 import {FxFlexDirective, FxLayoutAlignDirective, FxLayoutDirective, FxLayoutGapDirective} from './util/directives/flexbox-legacy.directive';
 import {ColorPaletteEditorComponent} from './colors/color-palette-editor/color-palette-editor.component';
+import {LineSimplificationComponent} from './operators/dialogs/line-simplification/line-simplification.component';
+import {TaskListComponent} from './tasks/task-list/task-list.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -238,8 +240,8 @@ const CORE_COMPONENTS = [
     IfLoggedInDirective,
     InterpolationComponent,
     LayerCollectionDropdownComponent,
-    LayerCollectionListComponent,
     LayerCollectionLayerComponent,
+    LayerCollectionListComponent,
     LayerCollectionNavigationComponent,
     LayerListComponent,
     LayerListElementComponent,
@@ -248,6 +250,7 @@ const CORE_COMPONENTS = [
     LineageGraphComponent,
     LineageGraphComponent,
     LineIconComponent,
+    LineSimplificationComponent,
     LoadProjectComponent,
     LoginComponent,
     MapContainerComponent,
@@ -298,6 +301,7 @@ const CORE_COMPONENTS = [
     StatisticsPlotComponent,
     SymbologyCreatorComponent,
     TabsComponent,
+    TaskListComponent,
     TemporalRasterAggregationComponent,
     TimeConfigComponent,
     TimeInputComponent,

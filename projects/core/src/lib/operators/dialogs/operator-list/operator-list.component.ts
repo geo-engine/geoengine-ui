@@ -24,6 +24,7 @@ import {NeighborhoodAggregateComponent} from '../neighborhood-aggregate/neighbor
 import {TimeShiftComponent} from '../time-shift/time-shift.component';
 import {PieChartComponent} from '../pie-chart/pie-chart.component';
 import {RasterizationComponent} from '../rasterization/rasterization.component';
+import {LineSimplificationComponent} from '../line-simplification/line-simplification.component';
 
 /**
  * This type encapsulates…
@@ -225,11 +226,6 @@ export class OperatorListComponent implements OnInit, OnChanges {
     ];
 
     static readonly DEFAULT_VECTOR_OPERATOR_DIALOGS: Array<OperatorListType> = [
-        // {
-        //     component: HeatmapOperatorComponent,
-        //     type: HeatmapType,
-        //     description: 'Create a heatmap for points',
-        // },
         {
             component: ColumnRangeFilterComponent,
             type: {
@@ -245,6 +241,14 @@ export class OperatorListComponent implements OnInit, OnChanges {
                 ICON_URL: createIconDataUrl('Point in Polygon'),
             },
             description: 'Filter points that are enclosed by a polygon',
+        },
+        {
+            component: LineSimplificationComponent,
+            type: {
+                NAME: 'Line Simplification',
+                ICON_URL: createIconDataUrl('Line Simplification'),
+            },
+            description: 'Reduce vertices of (multi-)line strings and (multi-)polygons',
         },
     ];
 

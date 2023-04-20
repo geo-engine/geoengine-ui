@@ -160,6 +160,7 @@ export class DatasetService {
                                       color: colorToDict(this.randomColorService.getRandomColorRgba()),
                                   },
                               },
+                              autoSimplified: true,
                           });
                     break;
                 case VectorDataTypes.MultiPolygon:
@@ -181,6 +182,7 @@ export class DatasetService {
                                   type: 'static',
                                   color: colorToDict(this.randomColorService.getRandomColorRgba()),
                               },
+                              autoSimplified: true,
                           });
                     break;
                 default:
