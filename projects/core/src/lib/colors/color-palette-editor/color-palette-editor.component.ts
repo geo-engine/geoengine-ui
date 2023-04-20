@@ -63,14 +63,6 @@ export class ColorPaletteEditorComponent implements OnInit {
         return inputs;
     }
 
-    // Currently not used ... everything is done by rebuildColorMap, can be deleted...
-    // updateColor(pos: number, color: ColorAttributeInput): void {
-    //     this.allColors[pos] = color; // because else, changes to HTML won't affect allColors
-    //     this.colorMap.set(parseFloat(color.key), color.value); // Sets the key/value in the map according to the ColorAttributeInput. Old map value still exists after this!
-
-    //     this.emitSymbology();
-    // }
-
     /**
      * Recreate the color map so that only values for which a ColorAttributeInput exists
      * are contained within the map. This is necessary because the $event that gets

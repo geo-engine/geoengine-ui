@@ -63,7 +63,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     histogramLoading = new BehaviorSubject(false);
     histogramCreated = false;
 
-    paletteSelected = false; // TODO: Remove once color palette picker is implemented and switch to "getColorizerType()"
+    paletteSelected = false; // TODO: Remove when gradients can be customized
 
     protected histogramWorkflowId = new ReplaySubject<UUID>(1);
     protected histogramSubscription?: Subscription;
@@ -275,7 +275,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     }
 
     updateColorizerType(colorizerType: 'linearGradient' | 'logarithmicGradient' | 'palette'): void {
-        // TODO: Remove this once palettes are fully implemented
+        // TODO: Remove next line when gradients can be customized
         this.paletteSelected = colorizerType === 'linearGradient' || colorizerType === 'logarithmicGradient' ? false : true;
 
         if (this.getColorizerType() === colorizerType) {
@@ -303,23 +303,27 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         switch (colorizerType) {
             case 'linearGradient':
                 // colorizer = new LinearGradient(breakpoints, noDataColor, overColor, underColor);
-                colorizer = new LinearGradient(
-                    this.colorMapToBreakpoints(this.colorPaletteEditor.getColors()),
-                    noDataColor,
-                    overColor,
-                    underColor,
-                );
+                colorizer = new LinearGradient(breakpoints, noDataColor, overColor, underColor);
                 break;
             case 'logarithmicGradient':
                 colorizer = new LogarithmicGradient(breakpoints, noDataColor, overColor, underColor);
                 break;
             case 'palette':
-                colorizer = new PaletteColorizer(this.colorPaletteEditor.getColors(), noDataColor, overColor);
+                colorizer = new PaletteColorizer(this.createColorMap(), noDataColor, overColor);
                 break;
         }
         this.symbology = this.symbology.cloneWith({colorizer});
         this.updateScale();
         this.unappliedChanges = true;
+    }
+
+    createColorMap(): Map<number, Color> {
+        const colorMap = new Map<number, Color>();
+        const colorizer: PaletteColorizer = this.symbology.colorizer as PaletteColorizer;
+        colorizer.getBreakpoints().forEach((bp, index) => {
+            colorMap.set(bp.value, colorizer.getColorAtIndex(index));
+        });
+        return colorMap;
     }
 
     /**
@@ -419,7 +423,9 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
 
     private update(): void {
         this.projectService.changeLayer(this.layer, {symbology: this.symbology});
-        this.colorPaletteEditor.sortColorAttributeInputs();
+        if (this.colorPaletteEditor !== undefined) {
+            this.colorPaletteEditor.sortColorAttributeInputs();
+        }
     }
 
     private initializeHistogramDataSubscription(): void {
