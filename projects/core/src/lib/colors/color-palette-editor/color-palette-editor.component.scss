@@ -10,7 +10,6 @@ geoengine-color-attribute-input {
 
 .removeButton {
     margin-left: 10px;
-    margin-right: 10px;
     -ms-transform: translateY(10%);
     transform: translateY(10%);
 }
@@ -25,7 +24,7 @@ geoengine-color-attribute-input {
     grid-template-rows: 1fr 1fr;
     grid-gap: 5px;
     height: 5rem;
-    width: 100%;
+    width: 95%;
 }
 
 .grid-colorpicker {
