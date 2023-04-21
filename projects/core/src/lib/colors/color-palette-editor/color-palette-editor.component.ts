@@ -13,9 +13,8 @@ import {PaletteColorizer} from '../colorizer.model';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ColorPaletteEditorComponent implements OnInit {
-    // Output and Input for communication with the parent "raster-symbology-editor" component
-    @Input() symbology!: RasterSymbology;
-    @Output() symbologyChanged: EventEmitter<RasterSymbology> = new EventEmitter();
+    @Input() symbology!: RasterSymbology; // Symbology to use for creating color tabs
+    @Output() symbologyChanged: EventEmitter<RasterSymbology> = new EventEmitter(); // Symbology altered through color tab inputs
 
     @ViewChild(CdkVirtualScrollViewport)
     virtualScrollViewport!: CdkVirtualScrollViewport;
