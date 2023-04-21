@@ -1,4 +1,5 @@
-import {ChangeDetectionStrategy, Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef} from '@angular/core';
+import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
+import {ChangeDetectionStrategy, Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef, ViewChild} from '@angular/core';
 import {RasterSymbology} from '../../layers/symbology/symbology.model';
 import {Color} from '../color';
 import {ColorAttributeInput} from '../color-attribute-input/color-attribute-input.component';
@@ -15,6 +16,9 @@ export class ColorPaletteEditorComponent implements OnInit {
     // Output and Input for communication with the parent "raster-symbology-editor" component
     @Input() symbology!: RasterSymbology;
     @Output() symbologyChanged: EventEmitter<RasterSymbology> = new EventEmitter();
+
+    @ViewChild(CdkVirtualScrollViewport)
+    virtualScrollViewport!: CdkVirtualScrollViewport;
 
     allColors: ColorAttributeInput[] = new Array<ColorAttributeInput>(); // HTML Template will use these to display the color cards
     colorMap = new Map<number, Color>(); // Returned to the parent component as parameter for the colorizer
@@ -39,6 +43,16 @@ export class ColorPaletteEditorComponent implements OnInit {
                 this.allColors.push(newInput);
                 this.colorMap.set(bp.value, this.getPaletteColorizer().getColorAtIndex(index));
             });
+    }
+
+    applyChanges(newSymbology: RasterSymbology): void {
+        this.setSymbology(newSymbology);
+        this.initColorInputs();
+        this.sortColorAttributeInputs();
+
+        // Keep the same scrolling position
+        const topOffset: number = this.virtualScrollViewport.measureScrollOffset('top');
+        setTimeout(() => this.virtualScrollViewport.scrollToOffset(topOffset), 0);
     }
 
     setSymbology(newSymbology: RasterSymbology): void {
@@ -102,6 +116,7 @@ export class ColorPaletteEditorComponent implements OnInit {
         this.rebuildColorMap(this.allColors.length, newTab);
         this.sortColorAttributeInputs();
         this.allColors = [...this.allColors]; // Recreate array to force redraw after values changed
+        setTimeout(() => this.virtualScrollViewport.scrollTo({bottom: 0}), 0); // Delay of 0 to include new tab in scroll
     }
 
     removeColorTab(index: number): void {
