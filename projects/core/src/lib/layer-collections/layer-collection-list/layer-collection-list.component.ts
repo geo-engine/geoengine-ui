@@ -110,7 +110,7 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
             this.selectListener(item);
         } else if (item.type === 'layer') {
             const layer = item as LayerCollectionLayerDict;
-            this.layerService.addLayerToProject(layer.id);
+            this.layerService.addLayerToProject(layer.id).subscribe(() => this.showGbifHint(layer.id));
         }
     }
 
@@ -119,7 +119,7 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
     }
 
     addLayer(layerId: ProviderLayerIdDict): void {
-        this.layerService.addLayerToProject(layerId);
+        this.layerService.addLayerToProject(layerId).subscribe(() => this.showGbifHint(layerId));
     }
 
     protected calculateInitialNumberOfElements(): number {
@@ -127,6 +127,12 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
         const numberOfElements = Math.ceil(element.clientHeight / this.itemSizePx);
         // add one such that scrolling happens
         return numberOfElements + 1;
+    }
+
+    private showGbifHint(layerId: ProviderLayerIdDict): void {
+        if (layerId.providerId === '1c01dbb9-e3ab-f9a2-06f5-228ba4b6bf7a') {
+            this.notificationService.info('Loading this layer might time out. In this case, try zooming in to request less occurrences.');
+        }
     }
 }
 
