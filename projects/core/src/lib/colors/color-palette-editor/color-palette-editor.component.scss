@@ -6,11 +6,6 @@ geoengine-color-attribute-input {
     flex-grow: 1;
 }
 
-.removeButton {
-    margin-left: 0.5rem;
-    transform: translateY(10%);
-}
-
 .warningMessage {
     width: 3rem;
 }
@@ -34,7 +29,7 @@ geoengine-color-attribute-input {
     height: 3rem;
     grid-row: 1 / 2;
     grid-column: 2 / 3;
-    transform: translateY(10%);
+    transform: translateY(0.5rem);
 }
 
 .grid-errormsg {
