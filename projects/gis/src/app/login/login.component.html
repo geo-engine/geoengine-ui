@@ -2,7 +2,7 @@
     <div class="container" fxLayout="column" fxLayoutAlign="space-around">
         <mat-card appearance="outlined" class="login">
             <mat-card-header>
-                <mat-icon matCardTitle svgIcon="geoengine:logo-alt" aria-label="Geo Engine" [inline]="true"></mat-icon>
+                <mat-icon matCardTitle svgIcon="geoengine:logo" aria-label="Geo Engine" [inline]="true"></mat-icon>
                 <mat-card-subtitle [ngSwitch]="formStatus$ | async">
                     <ng-template [ngSwitchCase]="FormStatus.LoggedOut">Login to this Geo Engine instance</ng-template>
                     <ng-template [ngSwitchCase]="FormStatus.LoggedIn">User Info</ng-template>
@@ -10,6 +10,11 @@
             </mat-card-header>
 
             <mat-card-content [ngSwitch]="formStatus$ | async">
+                <ng-template [ngSwitchCase]="FormStatus.Oidc">
+                    <mat-card-actions>
+                        <button mat-raised-button (click)="oidcLogin()" fxFlex color="primary">Sign in using OIDC</button>
+                    </mat-card-actions>
+                </ng-template>
                 <ng-template [ngSwitchCase]="FormStatus.LoggedOut">
                     <mat-form-field>
                         <input matInput type="text" placeholder="E-Mail" formControlName="email" />

@@ -49,19 +49,24 @@ export class UserService {
 
             if (status.available && !this.sessionInitialized) {
                 this.sessionInitialized = true;
-                // restore old session if possible
-                this.sessionFromBrowserOrCreateGuest().subscribe({
-                    next: (session) => {
-                        this.session$.next(session);
-                    },
-                    error: (error) => {
-                        // only show error if we did not expect it
-                        if (error.error.error !== 'AnonymousAccessDisabled') {
-                            this.notificationService.error(error.error.message);
-                        }
-                        this.session$.next(undefined);
-                    },
-                });
+
+                const oidcLogin = this.checkOidcParametersAndLogin();
+
+                if (!oidcLogin) {
+                    // restore old session if possible
+                    this.sessionFromBrowserOrCreateGuest().subscribe({
+                        next: (session) => {
+                            this.session$.next(session);
+                        },
+                        error: (error) => {
+                            // only show error if we did not expect it
+                            if (error.error.error !== 'Unauthorized') {
+                                this.notificationService.error(error.error.message);
+                            }
+                            this.session$.next(undefined);
+                        },
+                    });
+                }
             }
             if (!status.available && this.sessionInitialized) {
                 this.sessionInitialized = false;
@@ -324,6 +329,20 @@ export class UserService {
             .subscribe((quota) => {
                 this.sessionQuota$.next(quota);
             });
+    }
+
+    private checkOidcParametersAndLogin(): boolean {
+        const params = new URLSearchParams(window.location.search);
+        const sessionState = params.get('session_state');
+        const code = params.get('code');
+        const state = params.get('state');
+
+        if (sessionState && code && state) {
+            this.oidcLogin({sessionState, code, state}).pipe(first()).subscribe();
+            return true;
+        }
+
+        return false;
     }
 }
 

@@ -3,6 +3,7 @@ import {BehaviorSubject, finalize, first, SubscriptionLike} from 'rxjs';
 
 import {UserService} from '../user.service';
 import {User} from '../user.model';
+import {Router} from '@angular/router';
 
 @Component({
     selector: 'geoengine-oidc',
@@ -19,7 +20,7 @@ export class OidcComponent implements OnInit, OnDestroy {
 
     private pendingLoginRequest = false;
 
-    constructor(private readonly userService: UserService) {}
+    constructor(private readonly userService: UserService, private router: Router) {}
 
     ngOnInit(): void {
         this.userSubscription = this.userService
@@ -65,7 +66,10 @@ export class OidcComponent implements OnInit, OnDestroy {
                         this.user = session.user;
                     }
                 },
-                error: () => {},
+                error: () => {
+                    // guest login failed -> navigate to sign in
+                    this.router.navigate(['/signin']);
+                },
                 complete: () => {
                     this.logoutSubscription?.unsubscribe();
                 },
