@@ -20,7 +20,7 @@ export class OidcComponent implements OnInit, OnDestroy {
 
     private pendingLoginRequest = false;
 
-    constructor(private readonly userService: UserService, private router: Router) {}
+    constructor(private readonly userService: UserService, private readonly router: Router) {}
 
     ngOnInit(): void {
         this.userSubscription = this.userService
