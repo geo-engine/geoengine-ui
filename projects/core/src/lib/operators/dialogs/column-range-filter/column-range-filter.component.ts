@@ -6,10 +6,8 @@ import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap} from 'rxjs/operators';
 import {Layer, VectorLayer} from '../../../layers/layer.model';
 import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
-import {VectorColumnDataType, VectorColumnDataTypes} from '../../datatype.model';
+import {VectorColumnDataType, VectorColumnDataTypes, VectorDataType, VectorDataTypes} from '../../datatype.model';
 import {UUID, WorkflowDict} from '../../../backend/backend.model';
-import {ClusteredPointSymbology, PointSymbology} from '../../../layers/symbology/symbology.model';
-import {colorToDict} from '../../../colors/color';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {ColumnRangeFilterDict, HistogramDict, HistogramParams} from '../../../backend/operator.model';
 import {VegaChartData} from '../../../plots/vega-viewer/vega-viewer.component';
@@ -18,6 +16,7 @@ import {BackendService} from '../../../backend/backend.service';
 import {UserService} from '../../../users/user.service';
 import {extentToBboxDict} from '../../../util/conversions';
 import {geoengineValidators} from '../../../util/form.validators';
+import {createVectorSymbology} from '../../../util/symbologies';
 
 interface ColumnRangeFilterForm {
     layer: FormControl<Layer | null>;
@@ -52,6 +51,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     private subscriptions: Array<Subscription> = [];
     private columnTypes = new Map<string, VectorColumnDataType | undefined>();
     private currentLayerid = -1;
+    private dataType: VectorDataType = VectorDataTypes.MultiPoint;
 
     constructor(
         private readonly projectService: ProjectService,
@@ -78,6 +78,8 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                             this.currentLayerid = layer.id;
                             return this.projectService.getVectorLayerMetadata(layer).pipe(
                                 map((metadata: VectorLayerMetadata) => {
+                                    this.dataType = metadata.dataType;
+
                                     const attribs = metadata.dataTypes
                                         .filter(
                                             (columnType: any) =>
@@ -277,29 +279,9 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
             new VectorLayer({
                 workflowId,
                 name,
-                symbology: ClusteredPointSymbology.fromPointSymbologyDict({
-                    type: 'point',
-                    radius: {
-                        type: 'static',
-                        value: PointSymbology.DEFAULT_POINT_RADIUS,
-                    },
-                    stroke: {
-                        width: {
-                            type: 'static',
-                            value: 1,
-                        },
-                        color: {
-                            type: 'static',
-                            color: [0, 0, 0, 255],
-                        },
-                    },
-                    fillColor: {
-                        type: 'static',
-                        color: colorToDict(this.randomColorService.getRandomColorRgba()),
-                    },
-                }),
-                isLegendVisible: false,
                 isVisible: true,
+                isLegendVisible: false,
+                symbology: createVectorSymbology(this.dataType.getCode(), this.randomColorService.getRandomColorRgba()),
             }),
         );
     }
