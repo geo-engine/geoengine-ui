@@ -1,14 +1,10 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef} from '@angular/core';
 import {mergeMap, BehaviorSubject, of, forkJoin} from 'rxjs';
 import {
-    ClusteredPointSymbology,
-    colorToDict,
+    createVectorSymbology,
     LayerCollectionLayerDict,
     LayerCollectionService,
     LayerDict,
-    LineSymbology,
-    PointSymbology,
-    PolygonSymbology,
     ProjectService,
     ProviderLayerCollectionIdDict,
     RandomColorService,
@@ -99,7 +95,10 @@ export class AccordionVectorEntryComponent implements OnInit {
                     if (layer.symbology) {
                         symbology = VectorSymbology.fromVectorSymbologyDict(layer.symbology as VectorSymbologyDict);
                     } else {
-                        symbology = this.createVectorSymbology(vectorResultDescriptorDict.dataType);
+                        symbology = createVectorSymbology(
+                            vectorResultDescriptorDict.dataType,
+                            this.randomColorService.getRandomColorRgba(),
+                        );
                     }
 
                     const vectorLayer = new VectorLayer({
@@ -114,42 +113,5 @@ export class AccordionVectorEntryComponent implements OnInit {
                 }),
             )
             .subscribe(() => this.changeDetectorRef.markForCheck());
-    }
-
-    private createVectorSymbology(dataType: 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon'): VectorSymbology {
-        switch (dataType) {
-            case 'Data':
-                // TODO: cope with that
-                throw Error('we cannot add data layers here, yet');
-            case 'MultiPoint':
-                return ClusteredPointSymbology.fromPointSymbologyDict({
-                    type: 'point',
-                    radius: {type: 'static', value: PointSymbology.DEFAULT_POINT_RADIUS},
-                    stroke: {
-                        width: {type: 'static', value: 1},
-                        color: {type: 'static', color: [0, 0, 0, 255]},
-                    },
-                    fillColor: {type: 'static', color: colorToDict(this.randomColorService.getRandomColorRgba())},
-                });
-            case 'MultiLineString':
-                return LineSymbology.fromLineSymbologyDict({
-                    type: 'line',
-                    stroke: {
-                        width: {type: 'static', value: 1},
-                        color: {type: 'static', color: [0, 0, 0, 255]},
-                    },
-                    autoSimplified: true,
-                });
-            case 'MultiPolygon':
-                return PolygonSymbology.fromPolygonSymbologyDict({
-                    type: 'polygon',
-                    stroke: {
-                        width: {type: 'static', value: 1},
-                        color: {type: 'static', color: [0, 0, 0, 255]},
-                    },
-                    fillColor: {type: 'static', color: colorToDict(this.randomColorService.getRandomColorRgba())},
-                    autoSimplified: true,
-                });
-        }
     }
 }
