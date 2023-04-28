@@ -49,7 +49,6 @@ export class ColorPaletteEditorComponent implements OnInit {
     applyChanges(newSymbology: RasterSymbology): void {
         this.setSymbology(newSymbology);
         this.initColorInputs();
-        this.sortColorAttributeInputs();
 
         // Keep the same scrolling position
         const topOffset: number = this.virtualScrollViewport.measureScrollOffset('top');
