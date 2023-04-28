@@ -28,6 +28,7 @@ import {VegaChartData} from '../../../plots/vega-viewer/vega-viewer.component';
 import {Color} from '../../../colors/color';
 import {ColorMapSelectorComponent} from '../../../colors/color-map-selector/color-map-selector.component';
 import {LayoutService} from '../../../layout.service';
+import {ColorPaletteEditorComponent} from '../../../colors/color-palette-editor/color-palette-editor.component';
 
 /**
  * An editor for generating raster symbologies.
@@ -41,6 +42,9 @@ import {LayoutService} from '../../../layout.service';
 export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, AfterViewInit, OnInit {
     @ViewChild(ColorMapSelectorComponent)
     colorMapSelector!: ColorMapSelectorComponent;
+
+    @ViewChild(ColorPaletteEditorComponent)
+    colorPaletteEditor!: ColorPaletteEditorComponent;
 
     @Input() layer!: RasterLayer;
 
@@ -59,7 +63,7 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     histogramLoading = new BehaviorSubject(false);
     histogramCreated = false;
 
-    paletteSelected = false; // TODO: Remove once color palette picker is implemented and switch to "getColorizerType()"
+    paletteSelected = false; // TODO: Remove when gradients can be customized
 
     protected histogramWorkflowId = new ReplaySubject<UUID>(1);
     protected histogramSubscription?: Subscription;
@@ -165,6 +169,16 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         return this.defaultColor;
     }
 
+    /**
+     * Called from HTML template when a new value is emitted by the ColorPaletteEditor child component
+     *
+     * @param rasterSymbology The new rastersymbology to use
+     */
+    symbologyChangeHandler(rasterSymbology: RasterSymbology): void {
+        this.symbology = rasterSymbology;
+        this.unappliedChanges = true;
+    }
+
     updateDefaultColor(defaultColorInput: ColorAttributeInput): void {
         const defaultColor = defaultColorInput.value;
 
@@ -183,7 +197,8 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     }
 
     applyChanges(): void {
-        this.colorMapSelector.applyChanges();
+        this.colorMapSelector?.applyChanges();
+        this.colorPaletteEditor?.applyChanges(this.symbology);
         this.unappliedChanges = false;
         this.update();
     }
@@ -252,60 +267,65 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
     }
 
     updateColorizerType(colorizerType: 'linearGradient' | 'logarithmicGradient' | 'palette'): void {
-        // TODO: Remove this once palettes are fully implemented
+        // TODO: Remove next line when gradients can be customized
         this.paletteSelected = colorizerType === 'linearGradient' || colorizerType === 'logarithmicGradient' ? false : true;
 
         if (this.getColorizerType() === colorizerType) {
             return;
         }
 
-        if (colorizerType === 'palette' || this.getColorizerType() === 'palette') {
-            // TODO: implement palette
-            return;
+        const breakpoints = this.symbology.colorizer.getBreakpoints();
+        let noDataColor: Color;
+        let overColor: Color;
+        let underColor: Color;
+        let colorizer;
+
+        if (this.symbology.colorizer instanceof LogarithmicGradient || this.symbology.colorizer instanceof LinearGradient) {
+            noDataColor = this.symbology.colorizer.noDataColor;
+            overColor = this.symbology.colorizer.overColor;
+            underColor = this.symbology.colorizer.underColor;
+        } else {
+            // Must be a palette then, so use values from the color selectors or RGBA 0, 0, 0, 0 as a fallback
+            const defaultColor: Color = this.defaultColor ? this.defaultColor.value : new Color({r: 0, g: 0, b: 0, a: 0});
+            noDataColor = this.noDataColor ? this.noDataColor.value : new Color({r: 0, g: 0, b: 0, a: 0});
+            overColor = defaultColor;
+            underColor = defaultColor;
         }
 
-        if (colorizerType === 'linearGradient') {
-            const breakpoints = this.symbology.colorizer.getBreakpoints();
-            let noDataColor: Color;
-            let overColor: Color;
-            let underColor: Color;
-
-            if (this.symbology.colorizer instanceof LogarithmicGradient) {
-                noDataColor = this.symbology.colorizer.noDataColor;
-                overColor = this.symbology.colorizer.overColor;
-                underColor = this.symbology.colorizer.underColor;
-            } else {
-                // TODO: implement palette
-                return;
-            }
-
-            const colorizer = new LinearGradient(breakpoints, noDataColor, overColor, underColor);
-            this.symbology = this.symbology.cloneWith({colorizer});
-        } else if (colorizerType === 'logarithmicGradient') {
-            const breakpoints = this.symbology.colorizer.getBreakpoints();
-            let noDataColor: Color;
-            let overColor: Color;
-            let underColor: Color;
-
-            if (this.symbology.colorizer instanceof LinearGradient) {
-                noDataColor = this.symbology.colorizer.noDataColor;
-                overColor = this.symbology.colorizer.overColor;
-                underColor = this.symbology.colorizer.underColor;
-            } else {
-                // TODO: implement palette
-                return;
-            }
-
-            // TODO: refactor default color -> over/under color
-            const colorizer = new LogarithmicGradient(breakpoints, noDataColor, overColor, underColor);
-            this.symbology = this.symbology.cloneWith({colorizer});
-        } else if (colorizerType === 'palette') {
-            // TODO: implement palette
-            return;
+        switch (colorizerType) {
+            case 'linearGradient':
+                // colorizer = new LinearGradient(breakpoints, noDataColor, overColor, underColor);
+                colorizer = new LinearGradient(breakpoints, noDataColor, overColor, underColor);
+                break;
+            case 'logarithmicGradient':
+                colorizer = new LogarithmicGradient(breakpoints, noDataColor, overColor, underColor);
+                break;
+            case 'palette':
+                colorizer = new PaletteColorizer(this.createColorMap(), noDataColor, overColor);
+                break;
         }
-
+        this.symbology = this.symbology.cloneWith({colorizer});
         this.updateScale();
         this.unappliedChanges = true;
+    }
+
+    createColorMap(): Map<number, Color> {
+        const colorMap = new Map<number, Color>();
+        const colorizer: PaletteColorizer = this.symbology.colorizer as PaletteColorizer;
+        colorizer.getBreakpoints().forEach((bp, index) => {
+            colorMap.set(bp.value, colorizer.getColorAtIndex(index));
+        });
+        return colorMap;
+    }
+
+    /**
+     * Transform a map of <number, Color> i.e. the colorMap to an Array of ColorBreakpoint, which have a value : number and color
+     * This is needed to provide the breakpoints for LinearGradient and LogarithmicGradient from the colorPalette
+     */
+    colorMapToBreakpoints(colorMap: Map<number, Color>): ColorBreakpoint[] {
+        const breakpoints: ColorBreakpoint[] = [];
+        colorMap.forEach((color, value) => breakpoints.push(new ColorBreakpoint(value, color)));
+        return breakpoints;
     }
 
     /**
@@ -316,7 +336,11 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
             return;
         }
 
-        if (!(this.symbology.colorizer instanceof LinearGradient) && !(this.symbology.colorizer instanceof LogarithmicGradient)) {
+        if (
+            // try with palette
+            !(this.symbology.colorizer instanceof LinearGradient) &&
+            !(this.symbology.colorizer instanceof LogarithmicGradient && !(this.symbology.colorizer instanceof PaletteColorizer))
+        ) {
             return;
             // TODO: implement other variants
         }
@@ -391,6 +415,9 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
 
     private update(): void {
         this.projectService.changeLayer(this.layer, {symbology: this.symbology});
+        if (this.colorPaletteEditor !== undefined) {
+            this.colorPaletteEditor.sortColorAttributeInputs();
+        }
     }
 
     private initializeHistogramDataSubscription(): void {

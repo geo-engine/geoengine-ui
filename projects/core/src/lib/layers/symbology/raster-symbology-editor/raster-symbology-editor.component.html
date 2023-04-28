@@ -31,9 +31,9 @@
         <mat-accordion multi="true">
             <mat-expansion-panel expanded="true">
                 <mat-expansion-panel-header>
-                    <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
-                        <mat-icon>map</mat-icon>
-                        <span fxFlex>Global Layer Properties</span>
+                    <mat-panel-title>
+                        <mat-icon class="icon">map</mat-icon>
+                        <span class="panelTitleText">Global Layer Properties</span>
                     </mat-panel-title>
                 </mat-expansion-panel-header>
                 <ng-template matExpansionPanelContent>
@@ -64,19 +64,20 @@
 
                     <mat-divider></mat-divider>
                     <span>Colorizer:</span>
-                    <p fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
+
+                    <div class="button-group">
                         <mat-button-toggle-group
                             id="gradientType"
-                            fxFlex
                             [multiple]="false"
                             [ngModel]="getColorizerType()"
                             (ngModelChange)="updateColorizerType($event)"
                         >
-                            <mat-button-toggle fxFlexFill value="linearGradient">Linear Gradient</mat-button-toggle>
-                            <mat-button-toggle fxFlexFill value="logarithmicGradient">Logarithmic Gradient</mat-button-toggle>
-                            <mat-button-toggle fxFlexFill value="palette">Palette</mat-button-toggle>
+                            <mat-button-toggle value="linearGradient">Linear Gradient</mat-button-toggle>
+                            <mat-button-toggle value="logarithmicGradient">Logarithmic Gradient</mat-button-toggle>
+                            <mat-button-toggle value="palette">Palette</mat-button-toggle>
                         </mat-button-toggle-group>
-                    </p>
+                    </div>
+
                     <div
                         *ngIf="symbology.colorizer.isGradient()"
                         class="colorizer-preview"
@@ -126,15 +127,18 @@
                 </ng-template>
             </mat-expansion-panel>
 
-            <!-- TODO: implement palette editor -->
-            <mat-expansion-panel expanded="false" *ngIf="symbology.colorizer.isDiscrete()">
+            <mat-expansion-panel *ngIf="paletteSelected" expanded="true">
                 <mat-expansion-panel-header>
-                    <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
-                        <mat-icon>color_lens</mat-icon>
-                        <span fxFlex>Color Table</span>
+                    <mat-panel-title>
+                        <mat-icon class="icon">color_lens</mat-icon>
+                        <span class="panelTitleText">Color Table</span>
                     </mat-panel-title>
                 </mat-expansion-panel-header>
                 <ng-template matExpansionPanelContent> </ng-template>
+                <geoengine-color-palette-editor
+                    [symbology]="symbology"
+                    (symbologyChanged)="symbologyChangeHandler($event)"
+                ></geoengine-color-palette-editor>
             </mat-expansion-panel>
         </mat-accordion>
     </div>

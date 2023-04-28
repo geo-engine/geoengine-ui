@@ -21,7 +21,12 @@ mat-slider {
 }
 
 #gradientType {
+    display: flex;
     flex-wrap: wrap;
+}
+
+#gradientType mat-button-toggle {
+    flex: 1;
 }
 
 .outer {

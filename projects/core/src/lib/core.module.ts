@@ -153,6 +153,7 @@ import {DownloadRasterLayerComponent} from './download-raster-layer/download-ras
 import {TimeIntervalInputComponent} from './time/time-interval-input/time-interval-input.component';
 import {QuotaInfoComponent} from './users/quota/quota-info/quota-info.component';
 import {FxFlexDirective, FxLayoutAlignDirective, FxLayoutDirective, FxLayoutGapDirective} from './util/directives/flexbox-legacy.directive';
+import {ColorPaletteEditorComponent} from './colors/color-palette-editor/color-palette-editor.component';
 import {LineSimplificationComponent} from './operators/dialogs/line-simplification/line-simplification.component';
 import {TaskListComponent} from './tasks/task-list/task-list.component';
 
@@ -219,6 +220,7 @@ const CORE_COMPONENTS = [
     ColorBreakpointInputComponent,
     ColorMapSelectorComponent,
     ColorParamEditorComponent,
+    ColorPaletteEditorComponent,
     ColumnRangeFilterComponent,
     DatasetComponent,
     DatasetListComponent,
