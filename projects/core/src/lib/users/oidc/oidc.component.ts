@@ -67,8 +67,12 @@ export class OidcComponent implements OnInit, OnDestroy {
                     }
                 },
                 error: () => {
-                    // guest login failed -> navigate to sign in
-                    this.router.navigate(['/signin']);
+                    // guest login failed -> reload the application
+                    // we navigate to a dummy url first in order to ensure that the guards (logged in) are executed again
+                    const url = this.router.url;
+                    this.router.navigate(['/dummy']).then(() => {
+                        this.router.navigate([url]);
+                    });
                 },
                 complete: () => {
                     this.logoutSubscription?.unsubscribe();

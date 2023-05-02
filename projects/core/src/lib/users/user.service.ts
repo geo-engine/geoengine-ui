@@ -11,7 +11,7 @@ import {NotificationService} from '../notification.service';
 import {BackendService} from '../backend/backend.service';
 import {AuthCodeRequestURL, BackendInfoDict, SessionDict, UUID} from '../backend/backend.model';
 import {Session} from './session.model';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Quota} from './quota/quota.model';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
@@ -35,7 +35,11 @@ export class UserService {
         protected readonly backend: BackendService,
         protected readonly notificationService: NotificationService,
         protected readonly router: Router,
+        protected readonly activatedRoute: ActivatedRoute,
     ) {
+        // get oidc paramters from url before routing is enabled
+        const oidcParams = this.getOidcParametersFromUrl();
+
         this.session$.subscribe((session) => {
             // storage of the session
             this.saveSessionInBrowser(session);
@@ -50,9 +54,17 @@ export class UserService {
             if (status.available && !this.sessionInitialized) {
                 this.sessionInitialized = true;
 
-                const oidcLogin = this.checkOidcParametersAndLogin();
-
-                if (!oidcLogin) {
+                if (oidcParams) {
+                    this.oidcLogin(oidcParams)
+                        .pipe(first())
+                        .subscribe(() => {
+                            this.router.navigate([], {
+                                // eslint-disable-next-line @typescript-eslint/naming-convention
+                                queryParams: {session_state: undefined, state: undefined, code: undefined},
+                                queryParamsHandling: 'merge',
+                            });
+                        });
+                } else {
                     // restore old session if possible
                     this.sessionFromBrowserOrCreateGuest().subscribe({
                         next: (session) => {
@@ -331,18 +343,17 @@ export class UserService {
             });
     }
 
-    private checkOidcParametersAndLogin(): boolean {
+    private getOidcParametersFromUrl(): {sessionState: string; code: string; state: string} | undefined {
         const params = new URLSearchParams(window.location.search);
         const sessionState = params.get('session_state');
         const code = params.get('code');
         const state = params.get('state');
 
         if (sessionState && code && state) {
-            this.oidcLogin({sessionState, code, state}).pipe(first()).subscribe();
-            return true;
+            return {sessionState, code, state};
         }
 
-        return false;
+        return undefined;
     }
 }
 

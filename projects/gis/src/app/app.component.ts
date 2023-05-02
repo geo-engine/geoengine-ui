@@ -1,9 +1,10 @@
-import {ChangeDetectionStrategy, Component, Inject, ViewContainerRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject, OnInit, ViewContainerRef} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer, Title} from '@angular/platform-browser';
 import {Router} from '@angular/router';
 import {Config, UserService} from '@geoengine/core';
 import {AppConfig} from './app-config.service';
+import {Location} from '@angular/common';
 
 @Component({
     selector: 'geoengine-root',
@@ -11,7 +12,7 @@ import {AppConfig} from './app-config.service';
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
     constructor(
         private readonly iconRegistry: MatIconRegistry,
         private readonly sanitizer: DomSanitizer,
@@ -20,12 +21,25 @@ export class AppComponent {
         @Inject(Config) readonly config: AppConfig,
         private readonly titleService: Title,
         private readonly vcRef: ViewContainerRef,
+        private readonly location: Location,
     ) {
         this.registerIcons();
 
         this.setupLogoutCallback();
 
         this.titleService.setTitle(this.config.BRANDING.PAGE_TITLE);
+    }
+
+    ngOnInit(): void {
+        if (window.location.search.length > 0) {
+            // remove the query parameters before the hash from the url because they are not part of the app and cannot be removed later on
+            // services can get the original query parameters from the `URLSearchParams` in their constructor which is called before the routing is initialized.
+            const search = window.location.search;
+            window.history.replaceState(null, '', window.location.pathname);
+            this.location.go('/', search);
+        }
+
+        this.router.initialNavigation();
     }
 
     private registerIcons(): void {
