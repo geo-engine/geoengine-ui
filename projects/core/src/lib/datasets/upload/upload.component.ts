@@ -3,8 +3,8 @@ import {Component, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef} from '
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {MatChipInputEvent} from '@angular/material/chips';
 import {MatStepper} from '@angular/material/stepper';
-import {Subject} from 'rxjs';
-import {mergeMap} from 'rxjs/operators';
+import {Subject, of, zip} from 'rxjs';
+import {map, mergeMap} from 'rxjs/operators';
 import {
     AddDatasetDict,
     CreateDatasetDict,
@@ -49,8 +49,11 @@ export class UploadComponent {
     selectedFiles?: Array<File>;
     selectedTimeType?: string;
 
+    uploadFiles?: Array<string>;
+
     formMetaData: UntypedFormGroup;
     formNameDescription: UntypedFormGroup;
+    uploadFileLayers: Array<string> = [];
 
     constructor(
         protected datasetService: DatasetService,
@@ -279,7 +282,7 @@ export class UploadComponent {
                     }
                     this.stepper.next();
 
-                    this.suggest();
+                    this.setUpMetadataSpecification(uploadId);
                 }
             },
             (err) => {
@@ -300,7 +303,7 @@ export class UploadComponent {
     }
 
     reloadSuggestion(): void {
-        this.suggest(this.formMetaData.controls.mainFile.value);
+        this.suggest(this.formMetaData.controls.mainFile.value, this.formMetaData.controls.layerName.value);
     }
 
     submitCreate(): void {
@@ -377,40 +380,67 @@ export class UploadComponent {
         );
     }
 
-    private suggest(mainFile: string | undefined = undefined): void {
+    private setUpMetadataSpecification(uploadId: string): void {
+        let uploadFiles;
+
+        if (this.uploadFiles) {
+            uploadFiles = of(this.uploadFiles);
+        } else {
+            uploadFiles = this.datasetService.getUploadFiles(uploadId).pipe(map((files) => files.files));
+        }
+
+        zip(this.datasetService.suggestMetaData({upload: uploadId}), uploadFiles)
+            .pipe(
+                mergeMap(([suggest, files]) =>
+                    zip(of(suggest), of(files), this.datasetService.getUploadFileLayers(uploadId, suggest.mainFile)),
+                ),
+            )
+            .subscribe(([suggest, files, layers]) => {
+                this.uploadFiles = files;
+                this.uploadFileLayers = layers.layers;
+                this.fillMetaDataForm(suggest);
+                this.changeDetectorRef.markForCheck();
+            });
+    }
+
+    private fillMetaDataForm(suggest: MetaDataSuggestionDict): void {
+        const info = suggest.metaData.loadingInfo;
+        const start = this.getStartTime(info?.time);
+        const end = this.getEndTime(info?.time);
+        this.formMetaData.patchValue({
+            mainFile: suggest.mainFile,
+            layerName: info?.layerName,
+            dataType: info?.dataType,
+            timeType: info ? this.getTimeType(info.time) : 'None',
+            timeStartColumn: start ? start.startField : '',
+            timeStartFormat: start ? start.startFormat.format : '',
+            timeStartFormatCustom: start ? start.startFormat.customFormat : '',
+            timeStartFormatUnix: start ? start.startFormat.timestampType : '',
+            timeDurationColumn: info?.time.type === 'start+duration' ? info?.time.durationField : '',
+            timeDurationValue: info?.time.type === 'start' ? info?.time.duration : 1,
+            timeDurationValueType: info?.time.type === 'start' ? info?.time.duration.type : 'infinite',
+            timeEndColumn: end ? end.endField : '',
+            timeEndFormat: end ? end.endFormat.format : '',
+            timeEndFormatCustom: end ? end.endFormat.customFormat : '',
+            timeEndFormatUnix: end ? end.endFormat.timestampType : '',
+            columnsX: info?.columns?.x,
+            columnsY: info?.columns?.y,
+            columnsText: info?.columns?.text,
+            columnsFloat: info?.columns?.float,
+            columnsInt: info?.columns?.int,
+            errorHandling: info?.onError,
+            spatialReference: suggest.metaData.resultDescriptor.spatialReference,
+        });
+    }
+
+    private suggest(mainFile: string | undefined = undefined, layerName: string | undefined = undefined): void {
         if (!this.uploadId) {
             return;
         }
 
-        this.datasetService.suggestMetaData({upload: this.uploadId, mainFile}).subscribe(
+        this.datasetService.suggestMetaData({upload: this.uploadId, mainFile, layerName}).subscribe(
             (suggest) => {
-                const info = suggest.metaData.loadingInfo;
-                const start = this.getStartTime(info?.time);
-                const end = this.getEndTime(info?.time);
-                this.formMetaData.patchValue({
-                    mainFile: suggest.mainFile,
-                    layerName: info?.layerName,
-                    dataType: info?.dataType,
-                    timeType: info ? this.getTimeType(info.time) : 'None',
-                    timeStartColumn: start ? start.startField : '',
-                    timeStartFormat: start ? start.startFormat.format : '',
-                    timeStartFormatCustom: start ? start.startFormat.customFormat : '',
-                    timeStartFormatUnix: start ? start.startFormat.timestampType : '',
-                    timeDurationColumn: info?.time.type === 'start+duration' ? info?.time.durationField : '',
-                    timeDurationValue: info?.time.type === 'start' ? info?.time.duration : 1,
-                    timeDurationValueType: info?.time.type === 'start' ? info?.time.duration.type : 'infinite',
-                    timeEndColumn: end ? end.endField : '',
-                    timeEndFormat: end ? end.endFormat.format : '',
-                    timeEndFormatCustom: end ? end.endFormat.customFormat : '',
-                    timeEndFormatUnix: end ? end.endFormat.timestampType : '',
-                    columnsX: info?.columns?.x,
-                    columnsY: info?.columns?.y,
-                    columnsText: info?.columns?.text,
-                    columnsFloat: info?.columns?.float,
-                    columnsInt: info?.columns?.int,
-                    errorHandling: info?.onError,
-                    spatialReference: suggest.metaData.resultDescriptor.spatialReference,
-                });
+                this.fillMetaDataForm(suggest);
                 this.changeDetectorRef.markForCheck();
             },
             (err) => this.notificationService.error(err.message),

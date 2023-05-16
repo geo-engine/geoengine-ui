@@ -12,6 +12,8 @@ import {
     DataSetProviderListingDict,
     MetaDataSuggestionDict,
     SuggestMetaDataDict,
+    UploadFileLayersResponseDict,
+    UploadFilesResponseDict,
     UploadResponseDict,
     UUID,
     WorkflowDict,
@@ -60,6 +62,16 @@ export class DatasetService {
     }
     upload(form: FormData): Observable<HttpEvent<UploadResponseDict>> {
         return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.upload(token, form)));
+    }
+
+    getUploadFiles(uploadId: UUID): Observable<UploadFilesResponseDict> {
+        return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.getUploadFiles(token, uploadId)));
+    }
+
+    getUploadFileLayers(uploadId: UUID, fileName: string): Observable<UploadFileLayersResponseDict> {
+        return this.userService
+            .getSessionTokenForRequest()
+            .pipe(mergeMap((token) => this.backend.getUploadFileLayers(token, uploadId, fileName)));
     }
 
     createDataset(create: CreateDatasetDict): Observable<DatasetIdResponseDict> {
