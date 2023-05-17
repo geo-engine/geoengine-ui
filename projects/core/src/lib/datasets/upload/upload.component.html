@@ -17,7 +17,7 @@
 
             <mat-form-field appearance="fill">
                 <mat-label>Choose the main file</mat-label>
-                <mat-select id="mainFile" formControlName="mainFile">
+                <mat-select id="mainFile" formControlName="mainFile" (selectionChange)="changeMainFile()">
                     <mat-option *ngFor="let file of selectedFiles" [value]="file.name">
                         {{ file.name }}
                     </mat-option>

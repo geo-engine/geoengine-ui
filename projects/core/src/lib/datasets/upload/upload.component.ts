@@ -188,6 +188,26 @@ export class UploadComponent {
         form.timeDurationGranularity.updateValueAndValidity();
     }
 
+    changeMainFile(): void {
+        if (!this.uploadId) {
+            return;
+        }
+
+        const form = this.formMetaData.controls;
+        const mainFile = form.mainFile.value;
+        const layer = form.layerName.value;
+
+        this.datasetService.getUploadFileLayers(this.uploadId, mainFile).subscribe((layers) => {
+            this.uploadFileLayers = layers.layers;
+
+            if (this.uploadFileLayers.length > 0 && !this.uploadFileLayers.includes(layer)) {
+                form.layerName.setValue(this.uploadFileLayers[0]);
+            }
+
+            this.changeDetectorRef.markForCheck();
+        });
+    }
+
     removeText(column: string): void {
         const columns: Array<string> = this.formMetaData.controls.columnsText.value;
 
