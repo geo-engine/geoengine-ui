@@ -26,6 +26,7 @@ import {Time} from '../time/time.model';
 export class Dataset {
     readonly id: UUID;
     readonly name: string;
+    readonly displayName: string;
     readonly description: string;
     readonly resultDescriptor: ResultDescriptor;
     readonly sourceOperator: string;
@@ -34,6 +35,7 @@ export class Dataset {
     constructor(config: DatasetDict) {
         this.id = config.id;
         this.name = config.name;
+        this.displayName = config.displayName;
         this.description = config.description;
         this.resultDescriptor = ResultDescriptor.fromDict(config.resultDescriptor);
         this.sourceOperator = config.sourceOperator;
@@ -48,10 +50,7 @@ export class Dataset {
         return this.createSourceWorkflowWithOperator({
             type: this.sourceOperator,
             params: {
-                data: {
-                    type: 'internal',
-                    datasetId: this.id,
-                },
+                data: this.name,
             },
         });
     }

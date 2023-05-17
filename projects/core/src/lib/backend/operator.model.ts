@@ -1,6 +1,6 @@
 import {
-    DataIdDict,
     MeasurementDict,
+    NamedData,
     OperatorDict,
     OperatorParams,
     SourceOperatorDict,
@@ -274,7 +274,7 @@ export interface VisualPointClusteringParams extends OperatorParams {
 export interface OgrSourceDict extends SourceOperatorDict {
     type: 'OgrSource';
     params: {
-        data: DataIdDict;
+        data: NamedData;
         attributeProjection?: Array<string>;
         attributeFilters?: Array<AttributeFilterDict>;
     };

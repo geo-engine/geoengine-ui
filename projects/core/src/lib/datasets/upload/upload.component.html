@@ -212,7 +212,14 @@
             <p>
                 <mat-form-field appearance="fill">
                     <mat-label>Dataset Name</mat-label>
-                    <input matInput type="text" placeholder="New Dataset" formControlName="name" />
+                    <input matInput type="text" placeholder="data_set_name" formControlName="name" />
+                    <span matTextPrefix>{{ userNamePrefix }}:</span>
+                </mat-form-field>
+            </p>
+            <p>
+                <mat-form-field appearance="fill">
+                    <mat-label>Display Name</mat-label>
+                    <input matInput type="text" placeholder="New Dataset" formControlName="displayName" />
                 </mat-form-field>
             </p>
             <p>

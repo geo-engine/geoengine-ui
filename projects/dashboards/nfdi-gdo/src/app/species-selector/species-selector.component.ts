@@ -16,7 +16,6 @@ import {
     RasterVectorJoinDict,
     Time,
     UserService,
-    UUID,
     VectorLayer,
     WorkflowDict,
     TimeProjectionDict,
@@ -30,14 +29,15 @@ import {
     ExpressionDict,
     PieChartDict,
     PieChartCountParams,
+    NamedData,
 } from '@geoengine/core';
 import {BehaviorSubject, combineLatest, combineLatestWith, first, mergeMap, Observable, of, Subscription, tap} from 'rxjs';
 import {DataSelectionService} from '../data-selection.service';
 import moment from 'moment';
 
 interface EnvironmentLayer {
-    id: UUID;
     name: string;
+    displayName: string;
     dataRange: [number, number];
     plotType?: 'pieChart';
 }
@@ -364,23 +364,23 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
         //     dataRange: [70, 71],
         // },
         {
-            id: '6c9270ad-e87c-404b-aa1f-4bfb8a1b3cd7',
-            name: 'Mittlere monatliche Temperatur in C° (2000 - 2020)',
+            name: '6c9270ad-e87c-404b-aa1f-4bfb8a1b3cd7',
+            displayName: 'Mittlere monatliche Temperatur in C° (2000 - 2020)',
             dataRange: [-5, 30],
         },
         {
-            id: 'fedad2aa-00db-44b5-be38-e8637932aa0a',
-            name: 'Mittlerer monatlicher Niederschlag in mm (2000 - 2020)',
+            name: 'fedad2aa-00db-44b5-be38-e8637932aa0a',
+            displayName: 'Mittlerer monatlicher Niederschlag in mm (2000 - 2020)',
             dataRange: [0, 20],
         },
         {
-            id: '36574dc3-560a-4b09-9d22-d5945ffb8093',
-            name: 'Landnutzungstypen (2019 & 2020)',
+            name: '36574dc3-560a-4b09-9d22-d5945ffb8093',
+            displayName: 'Landnutzungstypen (2019 & 2020)',
             dataRange: [0, 60],
         },
         {
-            id: 'bde4f21f-b935-4cd3-b7ed-1675aedfa026',
-            name: 'Anteil Gebiete „Natur- und Artenschutz“ an Gebietsfläche',
+            name: 'bde4f21f-b935-4cd3-b7ed-1675aedfa026',
+            displayName: 'Anteil Gebiete „Natur- und Artenschutz“ an Gebietsfläche',
             dataRange: [0, 100],
             plotType: 'pieChart',
         },
@@ -408,9 +408,9 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     readonly startYear = START_YEAR;
     readonly endYear = END_YEAR;
 
-    private readonly dragonflyDatasetId: UUID = 'd9dd4530-7a57-44da-a650-ce7d81dcc216';
-    private readonly fishDatasetId: UUID = '40c0756f-ecfc-4460-ac6d-ca67190e0436';
-    private readonly intensityDatasetId: UUID = '1a7584e6-0c94-4d92-bbcd-223626d64d9c';
+    private readonly dragonflyDataset: NamedData = 'd9dd4530-7a57-44da-a650-ce7d81dcc216';
+    private readonly fishDataset: NamedData = '40c0756f-ecfc-4460-ac6d-ca67190e0436';
+    private readonly intensityDataset: NamedData = '1a7584e6-0c94-4d92-bbcd-223626d64d9c';
 
     private selectedEnvironmentDataset?: Dataset = undefined;
 
@@ -493,10 +493,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                     vector: {
                         type: 'OgrSource',
                         params: {
-                            data: {
-                                type: 'internal',
-                                datasetId: this.dragonflyDatasetId,
-                            },
+                            data: this.dragonflyDataset,
                             attributeProjection: [],
                             attributeFilters: [
                                 {
@@ -572,10 +569,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                     vector: {
                         type: 'OgrSource',
                         params: {
-                            data: {
-                                type: 'internal',
-                                datasetId: this.fishDatasetId,
-                            },
+                            data: this.fishDataset,
                             attributeProjection: [],
                             attributeFilters: [
                                 {
@@ -646,10 +640,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             operator: {
                 type: 'GdalSource',
                 params: {
-                    data: {
-                        type: 'internal',
-                        datasetId: layer.id,
-                    },
+                    data: layer.name,
                 },
             },
         };
@@ -659,7 +650,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
         this.projectService
             .registerWorkflow(workflow)
             .pipe(
-                combineLatestWith(this.datasetService.getDataset(layer.id)),
+                combineLatestWith(this.datasetService.getDataset(layer.name)),
                 tap(([workflowId, _dataset]) => {
                     this.userService
                         .getSessionTokenForRequest()
@@ -674,7 +665,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                         return this.dataSelectionService.setRasterLayer(
                             new RasterLayer({
                                 workflowId,
-                                name: layer.name,
+                                name: layer.displayName,
                                 symbology: dataset.symbology,
                                 isLegendVisible: false,
                                 isVisible: true,
@@ -712,10 +703,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
             operator: {
                 type: 'GdalSource',
                 params: {
-                    data: {
-                        type: 'internal',
-                        datasetId: this.intensityDatasetId,
-                    },
+                    data: this.intensityDataset,
                 },
             },
         };
@@ -723,7 +711,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
         this.projectService
             .registerWorkflow(workflow)
             .pipe(
-                combineLatestWith(this.datasetService.getDataset(this.intensityDatasetId)),
+                combineLatestWith(this.datasetService.getDataset(this.intensityDataset)),
                 tap(([workflowId, _dataset]) => {
                     this.userService
                         .getSessionTokenForRequest()
@@ -796,7 +784,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                     this.plotData.next(undefined);
 
                     this.plotSpecies = selectedSpecies ?? '';
-                    this.plotEnvironmentLayer = this.selectedEnvironmentLayer ? this.selectedEnvironmentLayer.name : '';
+                    this.plotEnvironmentLayer = this.selectedEnvironmentLayer ? this.selectedEnvironmentLayer.displayName : '';
                 }),
                 mergeMap(([rasterLayer, speciesLayer]) =>
                     combineLatest([
@@ -998,7 +986,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                     this.plotData.next(undefined);
 
                     this.plotSpecies = selectedSpecies ?? '';
-                    this.plotEnvironmentLayer = this.selectedEnvironmentLayer ? this.selectedEnvironmentLayer.name : '';
+                    this.plotEnvironmentLayer = this.selectedEnvironmentLayer ? this.selectedEnvironmentLayer.displayName : '';
                 }),
                 mergeMap(([rasterLayer, speciesLayer]) =>
                     combineLatest([

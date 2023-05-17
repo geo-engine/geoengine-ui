@@ -1,6 +1,6 @@
 import {HttpEventType} from '@angular/common/http';
 import {Component, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef} from '@angular/core';
-import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {FormControl, FormGroup, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {MatChipInputEvent} from '@angular/material/chips';
 import {MatStepper} from '@angular/material/stepper';
 import {Subject} from 'rxjs';
@@ -22,6 +22,13 @@ import {NotificationService} from '../../notification.service';
 import {ProjectService} from '../../project/project.service';
 import {timeStepGranularityOptions} from '../../time/time.model';
 import {DatasetService} from '../dataset.service';
+import {UserService} from '../../users/user.service';
+
+interface NameDescription {
+    name: FormControl<string>;
+    displayName: FormControl<string>;
+    description: FormControl<string>;
+}
 
 @Component({
     selector: 'geoengine-upload',
@@ -50,12 +57,15 @@ export class UploadComponent {
     selectedTimeType?: string;
 
     formMetaData: UntypedFormGroup;
-    formNameDescription: UntypedFormGroup;
+    formNameDescription: FormGroup<NameDescription>;
+
+    userNamePrefix = '?';
 
     constructor(
         protected datasetService: DatasetService,
         protected notificationService: NotificationService,
         protected projectService: ProjectService,
+        protected userService: UserService,
         protected changeDetectorRef: ChangeDetectorRef,
     ) {
         this.formMetaData = new UntypedFormGroup({
@@ -84,9 +94,24 @@ export class UploadComponent {
             spatialReference: new UntypedFormControl('EPSG:4326', Validators.required), // TODO: validate sref string
         });
 
-        this.formNameDescription = new UntypedFormGroup({
-            name: new UntypedFormControl('', Validators.required),
-            description: new UntypedFormControl(''),
+        this.formNameDescription = new FormGroup<NameDescription>({
+            name: new FormControl('', {
+                nonNullable: true,
+                validators: [Validators.required, Validators.pattern(/^[a-zA-Z0-9_]+$/), Validators.minLength(1)],
+            }),
+            displayName: new FormControl('', {
+                nonNullable: true,
+                validators: [Validators.required],
+            }),
+            description: new FormControl('', {
+                nonNullable: true,
+            }),
+        });
+
+        this.userService.getSessionOnce().subscribe((session) => {
+            if (session.user) {
+                this.userNamePrefix = session.user.id;
+            }
         });
     }
 
@@ -337,7 +362,8 @@ export class UploadComponent {
         };
 
         const addData: AddDatasetDict = {
-            name: formDataset.name.value,
+            name: this.userNamePrefix + ':' + formDataset.name.value,
+            displayName: formDataset.displayName.value,
             description: formDataset.description.value,
             sourceOperator: 'OgrSource',
         };
