@@ -409,16 +409,27 @@ export interface AutoCreateDatasetDict {
     datasetName: string;
     datasetDescription: string;
     mainFile: string;
+    layerName?: string;
 }
 
 export interface SuggestMetaDataDict {
     upload: UUID;
     mainFile?: string;
+    layerName?: string;
 }
 
 export interface MetaDataSuggestionDict {
     mainFile: string;
+    layerName: string;
     metaData: MetaDataDefinitionDict;
+}
+
+export interface UploadFilesResponseDict {
+    files: Array<string>;
+}
+
+export interface UploadFileLayersResponseDict {
+    layers: Array<string>;
 }
 
 export type MetaDataDefinitionDict = OgrMetaDataDict;

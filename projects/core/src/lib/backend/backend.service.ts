@@ -44,6 +44,8 @@ import {
     WorkflowIdResponseDict,
     TaskStatusDict,
     TaskStatusType,
+    UploadFilesResponseDict,
+    UploadFileLayersResponseDict,
 } from './backend.model';
 
 @Injectable({
@@ -333,6 +335,18 @@ export class BackendService {
         });
     }
 
+    getUploadFiles(sessionId: UUID, uploadId: UUID): Observable<UploadFilesResponseDict> {
+        return this.http.get<UploadFilesResponseDict>(this.config.API_URL + `/uploads/${uploadId}/files`, {
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    getUploadFileLayers(sessionId: UUID, uploadId: UUID, fileName: string): Observable<UploadFileLayersResponseDict> {
+        return this.http.get<UploadFileLayersResponseDict>(this.config.API_URL + `/uploads/${uploadId}/files/${fileName}/layers`, {
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
     createDataset(sessionId: UUID, createDataset: CreateDatasetDict): Observable<DatasetIdResponseDict> {
         return this.http.post<DatasetIdResponseDict>(this.config.API_URL + '/dataset', createDataset, {
             headers: BackendService.authorizationHeader(sessionId),
@@ -349,6 +363,7 @@ export class BackendService {
         const params = new NullDiscardingHttpParams();
         params.set('upload', suggestMetaData.upload);
         params.set('mainFile', suggestMetaData.mainFile);
+        params.set('layerName', suggestMetaData.layerName);
 
         return this.http.get<MetaDataSuggestionDict>(this.config.API_URL + '/dataset/suggest', {
             params: params.httpParams,
