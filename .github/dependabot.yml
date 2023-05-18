@@ -7,4 +7,5 @@ updates:
     # Check the `crates.io` for updates every day (weekdays)
     schedule:
       interval: "weekly"
+      day: "sunday" # to be checked before Monday
       
