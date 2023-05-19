@@ -274,12 +274,12 @@ export interface OperatorParams {
     [key: string]: ParamTypes;
 }
 
-export type NamedData = string;
+export type NamedDataDict = string;
 
 export interface SourceOperatorDict {
     type: string;
     params: {
-        data: NamedData;
+        data: NamedDataDict;
     };
 }
 

@@ -29,7 +29,7 @@ import {
     ExpressionDict,
     PieChartDict,
     PieChartCountParams,
-    NamedData,
+    NamedDataDict,
 } from '@geoengine/core';
 import {BehaviorSubject, combineLatest, combineLatestWith, first, mergeMap, Observable, of, Subscription, tap} from 'rxjs';
 import {DataSelectionService} from '../data-selection.service';
@@ -408,9 +408,9 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     readonly startYear = START_YEAR;
     readonly endYear = END_YEAR;
 
-    private readonly dragonflyDataset: NamedData = 'd9dd4530-7a57-44da-a650-ce7d81dcc216';
-    private readonly fishDataset: NamedData = '40c0756f-ecfc-4460-ac6d-ca67190e0436';
-    private readonly intensityDataset: NamedData = '1a7584e6-0c94-4d92-bbcd-223626d64d9c';
+    private readonly dragonflyDataset: NamedDataDict = 'd9dd4530-7a57-44da-a650-ce7d81dcc216';
+    private readonly fishDataset: NamedDataDict = '40c0756f-ecfc-4460-ac6d-ca67190e0436';
+    private readonly intensityDataset: NamedDataDict = '1a7584e6-0c94-4d92-bbcd-223626d64d9c';
 
     private selectedEnvironmentDataset?: Dataset = undefined;
 
