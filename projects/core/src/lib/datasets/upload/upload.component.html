@@ -213,7 +213,7 @@
                 <mat-form-field appearance="fill">
                     <mat-label>Dataset Name</mat-label>
                     <input matInput type="text" placeholder="data_set_name" formControlName="name" />
-                    <span matTextPrefix>{{ userNamePrefix }}:</span>
+                    <span matTextPrefix *ngIf="userNamePrefix !== '_'">{{ userNamePrefix }}:</span>
                 </mat-form-field>
             </p>
             <p>

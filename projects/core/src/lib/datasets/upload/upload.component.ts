@@ -59,7 +59,7 @@ export class UploadComponent {
     formMetaData: UntypedFormGroup;
     formNameDescription: FormGroup<NameDescription>;
 
-    userNamePrefix = '?';
+    userNamePrefix = '_';
 
     constructor(
         protected datasetService: DatasetService,
