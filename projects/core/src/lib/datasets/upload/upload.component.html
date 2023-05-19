@@ -15,15 +15,9 @@
         <form [formGroup]="formMetaData">
             <ng-template matStepLabel>Specify meta data</ng-template>
 
-            <div class="actions">
-                <button type="submit" mat-raised-button (click)="reloadSuggestion()">
-                    Suggest configuration based on selected main file
-                </button>
-            </div>
-
             <mat-form-field appearance="fill">
                 <mat-label>Choose the main file</mat-label>
-                <mat-select id="mainFile" formControlName="mainFile">
+                <mat-select id="mainFile" formControlName="mainFile" (selectionChange)="changeMainFile()">
                     <mat-option *ngFor="let file of selectedFiles" [value]="file.name">
                         {{ file.name }}
                     </mat-option>
@@ -31,9 +25,17 @@
             </mat-form-field>
 
             <mat-form-field appearance="fill">
-                <mat-label>Layer Name</mat-label>
-                <input matInput type="text" formControlName="layerName" />
+                <mat-label>Choose the layer</mat-label>
+                <mat-select id="layerName" formControlName="layerName">
+                    <mat-option *ngFor="let layer of uploadFileLayers" [value]="layer">
+                        {{ layer }}
+                    </mat-option>
+                </mat-select>
             </mat-form-field>
+
+            <div class="actions">
+                <button type="submit" mat-raised-button (click)="reloadSuggestion()">Suggest configuration</button>
+            </div>
 
             <mat-form-field appearance="fill">
                 <mat-label>Data Type</mat-label>
