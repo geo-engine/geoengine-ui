@@ -1,9 +1,9 @@
 import {HttpEventType} from '@angular/common/http';
-import {Component, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef, OnDestroy} from '@angular/core';
 import {FormControl, FormGroup, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {MatChipInputEvent} from '@angular/material/chips';
 import {MatStepper} from '@angular/material/stepper';
-import {Subject, of, zip} from 'rxjs';
+import {Subject, Subscription, of, zip} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 import {
     AddDatasetDict,
@@ -36,7 +36,7 @@ interface NameDescription {
     styleUrls: ['./upload.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UploadComponent {
+export class UploadComponent implements OnDestroy {
     vectorDataTypes = ['Data', 'MultiPoint', 'MultiLineString', 'MultiPolygon'];
     timeDurationValueTypes = ['infinite', 'value', 'zero'];
     timeTypes = ['None', 'Start', 'Start/End', 'Start/Duration'];
@@ -64,6 +64,8 @@ export class UploadComponent {
     userNamePrefix = '_';
 
     uploadFileLayers: Array<string> = [];
+
+    private displayNameChangeSubscription: Subscription;
 
     constructor(
         protected datasetService: DatasetService,
@@ -117,6 +119,28 @@ export class UploadComponent {
                 this.userNamePrefix = session.user.id;
             }
         });
+
+        /**
+         * Suggest a name based on the display name
+         */
+        this.displayNameChangeSubscription = this.formNameDescription.controls.displayName.valueChanges.subscribe((value) => {
+            const nameControl = this.formNameDescription.controls.name;
+
+            if (nameControl.dirty) {
+                return;
+            }
+
+            const src = /[^a-zA-Z0-9_]/g;
+            const target = '_';
+
+            const name = value.replace(src, target);
+
+            nameControl.setValue(name);
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.displayNameChangeSubscription?.unsubscribe();
     }
 
     changeTimeType(): void {

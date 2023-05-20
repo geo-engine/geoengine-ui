@@ -213,15 +213,15 @@
             <ng-template matStepLabel>Specify dataset name and description</ng-template>
             <p>
                 <mat-form-field appearance="fill">
-                    <mat-label>Dataset Name</mat-label>
-                    <input matInput type="text" placeholder="data_set_name" formControlName="name" />
-                    <span matTextPrefix *ngIf="userNamePrefix !== '_'">{{ userNamePrefix }}:</span>
+                    <mat-label>Display Name</mat-label>
+                    <input matInput type="text" placeholder="New Dataset" formControlName="displayName" />
                 </mat-form-field>
             </p>
             <p>
                 <mat-form-field appearance="fill">
-                    <mat-label>Display Name</mat-label>
-                    <input matInput type="text" placeholder="New Dataset" formControlName="displayName" />
+                    <mat-label>Dataset Name</mat-label>
+                    <input matInput type="text" placeholder="data_set_name" formControlName="name" />
+                    <span matTextPrefix *ngIf="userNamePrefix !== '_'">{{ userNamePrefix }}:</span>
                 </mat-form-field>
             </p>
             <p>
