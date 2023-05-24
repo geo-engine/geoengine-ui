@@ -1,9 +1,9 @@
 import {HttpEventType} from '@angular/common/http';
-import {Component, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef} from '@angular/core';
-import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {Component, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef, OnDestroy} from '@angular/core';
+import {FormControl, FormGroup, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {MatChipInputEvent} from '@angular/material/chips';
 import {MatStepper} from '@angular/material/stepper';
-import {Subject, of, zip} from 'rxjs';
+import {Subject, Subscription, of, zip} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 import {
     AddDatasetDict,
@@ -22,6 +22,13 @@ import {NotificationService} from '../../notification.service';
 import {ProjectService} from '../../project/project.service';
 import {timeStepGranularityOptions} from '../../time/time.model';
 import {DatasetService} from '../dataset.service';
+import {UserService} from '../../users/user.service';
+
+interface NameDescription {
+    name: FormControl<string>;
+    displayName: FormControl<string>;
+    description: FormControl<string>;
+}
 
 @Component({
     selector: 'geoengine-upload',
@@ -29,7 +36,7 @@ import {DatasetService} from '../dataset.service';
     styleUrls: ['./upload.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UploadComponent {
+export class UploadComponent implements OnDestroy {
     vectorDataTypes = ['Data', 'MultiPoint', 'MultiLineString', 'MultiPolygon'];
     timeDurationValueTypes = ['infinite', 'value', 'zero'];
     timeTypes = ['None', 'Start', 'Start/End', 'Start/Duration'];
@@ -52,13 +59,19 @@ export class UploadComponent {
     uploadFiles?: Array<string>;
 
     formMetaData: UntypedFormGroup;
-    formNameDescription: UntypedFormGroup;
+    formNameDescription: FormGroup<NameDescription>;
+
+    userNamePrefix = '_';
+
     uploadFileLayers: Array<string> = [];
+
+    private displayNameChangeSubscription: Subscription;
 
     constructor(
         protected datasetService: DatasetService,
         protected notificationService: NotificationService,
         protected projectService: ProjectService,
+        protected userService: UserService,
         protected changeDetectorRef: ChangeDetectorRef,
     ) {
         this.formMetaData = new UntypedFormGroup({
@@ -87,10 +100,47 @@ export class UploadComponent {
             spatialReference: new UntypedFormControl('EPSG:4326', Validators.required), // TODO: validate sref string
         });
 
-        this.formNameDescription = new UntypedFormGroup({
-            name: new UntypedFormControl('', Validators.required),
-            description: new UntypedFormControl(''),
+        this.formNameDescription = new FormGroup<NameDescription>({
+            name: new FormControl('', {
+                nonNullable: true,
+                validators: [Validators.required, Validators.pattern(/^[a-zA-Z0-9_]+$/), Validators.minLength(1)],
+            }),
+            displayName: new FormControl('', {
+                nonNullable: true,
+                validators: [Validators.required],
+            }),
+            description: new FormControl('', {
+                nonNullable: true,
+            }),
         });
+
+        this.userService.getSessionOnce().subscribe((session) => {
+            if (session.user) {
+                this.userNamePrefix = session.user.id;
+            }
+        });
+
+        /**
+         * Suggest a name based on the display name
+         */
+        this.displayNameChangeSubscription = this.formNameDescription.controls.displayName.valueChanges.subscribe((value) => {
+            const nameControl = this.formNameDescription.controls.name;
+
+            if (nameControl.dirty) {
+                return;
+            }
+
+            const src = /[^a-zA-Z0-9_]/g;
+            const target = '_';
+
+            const name = value.replace(src, target);
+
+            nameControl.setValue(name);
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.displayNameChangeSubscription?.unsubscribe();
     }
 
     changeTimeType(): void {
@@ -360,7 +410,8 @@ export class UploadComponent {
         };
 
         const addData: AddDatasetDict = {
-            name: formDataset.name.value,
+            name: this.userNamePrefix + ':' + formDataset.name.value,
+            displayName: formDataset.displayName.value,
             description: formDataset.description.value,
             sourceOperator: 'OgrSource',
         };

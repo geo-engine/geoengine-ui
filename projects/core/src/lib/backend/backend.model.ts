@@ -274,10 +274,12 @@ export interface OperatorParams {
     [key: string]: ParamTypes;
 }
 
+export type NamedDataDict = string;
+
 export interface SourceOperatorDict {
     type: string;
     params: {
-        data: DataIdDict;
+        data: NamedDataDict;
     };
 }
 
@@ -291,6 +293,7 @@ export type TimeStepGranularityDict = 'millis' | 'seconds' | 'minutes' | 'hours'
 export interface DatasetDict {
     id: UUID;
     name: string;
+    displayName: string;
     description: string;
     resultDescriptor: TypedResultDescriptorDict;
     sourceOperator: string;
@@ -397,8 +400,8 @@ export interface DatasetDefinitionDict {
 }
 
 export interface AddDatasetDict {
-    id?: DataIdDict;
-    name: string;
+    name?: string;
+    displayName: string;
     description: string;
     sourceOperator: string;
     symbology?: SymbologyDict;

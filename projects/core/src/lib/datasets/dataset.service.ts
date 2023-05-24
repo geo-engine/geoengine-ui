@@ -109,7 +109,7 @@ export class DatasetService {
             const symbology = dataset.symbology as RasterSymbology;
             return new RasterLayer({
                 workflowId,
-                name: dataset.name,
+                name: dataset.displayName,
                 symbology: symbology
                     ? symbology
                     : RasterSymbology.fromRasterSymbologyDict({
@@ -203,7 +203,7 @@ export class DatasetService {
 
             return new VectorLayer({
                 workflowId,
-                name: dataset.name,
+                name: dataset.displayName,
                 symbology,
                 isLegendVisible: false,
                 isVisible: true,

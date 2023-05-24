@@ -66,10 +66,7 @@ export class AnalysisComponent implements OnInit {
             operator: {
                 type: 'OgrSource',
                 params: {
-                    data: {
-                        type: 'internal',
-                        datasetId: this.selectedCountry.polygon,
-                    },
+                    data: this.selectedCountry.polygon,
                 },
             },
         };
@@ -139,10 +136,7 @@ export class AnalysisComponent implements OnInit {
         const countryRasterWorkflow: SourceOperatorDict = {
             type: 'GdalSource',
             params: {
-                data: {
-                    type: 'internal',
-                    datasetId: this.selectedCountry.raster,
-                },
+                data: this.selectedCountry.raster,
             },
         };
 

@@ -226,11 +226,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                             b: {
                                 type: 'GdalSource',
                                 params: {
-                                    data: {
-                                        type: 'internal',
-                                        //  use WGS 84 for computing the plot
-                                        datasetId: COUNTRY_DATA_LIST[selectedCountry.name].raster,
-                                    },
+                                    data: COUNTRY_DATA_LIST[selectedCountry.name].raster,
                                 },
                             },
                         },
