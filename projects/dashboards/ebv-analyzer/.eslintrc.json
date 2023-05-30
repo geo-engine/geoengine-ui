@@ -1,22 +1,28 @@
 {
-    "extends": "../../../.eslintrc.json",
-    "ignorePatterns": ["!**/*"],
-    "overrides": [
-        {
-            "files": ["*.ts"],
-            "parserOptions": {
-                "project": [
-                    "projects/dashboards/data-atlas/tsconfig.app.json",
-                    "projects/dashboards/data-atlas/tsconfig.spec.json",
-                    "projects/dashboards/data-atlas/e2e/tsconfig.json"
-                ],
-                "createDefaultProgram": true
-            },
-            "rules": {}
-        },
-        {
-            "files": ["*.html"],
-            "rules": {}
-        }
-    ]
+  "extends": "../../../.eslintrc.json",
+  "ignorePatterns": [
+    "!**/*"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*.ts"
+      ],
+      "parserOptions": {
+        "project": [
+          "projects/dashboards/data-atlas/tsconfig.app.json",
+          "projects/dashboards/data-atlas/tsconfig.spec.json",
+          "projects/dashboards/data-atlas/e2e/tsconfig.json"
+        ],
+        "createDefaultProgram": true
+      },
+      "rules": {}
+    },
+    {
+      "files": [
+        "*.html"
+      ],
+      "rules": {}
+    }
+  ]
 }

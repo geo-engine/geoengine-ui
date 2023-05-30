@@ -1,22 +1,28 @@
 {
-    "extends": "../../../.eslintrc.json",
-    "ignorePatterns": ["!**/*"],
-    "overrides": [
-        {
-            "files": ["*.ts"],
-            "parserOptions": {
-                "project": [
-                    "projects/dashboards/gfbio/tsconfig.app.json",
-                    "projects/dashboards/gfbio/tsconfig.spec.json",
-                    "projects/dashboards/gfbio/e2e/tsconfig.json"
-                ],
-                "createDefaultProgram": true
-            },
-            "rules": {}
-        },
-        {
-            "files": ["*.html"],
-            "rules": {}
-        }
-    ]
+  "extends": "../../../.eslintrc.json",
+  "ignorePatterns": [
+    "!**/*"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*.ts"
+      ],
+      "parserOptions": {
+        "project": [
+          "projects/dashboards/gfbio/tsconfig.app.json",
+          "projects/dashboards/gfbio/tsconfig.spec.json",
+          "projects/dashboards/gfbio/e2e/tsconfig.json"
+        ],
+        "createDefaultProgram": true
+      },
+      "rules": {}
+    },
+    {
+      "files": [
+        "*.html"
+      ],
+      "rules": {}
+    }
+  ]
 }
