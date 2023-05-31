@@ -1,28 +1,18 @@
 {
-  "extends": "../../.eslintrc.json",
-  "ignorePatterns": [
-    "!**/*"
-  ],
-  "overrides": [
-    {
-      "files": [
-        "*.ts"
-      ],
-      "parserOptions": {
-        "project": [
-          "projects/gis/tsconfig.app.json",
-          "projects/gis/tsconfig.spec.json",
-          "projects/gis/e2e/tsconfig.json"
-        ],
-        "createDefaultProgram": true
-      },
-      "rules": {}
-    },
-    {
-      "files": [
-        "*.html"
-      ],
-      "rules": {}
-    }
-  ]
+    "extends": "../../.eslintrc.json",
+    "ignorePatterns": ["!**/*"],
+    "overrides": [
+        {
+            "files": ["*.ts"],
+            "parserOptions": {
+                "project": ["projects/gis/tsconfig.app.json", "projects/gis/tsconfig.spec.json", "projects/gis/e2e/tsconfig.json"],
+                "createDefaultProgram": true
+            },
+            "rules": {}
+        },
+        {
+            "files": ["*.html"],
+            "rules": {}
+        }
+    ]
 }
