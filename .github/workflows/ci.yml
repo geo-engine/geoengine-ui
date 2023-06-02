@@ -12,7 +12,7 @@ jobs:
         strategy:
             matrix:
                 node-version: [ 16.13.x, 18.10.x ] # Include version 18 once upgraded to Angular 15
-                app: [ gis, dashboards/gfbio, dashboards/data-atlas, dashboards/nfdi-gdo, dashboards/ebv-analyzer ]
+                app: [ gis, dashboards/gfbio, dashboards/data-atlas, dashboards/nfdi-portal-demo, dashboards/ebv-analyzer ]
 
         steps:
             -   uses: actions/checkout@v3
