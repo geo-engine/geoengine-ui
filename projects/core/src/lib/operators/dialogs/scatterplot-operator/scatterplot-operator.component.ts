@@ -1,6 +1,6 @@
 import {Layer, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
@@ -22,7 +22,7 @@ import {VectorColumnDataTypes} from '../../datatype.model';
     styleUrls: ['./scatterplot-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ScatterplotOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ScatterplotOperatorComponent implements AfterViewInit, OnDestroy {
     inputTypes = ResultTypes.VECTOR_TYPES;
 
     form: UntypedFormGroup;
@@ -67,8 +67,6 @@ export class ScatterplotOperatorComponent implements OnInit, AfterViewInit, OnDe
                 .subscribe((attributes) => this.attributes$.next(attributes)),
         );
     }
-
-    ngOnInit(): void {}
 
     ngAfterViewInit(): void {
         setTimeout(() => {

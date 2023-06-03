@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, OnDestroy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnDestroy} from '@angular/core';
 import {ResultTypes} from '../../result-type.model';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
@@ -41,7 +41,7 @@ interface RangeForm {
     styleUrls: ['./column-range-filter.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
+export class ColumnRangeFilterComponent implements OnDestroy {
     readonly inputTypes = ResultTypes.VECTOR_TYPES;
 
     attributes$ = new ReplaySubject<Array<string>>(1);
@@ -82,7 +82,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
 
                                     const attribs = metadata.dataTypes
                                         .filter(
-                                            (columnType: any) =>
+                                            (columnType: VectorColumnDataType) =>
                                                 columnType === VectorColumnDataTypes.Float ||
                                                 columnType === VectorColumnDataTypes.Int ||
                                                 columnType === VectorColumnDataTypes.Text,
@@ -189,7 +189,6 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
             }
         }
     }
-    ngOnInit(): void {}
 
     ngOnDestroy(): void {
         this.subscriptions.forEach((subscription) => subscription.unsubscribe());
@@ -235,7 +234,9 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     createWorkflow(filterValues: any, index: number, inputWorkflow: WorkflowDict): WorkflowDict {
+        // TODO: create a type for filterValues
         if (index === filterValues.length) return inputWorkflow;
         const attribute = filterValues[index]['attribute'] as string;
         return {
@@ -254,9 +255,14 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         } as WorkflowDict;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     extractRanges(formRanges: any, attribute: string): any[][] {
+        // TODO: create a type for formRanges
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const filterRanges: any[][] = [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         formRanges.forEach((range: any) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const minMax: any[] = [];
             if (this.isAttributeText(attribute)) {
                 minMax.push(range.min);

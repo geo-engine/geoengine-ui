@@ -33,7 +33,9 @@ import {LineSimplificationComponent} from '../line-simplification/line-simplific
  *  * a short description text.
  */
 export interface OperatorListType {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     component: Type<any>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     config?: {[key: string]: any};
     type: {NAME: string; ICON_URL: string};
     description: string;
@@ -317,6 +319,7 @@ export class OperatorListComponent implements OnInit, OnChanges {
     /**
      * Load a selected dialog into the sidenav
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     load(component: Type<any>, config?: {[key: string]: any}): void {
         this.layoutService.setSidenavContentComponent({component, config, keepParent: true});
     }

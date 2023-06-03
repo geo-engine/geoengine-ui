@@ -20,9 +20,7 @@ export class RandomColorService {
 
     protected colorIndex = Math.trunc(Math.random() * RandomColorService.colorWheel.length);
 
-    constructor() {}
-
-    getRandomColorRgba(alpha: number = 0.8): Color {
+    getRandomColorRgba(alpha = 0.8): Color {
         const color = RandomColorService.colorWheel[this.colorIndex];
         this.colorIndex = (this.colorIndex + 1) % RandomColorService.colorWheel.length;
         return Color.fromRgbaLike([color[0], color[1], color[2], alpha]);

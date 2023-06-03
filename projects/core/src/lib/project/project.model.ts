@@ -13,6 +13,7 @@ export class Project implements ToDict<ProjectDict> {
 
     readonly _spatialReference: SpatialReference;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     readonly _plots: Array<any>;
     readonly _layers: Array<Layer>;
 
@@ -61,6 +62,7 @@ export class Project implements ToDict<ProjectDict> {
         description?: string;
         spatialReference?: SpatialReference;
         time?: Time;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         plots?: Array<any>;
         layers?: Array<Layer>;
         timeStepDuration?: TimeStepDuration;
@@ -87,7 +89,9 @@ export class Project implements ToDict<ProjectDict> {
         return this._spatialReference;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     get plots(): Array<any> {
+        // TODO: type correctly
         return this._plots;
     }
 

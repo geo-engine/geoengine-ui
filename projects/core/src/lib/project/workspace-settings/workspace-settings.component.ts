@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {LayoutService} from '../../layout.service';
 import {ChangeSpatialReferenceComponent} from '../change-spatial-reference/change-spatial-reference.component';
 import {NewProjectComponent} from '../new-project/new-project.component';
@@ -12,10 +12,8 @@ import {NotificationsComponent} from '../notifications/notifications.component';
     styleUrls: ['./workspace-settings.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WorkspaceSettingsComponent implements OnInit {
+export class WorkspaceSettingsComponent {
     constructor(protected layoutService: LayoutService) {}
-
-    ngOnInit(): void {}
 
     loadSpatialReferenceDialog(): void {
         this.layoutService.setSidenavContentComponent({component: ChangeSpatialReferenceComponent, keepParent: true});

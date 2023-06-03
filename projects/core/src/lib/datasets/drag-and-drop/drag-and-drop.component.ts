@@ -8,11 +8,10 @@ import {Component, ChangeDetectionStrategy, ViewChild, Output, EventEmitter} fro
 })
 export class DragAndDropComponent {
     selectedFiles?: Array<File>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     @ViewChild('fileInput') fileInput: any;
 
     @Output() public selectFilesEvent = new EventEmitter();
-
-    constructor() {}
 
     selectFiles(target: HTMLInputElement | null): void {
         const fileList = target?.files;

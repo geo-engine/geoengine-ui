@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges, ChangeDetectorRef} from '@angular/core';
+import {Component, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges, ChangeDetectorRef} from '@angular/core';
 import {RasterLayer, VectorLayer} from '@geoengine/core';
 
 @Component({
@@ -7,7 +7,7 @@ import {RasterLayer, VectorLayer} from '@geoengine/core';
     styleUrls: ['./legend.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LegendComponent implements OnInit, OnChanges {
+export class LegendComponent implements OnChanges {
     @Input() layer?: VectorLayer | RasterLayer = undefined;
 
     constructor(readonly changeDetectorRef: ChangeDetectorRef) {}
@@ -15,8 +15,6 @@ export class LegendComponent implements OnInit, OnChanges {
     ngOnChanges(_changes: SimpleChanges): void {
         this.changeDetectorRef.markForCheck();
     }
-
-    ngOnInit(): void {}
 
     get asRasterLayer(): RasterLayer | undefined {
         return this.layer instanceof RasterLayer ? this.layer : undefined;

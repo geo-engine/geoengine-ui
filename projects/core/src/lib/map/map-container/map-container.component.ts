@@ -29,6 +29,7 @@ import OlLayerVectorTile from 'ol/layer/VectorTile';
 
 import OlSource from 'ol/source/Source';
 import OlSourceOSM from 'ol/source/OSM';
+import OlTileSource from 'ol/source/Tile';
 import OlTileWmsSource from 'ol/source/TileWMS';
 import OlSourceVector from 'ol/source/Vector';
 import OlSourceVectorTile from 'ol/source/VectorTile';
@@ -54,7 +55,6 @@ import {SpatialReference} from '../../spatial-references/spatial-reference.model
 import {FeatureSelection, ProjectService} from '../../project/project.service';
 import {Extent, MapService} from '../map.service';
 import {Config} from '../../config.service';
-import {LayoutService} from '../../layout.service';
 import {MatGridList, MatGridTile} from '@angular/material/grid-list';
 import {VectorSymbology} from '../../layers/symbology/symbology.model';
 import {SpatialReferenceService, WGS_84} from '../../spatial-references/spatial-reference.service';
@@ -62,6 +62,7 @@ import {containsCoordinate, getCenter} from 'ol/extent';
 import {olExtentToTuple} from '../../util/conversions';
 import {applyBackground, stylefunction} from 'ol-mapbox-style';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type MapLayer = MapLayerComponent<OlLayer<OlSource, any>, OlSource>;
 
 const DEFAULT_ZOOM_LEVEL = 2;
@@ -105,9 +106,9 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     private maps: Array<OlMap>;
     private view: OlView;
     private backgroundLayerSource?: OlSource;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private backgroundLayers: Array<OlLayer<OlSource, any>> = [];
 
-    private selectedOlLayer?: OlLayer<OlSource, any> = undefined;
     private userSelect?: OlInteractionSelect;
 
     private selectedFeature?: OlFeature<OlGeometry> = undefined;
@@ -130,7 +131,6 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         private config: Config,
         private changeDetectorRef: ChangeDetectorRef,
         private mapService: MapService,
-        private layoutService: LayoutService,
         private projectService: ProjectService,
         private spatialReferenceService: SpatialReferenceService,
     ) {
@@ -230,7 +230,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
      */
     public startDrawInteraction(
         drawType: OlGeometryType,
-        drawSingleFeature: boolean = false,
+        drawSingleFeature = false,
         geometryFunction?: GeometryFunction,
         endDrawCallback?: (feature: OlFeature<OlGeometry>) => void,
     ): void {
@@ -299,7 +299,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             if (index < this.maps.length) {
                 this.maps[index].removeLayer(layer);
             }
-            layer.setMap(undefined as any);
+            layer.setMap(null);
         });
         this.drawInteractionLayers.length = 0;
 
@@ -308,7 +308,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             if (index < this.maps.length) {
                 this.maps[index].removeInteraction(interaction);
             }
-            interaction.setMap(undefined as any);
+            // interaction.setMap(null); // TODO: is this needed?
         });
         this.drawInteractions.length = 0;
 
@@ -323,14 +323,11 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 this.drawInteractions.push(drawInteraction);
                 map.addInteraction(drawInteraction);
 
-                const self = this;
-
-                drawInteraction.on('drawend', function (event) {
-                    if (self.drawSingleFeature) {
-                        self.endDrawInteraction();
+                drawInteraction.on('drawend', (event) => {
+                    if (this.drawSingleFeature) {
+                        this.endDrawInteraction();
                     }
-
-                    self.endDrawCallback?.(event.feature);
+                    this.endDrawCallback?.(event.feature);
                 });
             });
         }
@@ -374,7 +371,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     private initUserSelect(): void {
-        this.userSelect = new OlInteractionSelect({style: null as any});
+        this.userSelect = new OlInteractionSelect({style: null});
         this.attachUserSelectToMap();
 
         this.userSelect.on(['select'], (selectEvent) => {
@@ -383,7 +380,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             }
 
             if (selectEvent.selected.length > 0) {
-                this.projectService.setSelectedFeature((selectEvent as any).selected[0]);
+                this.projectService.setSelectedFeature(selectEvent.selected[0]);
             } else {
                 this.projectService.setSelectedFeature(undefined);
             }
@@ -530,8 +527,9 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
 
         let newCenterPoint: OlGeomPoint;
         let focusExtent: Extent | undefined;
-        if (this.view && this.view.getCenter()) {
-            const oldCenterPoint = new OlGeomPoint(this.view.getCenter() as any);
+        const centerCoord = this.view?.getCenter();
+        if (centerCoord) {
+            const oldCenterPoint = new OlGeomPoint(centerCoord);
             newCenterPoint = oldCenterPoint.transform(this.view.getProjection(), olProjection) as OlGeomPoint;
 
             if (!containsCoordinate(olProjection.getExtent(), newCenterPoint.getCoordinates())) {
@@ -574,7 +572,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
 
             // In theory, there could be a race-condition if the size is set before adding the `once` trigger.
             if (this.maps[0].getSize()) {
-                firstMap.un(listener.type as any, listener.listener);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                firstMap.un(listener.type as any, listener.listener); // the type of the listener is a string but the method expects a literal
                 this.zoomTo(focusExtent);
             }
         }
@@ -605,6 +604,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         });
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private createBackgroundLayer(projection: SpatialReference): OlLayer<OlSource, any> {
         // use fallback if background layer is not available for projection
         let backgroundLayer;
@@ -617,7 +617,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         switch (backgroundLayer) {
             case 'OSM':
                 return new OlLayerTile({
-                    source: this.backgroundLayerSource as any,
+                    source: this.backgroundLayerSource as OlTileSource,
                     // wrapX: false,
                 });
             case 'hosted':
@@ -626,8 +626,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 return new OlLayerTile({
                     source: this.backgroundLayerSource as OlTileWmsSource,
                 });
-            case 'MVT':
-                const layer = new OlLayerVectorTile({source: this.backgroundLayerSource as any});
+            case 'MVT': {
+                const layer = new OlLayerVectorTile({source: this.backgroundLayerSource as OlSourceVectorTile});
 
                 fetch(this.config.MAP.VECTOR_TILES.STYLE_URL).then((response) => {
                     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -641,6 +641,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 });
 
                 return layer;
+            }
             case 'fallback':
             default:
                 if (backgroundLayer === 'fallback') {
@@ -650,7 +651,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 }
 
                 return new OlLayerVector({
-                    source: this.backgroundLayerSource as any,
+                    source: this.backgroundLayerSource as OlSourceVector,
                     background: 'rgba(158, 189, 255, 1)',
                     style: (feature: OlFeatureLike, _resolution: number): OlStyleStyle => {
                         if (feature.getId() === 'BACKGROUND') {
@@ -733,7 +734,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 });
             }
             case 'fallback':
-            default:
+            default: {
                 if (backgroundLayer !== 'fallback') {
                     console.error(`Unknown background layer (source): ${this.config.MAP.BACKGROUND_LAYER}`);
                 }
@@ -760,6 +761,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 });
 
                 return source;
+            }
         }
     }
 }

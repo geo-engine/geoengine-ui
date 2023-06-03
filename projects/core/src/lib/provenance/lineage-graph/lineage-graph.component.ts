@@ -1,6 +1,6 @@
 import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit, Inject} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit, Inject} from '@angular/core';
 import * as dagreD3 from 'dagre-d3';
 import * as d3 from 'd3';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
@@ -32,7 +32,7 @@ const GRAPH_STYLE = {
     styleUrls: ['./lineage-graph.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LineageGraphComponent implements OnInit, AfterViewInit {
+export class LineageGraphComponent implements AfterViewInit {
     @ViewChild('svg', {static: true}) svg!: ElementRef;
     @ViewChild('g', {static: true}) g!: ElementRef;
 
@@ -73,8 +73,6 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         this.title = `Lineage for ${this.layer.name}`;
     }
 
-    ngOnInit(): void {}
-
     ngAfterViewInit(): void {
         setTimeout(() => {
             this.calculateDialogBounds();
@@ -102,7 +100,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
 
     private drawGraph(): void {
         this.projectService.getWorkflow(this.layer.workflowId).subscribe((workflow) => {
-            const graph = new dagreD3.graphlib.Graph().setGraph({}).setDefaultEdgeLabel(() => ({label: ''} as any));
+            const graph = new dagreD3.graphlib.Graph().setGraph({}).setDefaultEdgeLabel(() => ({label: ''}));
 
             LineageGraphComponent.addOperatorsToGraph(graph, workflow.operator);
 
@@ -117,6 +115,8 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
             const svgGroup = d3.select(this.g.nativeElement);
 
             // Run the renderer. This is what draws the final graph.
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             render(svgGroup as any, graph as any);
 
             LineageGraphComponent.fixLabelPosition(svg);
@@ -228,7 +228,9 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
     }
 
     private addZoomSupport(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         svg: d3.Selection<SVGElement, any, any, any>,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         svgGroup: d3.Selection<SVGElement, any, any, any>,
         graph: dagreD3.graphlib.Graph,
         svgWidth: number,
@@ -238,8 +240,10 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         const paddedWidth = svgWidth - GRAPH_STYLE.surrounding.margin;
         const paddedHeight = svgHeight - GRAPH_STYLE.surrounding.margin;
 
-        const grapWidth = (graph.graph() as any).width ?? 1;
-        const grapHeight = (graph.graph() as any).height ?? 1;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const grapWidth = (graph.graph() as any).width ?? 1; // TODO: remove any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const grapHeight = (graph.graph() as any).height ?? 1; // TODO: remove any
 
         // calculate the initial zoom level that captures the whole graph
         const scale = Math.min(
@@ -258,24 +262,29 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         svgGroup
             .transition()
             .duration(500)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .call(zoom.transform as any, d3.zoomIdentity.translate(initialX, initialY).scale(scale));
 
         // add zoom handler
-        zoom.on('zoom', ((zoomEvent: d3.D3ZoomEvent<any, any>) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        zoom.on('zoom', (zoomEvent: d3.D3ZoomEvent<any, any>) => {
             const zoomTranslate = isNaN(zoomEvent.transform.x) ? [0, 0] : [zoomEvent.transform.x, zoomEvent.transform.y];
             const zoomScale = isNaN(zoomEvent.transform.k) ? 0 : zoomEvent.transform.k;
             svgGroup.attr('transform', `translate(${zoomTranslate})scale(${zoomScale})`);
-        }) as any);
+        });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         svg.call(zoom as any);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private addClickHandler(svg: d3.Selection<SVGElement, any, any, any>, graph: dagreD3.graphlib.Graph): void {
         svg.selectAll('.node').on('click', (_event, theNodeId) => {
-            const nodeId = theNodeId as any as string; // conversion since the signature is of the wrong type
+            const nodeId = theNodeId as string; // conversion since the signature is of the wrong type
 
             const node = graph.node(nodeId);
-            if ((node as any).type === 'operator') {
-                const operator: OperatorDict | SourceOperatorDict = (node as any).operator;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            if (node.type === 'operator') {
+                const operator: OperatorDict | SourceOperatorDict = node.operator;
 
                 // update operator type
                 this.selectedOperator$.next(operator);
@@ -314,6 +323,7 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
         return list;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private static fixLabelPosition(svg: d3.Selection<SVGElement, any, any, any>): void {
         // HACK: move html label from center to top left
         svg.selectAll('.operator > .label > g > foreignObject')
@@ -338,7 +348,9 @@ export class LineageGraphComponent implements OnInit, AfterViewInit {
             maxWidth;
         // return the current width bounds
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const grapWidth = (graph.graph() as any).width ?? 1;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const grapHeight = (graph.graph() as any).height ?? 1;
 
         return {

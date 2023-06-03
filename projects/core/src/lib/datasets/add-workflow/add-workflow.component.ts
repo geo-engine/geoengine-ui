@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormGroup, UntypedFormControl, Validators} from '@angular/forms';
 import {GeoEngineErrorDict, RasterResultDescriptorDict, UUID, VectorResultDescriptorDict} from '../../backend/backend.model';
 import {RasterLayer, VectorLayer} from '../../layers/layer.model';
@@ -15,7 +15,7 @@ import {createVectorSymbology} from '../../util/symbologies';
     styleUrls: ['./add-workflow.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddWorkflowComponent implements OnInit {
+export class AddWorkflowComponent {
     readonly form: UntypedFormGroup;
 
     constructor(
@@ -28,8 +28,6 @@ export class AddWorkflowComponent implements OnInit {
             workflowId: new UntypedFormControl('', [Validators.required, isValidUuid]),
         });
     }
-
-    ngOnInit(): void {}
 
     add(): void {
         const layerName: string = this.form.controls.layerName.value;

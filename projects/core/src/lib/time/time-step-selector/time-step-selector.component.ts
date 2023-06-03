@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {Observable, combineLatest, BehaviorSubject} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ProjectService} from '../../project/project.service';
@@ -10,7 +10,7 @@ import {Time} from '../time.model';
     styleUrls: ['./time-step-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TimeStepSelectorComponent implements OnInit, OnChanges, OnDestroy {
+export class TimeStepSelectorComponent implements OnChanges {
     @Input() timeSteps?: Array<Time>;
     @Input() timeFormat = 'YYYY';
 
@@ -41,8 +41,6 @@ export class TimeStepSelectorComponent implements OnInit, OnChanges, OnDestroy {
         );
     }
 
-    ngOnInit(): void {}
-
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.timeSteps) {
             if (this.timeSteps) {
@@ -67,8 +65,6 @@ export class TimeStepSelectorComponent implements OnInit, OnChanges, OnDestroy {
             this.timeFormat$.next(this.timeFormat);
         }
     }
-
-    ngOnDestroy(): void {}
 
     /**
      * On a slider event, calculate the timestamp and set the new time for the app layers

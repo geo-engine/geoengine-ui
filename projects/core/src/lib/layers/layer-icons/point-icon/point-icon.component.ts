@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
+import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
 import {BLACK, Color, WHITE} from '../../../colors/color';
 import {IconStyle} from '../../symbology/symbology.model';
 
@@ -21,7 +21,7 @@ export interface PointIconStyle extends IconStyle {
     styleUrls: ['./point-icon.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PointIconComponent implements OnInit {
+export class PointIconComponent {
     // the style to use for the icon
     @Input()
     iconStyle: PointIconStyle = {
@@ -30,8 +30,4 @@ export class PointIconComponent implements OnInit {
         strokeRGBA: BLACK,
         fillRGBA: WHITE,
     };
-
-    constructor() {}
-
-    ngOnInit(): void {}
 }

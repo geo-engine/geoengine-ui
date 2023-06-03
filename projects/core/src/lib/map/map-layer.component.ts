@@ -34,13 +34,14 @@ import {Extent} from './map.service';
 import {Projection} from 'ol/proj';
 import {NotificationService} from '../notification.service';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type VectorData = any; // TODO: use correct type
 
 /**
  * The `ol-layer` component represents a single layer object of open layers.
  */
 @Directive()
-// eslint-disable-next-line @angular-eslint/directive-class-suffix
+// eslint-disable-next-line @angular-eslint/directive-class-suffix, @typescript-eslint/no-explicit-any
 export abstract class MapLayerComponent<OL extends OlLayer<OS, any>, OS extends OlSource> {
     @Input() layerId!: number;
     @Input() isVisible = true;

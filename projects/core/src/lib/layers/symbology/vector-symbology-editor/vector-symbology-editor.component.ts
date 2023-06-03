@@ -1,4 +1,4 @@
-import {Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChanges, OnDestroy, AfterViewInit, OnInit} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChanges, OnInit} from '@angular/core';
 import {
     ClusteredPointSymbology,
     ColorParam,
@@ -32,7 +32,7 @@ import {BLACK, WHITE} from '../../../colors/color';
     styleUrls: ['vector-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, AfterViewInit, OnInit {
+export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
     @Input() layer!: VectorLayer;
 
     symbology!: VectorSymbology;
@@ -76,10 +76,6 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
 
         this.initializeAttributes();
     }
-
-    ngAfterViewInit(): void {}
-
-    ngOnDestroy(): void {}
 
     get isPointLayer(): boolean {
         return this.symbology.symbologyType === SymbologyType.POINT;

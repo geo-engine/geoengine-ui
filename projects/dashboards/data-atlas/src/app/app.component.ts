@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ViewContainerRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ViewContainerRef} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {UserService} from '@geoengine/core';
 import {DomSanitizer} from '@angular/platform-browser';
@@ -10,7 +10,7 @@ import {Router} from '@angular/router';
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent {
     constructor(
         private readonly iconRegistry: MatIconRegistry,
         private readonly sanitizer: DomSanitizer,
@@ -22,10 +22,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         this.setupLogoutCallback();
     }
-
-    ngOnInit(): void {}
-
-    ngAfterViewInit(): void {}
 
     private registerIcons(): void {
         this.iconRegistry.addSvgIconInNamespace(

@@ -1,6 +1,6 @@
 import {Layer, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
@@ -32,7 +32,7 @@ const isVectorLayer = (layer: Layer): boolean => {
     styleUrls: ['./histogram-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
+export class HistogramOperatorComponent implements AfterViewInit, OnDestroy {
     minNumberOfBuckets = 1;
     maxNumberOfBuckets = 100;
 
@@ -108,8 +108,6 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
 
         this.isVectorLayer$ = this.form.controls['layer'].valueChanges.pipe(map((layer) => isVectorLayer(layer)));
     }
-
-    ngOnInit(): void {}
 
     ngAfterViewInit(): void {
         setTimeout(() => {

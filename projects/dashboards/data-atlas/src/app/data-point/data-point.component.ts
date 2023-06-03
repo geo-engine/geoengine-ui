@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, OnDestroy} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {ProjectService, FeatureSelection, LayerMetadata, VectorLayerMetadata, VectorData} from '@geoengine/core';
 import {map, mergeMap} from 'rxjs/operators';
 import {DataSelectionService} from '../data-selection.service';
@@ -10,7 +10,8 @@ import {combineLatest, Observable, of} from 'rxjs';
     styleUrls: ['./data-point.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DataPointComponent implements OnInit, OnDestroy {
+export class DataPointComponent {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     readonly tableData$: Observable<Array<{key: string; value: any}>>;
 
     constructor(private readonly projectService: ProjectService, private readonly dataSelectionService: DataSelectionService) {
@@ -53,8 +54,4 @@ export class DataPointComponent implements OnInit, OnDestroy {
             }),
         );
     }
-
-    ngOnInit(): void {}
-
-    ngOnDestroy(): void {}
 }

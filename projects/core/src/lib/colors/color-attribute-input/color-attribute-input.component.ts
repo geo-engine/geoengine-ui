@@ -2,7 +2,6 @@ import {
     Component,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
-    AfterViewInit,
     Input,
     forwardRef,
     OnChanges,
@@ -26,7 +25,7 @@ export interface ColorAttributeInput {
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorAttributeInputComponent), multi: true}],
     encapsulation: ViewEncapsulation.Emulated,
 })
-export class ColorAttributeInputComponent implements ControlValueAccessor, AfterViewInit, OnChanges {
+export class ColorAttributeInputComponent implements ControlValueAccessor, OnChanges {
     @Input() readonlyAttribute = false;
     @Input() readonlyColor = false;
     @Input() attributePlaceholder = 'attribute';
@@ -67,10 +66,6 @@ export class ColorAttributeInputComponent implements ControlValueAccessor, After
         this.cssString = color.rgbaCssString();
 
         this.propagateChange();
-    }
-
-    ngAfterViewInit(): void {
-        // setTimeout(() => this.changeDetectorRef.markForCheck());
     }
 
     ngOnChanges(changes: SimpleChanges): void {

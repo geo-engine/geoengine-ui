@@ -19,7 +19,8 @@ export class MediaviewComponent implements OnInit {
     mediaType: Array<string> = [];
     mediaUrls: Array<string> = [];
 
-    @Input() url: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    @Input() url: any; // TODO: what is this type?
 
     @Input() type!: VectorColumnDataType;
 
@@ -61,7 +62,7 @@ export class MediaviewComponent implements OnInit {
             this.mediaUrls = [];
 
             for (const i in this.urls) {
-                if (this.urls.hasOwnProperty(i)) {
+                if (Object.hasOwn(this.urls, i)) {
                     const checkMediaType = MediaviewComponent.getType(this.urls[i]);
                     if (checkMediaType !== '' && checkMediaType !== 'text') {
                         this.urls[i] = this.urls[i].trim();

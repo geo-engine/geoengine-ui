@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, HostBinding} from '@angular/core';
+import {Component, ChangeDetectionStrategy, HostBinding} from '@angular/core';
 
 @Component({
     selector: 'geoengine-attributions',
@@ -6,10 +6,6 @@ import {Component, OnInit, ChangeDetectionStrategy, HostBinding} from '@angular/
     styleUrls: ['./attributions.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AttributionsComponent implements OnInit {
+export class AttributionsComponent {
     @HostBinding('className') componentClass = 'mat-typography';
-
-    constructor() {}
-
-    ngOnInit(): void {}
 }

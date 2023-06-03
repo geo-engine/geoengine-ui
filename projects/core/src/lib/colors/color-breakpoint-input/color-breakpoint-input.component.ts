@@ -1,14 +1,4 @@
-import {
-    Component,
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    AfterViewInit,
-    Input,
-    forwardRef,
-    OnChanges,
-    SimpleChanges,
-    OnDestroy,
-} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ChangeDetectorRef, Input, forwardRef, OnChanges, SimpleChanges, OnDestroy} from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {ColorBreakpoint} from '../color-breakpoint.model';
@@ -24,7 +14,7 @@ import {debounceTime} from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorBreakpointInputComponent), multi: true}],
 })
-export class ColorBreakpointInputComponent implements ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy {
+export class ColorBreakpointInputComponent implements ControlValueAccessor, OnChanges, OnDestroy {
     @Input() readonlyAttribute = false;
     @Input() readonlyColor = false;
     @Input() attributePlaceholder = 'attribute';
@@ -40,7 +30,9 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, Afte
             .subscribe((colorBreakpoint) => this.onChange(colorBreakpoint.clone()));
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onTouched = (): void => {};
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onChange = (_: ColorBreakpoint): void => {};
 
     ngOnDestroy(): void {
@@ -85,8 +77,6 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, Afte
 
         this.propagateChange();
     }
-
-    ngAfterViewInit(): void {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.inputType || changes.attributePlaceholder || changes.colorPlaceholder) {

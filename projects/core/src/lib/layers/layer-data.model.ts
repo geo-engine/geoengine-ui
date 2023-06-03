@@ -47,7 +47,8 @@ export class VectorData extends LayerData {
         time: Time,
         projection: SpatialReference,
         extent: [number, number, number, number],
-        source: Document | Node | any | string,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        source: Document | Node | any | string, // any is also used by ol
         optOptions?: {dataProjection: OlProjectionLike; featureProjection: OlProjectionLike},
     ): VectorData {
         return new VectorData(time, projection, new OlFormatGeoJSON().readFeatures(source, optOptions), extent);
