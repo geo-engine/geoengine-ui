@@ -27,7 +27,7 @@ import {
     UploadResponseDict,
     CreateDatasetDict,
     AutoCreateDatasetDict,
-    DatasetIdResponseDict,
+    DatasetNameResponseDict,
     MetaDataSuggestionDict,
     SuggestMetaDataDict,
     ResultDescriptorDict,
@@ -304,8 +304,8 @@ export class BackendService {
         });
     }
 
-    getDataset(sessionId: UUID, datasetId: UUID): Observable<DatasetDict> {
-        return this.http.get<DatasetDict>(this.config.API_URL + `/dataset/${datasetId}`, {
+    getDataset(sessionId: UUID, datasetName: string): Observable<DatasetDict> {
+        return this.http.get<DatasetDict>(this.config.API_URL + `/dataset/${datasetName}`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
@@ -347,14 +347,14 @@ export class BackendService {
         });
     }
 
-    createDataset(sessionId: UUID, createDataset: CreateDatasetDict): Observable<DatasetIdResponseDict> {
-        return this.http.post<DatasetIdResponseDict>(this.config.API_URL + '/dataset', createDataset, {
+    createDataset(sessionId: UUID, createDataset: CreateDatasetDict): Observable<DatasetNameResponseDict> {
+        return this.http.post<DatasetNameResponseDict>(this.config.API_URL + '/dataset', createDataset, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
 
-    autoCreateDataset(sessionId: UUID, createDataset: AutoCreateDatasetDict): Observable<DatasetIdResponseDict> {
-        return this.http.post<DatasetIdResponseDict>(this.config.API_URL + '/dataset/auto', createDataset, {
+    autoCreateDataset(sessionId: UUID, createDataset: AutoCreateDatasetDict): Observable<DatasetNameResponseDict> {
+        return this.http.post<DatasetNameResponseDict>(this.config.API_URL + '/dataset/auto', createDataset, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }

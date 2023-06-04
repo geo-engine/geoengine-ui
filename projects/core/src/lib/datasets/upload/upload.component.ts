@@ -52,7 +52,7 @@ export class UploadComponent implements OnDestroy {
     metaDataSuggestion$ = new Subject<MetaDataSuggestionDict>();
 
     uploadId?: UUID;
-    datasetId?: UUID;
+    datasetName?: UUID;
     selectedFiles?: Array<File>;
     selectedTimeType?: string;
 
@@ -362,12 +362,12 @@ export class UploadComponent implements OnDestroy {
     }
 
     addToMap(): void {
-        if (!this.datasetId) {
+        if (!this.datasetName) {
             return;
         }
 
         this.datasetService
-            .getDataset(this.datasetId)
+            .getDataset(this.datasetName)
             .pipe(mergeMap((dataset) => this.datasetService.addDatasetToMap(dataset)))
             .subscribe();
     }
@@ -430,7 +430,7 @@ export class UploadComponent implements OnDestroy {
 
         this.datasetService.createDataset(create).subscribe(
             (response) => {
-                this.datasetId = response.id;
+                this.datasetName = response.datasetName;
                 if (this.stepper.selected) {
                     this.stepper.selected.completed = true;
                     this.stepper.selected.editable = false;
