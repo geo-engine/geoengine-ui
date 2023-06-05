@@ -308,7 +308,6 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             if (index < this.maps.length) {
                 this.maps[index].removeInteraction(interaction);
             }
-            // interaction.setMap(null); // TODO: is this needed?
         });
         this.drawInteractions.length = 0;
 
