@@ -67,9 +67,6 @@ export class LayoutService {
             const outer = document.createElement('div');
             outer.style.visibility = 'hidden';
             outer.style.width = '100px';
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            outer.style.msOverflowStyle = 'scrollbar'; // needed for WinJS apps
 
             document.body.appendChild(outer);
 
