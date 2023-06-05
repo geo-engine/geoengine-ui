@@ -105,7 +105,6 @@
                     }
                 ],
                 "arrow-parens": ["off", "always"],
-                "brace-style": ["off", "1tbs"],
                 "id-blacklist": "off",
                 "id-match": "off",
                 "import/order": "off",
