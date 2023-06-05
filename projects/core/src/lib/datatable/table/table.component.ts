@@ -168,7 +168,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
             : columnName;
     }
 
-    processRasterLayer(_layer: RasterLayer, _metadata: RasterLayerMetadata, _data: any): void {
+    processRasterLayer(_layer: RasterLayer, _metadata: RasterLayerMetadata, _data: unknown): void {
         // TODO: implement
 
         this.emptyTable();
@@ -222,7 +222,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         ) {
             xCoords.push('N/A');
             yCoords.push('N/A');
-            return new Array(xCoords, yCoords);
+            return [xCoords, yCoords];
         }
 
         const poly: OlPolygon = geometry.getGeometry() as OlPolygon;
@@ -236,7 +236,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
             xCoords.push(allCoords[i]);
             yCoords.push(allCoords[i + 1]);
         }
-        return new Array(xCoords, yCoords);
+        return [xCoords, yCoords];
     }
 
     onFullDisplayClick(output: OlFeature): void {

@@ -17,8 +17,6 @@ export class SidenavRef {
 
     private close$ = new Subject<void>();
 
-    constructor() {}
-
     /**
      * Set the toolbar title
      */

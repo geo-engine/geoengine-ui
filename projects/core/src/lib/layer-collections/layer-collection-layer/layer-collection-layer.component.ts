@@ -1,14 +1,4 @@
-import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    EventEmitter,
-    Input,
-    OnChanges,
-    OnInit,
-    Output,
-    SimpleChanges,
-} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import {mergeMap} from 'rxjs';
 import {LayerCollectionLayerDict, ProviderLayerIdDict} from '../../backend/backend.model';
 import {Colorizer} from '../../colors/colorizer.model';
@@ -22,7 +12,7 @@ import {LayerCollectionService} from '../layer-collection.service';
     styleUrls: ['./layer-collection-layer.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LayerCollectionLayerComponent implements OnInit, OnChanges {
+export class LayerCollectionLayerComponent implements OnChanges {
     @Input() layer: LayerCollectionLayerDict | undefined = undefined;
     @Output() addClick: EventEmitter<ProviderLayerIdDict> = new EventEmitter();
     @Output() isExpanded: EventEmitter<boolean> = new EventEmitter();
@@ -53,8 +43,6 @@ export class LayerCollectionLayerComponent implements OnInit, OnChanges {
             this.changeDetectorRef.markForCheck();
         }
     }
-
-    ngOnInit(): void {}
 
     toggleExpand(): void {
         if (this.layer) {

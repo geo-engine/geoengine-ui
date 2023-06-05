@@ -1,14 +1,4 @@
-import {
-    Component,
-    Input,
-    ChangeDetectionStrategy,
-    OnChanges,
-    SimpleChanges,
-    OnDestroy,
-    AfterViewInit,
-    OnInit,
-    ViewChild,
-} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {RasterSymbology} from '../symbology.model';
@@ -39,7 +29,7 @@ import {ColorPaletteEditorComponent} from '../../../colors/color-palette-editor/
     styleUrls: ['raster-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, AfterViewInit, OnInit {
+export class RasterSymbologyEditorComponent implements OnDestroy, OnInit {
     @ViewChild(ColorMapSelectorComponent)
     colorMapSelector!: ColorMapSelectorComponent;
 
@@ -80,8 +70,6 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         protected readonly config: Config,
     ) {}
 
-    ngOnChanges(_changes: SimpleChanges): void {}
-
     ngOnInit(): void {
         this.symbology = this.layer.symbology.clone();
         this.updateNodataAndDefaultColor();
@@ -92,8 +80,6 @@ export class RasterSymbologyEditorComponent implements OnChanges, OnDestroy, Aft
         this.createHistogramWorkflowId().subscribe((histogramWorkflowId) => this.histogramWorkflowId.next(histogramWorkflowId));
         this.updateColorizerType(this.getColorizerType()); // TODO: Remove after palettes are implemented
     }
-
-    ngAfterViewInit(): void {}
 
     ngOnDestroy(): void {
         if (this.histogramSubscription) {

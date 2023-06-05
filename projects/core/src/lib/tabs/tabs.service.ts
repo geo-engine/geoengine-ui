@@ -6,7 +6,8 @@ import {BehaviorSubject, NEVER, Observable, of, Subscription} from 'rxjs';
  * A component to display inside a tab
  */
 export interface TabContent {
-    component: ComponentType<any>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    component: ComponentType<any>; // TODO: figure out how to type this
     name: Observable<string>;
     inputs: TabInputs;
     /**
@@ -19,6 +20,7 @@ export interface TabContent {
 }
 
 export interface TabInputs {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [property: string]: any;
 }
 
@@ -29,8 +31,6 @@ export class TabsService {
     protected readonly _tabs = new BehaviorSubject<Array<TabContent>>([]);
 
     protected readonly _activeTab = new BehaviorSubject<TabContent | undefined>(undefined);
-
-    constructor() {}
 
     get tabs(): Observable<Array<TabContent>> {
         return this._tabs;

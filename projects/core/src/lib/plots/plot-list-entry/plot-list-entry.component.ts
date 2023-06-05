@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {PlotDataDict} from '../../backend/backend.model';
 import {Plot} from '../plot.model';
 import {LoadingState} from '../../project/loading-state.model';
@@ -14,7 +14,7 @@ import {GeoEngineError} from '../../util/errors';
     styleUrls: ['./plot-list-entry.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PlotListEntryComponent implements OnInit, OnChanges {
+export class PlotListEntryComponent implements OnChanges {
     @Input()
     plot!: Plot;
 
@@ -37,8 +37,6 @@ export class PlotListEntryComponent implements OnInit, OnChanges {
     isError = false;
 
     constructor(private readonly projectService: ProjectService, private readonly dialog: MatDialog) {}
-
-    ngOnInit(): void {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.plotData && this.plotData) {

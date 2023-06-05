@@ -64,12 +64,12 @@ export class OperatorOutputNameComponent implements ControlValueAccessor, OnChan
     }
 
     /** Implemented as part of ControlValueAccessor. */
-    registerOnChange(fn: () => any): void {
+    registerOnChange(fn: () => void): void {
         this.onChange = fn;
     }
 
     /** Implemented as part of ControlValueAccessor. */
-    registerOnTouched(fn: () => any): void {
+    registerOnTouched(fn: () => void): void {
         this.onTouched = fn;
     }
 

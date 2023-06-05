@@ -1,6 +1,5 @@
 import {
     Component,
-    OnInit,
     ChangeDetectionStrategy,
     ElementRef,
     ContentChildren,
@@ -21,14 +20,12 @@ export class SidenavSearchRightDirective {}
     styleUrls: ['./sidenav-search.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SidenavSearchComponent implements OnInit, AfterViewInit {
+export class SidenavSearchComponent implements AfterViewInit {
     @ContentChildren(SidenavSearchRightDirective, {read: ElementRef}) contentChildren!: QueryList<ElementRef>;
 
     @Output() searchString = new EventEmitter<string>();
 
     constructor(private sidenavRef: SidenavRef) {}
-
-    ngOnInit(): void {}
 
     ngAfterViewInit(): void {
         this.sidenavRef.setSearch(this.contentChildren, this.searchString);

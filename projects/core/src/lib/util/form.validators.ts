@@ -3,7 +3,8 @@ import {map} from 'rxjs/operators';
 import {AbstractControl, AsyncValidatorFn, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {Moment} from 'moment';
 
-const isFiniteNumber = (value: any): boolean => value !== null && value !== undefined && !isNaN(value) && isFinite(value);
+const isFiniteNumber = (value: null | undefined | number): boolean =>
+    value !== null && value !== undefined && !isNaN(value) && isFinite(value);
 
 /**
  * A validator that validates a form group that contains min/max number fields.
@@ -192,7 +193,7 @@ const isNumber = (control: AbstractControl): {isNoNumber: true} | null => {
 /**
  * checks if a value is undefined or null
  */
-const nullOrUndefined = (value: any): boolean => value === undefined || value === null;
+const nullOrUndefined = (value: unknown): boolean => value === undefined || value === null;
 
 /**
  * This Validator checks the relation of a value compared to another value.

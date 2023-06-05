@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, ViewChild, Output, EventEmitter} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ViewChild, Output, EventEmitter, ElementRef} from '@angular/core';
 
 @Component({
     selector: 'geoengine-drag-and-drop',
@@ -8,11 +8,9 @@ import {Component, ChangeDetectionStrategy, ViewChild, Output, EventEmitter} fro
 })
 export class DragAndDropComponent {
     selectedFiles?: Array<File>;
-    @ViewChild('fileInput') fileInput: any;
+    @ViewChild('fileInput') fileInput?: ElementRef<HTMLInputElement>;
 
     @Output() public selectFilesEvent = new EventEmitter();
-
-    constructor() {}
 
     selectFiles(target: HTMLInputElement | null): void {
         const fileList = target?.files;
@@ -22,14 +20,18 @@ export class DragAndDropComponent {
         }
         if (!this.selectedFiles) {
             this.selectedFiles = Array.from(fileList);
-            this.fileInput.nativeElement.value = '';
+            if (this.fileInput) {
+                this.fileInput.nativeElement.value = '';
+            }
             this.selectFilesEvent.emit(this.selectedFiles);
             return;
         }
 
         for (const file of Array.from(fileList)) {
             this.selectedFiles.unshift(file);
-            this.fileInput.nativeElement.value = '';
+            if (this.fileInput) {
+                this.fileInput.nativeElement.value = '';
+            }
         }
         this.selectFilesEvent.emit(this.selectedFiles);
     }

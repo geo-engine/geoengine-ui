@@ -14,9 +14,11 @@ export interface LayoutDict {
 }
 
 export interface SidenavConfig {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     component: Type<any>;
     keepParent?: boolean;
     parent?: SidenavConfig;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     config?: {[key: string]: any};
 }
 
@@ -65,8 +67,6 @@ export class LayoutService {
             const outer = document.createElement('div');
             outer.style.visibility = 'hidden';
             outer.style.width = '100px';
-            // @ts-ignore
-            outer.style.msOverflowStyle = 'scrollbar'; // needed for WinJS apps
 
             document.body.appendChild(outer);
 

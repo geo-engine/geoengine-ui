@@ -18,11 +18,11 @@ export class LayerCollectionNavigationComponent implements OnInit {
 
     selectedCollection = -1;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     selectedPortal!: Portal<any>;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     @ViewChild('scrollElement', {read: ElementRef}) public scrollElement!: ElementRef<any>;
-
-    constructor() {}
 
     ngOnInit(): void {
         this.setPortal(undefined);

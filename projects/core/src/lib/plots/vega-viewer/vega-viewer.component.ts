@@ -1,6 +1,5 @@
 import {
     Component,
-    OnInit,
     ChangeDetectionStrategy,
     ViewChild,
     ElementRef,
@@ -29,7 +28,7 @@ export interface VegaChartData {
     styleUrls: ['./vega-viewer.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class VegaViewerComponent implements OnInit, OnChanges {
+export class VegaViewerComponent implements OnChanges {
     @Input()
     chartData?: VegaChartData;
 
@@ -40,7 +39,7 @@ export class VegaViewerComponent implements OnInit, OnChanges {
     height?: number;
 
     @Output()
-    interactionChange = new EventEmitter<{[signal: string]: any}>();
+    interactionChange = new EventEmitter<{[signal: string]: unknown}>();
 
     @ViewChild('chart', {static: true}) protected chartContainer!: ElementRef;
 
@@ -52,8 +51,6 @@ export class VegaViewerComponent implements OnInit, OnChanges {
     } = undefined;
 
     constructor(protected element: ElementRef, private config: Config) {}
-
-    ngOnInit(): void {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.chartData || changes.width || changes.height) {

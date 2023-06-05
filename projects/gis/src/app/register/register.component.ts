@@ -1,6 +1,6 @@
 import {BehaviorSubject, Observable} from 'rxjs';
 
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
 import {Config, NotificationService, UserService, geoengineValidators, BackendService} from '@geoengine/core';
@@ -13,7 +13,7 @@ import {Router} from '@angular/router';
     styleUrls: ['./register.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
+export class RegisterComponent implements AfterViewInit {
     PASSWORD_MIN_LENGTH = 8;
 
     loading$ = new BehaviorSubject<boolean>(false);
@@ -43,14 +43,10 @@ export class RegisterComponent implements OnInit, AfterViewInit, OnDestroy {
         this.formIsInvalid$ = this.registrationForm.statusChanges.pipe(map((status) => status !== 'VALID'));
     }
 
-    ngOnInit(): void {}
-
     ngAfterViewInit(): void {
         // do this once for observables
         setTimeout(() => this.registrationForm.updateValueAndValidity());
     }
-
-    ngOnDestroy(): void {}
 
     register(): void {
         this.loading$.next(true);

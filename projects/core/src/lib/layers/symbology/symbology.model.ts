@@ -471,7 +471,7 @@ export class LineSymbology extends VectorSymbology {
     text?: TextSymbology;
     autoSimplified: boolean;
 
-    constructor(stroke: Stroke, text?: TextSymbology, autoSimplified: boolean = true) {
+    constructor(stroke: Stroke, text?: TextSymbology, autoSimplified = true) {
         super();
         this.stroke = stroke;
         this.text = text;
@@ -527,7 +527,7 @@ export class PolygonSymbology extends VectorSymbology {
 
     autoSimplified: boolean;
 
-    constructor(fillColor: ColorParam, stroke: Stroke, text?: TextSymbology, autoSimplified: boolean = true) {
+    constructor(fillColor: ColorParam, stroke: Stroke, text?: TextSymbology, autoSimplified = true) {
         super();
         this.fillColor = fillColor;
         this.stroke = stroke;

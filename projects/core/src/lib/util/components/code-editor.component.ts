@@ -177,7 +177,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
     }
 
     /** Implemented as part of ControlValueAccessor. */
-    registerOnChange(fn: () => any): void {
+    registerOnChange(fn: () => void): void {
         if (this.changeSubscription) {
             this.changeSubscription.unsubscribe();
         }
@@ -185,7 +185,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
     }
 
     /** Implemented as part of ControlValueAccessor. */
-    registerOnTouched(fn: () => any): void {
+    registerOnTouched(fn: () => void): void {
         if (this.onTouched) {
             this.onTouched = fn;
         }

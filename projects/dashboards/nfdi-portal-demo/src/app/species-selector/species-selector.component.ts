@@ -388,6 +388,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
 
     plotSpecies = '';
     plotEnvironmentLayer = '';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     readonly plotData = new BehaviorSubject<any>(undefined);
     readonly plotLoading = new BehaviorSubject(false);
 

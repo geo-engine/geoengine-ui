@@ -64,8 +64,6 @@ export class MapService {
         }),
     );
 
-    constructor() {}
-
     /**
      * Returns events that indicate if the map is in grid or default mode
      */

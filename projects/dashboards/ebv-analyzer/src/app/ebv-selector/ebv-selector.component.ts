@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {
     Config,
@@ -37,7 +37,7 @@ import {COUNTRY_DATA_LIST} from '../country-selector/country-data.model';
     styleUrls: ['./ebv-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EbvSelectorComponent implements OnInit, OnDestroy {
+export class EbvSelectorComponent implements OnInit {
     readonly SUBGROUP_SEARCH_THRESHOLD = 5;
 
     @ViewChild('container', {static: true})
@@ -56,6 +56,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
     layer?: RasterLayer;
     time?: Time;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     readonly plotData = new BehaviorSubject<any>(undefined);
     readonly plotLoading = new BehaviorSubject(false);
 
@@ -82,8 +83,6 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.handleQueryParams();
     }
-
-    ngOnDestroy(): void {}
 
     editSymbology(): void {
         this.layoutService.setSidenavContentComponent({

@@ -1,6 +1,6 @@
 import {RasterLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
@@ -27,7 +27,7 @@ interface TimePositionOption {
     styleUrls: ['./mean-raster-pixel-values-over-time-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MeanRasterPixelValuesOverTimeDialogComponent implements OnInit, AfterViewInit, OnDestroy {
+export class MeanRasterPixelValuesOverTimeDialogComponent implements AfterViewInit {
     readonly inputTypes = [ResultTypes.RASTER];
 
     readonly timePositionOptions: Array<TimePositionOption> = [
@@ -65,16 +65,12 @@ export class MeanRasterPixelValuesOverTimeDialogComponent implements OnInit, Aft
         this.disallowSubmit = this.form.statusChanges.pipe(map((status) => status !== 'VALID'));
     }
 
-    ngOnInit(): void {}
-
     ngAfterViewInit(): void {
         setTimeout(() => {
             this.form.updateValueAndValidity();
             this.form.controls['layer'].updateValueAndValidity();
         });
     }
-
-    ngOnDestroy(): void {}
 
     /**
      * Uses the user input to create the plot.

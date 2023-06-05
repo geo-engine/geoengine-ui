@@ -1,6 +1,6 @@
 import {RasterLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, ViewChild} from '@angular/core';
 import {FormControl, FormBuilder, FormGroup, Validators, ValidatorFn} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
@@ -20,7 +20,7 @@ import {RasterSymbology} from '../../../layers/symbology/symbology.model';
     styleUrls: ['./interpolation.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class InterpolationComponent implements OnInit, AfterViewInit, OnDestroy {
+export class InterpolationComponent implements AfterViewInit, OnDestroy {
     readonly interpolationMethods = [
         ['Nearest Neighbor', 'nearestNeighbor'],
         ['Bilinear', 'biLinear'],
@@ -72,8 +72,6 @@ export class InterpolationComponent implements OnInit, AfterViewInit, OnDestroy 
             )
             .subscribe();
     }
-
-    ngOnInit(): void {}
 
     ngAfterViewInit(): void {
         setTimeout(() => {

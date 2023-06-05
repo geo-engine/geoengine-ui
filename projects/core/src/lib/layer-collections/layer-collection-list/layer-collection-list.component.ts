@@ -185,6 +185,7 @@ class LayerCollectionItemDataSource extends DataSource<LayerCollectionItemDict> 
     /**
      * Clean up resources
      */
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     disconnect(): void {}
 
     fetchMoreData(numberOfTimes: number): void {

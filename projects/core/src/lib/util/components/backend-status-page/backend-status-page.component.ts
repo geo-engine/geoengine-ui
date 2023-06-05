@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component} from '@angular/core';
 import {Router} from '@angular/router';
 import {first, skipWhile, Subscription} from 'rxjs';
 import {BackendInfoDict} from '../../../backend/backend.model';
@@ -11,7 +11,7 @@ import {UserService} from '../../../users/user.service';
     templateUrl: './backend-status-page.component.html',
     styleUrls: ['./backend-status-page.component.scss'],
 })
-export class BackendStatusPageComponent implements OnInit {
+export class BackendStatusPageComponent {
     public backendStatus: BackendStatus | undefined = undefined;
     public backendInfo: BackendInfoDict | undefined = undefined;
     public goToMapSubscription: Subscription | undefined = undefined;
@@ -24,8 +24,6 @@ export class BackendStatusPageComponent implements OnInit {
     ) {
         this.fetchBackendState();
     }
-
-    ngOnInit(): void {}
 
     fetchBackendState(): void {
         this.userService.getBackendStatus().subscribe({

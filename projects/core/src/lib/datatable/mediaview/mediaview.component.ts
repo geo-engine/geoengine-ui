@@ -19,7 +19,7 @@ export class MediaviewComponent implements OnInit {
     mediaType: Array<string> = [];
     mediaUrls: Array<string> = [];
 
-    @Input() url: any;
+    @Input() url?: string;
 
     @Input() type!: VectorColumnDataType;
 
@@ -55,13 +55,20 @@ export class MediaviewComponent implements OnInit {
      * Gets the urls and file-types of the comma-separated urls given as input-argument.
      */
     ngOnInit(): void {
+        if (!this.url) {
+            this.urls = [];
+            this.mediaType = [];
+            this.mediaUrls = [];
+            return;
+        }
+
         if (this.type === VectorColumnDataTypes.Media) {
             this.urls = this.url.split(',');
             this.mediaType = [];
             this.mediaUrls = [];
 
             for (const i in this.urls) {
-                if (this.urls.hasOwnProperty(i)) {
+                if (Object.hasOwn(this.urls, i)) {
                     const checkMediaType = MediaviewComponent.getType(this.urls[i]);
                     if (checkMediaType !== '' && checkMediaType !== 'text') {
                         this.urls[i] = this.urls[i].trim();

@@ -253,7 +253,7 @@ export class BackendService {
             queryResolution?: number; // TODO: allow x and y seperately
         },
         sessionId: UUID,
-    ): Observable<any> {
+    ): Observable<JSON> {
         const params = new NullDiscardingHttpParams();
 
         params.set('service', 'WFS');
@@ -275,7 +275,7 @@ export class BackendService {
         params.set('filter', request.filter);
         params.set('propertyName', request.propertyName);
 
-        return this.http.get<any>(`${this.config.API_URL}/wfs/${request.workflowId}`, {
+        return this.http.get<JSON>(`${this.config.API_URL}/wfs/${request.workflowId}`, {
             headers: BackendService.authorizationHeader(sessionId),
             params: params.httpParams,
         });
@@ -310,12 +310,7 @@ export class BackendService {
         });
     }
 
-    getDatasets(
-        sessionId: UUID,
-        offset: number = 0,
-        limit: number = 20,
-        order: DatasetOrderByDict = 'NameAsc',
-    ): Observable<Array<DatasetDict>> {
+    getDatasets(sessionId: UUID, offset = 0, limit = 20, order: DatasetOrderByDict = 'NameAsc'): Observable<Array<DatasetDict>> {
         const params = new NullDiscardingHttpParams();
         params.setMapped('offset', offset, (r) => r.toString());
         params.setMapped('limit', limit, (r) => r.toString());
@@ -389,13 +384,7 @@ export class BackendService {
         });
     }
 
-    getLayerCollectionItems(
-        sessionId: UUID,
-        provider: UUID,
-        collection: string,
-        offset: number = 0,
-        limit: number = 20,
-    ): Observable<LayerCollectionDict> {
+    getLayerCollectionItems(sessionId: UUID, provider: UUID, collection: string, offset = 0, limit = 20): Observable<LayerCollectionDict> {
         const params = new NullDiscardingHttpParams();
         params.setMapped('offset', offset, (r) => r.toString());
         params.setMapped('limit', limit, (r) => r.toString());
@@ -409,7 +398,7 @@ export class BackendService {
         );
     }
 
-    getRootLayerCollectionItems(sessionId: UUID, offset: number = 0, limit: number = 20): Observable<LayerCollectionDict> {
+    getRootLayerCollectionItems(sessionId: UUID, offset = 0, limit = 20): Observable<LayerCollectionDict> {
         const params = new NullDiscardingHttpParams();
         params.setMapped('offset', offset, (r) => r.toString());
         params.setMapped('limit', limit, (r) => r.toString());
@@ -458,7 +447,7 @@ export class BackendService {
         });
     }
 
-    abortTask(sessionId: UUID, taskId: UUID, force: boolean = false): Observable<void> {
+    abortTask(sessionId: UUID, taskId: UUID, force = false): Observable<void> {
         const params = new NullDiscardingHttpParams();
         params.setMapped('force', force, (r) => r.toString());
 

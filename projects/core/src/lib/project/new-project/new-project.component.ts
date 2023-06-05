@@ -1,6 +1,6 @@
 import {BehaviorSubject, zip} from 'rxjs';
 import {first, mergeMap} from 'rxjs/operators';
-import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
+import {Component, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
 import {UntypedFormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
 import {ProjectService} from '../project.service';
 import {NotificationService} from '../../notification.service';
@@ -15,7 +15,7 @@ import {extentToBboxDict} from '../../util/conversions';
     styleUrls: ['./new-project.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NewProjectComponent implements OnInit, AfterViewInit {
+export class NewProjectComponent implements AfterViewInit {
     spatialReferenceOptions: Array<NamedSpatialReference>;
 
     form: UntypedFormGroup;
@@ -45,8 +45,6 @@ export class NewProjectComponent implements OnInit, AfterViewInit {
                 this.form.controls['spatialReference'].setValue(spatialReference);
             });
     }
-
-    ngOnInit(): void {}
 
     ngAfterViewInit(): void {
         setTimeout(() => this.form.updateValueAndValidity());
