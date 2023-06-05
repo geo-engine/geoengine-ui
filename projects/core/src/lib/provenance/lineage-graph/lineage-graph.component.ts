@@ -282,7 +282,6 @@ export class LineageGraphComponent implements AfterViewInit {
             const nodeId = theNodeId as string; // conversion since the signature is of the wrong type
 
             const node = graph.node(nodeId);
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             if (node.type === 'operator') {
                 const operator: OperatorDict | SourceOperatorDict = node.operator;
 
