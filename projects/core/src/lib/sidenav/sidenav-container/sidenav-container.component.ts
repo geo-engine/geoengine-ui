@@ -42,6 +42,7 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
 
     searchTerm = '';
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     componentRef?: ComponentRef<any>;
 
     sidenavPosition: 'start' | 'end';
@@ -135,7 +136,7 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
 
             if (sidenavConfig.config) {
                 for (const key in sidenavConfig.config) {
-                    if (sidenavConfig.config.hasOwnProperty(key)) {
+                    if (Object.hasOwn(sidenavConfig.config, key)) {
                         this.componentRef.instance[key] = sidenavConfig.config[key];
                     }
                 }

@@ -1,4 +1,4 @@
-import {Component, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, OnChanges, SimpleChanges, Input} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ChangeDetectorRef, Input} from '@angular/core';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {MatDialog} from '@angular/material/dialog';
 import {Layer, RasterLayer, VectorLayer} from '../../layer.model';
@@ -33,7 +33,7 @@ import {DownloadRasterLayerComponent} from '../../../download-raster-layer/downl
     styleUrls: ['./layer-list-element.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LayerListElementComponent implements OnDestroy, OnChanges {
+export class LayerListElementComponent {
     @Input()
     layer!: Layer;
 
@@ -63,12 +63,6 @@ export class LayerListElementComponent implements OnDestroy, OnChanges {
         protected readonly clipboard: Clipboard,
         protected readonly notificationService: NotificationService,
     ) {}
-
-    ngOnChanges(_changes: SimpleChanges): void {}
-
-    ngOnDestroy(): void {
-        // this.subscriptions.forEach((s) => s.unsubscribe());
-    }
 
     /**
      * select a layer
@@ -112,7 +106,7 @@ export class LayerListElementComponent implements OnDestroy, OnChanges {
         const name = this.projectService.getLayerChangesStream(layer).pipe(map((l) => 'Provenance of ' + l.name));
         const removeTrigger = this.projectService.getLayerChangesStream(layer).pipe(
             last(),
-            map(() => {}),
+            map(() => undefined),
         );
         this.tabsService.addComponent({
             name,
@@ -127,7 +121,7 @@ export class LayerListElementComponent implements OnDestroy, OnChanges {
         const name = this.projectService.getLayerChangesStream(layer).pipe(map((l) => l.name));
         const removeTrigger = this.projectService.getLayerChangesStream(layer).pipe(
             last(),
-            map(() => {}),
+            map(() => undefined),
         );
         this.tabsService.addComponent({
             name,

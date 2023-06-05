@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 
 @Component({
     selector: 'geoengine-login',
@@ -6,12 +6,4 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} fr
     styleUrls: ['./login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
-    constructor() {}
-
-    ngOnInit(): void {}
-
-    ngAfterViewInit(): void {}
-
-    ngOnDestroy(): void {}
-}
+export class LoginComponent {}

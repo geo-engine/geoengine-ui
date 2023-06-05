@@ -1,6 +1,6 @@
 import {Layer, RasterLayer, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {AbstractControl, AsyncValidatorFn, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {Observable, of, ReplaySubject, Subscription, first} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
@@ -84,7 +84,7 @@ const categoricalInputValidator =
     styleUrls: ['./class-histogram-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ClassHistogramOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ClassHistogramOperatorComponent implements AfterViewInit, OnDestroy {
     inputTypes = ResultTypes.INPUT_TYPES;
 
     form: UntypedFormGroup;
@@ -161,8 +161,6 @@ export class ClassHistogramOperatorComponent implements OnInit, AfterViewInit, O
 
         this.isVectorLayer$ = this.form.controls['layer'].valueChanges.pipe(map((layer) => isVectorLayer(layer)));
     }
-
-    ngOnInit(): void {}
 
     ngAfterViewInit(): void {
         setTimeout(() => {

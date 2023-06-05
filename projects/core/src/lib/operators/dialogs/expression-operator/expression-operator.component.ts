@@ -1,6 +1,6 @@
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, EMPTY, Observable, of} from 'rxjs';
-import {AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, Input, ViewChild} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
 import {RasterDataType, RasterDataTypes} from '../../datatype.model';
@@ -33,7 +33,7 @@ interface ExpressionForm {
     styleUrls: ['./expression-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
+export class ExpressionOperatorComponent implements AfterViewInit {
     /**
      * If the list is empty, show the following button.
      */
@@ -162,10 +162,12 @@ export class ExpressionOperatorComponent implements AfterViewInit, OnDestroy {
         );
     }
 
+    /*
     ngOnDestroy(): void {
         // TODO: incorporate unit again
         // this.unitSubscription.unsubscribe();
     }
+    */
 
     validateNoData(control: AbstractControl): ValidationErrors | null {
         if (!isNaN(parseFloat(control.value)) || control.value.toLowerCase() === 'nan') {

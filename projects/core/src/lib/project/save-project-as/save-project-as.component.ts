@@ -1,5 +1,5 @@
 import {BehaviorSubject} from 'rxjs';
-import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
+import {Component, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
 import {UntypedFormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
 import {ProjectService} from '../project.service';
 import {NotificationService} from '../../notification.service';
@@ -11,7 +11,7 @@ import {geoengineValidators} from '../../util/form.validators';
     styleUrls: ['./save-project-as.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SaveProjectAsComponent implements OnInit, AfterViewInit {
+export class SaveProjectAsComponent implements AfterViewInit {
     form: UntypedFormGroup;
 
     created$ = new BehaviorSubject(false);
@@ -32,8 +32,6 @@ export class SaveProjectAsComponent implements OnInit, AfterViewInit {
             this.form.controls['name'].setValue(project.name);
         });
     }
-
-    ngOnInit(): void {}
 
     ngAfterViewInit(): void {
         setTimeout(() => this.form.updateValueAndValidity());

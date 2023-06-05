@@ -207,10 +207,11 @@ export class Time implements ToDict<TimeIntervalDict> {
         switch (this.type) {
             case 'TimePoint':
                 return this.startString(format);
-            case 'TimeInterval':
+            case 'TimeInterval': {
                 const start = this.startString(format);
                 const end = this.endString(format);
                 return `${start} - ${end}`;
+            }
         }
     }
 

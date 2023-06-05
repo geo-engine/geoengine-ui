@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Output} from '@angular/core';
 
 @Component({
     selector: 'geoengine-zoom-handles',
@@ -6,12 +6,8 @@ import {ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output} from '
     styleUrls: ['./zoom-handles.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ZoomHandlesComponent implements OnInit {
+export class ZoomHandlesComponent {
     @Output() zoomIn = new EventEmitter<void>();
 
     @Output() zoomOut = new EventEmitter<void>();
-
-    constructor() {}
-
-    ngOnInit(): void {}
 }

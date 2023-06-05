@@ -121,7 +121,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
                     minMaxChanged = true;
                     break;
                 case 'layers':
-                case 'types':
+                case 'types': {
                     let layers$: Observable<Array<Layer>>;
                     if (this.layers instanceof Array) {
                         layers$ = of(this.layers);
@@ -150,6 +150,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
                     }
 
                     break;
+                }
 
                 default:
                 // DO NOTHING

@@ -66,10 +66,12 @@ describe('RasterLegend', () => {
         const expect4: number[] = [12.4235623, 3.00344563, 2, 2.9, 2.09643543, 1235.00096, 3.00000065, 4.11111123, 4.11111165];
         expect(unifyDecimals(values4)).toEqual(expect4);
 
+        // eslint-disable-next-line @typescript-eslint/no-loss-of-precision
         const values5: number[] = [122.4222235625234343, 122.42222034432356, 122.422225654352, 122.422226441233];
         const expect5: number[] = [122.4222235, 122.4222203, 122.4222256, 122.4222264];
         expect(unifyDecimals(values5)).toEqual(expect5);
 
+        // eslint-disable-next-line @typescript-eslint/no-loss-of-precision
         const values6: number[] = [4.0000123464234235234, 4.000005243423424, 4.000000009];
         const expect6: number[] = [4.0000123, 4.0000052, 4];
         expect(unifyDecimals(values6)).toEqual(expect6);

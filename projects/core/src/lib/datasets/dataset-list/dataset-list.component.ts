@@ -105,6 +105,7 @@ class DatasetDataSource extends DataSource<Dataset> {
     /**
      * Clean up resources
      */
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     disconnect(): void {}
 
     fetchMoreData(numberOfTimes: number): void {

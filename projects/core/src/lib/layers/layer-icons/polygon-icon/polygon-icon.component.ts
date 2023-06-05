@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
+import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
 import {BLACK, Color, WHITE} from '../../../colors/color';
 import {IconStyle} from '../../symbology/symbology.model';
 
@@ -21,7 +21,7 @@ export interface PolygonIconStyle extends IconStyle {
     styleUrls: ['./polygon-icon.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PolygonIconComponent implements OnInit {
+export class PolygonIconComponent {
     // the style to use for the icon
     @Input()
     iconStyle: PolygonIconStyle = {
@@ -30,8 +30,4 @@ export class PolygonIconComponent implements OnInit {
         strokeRGBA: BLACK,
         fillRGBA: WHITE,
     };
-
-    constructor() {}
-
-    ngOnInit(): void {}
 }

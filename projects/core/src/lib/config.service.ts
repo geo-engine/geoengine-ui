@@ -264,7 +264,7 @@ export class Config {
                 },
             }),
             catchError(() => of(undefined)),
-            map(() => {}),
+            map(() => undefined),
         );
         return firstValueFrom(config);
     }
@@ -281,5 +281,6 @@ export function mergeDeepOverrideLists<C>(a: C, b: Iterable<unknown> | Iterable<
         return mergeWith(mergeDeepOverrideLists as (a: unknown, b: unknown) => unknown, a, b);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return b as any;
 }

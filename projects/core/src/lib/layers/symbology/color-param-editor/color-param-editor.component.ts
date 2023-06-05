@@ -1,15 +1,4 @@
-import {
-    Component,
-    ChangeDetectionStrategy,
-    OnChanges,
-    SimpleChanges,
-    OnDestroy,
-    AfterViewInit,
-    OnInit,
-    forwardRef,
-    HostListener,
-    Input,
-} from '@angular/core';
+import {Component, ChangeDetectionStrategy, forwardRef, HostListener, Input} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {BLACK, Color} from '../../../colors/color';
 import {ColorAttributeInput} from '../../../colors/color-attribute-input/color-attribute-input.component';
@@ -27,7 +16,7 @@ import {ColorParam, DerivedColor, StaticColor} from '../symbology.model';
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorParamEditorComponent), multi: true}],
 })
-export class ColorParamEditorComponent implements OnChanges, OnDestroy, AfterViewInit, OnInit, ControlValueAccessor {
+export class ColorParamEditorComponent implements ControlValueAccessor {
     @Input() attributes = new Array<string>();
 
     colorParam: ColorParam;
@@ -50,16 +39,10 @@ export class ColorParamEditorComponent implements OnChanges, OnDestroy, AfterVie
         this.onTouched();
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onTouched = (): void => {};
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onChange = (_: ColorParam | null): void => {};
-
-    ngOnChanges(_changes: SimpleChanges): void {}
-
-    ngOnInit(): void {}
-
-    ngAfterViewInit(): void {}
-
-    ngOnDestroy(): void {}
 
     writeValue(value: ColorParam | null): void {
         if (!value) {
@@ -197,7 +180,7 @@ export class ColorParamEditorComponent implements OnChanges, OnDestroy, AfterVie
             colorizerType?: 'linearGradient' | 'palette';
             colorizerBreakpoints?: Array<ColorBreakpoint>;
         },
-        emit: boolean = true,
+        emit = true,
     ): void {
         const defaultColor = params.defaultColor ?? this.colorParam.getDefault();
         this._colorAttributeName = params.colorAttributeName === null ? undefined : params.colorAttributeName ?? this.colorAttributeName;

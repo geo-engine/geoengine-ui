@@ -1,6 +1,6 @@
 import {Layer, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
@@ -29,7 +29,7 @@ interface PieChartForm {
     styleUrls: ['./pie-chart.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy {
+export class PieChartComponent implements AfterViewInit, OnDestroy {
     minNumberOfBuckets = 1;
     maxNumberOfBuckets = 100;
 
@@ -87,8 +87,6 @@ export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy {
                 .subscribe((attributes) => this.attributes$.next(attributes)),
         );
     }
-
-    ngOnInit(): void {}
 
     ngAfterViewInit(): void {
         setTimeout(() => {

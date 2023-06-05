@@ -49,8 +49,6 @@ export class VectorLegendComponent implements OnInit {
     strokeColorAttributeName = '';
     radiusAttributeName = '';
 
-    constructor() {}
-
     ngOnInit(): void {
         this.symbology = this.layer.symbology;
 

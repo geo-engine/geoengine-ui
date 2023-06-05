@@ -317,6 +317,7 @@ export type DatasetOrderByDict = 'NameAsc' | 'NameDesc';
 export interface PlotDataDict {
     plotType: string;
     outputFormat: 'JsonPlain' | 'JsonVega' | 'ImagePng';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any;
 }
 
@@ -648,6 +649,7 @@ export interface TaskRunningDict extends TaskStatusDict {
     timeStarted: string;
     estimatedTimeRemaining: string;
     pctComplete: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     info: any; // TODO: better type in backend
 }
 
@@ -655,17 +657,21 @@ export interface TaskCompletedDict extends TaskStatusDict {
     status: 'completed';
     timeStarted: string;
     timeTotal: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     info: any; // TODO: better type in backend
 }
 
 export interface TaskAbortedDict extends TaskStatusDict {
     status: 'aborted';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cleanUp: any; // TODO: better type in backend
 }
 
 export interface TaskFailedDict extends TaskStatusDict {
     status: 'failed';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cleanUp: any; // TODO: better type in backend
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     error: any; // TODO: better type in backend
 }
 
@@ -675,11 +681,13 @@ export interface TaskCleanUpDict {
 
 export interface TaskCleanUpCompletedDict extends TaskCleanUpDict {
     status: 'completed';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     info: any; // TODO: better type in backend
 }
 
 export interface TaskCleanUpAbortedDict extends TaskCleanUpDict {
     status: 'aborted';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     info: any; // TODO: better type in backend
 }
 

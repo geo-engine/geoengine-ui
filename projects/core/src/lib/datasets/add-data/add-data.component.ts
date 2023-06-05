@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
+import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
 import {concatMap, first, Observable, range, reduce, takeWhile} from 'rxjs';
 import {LayerCollectionNavigationComponent} from '../../layer-collections/layer-collection-navigation/layer-collection-navigation.component';
 import {LayerCollectionService} from '../../layer-collections/layer-collection.service';
@@ -22,15 +22,13 @@ export interface AddDataButton {
     styleUrls: ['./add-data.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddDataComponent implements OnInit {
+export class AddDataComponent {
     /**
      * A list of data source dialogs to display
      */
     @Input() buttons!: Array<AddDataButton>;
 
     constructor(protected readonly layoutService: LayoutService) {}
-
-    ngOnInit(): void {}
 
     /**
      * Load a selected component into the sidenav

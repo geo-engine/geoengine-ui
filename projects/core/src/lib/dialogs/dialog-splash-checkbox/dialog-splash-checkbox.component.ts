@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {MatCheckboxChange} from '@angular/material/checkbox';
 import {UserService} from '../../users/user.service';
 
@@ -7,15 +7,13 @@ import {UserService} from '../../users/user.service';
     templateUrl: './dialog-splash-checkbox.component.html',
     styleUrls: ['./dialog-splash-checkbox.component.scss'],
 })
-export class DialogSplashCheckboxComponent implements OnInit {
+export class DialogSplashCheckboxComponent {
     /**
      * The name is used as the key in LocalStorage.
      */
     @Input() splashScreenName!: string;
 
     constructor(private readonly userService: UserService) {}
-
-    ngOnInit(): void {}
 
     changeCheckbox(event: MatCheckboxChange): void {
         this.userService.saveSettingInLocalStorage(this.splashScreenName, JSON.stringify(!event.checked));

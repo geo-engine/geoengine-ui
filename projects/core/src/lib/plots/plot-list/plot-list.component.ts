@@ -1,7 +1,7 @@
 import {BehaviorSubject, Subscription} from 'rxjs';
 import {filter, first} from 'rxjs/operators';
 
-import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy} from '@angular/core';
 
 import {OperatorListComponent} from '../../operators/dialogs/operator-list/operator-list.component';
 import {ProjectService} from '../../project/project.service';
@@ -18,7 +18,7 @@ import {LoadingState} from '../../project/loading-state.model';
     styleUrls: ['./plot-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
+export class PlotListComponent implements AfterViewInit, OnDestroy {
     /**
      * If the list is empty, show the following button.
      */
@@ -38,8 +38,6 @@ export class PlotListComponent implements OnInit, AfterViewInit, OnDestroy {
         private readonly layoutService: LayoutService,
         private readonly elementRef: ElementRef,
     ) {}
-
-    ngOnInit(): void {}
 
     ngAfterViewInit(): void {
         this.subscriptions.push(

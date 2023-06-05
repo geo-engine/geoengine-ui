@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 
 @Component({
     selector: 'geoengine-dialog-help',
@@ -6,8 +6,4 @@ import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
     styleUrls: ['./dialog-help.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DialogHelpComponent implements OnInit {
-    constructor() {}
-
-    ngOnInit(): void {}
-}
+export class DialogHelpComponent {}

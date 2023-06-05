@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 
 @Component({
     selector: 'geoengine-gfbio-help',
@@ -6,6 +6,4 @@ import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
     styleUrls: ['./help.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HelpComponent implements OnInit {
-    ngOnInit(): void {}
-}
+export class HelpComponent {}

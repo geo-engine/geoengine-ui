@@ -119,27 +119,27 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
         this.unsubscribe$.complete();
     }
 
-    writeValue(obj: any): void {
+    writeValue(obj: SymbologyCreationType | null): void {
         if (obj === null) {
             this.value.setValue(null);
             return;
         }
 
-        if (!SymbologyCreationType.hasOwnProperty(obj)) {
+        if (!(obj in SymbologyCreationType)) {
             throw new Error('Value must be of type `SymbologyCreationType`.');
         }
 
         this.value.setValue(obj);
     }
 
-    registerOnChange(fn: any): void {
+    registerOnChange(fn: (value: SymbologyCreationType | null) => void): void {
         if (typeof fn !== 'function') {
             throw new Error('Expected a function.');
         }
         this._onChange = fn;
     }
 
-    registerOnTouched(fn: any): void {
+    registerOnTouched(fn: () => void): void {
         if (typeof fn !== 'function') {
             throw new Error('Expected a function.');
         }

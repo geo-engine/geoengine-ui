@@ -1,6 +1,6 @@
 import {BehaviorSubject, ReplaySubject} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
-import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
+import {Component, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
 import {ProjectService} from '../project.service';
 import {UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl, ValidatorFn, ValidationErrors} from '@angular/forms';
 import {NotificationService} from '../../notification.service';
@@ -34,7 +34,7 @@ interface ProjectListing {
     styleUrls: ['./load-project.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoadProjectComponent implements OnInit, AfterViewInit {
+export class LoadProjectComponent implements AfterViewInit {
     form: UntypedFormGroup;
 
     projects$ = new ReplaySubject<Array<ProjectListing>>(1);
@@ -85,8 +85,6 @@ export class LoadProjectComponent implements OnInit, AfterViewInit {
                 this.loading$.next(false);
             });
     }
-
-    ngOnInit(): void {}
 
     ngAfterViewInit(): void {
         setTimeout(() => this.form.updateValueAndValidity());

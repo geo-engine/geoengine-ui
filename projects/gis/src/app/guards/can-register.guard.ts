@@ -1,5 +1,5 @@
 import {Inject, Injectable} from '@angular/core';
-import {ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree} from '@angular/router';
+import {ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree} from '@angular/router';
 import {Observable} from 'rxjs';
 import {AppConfig} from '../app-config.service';
 import {Config} from '@geoengine/core';
@@ -7,7 +7,7 @@ import {Config} from '@geoengine/core';
 @Injectable({
     providedIn: 'root',
 })
-export class CanRegisterGuard implements CanActivate {
+export class CanRegisterGuard {
     constructor(@Inject(Config) private readonly config: AppConfig) {}
 
     canActivate(

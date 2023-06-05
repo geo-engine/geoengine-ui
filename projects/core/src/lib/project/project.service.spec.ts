@@ -82,11 +82,11 @@ describe('test project methods in projectService', () => {
 
         projectService = new ProjectService(
             DEFAULT_CONFIG as Config,
-            notificationServiceSpy as any as NotificationService,
-            mapServiceSpy as any as MapService,
-            backendSpy as any as BackendService,
-            userServiceSpy as any as UserService,
-            spatialReferenceSpy as any as SpatialReferenceService,
+            notificationServiceSpy as unknown as NotificationService,
+            mapServiceSpy as unknown as MapService,
+            backendSpy as unknown as BackendService,
+            userServiceSpy as unknown as UserService,
+            spatialReferenceSpy as unknown as SpatialReferenceService,
         );
     });
 

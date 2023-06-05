@@ -18,8 +18,11 @@ import {Layer} from '../../layers/layer.model';
 export class TimeSliderComponent implements OnInit, OnDestroy {
     //Timeline Data for vis-timeline
     timeline: Timeline | undefined;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     options: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     groups: any;
 
     //Time Data

@@ -67,6 +67,7 @@ export class ProjectService {
 
     private readonly newLayer$ = new Subject<void>();
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private readonly plotData$ = new Map<number, ReplaySubject<any>>();
     private readonly plotError$ = new Map<number, ReplaySubject<GeoEngineError | undefined>>();
     private readonly plotDataState$ = new Map<number, ReplaySubject<LoadingState>>();
@@ -228,7 +229,7 @@ export class ProjectService {
      */
     setProject(project: Project): void {
         // clear all subjects
-        for (const subjectMap of [this.layers, this.layerData$, this.layerDataState$] as Array<Map<number, ReplaySubject<any>>>) {
+        for (const subjectMap of [this.layers, this.layerData$, this.layerDataState$] as Array<Map<number, ReplaySubject<unknown>>>) {
             subjectMap.forEach((subject) => subject.complete());
             subjectMap.clear();
         }
@@ -628,7 +629,9 @@ export class ProjectService {
     /**
      * Retrieve the data of the layer as a stream.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getLayerDataStream(layer: HasLayerId): Observable<any> {
+        // TODO: the plot type needs to be defined
         const data = this.layerData$.get(layer.id);
 
         if (!data) {
@@ -641,6 +644,7 @@ export class ProjectService {
     /**
      * Retrieve the data of the plot as a stream.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getPlotDataStream(plot: HasPlotId): Observable<any> {
         const data = this.plotData$.get(plot.id);
 
@@ -944,7 +948,7 @@ export class ProjectService {
             ),
             tap((_) => layerStreamSub.unsubscribe()),
             take(1),
-            map(() => {}),
+            map(() => undefined),
         );
     }
 
@@ -1063,7 +1067,7 @@ export class ProjectService {
         spatialReference?: SpatialReference;
         bbox?: BBoxDict;
         time?: Time;
-        plots?: Array<any>;
+        plots?: Array<unknown>;
         layers?: Array<Layer>;
         timeStepDuration?: TimeStepDuration;
     }): Observable<void> {
@@ -1429,7 +1433,10 @@ export class ProjectService {
             });
     }
 
+    // TODO: figure out the correct types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private addTimeToProperties(x: any): any {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         x['features'].forEach((element: any) => {
             const start: string = element['when']['start'];
             const end: string = element['when']['end'];
@@ -1471,7 +1478,7 @@ export class ProjectService {
 
     private createPlotDataStreams(plot: Plot): void {
         const loadingState$ = new ReplaySubject<LoadingState>(1);
-        const data$ = new ReplaySubject<any>(1);
+        const data$ = new ReplaySubject<unknown>(1);
         const error$ = new ReplaySubject<GeoEngineError | undefined>(1);
 
         const subscription = this.createPlotSubscription(plot, data$, error$, loadingState$);
@@ -1487,11 +1494,11 @@ export class ProjectService {
      */
     private createPlotSubscription(
         plot: Plot,
-        data$: Observer<any>,
+        data$: Observer<unknown>,
         error$: Observer<GeoEngineError | undefined>,
         loadingState$: Observer<LoadingState>,
     ): Subscription {
-        const observables: Array<Observable<any>> = [
+        const observables: [Observable<Time>, Observable<ViewportSize>, Observable<string>, Observable<SpatialReference>] = [
             this.getTimeStream(),
             this.mapService.getViewportSizeStream(),
             this.userService.getSessionTokenForRequest(),
@@ -1508,7 +1515,7 @@ export class ProjectService {
                     this.backend.getPlot(
                         plot.workflowId,
                         {
-                            time,
+                            time: time.toDict(),
                             bbox: extentToBboxDict(viewport.extent),
                             crs: sref.srsString,
                             spatialResolution: [viewport.resolution, viewport.resolution], // TODO: check if resolution needs two numbers
