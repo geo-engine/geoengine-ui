@@ -202,7 +202,9 @@ export interface ColumnRangeFilterDict extends OperatorDict {
 export interface RasterVectorJoinParams extends OperatorParams {
     names: Array<string>;
     temporalAggregation: 'none' | 'first' | 'mean';
+    temporalAggregationIgnoreNoData?: boolean;
     featureAggregation: 'first' | 'mean';
+    featureAggregationIgnoreNoData?: boolean;
 }
 
 export interface RasterVectorJoinDict extends OperatorDict {
