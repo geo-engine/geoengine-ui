@@ -9,7 +9,7 @@ import {SpatialReference} from '../../spatial-references/spatial-reference.model
 import {MapService} from '../../map/map.service';
 import {DatasetService} from '../dataset.service';
 import {HttpEventType, HttpResponse} from '@angular/common/http';
-import {AutoCreateDatasetDict, DataIdDict, UploadResponseDict, UUID} from '../../backend/backend.model';
+import {AutoCreateDatasetDict, UploadResponseDict, UUID} from '../../backend/backend.model';
 import {mergeMap} from 'rxjs/operators';
 import {WGS_84} from '../../spatial-references/spatial-reference.service';
 
@@ -32,7 +32,6 @@ export class DrawFeaturesComponent implements OnDestroy, OnInit {
 
     indicateLoading$ = new Subject<boolean>();
     uploadId$ = new Subject<UUID>();
-    datasetId$ = new Subject<DataIdDict>();
 
     state$ = new BehaviorSubject(State.Start);
 
@@ -164,18 +163,18 @@ export class DrawFeaturesComponent implements OnDestroy, OnInit {
                     };
                     return this.datasetService.autoCreateDataset(create);
                 }),
-                mergeMap((res) => this.datasetService.getDataset(res.id)),
+                mergeMap((res) => this.datasetService.getDataset(res.datasetName)),
                 mergeMap((dataset) => this.datasetService.addDatasetToMap(dataset)),
             )
-            .subscribe(
-                (_) => {
+            .subscribe({
+                next: (_) => {
                     this.indicateLoading$.next(false);
                     this.state$.next(State.Finished);
                 },
-                (err) => {
+                error: (err) => {
                     this.notificationService.error('Create dataset failed: ' + err.message);
                     this.indicateLoading$.next(false);
                 },
-            );
+            });
     }
 }

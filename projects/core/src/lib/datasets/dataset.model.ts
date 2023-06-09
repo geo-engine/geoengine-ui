@@ -4,8 +4,6 @@ import {
     UUID,
     WorkflowDict,
     SrsString,
-    DataIdDict,
-    ExternalDataIdDict,
     RasterResultDescriptorDict,
     VectorResultDescriptorDict,
     SourceOperatorDict,
@@ -59,61 +57,6 @@ export class Dataset {
         return {
             type: this.resultDescriptor.getTypeString(),
             operator,
-        };
-    }
-}
-
-export abstract class DatasetId {
-    static fromDict(dict: DataIdDict): DatasetId {
-        if (dict.type === 'internal') {
-            return InternalDatasetId.fromDict(dict.datasetId);
-        } else if (dict.type === 'external') {
-            return ExternalDataId.fromDict(dict);
-        }
-
-        throw Error('Unknown DatasetId type');
-    }
-
-    abstract toDict(): DataIdDict;
-}
-
-export class InternalDatasetId {
-    id: UUID;
-
-    constructor(id: UUID) {
-        this.id = id;
-    }
-
-    static fromDict(config: UUID): InternalDatasetId {
-        return new InternalDatasetId(config);
-    }
-
-    toDict(): DataIdDict {
-        return {
-            type: 'internal',
-            datasetId: this.id,
-        };
-    }
-}
-
-export class ExternalDataId {
-    providerId: UUID;
-    layerId: string;
-
-    constructor(config: ExternalDataIdDict) {
-        this.providerId = config.providerId;
-        this.layerId = config.layerId;
-    }
-
-    static fromDict(config: ExternalDataIdDict): ExternalDataId {
-        return new ExternalDataId(config);
-    }
-
-    toDict(): DataIdDict {
-        return {
-            type: 'external',
-            providerId: this.providerId,
-            layerId: this.layerId,
         };
     }
 }

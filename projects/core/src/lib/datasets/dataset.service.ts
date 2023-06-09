@@ -8,7 +8,7 @@ import {HttpEvent} from '@angular/common/http';
 import {
     AutoCreateDatasetDict,
     CreateDatasetDict,
-    DatasetIdResponseDict,
+    DatasetNameResponseDict,
     DataSetProviderListingDict,
     MetaDataSuggestionDict,
     SuggestMetaDataDict,
@@ -54,9 +54,9 @@ export class DatasetService {
         return this.userService.getSessionStream().pipe(mergeMap((session) => this.backend.getDatasetProviders(session.sessionToken)));
     }
 
-    getDataset(id: UUID): Observable<Dataset> {
+    getDataset(name: string): Observable<Dataset> {
         return this.userService.getSessionTokenForRequest().pipe(
-            mergeMap((token) => this.backend.getDataset(token, id)),
+            mergeMap((token) => this.backend.getDataset(token, name)),
             map((dict) => Dataset.fromDict(dict)),
         );
     }
@@ -74,11 +74,11 @@ export class DatasetService {
             .pipe(mergeMap((token) => this.backend.getUploadFileLayers(token, uploadId, fileName)));
     }
 
-    createDataset(create: CreateDatasetDict): Observable<DatasetIdResponseDict> {
+    createDataset(create: CreateDatasetDict): Observable<DatasetNameResponseDict> {
         return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.createDataset(token, create)));
     }
 
-    autoCreateDataset(create: AutoCreateDatasetDict): Observable<DatasetIdResponseDict> {
+    autoCreateDataset(create: AutoCreateDatasetDict): Observable<DatasetNameResponseDict> {
         return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.autoCreateDataset(token, create)));
     }
 

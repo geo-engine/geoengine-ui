@@ -364,22 +364,22 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
         //     dataRange: [70, 71],
         // },
         {
-            name: '6c9270ad-e87c-404b-aa1f-4bfb8a1b3cd7',
+            name: 'ECMWF_ERA_5_land_2m_temperature_celsius',
             displayName: 'Mittlere monatliche Temperatur in C° (2000 - 2020)',
             dataRange: [-5, 30],
         },
         {
-            name: 'fedad2aa-00db-44b5-be38-e8637932aa0a',
+            name: 'ECMWF_ERA_5_land_total_precipitation_mm',
             displayName: 'Mittlerer monatlicher Niederschlag in mm (2000 - 2020)',
             dataRange: [0, 20],
         },
         {
-            name: '36574dc3-560a-4b09-9d22-d5945ffb8093',
+            name: 'landcover_classification',
             displayName: 'Landnutzungstypen (2019 & 2020)',
             dataRange: [0, 60],
         },
         {
-            name: 'bde4f21f-b935-4cd3-b7ed-1675aedfa026',
+            name: 'IOER-Monitor',
             displayName: 'Anteil Gebiete „Natur- und Artenschutz“ an Gebietsfläche',
             dataRange: [0, 100],
             plotType: 'pieChart',
@@ -409,9 +409,9 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     readonly startYear = START_YEAR;
     readonly endYear = END_YEAR;
 
-    private readonly dragonflyDataset: NamedDataDict = 'd9dd4530-7a57-44da-a650-ce7d81dcc216';
-    private readonly fishDataset: NamedDataDict = '40c0756f-ecfc-4460-ac6d-ca67190e0436';
-    private readonly intensityDataset: NamedDataDict = '1a7584e6-0c94-4d92-bbcd-223626d64d9c';
+    private readonly dragonflyDataset: NamedDataDict = 'gdo_libellen';
+    private readonly fishDataset: NamedDataDict = 'gfi_fischartenatlas';
+    private readonly intensityDataset: NamedDataDict = 'beprobungsintensitaet_nrw';
 
     private selectedEnvironmentDataset?: Dataset = undefined;
 
