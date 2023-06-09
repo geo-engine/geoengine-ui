@@ -380,8 +380,8 @@ export interface UploadResponseDict {
     id: UUID;
 }
 
-export interface DatasetIdResponseDict {
-    id: UUID;
+export interface DatasetNameResponseDict {
+    datasetName: string;
 }
 
 export interface WorkflowIdResponseDict {
