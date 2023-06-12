@@ -5,11 +5,9 @@
         [preselectedPath]="preselectedPath"
     ></geoengine-layer-collection-dropdown>
 
-    <div fxLayout="row" fxLayoutGap="1rem">
-        <button mat-raised-button class="show" color="primary" *ngIf="layerId" (click)="showEbv()">Show</button>
-        <button mat-raised-button class="show" color="primary" *ngIf="layer" (click)="editSymbology()" fxFlex>
-            <mat-icon>palette</mat-icon>
-        </button>
+    <div class="ebv-actions">
+        <button mat-raised-button class="show" fxFlex color="primary" *ngIf="layerId" (click)="showEbv()">Show</button>
+        <button mat-raised-button color="primary" *ngIf="layer" (click)="editSymbology()"><mat-icon>palette</mat-icon></button>
     </div>
 
     <mat-divider></mat-divider>
