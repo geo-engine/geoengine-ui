@@ -6,9 +6,12 @@ geoengine-code-editor {
     margin-bottom: 1rem;
 }
 
-mat-form-field,
-geoengine-symbology-creator {
-    width: 100%;
+mat-form-field:not(:last-child) {
+    margin-right: 0.5rem;
+}
+
+mat-spinner {
+    margin: 0.5rem auto;
 }
 
 .error {

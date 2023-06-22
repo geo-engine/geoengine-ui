@@ -1,17 +1,31 @@
 import {map, mergeMap, tap} from 'rxjs/operators';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, combineLatest, firstValueFrom, from} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
 import {Layer, RasterLayer} from '../../../layers/layer.model';
 import {geoengineValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
-import {OperatorDict, SourceOperatorDict, UUID, WorkflowDict} from '../../../backend/backend.model';
-import {RgbDict} from '../../../backend/operator.model';
+import {
+    BBoxDict,
+    OperatorDict,
+    RasterResultDescriptorDict,
+    SourceOperatorDict,
+    SrsString,
+    TimeIntervalDict,
+    UUID,
+    WorkflowDict,
+} from '../../../backend/backend.model';
+import {RgbDict, StatisticsDict} from '../../../backend/operator.model';
 import {LayoutService, SidenavConfig} from '../../../layout.service';
 import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 import {NotificationService} from '../../../notification.service';
 import {RgbaColorizer} from '../../../colors/colorizer.model';
+import {BackendService} from '../../../backend/backend.service';
+import {UserService} from '../../../users/user.service';
+import {RasterResultDescriptor} from '../../../datasets/dataset.model';
+import {SpatialReferenceService} from '../../../spatial-references/spatial-reference.service';
+import {extentToBboxDict} from '../../../util/conversions';
 
 interface RgbCompositeForm {
     rasterLayers: FormControl<Array<RasterLayer> | undefined>;
@@ -34,6 +48,24 @@ interface RgbCompositeForm {
         scale: FormControl<number>;
     }>;
 }
+
+interface RgbRasterStats {
+    red: {
+        min: number;
+        max: number;
+    };
+    green: {
+        min: number;
+        max: number;
+    };
+    blue: {
+        min: number;
+        max: number;
+    };
+}
+
+type RgbColorName = 'red' | 'green' | 'blue';
+
 /**
  * This dialog allows calculations on (one or more) raster layers.
  */
@@ -50,12 +82,17 @@ export class RgbaCompositeComponent implements AfterViewInit {
     @Input() dataListConfig?: SidenavConfig;
 
     readonly RASTER_TYPE = [ResultTypes.RASTER];
+    readonly CHANNELS: Array<{color: RgbColorName; label: string}> = [
+        {color: 'red', label: 'A'},
+        {color: 'green', label: 'B'},
+        {color: 'blue', label: 'C'},
+    ];
     readonly form: FormGroup<RgbCompositeForm>;
 
     readonly projectHasRasterLayers$: Observable<boolean>;
     readonly notAllLayersSet$: Observable<boolean>;
 
-    readonly isRasterStatsLoading$ = new BehaviorSubject<boolean>(false);
+    readonly isRasterStatsNotLoading$ = new BehaviorSubject<boolean>(true);
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
 
@@ -66,6 +103,9 @@ export class RgbaCompositeComponent implements AfterViewInit {
         protected readonly projectService: ProjectService,
         protected readonly layoutService: LayoutService,
         protected readonly notificationService: NotificationService,
+        protected readonly spatialReferenceService: SpatialReferenceService,
+        protected readonly backend: BackendService,
+        protected readonly userService: UserService,
         readonly _formBuilder: FormBuilder,
     ) {
         const formBuilder = _formBuilder.nonNullable;
@@ -238,5 +278,139 @@ export class RgbaCompositeComponent implements AfterViewInit {
         }
 
         this.layoutService.setSidenavContentComponent(this.dataListConfig);
+    }
+
+    calculateRasterStats(): void {
+        if (this.loading$.value) {
+            return; // checked by form validator
+        }
+
+        const rasterLayers: Array<RasterLayer> | undefined = this.form.controls.rasterLayers.value;
+
+        if (!rasterLayers || rasterLayers.length !== 3) {
+            return; // checked by form validator
+        }
+
+        this.isRasterStatsNotLoading$.next(false);
+
+        from(this.queryRasterStats(rasterLayers[0], rasterLayers[1], rasterLayers[2])).subscribe({
+            next: (plotData) => {
+                this.isRasterStatsNotLoading$.next(true);
+
+                const colors: Array<RgbColorName> = ['red', 'green', 'blue'];
+
+                for (const color of colors) {
+                    this.form.controls[color].controls.min.setValue(plotData[color].min);
+                    this.form.controls[color].controls.max.setValue(plotData[color].max);
+                }
+
+                this.form.updateValueAndValidity();
+            },
+            error: (error) => {
+                const errorMsg = error.error.message;
+                this.notificationService.error(errorMsg);
+
+                this.isRasterStatsNotLoading$.next(true);
+            },
+        });
+    }
+
+    protected async queryRasterStats(layerRed: RasterLayer, layerGreen: RasterLayer, layerBlue: RasterLayer): Promise<RgbRasterStats> {
+        const [redOperator, greenOperator, blueOperator] = await firstValueFrom(
+            this.projectService.getAutomaticallyProjectedOperatorsFromLayers([layerRed, layerGreen, layerBlue]),
+        );
+
+        const workflow: WorkflowDict = {
+            type: 'Plot',
+            operator: {
+                type: 'Statistics',
+                params: {columnNames: ['red', 'green', 'blue']},
+                sources: {
+                    source: [redOperator, greenOperator, blueOperator],
+                },
+            } as StatisticsDict,
+        };
+
+        const [workflowId, sessionToken, queryParams] = await firstValueFrom(
+            combineLatest([
+                this.projectService.registerWorkflow(workflow),
+                this.userService.getSessionTokenForRequest(),
+                this.estimateQueryParams(redOperator), // we use the red operator to estimate the query params
+            ]),
+        );
+
+        const plot = await firstValueFrom(this.backend.getPlot(workflowId, queryParams, sessionToken));
+        const plotData = plot.data as {
+            [name: string]: {
+                valueCount: number;
+                validCount: number;
+                min: number;
+                max: number;
+                mean: number;
+                stddev: number;
+            };
+        };
+
+        return {
+            red: {
+                min: plotData.red.min,
+                max: plotData.red.max,
+            },
+            green: {
+                min: plotData.green.min,
+                max: plotData.green.max,
+            },
+            blue: {
+                min: plotData.blue.min,
+                max: plotData.blue.max,
+            },
+        };
+    }
+
+    /**
+     * TODO: put function to util or service?
+     * A similar function is used in the symbology component
+     */
+    protected async estimateQueryParams(rasterOperator: OperatorDict | SourceOperatorDict): Promise<{
+        bbox: BBoxDict;
+        crs: SrsString;
+        time: TimeIntervalDict;
+        spatialResolution: [number, number];
+    }> {
+        const rasterWorkflowId = await firstValueFrom(
+            this.projectService.registerWorkflow({
+                type: 'Raster',
+                operator: rasterOperator,
+            }),
+        );
+
+        const resultDescriptorDict = await firstValueFrom(this.projectService.getWorkflowMetaData(rasterWorkflowId));
+
+        const resultDescriptor = RasterResultDescriptor.fromDict(resultDescriptorDict as RasterResultDescriptorDict);
+
+        let bbox = resultDescriptor.bbox;
+
+        if (!bbox) {
+            // if we don't know the bbox of the dataset, we use the projection's whole bbox for guessing the symbology
+            // TODO: better use the screen extent?
+            bbox = await firstValueFrom(
+                this.spatialReferenceService
+                    .getSpatialReferenceSpecification(resultDescriptor.spatialReference)
+                    .pipe(map((spatialReferenceSpecification) => extentToBboxDict(spatialReferenceSpecification.extent))),
+            );
+        }
+
+        const time = await firstValueFrom(this.projectService.getTimeOnce());
+
+        // for sampling, we choose a reasonable resolution
+        const NUM_PIXELS = 1024;
+        const xResolution = (bbox.upperRightCoordinate.x - bbox.lowerLeftCoordinate.x) / NUM_PIXELS;
+        const yResolution = (bbox.upperRightCoordinate.y - bbox.lowerLeftCoordinate.y) / NUM_PIXELS;
+        return {
+            bbox,
+            crs: resultDescriptor.spatialReference,
+            time: time.toDict(),
+            spatialResolution: [xResolution, yResolution],
+        };
     }
 }
