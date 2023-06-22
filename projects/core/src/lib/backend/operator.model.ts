@@ -36,6 +36,26 @@ export interface ExpressionDict extends OperatorDict {
     };
 }
 
+export interface RgbDict extends OperatorDict {
+    type: 'Rgb';
+    params: {
+        redMin: number;
+        redMax: number;
+        redScale: number;
+        greenMin: number;
+        greenMax: number;
+        greenScale: number;
+        blueMin: number;
+        blueMax: number;
+        blueScale: number;
+    };
+    sources: {
+        red: OperatorDict | SourceOperatorDict;
+        green: OperatorDict | SourceOperatorDict;
+        blue: OperatorDict | SourceOperatorDict;
+    };
+}
+
 export interface NeighborhoodAggregateDict extends OperatorDict {
     type: 'NeighborhoodAggregate';
     params: {

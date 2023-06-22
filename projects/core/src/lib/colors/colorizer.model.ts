@@ -1,5 +1,12 @@
-import {ColorizerDict, LinearGradientDict, LogarithmitGradientDict, PaletteDict, RgbaColorDict} from '../backend/backend.model';
-import {Color, colorToDict, rgbaColorFromDict} from './color';
+import {
+    ColorizerDict,
+    LinearGradientDict,
+    LogarithmitGradientDict,
+    PaletteDict,
+    RgbaColorDict,
+    RgbaColorizerDict,
+} from '../backend/backend.model';
+import {Color, TRANSPARENT, colorToDict, rgbaColorFromDict} from './color';
 import {ColorBreakpoint} from './color-breakpoint.model';
 
 export abstract class Colorizer {
@@ -12,6 +19,8 @@ export abstract class Colorizer {
             return LogarithmicGradient.fromLogarithmicGradientDict(dict);
         } else if (dict.type === 'palette') {
             return PaletteColorizer.fromPaletteDict(dict);
+        } else if (dict.type === 'rgba') {
+            return RgbaColorizer.fromRgbaColorDict(dict);
         }
 
         throw new Error('Unimplemented or invalid colorizer');
@@ -422,5 +431,64 @@ export class PaletteColorizer extends Colorizer {
 
     getNumberOfColors(): number {
         return this.colors.size;
+    }
+}
+
+export class RgbaColorizer extends Colorizer {
+    override noDataColor: Color = TRANSPARENT;
+
+    static fromRgbaColorDict(_dict: RgbaColorizerDict): RgbaColorizer {
+        return new RgbaColorizer();
+    }
+
+    override getColor(value: number | undefined): Color {
+        if (value === undefined) {
+            return this.noDataColor;
+        }
+
+        // `>>>` is unsigned u32 right shift
+        const valueU32 = value >>> 0;
+
+        const red = (valueU32 & 0xff_00_00_00) >>> 24;
+        const green = (valueU32 & 0x00_ff_00_00) >>> 16;
+        const blue = (valueU32 & 0x00_00_ff_00) >>> 8;
+        const alpha = (valueU32 & 0x00_00_00_ff) >>> 0;
+
+        return new Color({
+            r: red,
+            g: green,
+            b: blue,
+            a: alpha,
+        });
+    }
+    override getBreakpoints(): ColorBreakpoint[] {
+        return [];
+    }
+    override equals(other: Colorizer): boolean {
+        if (other instanceof RgbaColorizer) {
+            return true;
+        }
+
+        return false;
+    }
+    override clone(): Colorizer {
+        return new RgbaColorizer();
+    }
+    override toDict(): ColorizerDict {
+        return {
+            type: 'rgba',
+        } as RgbaColorizerDict;
+    }
+    override isGradient(): boolean {
+        return false;
+    }
+    override isDiscrete(): boolean {
+        return false;
+    }
+    override getColorAtIndex(_index: number): Color {
+        return this.noDataColor;
+    }
+    override getNumberOfColors(): number {
+        return 0;
     }
 }

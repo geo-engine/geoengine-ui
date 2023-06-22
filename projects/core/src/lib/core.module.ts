@@ -156,6 +156,7 @@ import {FxFlexDirective, FxLayoutAlignDirective, FxLayoutDirective, FxLayoutGapD
 import {ColorPaletteEditorComponent} from './colors/color-palette-editor/color-palette-editor.component';
 import {LineSimplificationComponent} from './operators/dialogs/line-simplification/line-simplification.component';
 import {TaskListComponent} from './tasks/task-list/task-list.component';
+import {RgbaCompositeComponent} from './operators/dialogs/rgb-composite/rgb-composite.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -219,8 +220,8 @@ const CORE_COMPONENTS = [
     ColorAttributeInputComponent,
     ColorBreakpointInputComponent,
     ColorMapSelectorComponent,
-    ColorParamEditorComponent,
     ColorPaletteEditorComponent,
+    ColorParamEditorComponent,
     ColumnRangeFilterComponent,
     DatasetComponent,
     DatasetListComponent,
@@ -291,6 +292,7 @@ const CORE_COMPONENTS = [
     RasterVectorJoinComponent,
     RasterVectorJoinComponent,
     RenameLayerComponent,
+    RgbaCompositeComponent,
     SaveProjectAsComponent,
     ScatterplotOperatorComponent,
     SidenavContainerComponent,

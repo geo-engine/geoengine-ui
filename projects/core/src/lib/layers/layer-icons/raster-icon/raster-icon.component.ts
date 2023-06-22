@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChange} from '@angular/core';
-import {Color} from '../../../colors/color';
-import {Colorizer} from '../../../colors/colorizer.model';
+import {Color, TRANSPARENT} from '../../../colors/color';
+import {Colorizer, LinearGradient, RgbaColorizer} from '../../../colors/colorizer.model';
+import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
 
 /**
  * a simple interface to model a cell in the raster icon
@@ -38,6 +39,21 @@ export class RasterIconComponent implements OnInit, OnChanges {
      */
     cellSpace = 24;
 
+    static RAINBOW_COLORIZER: Colorizer = new LinearGradient(
+        [
+            new ColorBreakpoint(0, Color.fromRgbaLike('#ff0000')),
+            new ColorBreakpoint(0, Color.fromRgbaLike('#ffa500')),
+            new ColorBreakpoint(0, Color.fromRgbaLike('#ffff00')),
+            new ColorBreakpoint(0, Color.fromRgbaLike('#008000')),
+            new ColorBreakpoint(0, Color.fromRgbaLike('#0000ff')),
+            new ColorBreakpoint(0, Color.fromRgbaLike('#4b0082')),
+            new ColorBreakpoint(0, Color.fromRgbaLike('#ee82ee')),
+        ],
+        TRANSPARENT,
+        TRANSPARENT,
+        TRANSPARENT,
+    );
+
     ngOnChanges(_changes: {[propertyName: string]: SimpleChange}): void {
         this.generateCells(this.xCells, this.yCells);
     }
@@ -66,13 +82,19 @@ export class RasterIconComponent implements OnInit, OnChanges {
     }
 
     private cellColor(x: number, y: number): Color {
-        const validSymbology = this.colorizer && this.colorizer.getNumberOfColors() > 0;
+        let colorizer = this.colorizer;
+
+        if (this.colorizer instanceof RgbaColorizer) {
+            colorizer = RasterIconComponent.RAINBOW_COLORIZER;
+        }
+
+        const validSymbology = colorizer && colorizer.getNumberOfColors() > 0;
         if (!validSymbology) {
-            return Color.fromRgbaLike('ff000000');
+            return Color.fromRgbaLike('#ff0000');
         }
         const numberOfCells = this.xCells * this.yCells;
-        const numberOfColors = this.colorizer.getNumberOfColors();
-        const isGradient = this.colorizer.isGradient();
+        const numberOfColors = colorizer.getNumberOfColors();
+        const isGradient = colorizer.isGradient();
         const scale = isGradient ? numberOfColors / (this.xCells + this.yCells - 1) : numberOfColors / numberOfCells;
         const idx = y * this.xCells + x;
         let colorIdx = 0;
@@ -82,6 +104,6 @@ export class RasterIconComponent implements OnInit, OnChanges {
             const uidx = isGradient ? this.xCells - 1 - x + y : idx;
             colorIdx = Math.trunc(uidx * scale) % numberOfColors;
         }
-        return this.colorizer.getColorAtIndex(colorIdx);
+        return colorizer.getColorAtIndex(colorIdx);
     }
 }
