@@ -74,8 +74,6 @@ export class RasterSymbologyEditorComponent implements OnInit {
     }
 
     updateColorizer(colorizer: Colorizer): void {
-        console.log('update colorizer', colorizer);
-
         this.symbology = this.symbology.cloneWith({colorizer});
 
         this.unappliedChanges.next(true);
