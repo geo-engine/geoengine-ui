@@ -28,126 +28,62 @@
             </p>
         </geoengine-dialog-help>
 
-        <mat-accordion multi="true">
-            <mat-expansion-panel expanded="true">
-                <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        <mat-icon class="icon">map</mat-icon>
-                        <span class="panelTitleText">Global Layer Properties</span>
-                    </mat-panel-title>
-                </mat-expansion-panel-header>
-                <ng-template matExpansionPanelContent>
-                    <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="1rem">
-                        <span>Opacity</span>
-                        <mat-slider fxFlex max="100" min="1" step="1" thumbLabel discrete>
-                            <input matSliderThumb #opacitySliderInput [ngModel]="getOpacity()" (ngModelChange)="updateOpacity($event)" />
-                        </mat-slider>
-                        <span>{{ opacitySliderInput.value }} %</span>
-                    </div>
-                    <mat-divider></mat-divider>
-                    <div>
-                        <geoengine-color-attribute-input
-                            [ngModel]="getNoDataColor()"
-                            (ngModelChange)="updateNoDataColor($event)"
-                            attributePlaceholder=""
-                            [readonlyAttribute]="true"
-                        >
-                        </geoengine-color-attribute-input>
-                        <geoengine-color-attribute-input
-                            [ngModel]="getDefaultColor()"
-                            (ngModelChange)="updateDefaultColor($event)"
-                            attributePlaceholder=""
-                            [readonlyAttribute]="true"
-                        >
-                        </geoengine-color-attribute-input>
-                    </div>
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title-group>
+                    <mat-card-title>Global Layer Properties</mat-card-title>
+                    <mat-card-subtitle>Symbology properties for all raster layers</mat-card-subtitle>
+                    <mat-icon class="icon">map</mat-icon>
+                </mat-card-title-group>
+            </mat-card-header>
+            <mat-card-content>
+                <div class="slider-row">
+                    <p>Opacity</p>
+                    <mat-slider fxFlex max="100" min="1" step="1" thumbLabel discrete>
+                        <input matSliderThumb #opacitySliderInput [ngModel]="getOpacity()" (ngModelChange)="updateOpacity($event)" />
+                    </mat-slider>
+                    <span>{{ opacitySliderInput.value }} %</span>
+                </div>
 
-                    <mat-divider></mat-divider>
-                    <span>Colorizer:</span>
+                <mat-divider></mat-divider>
 
-                    <div class="button-group">
-                        <mat-button-toggle-group
-                            id="gradientType"
-                            [multiple]="false"
-                            [ngModel]="getColorizerType()"
-                            (ngModelChange)="updateColorizerType($event)"
-                        >
-                            <mat-button-toggle value="linearGradient">Linear Gradient</mat-button-toggle>
-                            <mat-button-toggle value="logarithmicGradient">Logarithmic Gradient</mat-button-toggle>
-                            <mat-button-toggle value="palette">Palette</mat-button-toggle>
-                        </mat-button-toggle-group>
-                    </div>
+                <p>Colorizer:</p>
 
-                    <div
-                        *ngIf="symbology.colorizer.isGradient()"
-                        class="colorizer-preview"
-                        [style.background]="symbology.colorizer | geoengineColorizerCssGradient : 90"
-                    ></div>
-                </ng-template>
-            </mat-expansion-panel>
-
-            <mat-expansion-panel *ngIf="paletteSelected === false" expanded="true">
-                <mat-expansion-panel-header>
-                    <mat-panel-title fxLayoutAlign="space-between center" fxLayoutGap="0.5rem">
-                        <mat-icon>looks</mat-icon>
-                        <span fxFlex>Update Color Map</span>
-                    </mat-panel-title>
-                </mat-expansion-panel-header>
-
-                <ng-template matExpansionPanelContent>
-                    <div class="histogram" *ngIf="histogramCreated === true">
-                        <ng-container *ngIf="histogramData | async as histogramData">
-                            <geoengine-vega-viewer
-                                [chartData]="histogramData"
-                                (interactionChange)="updateBounds($any($event))"
-                            ></geoengine-vega-viewer>
-                        </ng-container>
-                        <mat-progress-bar mode="indeterminate" *ngIf="histogramLoading | async"></mat-progress-bar>
-                    </div>
-                    <div class="histogram-actions">
-                        <button mat-stroked-button class="button" (click)="updateHistogram()">
-                            <ng-container *ngIf="histogramCreated; then createdBlock; else notCreatedBlock"></ng-container>
-                            <!-- Only displayed before any histogram is created -->
-                            <ng-template #createdBlock>Update Histogram</ng-template>
-                            <!-- Only displayed after histogram is created -->
-                            <ng-template #notCreatedBlock>Create Histogram</ng-template>
-                        </button>
-                    </div>
-
-                    <mat-divider></mat-divider>
-
-                    <geoengine-color-map-selector
-                        (breakpointsChange)="updateBreakpoints($event)"
-                        (changesToForm)="getNotified()"
-                        [minValue]="layerMinValue"
-                        [maxValue]="layerMaxValue"
-                        [scale]="scale"
+                <div>
+                    <mat-button-toggle-group
+                        id="colorizer-type"
+                        [multiple]="false"
+                        [ngModel]="getColorizerType()"
+                        (ngModelChange)="updateColorizerType($event)"
                     >
-                    </geoengine-color-map-selector>
-                </ng-template>
-            </mat-expansion-panel>
+                        <mat-button-toggle [value]="linearGradientColorizerType">Linear Gradient</mat-button-toggle>
+                        <mat-button-toggle [value]="logarithmicGradientColorizerType">Logarithmic Gradient</mat-button-toggle>
+                        <mat-button-toggle [value]="paletteColorizerType">Palette</mat-button-toggle>
+                        <mat-button-toggle [value]="rgbaColorizerType">RGBA</mat-button-toggle>
+                    </mat-button-toggle-group>
+                </div>
+            </mat-card-content>
+        </mat-card>
 
-            <mat-expansion-panel *ngIf="paletteSelected" expanded="true">
-                <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        <mat-icon class="icon">color_lens</mat-icon>
-                        <span class="panelTitleText">Color Table</span>
-                    </mat-panel-title>
-                </mat-expansion-panel-header>
-                <ng-template matExpansionPanelContent> </ng-template>
-                <geoengine-color-palette-editor
-                    [symbology]="symbology"
-                    (symbologyChanged)="symbologyChangeHandler($event)"
-                ></geoengine-color-palette-editor>
-            </mat-expansion-panel>
-        </mat-accordion>
+        <geoengine-raster-gradient-symbology-editor
+            *ngIf="gradientColorizer"
+            [layer]="layer"
+            [colorizer]="gradientColorizer"
+            (colorizerChange)="updateColorizer($event)"
+        ></geoengine-raster-gradient-symbology-editor>
+
+        <geoengine-raster-palette-symbology-editor
+            *ngIf="paletteColorizer"
+            [layer]="layer"
+            [colorizer]="paletteColorizer"
+            (colorizerChange)="updateColorizer($event)"
+        >
+        </geoengine-raster-palette-symbology-editor>
     </div>
 
     <div class="actions">
-        <button mat-raised-button class="button" (click)="resetChanges(layer)" [disabled]="unappliedChanges === false">Reset</button>
+        <button mat-raised-button (click)="resetChanges(layer)" [disabled]="unchangedSymbology | async">Reset</button>
 
-        <button mat-raised-button color="primary" class="button" (click)="applyChanges()" [disabled]="unappliedChanges === false">
-            Apply
-        </button>
+        <button mat-raised-button color="primary" (click)="applyChanges()" [disabled]="unchangedSymbology | async">Apply</button>
     </div>
 </div>

@@ -1,24 +1,23 @@
-import {Component, Input, ChangeDetectionStrategy, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
-import {map, mergeMap, tap} from 'rxjs/operators';
+import {Component, Input, ChangeDetectionStrategy, OnInit} from '@angular/core';
 import {RasterSymbology} from '../symbology.model';
 import {Layer, RasterLayer} from '../../layer.model';
 import {MapService} from '../../../map/map.service';
 import {ProjectService} from '../../../project/project.service';
 import {Config} from '../../../config.service';
 import {BackendService} from '../../../backend/backend.service';
-import {HistogramDict, HistogramParams} from '../../../backend/operator.model';
-import {LinearGradient, LogarithmicGradient, PaletteColorizer} from '../../../colors/colorizer.model';
-import {ColorAttributeInput} from '../../../colors/color-attribute-input/color-attribute-input.component';
-import {UUID, WorkflowDict} from '../../../backend/backend.model';
-import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
+import {
+    Colorizer,
+    ColorizerType,
+    LinearGradient,
+    LogarithmicGradient,
+    PaletteColorizer,
+    RgbaColorizer,
+} from '../../../colors/colorizer.model';
 import {UserService} from '../../../users/user.service';
-import {extentToBboxDict} from '../../../util/conversions';
-import {VegaChartData} from '../../../plots/vega-viewer/vega-viewer.component';
-import {Color} from '../../../colors/color';
-import {ColorMapSelectorComponent} from '../../../colors/color-map-selector/color-map-selector.component';
+import {Color, TRANSPARENT, WHITE} from '../../../colors/color';
 import {LayoutService} from '../../../layout.service';
-import {ColorPaletteEditorComponent} from '../../../colors/color-palette-editor/color-palette-editor.component';
+import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
+import {BehaviorSubject, map} from 'rxjs';
 
 /**
  * An editor for generating raster symbologies.
@@ -29,37 +28,18 @@ import {ColorPaletteEditorComponent} from '../../../colors/color-palette-editor/
     styleUrls: ['raster-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RasterSymbologyEditorComponent implements OnDestroy, OnInit {
-    @ViewChild(ColorMapSelectorComponent)
-    colorMapSelector!: ColorMapSelectorComponent;
-
-    @ViewChild(ColorPaletteEditorComponent)
-    colorPaletteEditor!: ColorPaletteEditorComponent;
-
+export class RasterSymbologyEditorComponent implements OnInit {
     @Input() layer!: RasterLayer;
 
     symbology!: RasterSymbology;
 
-    // The min value used for color table generation
-    layerMinValue: number | undefined = undefined;
-    // The max value used for color table generation
-    layerMaxValue: number | undefined = undefined;
+    readonly linearGradientColorizerType = LinearGradient.TYPE_NAME;
+    readonly logarithmicGradientColorizerType = LogarithmicGradient.TYPE_NAME;
+    readonly paletteColorizerType = PaletteColorizer.TYPE_NAME;
+    readonly rgbaColorizerType = RgbaColorizer.TYPE_NAME;
 
-    scale: 'linear' | 'logarithmic' = 'linear';
-
-    unappliedChanges = false;
-
-    histogramData = new ReplaySubject<VegaChartData>(1);
-    histogramLoading = new BehaviorSubject(false);
-    histogramCreated = false;
-
-    paletteSelected = false; // TODO: Remove when gradients can be customized
-
-    protected histogramWorkflowId = new ReplaySubject<UUID>(1);
-    protected histogramSubscription?: Subscription;
-
-    protected defaultColor?: ColorAttributeInput;
-    protected noDataColor?: ColorAttributeInput;
+    unappliedChanges = new BehaviorSubject(false);
+    unchangedSymbology = this.unappliedChanges.pipe(map((unapplied) => !unapplied));
 
     constructor(
         protected readonly projectService: ProjectService,
@@ -71,62 +51,8 @@ export class RasterSymbologyEditorComponent implements OnDestroy, OnInit {
     ) {}
 
     ngOnInit(): void {
+        // always work on a copy in order to being able to reset changes
         this.symbology = this.layer.symbology.clone();
-        this.updateNodataAndDefaultColor();
-
-        this.updateSymbologyFromLayer();
-        this.updateLayerMinMaxFromColorizer();
-
-        this.createHistogramWorkflowId().subscribe((histogramWorkflowId) => this.histogramWorkflowId.next(histogramWorkflowId));
-        this.updateColorizerType(this.getColorizerType()); // TODO: Remove after palettes are implemented
-    }
-
-    ngOnDestroy(): void {
-        if (this.histogramSubscription) {
-            this.histogramSubscription.unsubscribe();
-        }
-    }
-
-    get histogramAutoReload(): boolean {
-        return !!this.histogramSubscription;
-    }
-
-    set histogramAutoReload(autoReload: boolean) {
-        if (autoReload) {
-            this.initializeHistogramDataSubscription();
-        } else {
-            this.histogramSubscription?.unsubscribe();
-            this.histogramSubscription = undefined;
-        }
-    }
-
-    /**
-     * Set the max value to use for color table generation
-     */
-    updateLayerMinValue(min: number): void {
-        if (this.layerMinValue !== min) {
-            this.layerMinValue = min;
-        }
-    }
-
-    /**
-     * Set the max value to use for color table generation
-     */
-    updateLayerMaxValue(max: number): void {
-        if (this.layerMaxValue !== max) {
-            this.layerMaxValue = max;
-        }
-    }
-
-    updateBounds(histogramSignal: {binStart: [number, number]}): void {
-        if (!histogramSignal || !histogramSignal.binStart || histogramSignal.binStart.length !== 2) {
-            return;
-        }
-
-        const [min, max] = histogramSignal.binStart;
-
-        this.updateLayerMinValue(min);
-        this.updateLayerMaxValue(max);
     }
 
     /**
@@ -144,328 +70,164 @@ export class RasterSymbologyEditorComponent implements OnDestroy, OnInit {
 
         this.symbology = this.symbology.cloneWith({opacity});
 
-        this.unappliedChanges = true;
+        this.unappliedChanges.next(true);
     }
 
-    getDefaultColor(): ColorAttributeInput {
-        if (!this.defaultColor) {
-            throw new Error('uninitialized defaultColor');
-        }
+    updateColorizer(colorizer: Colorizer): void {
+        console.log('update colorizer', colorizer);
 
-        return this.defaultColor;
-    }
+        this.symbology = this.symbology.cloneWith({colorizer});
 
-    /**
-     * Called from HTML template when a new value is emitted by the ColorPaletteEditor child component
-     *
-     * @param rasterSymbology The new rastersymbology to use
-     */
-    symbologyChangeHandler(rasterSymbology: RasterSymbology): void {
-        this.symbology = rasterSymbology;
-        this.unappliedChanges = true;
-    }
-
-    updateDefaultColor(defaultColorInput: ColorAttributeInput): void {
-        const defaultColor = defaultColorInput.value;
-
-        if (this.symbology.colorizer instanceof LinearGradient || this.symbology.colorizer instanceof LogarithmicGradient) {
-            // TODO: refactor over/under color
-            const colorizer = this.symbology.colorizer.cloneWith({overColor: defaultColor, underColor: defaultColor});
-            this.symbology = this.symbology.cloneWith({colorizer});
-        } else if (this.symbology.colorizer instanceof PaletteColorizer) {
-            const colorizer = this.symbology.colorizer.cloneWith({defaultColor});
-            this.symbology = this.symbology.cloneWith({colorizer});
-        } else {
-            throw new Error('unsupported colorizer type');
-        }
-
-        this.unappliedChanges = true;
+        this.unappliedChanges.next(true);
     }
 
     applyChanges(): void {
-        this.colorMapSelector?.applyChanges();
-        this.colorPaletteEditor?.applyChanges(this.symbology);
-        this.unappliedChanges = false;
-        this.update();
-    }
+        this.unappliedChanges.next(false);
+        this.projectService.changeLayer(this.layer, {symbology: this.symbology});
 
-    getNotified(): void {
-        this.unappliedChanges = true;
+        // TODO: get layer with updated symbology
     }
 
     resetChanges(layer: Layer): void {
         this.layoutService.setSidenavContentComponent({
             component: RasterSymbologyEditorComponent,
-            config: {layer, histogramData: this.histogramData, histogramCreated: this.histogramCreated},
+            config: {layer},
         });
     }
 
-    getNoDataColor(): ColorAttributeInput {
-        if (!this.noDataColor) {
-            throw new Error('uninitialized noDataColor');
-        }
-
-        return this.noDataColor;
-    }
-
-    /**
-     * Set the no data color
-     */
-    updateNoDataColor(noDataColorInput: ColorAttributeInput): void {
-        const noDataColor = noDataColorInput.value;
-
-        if (this.symbology.colorizer instanceof LinearGradient || this.symbology.colorizer instanceof LogarithmicGradient) {
-            const colorizer = this.symbology.colorizer.cloneWith({noDataColor});
-            this.symbology = this.symbology.cloneWith({colorizer});
-        } else if (this.symbology.colorizer instanceof PaletteColorizer) {
-            const colorizer = this.symbology.colorizer.cloneWith({noDataColor});
-            this.symbology = this.symbology.cloneWith({colorizer});
-        } else {
-            throw new Error('unsupported colorizer type');
-        }
-
-        this.unappliedChanges = true;
-    }
-
-    getColorizerType(): 'linearGradient' | 'logarithmicGradient' | 'palette' {
+    getColorizerType(): ColorizerType {
         if (this.symbology.colorizer instanceof LinearGradient) {
-            return 'linearGradient';
+            return LinearGradient.TYPE_NAME;
         }
 
         if (this.symbology.colorizer instanceof PaletteColorizer) {
-            return 'palette';
+            return PaletteColorizer.TYPE_NAME;
         }
 
         if (this.symbology.colorizer instanceof LogarithmicGradient) {
-            return 'logarithmicGradient';
+            return LogarithmicGradient.TYPE_NAME;
+        }
+
+        if (this.symbology.colorizer instanceof RgbaColorizer) {
+            return RgbaColorizer.TYPE_NAME;
         }
 
         throw Error('unknown colorizer type');
     }
 
-    updateScale(): void {
-        if (this.symbology.colorizer instanceof LogarithmicGradient) {
-            this.scale = 'logarithmic';
+    get paletteColorizer(): PaletteColorizer | undefined {
+        if (this.symbology.colorizer instanceof PaletteColorizer) {
+            return this.symbology.colorizer;
+        }
+        return undefined;
+    }
+
+    get gradientColorizer(): LinearGradient | LogarithmicGradient | undefined {
+        if (this.symbology.colorizer instanceof LinearGradient || this.symbology.colorizer instanceof LogarithmicGradient) {
+            return this.symbology.colorizer;
+        }
+        return undefined;
+    }
+
+    /**
+     * Conversion between different colorizer types
+     */
+    updateColorizerType(colorizerType: ColorizerType): void {
+        if (colorizerType === this.getColorizerType()) {
             return;
         }
 
-        this.scale = 'linear';
+        let colorizer: Colorizer;
+
+        switch (colorizerType) {
+            case 'linearGradient':
+                colorizer = this.createGradientColorizer(
+                    (breakpoints: Array<ColorBreakpoint>, noDataColor: Color, overColor: Color, underColor: Color) =>
+                        new LinearGradient(breakpoints, noDataColor, overColor, underColor),
+                );
+                break;
+            case 'logarithmicGradient':
+                colorizer = this.createGradientColorizer(
+                    (breakpoints: Array<ColorBreakpoint>, noDataColor: Color, overColor: Color, underColor: Color) =>
+                        new LogarithmicGradient(breakpoints, noDataColor, overColor, underColor),
+                );
+                break;
+            case 'palette':
+                colorizer = this.createPaletteColorizer();
+                break;
+            case 'rgba':
+                colorizer = new RgbaColorizer();
+        }
+
+        this.symbology = this.symbology.cloneWith({colorizer});
+        this.unappliedChanges.next(true);
     }
 
-    updateColorizerType(colorizerType: 'linearGradient' | 'logarithmicGradient' | 'palette'): void {
-        // TODO: Remove next line when gradients can be customized
-        this.paletteSelected = colorizerType === 'linearGradient' || colorizerType === 'logarithmicGradient' ? false : true;
-
-        if (this.getColorizerType() === colorizerType) {
-            return;
+    protected createGradientColorizer<G>(
+        constructorFn: (breakpoints: Array<ColorBreakpoint>, noDataColor: Color, overColor: Color, underColor: Color) => G,
+    ): G {
+        if (this.symbology.colorizer instanceof RgbaColorizer) {
+            // TODO: derive some reasonable default values
+            return constructorFn([], TRANSPARENT, TRANSPARENT, TRANSPARENT);
         }
 
         const breakpoints = this.symbology.colorizer.getBreakpoints();
         let noDataColor: Color;
         let overColor: Color;
         let underColor: Color;
-        let colorizer;
 
         if (this.symbology.colorizer instanceof LogarithmicGradient || this.symbology.colorizer instanceof LinearGradient) {
             noDataColor = this.symbology.colorizer.noDataColor;
             overColor = this.symbology.colorizer.overColor;
             underColor = this.symbology.colorizer.underColor;
-        } else {
+        } else if (this.symbology.colorizer instanceof PaletteColorizer) {
             // Must be a palette then, so use values from the color selectors or RGBA 0, 0, 0, 0 as a fallback
-            const defaultColor: Color = this.defaultColor ? this.defaultColor.value : new Color({r: 0, g: 0, b: 0, a: 0});
-            noDataColor = this.noDataColor ? this.noDataColor.value : new Color({r: 0, g: 0, b: 0, a: 0});
+            const colorizer = this.symbology.colorizer as PaletteColorizer;
+            const defaultColor: Color = colorizer.defaultColor ? colorizer.defaultColor : TRANSPARENT;
+
+            noDataColor = colorizer.noDataColor ? colorizer.noDataColor : TRANSPARENT;
             overColor = defaultColor;
             underColor = defaultColor;
+        } else {
+            throw Error('unknown colorizer type');
         }
 
-        switch (colorizerType) {
-            case 'linearGradient':
-                // colorizer = new LinearGradient(breakpoints, noDataColor, overColor, underColor);
-                colorizer = new LinearGradient(breakpoints, noDataColor, overColor, underColor);
-                break;
-            case 'logarithmicGradient':
-                colorizer = new LogarithmicGradient(breakpoints, noDataColor, overColor, underColor);
-                break;
-            case 'palette':
-                colorizer = new PaletteColorizer(this.createColorMap(), noDataColor, overColor);
-                break;
-        }
-        this.symbology = this.symbology.cloneWith({colorizer});
-        this.updateScale();
-        this.unappliedChanges = true;
+        return constructorFn(breakpoints, noDataColor, overColor, underColor);
     }
 
-    createColorMap(): Map<number, Color> {
+    protected createPaletteColorizer(): PaletteColorizer {
+        if (this.symbology.colorizer instanceof RgbaColorizer) {
+            // TODO: derive some reasonable default values
+            return new PaletteColorizer(new Map([[0, WHITE]]), TRANSPARENT, TRANSPARENT);
+        }
+
+        const breakpoints = this.symbology.colorizer.getBreakpoints();
+        let noDataColor: Color;
+        let defaultColor: Color;
+
+        if (this.symbology.colorizer instanceof LogarithmicGradient || this.symbology.colorizer instanceof LinearGradient) {
+            noDataColor = this.symbology.colorizer.noDataColor;
+
+            // we can neither use the over nor the under color
+            defaultColor = TRANSPARENT;
+        } else if (this.symbology.colorizer instanceof PaletteColorizer) {
+            // Must be a palette then, so use values from the color selectors or RGBA 0, 0, 0, 0 as a fallback
+            const colorizer = this.symbology.colorizer as PaletteColorizer;
+
+            noDataColor = colorizer.noDataColor ? colorizer.noDataColor : TRANSPARENT;
+            defaultColor = colorizer.defaultColor ? colorizer.defaultColor : TRANSPARENT;
+        } else {
+            throw Error('unknown colorizer type');
+        }
+
+        return new PaletteColorizer(this.createColorMap(breakpoints), noDataColor, defaultColor);
+    }
+
+    protected createColorMap(breakpoints: Array<ColorBreakpoint>): Map<number, Color> {
         const colorMap = new Map<number, Color>();
-        const colorizer: PaletteColorizer = this.symbology.colorizer as PaletteColorizer;
-        colorizer.getBreakpoints().forEach((bp, index) => {
-            colorMap.set(bp.value, colorizer.getColorAtIndex(index));
+        breakpoints.forEach((bp, _index) => {
+            colorMap.set(bp.value, bp.color);
         });
         return colorMap;
-    }
-
-    /**
-     * Transform a map of <number, Color> i.e. the colorMap to an Array of ColorBreakpoint, which have a value : number and color
-     * This is needed to provide the breakpoints for LinearGradient and LogarithmicGradient from the colorPalette
-     */
-    colorMapToBreakpoints(colorMap: Map<number, Color>): ColorBreakpoint[] {
-        const breakpoints: ColorBreakpoint[] = [];
-        colorMap.forEach((color, value) => breakpoints.push(new ColorBreakpoint(value, color)));
-        return breakpoints;
-    }
-
-    /**
-     * Set the symbology colorizer
-     */
-    updateBreakpoints(breakpoints: Array<ColorBreakpoint>): void {
-        if (!breakpoints) {
-            return;
-        }
-
-        if (
-            // try with palette
-            !(this.symbology.colorizer instanceof LinearGradient) &&
-            !(this.symbology.colorizer instanceof LogarithmicGradient && !(this.symbology.colorizer instanceof PaletteColorizer))
-        ) {
-            return;
-            // TODO: implement other variants
-        }
-
-        this.symbology = this.symbology.cloneWith({colorizer: this.symbology.colorizer.cloneWith({breakpoints})});
-
-        this.update();
-    }
-
-    /**
-     * Sets the current (working) symbology to the one of the current layer.
-     */
-    updateSymbologyFromLayer(): void {
-        if (!this.layer || !this.layer.symbology || this.layer.symbology.equals(this.symbology)) {
-            return;
-        }
-        this.symbology = this.layer.symbology;
-
-        this.updateNodataAndDefaultColor();
-
-        this.updateScale();
-    }
-
-    /**
-     * Sets the layer min/max values from the colorizer.
-     */
-    updateLayerMinMaxFromColorizer(): void {
-        const breakpoints = this.symbology.colorizer.getBreakpoints();
-        this.updateLayerMinValue(breakpoints[0].value);
-        this.updateLayerMaxValue(breakpoints[breakpoints.length - 1].value);
-    }
-
-    updateHistogram(): void {
-        this.histogramCreated = true;
-        this.histogramSubscription = this.createHistogramStream().subscribe((histogramData) => {
-            this.histogramData.next(histogramData);
-            this.histogramSubscription?.unsubscribe();
-            this.histogramAutoReload = false;
-        });
-    }
-
-    private updateNodataAndDefaultColor(): void {
-        if (this.symbology.colorizer instanceof LinearGradient || this.symbology.colorizer instanceof LogarithmicGradient) {
-            // TODO: refactor over/under color
-            this.defaultColor = {
-                key: 'Overflow Color',
-                value: this.symbology.colorizer.underColor,
-            };
-        } else if (this.symbology.colorizer instanceof PaletteColorizer) {
-            this.defaultColor = {
-                key: 'Overflow Color',
-                value: this.symbology.colorizer.defaultColor,
-            };
-        } else {
-            // TODO: refactor over/under color
-            this.defaultColor = undefined;
-        }
-
-        if (
-            this.symbology.colorizer instanceof LinearGradient ||
-            this.symbology.colorizer instanceof LogarithmicGradient ||
-            this.symbology.colorizer instanceof PaletteColorizer
-        ) {
-            this.noDataColor = {
-                key: 'No Data Color',
-                value: this.symbology.colorizer.noDataColor,
-            };
-        } else {
-            this.noDataColor = undefined;
-        }
-    }
-
-    private update(): void {
-        this.projectService.changeLayer(this.layer, {symbology: this.symbology});
-        if (this.colorPaletteEditor !== undefined) {
-            this.colorPaletteEditor.sortColorAttributeInputs();
-        }
-    }
-
-    private initializeHistogramDataSubscription(): void {
-        if (this.histogramSubscription) {
-            this.histogramSubscription.unsubscribe();
-        }
-
-        this.histogramSubscription = this.createHistogramStream().subscribe((histogramData) => this.histogramData.next(histogramData));
-    }
-
-    private createHistogramStream(): Observable<VegaChartData> {
-        return combineLatest([
-            this.histogramWorkflowId,
-            this.projectService.getTimeStream(),
-            this.mapService.getViewportSizeStream(),
-            this.userService.getSessionTokenForRequest(),
-            this.projectService.getSpatialReferenceStream(),
-        ]).pipe(
-            tap(() => this.histogramLoading.next(true)),
-            mergeMap(([workflowId, time, viewport, sessionToken, sref]) =>
-                this.backend.getPlot(
-                    workflowId,
-                    {
-                        bbox: extentToBboxDict(viewport.extent),
-                        crs: sref.srsString,
-                        spatialResolution: [viewport.resolution, viewport.resolution],
-                        time: time.toDict(),
-                    },
-                    sessionToken,
-                ),
-            ),
-            map((plotData) => plotData.data),
-            tap(() => this.histogramLoading.next(false)),
-        );
-    }
-
-    private createHistogramWorkflowId(): Observable<UUID> {
-        return this.projectService.getWorkflow(this.layer.workflowId).pipe(
-            mergeMap((workflow) =>
-                combineLatest([
-                    of({
-                        type: 'Plot',
-                        operator: {
-                            type: 'Histogram',
-                            params: {
-                                buckets: {
-                                    type: 'number',
-                                    value: 20,
-                                },
-                                bounds: 'data',
-                                interactive: true,
-                            } as HistogramParams,
-                            sources: {
-                                source: workflow.operator,
-                            },
-                        } as HistogramDict,
-                    } as WorkflowDict),
-                    this.userService.getSessionTokenForRequest(),
-                ]),
-            ),
-            mergeMap(([workflow, sessionToken]) => this.backend.registerWorkflow(workflow, sessionToken)),
-            map((workflowRegistration) => workflowRegistration.id),
-        );
     }
 }

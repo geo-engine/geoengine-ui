@@ -9,17 +9,19 @@ import {
 import {Color, TRANSPARENT, colorToDict, rgbaColorFromDict} from './color';
 import {ColorBreakpoint} from './color-breakpoint.model';
 
+export type ColorizerType = 'linearGradient' | 'logarithmicGradient' | 'palette' | 'rgba';
+
 export abstract class Colorizer {
     abstract readonly noDataColor: Color;
 
     static fromDict(dict: ColorizerDict): Colorizer {
-        if (dict.type === 'linearGradient') {
+        if (dict.type === LinearGradient.TYPE_NAME) {
             return LinearGradient.fromLinearGradientDict(dict);
-        } else if (dict.type === 'logarithmicGradient') {
+        } else if (dict.type === LogarithmicGradient.TYPE_NAME) {
             return LogarithmicGradient.fromLogarithmicGradientDict(dict);
-        } else if (dict.type === 'palette') {
+        } else if (dict.type === PaletteColorizer.TYPE_NAME) {
             return PaletteColorizer.fromPaletteDict(dict);
-        } else if (dict.type === 'rgba') {
+        } else if (dict.type === RgbaColorizer.TYPE_NAME) {
             return RgbaColorizer.fromRgbaColorDict(dict);
         }
 
@@ -50,6 +52,8 @@ export abstract class Colorizer {
 }
 
 export class LinearGradient extends Colorizer {
+    static readonly TYPE_NAME = 'linearGradient';
+
     readonly breakpoints: Array<ColorBreakpoint>;
     readonly noDataColor: Color;
     readonly overColor: Color;
@@ -153,7 +157,7 @@ export class LinearGradient extends Colorizer {
 
     toDict(): ColorizerDict {
         return {
-            type: 'linearGradient',
+            type: LinearGradient.TYPE_NAME,
             breakpoints: this.breakpoints.map((b) => b.toDict()),
             noDataColor: colorToDict(this.noDataColor),
             overColor: colorToDict(this.overColor),
@@ -179,6 +183,8 @@ export class LinearGradient extends Colorizer {
 }
 
 export class LogarithmicGradient extends Colorizer {
+    static readonly TYPE_NAME = 'logarithmicGradient';
+
     readonly breakpoints: Array<ColorBreakpoint>;
     readonly noDataColor: Color;
     readonly overColor: Color;
@@ -280,7 +286,7 @@ export class LogarithmicGradient extends Colorizer {
 
     toDict(): ColorizerDict {
         return {
-            type: 'logarithmicGradient',
+            type: LogarithmicGradient.TYPE_NAME,
             breakpoints: this.breakpoints.map((b) => b.toDict()),
             noDataColor: colorToDict(this.noDataColor),
             overColor: colorToDict(this.overColor),
@@ -306,6 +312,8 @@ export class LogarithmicGradient extends Colorizer {
 }
 
 export class PaletteColorizer extends Colorizer {
+    static readonly TYPE_NAME = 'palette';
+
     readonly colors: Map<number, Color>;
     readonly noDataColor: Color;
     readonly defaultColor: Color;
@@ -403,7 +411,7 @@ export class PaletteColorizer extends Colorizer {
         }
 
         return {
-            type: 'palette',
+            type: PaletteColorizer.TYPE_NAME,
             colors,
             noDataColor: colorToDict(this.noDataColor),
             defaultColor: colorToDict(this.defaultColor),
@@ -435,6 +443,8 @@ export class PaletteColorizer extends Colorizer {
 }
 
 export class RgbaColorizer extends Colorizer {
+    static readonly TYPE_NAME = 'rgba';
+
     override noDataColor: Color = TRANSPARENT;
 
     static fromRgbaColorDict(_dict: RgbaColorizerDict): RgbaColorizer {
@@ -476,7 +486,7 @@ export class RgbaColorizer extends Colorizer {
     }
     override toDict(): ColorizerDict {
         return {
-            type: 'rgba',
+            type: RgbaColorizer.TYPE_NAME,
         } as RgbaColorizerDict;
     }
     override isGradient(): boolean {
