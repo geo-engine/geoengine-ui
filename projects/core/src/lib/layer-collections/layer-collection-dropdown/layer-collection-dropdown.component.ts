@@ -102,12 +102,14 @@ export class LayerCollectionDropdownComponent implements OnInit {
 
         this.layerSelected.emit(undefined);
 
-        this.layerCollectionService.getLayerCollectionItems(collection.id.providerId, collection.id.collectionId).subscribe((c) => {
-            this.collections.splice(index + 1);
-            this.collections.push(c);
+        this.layerCollectionService
+            .getLayerCollectionItems(collection.id.providerId, collection.id.collectionId, 0, 9999)
+            .subscribe((c) => {
+                this.collections.splice(index + 1);
+                this.collections.push(c);
 
-            this.changeDetectorRef.markForCheck();
-        });
+                this.changeDetectorRef.markForCheck();
+            });
     }
 
     searchPredicate(filter: string, element: LayerCollectionItemDict): boolean {
