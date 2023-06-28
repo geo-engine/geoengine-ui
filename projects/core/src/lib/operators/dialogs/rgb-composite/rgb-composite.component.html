@@ -1,8 +1,8 @@
-<geoengine-sidenav-header>Calculate Expression on Raster</geoengine-sidenav-header>
+<geoengine-sidenav-header>Calculate RGB Composite on Rasters</geoengine-sidenav-header>
 
 <form [formGroup]="form" (ngSubmit)="add()" *ngIf="projectHasRasterLayers$ | async; else noDataInfo">
     <geoengine-operator-dialog-container [loading]="loading$ | async | valueDefault : false">
-        <a mat-icon-button operatorInputIcon href="https://docs.geoengine.io/operators/expression.html" target="_blank">
+        <a mat-icon-button operatorInputIcon href="https://docs.geoengine.io/operators/rgb.html" target="_blank">
             <mat-icon>help_center</mat-icon>
         </a>
 
@@ -15,7 +15,7 @@
             ></geoengine-multi-layer-selection>
         </ng-container>
 
-        <a mat-icon-button operatorParametersIcon href="https://docs.geoengine.io/operators/expression.html" target="_blank">
+        <a mat-icon-button operatorParametersIcon href="https://docs.geoengine.io/operators/rgb.html" target="_blank">
             <mat-icon>help_center</mat-icon>
         </a>
 
