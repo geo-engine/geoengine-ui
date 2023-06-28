@@ -166,7 +166,7 @@ export class RasterSymbologyEditorComponent implements OnInit {
     ): G {
         if (this.symbology.colorizer instanceof RgbaColorizer) {
             // TODO: derive some reasonable default values
-            return constructorFn([], TRANSPARENT, TRANSPARENT, TRANSPARENT);
+            return constructorFn([new ColorBreakpoint(0, WHITE)], TRANSPARENT, TRANSPARENT, TRANSPARENT);
         }
 
         const breakpoints = this.symbology.colorizer.getBreakpoints();
