@@ -66,10 +66,15 @@ export class ColorTableEditorComponent implements OnInit {
     }
 
     appendColor(): void {
-        // Determine a value so that the new tab will appear at the bottom of the list.
-        const afterLast: number = parseFloat(this.colorAttributes[this.colorAttributes.length - 1].key) + 1;
+        let newValue;
+        if (this.colorAttributes.length) {
+            // Determine a value so that the new tab will appear at the bottom of the list.
+            newValue = parseFloat(this.colorAttributes[this.colorAttributes.length - 1].key) + 1;
+        } else {
+            newValue = 0;
+        }
 
-        this.colorAttributes = [...this.colorAttributes, {key: afterLast.toString(), value: WHITE}];
+        this.colorAttributes = [...this.colorAttributes, {key: newValue.toString(), value: WHITE}];
 
         // TODO: do we need that?
         this.sortColorAttributeInputs();
