@@ -184,7 +184,7 @@ export class RgbaCompositeComponent implements AfterViewInit {
     }
 
     /**
-     * Uses the user input and creates a new expression operator.
+     * Uses the user input and creates a new rgb composite operator.
      * The resulting layer is added to the map.
      */
     add(): void {
