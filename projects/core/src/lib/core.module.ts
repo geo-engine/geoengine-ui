@@ -153,9 +153,12 @@ import {DownloadRasterLayerComponent} from './download-raster-layer/download-ras
 import {TimeIntervalInputComponent} from './time/time-interval-input/time-interval-input.component';
 import {QuotaInfoComponent} from './users/quota/quota-info/quota-info.component';
 import {FxFlexDirective, FxLayoutAlignDirective, FxLayoutDirective, FxLayoutGapDirective} from './util/directives/flexbox-legacy.directive';
-import {ColorPaletteEditorComponent} from './colors/color-palette-editor/color-palette-editor.component';
+import {ColorTableEditorComponent} from './colors/color-table-editor/color-table-editor.component';
 import {LineSimplificationComponent} from './operators/dialogs/line-simplification/line-simplification.component';
 import {TaskListComponent} from './tasks/task-list/task-list.component';
+import {RgbaCompositeComponent} from './operators/dialogs/rgb-composite/rgb-composite.component';
+import {RasterGradientSymbologyEditorComponent} from './layers/symbology/raster-gradient-symbology-editor/raster-gradient-symbology-editor.component';
+import {RasterPaletteSymbologyEditorComponent} from './layers/symbology/raster-palette-symbology-editor/raster-palette-symbology-editor.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -219,8 +222,8 @@ const CORE_COMPONENTS = [
     ColorAttributeInputComponent,
     ColorBreakpointInputComponent,
     ColorMapSelectorComponent,
+    ColorTableEditorComponent,
     ColorParamEditorComponent,
-    ColorPaletteEditorComponent,
     ColumnRangeFilterComponent,
     DatasetComponent,
     DatasetListComponent,
@@ -281,16 +284,18 @@ const CORE_COMPONENTS = [
     PolygonIconComponent,
     ProvenanceTableComponent,
     QuotaInfoComponent,
+    RasterGradientSymbologyEditorComponent,
     RasterIconComponent,
     RasterizationComponent,
     RasterLegendComponent,
     RasterLegendComponent,
+    RasterPaletteSymbologyEditorComponent,
     RasterScalingComponent,
     RasterSymbologyEditorComponent,
     RasterTypeConversionComponent,
     RasterVectorJoinComponent,
-    RasterVectorJoinComponent,
     RenameLayerComponent,
+    RgbaCompositeComponent,
     SaveProjectAsComponent,
     ScatterplotOperatorComponent,
     SidenavContainerComponent,
