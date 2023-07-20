@@ -28,13 +28,14 @@ mat-slider {
     border: #000 solid 1px;
 }
 
+.options {
+    width: 90%;
+    display: block;
+}
+
 .colorizer_option_preview {
     min-height: 20px;
     border: #000 solid 1px;
-    width: 30%;
-    display: inline-block;
-    margin: auto;
-    vertical-align: middle;
 }
 
 .fill_width {
