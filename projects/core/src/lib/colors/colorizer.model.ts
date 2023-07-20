@@ -161,7 +161,7 @@ export class LinearGradient extends Colorizer {
             breakpoints: this.breakpoints.map((b) => b.toDict()),
             noDataColor: colorToDict(this.noDataColor),
             overColor: colorToDict(this.overColor),
-            underColor: colorToDict(this.overColor),
+            underColor: colorToDict(this.underColor),
         };
     }
 
