@@ -1,4 +1,4 @@
-import {Observable, BehaviorSubject, first, filter, map, combineLatest} from 'rxjs';
+import {Observable, BehaviorSubject, first, filter, map, forkJoin} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {
@@ -26,6 +26,7 @@ import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
 interface LayerCollectionBiListing {
     name: string;
     raster?: LayerCollectionListingDict;
+    otherRaster?: LayerCollectionListingDict;
     vector?: LayerCollectionListingDict;
 }
 
@@ -68,14 +69,24 @@ export class MainComponent implements OnInit, AfterViewInit {
 
         this.layersReverse$ = this.dataSelectionService.layers;
 
-        combineLatest([
-            this.layerCollectionService.getLayerCollectionItems(this.config.DATA.RASTER.PROVIDER, this.config.DATA.RASTER.COLLECTION),
-            this.layerCollectionService.getLayerCollectionItems(this.config.DATA.VECTOR.PROVIDER, this.config.DATA.VECTOR.COLLECTION),
-        ]).subscribe(([raster, vector]) => {
+        forkJoin({
+            raster4d: this.layerCollectionService.getLayerCollectionItems(
+                this.config.DATA.RASTER4D.PROVIDER,
+                this.config.DATA.RASTER4D.COLLECTION,
+            ),
+            rasterOther: this.layerCollectionService.getLayerCollectionItems(
+                this.config.DATA.RASTER_OTHER.PROVIDER,
+                this.config.DATA.RASTER_OTHER.COLLECTION,
+            ),
+            vector: this.layerCollectionService.getLayerCollectionItems(
+                this.config.DATA.VECTOR.PROVIDER,
+                this.config.DATA.VECTOR.COLLECTION,
+            ),
+        }).subscribe(({raster4d, rasterOther, vector}) => {
             const collections = new Map<string, LayerCollectionBiListing>();
 
             // create initial groups
-            for (const item of raster.items) {
+            for (const item of raster4d.items) {
                 if (item.type !== 'collection') {
                     continue;
                 }
@@ -84,6 +95,24 @@ export class MainComponent implements OnInit, AfterViewInit {
                     name: item.name,
                     raster: item as LayerCollectionListingDict,
                 });
+            }
+
+            // add other raster layers to groups
+            for (const item of rasterOther.items) {
+                if (item.type !== 'collection') {
+                    continue;
+                }
+
+                const collection = collections.get(item.name);
+
+                if (collection && collection.raster) {
+                    collection.otherRaster = item as LayerCollectionListingDict;
+                } else {
+                    collections.set(item.name, {
+                        name: item.name,
+                        otherRaster: item as LayerCollectionListingDict,
+                    });
+                }
             }
 
             // add vector layers to groups
