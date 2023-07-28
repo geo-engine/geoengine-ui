@@ -33,8 +33,8 @@
         <mat-form-field>
             <mat-label>Colormap name</mat-label>
             <mat-select formControlName="colorMap">
-                <mat-option *ngFor="let colorMap of colorMaps | keyvalue" [value]="colorMap.value">
-                    <span class="colorizer_option_preview" [style.background]="colorMap.value | geoengineRgbaTuplesCssGradient : 90"></span>
+                <mat-option class="options" *ngFor="let colorMap of colorMaps | keyvalue" [value]="colorMap.value">
+                    <div class="colorizer_option_preview" [style.background]="colorMap.value | geoengineRgbaTuplesCssGradient : 90"></div>
                     {{ colorMap.key }}
                 </mat-option>
             </mat-select>
