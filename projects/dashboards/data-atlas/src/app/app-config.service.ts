@@ -32,7 +32,7 @@ const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CONFIG, {
         },
         VECTOR: {
             PROVIDER: 'ce5e84db-cbf9-48a2-9a32-d4b7cc56ea74',
-            COLLECTION: 'c6f78d3b-609b-454f-8ad5-ed6ec12a9ac0c',
+            COLLECTION: '77004f1b-136d-4392-8be9-e88da1528838',
         },
     },
 }) as AppConfigStructure;
