@@ -11,3 +11,7 @@ form {
 mat-radio-group {
     margin-bottom: 1rem;
 }
+
+section:not(:last-child) {
+    margin-bottom: 1rem;
+}

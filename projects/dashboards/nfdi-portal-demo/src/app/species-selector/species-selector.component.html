@@ -150,7 +150,7 @@
         <mat-select (valueChange)="selectEnvironmentLayer($event)">
             <mat-option>– Keine Auswahl –</mat-option>
             <mat-option *ngFor="let layer of environmentLayers" [value]="layer">
-                {{ layer.name }}
+                {{ layer.displayName }}
             </mat-option>
         </mat-select>
     </mat-form-field>

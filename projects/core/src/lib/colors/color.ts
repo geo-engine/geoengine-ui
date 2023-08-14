@@ -119,7 +119,11 @@ export class Color implements IRgba, RgbaStruct {
             return new Color(Color.rgbaTupleToStruct(rgba));
         }
 
-        if ('rgbaStruct' in (rgba as IRgba)) {
+        if (typeof rgba === 'string') {
+            rgba = stringToRgbaStruct(rgba);
+        }
+
+        if (typeof rgba === 'object' && 'rgbaStruct' in (rgba as IRgba)) {
             return new Color((rgba as IRgba).rgbaStruct());
         }
 

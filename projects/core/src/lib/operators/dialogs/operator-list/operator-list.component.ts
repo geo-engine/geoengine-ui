@@ -25,6 +25,7 @@ import {TimeShiftComponent} from '../time-shift/time-shift.component';
 import {PieChartComponent} from '../pie-chart/pie-chart.component';
 import {RasterizationComponent} from '../rasterization/rasterization.component';
 import {LineSimplificationComponent} from '../line-simplification/line-simplification.component';
+import {RgbaCompositeComponent as RgbaCompositeComponent} from '../rgb-composite/rgb-composite.component';
 
 /**
  * This type encapsulates…
@@ -220,11 +221,14 @@ export class OperatorListComponent implements OnInit, OnChanges {
         //     },
         //     description: 'Apply a mask to a raster',
         // },
-        // {
-        //     component: RgbCompositeComponent,
-        //     type: RgbaCompositeType,
-        //     description: 'Create an RGB composite from a set of rasters',
-        // }
+        {
+            component: RgbaCompositeComponent,
+            type: {
+                NAME: 'RGBA Composite',
+                ICON_URL: createIconDataUrl('RGBA Composite'),
+            },
+            description: 'Create an RGB composite from a set of rasters',
+        },
     ];
 
     static readonly DEFAULT_VECTOR_OPERATOR_DIALOGS: Array<OperatorListType> = [

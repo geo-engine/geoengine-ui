@@ -61,6 +61,16 @@ mat-divider {
     margin-top: 1rem;
 }
 
-button.show {
-    width: 100%;
+.ebv-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+
+    button.show {
+        flex: 1;
+    }
+
+    button > mat-icon {
+        margin: 0;
+    }
 }
