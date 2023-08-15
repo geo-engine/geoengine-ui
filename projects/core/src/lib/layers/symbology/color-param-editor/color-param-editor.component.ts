@@ -146,8 +146,14 @@ export class ColorParamEditorComponent implements ControlValueAccessor {
 
         const colorizerBreakpoints = [...this.colorizerBreakpoints];
         colorizerBreakpoints[i] = breakpoint;
-
         this.colorizerBreakpoints = colorizerBreakpoints;
+    }
+
+    /**
+     *  Helps tracking the items in the ngFor by their color, to prevent re-rendering and unfocusing the input
+     */
+    identify(index: number, item: ColorBreakpoint): Color {
+        return item.color;
     }
 
     addBreakpointAt(i: number): void {
