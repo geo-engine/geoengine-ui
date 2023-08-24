@@ -46,6 +46,7 @@ import {
     TaskStatusType,
     UploadFilesResponseDict,
     UploadFileLayersResponseDict,
+    RoleDescription,
 } from './backend.model';
 
 @Injectable({
@@ -454,6 +455,12 @@ export class BackendService {
         return this.http.delete<void>(this.config.API_URL + `/tasks/${taskId}`, {
             headers: BackendService.authorizationHeader(sessionId),
             params: params.httpParams,
+        });
+    }
+
+    getRoleDescriptions(sessionId: UUID): Observable<Array<RoleDescription>> {
+        return this.http.get<Array<RoleDescription>>(this.config.API_URL + '/user/roles/descriptions', {
+            headers: BackendService.authorizationHeader(sessionId),
         });
     }
 }

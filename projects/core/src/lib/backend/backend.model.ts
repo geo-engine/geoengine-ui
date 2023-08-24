@@ -695,3 +695,13 @@ export interface TaskCleanUpFailedDict extends TaskCleanUpDict {
     status: 'failed';
     error: string;
 }
+
+export interface Role {
+    id: UUID;
+    name: string;
+}
+
+export interface RoleDescription {
+    role: Role;
+    individual: boolean;
+}

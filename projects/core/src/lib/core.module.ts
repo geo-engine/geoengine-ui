@@ -159,6 +159,7 @@ import {TaskListComponent} from './tasks/task-list/task-list.component';
 import {RgbaCompositeComponent} from './operators/dialogs/rgb-composite/rgb-composite.component';
 import {RasterGradientSymbologyEditorComponent} from './layers/symbology/raster-gradient-symbology-editor/raster-gradient-symbology-editor.component';
 import {RasterPaletteSymbologyEditorComponent} from './layers/symbology/raster-palette-symbology-editor/raster-palette-symbology-editor.component';
+import {RolesComponent} from './users/roles/roles.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -328,7 +329,7 @@ const CORE_COMPONENTS = [
 const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGapDirective, FxLayoutAlignDirective];
 
 @NgModule({
-    declarations: [...CORE_PIPES, ...CORE_COMPONENTS, ...FXFLEX_LEGACY_DIRECTIVES],
+    declarations: [...CORE_PIPES, ...CORE_COMPONENTS, ...FXFLEX_LEGACY_DIRECTIVES, RolesComponent],
     imports: [
         ...MATERIAL_MODULES,
         ColorPickerModule,
