@@ -9,7 +9,7 @@ import {BackendStatus, User} from './user.model';
 import {Config} from '../config.service';
 import {NotificationService} from '../notification.service';
 import {BackendService} from '../backend/backend.service';
-import {AuthCodeRequestURL, BackendInfoDict, SessionDict, UUID} from '../backend/backend.model';
+import {AuthCodeRequestURL, BackendInfoDict, RoleDescription, SessionDict, UUID} from '../backend/backend.model';
 import {Session} from './session.model';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Quota} from './quota/quota.model';
@@ -291,6 +291,22 @@ export class UserService {
 
     getSettingFromLocalStorage(keyValue: string): string | null {
         return localStorage.getItem(PATH_PREFIX + keyValue);
+    }
+
+    /**
+     * Returns a stream that notifies about the current roles of the user.
+     * May be undefined if there is no current session.
+     *
+     * @returns Observable<Array<RoleDescription> | undefined>
+     **/
+    getRoleDescriptions(): Observable<Array<RoleDescription> | undefined> {
+        return this.getSessionOrUndefinedStream().pipe(
+            mergeMap((session) => {
+                if (!session) return of(undefined);
+                return this.backend.getRoleDescriptions(session.sessionToken);
+            }),
+            catchError(() => of(undefined)),
+        );
     }
 
     protected saveSessionInBrowser(session: Session | undefined): void {
