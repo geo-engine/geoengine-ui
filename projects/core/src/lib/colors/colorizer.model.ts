@@ -96,13 +96,16 @@ export class LinearGradient extends Colorizer {
             return this.overColor;
         }
 
-        const index = this.breakpoints.findIndex((b) => value >= b.value);
+        const reversedBreakpoints = [...this.breakpoints].reverse();
+        const index = this.breakpoints.length - 1 - reversedBreakpoints.findIndex((b) => value >= b.value);
+        const nextIndex = Math.min(index + 1, this.breakpoints.length - 1);
 
         const brk = this.breakpoints[index];
-        const nextBrk = this.breakpoints[Math.min(index + 1, this.breakpoints.length - 1)];
+        const nextBrk = this.breakpoints[nextIndex];
 
         const diff = value - brk.value;
         const fracDiff = diff / (nextBrk.value - brk.value);
+
         return Color.interpolate(brk.color, nextBrk.color, fracDiff);
     }
 
