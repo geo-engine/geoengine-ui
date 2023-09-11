@@ -16,6 +16,7 @@ import {extentToBboxDict} from '../../../util/conversions';
 import {VegaChartData} from '../../../plots/vega-viewer/vega-viewer.component';
 import {ColorMapSelectorComponent} from '../../../colors/color-map-selector/color-map-selector.component';
 import {LayoutService} from '../../../layout.service';
+import {Color} from '../../../colors/color';
 
 /**
  * An editor for generating raster symbologies.
@@ -74,6 +75,36 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
         if (this.histogramSubscription) {
             this.histogramSubscription.unsubscribe();
         }
+    }
+
+    get colorTable(): Array<ColorBreakpoint> {
+        return this.colorizer.getBreakpoints();
+    }
+
+    updateColorTable(colorTable: Array<ColorBreakpoint>): void {
+        const colors = new Map<number, Color>();
+        for (const breakpoint of colorTable) {
+            colors.set(breakpoint.value, breakpoint.color);
+        }
+        // if (this.colorMapEquals(this.colorizer.colors, colors)) {
+        //     return;
+        // }
+        // TODO: adapt early return to new colorizer
+        this.colorizer = this.colorizer.cloneWith({breakpoints: colorTable});
+        this.colorizerChange.emit(this.colorizer);
+    }
+
+    private colorMapEquals(a: Map<number, Color>, b: Map<number, Color>): boolean {
+        if (a.size !== b.size) {
+            return false;
+        }
+        for (const [key, aValue] of a) {
+            const bValue = b.get(key);
+            if (!bValue || !aValue.equals(bValue)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     get histogramAutoReload(): boolean {
@@ -204,6 +235,15 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
 
     createColorTable(): void {
         this.colorMapSelector?.applyChanges();
+        // TODO: Need to update or recreate the color palette display here
+        // These attempts didn't work:
+        // this.colorizerChange.emit(this.colorizer);
+        // this.colorizer = this.colorizer.cloneWith({breakpoints: this.colorizer.getBreakpoints()});
+        // this.updateColorTable(this.colorizer.getBreakpoints());
+
+        // Color table must be updated, but
+        // this.colorTable = [...this.colorTable]
+        // won't work because colorTable is not a field...
     }
 
     private updateNodataAndDefaultColor(): void {

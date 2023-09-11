@@ -75,3 +75,18 @@
         <button mat-stroked-button (click)="createColorTable()">Create color table</button>
     </mat-card-content>
 </mat-card>
+<mat-card>
+    <mat-card-header>
+        <mat-card-title-group>
+            <mat-card-title>Color Table</mat-card-title>
+            <mat-card-subtitle>Edit the color table</mat-card-subtitle>
+            <mat-icon class="icon">looks</mat-icon>
+        </mat-card-title-group>
+    </mat-card-header>
+    <mat-card-content>
+        <geoengine-color-table-editor
+            [colorTable]="colorTable"
+            (colorTableChanged)="updateColorTable($event)"
+        ></geoengine-color-table-editor>
+    </mat-card-content>
+</mat-card>
