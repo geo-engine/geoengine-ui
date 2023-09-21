@@ -1,4 +1,14 @@
-import {Component, Input, ChangeDetectionStrategy, OnDestroy, OnInit, ViewChild, EventEmitter, Output} from '@angular/core';
+import {
+    Component,
+    Input,
+    ChangeDetectionStrategy,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+    EventEmitter,
+    Output,
+    ChangeDetectorRef,
+} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {RasterLayer} from '../../layer.model';
@@ -17,6 +27,7 @@ import {VegaChartData} from '../../../plots/vega-viewer/vega-viewer.component';
 import {ColorMapSelectorComponent} from '../../../colors/color-map-selector/color-map-selector.component';
 import {LayoutService} from '../../../layout.service';
 import {Color} from '../../../colors/color';
+import {ColorTableEditorComponent} from '../../../../lib/colors/color-table-editor/color-table-editor.component';
 
 /**
  * An editor for generating raster symbologies.
@@ -30,6 +41,9 @@ import {Color} from '../../../colors/color';
 export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit {
     @ViewChild(ColorMapSelectorComponent)
     colorMapSelector!: ColorMapSelectorComponent;
+
+    @ViewChild(ColorTableEditorComponent)
+    colorTableEditor!: ColorTableEditorComponent;
 
     @Input() layer!: RasterLayer;
 
@@ -61,6 +75,7 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
         protected readonly userService: UserService,
         protected readonly mapService: MapService,
         protected readonly config: Config,
+        private changeDetectorRef: ChangeDetectorRef,
     ) {}
 
     ngOnInit(): void {
@@ -86,25 +101,8 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
         for (const breakpoint of colorTable) {
             colors.set(breakpoint.value, breakpoint.color);
         }
-        // if (this.colorMapEquals(this.colorizer.colors, colors)) {
-        //     return;
-        // }
-        // TODO: adapt early return to new colorizer
         this.colorizer = this.colorizer.cloneWith({breakpoints: colorTable});
         this.colorizerChange.emit(this.colorizer);
-    }
-
-    private colorMapEquals(a: Map<number, Color>, b: Map<number, Color>): boolean {
-        if (a.size !== b.size) {
-            return false;
-        }
-        for (const [key, aValue] of a) {
-            const bValue = b.get(key);
-            if (!bValue || !aValue.equals(bValue)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     get histogramAutoReload(): boolean {
@@ -235,15 +233,8 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
 
     createColorTable(): void {
         this.colorMapSelector?.applyChanges();
-        // TODO: Need to update or recreate the color palette display here
-        // These attempts didn't work:
-        // this.colorizerChange.emit(this.colorizer);
-        // this.colorizer = this.colorizer.cloneWith({breakpoints: this.colorizer.getBreakpoints()});
-        // this.updateColorTable(this.colorizer.getBreakpoints());
-
-        // Color table must be updated, but
-        // this.colorTable = [...this.colorTable]
-        // won't work because colorTable is not a field...
+        this.changeDetectorRef.detectChanges();
+        this.colorTableEditor?.updateColorAttributes();
     }
 
     private updateNodataAndDefaultColor(): void {
