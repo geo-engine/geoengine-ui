@@ -24,9 +24,14 @@ export class ColorTableEditorComponent implements OnInit {
     constructor(private ref: ChangeDetectorRef) {}
 
     ngOnInit(): void {
+        this.updateColorAttributes();
+    }
+
+    updateColorAttributes(): void {
         this.colorAttributes = this.colorTable.map((color: ColorBreakpoint) => {
             return {key: color.value.toString(), value: color.color};
         });
+        this.ref.detectChanges();
     }
 
     /**

@@ -1,4 +1,14 @@
-import {Component, Input, ChangeDetectionStrategy, OnDestroy, OnInit, ViewChild, EventEmitter, Output} from '@angular/core';
+import {
+    Component,
+    Input,
+    ChangeDetectionStrategy,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+    EventEmitter,
+    Output,
+    ChangeDetectorRef,
+} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {RasterLayer} from '../../layer.model';
@@ -16,6 +26,8 @@ import {extentToBboxDict} from '../../../util/conversions';
 import {VegaChartData} from '../../../plots/vega-viewer/vega-viewer.component';
 import {ColorMapSelectorComponent} from '../../../colors/color-map-selector/color-map-selector.component';
 import {LayoutService} from '../../../layout.service';
+import {Color} from '../../../colors/color';
+import {ColorTableEditorComponent} from '../../../../lib/colors/color-table-editor/color-table-editor.component';
 
 /**
  * An editor for generating raster symbologies.
@@ -29,6 +41,9 @@ import {LayoutService} from '../../../layout.service';
 export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit {
     @ViewChild(ColorMapSelectorComponent)
     colorMapSelector!: ColorMapSelectorComponent;
+
+    @ViewChild(ColorTableEditorComponent)
+    colorTableEditor!: ColorTableEditorComponent;
 
     @Input() layer!: RasterLayer;
 
@@ -60,6 +75,7 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
         protected readonly userService: UserService,
         protected readonly mapService: MapService,
         protected readonly config: Config,
+        private changeDetectorRef: ChangeDetectorRef,
     ) {}
 
     ngOnInit(): void {
@@ -74,6 +90,19 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
         if (this.histogramSubscription) {
             this.histogramSubscription.unsubscribe();
         }
+    }
+
+    get colorTable(): Array<ColorBreakpoint> {
+        return this.colorizer.getBreakpoints();
+    }
+
+    updateColorTable(colorTable: Array<ColorBreakpoint>): void {
+        const colors = new Map<number, Color>();
+        for (const breakpoint of colorTable) {
+            colors.set(breakpoint.value, breakpoint.color);
+        }
+        this.colorizer = this.colorizer.cloneWith({breakpoints: colorTable});
+        this.colorizerChange.emit(this.colorizer);
     }
 
     get histogramAutoReload(): boolean {
@@ -204,6 +233,8 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
 
     createColorTable(): void {
         this.colorMapSelector?.applyChanges();
+        this.changeDetectorRef.detectChanges();
+        this.colorTableEditor?.updateColorAttributes();
     }
 
     private updateNodataAndDefaultColor(): void {
