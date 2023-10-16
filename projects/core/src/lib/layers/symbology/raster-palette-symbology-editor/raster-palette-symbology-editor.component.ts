@@ -12,6 +12,8 @@ import {ColorMapSelectorComponent} from '../../../colors/color-map-selector/colo
 import {LayoutService} from '../../../layout.service';
 import {ColorTableEditorComponent} from '../../../colors/color-table-editor/color-table-editor.component';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
+import {Measurement} from '../../measurement';
+import {first} from 'rxjs/operators';
 
 /**
  * An editor for generating raster symbologies.
@@ -32,6 +34,8 @@ export class RasterPaletteSymbologyEditorComponent implements OnInit {
     @Input() layer!: RasterLayer;
 
     @Input() colorizer!: PaletteColorizer;
+    @Input() measurement!: Measurement;
+
     @Output() colorizerChange = new EventEmitter<PaletteColorizer>();
 
     // The min value used for color table generation
@@ -53,8 +57,12 @@ export class RasterPaletteSymbologyEditorComponent implements OnInit {
 
     ngOnInit(): void {
         this.updateNodataAndDefaultColor();
-
         this.updateLayerMinMaxFromColorizer();
+        // get the layers measurement. It cant change so we can subscribe once
+        this.projectService
+            .getRasterLayerMetadata(this.layer)
+            .pipe(first())
+            .subscribe((m) => (this.measurement = m.measurement));
     }
 
     get colorTable(): Array<ColorBreakpoint> {

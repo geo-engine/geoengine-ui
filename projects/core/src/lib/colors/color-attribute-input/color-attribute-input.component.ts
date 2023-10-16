@@ -17,6 +17,10 @@ export interface ColorAttributeInput {
     readonly value: Color;
 }
 
+export interface ColorAttributeInputHinter {
+    colorHint(key: string): string | undefined;
+}
+
 @Component({
     selector: 'geoengine-color-attribute-input',
     templateUrl: './color-attribute-input.component.html',
@@ -30,6 +34,7 @@ export class ColorAttributeInputComponent implements ControlValueAccessor, OnCha
     @Input() readonlyColor = false;
     @Input() attributePlaceholder = 'attribute';
     @Input() colorPlaceholder = 'color';
+    @Input() colorAttributeHinter?: ColorAttributeInputHinter;
 
     onTouched?: () => void;
     onChange?: (_: ColorAttributeInput) => void = undefined;
@@ -38,6 +43,20 @@ export class ColorAttributeInputComponent implements ControlValueAccessor, OnCha
     cssString = '';
 
     constructor(private changeDetectorRef: ChangeDetectorRef) {}
+
+    hasColorHint(): boolean {
+        return this.colorAttributeHinter !== undefined;
+    }
+
+    colorHint(key: string | undefined): string | undefined {
+        if (!key) {
+            return undefined;
+        }
+        if (this.colorAttributeHinter) {
+            return this.colorAttributeHinter.colorHint(key);
+        }
+        return undefined;
+    }
 
     updateKey(key: string): void {
         if (!key || !this.input || key === this.input.key) {

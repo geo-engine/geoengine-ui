@@ -2,7 +2,7 @@
     <thead>
         <!-- measurement -->
         <tr>
-            <td colspan="2" class="measurement">
+            <td colspan="3" class="measurement">
                 <ng-container *ngIf="measurement$ | async | continuousMeasurement as measurement">
                     {{ measurement.measurement }} <span *ngIf="measurement.unit">(in {{ measurement.unit }})</span>
                 </ng-container>
@@ -41,6 +41,7 @@
                     <td class="classes">
                         <div class="icon" [style.background-color]="breakpoint | breakpointToCssStringPipe"></div>
                     </td>
+                    <td class="classes">{{ breakpoint.value }}</td>
                     <td>{{ measurement.classes.get(breakpoint.value) }}</td>
                 </tr>
             </ng-container>

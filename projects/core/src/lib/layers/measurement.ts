@@ -1,5 +1,6 @@
 import {MeasurementDict, ToDict} from '../backend/backend.model';
 import * as Immutable from 'immutable';
+import {ColorAttributeInputHinter} from '../colors/color-attribute-input/color-attribute-input.component';
 
 export abstract class Measurement implements ToDict<MeasurementDict> {
     abstract readonly measurement: string;
@@ -57,7 +58,7 @@ export class ContinuousMeasurement extends Measurement {
     }
 }
 
-export class ClassificationMeasurement extends Measurement {
+export class ClassificationMeasurement extends Measurement implements ColorAttributeInputHinter {
     readonly measurement: string;
     readonly classes: Immutable.Map<number, string>;
 
@@ -81,5 +82,10 @@ export class ClassificationMeasurement extends Measurement {
             measurement: this.measurement,
             classes: this.classes.toObject(),
         };
+    }
+
+    colorHint(key: string): string | undefined {
+        const keyNumber = parseInt(key, 10);
+        return this.classes.get(keyNumber);
     }
 }

@@ -8,6 +8,7 @@
             [ngModel]="input?.key"
             (ngModelChange)="updateKey($event)"
         />
+        <mat-hint *ngIf="hasColorHint()" align="start">{{ colorHint(input?.key) }}</mat-hint>
     </mat-form-field>
 
     <mat-form-field fxFlex>
