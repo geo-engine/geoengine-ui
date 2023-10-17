@@ -225,11 +225,14 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
                 nextMapIndex = Math.max(0, colorMapIndex - 1);
             }
 
+            // we use the colorMapPosRemainder to interpolate between the two colors
+            //if the remainder is 0, we can just use the colorMapIndex and return the color
             if (colorMapPosRemainder < Number.EPSILON) {
                 breakpoints.push(new ColorBreakpoint(value, Color.fromRgbaLike(colorMap[colorMapIndex])));
                 continue;
             }
 
+            //otherwise we need to interpolate between the two colors
             const color = Color.fromRgbaLike(colorMap[colorMapIndex]);
             const nextColor = Color.fromRgbaLike(colorMap[nextMapIndex]);
 
@@ -238,7 +241,7 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
             const b = color.b + colorMapPosRemainder * (nextColor.b - color.b);
             const a = color.a + colorMapPosRemainder * (nextColor.a - color.a);
 
-            const realColor = Color.fromRgbaLike([r, g, b, a]);
+            const realColor = Color.fromRgbaLike([Math.trunc(r), Math.trunc(g), Math.trunc(b), Math.trunc(a)]);
 
             breakpoints.push(new ColorBreakpoint(value, realColor));
         }
@@ -310,17 +313,39 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
 
         const breakpoints = new Array<ColorBreakpoint>();
 
-        const stepSize = 1 / (colorMapSteps - 1);
-        for (let frac = 0; frac <= 1; frac += stepSize) {
+        for (let i = 0; i <= colorMapSteps; i++) {
+            const frac = i / colorMapSteps;
             const value = Math.exp(Math.log(bounds.min) + frac * (Math.log(bounds.max) - Math.log(bounds.min)));
 
-            let colorMapIndex = Math.round(frac * (colorMap.length - 1));
+            const colorMapPos = frac * (colorMap.length - 1);
+            let colorMapIndex = Math.floor(colorMapPos);
+            const colorMapPosRemainder = colorMapPos - colorMapIndex;
+            let nextMapIndex = Math.min(colorMapIndex + 1, colorMap.length - 1);
+
             if (colorMapReverseColors) {
                 colorMapIndex = colorMap.length - colorMapIndex - 1;
+                nextMapIndex = Math.max(0, colorMapIndex - 1);
             }
-            const color = Color.fromRgbaLike(colorMap[colorMapIndex]);
 
-            breakpoints.push(new ColorBreakpoint(value, color));
+            // we use the colorMapPosRemainder to interpolate between the two colors
+            //if the remainder is 0, we can just use the colorMapIndex and return the color
+            if (colorMapPosRemainder < Number.EPSILON) {
+                breakpoints.push(new ColorBreakpoint(value, Color.fromRgbaLike(colorMap[colorMapIndex])));
+                continue;
+            }
+
+            //otherwise we need to interpolate between the two colors
+            const color = Color.fromRgbaLike(colorMap[colorMapIndex]);
+            const nextColor = Color.fromRgbaLike(colorMap[nextMapIndex]);
+
+            const r = color.r + colorMapPosRemainder * (nextColor.r - color.r);
+            const g = color.g + colorMapPosRemainder * (nextColor.g - color.g);
+            const b = color.b + colorMapPosRemainder * (nextColor.b - color.b);
+            const a = color.a + colorMapPosRemainder * (nextColor.a - color.a);
+
+            const realColor = Color.fromRgbaLike([Math.trunc(r), Math.trunc(g), Math.trunc(b), Math.trunc(a)]);
+
+            breakpoints.push(new ColorBreakpoint(value, realColor));
         }
 
         // override last because of rounding errors
