@@ -8,6 +8,8 @@ import {
     EventEmitter,
     Output,
     ChangeDetectorRef,
+    OnChanges,
+    SimpleChanges,
 } from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {map, mergeMap, tap} from 'rxjs/operators';
@@ -38,7 +40,7 @@ import {ColorTableEditorComponent} from '../../../../lib/colors/color-table-edit
     styleUrls: ['raster-gradient-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit {
+export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit, OnChanges {
     @ViewChild(ColorMapSelectorComponent)
     colorMapSelector!: ColorMapSelectorComponent;
 
@@ -89,6 +91,13 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     ngOnDestroy(): void {
         if (this.histogramSubscription) {
             this.histogramSubscription.unsubscribe();
+        }
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.colorizer) {
+            this.updateScale();
+            this.updateBreakpoints(this.colorizer.getBreakpoints());
         }
     }
 
