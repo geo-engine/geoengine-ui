@@ -211,17 +211,36 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
     ): Array<ColorBreakpoint> {
         const breakpoints = new Array<ColorBreakpoint>();
 
-        const stepSize = 1 / (colorMapSteps - 1);
-        for (let frac = 0; frac <= 1; frac += stepSize) {
+        for (let i = 0; i <= colorMapSteps; i++) {
+            const frac = i / colorMapSteps;
             const value = bounds.min + frac * (bounds.max - bounds.min);
 
-            let colorMapIndex = Math.round(frac * (colorMap.length - 1));
+            const colorMapPos = frac * (colorMap.length - 1);
+            let colorMapIndex = Math.floor(colorMapPos);
+            const colorMapPosRemainder = colorMapPos - colorMapIndex;
+            let nextMapIndex = Math.min(colorMapIndex + 1, colorMap.length - 1);
+
             if (colorMapReverseColors) {
                 colorMapIndex = colorMap.length - colorMapIndex - 1;
+                nextMapIndex = Math.max(0, colorMapIndex - 1);
             }
-            const color = Color.fromRgbaLike(colorMap[colorMapIndex]);
 
-            breakpoints.push(new ColorBreakpoint(value, color));
+            if (colorMapPosRemainder < Number.EPSILON) {
+                breakpoints.push(new ColorBreakpoint(value, Color.fromRgbaLike(colorMap[colorMapIndex])));
+                continue;
+            }
+
+            const color = Color.fromRgbaLike(colorMap[colorMapIndex]);
+            const nextColor = Color.fromRgbaLike(colorMap[nextMapIndex]);
+
+            const r = color.r + colorMapPosRemainder * (nextColor.r - color.r);
+            const g = color.g + colorMapPosRemainder * (nextColor.g - color.g);
+            const b = color.b + colorMapPosRemainder * (nextColor.b - color.b);
+            const a = color.a + colorMapPosRemainder * (nextColor.a - color.a);
+
+            const realColor = Color.fromRgbaLike([r, g, b, a]);
+
+            breakpoints.push(new ColorBreakpoint(value, realColor));
         }
 
         // override last because of rounding errors
