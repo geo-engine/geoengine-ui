@@ -211,8 +211,8 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
     ): Array<ColorBreakpoint> {
         const breakpoints = new Array<ColorBreakpoint>();
 
-        for (let i = 0; i <= colorMapSteps; i++) {
-            const frac = i / colorMapSteps;
+        for (let i = 0; i < colorMapSteps; i++) {
+            const frac = i / (colorMapSteps - 1);
             const value = bounds.min + frac * (bounds.max - bounds.min);
 
             const colorMapPos = frac * (colorMap.length - 1);
@@ -313,8 +313,8 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
 
         const breakpoints = new Array<ColorBreakpoint>();
 
-        for (let i = 0; i <= colorMapSteps; i++) {
-            const frac = i / colorMapSteps;
+        for (let i = 0; i < colorMapSteps; i++) {
+            const frac = i / (colorMapSteps - 1);
             const value = Math.exp(Math.log(bounds.min) + frac * (Math.log(bounds.max) - Math.log(bounds.min)));
 
             const colorMapPos = frac * (colorMap.length - 1);
