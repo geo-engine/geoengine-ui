@@ -1,8 +1,9 @@
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {ChangeDetectionStrategy, Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef, ViewChild} from '@angular/core';
 import {WHITE} from '../color';
-import {ColorAttributeInput} from '../color-attribute-input/color-attribute-input.component';
+import {ColorAttributeInput, ColorAttributeInputHinter} from '../color-attribute-input/color-attribute-input.component';
 import {ColorBreakpoint} from '../color-breakpoint.model';
+import {ClassificationMeasurement, Measurement} from '../../layers/measurement';
 
 @Component({
     selector: 'geoengine-color-table-editor',
@@ -13,6 +14,9 @@ import {ColorBreakpoint} from '../color-breakpoint.model';
 export class ColorTableEditorComponent implements OnInit {
     // Symbology to use for creating color tabs
     @Input() colorTable!: Array<ColorBreakpoint>;
+
+    @Input() measurement?: Measurement;
+
     // Symbology altered through color tab inputs
     @Output() colorTableChanged = new EventEmitter<Array<ColorBreakpoint>>();
 
@@ -20,11 +24,16 @@ export class ColorTableEditorComponent implements OnInit {
     virtualScrollViewport!: CdkVirtualScrollViewport;
 
     colorAttributes: Array<ColorAttributeInput> = [];
+    colorHints?: ColorAttributeInputHinter;
 
     constructor(private ref: ChangeDetectorRef) {}
 
     ngOnInit(): void {
         this.updateColorAttributes();
+
+        if (this.measurement instanceof ClassificationMeasurement) {
+            this.colorHints = this.measurement as ColorAttributeInputHinter;
+        }
     }
 
     updateColorAttributes(): void {
