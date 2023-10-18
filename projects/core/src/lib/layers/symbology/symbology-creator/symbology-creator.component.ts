@@ -89,26 +89,13 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
         if (!this.enableCopyInputSymbology) {
             this.value.setValue(this.COMPUTE_LINEAR_GRADIENT);
         }
-        switch (this.colorMapName) {
-            case 'magma': {
-                this.colorMap = MPL_COLORMAPS.MAGMA;
-                break;
-            }
-            case 'inferno': {
-                this.colorMap = MPL_COLORMAPS.INFERNO;
-                break;
-            }
-            case 'plasma': {
-                this.colorMap = MPL_COLORMAPS.PLASMA;
-                break;
-            }
-            case 'viridis': {
-                this.colorMap = MPL_COLORMAPS.VIRIDIS;
-                break;
-            }
-            default:
-                throw new Error('Unsupported color map name ' + this.colorMapName);
+
+        if (this.colorMapName.toUpperCase() in MPL_COLORMAPS) {
+            this.colorMap = MPL_COLORMAPS[this.colorMapName.toUpperCase()];
+        } else {
+            throw new Error('Unsupported color map name ' + this.colorMapName);
         }
+
         if (this.opacity < 0 || this.opacity > 1) {
             throw new Error('The opacity needs to be in [0, 1]');
         }
