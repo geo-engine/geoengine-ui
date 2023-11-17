@@ -14,6 +14,11 @@ export class TimeStepSelectorComponent implements OnChanges {
     @Input() timeSteps?: Array<Time>;
     @Input() timeFormat = 'YYYY';
 
+    /**
+     * The suffix to display after the time value
+     */
+    @Input() suffix = '';
+
     readonly min = 0;
     readonly step = 1;
     readonly tickInterval = 1;

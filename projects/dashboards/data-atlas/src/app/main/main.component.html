@@ -49,6 +49,7 @@
             class="mat-elevation-z4"
             [timeSteps]="dataSelectionService.timeSteps | async | valueDefault : undefined"
             [timeFormat]="dataSelectionService.timeFormat | async | stringSanitizer"
+            suffix="BC"
         ></geoengine-time-step-selector>
 
         <geoengine-zoom-handles (zoomIn)="map.zoomIn()" (zoomOut)="map.zoomOut()" class="mat-elevation-z4"></geoengine-zoom-handles>
