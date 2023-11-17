@@ -2,9 +2,9 @@
     <mat-slider [min]="min" [max]="max" [step]="step" showTickMarks discrete [displayWith]="thumbLabelDisplay()">
         <input matSliderThumb (ngModelChange)="setTime($event)" [(ngModel)]="currentTimeIndex" />
     </mat-slider>
-    <span>{{ currentTimeFormatted | async }} {{ suffix }}</span>
+    <span>{{ currentTimeFormatted | async }}</span>
 </div>
 
 <div *ngIf="!displayTimeSlider()" class="padded mat-typography">
-    <span>{{ currentTimeFormatted | async }} {{ suffix }}</span>
+    <span>{{ currentTimeFormatted | async }}</span>
 </div>
