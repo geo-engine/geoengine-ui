@@ -184,7 +184,7 @@ export class AnalysisComponent {
                                         expression: 'if B != 0 { A } else { NODATA }',
                                         // TODO: get data type from data
                                         outputType: RasterDataTypes.Float64.getCode(),
-                                        outputMeasurement: rasterResultDescriptor.measurement,
+                                        outputMeasurement: rasterResultDescriptor.bands[0].measurement,
                                         mapNoData: false,
                                     },
                                     sources: {
