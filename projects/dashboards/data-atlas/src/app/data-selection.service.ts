@@ -24,7 +24,7 @@ export class DataSelectionService {
     readonly vectorLayerLoading: Observable<boolean>;
 
     readonly timeSteps = new BehaviorSubject<Array<Time>>([new Time(moment.utc())]);
-    readonly timeFormat = new BehaviorSubject<string>('YYYY'); // TODO: make configurable
+    readonly timeFormat = new BehaviorSubject<string>('y N'); // TODO: make configurable
 
     readonly dataRange = new BehaviorSubject<DataRange>({min: 0, max: 1});
 

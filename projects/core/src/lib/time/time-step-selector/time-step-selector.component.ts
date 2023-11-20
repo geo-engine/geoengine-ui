@@ -14,11 +14,6 @@ export class TimeStepSelectorComponent implements OnChanges {
     @Input() timeSteps?: Array<Time>;
     @Input() timeFormat = 'YYYY';
 
-    /**
-     * Use BCE/CE format instead of -/+ for years
-     */
-    @Input() useCeFormat = false;
-
     readonly min = 0;
     readonly step = 1;
     readonly tickInterval = 1;
@@ -38,14 +33,6 @@ export class TimeStepSelectorComponent implements OnChanges {
             map(([time, format]) => {
                 if (this.timeSteps) {
                     this.currentTimeIndex = this.timeSteps.findIndex((t) => time.isSame(t));
-
-                    if (this.useCeFormat) {
-                        if (time.start.year() < 0) {
-                            format = format.replace('YYYY', 'YYYY [BCE]');
-                        } else {
-                            format = format.replace('YYYY', 'YYYY [CE]');
-                        }
-                    }
 
                     setTimeout(() => this.changeDetectorRef.detectChanges());
                 }
