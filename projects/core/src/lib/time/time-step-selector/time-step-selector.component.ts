@@ -33,6 +33,7 @@ export class TimeStepSelectorComponent implements OnChanges {
             map(([time, format]) => {
                 if (this.timeSteps) {
                     this.currentTimeIndex = this.timeSteps.findIndex((t) => time.isSame(t));
+
                     setTimeout(() => this.changeDetectorRef.detectChanges());
                 }
 
