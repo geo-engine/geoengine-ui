@@ -114,7 +114,7 @@ export class LayerCollectionService {
                                   this.randomColorService.getRandomColorRgba(),
                               ),
                     });
-                } else if (keys.includes('measurement')) {
+                } else if (keys.includes('bands')) {
                     return new RasterLayer({
                         name: layer.name,
                         workflowId,

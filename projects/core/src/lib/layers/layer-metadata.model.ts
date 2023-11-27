@@ -115,7 +115,7 @@ export class RasterLayerMetadata extends LayerMetadata {
 
     static override fromDict(dict: RasterResultDescriptorDict): RasterLayerMetadata {
         const dataType = RasterDataTypes.fromCode(dict.dataType);
-        const measurement = Measurement.fromDict(dict.measurement);
+        const measurement = Measurement.fromDict(dict.bands[0].measurement); // TODO: support multiple bands
         const time = dict.time ? Time.fromDict(dict.time) : undefined;
         const bbox = dict.bbox ? BoundingBox2D.fromSpatialPartitionDict(dict.bbox) : undefined;
 

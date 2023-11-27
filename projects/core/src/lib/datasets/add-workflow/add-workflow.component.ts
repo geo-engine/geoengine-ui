@@ -39,7 +39,7 @@ export class AddWorkflowComponent {
 
                 if (keys.includes('columns')) {
                     this.addVectorLayer(layerName, workflowId, resultDescriptorDict as VectorResultDescriptorDict);
-                } else if (keys.includes('measurement')) {
+                } else if (keys.includes('bands')) {
                     this.addRasterLayer(layerName, workflowId, resultDescriptorDict as RasterResultDescriptorDict);
                 } else {
                     // TODO: implement plots, etc.
