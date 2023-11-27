@@ -25,8 +25,7 @@ import {SpatialReference} from '../spatial-references/spatial-reference.model';
 import {RasterData} from '../layers/layer-data.model';
 import {BackendService} from '../backend/backend.service';
 import {UUID} from '../backend/backend.model';
-import {RasterSymbology, Symbology, VectorSymbology} from '../layers/symbology/symbology.model';
-import {Colorizer} from '../colors/colorizer.model';
+import {RasterColorizer, RasterSymbology, Symbology, VectorSymbology} from '../layers/symbology/symbology.model';
 import OlGeometry from 'ol/geom/Geometry';
 import {olExtentToTuple} from '../util/conversions';
 import TileState from 'ol/TileState';
@@ -365,7 +364,7 @@ export class OlRasterLayerComponent
         this.initializeOrUpdateOlMapLayer();
     }
 
-    private stylesFromColorizer(colorizer: Colorizer): string {
+    private stylesFromColorizer(colorizer: RasterColorizer): string {
         return 'custom:' + JSON.stringify(colorizer.toDict());
     }
 

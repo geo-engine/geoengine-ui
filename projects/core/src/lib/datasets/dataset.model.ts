@@ -8,6 +8,7 @@ import {
     VectorResultDescriptorDict,
     SourceOperatorDict,
     BBoxDict,
+    RasterBandDescriptorDict,
 } from '../backend/backend.model';
 import {Measurement} from '../layers/measurement';
 import {Symbology} from '../layers/symbology/symbology.model';
@@ -83,12 +84,14 @@ export abstract class ResultDescriptor {
 
 export class RasterResultDescriptor extends ResultDescriptor {
     readonly dataType: RasterDataType;
+    readonly bands: Array<RasterBandDescriptor>;
     readonly bbox?: BBoxDict;
     readonly time?: Time;
 
     constructor(config: RasterResultDescriptorDict) {
         super(config.spatialReference);
         this.dataType = RasterDataTypes.fromCode(config.dataType);
+        this.bands = config.bands.map((band) => RasterBandDescriptor.fromDict(band));
         if (config.bbox) {
             this.bbox = {
                 lowerLeftCoordinate: {
@@ -110,6 +113,20 @@ export class RasterResultDescriptor extends ResultDescriptor {
 
     getTypeString(): 'Vector' | 'Raster' {
         return 'Raster';
+    }
+}
+
+export class RasterBandDescriptor {
+    readonly name: string;
+    readonly measurement: Measurement;
+
+    constructor(name: string, measurement: Measurement) {
+        this.name = name;
+        this.measurement = measurement;
+    }
+
+    static fromDict(dict: RasterBandDescriptorDict): RasterBandDescriptor {
+        return new RasterBandDescriptor(dict.name, Measurement.fromDict(dict.measurement));
     }
 }
 

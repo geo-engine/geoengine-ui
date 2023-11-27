@@ -40,7 +40,12 @@ import {SafeHtmlPipe} from './util/pipes/safe-html.pipe';
 import {TrimPipe} from './util/pipes/trim.pipe';
 import {CssStringToRgbaPipe} from './util/pipes/css-string-to-rgba.pipe';
 import {HighlightPipe} from './util/pipes/highlight.pipe';
-import {RgbaArrayCssGradientPipe, ColorBreakpointsCssGradientPipe, ColorizerCssGradientPipe} from './util/pipes/color-gradients.pipe';
+import {
+    RgbaArrayCssGradientPipe,
+    ColorBreakpointsCssGradientPipe,
+    ColorizerCssGradientPipe,
+    RasterColorizerCssGradientPipe,
+} from './util/pipes/color-gradients.pipe';
 import {RgbaToCssStringPipe} from './util/pipes/rgba-to-css-string.pipe';
 import {CommonModule} from '@angular/common';
 import {DialogHelpComponent} from './dialogs/dialog-help/dialog-help.component';
@@ -202,6 +207,7 @@ const CORE_PIPES = [
     CastMeasurementToContinuousPipe,
     ColorBreakpointsCssGradientPipe,
     ColorizerCssGradientPipe,
+    RasterColorizerCssGradientPipe,
     CssStringToRgbaPipe,
     HighlightPipe,
     RgbaArrayCssGradientPipe,

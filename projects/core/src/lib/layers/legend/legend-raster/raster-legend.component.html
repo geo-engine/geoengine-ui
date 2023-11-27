@@ -20,7 +20,7 @@
                     class="gradient"
                     *ngIf="isFirst"
                     [rowSpan]="layer.symbology.colorizer.getBreakpoints().length"
-                    [style.background]="layer.symbology.colorizer | geoengineColorizerCssGradient : gradientAngle"
+                    [style.background]="layer.symbology.colorizer | geoengineRasterColorizerCssGradient : gradientAngle"
                 ></td>
                 <td>{{ breakpoint }}</td>
             </tr>
