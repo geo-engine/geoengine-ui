@@ -60,13 +60,15 @@ export class RasterSymbologyEditorComponent implements OnInit {
         // always work on a copy in order to being able to reset changes
         this.symbology = this.layer.symbology.clone();
 
+        const bandIndex = (this.symbology.colorizer as SingleBandRasterColorizer).band;
+
         this.projectService.getWorkflowMetaData(this.layer.workflowId).subscribe((resultDescriptor) => {
             if (resultDescriptor.type === 'raster') {
                 const rd = resultDescriptor as RasterResultDescriptorDict;
                 const bands = rd.bands.map((band) => RasterBandDescriptor.fromDict(band));
 
                 this.bands$.next(bands);
-                this.selectedBand = bands[0]; // TODO: select band from symbology
+                this.selectedBand = bands[bandIndex];
             }
         });
     }
