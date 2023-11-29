@@ -13,7 +13,6 @@ import {ProvenanceTableComponent} from '../../../provenance/table/provenance-tab
 import {DataTableComponent} from '../../../datatable/table/table.component';
 import {RasterSymbologyEditorComponent} from '../../symbology/raster-symbology-editor/raster-symbology-editor.component';
 import {VectorSymbologyEditorComponent} from '../../symbology/vector-symbology-editor/vector-symbology-editor.component';
-import {Measurement} from '../../measurement';
 import {RasterLayerMetadata} from '../../layer-metadata.model';
 import {NotificationService} from '../../../notification.service';
 import {RenameLayerComponent} from '../../rename-layer/rename-layer.component';
@@ -24,6 +23,7 @@ import {UserService} from '../../../users/user.service';
 import {HttpEventType} from '@angular/common/http';
 import {filenameFromHttpHeaders} from '../../../util/http';
 import {DownloadRasterLayerComponent} from '../../../download-raster-layer/download-raster-layer.component';
+import {RasterBandDescriptor} from '../../../datasets/dataset.model';
 /**
  * The layer list component displays active layers, legends and other controlls.
  */
@@ -68,7 +68,6 @@ export class LayerListElementComponent {
      * select a layer
      */
     toggleLegend(layer: Layer): void {
-        this.layer = this.layer.updateFields({isLegendVisible: !this.layer.isLegendVisible});
         this.projectService.toggleLegend(layer);
     }
 
@@ -142,10 +141,10 @@ export class LayerListElementComponent {
         }
     }
 
-    getMeasurement(layer: Layer): Observable<Measurement> {
+    getBands(layer: Layer): Observable<Array<RasterBandDescriptor>> {
         return this.projectService.getLayerMetadata(layer).pipe(
             map((metaData) => metaData as RasterLayerMetadata),
-            map((metaData) => metaData.measurement),
+            map((metaData) => metaData.bands),
         );
     }
 

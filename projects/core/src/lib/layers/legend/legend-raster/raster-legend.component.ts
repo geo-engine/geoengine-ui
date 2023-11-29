@@ -1,11 +1,23 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, Pipe, PipeTransform, SimpleChanges} from '@angular/core';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    Component,
+    Input,
+    OnChanges,
+    OnDestroy,
+    OnInit,
+    Pipe,
+    PipeTransform,
+    SimpleChanges,
+} from '@angular/core';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
-import {ClassificationMeasurement, ContinuousMeasurement, Measurement} from '../../measurement';
+import {ClassificationMeasurement, ContinuousMeasurement} from '../../measurement';
 import {ProjectService} from '../../../project/project.service';
-import {map} from 'rxjs/operators';
 import {RasterLayerMetadata} from '../../layer-metadata.model';
-import {Observable} from 'rxjs';
 import {RasterLayer} from '../../layer.model';
+import {SingleBandRasterColorizer} from '../../symbology/symbology.model';
+import {RasterBandDescriptor} from '../../../datasets/dataset.model';
+import {Subject, Subscription, first} from 'rxjs';
 
 /**
  * calculate the decimal places for the legend of raster data
@@ -114,24 +126,42 @@ export function oneApart(values: number[]): boolean {
     styleUrls: ['raster-legend.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RasterLegendComponent implements OnInit, OnChanges {
+export class RasterLegendComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
     @Input() layer!: RasterLayer;
-    measurement$?: Observable<Measurement>;
+    selectedBand$ = new Subject<RasterBandDescriptor>();
     displayedBreakpoints: number[] = [];
 
     @Input()
     orderValuesDescending = false;
 
+    private layerMetaDataSubscription?: Subscription;
+
     constructor(public projectService: ProjectService) {}
 
     ngOnInit(): void {
-        this.measurement$ = this.projectService.getLayerMetadata(this.layer).pipe(map((m) => (m as RasterLayerMetadata).measurement));
         this.calculateDisplayedBreakpoints();
+    }
+
+    ngAfterViewInit(): void {
+        this.projectService
+            .getLayerMetadata(this.layer)
+            .pipe(first())
+            .subscribe((m) => {
+                const bands = (m as RasterLayerMetadata).bands;
+                const bandIndex = (this.layer.symbology.colorizer as SingleBandRasterColorizer).band;
+                this.selectedBand$.next(bands[bandIndex]);
+            });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.layer || changes.orderValuesDescending) {
             this.calculateDisplayedBreakpoints();
+        }
+    }
+
+    ngOnDestroy(): void {
+        if (this.layerMetaDataSubscription) {
+            this.layerMetaDataSubscription.unsubscribe();
         }
     }
 
