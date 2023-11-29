@@ -43,14 +43,18 @@ export class AppDatasetService extends DatasetService {
                                   type: 'raster',
                                   opacity: 1.0,
                                   colorizer: {
-                                      type: 'linearGradient',
-                                      breakpoints: [
-                                          {value: 1, color: [0, 0, 0, 255]},
-                                          {value: 255, color: [255, 255, 255, 255]},
-                                      ],
-                                      overColor: [255, 255, 255, 127],
-                                      underColor: [0, 0, 0, 127],
-                                      noDataColor: [0, 0, 0, 0],
+                                      type: 'singleBand',
+                                      band: 0,
+                                      colorizer: {
+                                          type: 'linearGradient',
+                                          breakpoints: [
+                                              {value: 1, color: [0, 0, 0, 255]},
+                                              {value: 255, color: [255, 255, 255, 255]},
+                                          ],
+                                          overColor: [255, 255, 255, 127],
+                                          underColor: [0, 0, 0, 127],
+                                          noDataColor: [0, 0, 0, 0],
+                                      },
                                   },
                               }),
                         isLegendVisible: false,
