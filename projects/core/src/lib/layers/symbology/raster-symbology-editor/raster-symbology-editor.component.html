@@ -74,8 +74,9 @@
         </mat-card>
 
         <geoengine-raster-gradient-symbology-editor
-            *ngIf="gradientColorizer"
+            *ngIf="gradientColorizer && selectedBand"
             [layer]="layer"
+            [band]="selectedBand.name"
             [colorizer]="gradientColorizer"
             (colorizerChange)="updateColorizer($event)"
         ></geoengine-raster-gradient-symbology-editor>

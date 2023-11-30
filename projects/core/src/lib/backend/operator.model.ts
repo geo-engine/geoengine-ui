@@ -79,7 +79,7 @@ export interface FeatureAttributeOverTimeDict extends OperatorDict {
 }
 
 export interface HistogramParams extends OperatorParams {
-    columnName?: string;
+    attributeName: string;
     bounds:
         | {
               min: number;

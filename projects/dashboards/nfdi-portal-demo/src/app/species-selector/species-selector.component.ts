@@ -30,6 +30,7 @@ import {
     PieChartDict,
     PieChartCountParams,
     NamedDataDict,
+    ClassHistogramParams,
 } from '@geoengine/core';
 import {BehaviorSubject, combineLatest, combineLatestWith, first, mergeMap, Observable, of, Subscription, tap} from 'rxjs';
 import {DataSelectionService} from '../data-selection.service';
@@ -888,6 +889,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                             type: 'Histogram',
                             params: {
                                 // TODO: get params from selected data
+                                attributeName: 'band',
                                 buckets: {
                                     type: 'number',
                                     value: 20,
@@ -1058,7 +1060,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                             type: 'ClassHistogram',
                             params: {
                                 columnName: environmentColumnName,
-                            } as HistogramParams,
+                            } as ClassHistogramParams,
                             sources: {
                                 source: workflow.operator,
                             },
@@ -1068,6 +1070,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                             type: 'Histogram',
                             params: {
                                 // TODO: get params from selected data
+                                attributeName: 'band',
                                 buckets: {
                                     type: 'number',
                                     value: 20,
