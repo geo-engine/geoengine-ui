@@ -264,7 +264,7 @@ export class OlRasterLayerComponent
         if (changes.symbology && this.symbology) {
             this._mapLayer.setOpacity(this.symbology.opacity);
             this.source.updateParams({
-                STYLES: this.stylesFromColorizer(this.symbology.colorizer),
+                STYLES: this.stylesFromColorizer(this.symbology.rasterColorizer),
             });
         }
         if (changes.workflow !== undefined || changes.sessionToken !== undefined) {
@@ -292,7 +292,7 @@ export class OlRasterLayerComponent
         if (this.source && this.time && this.symbology) {
             this.source.updateParams({
                 time: this.time.asRequestString(),
-                STYLES: this.stylesFromColorizer(this.symbology.colorizer),
+                STYLES: this.stylesFromColorizer(this.symbology.rasterColorizer),
             });
         }
     }
@@ -314,7 +314,7 @@ export class OlRasterLayerComponent
             params: {
                 layers: this.workflow,
                 time: this.time.asRequestString(),
-                STYLES: this.stylesFromColorizer(this.symbology.colorizer),
+                STYLES: this.stylesFromColorizer(this.symbology.rasterColorizer),
                 EXCEPTIONS: 'application/json',
             },
             projection: this.spatialReference.srsString,

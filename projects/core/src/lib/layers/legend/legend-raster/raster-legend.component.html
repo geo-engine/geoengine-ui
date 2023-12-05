@@ -18,20 +18,20 @@
         </tr>
     </thead>
     <tbody>
-        <ng-template [ngIf]="layer.symbology.colorizer.isContinuous()">
+        <ng-template [ngIf]="layer.symbology.rasterColorizer.isContinuous()">
             <!-- data -->
             <tr *ngFor="let breakpoint of displayedBreakpoints; let isFirst = first">
                 <td
                     class="gradient"
                     *ngIf="isFirst"
-                    [rowSpan]="layer.symbology.colorizer.getBreakpoints().length"
-                    [style.background]="layer.symbology.colorizer | geoengineRasterColorizerCssGradient : gradientAngle"
+                    [rowSpan]="layer.symbology.rasterColorizer.getBreakpoints().length"
+                    [style.background]="layer.symbology.rasterColorizer | geoengineRasterColorizerCssGradient : gradientAngle"
                 ></td>
                 <td>{{ breakpoint }}</td>
             </tr>
         </ng-template>
 
-        <ng-container *ngIf="layer.symbology.colorizer.isDiscrete()">
+        <ng-container *ngIf="layer.symbology.rasterColorizer.isDiscrete()">
             <ng-container *ngIf="!(band.measurement | classificationMeasurement)">
                 <tr *ngFor="let breakpoint of colorizerBreakpoints">
                     <td class="classes">

@@ -60,7 +60,7 @@ export class RasterSymbologyEditorComponent implements OnInit {
         // always work on a copy in order to being able to reset changes
         this.symbology = this.layer.symbology.clone();
 
-        const bandIndex = (this.symbology.colorizer as SingleBandRasterColorizer).band;
+        const bandIndex = (this.symbology.rasterColorizer as SingleBandRasterColorizer).band;
 
         this.projectService.getWorkflowMetaData(this.layer.workflowId).subscribe((resultDescriptor) => {
             if (resultDescriptor.type === 'raster') {
@@ -137,11 +137,11 @@ export class RasterSymbologyEditorComponent implements OnInit {
 
     setSelectedBand(band: RasterBandDescriptor): void {
         this.selectedBand = band;
-        if (this.symbology.colorizer instanceof SingleBandRasterColorizer) {
+        if (this.symbology.rasterColorizer instanceof SingleBandRasterColorizer) {
             const index = this.getSelectedBandIndex();
             this.symbology = new RasterSymbology(
                 this.getOpacity(),
-                new SingleBandRasterColorizer(index, this.symbology.colorizer.colorizer),
+                new SingleBandRasterColorizer(index, this.symbology.rasterColorizer.bandColorizer),
             );
         }
     }
@@ -209,11 +209,11 @@ export class RasterSymbologyEditorComponent implements OnInit {
     }
 
     protected getActualColorizer(): Colorizer {
-        if (!(this.symbology.colorizer instanceof SingleBandRasterColorizer)) {
+        if (!(this.symbology.rasterColorizer instanceof SingleBandRasterColorizer)) {
             throw Error('Symbology editor only supports single band raster colorizers');
         }
 
-        return this.symbology.colorizer.colorizer;
+        return this.symbology.rasterColorizer.bandColorizer;
     }
 
     protected createGradientColorizer<G>(

@@ -125,10 +125,10 @@ export class LayerCollectionService {
                             : RasterSymbology.fromRasterSymbologyDict({
                                   type: 'raster',
                                   opacity: 1.0,
-                                  colorizer: {
+                                  rasterColorizer: {
                                       type: 'singleBand',
                                       band: 0,
-                                      colorizer: {
+                                      bandColorizer: {
                                           type: 'linearGradient',
                                           breakpoints: [
                                               {value: 1, color: [0, 0, 0, 255]},

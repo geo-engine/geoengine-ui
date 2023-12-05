@@ -148,7 +148,7 @@ export class RasterLegendComponent implements OnInit, OnChanges, OnDestroy, Afte
             .pipe(first())
             .subscribe((m) => {
                 const bands = (m as RasterLayerMetadata).bands;
-                const bandIndex = (this.layer.symbology.colorizer as SingleBandRasterColorizer).band;
+                const bandIndex = (this.layer.symbology.rasterColorizer as SingleBandRasterColorizer).band;
                 this.selectedBand$.next(bands[bandIndex]);
             });
     }
@@ -166,7 +166,7 @@ export class RasterLegendComponent implements OnInit, OnChanges, OnDestroy, Afte
     }
 
     protected calculateDisplayedBreakpoints(): void {
-        this.displayedBreakpoints = this.layer.symbology.colorizer.getBreakpoints().map((x) => x.value);
+        this.displayedBreakpoints = this.layer.symbology.rasterColorizer.getBreakpoints().map((x) => x.value);
         this.displayedBreakpoints = unifyDecimals(this.displayedBreakpoints);
 
         if (this.orderValuesDescending) {
@@ -180,9 +180,9 @@ export class RasterLegendComponent implements OnInit, OnChanges, OnDestroy, Afte
 
     get colorizerBreakpoints(): Array<ColorBreakpoint> {
         if (this.orderValuesDescending) {
-            return this.layer.symbology.colorizer.getBreakpoints().slice().reverse();
+            return this.layer.symbology.rasterColorizer.getBreakpoints().slice().reverse();
         } else {
-            return this.layer.symbology.colorizer.getBreakpoints();
+            return this.layer.symbology.rasterColorizer.getBreakpoints();
         }
     }
 }

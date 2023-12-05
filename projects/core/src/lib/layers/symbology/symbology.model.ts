@@ -593,37 +593,37 @@ export class PolygonSymbology extends VectorSymbology {
 
 export class RasterSymbology extends Symbology {
     readonly opacity: number;
-    readonly colorizer: RasterColorizer;
+    readonly rasterColorizer: RasterColorizer;
 
     constructor(opacity: number, colorizer: RasterColorizer) {
         super();
         this.opacity = opacity;
-        this.colorizer = colorizer;
+        this.rasterColorizer = colorizer;
     }
 
     static fromRasterSymbologyDict(dict: RasterSymbologyDict): RasterSymbology {
-        return new RasterSymbology(dict.opacity, RasterColorizer.fromDict(dict.colorizer));
+        return new RasterSymbology(dict.opacity, RasterColorizer.fromDict(dict.rasterColorizer));
     }
 
     equals(other: RasterSymbology): boolean {
         return (
-            other instanceof RasterSymbology && this.opacity === other.opacity && this.colorizer.equals(other.colorizer) //&&
+            other instanceof RasterSymbology && this.opacity === other.opacity && this.rasterColorizer.equals(other.rasterColorizer) //&&
         );
     }
 
     clone(): RasterSymbology {
-        return new RasterSymbology(this.opacity, this.colorizer.clone());
+        return new RasterSymbology(this.opacity, this.rasterColorizer.clone());
     }
 
     cloneWith(updates: {readonly opacity?: number; readonly colorizer?: RasterColorizer}): RasterSymbology {
-        return new RasterSymbology(updates.opacity ?? this.opacity, updates.colorizer ?? this.colorizer.clone());
+        return new RasterSymbology(updates.opacity ?? this.opacity, updates.colorizer ?? this.rasterColorizer.clone());
     }
 
     toDict(): SymbologyDict {
         return {
             type: 'raster',
             opacity: this.opacity,
-            colorizer: this.colorizer.toDict(),
+            rasterColorizer: this.rasterColorizer.toDict(),
         };
     }
 
@@ -636,7 +636,7 @@ export class RasterSymbology extends Symbology {
     }
 
     getBreakpoints(): Array<ColorBreakpoint> {
-        return this.colorizer.getBreakpoints();
+        return this.rasterColorizer.getBreakpoints();
     }
 }
 
@@ -644,7 +644,7 @@ export abstract class RasterColorizer {
     static fromDict(dict: RasterColorizerDict): RasterColorizer {
         // TODO: multi band
         if (dict.type === 'singleBand') {
-            return new SingleBandRasterColorizer(dict.band, Colorizer.fromDict(dict.colorizer));
+            return new SingleBandRasterColorizer(dict.band, Colorizer.fromDict(dict.bandColorizer));
         } else {
             throw new Error('unable to deserialize `RasterColorizer`');
         }
@@ -673,49 +673,49 @@ export abstract class RasterColorizer {
 
 export class SingleBandRasterColorizer extends RasterColorizer {
     readonly band: number;
-    readonly colorizer: Colorizer;
+    readonly bandColorizer: Colorizer;
 
     constructor(band: number, colorizer: Colorizer) {
         super();
         this.band = band;
-        this.colorizer = colorizer;
+        this.bandColorizer = colorizer;
     }
 
     override equals(other: RasterColorizer): boolean {
         if (other instanceof SingleBandRasterColorizer) {
-            return this.band === other.band && this.colorizer.equals(other.colorizer);
+            return this.band === other.band && this.bandColorizer.equals(other.bandColorizer);
         }
         return false;
     }
     override clone(): RasterColorizer {
-        return new SingleBandRasterColorizer(this.band, this.colorizer.clone());
+        return new SingleBandRasterColorizer(this.band, this.bandColorizer.clone());
     }
     override toDict(): RasterColorizerDict {
         return {
             type: 'singleBand',
             band: this.band,
-            colorizer: this.colorizer.toDict(),
+            bandColorizer: this.bandColorizer.toDict(),
         };
     }
 
     getBreakpoints(): Array<ColorBreakpoint> {
-        return this.colorizer.getBreakpoints();
+        return this.bandColorizer.getBreakpoints();
     }
 
     override isDiscrete(): boolean {
-        return this.colorizer.isDiscrete();
+        return this.bandColorizer.isDiscrete();
     }
 
     getNumberOfColors(): number {
-        return this.colorizer.getNumberOfColors();
+        return this.bandColorizer.getNumberOfColors();
     }
 
     override isGradient(): boolean {
-        return this.colorizer.isGradient();
+        return this.bandColorizer.isGradient();
     }
 
     override getColorAtIndex(index: number): Color {
-        return this.colorizer.getColorAtIndex(index);
+        return this.bandColorizer.getColorAtIndex(index);
     }
 }
 
