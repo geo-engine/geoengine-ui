@@ -487,7 +487,7 @@ export class UploadComponent implements OnDestroy {
             timeStartFormat: start ? start.startFormat.format : '',
             timeStartFormatCustom: start ? start.startFormat.customFormat : '',
             timeStartFormatUnix: start ? start.startFormat.timestampType : '',
-            timeDurationColumn: info?.time.type === 'start+duration' ? info?.time.durationField : '',
+            timeDurationColumn: info?.time.type === 'startDuration' ? info?.time.durationField : '',
             timeDurationValue: info?.time.type === 'start' ? info?.time.duration : 1,
             timeDurationValueType: info?.time.type === 'start' ? info?.time.duration.type : 'infinite',
             timeEndColumn: end ? end.endField : '',
@@ -535,7 +535,7 @@ export class UploadComponent implements OnDestroy {
             return undefined;
         }
 
-        if (time.type === 'start+end') {
+        if (time.type === 'startEnd') {
             return time;
         }
 
@@ -645,7 +645,7 @@ export class UploadComponent implements OnDestroy {
             }
 
             time = {
-                type: 'start+end',
+                type: 'startEnd',
                 startField: formMeta.timeStartColumn.value,
                 startFormat,
                 endField: formMeta.timeEndColumn.value,
@@ -663,7 +663,7 @@ export class UploadComponent implements OnDestroy {
             }
 
             time = {
-                type: 'start+duration',
+                type: 'startDuration',
                 startField: formMeta.timeStartColumn.value,
                 startFormat: format,
                 durationField: formMeta.timeDurationColumn.value,
@@ -678,9 +678,9 @@ export class UploadComponent implements OnDestroy {
         }
         if (time.type === 'start') {
             return 'Start';
-        } else if (time.type === 'start+duration') {
+        } else if (time.type === 'startDuration') {
             return 'Start/Duration';
-        } else if (time.type === 'start+end') {
+        } else if (time.type === 'startEnd') {
             return 'Start/End';
         }
         return 'None';

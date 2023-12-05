@@ -477,7 +477,7 @@ export interface StartOgrSourceDatasetTimeTypeDict {
 }
 
 export interface StartEndOgrSourceDatasetTimeTypeDict {
-    type: 'start+end';
+    type: 'startEnd';
     startField: string;
     startFormat: OgrSourceTimeFormatDict;
     endField: string;
@@ -485,7 +485,7 @@ export interface StartEndOgrSourceDatasetTimeTypeDict {
 }
 
 export interface StartDurationOgrSourceDatasetTimeTypeDict {
-    type: 'start+duration';
+    type: 'startDuration';
     startField: string;
     startFormat: OgrSourceTimeFormatDict;
     durationField: string;
