@@ -1,4 +1,4 @@
-import {Component, Input, ChangeDetectionStrategy, OnInit} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/core';
 import {RasterSymbology, SingleBandRasterColorizer} from '../symbology.model';
 import {Layer, RasterLayer} from '../../layer.model';
 import {MapService} from '../../../map/map.service';
@@ -17,7 +17,7 @@ import {UserService} from '../../../users/user.service';
 import {Color, TRANSPARENT, WHITE} from '../../../colors/color';
 import {LayoutService} from '../../../layout.service';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
-import {BehaviorSubject, map} from 'rxjs';
+import {BehaviorSubject, Subscription, map} from 'rxjs';
 import {RasterBandDescriptor} from '../../../datasets/dataset.model';
 import {RasterResultDescriptorDict} from '../../../backend/backend.model';
 
@@ -30,7 +30,7 @@ import {RasterResultDescriptorDict} from '../../../backend/backend.model';
     styleUrls: ['raster-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RasterSymbologyEditorComponent implements OnInit {
+export class RasterSymbologyEditorComponent implements OnInit, OnDestroy {
     @Input() layer!: RasterLayer;
 
     symbology!: RasterSymbology;
@@ -47,6 +47,8 @@ export class RasterSymbologyEditorComponent implements OnInit {
     unappliedChanges = new BehaviorSubject(false);
     unchangedSymbology = this.unappliedChanges.pipe(map((unapplied) => !unapplied));
 
+    private metadataSubscription?: Subscription;
+
     constructor(
         protected readonly projectService: ProjectService,
         protected readonly backend: BackendService,
@@ -62,7 +64,7 @@ export class RasterSymbologyEditorComponent implements OnInit {
 
         const bandIndex = (this.symbology.rasterColorizer as SingleBandRasterColorizer).band;
 
-        this.projectService.getWorkflowMetaData(this.layer.workflowId).subscribe((resultDescriptor) => {
+        this.metadataSubscription = this.projectService.getWorkflowMetaData(this.layer.workflowId).subscribe((resultDescriptor) => {
             if (resultDescriptor.type === 'raster') {
                 const rd = resultDescriptor as RasterResultDescriptorDict;
                 const bands = rd.bands.map((band) => RasterBandDescriptor.fromDict(band));
@@ -71,6 +73,12 @@ export class RasterSymbologyEditorComponent implements OnInit {
                 this.selectedBand = bands[bandIndex];
             }
         });
+    }
+
+    ngOnDestroy(): void {
+        if (this.metadataSubscription) {
+            this.metadataSubscription.unsubscribe();
+        }
     }
 
     /**

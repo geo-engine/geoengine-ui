@@ -222,13 +222,14 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
         this.histogramCreated = true;
         this.histogramSubscription = this.createHistogramWorkflowId()
             .pipe(mergeMap((histogramWorkflowId) => this.createHistogramStream(histogramWorkflowId)))
-            .subscribe(
-                (histogramData) => {
+            .subscribe({
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                next: (histogramData: any) => {
                     this.histogramData.next(histogramData);
                     this.histogramSubscription?.unsubscribe();
                 },
-                (error) => console.error('Error:', error),
-            );
+                error: (error) => console.error('Error:', error),
+            });
     }
 
     createColorTable(): void {

@@ -143,7 +143,7 @@ export class RasterLegendComponent implements OnInit, OnChanges, OnDestroy, Afte
     }
 
     ngAfterViewInit(): void {
-        this.projectService
+        this.layerMetaDataSubscription = this.projectService
             .getLayerMetadata(this.layer)
             .pipe(first())
             .subscribe((m) => {
