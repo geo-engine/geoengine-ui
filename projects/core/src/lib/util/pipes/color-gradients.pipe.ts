@@ -2,6 +2,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 import {DomSanitizer, SafeStyle} from '@angular/platform-browser';
 import {Color, RgbaTuple} from '../../colors/color';
 import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
+import {RasterColorizer} from '../../layers/symbology/symbology.model';
 import {Colorizer} from '../../colors/colorizer.model';
 
 /**
@@ -12,6 +13,20 @@ export class ColorizerCssGradientPipe implements PipeTransform {
     constructor(protected sanitizer: DomSanitizer) {}
 
     transform(colorizer: Colorizer, angle = 180): SafeStyle {
+        const colors = colorizer.getBreakpoints().map((breakpoint) => breakpoint.color);
+        const style = colorsToCssGradient(colors, angle);
+        return this.sanitizer.bypassSecurityTrustStyle(style);
+    }
+}
+
+/**
+ * Pipe to transform a RasterColorizer into a CSS gradient.
+ */
+@Pipe({name: 'geoengineRasterColorizerCssGradient'})
+export class RasterColorizerCssGradientPipe implements PipeTransform {
+    constructor(protected sanitizer: DomSanitizer) {}
+
+    transform(colorizer: RasterColorizer, angle = 180): SafeStyle {
         const colors = colorizer.getBreakpoints().map((breakpoint) => breakpoint.color);
         const style = colorsToCssGradient(colors, angle);
         return this.sanitizer.bypassSecurityTrustStyle(style);

@@ -30,6 +30,7 @@ import {ColorMapSelectorComponent} from '../../../colors/color-map-selector/colo
 import {LayoutService} from '../../../layout.service';
 import {Color} from '../../../colors/color';
 import {ColorTableEditorComponent} from '../../../../lib/colors/color-table-editor/color-table-editor.component';
+import {RasterBandDescriptor} from '../../../datasets/dataset.model';
 
 /**
  * An editor for generating raster symbologies.
@@ -48,6 +49,8 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     colorTableEditor!: ColorTableEditorComponent;
 
     @Input() layer!: RasterLayer;
+    @Input() bands!: RasterBandDescriptor[];
+    @Input() band!: string;
 
     @Input() colorizer!: LinearGradient | LogarithmicGradient;
     @Output() colorizerChange = new EventEmitter<LinearGradient | LogarithmicGradient>();
@@ -63,7 +66,6 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     histogramLoading = new BehaviorSubject(false);
     histogramCreated = false;
 
-    protected histogramWorkflowId = new ReplaySubject<UUID>(1);
     protected histogramSubscription?: Subscription;
 
     protected underColor?: ColorAttributeInput;
@@ -84,8 +86,6 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
         this.updateNodataAndDefaultColor();
 
         this.updateLayerMinMaxFromColorizer();
-
-        this.createHistogramWorkflowId().subscribe((histogramWorkflowId) => this.histogramWorkflowId.next(histogramWorkflowId));
     }
 
     ngOnDestroy(): void {
@@ -112,19 +112,6 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
         }
         this.colorizer = this.colorizer.cloneWith({breakpoints: colorTable});
         this.colorizerChange.emit(this.colorizer);
-    }
-
-    get histogramAutoReload(): boolean {
-        return !!this.histogramSubscription;
-    }
-
-    set histogramAutoReload(autoReload: boolean) {
-        if (autoReload) {
-            this.initializeHistogramDataSubscription();
-        } else {
-            this.histogramSubscription?.unsubscribe();
-            this.histogramSubscription = undefined;
-        }
     }
 
     /**
@@ -233,11 +220,16 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
 
     updateHistogram(): void {
         this.histogramCreated = true;
-        this.histogramSubscription = this.createHistogramStream().subscribe((histogramData) => {
-            this.histogramData.next(histogramData);
-            this.histogramSubscription?.unsubscribe();
-            this.histogramAutoReload = false;
-        });
+        this.histogramSubscription = this.createHistogramWorkflowId()
+            .pipe(mergeMap((histogramWorkflowId) => this.createHistogramStream(histogramWorkflowId)))
+            .subscribe({
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                next: (histogramData: any) => {
+                    this.histogramData.next(histogramData);
+                    this.histogramSubscription?.unsubscribe();
+                },
+                error: (error) => console.error('Error:', error),
+            });
     }
 
     createColorTable(): void {
@@ -263,26 +255,17 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
         };
     }
 
-    private initializeHistogramDataSubscription(): void {
-        if (this.histogramSubscription) {
-            this.histogramSubscription.unsubscribe();
-        }
-
-        this.histogramSubscription = this.createHistogramStream().subscribe((histogramData) => this.histogramData.next(histogramData));
-    }
-
-    private createHistogramStream(): Observable<VegaChartData> {
+    private createHistogramStream(histogramWorkflowId: UUID): Observable<VegaChartData> {
         return combineLatest([
-            this.histogramWorkflowId,
             this.projectService.getTimeStream(),
             this.mapService.getViewportSizeStream(),
             this.userService.getSessionTokenForRequest(),
             this.projectService.getSpatialReferenceStream(),
         ]).pipe(
             tap(() => this.histogramLoading.next(true)),
-            mergeMap(([workflowId, time, viewport, sessionToken, sref]) =>
+            mergeMap(([time, viewport, sessionToken, sref]) =>
                 this.backend.getPlot(
-                    workflowId,
+                    histogramWorkflowId,
                     {
                         bbox: extentToBboxDict(viewport.extent),
                         crs: sref.srsString,
@@ -306,6 +289,7 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
                         operator: {
                             type: 'Histogram',
                             params: {
+                                attributeName: this.band,
                                 buckets: {
                                     type: 'number',
                                     value: 20,

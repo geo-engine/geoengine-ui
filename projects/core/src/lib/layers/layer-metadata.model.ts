@@ -14,6 +14,7 @@ import {ResultType, ResultTypes} from '../operators/result-type.model';
 import {SpatialReference} from '../spatial-references/spatial-reference.model';
 import {Time} from '../time/time.model';
 import {BoundingBox2D} from '../spatial-bounds/bounding-box';
+import {RasterBandDescriptor} from '../datasets/dataset.model';
 
 export abstract class LayerMetadata implements HasLayerType {
     abstract readonly layerType: LayerType;
@@ -93,14 +94,14 @@ export class RasterLayerMetadata extends LayerMetadata {
     readonly layerType = 'raster';
 
     readonly dataType: RasterDataType;
-    readonly measurement: Measurement;
+    readonly bands: RasterBandDescriptor[];
 
     readonly resolution?: SpatialResolution;
 
     constructor(
         dataType: RasterDataType,
         spatialReference: SpatialReference,
-        measurement: Measurement,
+        bands: RasterBandDescriptor[],
         time?: Time,
         bbox?: BoundingBox2D,
         resolution?: SpatialResolution,
@@ -108,25 +109,18 @@ export class RasterLayerMetadata extends LayerMetadata {
         super(spatialReference, time, bbox);
 
         this.dataType = dataType;
-        this.measurement = measurement;
+        this.bands = bands;
 
         this.resolution = resolution;
     }
 
     static override fromDict(dict: RasterResultDescriptorDict): RasterLayerMetadata {
         const dataType = RasterDataTypes.fromCode(dict.dataType);
-        const measurement = Measurement.fromDict(dict.bands[0].measurement); // TODO: support multiple bands
+        const bands = dict.bands.map((b) => RasterBandDescriptor.fromDict(b));
         const time = dict.time ? Time.fromDict(dict.time) : undefined;
         const bbox = dict.bbox ? BoundingBox2D.fromSpatialPartitionDict(dict.bbox) : undefined;
 
-        return new RasterLayerMetadata(
-            dataType,
-            SpatialReference.fromSrsString(dict.spatialReference),
-            measurement,
-            time,
-            bbox,
-            dict.resolution,
-        );
+        return new RasterLayerMetadata(dataType, SpatialReference.fromSrsString(dict.spatialReference), bands, time, bbox, dict.resolution);
     }
 
     public get resultType(): ResultType {

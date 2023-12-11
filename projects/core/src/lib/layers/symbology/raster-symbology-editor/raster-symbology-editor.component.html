@@ -45,6 +45,14 @@
                     <span>{{ opacitySliderInput.value }} %</span>
                 </div>
 
+                <div>
+                    <p>Raster band:</p>
+
+                    <mat-select [ngModel]="selectedBand" (ngModelChange)="setSelectedBand($event)" placeholder="Bands">
+                        <mat-option *ngFor="let band of bands$ | async" [value]="band">{{ band.name }}</mat-option>
+                    </mat-select>
+                </div>
+
                 <mat-divider></mat-divider>
 
                 <p>Colorizer:</p>
@@ -66,8 +74,9 @@
         </mat-card>
 
         <geoengine-raster-gradient-symbology-editor
-            *ngIf="gradientColorizer"
+            *ngIf="gradientColorizer && selectedBand"
             [layer]="layer"
+            [band]="selectedBand.name"
             [colorizer]="gradientColorizer"
             (colorizerChange)="updateColorizer($event)"
         ></geoengine-raster-gradient-symbology-editor>

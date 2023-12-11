@@ -18,7 +18,7 @@ import {
 } from '../../../backend/backend.model';
 import {RgbDict, StatisticsDict} from '../../../backend/operator.model';
 import {LayoutService, SidenavConfig} from '../../../layout.service';
-import {RasterSymbology} from '../../../layers/symbology/symbology.model';
+import {RasterSymbology, SingleBandRasterColorizer} from '../../../layers/symbology/symbology.model';
 import {NotificationService} from '../../../notification.service';
 import {RgbaColorizer} from '../../../colors/colorizer.model';
 import {BackendService} from '../../../backend/backend.service';
@@ -214,7 +214,7 @@ export class RgbaCompositeComponent implements AfterViewInit {
 
         const sourceOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers(rasterLayers);
 
-        const symbology = new RasterSymbology(1, new RgbaColorizer());
+        const symbology = new RasterSymbology(1, new SingleBandRasterColorizer(0, new RgbaColorizer()));
 
         sourceOperators
             .pipe(

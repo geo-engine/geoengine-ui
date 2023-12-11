@@ -163,7 +163,15 @@ export type VectorSymbologyDict = PointSymbologyDict | LineSymbologyDict | Polyg
 export interface RasterSymbologyDict {
     type: 'raster';
     opacity: number;
-    colorizer: ColorizerDict;
+    rasterColorizer: RasterColorizerDict;
+}
+
+export type RasterColorizerDict = SingleBandRasterColorizerDict /* TODO: | MultiBandRasterColorizerDict */;
+
+export interface SingleBandRasterColorizerDict {
+    type: 'singleBand';
+    band: number;
+    bandColorizer: ColorizerDict;
 }
 
 export interface TextSymbologyDict {

@@ -343,7 +343,7 @@ export class ColumnRangeFilterComponent implements OnDestroy {
                         operator: {
                             type: 'Histogram',
                             params: {
-                                columnName: attributeName,
+                                attributeName: attributeName,
                                 bounds: 'data',
                                 buckets: {
                                     type: 'squareRootChoiceRule',

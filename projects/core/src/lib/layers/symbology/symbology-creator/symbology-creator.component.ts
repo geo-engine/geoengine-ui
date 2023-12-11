@@ -15,7 +15,7 @@ import {Time} from '../../../time/time.model';
 import {UserService} from '../../../users/user.service';
 import {extentToBboxDict} from '../../../util/conversions';
 import {RasterLayer} from '../../layer.model';
-import {RasterSymbology} from '../symbology.model';
+import {RasterSymbology, SingleBandRasterColorizer} from '../symbology.model';
 
 export enum SymbologyCreationType {
     AS_INPUT = 'AS_INPUT',
@@ -165,7 +165,12 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
                 return this.computeSymbologyForRasterLayer(workflowId);
             }
             case SymbologyCreationType.LINEAR_GRADIENT_FROM_MIN_MAX: {
-                return of(new RasterSymbology(this.opacity, this.colorizerForMinMax(this.min.getRawValue(), this.max.getRawValue())));
+                return of(
+                    new RasterSymbology(
+                        this.opacity,
+                        new SingleBandRasterColorizer(0, this.colorizerForMinMax(this.min.getRawValue(), this.max.getRawValue())),
+                    ),
+                );
             }
         }
     }
@@ -257,7 +262,7 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
                     throw new Error('Sample statistics do not have valid min/max values.');
                 }
 
-                return new RasterSymbology(this.opacity, this.colorizerForMinMax(min, max));
+                return new RasterSymbology(this.opacity, new SingleBandRasterColorizer(0, this.colorizerForMinMax(min, max)));
             }),
         );
     }

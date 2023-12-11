@@ -40,7 +40,8 @@ const categoricalInputValidator =
             return projectService.getRasterLayerMetadata(layer).pipe(
                 first(),
                 map((metadata) => {
-                    if (metadata.measurement instanceof ClassificationMeasurement) {
+                    const allBandsAreClassification = metadata.bands.every((band) => band instanceof ClassificationMeasurement);
+                    if (allBandsAreClassification) {
                         return null;
                     } else {
                         return {nonCategorical: true};

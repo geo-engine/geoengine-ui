@@ -1,5 +1,5 @@
-import {Component, Input, ChangeDetectionStrategy, OnInit} from '@angular/core';
-import {RasterSymbology} from '../symbology.model';
+import {Component, Input, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/core';
+import {RasterSymbology, SingleBandRasterColorizer} from '../symbology.model';
 import {Layer, RasterLayer} from '../../layer.model';
 import {MapService} from '../../../map/map.service';
 import {ProjectService} from '../../../project/project.service';
@@ -17,7 +17,9 @@ import {UserService} from '../../../users/user.service';
 import {Color, TRANSPARENT, WHITE} from '../../../colors/color';
 import {LayoutService} from '../../../layout.service';
 import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
-import {BehaviorSubject, map} from 'rxjs';
+import {BehaviorSubject, Subscription, map} from 'rxjs';
+import {RasterBandDescriptor} from '../../../datasets/dataset.model';
+import {RasterResultDescriptorDict} from '../../../backend/backend.model';
 
 /**
  * An editor for generating raster symbologies.
@@ -28,7 +30,7 @@ import {BehaviorSubject, map} from 'rxjs';
     styleUrls: ['raster-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RasterSymbologyEditorComponent implements OnInit {
+export class RasterSymbologyEditorComponent implements OnInit, OnDestroy {
     @Input() layer!: RasterLayer;
 
     symbology!: RasterSymbology;
@@ -37,9 +39,15 @@ export class RasterSymbologyEditorComponent implements OnInit {
     readonly logarithmicGradientColorizerType = LogarithmicGradient.TYPE_NAME;
     readonly paletteColorizerType = PaletteColorizer.TYPE_NAME;
     readonly rgbaColorizerType = RgbaColorizer.TYPE_NAME;
+    readonly loading$ = new BehaviorSubject<boolean>(false);
+
+    readonly bands$ = new BehaviorSubject<Array<RasterBandDescriptor>>([]);
+    selectedBand?: RasterBandDescriptor;
 
     unappliedChanges = new BehaviorSubject(false);
     unchangedSymbology = this.unappliedChanges.pipe(map((unapplied) => !unapplied));
+
+    private metadataSubscription?: Subscription;
 
     constructor(
         protected readonly projectService: ProjectService,
@@ -53,6 +61,24 @@ export class RasterSymbologyEditorComponent implements OnInit {
     ngOnInit(): void {
         // always work on a copy in order to being able to reset changes
         this.symbology = this.layer.symbology.clone();
+
+        const bandIndex = (this.symbology.rasterColorizer as SingleBandRasterColorizer).band;
+
+        this.metadataSubscription = this.projectService.getWorkflowMetaData(this.layer.workflowId).subscribe((resultDescriptor) => {
+            if (resultDescriptor.type === 'raster') {
+                const rd = resultDescriptor as RasterResultDescriptorDict;
+                const bands = rd.bands.map((band) => RasterBandDescriptor.fromDict(band));
+
+                this.bands$.next(bands);
+                this.selectedBand = bands[bandIndex];
+            }
+        });
+    }
+
+    ngOnDestroy(): void {
+        if (this.metadataSubscription) {
+            this.metadataSubscription.unsubscribe();
+        }
     }
 
     /**
@@ -74,7 +100,9 @@ export class RasterSymbologyEditorComponent implements OnInit {
     }
 
     updateColorizer(colorizer: Colorizer): void {
-        this.symbology = this.symbology.cloneWith({colorizer});
+        const rasterColorizer = new SingleBandRasterColorizer(this.getSelectedBandIndex(), colorizer);
+
+        this.symbology = this.symbology.cloneWith({colorizer: rasterColorizer});
 
         this.unappliedChanges.next(true);
     }
@@ -94,35 +122,52 @@ export class RasterSymbologyEditorComponent implements OnInit {
     }
 
     getColorizerType(): ColorizerType {
-        if (this.symbology.colorizer instanceof LinearGradient) {
+        const colorizer = this.getActualColorizer();
+
+        if (colorizer instanceof LinearGradient) {
             return LinearGradient.TYPE_NAME;
         }
 
-        if (this.symbology.colorizer instanceof PaletteColorizer) {
+        if (colorizer instanceof PaletteColorizer) {
             return PaletteColorizer.TYPE_NAME;
         }
 
-        if (this.symbology.colorizer instanceof LogarithmicGradient) {
+        if (colorizer instanceof LogarithmicGradient) {
             return LogarithmicGradient.TYPE_NAME;
         }
 
-        if (this.symbology.colorizer instanceof RgbaColorizer) {
+        if (colorizer instanceof RgbaColorizer) {
             return RgbaColorizer.TYPE_NAME;
         }
 
         throw Error('unknown colorizer type');
     }
 
+    setSelectedBand(band: RasterBandDescriptor): void {
+        this.selectedBand = band;
+        if (this.symbology.rasterColorizer instanceof SingleBandRasterColorizer) {
+            const index = this.getSelectedBandIndex();
+            this.symbology = new RasterSymbology(
+                this.getOpacity(),
+                new SingleBandRasterColorizer(index, this.symbology.rasterColorizer.bandColorizer),
+            );
+        }
+    }
+
     get paletteColorizer(): PaletteColorizer | undefined {
-        if (this.symbology.colorizer instanceof PaletteColorizer) {
-            return this.symbology.colorizer;
+        const colorizer = this.getActualColorizer();
+
+        if (colorizer instanceof PaletteColorizer) {
+            return colorizer;
         }
         return undefined;
     }
 
     get gradientColorizer(): LinearGradient | LogarithmicGradient | undefined {
-        if (this.symbology.colorizer instanceof LinearGradient || this.symbology.colorizer instanceof LogarithmicGradient) {
-            return this.symbology.colorizer;
+        const colorizer = this.getActualColorizer();
+
+        if (colorizer instanceof LinearGradient || colorizer instanceof LogarithmicGradient) {
+            return colorizer;
         }
         return undefined;
     }
@@ -135,7 +180,7 @@ export class RasterSymbologyEditorComponent implements OnInit {
             return;
         }
 
-        let colorizer: Colorizer;
+        let colorizer = this.getActualColorizer();
 
         switch (colorizerType) {
             case 'linearGradient':
@@ -157,33 +202,53 @@ export class RasterSymbologyEditorComponent implements OnInit {
                 colorizer = new RgbaColorizer();
         }
 
-        this.symbology = this.symbology.cloneWith({colorizer});
+        const rasterColorizer = new SingleBandRasterColorizer(this.getSelectedBandIndex(), colorizer);
+
+        this.symbology = this.symbology.cloneWith({colorizer: rasterColorizer});
         this.unappliedChanges.next(true);
+    }
+
+    protected getSelectedBandIndex(): number {
+        if (this.selectedBand) {
+            return this.bands$.value.indexOf(this.selectedBand);
+        }
+
+        return 0;
+    }
+
+    protected getActualColorizer(): Colorizer {
+        if (!(this.symbology.rasterColorizer instanceof SingleBandRasterColorizer)) {
+            throw Error('Symbology editor only supports single band raster colorizers');
+        }
+
+        return this.symbology.rasterColorizer.bandColorizer;
     }
 
     protected createGradientColorizer<G>(
         constructorFn: (breakpoints: Array<ColorBreakpoint>, noDataColor: Color, overColor: Color, underColor: Color) => G,
     ): G {
-        if (this.symbology.colorizer instanceof RgbaColorizer) {
+        const colorizer = this.getActualColorizer();
+
+        if (colorizer instanceof RgbaColorizer) {
             // TODO: derive some reasonable default values
             return constructorFn([new ColorBreakpoint(0, WHITE)], TRANSPARENT, TRANSPARENT, TRANSPARENT);
         }
 
-        const breakpoints = this.symbology.colorizer.getBreakpoints();
+        const breakpoints = colorizer.getBreakpoints();
         let noDataColor: Color;
         let overColor: Color;
         let underColor: Color;
 
-        if (this.symbology.colorizer instanceof LogarithmicGradient || this.symbology.colorizer instanceof LinearGradient) {
-            noDataColor = this.symbology.colorizer.noDataColor;
-            overColor = this.symbology.colorizer.overColor;
-            underColor = this.symbology.colorizer.underColor;
-        } else if (this.symbology.colorizer instanceof PaletteColorizer) {
+        if (colorizer instanceof LogarithmicGradient || colorizer instanceof LinearGradient) {
+            noDataColor = colorizer.noDataColor;
+            overColor = colorizer.overColor;
+            underColor = colorizer.underColor;
+        } else if (colorizer instanceof PaletteColorizer) {
             // Must be a palette then, so use values from the color selectors or RGBA 0, 0, 0, 0 as a fallback
-            const colorizer = this.symbology.colorizer as PaletteColorizer;
-            const defaultColor: Color = colorizer.defaultColor ? colorizer.defaultColor : TRANSPARENT;
+            const paletteColorizer = colorizer as PaletteColorizer;
+            const defaultColor: Color = paletteColorizer.defaultColor ? paletteColorizer.defaultColor : TRANSPARENT;
 
-            noDataColor = colorizer.noDataColor ? colorizer.noDataColor : TRANSPARENT;
+            noDataColor = paletteColorizer.noDataColor ? paletteColorizer.noDataColor : TRANSPARENT;
             overColor = defaultColor;
             underColor = defaultColor;
         } else {
@@ -194,26 +259,28 @@ export class RasterSymbologyEditorComponent implements OnInit {
     }
 
     protected createPaletteColorizer(): PaletteColorizer {
-        if (this.symbology.colorizer instanceof RgbaColorizer) {
+        const colorizer = this.getActualColorizer();
+
+        if (colorizer instanceof RgbaColorizer) {
             // TODO: derive some reasonable default values
             return new PaletteColorizer(new Map([[0, WHITE]]), TRANSPARENT, TRANSPARENT);
         }
 
-        const breakpoints = this.symbology.colorizer.getBreakpoints();
+        const breakpoints = colorizer.getBreakpoints();
         let noDataColor: Color;
         let defaultColor: Color;
 
-        if (this.symbology.colorizer instanceof LogarithmicGradient || this.symbology.colorizer instanceof LinearGradient) {
-            noDataColor = this.symbology.colorizer.noDataColor;
+        if (colorizer instanceof LogarithmicGradient || colorizer instanceof LinearGradient) {
+            noDataColor = colorizer.noDataColor;
 
             // we can neither use the over nor the under color
             defaultColor = TRANSPARENT;
-        } else if (this.symbology.colorizer instanceof PaletteColorizer) {
+        } else if (colorizer instanceof PaletteColorizer) {
             // Must be a palette then, so use values from the color selectors or RGBA 0, 0, 0, 0 as a fallback
-            const colorizer = this.symbology.colorizer as PaletteColorizer;
+            const paletteColorizer = colorizer as PaletteColorizer;
 
-            noDataColor = colorizer.noDataColor ? colorizer.noDataColor : TRANSPARENT;
-            defaultColor = colorizer.defaultColor ? colorizer.defaultColor : TRANSPARENT;
+            noDataColor = paletteColorizer.noDataColor ? paletteColorizer.noDataColor : TRANSPARENT;
+            defaultColor = paletteColorizer.defaultColor ? paletteColorizer.defaultColor : TRANSPARENT;
         } else {
             throw Error('unknown colorizer type');
         }
