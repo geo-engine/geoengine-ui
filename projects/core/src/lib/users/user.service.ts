@@ -1,4 +1,4 @@
-import {Observable, ReplaySubject, of, BehaviorSubject, combineLatest} from 'rxjs';
+import {Observable, ReplaySubject, of, BehaviorSubject, combineLatest, from} from 'rxjs';
 import {catchError, filter, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
@@ -9,10 +9,11 @@ import {BackendStatus, User} from './user.model';
 import {Config} from '../config.service';
 import {NotificationService} from '../notification.service';
 import {BackendService} from '../backend/backend.service';
-import {AuthCodeRequestURL, BackendInfoDict, RoleDescription, SessionDict, UUID} from '../backend/backend.model';
+import {AuthCodeRequestURL, BackendInfoDict, RoleDescription, UUID} from '../backend/backend.model';
 import {Session} from './session.model';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Quota} from './quota/quota.model';
+import {SessionApi, Configuration, UserSession} from 'geoengine-openapi-client';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
@@ -127,7 +128,11 @@ export class UserService {
     }
 
     createGuestUser(): Observable<Session> {
-        return this.backend.createAnonymousUserSession().pipe(mergeMap((response) => this.createSession(response)));
+        return from(
+            new SessionApi(new Configuration({basePath: this.config.API_URL}))
+                .anonymousHandler()
+                .then((response) => this.sessionFromDict(response)),
+        );
     }
 
     /**
@@ -190,17 +195,22 @@ export class UserService {
      */
     login(credentials: {email: string; password: string}): Observable<Session> {
         const result = new ReplaySubject<Session>();
-        this.backend
-            .loginUser(credentials)
-            .pipe(mergeMap((response) => this.createSession(response)))
-            .subscribe(
-                (session) => {
-                    this.session$.next(session);
-                    result.next(session);
+
+        new SessionApi(new Configuration({basePath: this.config.API_URL}))
+            .loginHandler({
+                userCredentials: {
+                    email: credentials.email,
+                    password: credentials.password,
                 },
-                (error) => result.error(error),
-                () => result.complete(),
-            );
+            })
+            .then((response) => this.sessionFromDict(response))
+            .then((session) => {
+                this.session$.next(session);
+                result.next(session);
+                result.complete();
+            })
+            .catch((error) => result.error(error));
+
         return result.asObservable();
     }
 
@@ -208,31 +218,32 @@ export class UserService {
         const result = new ReplaySubject<Session>();
         this.session$.pipe(first()).subscribe((oldSession) => {
             if (oldSession) {
-                this.backend.logoutUser(oldSession.sessionToken).subscribe();
+                new SessionApi(new Configuration({basePath: this.config.API_URL, accessToken: oldSession.sessionToken})).logoutHandler();
             }
 
-            this.createGuestUser().subscribe(
-                (session) => {
+            this.createGuestUser().subscribe({
+                next: (session) => {
                     this.session$.next(session);
                     result.next(session);
                 },
-                (error) => {
+                error: (error) => {
                     // failing on a guest login means we cannot do it,
                     // so we are logged out
                     this.session$.next(undefined);
                     result.error(error);
                 },
-                () => result.complete(),
-            );
+                complete: () => result.complete(),
+            });
         });
         return result.asObservable();
     }
 
     createSessionWithToken(sessionToken: UUID): Observable<Session> {
-        return this.backend.getSession(sessionToken).pipe(
-            mergeMap((response) => this.createSession(response)),
-            tap((session) => this.session$.next(session)),
-        );
+        return from(
+            new SessionApi(new Configuration({basePath: this.config.API_URL, accessToken: sessionToken}))
+                .sessionHandler()
+                .then((response) => this.sessionFromDict(response)),
+        ).pipe(tap((session) => this.session$.next(session)));
     }
 
     getSessionOnce(): Observable<Session> {
@@ -247,9 +258,11 @@ export class UserService {
      * @returns `true` if the session is valid, `false` otherwise.
      */
     isSessionValid(session: Session): Observable<boolean> {
-        return this.backend.getSession(session.sessionToken).pipe(
-            map((_) => true),
-            catchError((_) => of(false)),
+        return from(
+            new SessionApi(new Configuration({basePath: this.config.API_URL, accessToken: session.sessionToken}))
+                .sessionHandler()
+                .then((_response) => true)
+                .catch((_error) => false),
         );
     }
 
@@ -266,22 +279,24 @@ export class UserService {
     }
 
     oidcInit(): Observable<AuthCodeRequestURL> {
-        return this.backend.oidcInit();
+        return from(new SessionApi(new Configuration({basePath: this.config.API_URL})).oidcInit());
     }
 
     oidcLogin(request: {sessionState: string; code: string; state: string}): Observable<Session> {
         const result = new ReplaySubject<Session>();
-        this.backend
-            .oidcLogin(request)
-            .pipe(mergeMap((response) => this.createSession(response)))
-            .subscribe(
-                (session) => {
-                    this.session$.next(session);
-                    result.next(session);
-                },
-                (error) => result.error(error),
-                () => result.complete(),
-            );
+
+        new SessionApi(new Configuration({basePath: this.config.API_URL}))
+            .oidcLogin({
+                authCodeResponse: request,
+            })
+            .then((response) => this.sessionFromDict(response))
+            .then((session) => {
+                this.session$.next(session);
+                result.next(session);
+                result.complete();
+            })
+            .catch((error) => result.error(error));
+
         return result.asObservable();
     }
 
@@ -320,16 +335,20 @@ export class UserService {
     protected restoreSessionFromBrowser(): Observable<Session> {
         const sessionToken = localStorage.getItem(PATH_PREFIX + 'session') ?? '';
 
-        return this.backend.getSession(sessionToken).pipe(mergeMap((response) => this.createSession(response)));
+        return from(
+            new SessionApi(new Configuration({basePath: this.config.API_URL, accessToken: sessionToken}))
+                .sessionHandler()
+                .then((response) => this.sessionFromDict(response)),
+        );
     }
 
-    protected createSession(sessionDict: SessionDict): Observable<Session> {
+    protected sessionFromDict(sessionDict: UserSession): Session {
         let user: User | undefined;
         if (sessionDict.user) {
             user = new User({
                 id: sessionDict.user.id,
-                email: sessionDict.user.email,
-                realName: sessionDict.user.realName,
+                email: sessionDict.user.email ?? undefined,
+                realName: sessionDict.user.realName ?? undefined,
             });
         }
 
@@ -337,11 +356,11 @@ export class UserService {
             sessionToken: sessionDict.id,
             user,
             validUntil: utc(sessionDict.validUntil),
-            lastProjectId: sessionDict.project,
-            lastView: sessionDict.view,
+            lastProjectId: sessionDict.project ?? undefined,
+            lastView: sessionDict.view ?? undefined,
         };
 
-        return of(session);
+        return session;
     }
 
     private createSessionQuotaStream(): void {
