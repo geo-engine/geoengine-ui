@@ -189,15 +189,12 @@ export class UserService {
      * @param credentials.password The user's password.
      * @returns `true` if the login was successful, `false` otherwise.
      */
-    login(credentials: {email: string; password: string}): Observable<Session> {
+    login(userCredentials: {email: string; password: string}): Observable<Session> {
         const result = new ReplaySubject<Session>();
 
         new SessionApi()
             .loginHandler({
-                userCredentials: {
-                    email: credentials.email,
-                    password: credentials.password,
-                },
+                userCredentials,
             })
             .then((response) => this.sessionFromDict(response))
             .then((session) => {
@@ -283,8 +280,8 @@ export class UserService {
             .oidcLogin({
                 authCodeResponse: request,
             })
-            .then((response) => this.sessionFromDict(response))
-            .then((session) => {
+            .then((response) => {
+                const session = this.sessionFromDict(response);
                 this.session$.next(session);
                 result.next(session);
                 result.complete();
