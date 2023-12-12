@@ -13,7 +13,7 @@ import {AuthCodeRequestURL, BackendInfoDict, RoleDescription, UUID} from '../bac
 import {Session} from './session.model';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Quota} from './quota/quota.model';
-import {SessionApi, Configuration, UserSession} from 'geoengine-openapi-client';
+import {SessionApi, Configuration, UserSession, DefaultConfig} from '@geoengine/openapi-client';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
@@ -128,11 +128,7 @@ export class UserService {
     }
 
     createGuestUser(): Observable<Session> {
-        return from(
-            new SessionApi(new Configuration({basePath: this.config.API_URL}))
-                .anonymousHandler()
-                .then((response) => this.sessionFromDict(response)),
-        );
+        return from(new SessionApi().anonymousHandler().then((response) => this.sessionFromDict(response)));
     }
 
     /**
@@ -196,7 +192,7 @@ export class UserService {
     login(credentials: {email: string; password: string}): Observable<Session> {
         const result = new ReplaySubject<Session>();
 
-        new SessionApi(new Configuration({basePath: this.config.API_URL}))
+        new SessionApi()
             .loginHandler({
                 userCredentials: {
                     email: credentials.email,
@@ -218,7 +214,7 @@ export class UserService {
         const result = new ReplaySubject<Session>();
         this.session$.pipe(first()).subscribe((oldSession) => {
             if (oldSession) {
-                new SessionApi(new Configuration({basePath: this.config.API_URL, accessToken: oldSession.sessionToken})).logoutHandler();
+                new SessionApi(oldSession.apiConfiguration).logoutHandler();
             }
 
             this.createGuestUser().subscribe({
@@ -240,9 +236,7 @@ export class UserService {
 
     createSessionWithToken(sessionToken: UUID): Observable<Session> {
         return from(
-            new SessionApi(new Configuration({basePath: this.config.API_URL, accessToken: sessionToken}))
-                .sessionHandler()
-                .then((response) => this.sessionFromDict(response)),
+            new SessionApi(apiConfigurationWithAccessKey(sessionToken)).sessionHandler().then((response) => this.sessionFromDict(response)),
         ).pipe(tap((session) => this.session$.next(session)));
     }
 
@@ -259,7 +253,7 @@ export class UserService {
      */
     isSessionValid(session: Session): Observable<boolean> {
         return from(
-            new SessionApi(new Configuration({basePath: this.config.API_URL, accessToken: session.sessionToken}))
+            new SessionApi(session.apiConfiguration)
                 .sessionHandler()
                 .then((_response) => true)
                 .catch((_error) => false),
@@ -279,13 +273,13 @@ export class UserService {
     }
 
     oidcInit(): Observable<AuthCodeRequestURL> {
-        return from(new SessionApi(new Configuration({basePath: this.config.API_URL})).oidcInit());
+        return from(new SessionApi().oidcInit());
     }
 
     oidcLogin(request: {sessionState: string; code: string; state: string}): Observable<Session> {
         const result = new ReplaySubject<Session>();
 
-        new SessionApi(new Configuration({basePath: this.config.API_URL}))
+        new SessionApi()
             .oidcLogin({
                 authCodeResponse: request,
             })
@@ -335,11 +329,7 @@ export class UserService {
     protected restoreSessionFromBrowser(): Observable<Session> {
         const sessionToken = localStorage.getItem(PATH_PREFIX + 'session') ?? '';
 
-        return from(
-            new SessionApi(new Configuration({basePath: this.config.API_URL, accessToken: sessionToken}))
-                .sessionHandler()
-                .then((response) => this.sessionFromDict(response)),
-        );
+        return this.createSessionWithToken(sessionToken);
     }
 
     protected sessionFromDict(sessionDict: UserSession): Session {
@@ -358,6 +348,7 @@ export class UserService {
             validUntil: utc(sessionDict.validUntil),
             lastProjectId: sessionDict.project ?? undefined,
             lastView: sessionDict.view ?? undefined,
+            apiConfiguration: apiConfigurationWithAccessKey(sessionDict.id),
         };
 
         return session;
@@ -399,3 +390,17 @@ export class UserService {
 function isDefined<T>(arg: T | null | undefined): arg is T {
     return arg !== null && arg !== undefined;
 }
+
+const apiConfigurationWithAccessKey = (accessToken: string): Configuration =>
+    new Configuration({
+        basePath: DefaultConfig.basePath,
+        fetchApi: DefaultConfig.fetchApi,
+        middleware: DefaultConfig.middleware,
+        queryParamsStringify: DefaultConfig.queryParamsStringify,
+        username: DefaultConfig.username,
+        password: DefaultConfig.password,
+        apiKey: DefaultConfig.apiKey,
+        accessToken: accessToken,
+        headers: DefaultConfig.headers,
+        credentials: DefaultConfig.credentials,
+    });
