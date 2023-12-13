@@ -1,6 +1,7 @@
 import {Moment} from 'moment';
 import {STRectangleDict, UUID} from '../backend/backend.model';
 import {User} from './user.model';
+import {Configuration} from '@geoengine/openapi-client';
 
 /**
  * A user session after login
@@ -8,6 +9,7 @@ import {User} from './user.model';
 export interface Session {
     sessionToken: string;
     user?: User; // TODO: split for pro
+    apiConfiguration: Configuration;
     validUntil: Moment; // TODO: custom time point?
     lastProjectId?: UUID;
     lastView?: STRectangleDict;

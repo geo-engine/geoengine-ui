@@ -16,7 +16,6 @@ import {
     ProjectPermissionDict,
     RegisterWorkflowResultDict,
     RegistrationDict,
-    SessionDict,
     STRectangleDict,
     SrsString,
     TimeIntervalDict,
@@ -37,7 +36,6 @@ import {
     DatasetOrderByDict,
     LayerDict,
     LayerCollectionDict,
-    AuthCodeRequestURL,
     BackendInfoDict,
     WcsParamsDict,
     QuotaDict,
@@ -60,34 +58,6 @@ export class BackendService {
 
     registerUser(request: {email: string; password: string; realName: string}): Observable<RegistrationDict> {
         return this.http.post<RegistrationDict>(this.config.API_URL + '/user', request);
-    }
-
-    loginUser(request: {email: string; password: string}): Observable<SessionDict> {
-        return this.http.post<SessionDict>(this.config.API_URL + '/login', request);
-    }
-
-    getSession(sessionId: UUID): Observable<SessionDict> {
-        return this.http.get<SessionDict>(this.config.API_URL + '/session', {
-            headers: new HttpHeaders().set('Authorization', `Bearer ${sessionId}`),
-        });
-    }
-
-    logoutUser(sessionId: UUID): Observable<void> {
-        return this.http.post<void>(this.config.API_URL + '/logout', null, {
-            headers: new HttpHeaders().set('Authorization', `Bearer ${sessionId}`),
-        });
-    }
-
-    createAnonymousUserSession(): Observable<SessionDict> {
-        return this.http.post<SessionDict>(this.config.API_URL + '/anonymous', null);
-    }
-
-    oidcInit(): Observable<AuthCodeRequestURL> {
-        return this.http.post<AuthCodeRequestURL>(this.config.API_URL + '/oidcInit', null);
-    }
-
-    oidcLogin(request: {sessionState: string; code: string; state: string}): Observable<SessionDict> {
-        return this.http.post<SessionDict>(this.config.API_URL + '/oidcLogin', request);
     }
 
     createProject(

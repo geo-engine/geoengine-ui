@@ -1,9 +1,8 @@
-import {firstValueFrom, of} from 'rxjs';
-import {catchError, map, tap} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {mergeWith} from 'immutable';
 import {HttpClient} from '@angular/common/http';
 import Immutable from 'immutable';
+import {Configuration, DefaultConfig} from '@geoengine/openapi-client';
 
 interface Plots {
     readonly THEME: 'excel' | 'ggplot2' | 'quartz' | 'vox' | 'dark';
@@ -251,22 +250,25 @@ export class Config {
     /**
      * Initialize the config on app start.
      */
-    load(defaults: ConfigStructure = DEFAULT_CONFIG): Promise<void> {
-        const config = this.http.get<ConfigStructure>(Config.CONFIG_FILE).pipe(
-            map((appConfig) => ({...appConfig})), // The interface returned by http get is not indexable, create an object with the same content.
-            tap({
-                next: (appConfig) => {
-                    this.config = mergeDeepOverrideLists(defaults, appConfig);
-                },
-                error: () => {
-                    // error
-                    this.config = defaults;
-                },
-            }),
-            catchError(() => of(undefined)),
-            map(() => undefined),
-        );
-        return firstValueFrom(config);
+    async load(defaults: ConfigStructure = DEFAULT_CONFIG): Promise<void> {
+        const configFileResponse = await fetch(Config.CONFIG_FILE);
+
+        const appConfig = await configFileResponse.json().catch(() => ({}));
+        this.config = mergeDeepOverrideLists(defaults, {...appConfig});
+
+        // we alter the config in the openapi-client so that it uses the correct API_URL
+        DefaultConfig.config = new Configuration({
+            basePath: this.config.API_URL,
+            fetchApi: DefaultConfig.fetchApi,
+            middleware: DefaultConfig.middleware,
+            queryParamsStringify: DefaultConfig.queryParamsStringify,
+            username: DefaultConfig.username,
+            password: DefaultConfig.password,
+            apiKey: DefaultConfig.apiKey,
+            accessToken: DefaultConfig.accessToken,
+            headers: DefaultConfig.headers,
+            credentials: DefaultConfig.credentials,
+        });
     }
 }
 

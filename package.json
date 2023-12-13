@@ -52,6 +52,7 @@
         "dagre": "~0.8.5",
         "dagre-d3": "~0.6.4",
         "flatgeobuf": "3.25.0",
+        "@geoengine/openapi-client": "0.0.2",
         "immutable": "~4.3.0",
         "keycharm": "0.4.0",
         "moment": "~2.29.4",
