@@ -149,10 +149,10 @@
                     "options": {},
                     "configurations": {
                         "production": {
-                            "browserTarget": "gis:build:production"
+                            "buildTarget": "gis:build:production"
                         },
                         "development": {
-                            "browserTarget": "gis:build:development"
+                            "buildTarget": "gis:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -160,7 +160,7 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "gis:build"
+                        "buildTarget": "gis:build"
                     }
                 },
                 "test": {
@@ -293,10 +293,10 @@
                     "options": {},
                     "configurations": {
                         "production": {
-                            "browserTarget": "data-atlas:build:production"
+                            "buildTarget": "data-atlas:build:production"
                         },
                         "development": {
-                            "browserTarget": "data-atlas:build:development"
+                            "buildTarget": "data-atlas:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -304,7 +304,7 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "data-atlas:build"
+                        "buildTarget": "data-atlas:build"
                     }
                 },
                 "test": {
@@ -437,10 +437,10 @@
                     "options": {},
                     "configurations": {
                         "production": {
-                            "browserTarget": "ebv-analyzer:build:production"
+                            "buildTarget": "ebv-analyzer:build:production"
                         },
                         "development": {
-                            "browserTarget": "ebv-analyzer:build:development"
+                            "buildTarget": "ebv-analyzer:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -448,7 +448,7 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "ebv-analyzer:build"
+                        "buildTarget": "ebv-analyzer:build"
                     }
                 },
                 "test": {
@@ -582,10 +582,10 @@
                     "options": {},
                     "configurations": {
                         "production": {
-                            "browserTarget": "nfdi-portal-demo:build:production"
+                            "buildTarget": "nfdi-portal-demo:build:production"
                         },
                         "development": {
-                            "browserTarget": "nfdi-portal-demo:build:development"
+                            "buildTarget": "nfdi-portal-demo:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -593,7 +593,7 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "nfdi-portal-demo:build"
+                        "buildTarget": "nfdi-portal-demo:build"
                     }
                 },
                 "test": {
@@ -732,10 +732,10 @@
                     "options": {},
                     "configurations": {
                         "production": {
-                            "browserTarget": "gfbio:build:production"
+                            "buildTarget": "gfbio:build:production"
                         },
                         "development": {
-                            "browserTarget": "gfbio:build:development"
+                            "buildTarget": "gfbio:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -743,7 +743,7 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "gfbio:build"
+                        "buildTarget": "gfbio:build"
                     }
                 },
                 "test": {
