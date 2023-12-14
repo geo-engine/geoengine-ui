@@ -31,6 +31,19 @@ mat-toolbar.navbar {
     }
 }
 
+.homepage-button {
+    z-index: 2;
+
+    mat-icon {
+        color: white;
+    }
+
+    img {
+        height: 1.5rem;
+        vertical-align: middle;
+    }
+}
+
 geoengine-layer-list {
     position: absolute;
     z-index: 2;

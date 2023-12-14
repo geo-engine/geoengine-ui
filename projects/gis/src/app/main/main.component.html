@@ -3,6 +3,16 @@
 
     <geoengine-layer-list-menu></geoengine-layer-list-menu>
 
+    <ng-container *ngIf="config.BRANDING.HOMEPAGE as homepage">
+        <div class="divider"></div>
+
+        <a [href]="homepage.URL" mat-flat-button color="primary" class="homepage-button">
+            <mat-icon>keyboard_return</mat-icon>
+            <span></span>
+            <img [src]="homepage.BUTTON_IMAGE_URL" [alt]="homepage.BUTTON_ALT_TEXT" [matTooltip]="homepage.BUTTON_TOOLTIP_TEXT" />
+        </a>
+    </ng-container>
+
     <div class="divider"></div>
 
     <geoengine-zoom-handles (zoomIn)="map.zoomIn()" (zoomOut)="map.zoomOut()"></geoengine-zoom-handles>
