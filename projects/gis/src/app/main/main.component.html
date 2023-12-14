@@ -15,7 +15,7 @@
 
     <div class="space"></div>
 
-    <geoengine-navigation [buttons]="navigationButtons | async | valueDefault : []"></geoengine-navigation>
+    <geoengine-navigation [buttons]="navigationButtons | async | valueDefault: []"></geoengine-navigation>
 </mat-toolbar>
 
 <mat-sidenav-container fullscreen>
@@ -26,12 +26,12 @@
     <geoengine-layer-list
         class="mat-elevation-z3"
         [height]="middleContainerHeight$ | async | numberSanitizer"
-        [addAFirstLayerSidenavConfig]="addDataConfig | async | valueDefault : undefined"
+        [addAFirstLayerSidenavConfig]="addDataConfig | async | valueDefault: undefined"
     >
     </geoengine-layer-list>
 
     <div class="mid-container" [style.height.px]="middleContainerHeight$ | async">
-        <geoengine-map-container #map [grid]="mapIsGrid$ | async | valueDefault : false">
+        <geoengine-map-container #map [grid]="mapIsGrid$ | async | valueDefault: false">
             <ng-container *ngIf="userService.getSessionTokenStream() | async as sessionToken">
                 <ng-template ngFor let-layer [ngForOf]="layersReverse$ | async" [ngForTrackBy]="idFromLayer">
                     <ng-template [ngIf]="layer.layerType === 'vector'">
@@ -58,7 +58,7 @@
         </geoengine-map-container>
     </div>
     <geoengine-tab-panel
-        [visible]="layerDetailViewVisible$ | async | valueDefault : false"
+        [visible]="layerDetailViewVisible$ | async | valueDefault: false"
         [maxHeight]="bottomContainerHeight$ | async | numberSanitizer"
     ></geoengine-tab-panel>
 </mat-sidenav-container>

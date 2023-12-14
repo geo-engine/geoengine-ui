@@ -43,10 +43,10 @@ export class MediaviewComponent implements OnInit {
         const isMediaFile = imageArray.includes(fileEnding)
             ? (ret = 'image')
             : audioArray.includes(fileEnding)
-            ? (ret = 'audio')
-            : videoArray.includes(fileEnding)
-            ? (ret = 'video')
-            : (ret = 'text');
+              ? (ret = 'audio')
+              : videoArray.includes(fileEnding)
+                ? (ret = 'video')
+                : (ret = 'text');
         if (!isMediaFile) ret = 'text';
         return ret;
     }

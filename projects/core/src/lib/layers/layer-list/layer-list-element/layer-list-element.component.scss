@@ -60,7 +60,9 @@ mat-progress-bar {
 .lineThrough {
     background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' preserveAspectRatio='none' viewBox='0 0 20 20'><line x1='5%' y1='95%' x2='95%' y2='5%' style='stroke:rgba(0, 0, 0, 0.87); stroke-width: 2px;'/></svg>")
         no-repeat center center;
-    background-size: 100% 100%, auto;
+    background-size:
+        100% 100%,
+        auto;
 }
 
 geoengine-raster-legend {

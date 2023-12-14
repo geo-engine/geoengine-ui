@@ -6,7 +6,8 @@ import OlFeature from 'ol/Feature';
 import {ProjectionLike as OlProjectionLike} from 'ol/proj';
 import {UUID} from '../backend/backend.model';
 import {featureToHash} from '../util/conversions';
-import OlGeometry from 'ol/geom/Geometry';
+import {FeatureLike} from 'ol/Feature';
+import OlRenderFeature, {toFeature} from 'ol/render/Feature';
 
 export abstract class LayerData {
     readonly type: LayerType;
@@ -33,10 +34,10 @@ export class RasterData extends LayerData {
 }
 
 export class VectorData extends LayerData {
-    readonly data: Array<OlFeature<OlGeometry>>;
+    readonly data: Array<OlFeature>;
     readonly extent: [number, number, number, number];
 
-    constructor(time: Time, projection: SpatialReference, data: Array<OlFeature<OlGeometry>>, extent: [number, number, number, number]) {
+    constructor(time: Time, projection: SpatialReference, data: Array<OlFeature>, extent: [number, number, number, number]) {
         super('vector', time, projection);
         this.data = data;
         this.extent = extent;
@@ -51,7 +52,9 @@ export class VectorData extends LayerData {
         source: Document | Node | any | string, // any is also used by ol
         optOptions?: {dataProjection: OlProjectionLike; featureProjection: OlProjectionLike},
     ): VectorData {
-        return new VectorData(time, projection, new OlFormatGeoJSON().readFeatures(source, optOptions), extent);
+        const featureLikes = new OlFormatGeoJSON().readFeatures(source, optOptions);
+        const features = featureLikes.map((f: FeatureLike) => (f instanceof OlRenderFeature ? toFeature(f) : f));
+        return new VectorData(time, projection, features, extent);
     }
 
     fakeIds(): void {

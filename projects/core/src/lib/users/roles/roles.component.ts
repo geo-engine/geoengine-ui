@@ -20,7 +20,10 @@ export class RolesComponent implements AfterViewInit, OnDestroy {
 
     private roleNamesSubscription: Subscription | undefined;
 
-    constructor(protected readonly userService: UserService, protected readonly changeDetectorRef: ChangeDetectorRef) {}
+    constructor(
+        protected readonly userService: UserService,
+        protected readonly changeDetectorRef: ChangeDetectorRef,
+    ) {}
 
     ngAfterViewInit(): void {
         this.roleNamesSubscription = this.userService.getRoleDescriptions().subscribe((roleNames) => {

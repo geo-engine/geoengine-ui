@@ -8,8 +8,8 @@
     *ngFor="let plot of projectService.getPlotStream() | async; trackBy: idOfPlot"
     [plot]="plot"
     [plotData]="projectService.getPlotDataStream(plot) | async"
-    [plotError]="projectService.getPlotErrorStream(plot) | async | valueDefault : undefined"
-    [plotStatus]="projectService.getPlotDataStatusStream(plot) | async | valueDefault : defaultLoadingState"
+    [plotError]="projectService.getPlotErrorStream(plot) | async | valueDefault: undefined"
+    [plotStatus]="projectService.getPlotDataStatusStream(plot) | async | valueDefault: defaultLoadingState"
     [width]="cardWidth$ | async | numberSanitizer"
 >
 </geoengine-plot-list-entry>

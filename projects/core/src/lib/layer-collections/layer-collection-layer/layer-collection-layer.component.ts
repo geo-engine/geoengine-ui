@@ -36,7 +36,10 @@ export class LayerCollectionLayerComponent implements OnChanges {
 
     protected loading = false;
 
-    constructor(private layerService: LayerCollectionService, private changeDetectorRef: ChangeDetectorRef) {}
+    constructor(
+        private layerService: LayerCollectionService,
+        private changeDetectorRef: ChangeDetectorRef,
+    ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.layer) {

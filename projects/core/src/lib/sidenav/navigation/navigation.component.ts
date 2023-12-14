@@ -67,7 +67,11 @@ export class NavigationComponent implements OnInit, OnDestroy {
     /**
      * DI for services
      */
-    constructor(private layoutService: LayoutService, private sidenavRef: SidenavRef, private changeDetectorRef: ChangeDetectorRef) {}
+    constructor(
+        private layoutService: LayoutService,
+        private sidenavRef: SidenavRef,
+        private changeDetectorRef: ChangeDetectorRef,
+    ) {}
 
     ngOnInit(): void {
         this.sidenavConfigSubscription = this.layoutService.getSidenavContentComponentStream().subscribe((sidenavConfig) => {

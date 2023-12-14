@@ -61,7 +61,10 @@ export class StatisticsPlotComponent implements AfterViewInit, OnDestroy {
 
     private subscriptions: Array<Subscription> = [];
 
-    constructor(private formBuilder: FormBuilder, private projectService: ProjectService) {
+    constructor(
+        private formBuilder: FormBuilder,
+        private projectService: ProjectService,
+    ) {
         const layerControl = this.formBuilder.control<Layer | null>(null, Validators.required);
         this.form = this.formBuilder.group({
             layer: layerControl,

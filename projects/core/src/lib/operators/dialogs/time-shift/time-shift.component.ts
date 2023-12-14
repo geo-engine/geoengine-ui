@@ -45,7 +45,10 @@ export class TimeShiftComponent implements AfterViewInit {
     form: FormGroup<TimeShiftForm>;
     disallowSubmit: Observable<boolean>;
 
-    constructor(private readonly projectService: ProjectService, private readonly notificationService: NotificationService) {
+    constructor(
+        private readonly projectService: ProjectService,
+        private readonly notificationService: NotificationService,
+    ) {
         const form: FormGroup<TimeShiftForm> = new FormGroup({
             name: new FormControl('Time Shift', {
                 validators: [Validators.required, geoengineValidators.notOnlyWhitespace],

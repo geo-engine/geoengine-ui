@@ -114,12 +114,12 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     private selectedFeature?: OlFeature<OlGeometry> = undefined;
     private selectedFeatureOriginalStyle?: OlStyleLike = undefined;
 
-    private drawInteractionSource?: OlSourceVector<OlGeometry>;
+    private drawInteractionSource?: OlSourceVector<OlFeature>;
     private drawType: OlGeometryType = 'Point';
     private drawGeometryFunction?: GeometryFunction;
     private drawSingleFeature = false;
     private drawInteractions: Array<OlInteractionDraw> = [];
-    private drawInteractionLayers: Array<OlLayerVector<OlSourceVector<OlGeometry>>> = [];
+    private drawInteractionLayers: Array<OlLayerVector<OlSourceVector<OlFeature>>> = [];
     private endDrawCallback?: (feature: OlFeature<OlGeometry>) => void;
 
     private subscriptions: Array<Subscription> = [];
@@ -257,7 +257,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     /**
      * Disable user input (hand drawn) for the map and return the result
      */
-    public endDrawInteraction(): OlSourceVector<OlGeometry> | undefined {
+    public endDrawInteraction(): OlSourceVector<OlFeature> | undefined {
         if (!this.isDrawInteractionAttached()) {
             console.error('no interaction or layer active!');
             return undefined;
@@ -279,7 +279,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         this.projection$.pipe(first()).subscribe((projection) => this.redrawLayers(projection));
     }
 
-    private createDrawInteractionLayer(): OlLayerVector<OlSourceVector<OlGeometry>> {
+    private createDrawInteractionLayer(): OlLayerVector<OlSourceVector<OlFeature>> {
         return new OlLayerVector({
             source: this.drawInteractionSource,
         });

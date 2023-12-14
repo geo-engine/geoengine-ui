@@ -36,7 +36,10 @@ export class PlotListEntryComponent implements OnChanges {
     isOk = false;
     isError = false;
 
-    constructor(private readonly projectService: ProjectService, private readonly dialog: MatDialog) {}
+    constructor(
+        private readonly projectService: ProjectService,
+        private readonly dialog: MatDialog,
+    ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.plotData && this.plotData) {

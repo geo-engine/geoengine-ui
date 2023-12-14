@@ -34,7 +34,7 @@
             <mat-label>Colormap name</mat-label>
             <mat-select formControlName="colorMap">
                 <mat-option class="options" *ngFor="let colorMap of colorMaps | keyvalue" [value]="colorMap.value">
-                    <div class="colorizer_option_preview" [style.background]="colorMap.value | geoengineRgbaTuplesCssGradient : 90"></div>
+                    <div class="colorizer_option_preview" [style.background]="colorMap.value | geoengineRgbaTuplesCssGradient: 90"></div>
                     {{ colorMap.key }}
                 </mat-option>
             </mat-select>
@@ -60,7 +60,7 @@
                         <div
                             *ngIf="!!breakpoints"
                             class="colorizer_preview fill_width"
-                            [style.background]="breakpoints | geoengineColorBreakpointsCssGradient : 90"
+                            [style.background]="breakpoints | geoengineColorBreakpointsCssGradient: 90"
                         ></div>
                     </td>
                 </tr>

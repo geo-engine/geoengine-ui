@@ -8,7 +8,10 @@ import {Observable, map, skipWhile} from 'rxjs';
     providedIn: 'root',
 })
 export class BackendAvailableGuard {
-    constructor(private readonly userService: UserService, private router: Router) {}
+    constructor(
+        private readonly userService: UserService,
+        private router: Router,
+    ) {}
 
     canActivate(
         _route: ActivatedRouteSnapshot,

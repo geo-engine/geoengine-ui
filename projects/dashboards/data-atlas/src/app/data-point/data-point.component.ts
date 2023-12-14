@@ -14,7 +14,10 @@ export class DataPointComponent {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     readonly tableData$: Observable<Array<{key: string; value: any}>>;
 
-    constructor(private readonly projectService: ProjectService, private readonly dataSelectionService: DataSelectionService) {
+    constructor(
+        private readonly projectService: ProjectService,
+        private readonly dataSelectionService: DataSelectionService,
+    ) {
         this.tableData$ = this.dataSelectionService.vectorLayer.pipe(
             mergeMap((layer) => {
                 if (!layer) {
