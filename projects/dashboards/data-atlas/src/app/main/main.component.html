@@ -47,7 +47,7 @@
 
         <geoengine-time-step-selector
             class="mat-elevation-z4"
-            [timeSteps]="dataSelectionService.timeSteps | async | valueDefault : undefined"
+            [timeSteps]="dataSelectionService.timeSteps | async | valueDefault: undefined"
             [timeFormat]="dataSelectionService.timeFormat | async | stringSanitizer"
         ></geoengine-time-step-selector>
 

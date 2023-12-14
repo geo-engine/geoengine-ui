@@ -50,7 +50,10 @@ export class VegaViewerComponent implements OnChanges {
         finalize: () => void;
     } = undefined;
 
-    constructor(protected element: ElementRef, private config: Config) {}
+    constructor(
+        protected element: ElementRef,
+        private config: Config,
+    ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.chartData || changes.width || changes.height) {

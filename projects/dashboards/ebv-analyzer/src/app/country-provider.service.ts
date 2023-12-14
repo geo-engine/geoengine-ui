@@ -21,7 +21,10 @@ export class CountryProviderService {
     public readonly selectedCountry$ = new BehaviorSubject<Country | undefined>(undefined);
     public readonly availabeCountries: Array<Country>;
 
-    constructor(private readonly projectService: ProjectService, private readonly dataSelectionService: DataSelectionService) {
+    constructor(
+        private readonly projectService: ProjectService,
+        private readonly dataSelectionService: DataSelectionService,
+    ) {
         this.availabeCountries = COUNTRY_LIST.map((r) => {
             const [name, maxx, maxy, minx, miny, tifChannelId] = r;
             return {

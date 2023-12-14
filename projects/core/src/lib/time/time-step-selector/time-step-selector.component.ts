@@ -28,7 +28,10 @@ export class TimeStepSelectorComponent implements OnChanges {
     /**
      * Require services by using DI
      */
-    constructor(private readonly projectService: ProjectService, private readonly changeDetectorRef: ChangeDetectorRef) {
+    constructor(
+        private readonly projectService: ProjectService,
+        private readonly changeDetectorRef: ChangeDetectorRef,
+    ) {
         this.currentTimeFormatted = combineLatest([this.projectService.getTimeStream(), this.timeFormat$]).pipe(
             map(([time, format]) => {
                 if (this.timeSteps) {

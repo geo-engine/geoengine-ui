@@ -24,7 +24,10 @@ export class LayerCollectionDropdownComponent implements OnInit {
 
     selections: Array<LayerCollectionItemDict> = [];
 
-    constructor(protected readonly layerCollectionService: LayerCollectionService, private readonly changeDetectorRef: ChangeDetectorRef) {}
+    constructor(
+        protected readonly layerCollectionService: LayerCollectionService,
+        private readonly changeDetectorRef: ChangeDetectorRef,
+    ) {}
 
     ngOnInit(): void {
         if (this.root) {

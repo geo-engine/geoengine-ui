@@ -56,7 +56,10 @@ export class RasterScalingComponent implements AfterViewInit {
     form: FormGroup<RasterScalingForm>;
     disallowSubmit: Observable<boolean>;
 
-    constructor(private readonly projectService: ProjectService, private readonly notificationService: NotificationService) {
+    constructor(
+        private readonly projectService: ProjectService,
+        private readonly notificationService: NotificationService,
+    ) {
         this.form = new FormGroup<RasterScalingForm>({
             name: new FormControl<string>('', {
                 nonNullable: true,

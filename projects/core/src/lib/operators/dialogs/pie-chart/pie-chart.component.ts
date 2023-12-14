@@ -44,7 +44,10 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
     /**
      * DI for services
      */
-    constructor(private readonly projectService: ProjectService, private readonly notificationService: NotificationService) {
+    constructor(
+        private readonly projectService: ProjectService,
+        private readonly notificationService: NotificationService,
+    ) {
         this.form = new FormGroup({
             name: new FormControl('Filtered Values', {
                 validators: [Validators.required, geoengineValidators.notOnlyWhitespace],

@@ -7,7 +7,10 @@ import {UserService} from '../../users/user.service';
     providedIn: 'root',
 })
 export class LogInGuard {
-    constructor(private readonly userService: UserService, private router: Router) {}
+    constructor(
+        private readonly userService: UserService,
+        private router: Router,
+    ) {}
 
     canActivate(
         _route: ActivatedRouteSnapshot,

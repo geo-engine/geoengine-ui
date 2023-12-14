@@ -61,7 +61,7 @@
     <mat-card-content>
         <geoengine-color-param-editor
             [(ngModel)]="fillColor"
-            [attributes]="numericAttributes | async | valueDefault : []"
+            [attributes]="numericAttributes | async | valueDefault: []"
         ></geoengine-color-param-editor>
     </mat-card-content>
 </mat-card>
@@ -77,13 +77,13 @@
         <h3 class="mat-subtitle-1">Color</h3>
         <geoengine-color-param-editor
             [(ngModel)]="strokeColor"
-            [attributes]="numericAttributes | async | valueDefault : []"
+            [attributes]="numericAttributes | async | valueDefault: []"
         ></geoengine-color-param-editor>
         <h3 class="mat-subtitle-1">Width</h3>
         <geoengine-number-param-editor
             [(ngModel)]="strokeWidth"
             [min]="1"
-            [attributes]="numericAttributes | async | valueDefault : []"
+            [attributes]="numericAttributes | async | valueDefault: []"
         ></geoengine-number-param-editor>
     </mat-card-content>
 </mat-card>
@@ -100,7 +100,7 @@
         <geoengine-number-param-editor
             [(ngModel)]="radius"
             [min]="1"
-            [attributes]="numericAttributes | async | valueDefault : []"
+            [attributes]="numericAttributes | async | valueDefault: []"
         ></geoengine-number-param-editor>
     </mat-card-content>
 </mat-card>
@@ -126,20 +126,20 @@
             <h3 class="mat-subtitle-1">Fill Color</h3>
             <geoengine-color-param-editor
                 [(ngModel)]="textFillColor"
-                [attributes]="numericAttributes | async | valueDefault : []"
+                [attributes]="numericAttributes | async | valueDefault: []"
             ></geoengine-color-param-editor>
 
             <h3 class="mat-subtitle-1">Stroke Color</h3>
             <geoengine-color-param-editor
                 [(ngModel)]="textStrokeColor"
-                [attributes]="numericAttributes | async | valueDefault : []"
+                [attributes]="numericAttributes | async | valueDefault: []"
             ></geoengine-color-param-editor>
 
             <h3 class="mat-subtitle-1">Stroke Width</h3>
             <geoengine-number-param-editor
                 [(ngModel)]="textStrokeWidth"
                 [min]="1"
-                [attributes]="numericAttributes | async | valueDefault : []"
+                [attributes]="numericAttributes | async | valueDefault: []"
             ></geoengine-number-param-editor>
         </ng-template>
     </mat-card-content>

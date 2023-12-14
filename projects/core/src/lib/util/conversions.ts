@@ -57,11 +57,14 @@ export function featureToHash(feature: OlFeature<OlGeometry>): number {
     const sortObjKeys = (obj: {[_: string]: any}): any => {
         Object.keys(obj)
             .sort()
-            .reduce((x, key) => {
-                x[key] = obj[key];
-                return x;
+            .reduce(
+                (x, key) => {
+                    x[key] = obj[key];
+                    return x;
+                },
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            }, {} as {[_: string]: any});
+                {} as {[_: string]: any},
+            );
     };
 
     const jsonObj = new OlFormatGeoJson().writeFeatureObject(feature);

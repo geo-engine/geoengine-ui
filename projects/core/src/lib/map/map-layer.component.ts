@@ -61,7 +61,11 @@ export abstract class MapLayerComponent<OL extends OlLayer<OS, any>, OS extends 
     /**
      * Setup of DI
      */
-    protected constructor(protected projectService: ProjectService, source: OS, layer: (_: OS) => OL) {
+    protected constructor(
+        protected projectService: ProjectService,
+        source: OS,
+        layer: (_: OS) => OL,
+    ) {
         this.source = source;
         this._mapLayer = layer(source);
     }

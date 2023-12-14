@@ -40,7 +40,10 @@ export class ModalLoginComponent implements OnDestroy {
 
     private formStatusSubscription?: Subscription;
 
-    constructor(private readonly config: Config, private dialogRef: MatDialogRef<ModalLoginComponent>) {
+    constructor(
+        private readonly config: Config,
+        private dialogRef: MatDialogRef<ModalLoginComponent>,
+    ) {
         this.loginForm = new UntypedFormGroup({
             email: new UntypedFormControl(
                 '',

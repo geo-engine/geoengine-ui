@@ -59,7 +59,10 @@ export class ExpressionOperatorComponent implements AfterViewInit {
     /**
      * DI of services and setup of observables for the template
      */
-    constructor(protected readonly projectService: ProjectService, protected readonly layoutService: LayoutService) {
+    constructor(
+        protected readonly projectService: ProjectService,
+        protected readonly layoutService: LayoutService,
+    ) {
         this.form = new FormGroup<ExpressionForm>({
             rasterLayers: new FormControl<Array<RasterLayer> | undefined>(undefined, {
                 nonNullable: true,

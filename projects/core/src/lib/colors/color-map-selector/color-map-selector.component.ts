@@ -85,7 +85,10 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
 
     protected readonly largerThanZeroValidator = geoengineValidators.largerThan(0);
 
-    constructor(protected readonly changeDetectorRef: ChangeDetectorRef, protected readonly formBuilder: UntypedFormBuilder) {
+    constructor(
+        protected readonly changeDetectorRef: ChangeDetectorRef,
+        protected readonly formBuilder: UntypedFormBuilder,
+    ) {
         const initialColorMapName = Object.keys(this.colorMaps)[0];
 
         this.form = formBuilder.group({

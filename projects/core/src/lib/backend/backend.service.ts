@@ -54,7 +54,10 @@ export class BackendService {
     readonly wmsBaseUrl = `${this.config.API_URL}/wms`;
     readonly wcsBaseUrl = `${this.config.API_URL}/wcs`;
 
-    constructor(protected readonly http: HttpClient, protected readonly config: Config) {}
+    constructor(
+        protected readonly http: HttpClient,
+        protected readonly config: Config,
+    ) {}
 
     registerUser(request: {email: string; password: string; realName: string}): Observable<RegistrationDict> {
         return this.http.post<RegistrationDict>(this.config.API_URL + '/user', request);

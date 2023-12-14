@@ -24,7 +24,10 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, OnCh
     private changedValue = new Subject<ColorBreakpoint>();
     private onChangePropagationSubscription: Subscription;
 
-    constructor(private config: Config, private changeDetectorRef: ChangeDetectorRef) {
+    constructor(
+        private config: Config,
+        private changeDetectorRef: ChangeDetectorRef,
+    ) {
         this.onChangePropagationSubscription = this.changedValue
             .pipe(debounceTime(this.config.DELAYS.DEBOUNCE)) // defer emitting values while the user is typing
             .subscribe((colorBreakpoint) => this.onChange(colorBreakpoint.clone()));

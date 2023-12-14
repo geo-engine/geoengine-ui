@@ -160,12 +160,12 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         return columnName === '_____coordinates'
             ? 'Coordinates'
             : columnName === '_____table__start'
-            ? 'Start '
-            : columnName === '_____table__end'
-            ? 'End'
-            : columnName === '_____select' // TODO delete this if hiding select box is not necessary
-            ? 'Select'
-            : columnName;
+              ? 'Start '
+              : columnName === '_____table__end'
+                ? 'End'
+                : columnName === '_____select' // TODO delete this if hiding select box is not necessary
+                  ? 'Select'
+                  : columnName;
     }
 
     processRasterLayer(_layer: RasterLayer, _metadata: RasterLayerMetadata, _data: unknown): void {

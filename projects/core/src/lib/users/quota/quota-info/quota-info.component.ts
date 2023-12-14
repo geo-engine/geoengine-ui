@@ -15,7 +15,10 @@ export class QuotaInfoComponent implements OnDestroy, OnInit {
 
     static readonly refreshTime: number = 30000;
 
-    constructor(protected readonly userService: UserService, protected readonly changeDetectorRef: ChangeDetectorRef) {}
+    constructor(
+        protected readonly userService: UserService,
+        protected readonly changeDetectorRef: ChangeDetectorRef,
+    ) {}
 
     ngOnInit(): void {
         this.sessionQuotaSubscription = this.userService.getSessionQuotaStream().subscribe((quota) => {

@@ -151,7 +151,10 @@ class LayerCollectionItemDataSource extends DataSource<LayerCollectionItemDict> 
 
     protected getCollectionItems: (offset: number, limit: number) => Observable<Array<LayerCollectionItemDict>>;
 
-    constructor(protected layerCollectionService: LayerCollectionService, protected collection?: ProviderLayerCollectionIdDict) {
+    constructor(
+        protected layerCollectionService: LayerCollectionService,
+        protected collection?: ProviderLayerCollectionIdDict,
+    ) {
         super();
 
         if (collection) {
