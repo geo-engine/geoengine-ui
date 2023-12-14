@@ -1,4 +1,4 @@
-import {Layer, VectorLayer} from '../../../layers/layer.model';
+import {VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
@@ -74,10 +74,12 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
         this.form.controls['type'].disable(); // TODO: remove when other options are available
 
         this.subscriptions.push(
-            this.form.controls['layer'].valueChanges
+            this.form.controls.layer.valueChanges
                 .pipe(
-                    tap(() => this.form.controls['attribute'].setValue(undefined)),
-                    mergeMap((layer?: Layer) => {
+                    tap({
+                        next: () => this.form.controls.attribute.setValue(undefined),
+                    }),
+                    mergeMap((layer: VectorLayer | undefined) => {
                         if (!layer || !(layer instanceof VectorLayer)) {
                             return of([]);
                         }

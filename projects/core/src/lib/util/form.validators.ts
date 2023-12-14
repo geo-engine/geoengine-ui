@@ -1,6 +1,6 @@
 import {Observable, Observer} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {AbstractControl, AsyncValidatorFn, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidatorFn, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {Moment} from 'moment';
 
 const isFiniteNumber = (value: null | undefined | number): boolean =>
@@ -344,7 +344,7 @@ const notZero = (control: AbstractControl): ValidationErrors | null => {
  * The field must be a `FormGroup` with the fields `start` and `end` of type `Moment`.
  */
 const startBeforeEndValidator = (control: AbstractControl): ValidationErrors | null => {
-    if (!(control instanceof FormGroup<{start: FormControl<Moment>; end: FormControl<Moment>; timeAsPoint: FormControl<boolean>}>)) {
+    if (!(control instanceof FormGroup)) {
         throw Error('The field must be a FormGroup with the fields `start` and `end` of type Moment and `timeAsPoint` of type boolean.');
     }
     if (!control.controls.start || !control.controls.end) {
