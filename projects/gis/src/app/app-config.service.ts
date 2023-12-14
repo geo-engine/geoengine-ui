@@ -17,6 +17,14 @@ interface Branding {
     readonly LOGO_ICON_URL: string;
     readonly LOGO_ALT_URL: string;
     readonly PAGE_TITLE: string;
+    readonly HOMEPAGE?: Homepage;
+}
+
+interface Homepage {
+    readonly URL: string;
+    readonly BUTTON_IMAGE_URL: string;
+    readonly BUTTON_ALT_TEXT: string;
+    readonly BUTTON_TOOLTIP_TEXT: string;
 }
 
 interface AppConfigStructure extends ConfigStructure {
