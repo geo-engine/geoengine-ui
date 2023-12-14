@@ -75,6 +75,7 @@
                         "allowedCommonJsDependencies": [
                             "clone",
                             "codemirror",
+                            "color-name",
                             "dagre-d3",
                             "earcut",
                             "fast-deep-equal",
@@ -219,6 +220,7 @@
                     "options": {
                         "allowedCommonJsDependencies": [
                             "codemirror",
+                            "color-name",
                             "dagre-d3",
                             "earcut",
                             "moment",
@@ -362,6 +364,7 @@
                     "options": {
                         "allowedCommonJsDependencies": [
                             "codemirror",
+                            "color-name",
                             "dagre-d3",
                             "earcut",
                             "moment",
@@ -506,6 +509,7 @@
                         "allowedCommonJsDependencies": [
                             "clone",
                             "codemirror",
+                            "color-name",
                             "dagre-d3",
                             "earcut",
                             "fast-deep-equal",
@@ -655,6 +659,7 @@
                     "options": {
                         "allowedCommonJsDependencies": [
                             "codemirror",
+                            "color-name",
                             "dagre-d3",
                             "earcut",
                             "moment",

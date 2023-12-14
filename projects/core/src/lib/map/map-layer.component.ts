@@ -26,7 +26,7 @@ import {RasterData} from '../layers/layer-data.model';
 import {BackendService} from '../backend/backend.service';
 import {UUID} from '../backend/backend.model';
 import {RasterColorizer, RasterSymbology, Symbology, VectorSymbology} from '../layers/symbology/symbology.model';
-import OlGeometry from 'ol/geom/Geometry';
+import OlFeature from 'ol/Feature';
 import {olExtentToTuple} from '../util/conversions';
 import TileState from 'ol/TileState';
 import {Extent} from './map.service';
@@ -101,7 +101,7 @@ export abstract class MapLayerComponent<OL extends OlLayer<OS, any>, OS extends 
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OlVectorLayerComponent
-    extends MapLayerComponent<OlLayerVector<OlVectorSource<OlGeometry>>, OlVectorSource<OlGeometry>>
+    extends MapLayerComponent<OlLayerVector<OlVectorSource<OlFeature>>, OlVectorSource<OlFeature>>
     implements OnInit, OnDestroy, OnChanges
 {
     override symbology?: VectorSymbology;
