@@ -72,11 +72,11 @@
         "vis-timeline": "7.7.3",
         "vis-util": "5.0.7",
         "xss": "1.0.14",
-        "zone.js": "~0.13.0"
+        "zone.js": "~0.14.2"
     },
     "devDependencies": {
         "@angular-devkit/architect": "^0.1600.3",
-        "@angular-devkit/build-angular": "^16.0.3",
+        "@angular-devkit/build-angular": "^16.2.10",
         "@angular-eslint/builder": "^17.1.1",
         "@angular-eslint/eslint-plugin": "^17.1.1",
         "@angular-eslint/eslint-plugin-template": "^17.1.1",
@@ -113,6 +113,6 @@
         "protractor": "~7.0.0",
         "puppeteer": "~21.6.1",
         "ts-node": "~10.9.2",
-        "typescript": "~5.0.4"
+        "typescript": "~5.2.2"
     }
 }
