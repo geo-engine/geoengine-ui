@@ -1,5 +1,5 @@
 import {ComponentPortal, Portal} from '@angular/cdk/portal';
-import {Component, ViewChild, ElementRef, ChangeDetectionStrategy, Injector, Input, OnInit} from '@angular/core';
+import {Component, ViewChild, ElementRef, ChangeDetectionStrategy, Injector, Input, OnInit, ChangeDetectorRef} from '@angular/core';
 import {LayerCollectionItemDict, ProviderLayerCollectionIdDict} from '../../backend/backend.model';
 import {CONTEXT_TOKEN, LayerCollectionListComponent} from '../layer-collection-list/layer-collection-list.component';
 
@@ -21,8 +21,14 @@ export class LayerCollectionNavigationComponent implements OnInit {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     selectedPortal!: Portal<any>;
 
+    isSearching = false;
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     @ViewChild('scrollElement', {read: ElementRef}) public scrollElement!: ElementRef<any>;
+
+    @ViewChild('searchFormField', {read: ElementRef}) public searchFormField!: ElementRef<HTMLInputElement>;
+
+    constructor(private readonly changeDetectorRef: ChangeDetectorRef) {}
 
     ngOnInit(): void {
         this.setPortal(undefined);
@@ -108,6 +114,16 @@ export class LayerCollectionNavigationComponent implements OnInit {
 
     showRoot(): void {
         this.setPortal(undefined);
+    }
+
+    toggleSearch(): void {
+        if (this.isSearching) {
+            console.log('searching');
+            setTimeout(() => this.searchFormField.nativeElement.focus());
+        }
+
+        this.isSearching = !this.isSearching;
+        this.changeDetectorRef.markForCheck();
     }
 
     private setPortal(id?: LayerCollectionItemDict): void {

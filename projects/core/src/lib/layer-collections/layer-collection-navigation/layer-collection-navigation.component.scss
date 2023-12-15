@@ -1,29 +1,65 @@
-.portal-outlet {
-    height: calc(100% - 70px);
-}
-
-.head {
+:host {
     display: grid;
-    grid-template-columns: 8rem 1fr;
-    white-space: nowrap;
-    overflow: hidden;
+    width: 100%;
+    height: calc(100% - 0.5rem);
     padding-top: 0.5rem;
+
+    grid-template-rows: min-content auto;
+    grid-template-columns: 0.5rem auto min-content min-content min-content 0.5rem;
+    grid-template-areas:
+        'gap-left breadcrumbs back forth search gap-right'
+        'content content content content content content';
 }
 
-.nagivation {
-    grid-column: 1/2;
-    justify-content: center;
+.back-btn {
+    grid-area: back;
 }
 
-.breadcrumbarea {
-    grid-column: 2/-1;
-    justify-content: center;
-    overflow: auto;
+.forth-btn {
+    grid-area: forth;
+}
+
+.search-btn {
+    grid-area: search;
+}
+
+.small-btn {
+    min-width: 1rem;
+    margin: 0;
+
+    align-self: center;
+
+    mat-icon {
+        margin: 0;
+    }
+}
+
+.breadcrumbs {
+    grid-area: breadcrumbs;
+
+    overflow-x: auto;
+    overflow-y: hidden;
     white-space: nowrap;
-    padding-bottom: 0.2rem;
-    margin-bottom: 0.2rem;
+
+    padding-bottom: 0.25rem;
+
+    button {
+        display: inline-block;
+    }
+
+    mat-icon {
+        vertical-align: middle;
+    }
 }
 
-.root-btn mat-icon {
-    margin: 0; // removes auto margin from button
+.search {
+    grid-area: breadcrumbs;
+}
+
+.search-settings-btn {
+    grid-area: forth;
+}
+
+.portal-outlet {
+    grid-area: content;
 }
