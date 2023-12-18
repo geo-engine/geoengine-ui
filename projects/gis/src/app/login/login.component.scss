@@ -1,3 +1,5 @@
+@import '../../app-theme.scss';
+
 .container {
     overflow: hidden; // prevents margin breaking
     margin: 0;
@@ -41,4 +43,28 @@ mat-card-actions button {
 
 mat-spinner {
     margin: 0 auto;
+}
+
+img.logo {
+    height: 3rem;
+    width: auto;
+    margin: 0 1rem;
+}
+
+.homepage-wrapper {
+    width: 100%;
+    text-align: center;
+}
+
+.homepage-button {
+    margin: 1rem 1rem;
+
+    mat-icon {
+        color: map-get($geoengine-theme, text);
+    }
+
+    img {
+        height: 1.5rem;
+        vertical-align: middle;
+    }
 }

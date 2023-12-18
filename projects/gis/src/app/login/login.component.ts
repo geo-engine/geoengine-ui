@@ -37,8 +37,8 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     private formStatusSubscription?: Subscription;
 
     constructor(
+        @Inject(Config) readonly config: AppConfig,
         private readonly changeDetectorRef: ChangeDetectorRef,
-        @Inject(Config) private readonly config: AppConfig,
         private readonly userService: UserService,
         private readonly notificationService: NotificationService,
         private readonly router: Router,
