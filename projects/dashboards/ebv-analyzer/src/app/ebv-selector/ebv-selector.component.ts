@@ -221,11 +221,19 @@ export class EbvSelectorComponent implements OnInit {
                             mapNoData: false,
                         },
                         sources: {
-                            a: projectedRasterWorkflow,
-                            b: {
-                                type: 'GdalSource',
-                                params: {
-                                    data: COUNTRY_DATA_LIST[selectedCountry.name].raster,
+                            raster: {
+                                type: 'RasterStacker',
+                                params: {},
+                                sources: {
+                                    rasters: [
+                                        projectedRasterWorkflow,
+                                        {
+                                            type: 'GdalSource',
+                                            params: {
+                                                data: COUNTRY_DATA_LIST[selectedCountry.name].raster,
+                                            },
+                                        },
+                                    ],
                                 },
                             },
                         },

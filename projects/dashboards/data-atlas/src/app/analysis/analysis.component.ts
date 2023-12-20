@@ -188,17 +188,25 @@ export class AnalysisComponent {
                                         mapNoData: false,
                                     },
                                     sources: {
-                                        a: {
-                                            type: 'Reprojection',
-                                            params: {
-                                                // country rasters are in 4326
-                                                targetSpatialReference: 'EPSG:4326',
-                                            },
+                                        raster: {
+                                            type: 'RasterStacker',
+                                            params: {},
                                             sources: {
-                                                source: rasterWorkflow.operator,
+                                                rasters: [
+                                                    {
+                                                        type: 'Reprojection',
+                                                        params: {
+                                                            // country rasters are in 4326
+                                                            targetSpatialReference: 'EPSG:4326',
+                                                        },
+                                                        sources: {
+                                                            source: rasterWorkflow.operator,
+                                                        },
+                                                    } as ReprojectionDict,
+                                                    countryRasterWorkflow,
+                                                ],
                                             },
-                                        } as ReprojectionDict,
-                                        b: countryRasterWorkflow,
+                                        },
                                     },
                                 } as ExpressionDict,
                             },
