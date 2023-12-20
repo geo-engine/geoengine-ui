@@ -163,7 +163,9 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
     }
 
     updateLayer(index: number, layer: Layer): void {
-        this.selectedLayers.value[index] = layer;
+        const newSelectedLayers = [...this.selectedLayers.value];
+        newSelectedLayers[index] = layer;
+        this.selectedLayers.next(newSelectedLayers);
     }
 
     updateLayersForSelection(): void {
