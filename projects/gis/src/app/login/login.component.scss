@@ -1,5 +1,3 @@
-@import '../../app-theme.scss';
-
 .container {
     overflow: hidden; // prevents margin breaking
     margin: 0;
@@ -60,7 +58,7 @@ img.logo {
     margin: 1rem 1rem;
 
     mat-icon {
-        color: map-get($geoengine-theme, text);
+        color: inherit; // use color from button
     }
 
     img {

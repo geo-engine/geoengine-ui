@@ -1,5 +1,3 @@
-@import '../../app-theme.scss';
-
 mat-sidenav-container {
     top: 4rem !important;
 
@@ -37,7 +35,7 @@ mat-toolbar.navbar {
     margin: 0 1rem;
 
     mat-icon {
-        color: map-get($geoengine-theme, text);
+        color: inherit; // use color from button
     }
 
     img {
