@@ -40,6 +40,7 @@ import {
     SpatialReferenceService,
     LayerCollectionService,
     TaskListComponent,
+    LayerCollectionNavigationComponent,
 } from '@geoengine/core';
 import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from '../app-config.service';
@@ -143,6 +144,22 @@ export class MainComponent implements OnInit, AfterViewInit {
         //         setTimeout(() => this.changeDetectorRef.markForCheck());
         //     }
         // });
+
+        console.log('auto navigation // TODO: remove');
+        this.layerService.getRootLayerCollectionItems(0, 20).subscribe({
+            next: (collection) => {
+                for (const item of collection.items) {
+                    if (item.name !== 'Layers') {
+                        continue;
+                    }
+                    this.layoutService.setSidenavContentComponent({
+                        component: LayerCollectionNavigationComponent,
+                        keepParent: true,
+                        config: {rootCollectionItem: item},
+                    });
+                }
+            },
+        });
     }
 
     setTabIndex(index: number): void {

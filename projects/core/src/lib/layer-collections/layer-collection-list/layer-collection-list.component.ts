@@ -1,13 +1,4 @@
-import {
-    Component,
-    OnInit,
-    ChangeDetectionStrategy,
-    AfterViewInit,
-    ViewChild,
-    ChangeDetectorRef,
-    Inject,
-    InjectionToken,
-} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, ViewChild, ChangeDetectorRef, Input} from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, EMPTY, Observable, range, Subject} from 'rxjs';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
@@ -28,13 +19,6 @@ import {ProjectService} from '../../project/project.service';
 import {NotificationService} from '../../notification.service';
 import {RandomColorService} from '../../util/services/random-color.service';
 
-export interface LayerCollectionListConfig {
-    id?: ProviderLayerCollectionIdDict;
-    selectListener: (id: LayerCollectionItemDict) => void;
-}
-
-export const CONTEXT_TOKEN = new InjectionToken<LayerCollectionListConfig>('CONTEXT_TOKEN');
-
 @Component({
     selector: 'geoengine-layer-collection-list',
     templateUrl: './layer-collection-list.component.html',
@@ -47,8 +31,10 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
 
     readonly itemSizePx = 72;
 
+    @Input()
     collection?: ProviderLayerCollectionIdDict = undefined;
 
+    @Input()
     selectListener!: (id: LayerCollectionItemDict) => void;
 
     readonly loadingSpinnerDiameterPx: number = 3 * LayoutService.remInPx;
@@ -56,17 +42,13 @@ export class LayerCollectionListComponent implements OnInit, AfterViewInit {
     source?: LayerCollectionItemDataSource;
 
     constructor(
-        @Inject(CONTEXT_TOKEN) private data: LayerCollectionListConfig,
         private readonly layerService: LayerCollectionService,
         private readonly layoutService: LayoutService,
         private readonly projectService: ProjectService,
         private readonly notificationService: NotificationService,
         private readonly randomColorService: RandomColorService,
         private readonly changeDetectorRef: ChangeDetectorRef,
-    ) {
-        this.collection = data.id;
-        this.selectListener = data.selectListener;
-    }
+    ) {}
 
     ngOnInit(): void {
         this.source = new LayerCollectionItemDataSource(this.layerService, this.collection);

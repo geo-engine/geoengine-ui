@@ -1,7 +1,16 @@
-import {ComponentPortal, Portal} from '@angular/cdk/portal';
-import {Component, ViewChild, ElementRef, ChangeDetectionStrategy, Injector, Input, OnInit, ChangeDetectorRef} from '@angular/core';
-import {LayerCollectionItemDict, ProviderLayerCollectionIdDict} from '../../backend/backend.model';
-import {CONTEXT_TOKEN, LayerCollectionListComponent} from '../layer-collection-list/layer-collection-list.component';
+import {Component, ViewChild, ElementRef, ChangeDetectionStrategy, Input, OnInit, ChangeDetectorRef} from '@angular/core';
+import {LayerCollectionItemDict, LayerCollectionListingDict, ProviderLayerCollectionIdDict, UUID} from '../../backend/backend.model';
+import {MatInput} from '@angular/material/input';
+import {LayerCollection, LayersApi, SearchCapabilities, SearchType, SearchTypes} from '@geoengine/openapi-client';
+import {UserService} from '../../users/user.service';
+import {firstValueFrom} from 'rxjs';
+
+/**
+ * TODO:
+ *  - search on pressing enter, escape to abort
+ *  - settings for search
+ *  - TODO: loading animation
+ */
 
 @Component({
     selector: 'geoengine-layer-collection-navigation',
@@ -10,7 +19,7 @@ import {CONTEXT_TOKEN, LayerCollectionListComponent} from '../layer-collection-l
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerCollectionNavigationComponent implements OnInit {
-    @Input() rootCollectionItem?: LayerCollectionItemDict;
+    @Input({required: true}) rootCollectionItem!: LayerCollectionListingDict;
 
     collections: Array<LayerCollectionItemDict> = [];
     allTrails: Array<Array<LayerCollectionItemDict>> = [];
@@ -18,20 +27,30 @@ export class LayerCollectionNavigationComponent implements OnInit {
 
     selectedCollection = -1;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    selectedPortal!: Portal<any>;
-
-    isSearching = false;
+    selectedId?: ProviderLayerCollectionIdDict;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     @ViewChild('scrollElement', {read: ElementRef}) public scrollElement!: ElementRef<any>;
 
-    @ViewChild('searchFormField', {read: ElementRef}) public searchFormField!: ElementRef<HTMLInputElement>;
+    searchCapabilities: SearchCapabilities = NO_SEARCH_CAPABILITIES;
+    searchSettings: SearchSettings = {
+        searchType: SearchType.Fulltext,
+        filter: undefined,
+    };
+    isSearching = false;
+    autocompleteResults: Array<string> = [];
+    searchString = '';
+    protected searchCapabilitiesProviderId: UUID = '';
+    protected autocompleteAbortController?: AbortController;
+    protected searchAbortController?: AbortController;
 
-    constructor(private readonly changeDetectorRef: ChangeDetectorRef) {}
+    constructor(
+        protected readonly userService: UserService,
+        private readonly changeDetectorRef: ChangeDetectorRef,
+    ) {}
 
     ngOnInit(): void {
-        this.setPortal(undefined);
+        this.updateListView(undefined);
     }
 
     get title(): string {
@@ -62,7 +81,14 @@ export class LayerCollectionNavigationComponent implements OnInit {
 
         this.scrollToRight();
 
-        this.setPortal(id);
+        // TODO: update search capabilities if necessary
+
+        this.updateListView(id);
+    }
+
+    selectListener(): (selection: LayerCollectionItemDict) => void {
+        // return this.selectCollection.bind(this);
+        return (selection: LayerCollectionItemDict) => this.selectCollection(selection);
     }
 
     back(): void {
@@ -88,7 +114,7 @@ export class LayerCollectionNavigationComponent implements OnInit {
         const currentTrail = this.allTrails[this.selectedCollection];
         this.displayedTrail = currentTrail;
         const lastId = currentTrail[currentTrail.length - 1];
-        this.setPortal(lastId);
+        this.updateListView(lastId);
     }
 
     onBreadCrumbClick(index: number): void {
@@ -113,36 +139,160 @@ export class LayerCollectionNavigationComponent implements OnInit {
     }
 
     showRoot(): void {
-        this.setPortal(undefined);
+        this.updateListView(undefined);
+    }
+
+    get hasSearchCapabilities(): boolean {
+        const searchTypes = this.searchCapabilities.searchTypes;
+        for (const searchType in searchTypes) {
+            if (this.searchCapabilities.searchTypes[searchType as keyof SearchTypes]) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     toggleSearch(): void {
-        if (this.isSearching) {
-            console.log('searching');
-            setTimeout(() => this.searchFormField.nativeElement.focus());
+        if (this.isSearching && this.searchString) {
+            this.search(this.searchString);
         }
 
         this.isSearching = !this.isSearching;
         this.changeDetectorRef.markForCheck();
     }
 
-    private setPortal(id?: LayerCollectionItemDict): void {
+    // Focus the search field when it is shown
+    @ViewChild('searchInput', {read: MatInput})
+    set searchInput(searchInput: MatInput | undefined) {
+        searchInput?.focus();
+    }
+
+    async triggerAutocomplete(searchString: string): Promise<void> {
+        this.autocompleteAbortController?.abort();
+        this.autocompleteAbortController = new AbortController();
+
+        const collection = this.selectedId ?? this.rootCollectionItem.id;
+
+        const session = await firstValueFrom(this.userService.getSessionOnce());
+
+        const results = await new LayersApi(session.apiConfiguration)
+            .autocompleteHandler(
+                {
+                    provider: collection.providerId,
+                    collection: collection.collectionId,
+                    searchType: this.searchSettings.searchType,
+                    searchString,
+                    limit: 10,
+                    offset: 0,
+                },
+                {signal: this.autocompleteAbortController.signal},
+            )
+            // on error or abort, just return undefeind
+            .catch(() => undefined);
+
+        if (results === undefined) {
+            return; // result was aborted and become invalid
+        }
+
+        this.autocompleteResults = results;
+
+        this.changeDetectorRef.markForCheck();
+    }
+
+    async search(searchString: string): Promise<void> {
+        console.log('searching for', searchString);
+
+        this.searchAbortController?.abort();
+        this.searchAbortController = new AbortController();
+
+        const collection = this.selectedId ?? this.rootCollectionItem.id;
+
+        const session = await firstValueFrom(this.userService.getSessionOnce());
+
+        const resultCollection = await new LayersApi(session.apiConfiguration)
+            .searchHandler(
+                {
+                    provider: collection.providerId,
+                    collection: collection.collectionId,
+                    searchType: this.searchSettings.searchType,
+                    searchString,
+                    limit: 10,
+                    offset: 0,
+                },
+                {signal: this.searchAbortController.signal},
+            )
+            // on error or abort, just return undefeind
+            .catch(() => undefined);
+
+        if (resultCollection === undefined) {
+            return; // result was aborted and become invalid
+        }
+
+        // this.selectCollection(resultCollection);
+
+        console.log('got results', resultCollection);
+    }
+
+    private updateListView(id?: LayerCollectionItemDict): void {
         if (!id) {
             id = this.rootCollectionItem;
         }
 
         const providerLayer = id?.id as ProviderLayerCollectionIdDict;
-        this.selectedPortal = new ComponentPortal(LayerCollectionListComponent, null, this.createInjector(providerLayer));
+
+        this.selectedId = providerLayer;
+
+        this.updateSearchCapabilities(id);
     }
 
-    private createInjector(id?: ProviderLayerCollectionIdDict): Injector {
-        return Injector.create({
-            providers: [
-                {
-                    provide: CONTEXT_TOKEN,
-                    useValue: {id, selectListener: (selection: LayerCollectionItemDict) => this.selectCollection(selection)},
-                },
-            ],
+    private async updateSearchCapabilities(layerCollection: LayerCollectionItemDict): Promise<void> {
+        const provider = layerCollection.id.providerId;
+        if (this.searchCapabilitiesProviderId === provider) {
+            return; // same provider, no need to re-query
+        }
+
+        const session = await firstValueFrom(this.userService.getSessionOnce());
+
+        if (!session) {
+            return;
+        }
+
+        this.searchCapabilities = await new LayersApi(session.apiConfiguration).searchCapabilitiesHandler({
+            provider,
         });
+        this.searchCapabilitiesProviderId = provider;
+
+        // set some default settings
+        this.searchSettings = {
+            searchType: SearchType.Fulltext,
+            filter: undefined,
+        };
+        // fulltext is the default, but if it is not supported, use the first supported search type
+        if (!this.searchCapabilities.searchTypes.fulltext) {
+            const searchTypes = this.searchCapabilities.searchTypes;
+            for (const searchType in searchTypes) {
+                if (this.searchCapabilities.searchTypes[searchType as keyof SearchTypes]) {
+                    this.searchSettings.searchType = searchType as SearchType;
+                    break;
+                }
+            }
+        }
+
+        this.changeDetectorRef.markForCheck();
     }
 }
+
+interface SearchSettings {
+    searchType: SearchType;
+    filter?: string;
+}
+
+const NO_SEARCH_CAPABILITIES: SearchCapabilities = {
+    autocomplete: false,
+    searchTypes: {
+        fulltext: false,
+        prefix: false,
+    },
+    filters: [],
+};
