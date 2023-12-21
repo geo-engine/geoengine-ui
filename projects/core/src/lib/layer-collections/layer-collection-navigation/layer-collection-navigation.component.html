@@ -66,16 +66,8 @@
     </button>
 }
 
-@if (selectedCollection && selectedCollection.type === 'collection') {
-    <geoengine-layer-collection-list
-        class="portal-outlet"
-        (selectCollection)="breadcrumbs.selectCollection($event)"
-        [collection]="layerCollectionItem(selectedCollection).id"
-    ></geoengine-layer-collection-list>
-} @else if (selectedCollection && selectedCollection.type === 'search') {
-    <geoengine-layer-collection-list
-        class="portal-outlet"
-        (selectCollection)="breadcrumbs.selectCollection($event)"
-        [collection]="layerCollectionSearch(selectedCollection)"
-    ></geoengine-layer-collection-list>
-}
+<geoengine-layer-collection-list
+    class="portal-outlet"
+    (selectCollection)="breadcrumbs.selectCollection($event)"
+    [collection]="providerLayerCollectionIdOrSearch"
+></geoengine-layer-collection-list>

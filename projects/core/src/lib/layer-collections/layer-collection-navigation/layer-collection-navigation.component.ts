@@ -65,32 +65,6 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
         this.search.onDestroy();
     }
 
-    createBreadcrumbNavigation(): BreadcrumbNavigation {
-        return new BreadcrumbNavigation(
-            (id) => this.updateListView(id),
-            () => this.scrollToRight(),
-        );
-    }
-
-    createSearch(): Search {
-        return new Search({
-            layerCollectionService: this.layerCollectionService,
-            selectedCollection: () => this.selectedCollection?.id ?? this.rootCollectionItem.id,
-            searchResult: (searchResult): void => {
-                this.breadcrumbs.selectCollection(searchResult);
-            },
-            debounceTimeMs: this.config.DELAYS.DEBOUNCE,
-            maxAutocompleteResults: 10,
-        });
-    }
-
-    scrollToRight(): void {
-        setTimeout(() => {
-            // wait until breadcrumbs are re-rendered before scrolling
-            this.scrollElement.nativeElement.scrollLeft += this.scrollElement.nativeElement.scrollWidth;
-        }, 0);
-    }
-
     /** Cast method for the template */
     layerCollectionItem(item: LayerCollectionItemOrSearch): LayerCollectionItem {
         if (item.type === 'collection') {
@@ -113,6 +87,42 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
     @ViewChild('searchInput', {read: MatInput})
     set searchInput(searchInput: MatInput | undefined) {
         searchInput?.focus();
+    }
+
+    get providerLayerCollectionIdOrSearch(): ProviderLayerCollectionIdDict | LayerCollectionSearch | undefined {
+        if (this.selectedCollection && this.selectedCollection.type === 'collection') {
+            return this.selectedCollection.id;
+        } else if (this.selectedCollection && this.selectedCollection.type === 'search') {
+            return this.selectedCollection as LayerCollectionSearch;
+        } else {
+            return undefined;
+        }
+    }
+
+    protected createBreadcrumbNavigation(): BreadcrumbNavigation {
+        return new BreadcrumbNavigation(
+            (id) => this.updateListView(id),
+            () => this.scrollToRight(),
+        );
+    }
+
+    protected createSearch(): Search {
+        return new Search({
+            layerCollectionService: this.layerCollectionService,
+            selectedCollection: () => this.selectedCollection?.id ?? this.rootCollectionItem.id,
+            searchResult: (searchResult): void => {
+                this.breadcrumbs.selectCollection(searchResult);
+            },
+            debounceTimeMs: this.config.DELAYS.DEBOUNCE,
+            maxAutocompleteResults: 10,
+        });
+    }
+
+    protected scrollToRight(): void {
+        setTimeout(() => {
+            // wait until breadcrumbs are re-rendered before scrolling
+            this.scrollElement.nativeElement.scrollLeft += this.scrollElement.nativeElement.scrollWidth;
+        }, 0);
     }
 
     protected updateListView(id?: LayerCollectionItemOrSearch): void {
