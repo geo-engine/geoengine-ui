@@ -1,6 +1,6 @@
-<geoengine-sidenav-header>{{ title }}</geoengine-sidenav-header>
+<geoengine-sidenav-header>{{ rootCollectionItem.name }}</geoengine-sidenav-header>
 
-@if (isSearching) {
+@if (search.isSearching) {
     <mat-form-field class="search" appearance="outline" subscriptSizing="dynamic">
         <mat-icon matPrefix>search</mat-icon>
         <input
@@ -8,28 +8,28 @@
             #searchInput
             type="text"
             placeholder="Search in collection"
-            [ngModel]="searchString"
-            (ngModelChange)="triggerAutocomplete($event); searchString = $event"
+            [ngModel]="search.searchString.value"
+            (ngModelChange)="search.searchString.next($event)"
             [matAutocomplete]="searchAutocomplete"
         />
     </mat-form-field>
     <mat-autocomplete #searchAutocomplete="matAutocomplete">
-        @for (option of autocompleteResults; track option) {
+        @for (option of search.autocompleteResults | async; track option) {
             <mat-option [value]="option">{{ option }}</mat-option>
         }
     </mat-autocomplete>
 
-    <button mat-button class="search-settings-btn small-btn" (click)="back()" matTooltip="Search Settings" matTooltipPosition="before">
+    <button mat-button class="search-settings-btn small-btn" matTooltip="Search Settings" matTooltipPosition="before">
         <mat-icon>tune</mat-icon>
     </button>
 } @else {
     <button
         mat-button
         class="back-btn small-btn"
-        (click)="back()"
+        (click)="breadcrumbs.back()"
         matTooltip="Navigate Back"
         matTooltipPosition="before"
-        [disabled]="selectedCollection === -1"
+        [disabled]="breadcrumbs.isBackDisabled"
     >
         <mat-icon>arrow_back</mat-icon>
     </button>
@@ -37,35 +37,45 @@
     <button
         mat-button
         class="forth-btn small-btn"
-        (click)="forward()"
+        (click)="breadcrumbs.forward()"
         matTooltip="Navigate Forward"
         matTooltipPosition="before"
-        [disabled]="selectedCollection === allTrails.length - 1"
+        [disabled]="breadcrumbs.isForwardDisabled"
     >
         <mat-icon>arrow_forward</mat-icon>
     </button>
 
     <div #scrollElement class="breadcrumbs">
-        <button mat-stroked-button (click)="navigateToRoot()" class="root-btn small-btn"><mat-icon>layers</mat-icon></button>
-        @for (item of displayedTrail; track $index) {
+        <button mat-stroked-button (click)="breadcrumbs.navigateToRoot()" class="root-btn small-btn"><mat-icon>layers</mat-icon></button>
+        @for (item of breadcrumbs.activeTrail; track $index) {
             <mat-icon>chevron_right</mat-icon>
-            <button mat-stroked-button class="breadcrumb" (click)="onBreadCrumbClick($index)">{{ item.name }}</button>
+            <button mat-stroked-button class="breadcrumb" (click)="breadcrumbs.onBreadCrumbClick($index)">
+                @if (item.type === 'collection') {
+                    {{ layerCollectionItem(item).name }}
+                } @else {
+                    "{{ layerCollectionSearch(item).searchString }}"
+                }
+            </button>
         }
     </div>
 }
 
-@if (hasSearchCapabilities) {
-    <button mat-button class="search-btn small-btn" matTooltip="Search" matTooltipPosition="before" (click)="toggleSearch()">
+@if (search.hasSearchCapabilities) {
+    <button mat-button class="search-btn small-btn" matTooltip="Search" matTooltipPosition="before" (click)="search.toggleSearch()">
         <mat-icon>search</mat-icon>
     </button>
 }
 
-<!-- TODO: This is a hack for re-creating the component on changes to `collection`.
-        The component, however, should be able to react on changes. -->
-@for (selectedId of [selectedId]; track selectedId) {
+@if (selectedCollection && selectedCollection.type === 'collection') {
     <geoengine-layer-collection-list
         class="portal-outlet"
-        [selectListener]="selectListener()"
-        [collection]="selectedId"
+        (selectCollection)="breadcrumbs.selectCollection($event)"
+        [collection]="layerCollectionItem(selectedCollection).id"
+    ></geoengine-layer-collection-list>
+} @else if (selectedCollection && selectedCollection.type === 'search') {
+    <geoengine-layer-collection-list
+        class="portal-outlet"
+        (selectCollection)="breadcrumbs.selectCollection($event)"
+        [collection]="layerCollectionSearch(selectedCollection)"
     ></geoengine-layer-collection-list>
 }

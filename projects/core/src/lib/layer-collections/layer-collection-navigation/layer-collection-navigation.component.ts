@@ -1,15 +1,28 @@
-import {Component, ViewChild, ElementRef, ChangeDetectionStrategy, Input, OnInit, ChangeDetectorRef} from '@angular/core';
-import {LayerCollectionItemDict, LayerCollectionListingDict, ProviderLayerCollectionIdDict, UUID} from '../../backend/backend.model';
+import {
+    Component,
+    ViewChild,
+    ElementRef,
+    ChangeDetectionStrategy,
+    Input,
+    OnInit,
+    ChangeDetectorRef,
+    OnChanges,
+    SimpleChanges,
+    OnDestroy,
+} from '@angular/core';
+import {LayerCollectionListingDict, ProviderLayerCollectionIdDict, UUID} from '../../backend/backend.model';
 import {MatInput} from '@angular/material/input';
-import {LayerCollection, LayersApi, SearchCapabilities, SearchType, SearchTypes} from '@geoengine/openapi-client';
+import {SearchCapabilities, SearchType, SearchTypes} from '@geoengine/openapi-client';
 import {UserService} from '../../users/user.service';
-import {firstValueFrom} from 'rxjs';
+import {BehaviorSubject, Observable, debounceTime, distinctUntilChanged, switchMap} from 'rxjs';
+import {LayerCollectionItem, LayerCollectionItemOrSearch, LayerCollectionSearch} from '../layer-collection.model';
+import {Config} from '../../config.service';
+import {LayerCollectionService} from '../layer-collection.service';
 
 /**
  * TODO:
  *  - search on pressing enter, escape to abort
  *  - settings for search
- *  - TODO: loading animation
  */
 
 @Component({
@@ -18,34 +31,20 @@ import {firstValueFrom} from 'rxjs';
     styleUrls: ['./layer-collection-navigation.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LayerCollectionNavigationComponent implements OnInit {
+export class LayerCollectionNavigationComponent implements OnInit, OnChanges, OnDestroy {
     @Input({required: true}) rootCollectionItem!: LayerCollectionListingDict;
 
-    collections: Array<LayerCollectionItemDict> = [];
-    allTrails: Array<Array<LayerCollectionItemDict>> = [];
-    displayedTrail: Array<LayerCollectionItemDict> = [];
+    @ViewChild('scrollElement', {read: ElementRef}) public scrollElement!: ElementRef<HTMLDivElement>;
 
-    selectedCollection = -1;
+    breadcrumbs: BreadcrumbNavigation = this.createBreadcrumbNavigation();
+    search: Search = this.createSearch();
 
-    selectedId?: ProviderLayerCollectionIdDict;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    @ViewChild('scrollElement', {read: ElementRef}) public scrollElement!: ElementRef<any>;
-
-    searchCapabilities: SearchCapabilities = NO_SEARCH_CAPABILITIES;
-    searchSettings: SearchSettings = {
-        searchType: SearchType.Fulltext,
-        filter: undefined,
-    };
-    isSearching = false;
-    autocompleteResults: Array<string> = [];
-    searchString = '';
-    protected searchCapabilitiesProviderId: UUID = '';
-    protected autocompleteAbortController?: AbortController;
-    protected searchAbortController?: AbortController;
+    selectedCollection?: LayerCollectionItemOrSearch;
 
     constructor(
         protected readonly userService: UserService,
+        protected readonly config: Config,
+        protected readonly layerCollectionService: LayerCollectionService,
         private readonly changeDetectorRef: ChangeDetectorRef,
     ) {}
 
@@ -53,12 +52,36 @@ export class LayerCollectionNavigationComponent implements OnInit {
         this.updateListView(undefined);
     }
 
-    get title(): string {
-        if (!this.rootCollectionItem) {
-            return 'Layer Collection';
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.rootCollectionItem) {
+            this.breadcrumbs = this.createBreadcrumbNavigation();
+            this.search.onDestroy();
+            this.search = this.createSearch();
+            this.updateListView(undefined);
         }
+    }
 
-        return this.rootCollectionItem.name;
+    ngOnDestroy(): void {
+        this.search.onDestroy();
+    }
+
+    createBreadcrumbNavigation(): BreadcrumbNavigation {
+        return new BreadcrumbNavigation(
+            (id) => this.updateListView(id),
+            () => this.scrollToRight(),
+        );
+    }
+
+    createSearch(): Search {
+        return new Search({
+            layerCollectionService: this.layerCollectionService,
+            selectedCollection: () => this.selectedCollection?.id ?? this.rootCollectionItem.id,
+            searchResult: (searchResult): void => {
+                this.breadcrumbs.selectCollection(searchResult);
+            },
+            debounceTimeMs: this.config.DELAYS.DEBOUNCE,
+            maxAutocompleteResults: 10,
+        });
     }
 
     scrollToRight(): void {
@@ -68,78 +91,100 @@ export class LayerCollectionNavigationComponent implements OnInit {
         }, 0);
     }
 
-    selectCollection(id: LayerCollectionItemDict): void {
-        this.collections = this.collections.splice(0, this.displayedTrail.length);
-        this.collections.push(id);
-        this.selectedCollection += 1;
-
-        // Create a new trail, append it to the collection and display it
-        const clone = this.collections.map((x) => Object.assign({}, x));
-        this.allTrails = this.allTrails.slice(0, this.selectedCollection);
-        this.allTrails.push(clone);
-        this.displayedTrail = this.allTrails[this.selectedCollection];
-
-        this.scrollToRight();
-
-        // TODO: update search capabilities if necessary
-
-        this.updateListView(id);
-    }
-
-    selectListener(): (selection: LayerCollectionItemDict) => void {
-        // return this.selectCollection.bind(this);
-        return (selection: LayerCollectionItemDict) => this.selectCollection(selection);
-    }
-
-    back(): void {
-        if (this.selectedCollection > 0) {
-            this.selectedCollection -= 1;
-            this.updateLayerView();
-        } else if (this.selectedCollection === 0) {
-            this.displayedTrail = [];
-            this.showRoot();
-            this.selectedCollection = -1;
+    /** Cast method for the template */
+    layerCollectionItem(item: LayerCollectionItemOrSearch): LayerCollectionItem {
+        if (item.type === 'collection') {
+            return item as LayerCollectionItem;
         }
+
+        throw Error('not a collection item');
     }
 
-    forward(): void {
-        if (this.selectedCollection < this.allTrails.length - 1) {
-            this.selectedCollection += 1;
-            this.updateLayerView();
-            this.scrollToRight();
+    /** Cast method for the template */
+    layerCollectionSearch(item: LayerCollectionItemOrSearch): LayerCollectionSearch {
+        if (item.type === 'search') {
+            return item as LayerCollectionSearch;
         }
+
+        throw Error('not a search item');
     }
 
-    updateLayerView(): void {
-        const currentTrail = this.allTrails[this.selectedCollection];
-        this.displayedTrail = currentTrail;
-        const lastId = currentTrail[currentTrail.length - 1];
-        this.updateListView(lastId);
+    // Focus the search field when it is shown
+    @ViewChild('searchInput', {read: MatInput})
+    set searchInput(searchInput: MatInput | undefined) {
+        searchInput?.focus();
     }
 
-    onBreadCrumbClick(index: number): void {
-        // Creates and appends a new crumbtrail, then moves forward to it
-        if (index === this.displayedTrail.length - 1) {
-            return;
-        }
-        const newTrail = this.displayedTrail.map((x) => Object.assign({}, x)).slice(0, index + 1);
-        this.allTrails.push(newTrail);
-        this.selectedCollection = this.allTrails.length - 2;
-        this.forward();
+    protected updateListView(id?: LayerCollectionItemOrSearch): void {
+        this.selectedCollection = id ?? this.rootCollectionItem;
+
+        this.search.updateSearchCapabilities(this.selectedCollection.id).then(() => {
+            this.changeDetectorRef.markForCheck();
+        });
+    }
+}
+
+interface SearchSettings {
+    searchType: SearchType;
+    filter?: string;
+}
+
+const NO_SEARCH_CAPABILITIES: SearchCapabilities = {
+    autocomplete: false,
+    searchTypes: {
+        fulltext: false,
+        prefix: false,
+    },
+    filters: [],
+};
+
+class Search {
+    searchCapabilities: SearchCapabilities = NO_SEARCH_CAPABILITIES;
+    searchSettings: SearchSettings = {
+        searchType: SearchType.Fulltext,
+        filter: undefined,
+    };
+    isSearching = false;
+
+    searchString = new BehaviorSubject<string>('');
+    autocompleteResults: Observable<Array<string>>;
+
+    protected searchCapabilitiesProviderId: UUID = '';
+    protected autocompleteAbortController?: AbortController;
+    protected searchAbortController?: AbortController;
+
+    protected layerCollectionService: LayerCollectionService;
+    protected selectedCollection: () => ProviderLayerCollectionIdDict;
+    protected searchResult: (_: LayerCollectionSearch) => void;
+    protected maxAutocompleteResults: number;
+
+    constructor({
+        layerCollectionService,
+        selectedCollection,
+        searchResult,
+        debounceTimeMs,
+        maxAutocompleteResults,
+    }: {
+        readonly layerCollectionService: LayerCollectionService;
+        readonly selectedCollection: () => ProviderLayerCollectionIdDict;
+        readonly searchResult: (_: LayerCollectionSearch) => void;
+        readonly debounceTimeMs: number;
+        readonly maxAutocompleteResults: number;
+    }) {
+        this.layerCollectionService = layerCollectionService;
+        this.selectedCollection = selectedCollection;
+        this.searchResult = searchResult;
+        this.maxAutocompleteResults = maxAutocompleteResults;
+
+        this.autocompleteResults = this.searchString.pipe(
+            debounceTime(debounceTimeMs),
+            distinctUntilChanged(),
+            switchMap((searchString) => this.computeAutocompleteResults(searchString)),
+        );
     }
 
-    navigateToRoot(): void {
-        if (this.selectedCollection === -1) {
-            return;
-        }
-        const newTrail: Array<LayerCollectionItemDict> = [];
-        this.allTrails.push(newTrail);
-        this.selectedCollection = this.allTrails.length - 2;
-        this.forward();
-    }
-
-    showRoot(): void {
-        this.updateListView(undefined);
+    onDestroy(): void {
+        this.searchString.complete();
     }
 
     get hasSearchCapabilities(): boolean {
@@ -155,113 +200,57 @@ export class LayerCollectionNavigationComponent implements OnInit {
 
     toggleSearch(): void {
         if (this.isSearching && this.searchString) {
-            this.search(this.searchString);
+            this.search(this.searchString.value);
         }
 
         this.isSearching = !this.isSearching;
-        this.changeDetectorRef.markForCheck();
     }
 
-    // Focus the search field when it is shown
-    @ViewChild('searchInput', {read: MatInput})
-    set searchInput(searchInput: MatInput | undefined) {
-        searchInput?.focus();
-    }
+    async computeAutocompleteResults(searchString: string): Promise<Array<string>> {
+        if (searchString.length === 0 || this.searchCapabilities.autocomplete === false) {
+            return [];
+        }
 
-    async triggerAutocomplete(searchString: string): Promise<void> {
+        this.searchString.next(searchString);
+
         this.autocompleteAbortController?.abort();
         this.autocompleteAbortController = new AbortController();
 
-        const collection = this.selectedId ?? this.rootCollectionItem.id;
+        const collection = this.selectedCollection();
 
-        const session = await firstValueFrom(this.userService.getSessionOnce());
-
-        const results = await new LayersApi(session.apiConfiguration)
-            .autocompleteHandler(
-                {
-                    provider: collection.providerId,
-                    collection: collection.collectionId,
-                    searchType: this.searchSettings.searchType,
-                    searchString,
-                    limit: 10,
-                    offset: 0,
-                },
-                {signal: this.autocompleteAbortController.signal},
-            )
-            // on error or abort, just return undefeind
-            .catch(() => undefined);
-
-        if (results === undefined) {
-            return; // result was aborted and become invalid
-        }
-
-        this.autocompleteResults = results;
-
-        this.changeDetectorRef.markForCheck();
+        return await this.layerCollectionService.autocompleteSearch(
+            {
+                provider: collection.providerId,
+                collection: collection.collectionId,
+                searchType: this.searchSettings.searchType,
+                searchString,
+                limit: this.maxAutocompleteResults,
+                offset: 0,
+            },
+            {abortController: this.autocompleteAbortController},
+        );
     }
 
     async search(searchString: string): Promise<void> {
-        console.log('searching for', searchString);
+        const collection = this.selectedCollection();
 
-        this.searchAbortController?.abort();
-        this.searchAbortController = new AbortController();
-
-        const collection = this.selectedId ?? this.rootCollectionItem.id;
-
-        const session = await firstValueFrom(this.userService.getSessionOnce());
-
-        const resultCollection = await new LayersApi(session.apiConfiguration)
-            .searchHandler(
-                {
-                    provider: collection.providerId,
-                    collection: collection.collectionId,
-                    searchType: this.searchSettings.searchType,
-                    searchString,
-                    limit: 10,
-                    offset: 0,
-                },
-                {signal: this.searchAbortController.signal},
-            )
-            // on error or abort, just return undefeind
-            .catch(() => undefined);
-
-        if (resultCollection === undefined) {
-            return; // result was aborted and become invalid
-        }
-
-        // this.selectCollection(resultCollection);
-
-        console.log('got results', resultCollection);
+        this.searchResult({
+            type: 'search',
+            id: collection,
+            searchType: this.searchSettings.searchType,
+            searchString,
+            offset: 0,
+        } as LayerCollectionSearch);
     }
 
-    private updateListView(id?: LayerCollectionItemDict): void {
-        if (!id) {
-            id = this.rootCollectionItem;
-        }
-
-        const providerLayer = id?.id as ProviderLayerCollectionIdDict;
-
-        this.selectedId = providerLayer;
-
-        this.updateSearchCapabilities(id);
-    }
-
-    private async updateSearchCapabilities(layerCollection: LayerCollectionItemDict): Promise<void> {
-        const provider = layerCollection.id.providerId;
-        if (this.searchCapabilitiesProviderId === provider) {
+    async updateSearchCapabilities(layerCollection: ProviderLayerCollectionIdDict): Promise<void> {
+        const providerId = layerCollection.providerId;
+        if (this.searchCapabilitiesProviderId === providerId) {
             return; // same provider, no need to re-query
         }
 
-        const session = await firstValueFrom(this.userService.getSessionOnce());
-
-        if (!session) {
-            return;
-        }
-
-        this.searchCapabilities = await new LayersApi(session.apiConfiguration).searchCapabilitiesHandler({
-            provider,
-        });
-        this.searchCapabilitiesProviderId = provider;
+        this.searchCapabilities = await this.layerCollectionService.searchCapabilities(providerId);
+        this.searchCapabilitiesProviderId = providerId;
 
         // set some default settings
         this.searchSettings = {
@@ -279,20 +268,94 @@ export class LayerCollectionNavigationComponent implements OnInit {
             }
         }
 
-        this.changeDetectorRef.markForCheck();
+        // this.changeDetectorRef.markForCheck();
     }
 }
 
-interface SearchSettings {
-    searchType: SearchType;
-    filter?: string;
-}
+/**
+ * Encapsulates the logic for navigating through the breadcrumb trail.
+ */
+class BreadcrumbNavigation {
+    activeTrail: Array<LayerCollectionItemOrSearch> = [];
 
-const NO_SEARCH_CAPABILITIES: SearchCapabilities = {
-    autocomplete: false,
-    searchTypes: {
-        fulltext: false,
-        prefix: false,
-    },
-    filters: [],
-};
+    protected collections: Array<LayerCollectionItemOrSearch> = [];
+    protected allTrails: Array<Array<LayerCollectionItemOrSearch>> = [];
+
+    protected selectedCollection = -1;
+
+    constructor(
+        protected readonly updateListView: (_: LayerCollectionItemOrSearch | undefined) => void,
+        protected readonly scrollToRight: () => void,
+    ) {}
+
+    selectCollection(id: LayerCollectionItemOrSearch): void {
+        this.collections = this.collections.splice(0, this.activeTrail.length);
+        this.collections.push(id);
+        this.selectedCollection += 1;
+
+        // Create a new trail, append it to the collection and display it
+        const clone = this.collections.map((x) => Object.assign({}, x));
+        this.allTrails = this.allTrails.slice(0, this.selectedCollection);
+        this.allTrails.push(clone);
+        this.activeTrail = this.allTrails[this.selectedCollection];
+
+        this.scrollToRight();
+
+        this.updateListView(id);
+    }
+
+    get isBackDisabled(): boolean {
+        return this.selectedCollection < 0;
+    }
+
+    get isForwardDisabled(): boolean {
+        return this.selectedCollection >= this.allTrails.length - 1;
+    }
+
+    back(): void {
+        if (this.selectedCollection > 0) {
+            this.selectedCollection -= 1;
+            this.updateTrailAndCollection();
+        } else if (this.selectedCollection === 0) {
+            this.activeTrail = [];
+            this.updateListView(undefined);
+            this.selectedCollection = -1;
+        }
+    }
+
+    forward(): void {
+        if (this.selectedCollection < this.allTrails.length - 1) {
+            this.selectedCollection += 1;
+            this.updateTrailAndCollection();
+            this.scrollToRight();
+        }
+    }
+
+    onBreadCrumbClick(index: number): void {
+        // Creates and appends a new crumbtrail, then moves forward to it
+        if (index === this.activeTrail.length - 1) {
+            return;
+        }
+        const newTrail = this.activeTrail.map((x) => Object.assign({}, x)).slice(0, index + 1);
+        this.allTrails.push(newTrail);
+        this.selectedCollection = this.allTrails.length - 2;
+        this.forward();
+    }
+
+    navigateToRoot(): void {
+        if (this.selectedCollection === -1) {
+            return;
+        }
+        const newTrail: Array<LayerCollectionListingDict> = [];
+        this.allTrails.push(newTrail);
+        this.selectedCollection = this.allTrails.length - 2;
+        this.forward();
+    }
+
+    protected updateTrailAndCollection(): void {
+        const currentTrail = this.allTrails[this.selectedCollection];
+        this.activeTrail = currentTrail;
+        const lastId = currentTrail[currentTrail.length - 1];
+        this.updateListView(lastId);
+    }
+}
