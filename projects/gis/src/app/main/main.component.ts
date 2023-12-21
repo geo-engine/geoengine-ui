@@ -40,7 +40,6 @@ import {
     SpatialReferenceService,
     LayerCollectionService,
     TaskListComponent,
-    LayerCollectionNavigationComponent,
 } from '@geoengine/core';
 import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from '../app-config.service';
