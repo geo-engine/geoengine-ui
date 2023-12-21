@@ -56,10 +56,18 @@
     grid-area: breadcrumbs;
 }
 
+.exit-search-btn {
+    grid-area: back;
+}
+
 .search-settings-btn {
     grid-area: forth;
 }
 
 .portal-outlet {
     grid-area: content;
+}
+
+.menu-form {
+    margin: 1rem 1rem 0 1rem;
 }

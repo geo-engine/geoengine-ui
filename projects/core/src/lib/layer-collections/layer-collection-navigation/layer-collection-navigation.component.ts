@@ -9,6 +9,7 @@ import {
     OnChanges,
     SimpleChanges,
     OnDestroy,
+    HostListener,
 } from '@angular/core';
 import {LayerCollectionListingDict, ProviderLayerCollectionIdDict, UUID} from '../../backend/backend.model';
 import {MatInput} from '@angular/material/input';
@@ -18,12 +19,6 @@ import {BehaviorSubject, Observable, debounceTime, distinctUntilChanged, switchM
 import {LayerCollectionItem, LayerCollectionItemOrSearch, LayerCollectionSearch} from '../layer-collection.model';
 import {Config} from '../../config.service';
 import {LayerCollectionService} from '../layer-collection.service';
-
-/**
- * TODO:
- *  - search on pressing enter, escape to abort
- *  - settings for search
- */
 
 @Component({
     selector: 'geoengine-layer-collection-navigation',
@@ -87,6 +82,25 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
     @ViewChild('searchInput', {read: MatInput})
     set searchInput(searchInput: MatInput | undefined) {
         searchInput?.focus();
+    }
+
+    @HostListener('window:keydown', ['$event'])
+    onKeyDown(eventData: KeyboardEvent): void {
+        if (!this.search.hasSearchCapabilities) {
+            return;
+        }
+
+        if (!this.search.isSearching && eventData.key === 'f' && eventData.ctrlKey) {
+            this.search.toggleSearch();
+            eventData.preventDefault();
+        } else if (this.search.isSearching && eventData.key === 'Escape') {
+            // Note: for some reason, this event is rarely catched.
+            this.search.exitSearch();
+            eventData.preventDefault();
+        } else if (this.search.isSearching && eventData.key === 'Enter') {
+            this.search.toggleSearch();
+            eventData.preventDefault();
+        }
     }
 
     get providerLayerCollectionIdOrSearch(): ProviderLayerCollectionIdDict | LayerCollectionSearch | undefined {
@@ -161,7 +175,6 @@ class Search {
 
     protected searchCapabilitiesProviderId: UUID = '';
     protected autocompleteAbortController?: AbortController;
-    protected searchAbortController?: AbortController;
 
     protected layerCollectionService: LayerCollectionService;
     protected selectedCollection: () => ProviderLayerCollectionIdDict;
@@ -209,11 +222,16 @@ class Search {
     }
 
     toggleSearch(): void {
-        if (this.isSearching && this.searchString) {
+        if (this.isSearching && this.searchString.value) {
             this.search(this.searchString.value);
         }
 
         this.isSearching = !this.isSearching;
+    }
+
+    exitSearch(): void {
+        this.searchString.next('');
+        this.isSearching = false;
     }
 
     async computeAutocompleteResults(searchString: string): Promise<Array<string>> {
@@ -277,8 +295,6 @@ class Search {
                 }
             }
         }
-
-        // this.changeDetectorRef.markForCheck();
     }
 }
 
@@ -299,15 +315,25 @@ class BreadcrumbNavigation {
     ) {}
 
     selectCollection(id: LayerCollectionItemOrSearch): void {
-        this.collections = this.collections.splice(0, this.activeTrail.length);
-        this.collections.push(id);
-        this.selectedCollection += 1;
+        if (this.activeTrail[this.activeTrail.length - 1]?.type === 'search' && id.type === 'search') {
+            // SPECIAL CASE:
+            // if the current item is a search and we get a search, swap instead of append
 
-        // Create a new trail, append it to the collection and display it
-        const clone = this.collections.map((x) => Object.assign({}, x));
-        this.allTrails = this.allTrails.slice(0, this.selectedCollection);
-        this.allTrails.push(clone);
-        this.activeTrail = this.allTrails[this.selectedCollection];
+            this.collections[this.collections.length - 1] = id;
+            this.activeTrail[this.activeTrail.length - 1] = id;
+        } else {
+            // DEFAULT CASE: append
+
+            this.collections = this.collections.splice(0, this.activeTrail.length);
+            this.collections.push(id);
+            this.selectedCollection += 1;
+
+            // Create a new trail, append it to the collection and display it
+            const clone = this.collections.map((x) => Object.assign({}, x));
+            this.allTrails = this.allTrails.slice(0, this.selectedCollection);
+            this.allTrails.push(clone);
+            this.activeTrail = this.allTrails[this.selectedCollection];
+        }
 
         this.scrollToRight();
 

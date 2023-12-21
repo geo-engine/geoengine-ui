@@ -19,8 +19,33 @@
         }
     </mat-autocomplete>
 
-    <button mat-button class="search-settings-btn small-btn" matTooltip="Search Settings" matTooltipPosition="before">
+    <button
+        mat-button
+        class="search-settings-btn small-btn"
+        matTooltip="Search Settings"
+        matTooltipPosition="below"
+        [matMenuTriggerFor]="searchSettingsMenu"
+    >
         <mat-icon>tune</mat-icon>
+    </button>
+
+    <mat-menu #searchSettingsMenu="matMenu">
+        <mat-form-field class="menu-form">
+            <mat-label>Search type</mat-label>
+            <mat-select [(value)]="search.searchSettings.searchType">
+                @if (search.searchCapabilities.searchTypes.fulltext) {
+                    <mat-option value="fulltext">Fulltext</mat-option>
+                }
+                @if (search.searchCapabilities.searchTypes.prefix) {
+                    <mat-option value="prefix">Prefix</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+        <!-- TODO: insert filter selection if filters are actually used -->
+    </mat-menu>
+
+    <button mat-button class="exit-search-btn small-btn" matTooltip="Exit Search" matTooltipPosition="below" (click)="search.exitSearch()">
+        <mat-icon>close</mat-icon>
     </button>
 } @else {
     <button
@@ -28,7 +53,7 @@
         class="back-btn small-btn"
         (click)="breadcrumbs.back()"
         matTooltip="Navigate Back"
-        matTooltipPosition="before"
+        matTooltipPosition="below"
         [disabled]="breadcrumbs.isBackDisabled"
     >
         <mat-icon>arrow_back</mat-icon>
@@ -39,7 +64,7 @@
         class="forth-btn small-btn"
         (click)="breadcrumbs.forward()"
         matTooltip="Navigate Forward"
-        matTooltipPosition="before"
+        matTooltipPosition="below"
         [disabled]="breadcrumbs.isForwardDisabled"
     >
         <mat-icon>arrow_forward</mat-icon>
@@ -61,7 +86,7 @@
 }
 
 @if (search.hasSearchCapabilities) {
-    <button mat-button class="search-btn small-btn" matTooltip="Search" matTooltipPosition="before" (click)="search.toggleSearch()">
+    <button mat-button class="search-btn small-btn" matTooltip="Search" matTooltipPosition="below" (click)="search.toggleSearch()">
         <mat-icon>search</mat-icon>
     </button>
 }
