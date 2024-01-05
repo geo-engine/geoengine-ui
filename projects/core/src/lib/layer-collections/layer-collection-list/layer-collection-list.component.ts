@@ -2,7 +2,7 @@ import {Component, ChangeDetectionStrategy, ViewChild, Input, Output, EventEmitt
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, EMPTY, from, Observable, range, Subject} from 'rxjs';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
-import {concatMap, first, map, scan, tap} from 'rxjs/operators';
+import {concatMap, first, map, scan, startWith, tap} from 'rxjs/operators';
 import {LayoutService} from '../../layout.service';
 import {
     LayerCollectionItemDict,
@@ -132,7 +132,7 @@ export class LayerCollectionListComponent implements OnChanges {
  */
 class LayerCollectionItemDataSource extends DataSource<LayerCollectionItemDict> {
     // cannot increase this, since it is limited by the server
-    readonly scrollFetchSize = 5;
+    readonly scrollFetchSize = 20;
 
     readonly loading$ = new BehaviorSubject(false);
 
@@ -187,6 +187,7 @@ class LayerCollectionItemDataSource extends DataSource<LayerCollectionItemDict> 
             concatMap((numberOfTimes) => range(0, numberOfTimes)),
             concatMap(() => this.getMoreDataFromServer()),
             scan((acc, newValues) => [...acc, ...newValues]),
+            startWith([]), // emit empty array initially to trigger loading animation properly
         );
     }
 
