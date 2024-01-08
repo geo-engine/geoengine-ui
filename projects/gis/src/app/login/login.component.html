@@ -67,7 +67,7 @@
                 </mat-card-actions>
             </mat-card>
 
-            @if (config.BRANDING.HOMEPAGE; as homepage) {
+            <ng-container *ngIf="config.BRANDING.HOMEPAGE as homepage">
                 <div class="homepage-wrapper">
                     <a [href]="homepage.URL" mat-flat-button color="accent" class="homepage-button">
                         <mat-icon>keyboard_return</mat-icon>
@@ -79,7 +79,7 @@
                         />
                     </a>
                 </div>
-            }
+            </ng-container>
         </div>
     </div>
 </form>
