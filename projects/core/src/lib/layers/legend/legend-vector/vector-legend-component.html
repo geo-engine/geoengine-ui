@@ -1,5 +1,4 @@
 <div fxLayout="column">
-    <!-- Default Style   -->
     <div fxLayout="row" fxLayoutAlign="start center" class="single-line" *ngIf="showDefaultStyle">
         <mat-icon>
             <ng-container [ngSwitch]="layer.symbology.symbologyType">
@@ -17,8 +16,11 @@
         <mat-divider></mat-divider>
         <div fxLayout="row" fxLayoutAlign="start center" class="heading">
             <span fxFlex
-                >Fill Colors derived by <b><i>{{ colorAttributeName }}</i></b></span
-            >
+                >Fill Colors derived by
+                <b
+                    ><i>{{ colorAttributeName }}</i>
+                </b>
+            </span>
         </div>
         <div fxLayout="row" fxLayoutAlign="start center" class="segment" *ngFor="let breakpoint of colorBreakPoints">
             <mat-icon>
@@ -33,7 +35,7 @@
                     ></geoengine-polygon-icon>
                 </ng-container>
             </mat-icon>
-            <span fxFlex>{{breakpoint.value}}</span>
+            <span fxFlex>{{ breakpoint.value }}</span>
         </div>
     </div>
 
@@ -42,8 +44,11 @@
         <mat-divider></mat-divider>
         <div fxLayout="row" fxLayoutAlign="start center" class="heading">
             <span fxFlex
-                >Stroke Colors derived by <b><i>{{ strokeColorAttributeName }}</i></b></span
-            >
+                >Stroke Colors derived by
+                <b
+                    ><i>{{ strokeColorAttributeName }}</i>
+                </b>
+            </span>
         </div>
         <div fxLayout="row" fxLayoutAlign="start center" class="segment" *ngFor="let breakpoint of strokeColorBreakpoints">
             <mat-icon>
@@ -62,7 +67,7 @@
                     ></geoengine-line-icon>
                 </ng-container>
             </mat-icon>
-            <span fxFlex>{{breakpoint.value}}</span>
+            <span fxFlex>{{ breakpoint.value }}</span>
         </div>
     </div>
 
@@ -70,9 +75,12 @@
     <div *ngIf="strokeWidthAttributeName">
         <mat-divider></mat-divider>
         <div fxLayout="row" fxLayoutAlign="start center" class="heading">
-            <span fxFlex
-                >Stroke Width derived by <b><i>{{ strokeWidthAttributeName }}</i></b></span
-            >
+            <span fxFlex>
+                Stroke Width derived by
+                <b>
+                    <i>{{ strokeWidthAttributeName }}</i>
+                </b>
+            </span>
         </div>
         <div fxLayout="row" fxLayoutAlign="start center" class="segment">
             <span fxFlex> with factor: {{ strokeWidthFactor }}</span>
@@ -94,7 +102,10 @@
         <mat-divider></mat-divider>
         <div fxLayout="row" fxLayoutAlign="start center" class="heading">
             <span fxFlex
-                >Radius derived by <b><i>{{ radiusAttributeName }}</i></b></span
+                >Radius derived by
+                <b
+                    ><i>{{ radiusAttributeName }}</i></b
+                ></span
             >
         </div>
         <div fxLayout="row" fxLayoutAlign="start center" class="segment">

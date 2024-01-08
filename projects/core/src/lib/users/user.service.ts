@@ -1,4 +1,4 @@
-import {Observable, ReplaySubject, of, BehaviorSubject, combineLatest} from 'rxjs';
+import {Observable, ReplaySubject, of, BehaviorSubject, combineLatest, from} from 'rxjs';
 import {catchError, filter, first, map, mergeMap, tap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
@@ -9,10 +9,11 @@ import {BackendStatus, User} from './user.model';
 import {Config} from '../config.service';
 import {NotificationService} from '../notification.service';
 import {BackendService} from '../backend/backend.service';
-import {AuthCodeRequestURL, BackendInfoDict, SessionDict, UUID} from '../backend/backend.model';
+import {AuthCodeRequestURL, BackendInfoDict, RoleDescription, UUID} from '../backend/backend.model';
 import {Session} from './session.model';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Quota} from './quota/quota.model';
+import {SessionApi, Configuration, UserSession, DefaultConfig} from '@geoengine/openapi-client';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
@@ -35,7 +36,11 @@ export class UserService {
         protected readonly backend: BackendService,
         protected readonly notificationService: NotificationService,
         protected readonly router: Router,
+        protected readonly activatedRoute: ActivatedRoute,
     ) {
+        // get oidc paramters from url before routing is enabled
+        const oidcParams = this.getOidcParametersFromUrl();
+
         this.session$.subscribe((session) => {
             // storage of the session
             this.saveSessionInBrowser(session);
@@ -49,19 +54,32 @@ export class UserService {
 
             if (status.available && !this.sessionInitialized) {
                 this.sessionInitialized = true;
-                // restore old session if possible
-                this.sessionFromBrowserOrCreateGuest().subscribe({
-                    next: (session) => {
-                        this.session$.next(session);
-                    },
-                    error: (error) => {
-                        // only show error if we did not expect it
-                        if (error.error.error !== 'AnonymousAccessDisabled') {
-                            this.notificationService.error(error.error.message);
-                        }
-                        this.session$.next(undefined);
-                    },
-                });
+
+                if (oidcParams) {
+                    this.oidcLogin(oidcParams)
+                        .pipe(first())
+                        .subscribe(() => {
+                            this.router.navigate([], {
+                                // eslint-disable-next-line @typescript-eslint/naming-convention
+                                queryParams: {session_state: undefined, state: undefined, code: undefined},
+                                queryParamsHandling: 'merge',
+                            });
+                        });
+                } else {
+                    // restore old session if possible
+                    this.sessionFromBrowserOrCreateGuest().subscribe({
+                        next: (session) => {
+                            this.session$.next(session);
+                        },
+                        error: (error) => {
+                            // only show error if we did not expect it
+                            if (error && error.error.error !== 'Unauthorized') {
+                                this.notificationService.error(error.error.message);
+                            }
+                            this.session$.next(undefined);
+                        },
+                    });
+                }
             }
             if (!status.available && this.sessionInitialized) {
                 this.sessionInitialized = false;
@@ -110,7 +128,7 @@ export class UserService {
     }
 
     createGuestUser(): Observable<Session> {
-        return this.backend.createAnonymousUserSession().pipe(mergeMap((response) => this.createSession(response)));
+        return from(new SessionApi().anonymousHandler().then((response) => this.sessionFromDict(response)));
     }
 
     /**
@@ -171,19 +189,21 @@ export class UserService {
      * @param credentials.password The user's password.
      * @returns `true` if the login was successful, `false` otherwise.
      */
-    login(credentials: {email: string; password: string}): Observable<Session> {
+    login(userCredentials: {email: string; password: string}): Observable<Session> {
         const result = new ReplaySubject<Session>();
-        this.backend
-            .loginUser(credentials)
-            .pipe(mergeMap((response) => this.createSession(response)))
-            .subscribe(
-                (session) => {
-                    this.session$.next(session);
-                    result.next(session);
-                },
-                (error) => result.error(error),
-                () => result.complete(),
-            );
+
+        new SessionApi()
+            .loginHandler({
+                userCredentials,
+            })
+            .then((response) => this.sessionFromDict(response))
+            .then((session) => {
+                this.session$.next(session);
+                result.next(session);
+                result.complete();
+            })
+            .catch((error) => result.error(error));
+
         return result.asObservable();
     }
 
@@ -191,31 +211,30 @@ export class UserService {
         const result = new ReplaySubject<Session>();
         this.session$.pipe(first()).subscribe((oldSession) => {
             if (oldSession) {
-                this.backend.logoutUser(oldSession.sessionToken).subscribe();
+                new SessionApi(oldSession.apiConfiguration).logoutHandler();
             }
 
-            this.createGuestUser().subscribe(
-                (session) => {
+            this.createGuestUser().subscribe({
+                next: (session) => {
                     this.session$.next(session);
                     result.next(session);
                 },
-                (error) => {
+                error: (error) => {
                     // failing on a guest login means we cannot do it,
                     // so we are logged out
                     this.session$.next(undefined);
                     result.error(error);
                 },
-                () => result.complete(),
-            );
+                complete: () => result.complete(),
+            });
         });
         return result.asObservable();
     }
 
     createSessionWithToken(sessionToken: UUID): Observable<Session> {
-        return this.backend.getSession(sessionToken).pipe(
-            mergeMap((response) => this.createSession(response)),
-            tap((session) => this.session$.next(session)),
-        );
+        return from(
+            new SessionApi(apiConfigurationWithAccessKey(sessionToken)).sessionHandler().then((response) => this.sessionFromDict(response)),
+        ).pipe(tap((session) => this.session$.next(session)));
     }
 
     getSessionOnce(): Observable<Session> {
@@ -230,9 +249,11 @@ export class UserService {
      * @returns `true` if the session is valid, `false` otherwise.
      */
     isSessionValid(session: Session): Observable<boolean> {
-        return this.backend.getSession(session.sessionToken).pipe(
-            map((_) => true),
-            catchError((_) => of(false)),
+        return from(
+            new SessionApi(session.apiConfiguration)
+                .sessionHandler()
+                .then((_response) => true)
+                .catch((_error) => false),
         );
     }
 
@@ -249,22 +270,24 @@ export class UserService {
     }
 
     oidcInit(): Observable<AuthCodeRequestURL> {
-        return this.backend.oidcInit();
+        return from(new SessionApi().oidcInit());
     }
 
     oidcLogin(request: {sessionState: string; code: string; state: string}): Observable<Session> {
         const result = new ReplaySubject<Session>();
-        this.backend
-            .oidcLogin(request)
-            .pipe(mergeMap((response) => this.createSession(response)))
-            .subscribe(
-                (session) => {
-                    this.session$.next(session);
-                    result.next(session);
-                },
-                (error) => result.error(error),
-                () => result.complete(),
-            );
+
+        new SessionApi()
+            .oidcLogin({
+                authCodeResponse: request,
+            })
+            .then((response) => {
+                const session = this.sessionFromDict(response);
+                this.session$.next(session);
+                result.next(session);
+                result.complete();
+            })
+            .catch((error) => result.error(error));
+
         return result.asObservable();
     }
 
@@ -274,6 +297,22 @@ export class UserService {
 
     getSettingFromLocalStorage(keyValue: string): string | null {
         return localStorage.getItem(PATH_PREFIX + keyValue);
+    }
+
+    /**
+     * Returns a stream that notifies about the current roles of the user.
+     * May be undefined if there is no current session.
+     *
+     * @returns Observable<Array<RoleDescription> | undefined>
+     **/
+    getRoleDescriptions(): Observable<Array<RoleDescription> | undefined> {
+        return this.getSessionOrUndefinedStream().pipe(
+            mergeMap((session) => {
+                if (!session) return of(undefined);
+                return this.backend.getRoleDescriptions(session.sessionToken);
+            }),
+            catchError(() => of(undefined)),
+        );
     }
 
     protected saveSessionInBrowser(session: Session | undefined): void {
@@ -287,16 +326,16 @@ export class UserService {
     protected restoreSessionFromBrowser(): Observable<Session> {
         const sessionToken = localStorage.getItem(PATH_PREFIX + 'session') ?? '';
 
-        return this.backend.getSession(sessionToken).pipe(mergeMap((response) => this.createSession(response)));
+        return this.createSessionWithToken(sessionToken);
     }
 
-    protected createSession(sessionDict: SessionDict): Observable<Session> {
+    protected sessionFromDict(sessionDict: UserSession): Session {
         let user: User | undefined;
         if (sessionDict.user) {
             user = new User({
                 id: sessionDict.user.id,
-                email: sessionDict.user.email,
-                realName: sessionDict.user.realName,
+                email: sessionDict.user.email ?? undefined,
+                realName: sessionDict.user.realName ?? undefined,
             });
         }
 
@@ -304,11 +343,12 @@ export class UserService {
             sessionToken: sessionDict.id,
             user,
             validUntil: utc(sessionDict.validUntil),
-            lastProjectId: sessionDict.project,
-            lastView: sessionDict.view,
+            lastProjectId: sessionDict.project ?? undefined,
+            lastView: sessionDict.view ?? undefined,
+            apiConfiguration: apiConfigurationWithAccessKey(sessionDict.id),
         };
 
-        return of(session);
+        return session;
     }
 
     private createSessionQuotaStream(): void {
@@ -325,6 +365,19 @@ export class UserService {
                 this.sessionQuota$.next(quota);
             });
     }
+
+    private getOidcParametersFromUrl(): {sessionState: string; code: string; state: string} | undefined {
+        const params = new URLSearchParams(window.location.search);
+        const sessionState = params.get('session_state');
+        const code = params.get('code');
+        const state = params.get('state');
+
+        if (sessionState && code && state) {
+            return {sessionState, code, state};
+        }
+
+        return undefined;
+    }
 }
 
 /**
@@ -334,3 +387,17 @@ export class UserService {
 function isDefined<T>(arg: T | null | undefined): arg is T {
     return arg !== null && arg !== undefined;
 }
+
+const apiConfigurationWithAccessKey = (accessToken: string): Configuration =>
+    new Configuration({
+        basePath: DefaultConfig.basePath,
+        fetchApi: DefaultConfig.fetchApi,
+        middleware: DefaultConfig.middleware,
+        queryParamsStringify: DefaultConfig.queryParamsStringify,
+        username: DefaultConfig.username,
+        password: DefaultConfig.password,
+        apiKey: DefaultConfig.apiKey,
+        accessToken: accessToken,
+        headers: DefaultConfig.headers,
+        credentials: DefaultConfig.credentials,
+    });

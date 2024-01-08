@@ -75,6 +75,7 @@
                         "allowedCommonJsDependencies": [
                             "clone",
                             "codemirror",
+                            "color-name",
                             "dagre-d3",
                             "earcut",
                             "fast-deep-equal",
@@ -135,7 +136,7 @@
                                 {
                                     "type": "anyComponentStyle",
                                     "maximumWarning": "6kb",
-                                    "maximumError": "10kb"
+                                    "maximumError": "100kb"
                                 }
                             ]
                         },
@@ -148,10 +149,10 @@
                     "options": {},
                     "configurations": {
                         "production": {
-                            "browserTarget": "gis:build:production"
+                            "buildTarget": "gis:build:production"
                         },
                         "development": {
-                            "browserTarget": "gis:build:development"
+                            "buildTarget": "gis:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -159,7 +160,7 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "gis:build"
+                        "buildTarget": "gis:build"
                     }
                 },
                 "test": {
@@ -219,6 +220,7 @@
                     "options": {
                         "allowedCommonJsDependencies": [
                             "codemirror",
+                            "color-name",
                             "dagre-d3",
                             "earcut",
                             "moment",
@@ -291,10 +293,10 @@
                     "options": {},
                     "configurations": {
                         "production": {
-                            "browserTarget": "data-atlas:build:production"
+                            "buildTarget": "data-atlas:build:production"
                         },
                         "development": {
-                            "browserTarget": "data-atlas:build:development"
+                            "buildTarget": "data-atlas:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -302,7 +304,7 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "data-atlas:build"
+                        "buildTarget": "data-atlas:build"
                     }
                 },
                 "test": {
@@ -362,6 +364,7 @@
                     "options": {
                         "allowedCommonJsDependencies": [
                             "codemirror",
+                            "color-name",
                             "dagre-d3",
                             "earcut",
                             "moment",
@@ -434,10 +437,10 @@
                     "options": {},
                     "configurations": {
                         "production": {
-                            "browserTarget": "ebv-analyzer:build:production"
+                            "buildTarget": "ebv-analyzer:build:production"
                         },
                         "development": {
-                            "browserTarget": "ebv-analyzer:build:development"
+                            "buildTarget": "ebv-analyzer:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -445,7 +448,7 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "ebv-analyzer:build"
+                        "buildTarget": "ebv-analyzer:build"
                     }
                 },
                 "test": {
@@ -482,7 +485,7 @@
                 }
             }
         },
-        "nfdi-gdo": {
+        "nfdi-portal-demo": {
             "projectType": "application",
             "schematics": {
                 "@schematics/angular:component": {
@@ -496,8 +499,8 @@
                     "prefix": "geoengine"
                 }
             },
-            "root": "projects/dashboards/nfdi-gdo",
-            "sourceRoot": "projects/dashboards/nfdi-gdo/src",
+            "root": "projects/dashboards/nfdi-portal-demo",
+            "sourceRoot": "projects/dashboards/nfdi-portal-demo/src",
             "prefix": "geoengine",
             "architect": {
                 "build": {
@@ -506,6 +509,7 @@
                         "allowedCommonJsDependencies": [
                             "clone",
                             "codemirror",
+                            "color-name",
                             "dagre-d3",
                             "earcut",
                             "fast-deep-equal",
@@ -517,14 +521,14 @@
                             "web-worker",
                             "xml-utils"
                         ],
-                        "outputPath": "dist/dashboards/nfdi-gdo",
-                        "index": "projects/dashboards/nfdi-gdo/src/index.html",
-                        "main": "projects/dashboards/nfdi-gdo/src/main.ts",
+                        "outputPath": "dist/dashboards/nfdi-portal-demo",
+                        "index": "projects/dashboards/nfdi-portal-demo/src/index.html",
+                        "main": "projects/dashboards/nfdi-portal-demo/src/main.ts",
                         "polyfills": ["zone.js"],
-                        "tsConfig": "projects/dashboards/nfdi-gdo/tsconfig.app.json",
+                        "tsConfig": "projects/dashboards/nfdi-portal-demo/tsconfig.app.json",
                         "assets": [
-                            "projects/dashboards/nfdi-gdo/src/favicon.ico",
-                            "projects/dashboards/nfdi-gdo/src/assets",
+                            "projects/dashboards/nfdi-portal-demo/src/favicon.ico",
+                            "projects/dashboards/nfdi-portal-demo/src/assets",
                             {
                                 "glob": "**/*",
                                 "input": "dist/core/assets",
@@ -532,7 +536,7 @@
                             }
                         ],
                         "styles": [
-                            "projects/dashboards/nfdi-gdo/src/styles.scss",
+                            "projects/dashboards/nfdi-portal-demo/src/styles.scss",
                             "dist/core/assets/fonts/poppins/poppins.css",
                             "dist/core/assets/fonts/pacifico/pacifico.css",
                             "dist/core/assets/fonts/material-design-icons/material-icons.css",
@@ -578,10 +582,10 @@
                     "options": {},
                     "configurations": {
                         "production": {
-                            "browserTarget": "nfdi-gdo:build:production"
+                            "buildTarget": "nfdi-portal-demo:build:production"
                         },
                         "development": {
-                            "browserTarget": "nfdi-gdo:build:development"
+                            "buildTarget": "nfdi-portal-demo:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -589,37 +593,43 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "nfdi-gdo:build"
+                        "buildTarget": "nfdi-portal-demo:build"
                     }
                 },
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
                         "polyfills": ["zone.js", "zone.js/testing"],
-                        "tsConfig": "projects/dashboards/nfdi-gdo/tsconfig.spec.json",
-                        "assets": ["projects/dashboards/nfdi-gdo/src/favicon.ico", "projects/dashboards/nfdi-gdo/src/assets"],
+                        "tsConfig": "projects/dashboards/nfdi-portal-demo/tsconfig.spec.json",
+                        "assets": [
+                            "projects/dashboards/nfdi-portal-demo/src/favicon.ico",
+                            "projects/dashboards/nfdi-portal-demo/src/assets"
+                        ],
                         "inlineStyleLanguage": "scss",
-                        "styles": ["projects/dashboards/nfdi-gdo/src/styles.scss"],
+                        "styles": ["projects/dashboards/nfdi-portal-demo/src/styles.scss"],
                         "scripts": []
                     }
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "lintFilePatterns": ["projects/dashboards/nfdi-gdo/**/*.ts", "projects/dashboards/nfdi-gdo/**/*.html"]
+                        "lintFilePatterns": [
+                            "projects/dashboards/nfdi-portal-demo/**/*.ts",
+                            "projects/dashboards/nfdi-portal-demo/**/*.html"
+                        ]
                     }
                 },
                 "e2e": {
                     "builder": "@angular-devkit/build-angular:protractor",
                     "options": {
-                        "protractorConfig": "projects/dashboards/nfdi-gdo/e2e/protractor.conf.js"
+                        "protractorConfig": "projects/dashboards/nfdi-portal-demo/e2e/protractor.conf.js"
                     },
                     "configurations": {
                         "production": {
-                            "devServerTarget": "nfdi-gdo:serve:production"
+                            "devServerTarget": "nfdi-portal-demo:serve:production"
                         },
                         "development": {
-                            "devServerTarget": "nfdi-gdo:serve:development"
+                            "devServerTarget": "nfdi-portal-demo:serve:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -649,6 +659,7 @@
                     "options": {
                         "allowedCommonJsDependencies": [
                             "codemirror",
+                            "color-name",
                             "dagre-d3",
                             "earcut",
                             "moment",
@@ -721,10 +732,10 @@
                     "options": {},
                     "configurations": {
                         "production": {
-                            "browserTarget": "gfbio:build:production"
+                            "buildTarget": "gfbio:build:production"
                         },
                         "development": {
-                            "browserTarget": "gfbio:build:development"
+                            "buildTarget": "gfbio:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -732,7 +743,7 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "gfbio:build"
+                        "buildTarget": "gfbio:build"
                     }
                 },
                 "test": {

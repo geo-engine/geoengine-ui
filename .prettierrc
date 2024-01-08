@@ -9,5 +9,13 @@
     "arrowParens": "always",
     "htmlWhitespaceSensitivity": "css",
     "endOfLine": "lf",
-    "embeddedLanguageFormatting": "auto"
+    "embeddedLanguageFormatting": "auto",
+    "overrides": [
+        {
+            "files": "*.html",
+            "options": {
+                "parser": "angular"
+            }
+        }
+    ]
 }

@@ -1,7 +1,8 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef} from '@angular/core';
-import {mergeMap, BehaviorSubject, combineLatest, of} from 'rxjs';
+import {mergeMap, BehaviorSubject, combineLatest, of, forkJoin, Observable, map} from 'rxjs';
 import {
     LayerCollectionDict,
+    LayerCollectionItemDict,
     LayerCollectionListingDict,
     LayerCollectionService,
     ProjectService,
@@ -21,6 +22,7 @@ import {DataRange, DataSelectionService} from '../data-selection.service';
 })
 export class AccordionEntryComponent implements OnInit {
     @Input() collection!: ProviderLayerCollectionIdDict;
+    @Input() otherCollection?: ProviderLayerCollectionIdDict;
     @Input() icon = 'class';
 
     readonly selectedLayers$ = new BehaviorSubject<Array<ProviderLayerIdDict | undefined>>([]);
@@ -34,9 +36,32 @@ export class AccordionEntryComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this.layerCollectionService.getLayerCollectionItems(this.collection.providerId, this.collection.collectionId).subscribe((c) => {
+        let otherCollectionItems$: Observable<Array<LayerCollectionItemDict>> = of([]);
+        if (this.otherCollection) {
+            otherCollectionItems$ = this.layerCollectionService
+                .getLayerCollectionItems(this.otherCollection.providerId, this.otherCollection.collectionId)
+                .pipe(map((c) => c.items));
+        }
+
+        forkJoin({
+            providerCollections: this.layerCollectionService.getLayerCollectionItems(
+                this.collection.providerId,
+                this.collection.collectionId,
+            ),
+            otherCollectionItems: otherCollectionItems$,
+        }).subscribe(({providerCollections, otherCollectionItems}) => {
             const collections = [];
-            for (const item of c.items) {
+
+            for (const item of providerCollections.items) {
+                if (item.type === 'collection') {
+                    const collection = item as LayerCollectionListingDict;
+                    collections.push(
+                        this.layerCollectionService.getLayerCollectionItems(collection.id.providerId, collection.id.collectionId),
+                    );
+                }
+            }
+
+            for (const item of otherCollectionItems) {
                 if (item.type === 'collection') {
                     const collection = item as LayerCollectionListingDict;
                     collections.push(
@@ -46,6 +71,8 @@ export class AccordionEntryComponent implements OnInit {
             }
 
             combineLatest(collections).subscribe((col) => {
+                col.sort((a, b) => a.name.localeCompare(b.name));
+
                 this.collections$.next(col);
                 this.selectedLayers$.next(new Array(col.length).fill(undefined));
             });

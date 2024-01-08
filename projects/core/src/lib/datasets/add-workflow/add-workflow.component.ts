@@ -1,20 +1,13 @@
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormGroup, UntypedFormControl, Validators} from '@angular/forms';
 import {GeoEngineErrorDict, RasterResultDescriptorDict, UUID, VectorResultDescriptorDict} from '../../backend/backend.model';
-import {colorToDict} from '../../colors/color';
 import {RasterLayer, VectorLayer} from '../../layers/layer.model';
-import {
-    ClusteredPointSymbology,
-    LineSymbology,
-    PointSymbology,
-    PolygonSymbology,
-    RasterSymbology,
-    VectorSymbology,
-} from '../../layers/symbology/symbology.model';
+import {RasterSymbology} from '../../layers/symbology/symbology.model';
 import {NotificationService} from '../../notification.service';
 import {ProjectService} from '../../project/project.service';
 import {isValidUuid} from '../../util/form.validators';
 import {RandomColorService} from '../../util/services/random-color.service';
+import {createVectorSymbology} from '../../util/symbologies';
 
 @Component({
     selector: 'geoengine-add-workflow',
@@ -22,7 +15,7 @@ import {RandomColorService} from '../../util/services/random-color.service';
     styleUrls: ['./add-workflow.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddWorkflowComponent implements OnInit {
+export class AddWorkflowComponent {
     readonly form: UntypedFormGroup;
 
     constructor(
@@ -36,8 +29,6 @@ export class AddWorkflowComponent implements OnInit {
         });
     }
 
-    ngOnInit(): void {}
-
     add(): void {
         const layerName: string = this.form.controls.layerName.value;
         const workflowId: UUID = this.form.controls.workflowId.value;
@@ -48,7 +39,7 @@ export class AddWorkflowComponent implements OnInit {
 
                 if (keys.includes('columns')) {
                     this.addVectorLayer(layerName, workflowId, resultDescriptorDict as VectorResultDescriptorDict);
-                } else if (keys.includes('measurement')) {
+                } else if (keys.includes('bands')) {
                     this.addRasterLayer(layerName, workflowId, resultDescriptorDict as RasterResultDescriptorDict);
                 } else {
                     // TODO: implement plots, etc.
@@ -65,47 +56,10 @@ export class AddWorkflowComponent implements OnInit {
             workflowId,
             isVisible: true,
             isLegendVisible: false,
-            symbology: this.createVectorSymbology(resultDescriptor.dataType),
+            symbology: createVectorSymbology(resultDescriptor.dataType, this.randomColorService.getRandomColorRgba()),
         });
 
         this.projectService.addLayer(layer);
-    }
-
-    private createVectorSymbology(dataType: 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon'): VectorSymbology {
-        switch (dataType) {
-            case 'Data':
-                // TODO: cope with that
-                throw Error('we cannot add data layers here, yet');
-            case 'MultiPoint':
-                return ClusteredPointSymbology.fromPointSymbologyDict({
-                    type: 'point',
-                    radius: {type: 'static', value: PointSymbology.DEFAULT_POINT_RADIUS},
-                    stroke: {
-                        width: {type: 'static', value: 1},
-                        color: {type: 'static', color: [0, 0, 0, 255]},
-                    },
-                    fillColor: {type: 'static', color: colorToDict(this.randomColorService.getRandomColorRgba())},
-                });
-            case 'MultiLineString':
-                return LineSymbology.fromLineSymbologyDict({
-                    type: 'line',
-                    stroke: {
-                        width: {type: 'static', value: 1},
-                        color: {type: 'static', color: [0, 0, 0, 255]},
-                    },
-                    autoSimplified: true,
-                });
-            case 'MultiPolygon':
-                return PolygonSymbology.fromPolygonSymbologyDict({
-                    type: 'polygon',
-                    stroke: {
-                        width: {type: 'static', value: 1},
-                        color: {type: 'static', color: [0, 0, 0, 255]},
-                    },
-                    fillColor: {type: 'static', color: colorToDict(this.randomColorService.getRandomColorRgba())},
-                    autoSimplified: true,
-                });
-        }
     }
 
     private addRasterLayer(layerName: string, workflowId: UUID, _resultDescriptor: RasterResultDescriptorDict): void {
@@ -117,15 +71,19 @@ export class AddWorkflowComponent implements OnInit {
             symbology: RasterSymbology.fromRasterSymbologyDict({
                 type: 'raster',
                 opacity: 1.0,
-                colorizer: {
-                    type: 'linearGradient',
-                    breakpoints: [
-                        {value: 1, color: [0, 0, 0, 255]},
-                        {value: 255, color: [255, 255, 255, 255]},
-                    ],
-                    overColor: [255, 255, 255, 127],
-                    underColor: [0, 0, 0, 127],
-                    noDataColor: [0, 0, 0, 0],
+                rasterColorizer: {
+                    type: 'singleBand',
+                    band: 0,
+                    bandColorizer: {
+                        type: 'linearGradient',
+                        breakpoints: [
+                            {value: 1, color: [0, 0, 0, 255]},
+                            {value: 255, color: [255, 255, 255, 255]},
+                        ],
+                        overColor: [255, 255, 255, 127],
+                        underColor: [0, 0, 0, 127],
+                        noDataColor: [0, 0, 0, 0],
+                    },
                 },
             }),
         });

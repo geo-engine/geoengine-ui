@@ -1,15 +1,4 @@
-import {
-    Component,
-    ChangeDetectionStrategy,
-    OnChanges,
-    SimpleChanges,
-    OnDestroy,
-    AfterViewInit,
-    OnInit,
-    forwardRef,
-    HostListener,
-    Input,
-} from '@angular/core';
+import {Component, ChangeDetectionStrategy, forwardRef, HostListener, Input} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {NumberParam, StaticNumber, DerivedNumber} from '../symbology.model';
 
@@ -23,7 +12,7 @@ import {NumberParam, StaticNumber, DerivedNumber} from '../symbology.model';
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => NumberParamEditorComponent), multi: true}],
 })
-export class NumberParamEditorComponent implements OnChanges, OnDestroy, AfterViewInit, OnInit, ControlValueAccessor {
+export class NumberParamEditorComponent implements ControlValueAccessor {
     @Input() attributes = new Array<string>();
     @Input() min = Number.MIN_VALUE;
 
@@ -42,16 +31,10 @@ export class NumberParamEditorComponent implements OnChanges, OnDestroy, AfterVi
         this.onTouched();
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onTouched = (): void => {};
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onChange = (_: NumberParam | null): void => {};
-
-    ngOnChanges(_changes: SimpleChanges): void {}
-
-    ngOnInit(): void {}
-
-    ngAfterViewInit(): void {}
-
-    ngOnDestroy(): void {}
 
     writeValue(value: NumberParam | null): void {
         if (!value) {
@@ -126,7 +109,7 @@ export class NumberParamEditorComponent implements OnChanges, OnDestroy, AfterVi
             numberAttributeName?: string | null;
             factor?: number;
         },
-        emit: boolean = true,
+        emit = true,
     ): void {
         const defaultNumber = params.defaultNumber ?? this.numberParam.getDefault();
         this._numberAttributeName =

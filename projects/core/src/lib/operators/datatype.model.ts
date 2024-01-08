@@ -212,13 +212,13 @@ export abstract class VectorDataType {
     /**
      * @return The name of the data type.
      */
-    abstract getCode(): string;
+    abstract getCode(): 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
 }
 
 class Data extends VectorDataType {
     resultType = ResultTypes.DATA;
 
-    getCode(): string {
+    getCode(): 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon' {
         return 'Data';
     }
 }
@@ -226,7 +226,7 @@ class Data extends VectorDataType {
 class MultiPoint extends VectorDataType {
     resultType = ResultTypes.POINTS;
 
-    getCode(): string {
+    getCode(): 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon' {
         return 'MultiPoint';
     }
 }
@@ -234,7 +234,7 @@ class MultiPoint extends VectorDataType {
 class MultiLineString extends VectorDataType {
     resultType = ResultTypes.LINES;
 
-    getCode(): string {
+    getCode(): 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon' {
         return 'MultiLineString';
     }
 }
@@ -242,7 +242,7 @@ class MultiLineString extends VectorDataType {
 class MultiPolygon extends VectorDataType {
     resultType = ResultTypes.POLYGONS;
 
-    getCode(): string {
+    getCode(): 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon' {
         return 'MultiPolygon';
     }
 }

@@ -1,5 +1,5 @@
 import {Observable, BehaviorSubject, of, concat} from 'rxjs';
-import {first, map, mergeMap, tap} from 'rxjs/operators';
+import {map, mergeMap, tap} from 'rxjs/operators';
 
 import {
     AfterViewInit,
@@ -143,8 +143,6 @@ export class MainComponent implements OnInit, AfterViewInit {
         //         setTimeout(() => this.changeDetectorRef.markForCheck());
         //     }
         // });
-
-        this.handleQueryParameters();
     }
 
     setTabIndex(index: number): void {
@@ -247,16 +245,5 @@ export class MainComponent implements OnInit, AfterViewInit {
     @HostListener('window:resize')
     private windowHeight(): void {
         this.windowHeight$.next(window.innerHeight);
-    }
-
-    private handleQueryParameters(): void {
-        const params = new URLSearchParams(window.location.search);
-        const sessionState = params.get('session_state');
-        const code = params.get('code');
-        const state = params.get('state');
-
-        if (sessionState && code && state) {
-            this.userService.oidcLogin({sessionState, code, state}).pipe(first()).subscribe();
-        }
     }
 }

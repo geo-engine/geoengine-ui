@@ -2,6 +2,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 import {DomSanitizer, SafeStyle} from '@angular/platform-browser';
 import {Color, RgbaTuple} from '../../colors/color';
 import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
+import {RasterColorizer} from '../../layers/symbology/symbology.model';
 import {Colorizer} from '../../colors/colorizer.model';
 
 /**
@@ -11,7 +12,21 @@ import {Colorizer} from '../../colors/colorizer.model';
 export class ColorizerCssGradientPipe implements PipeTransform {
     constructor(protected sanitizer: DomSanitizer) {}
 
-    transform(colorizer: Colorizer, angle: number = 180): SafeStyle {
+    transform(colorizer: Colorizer, angle = 180): SafeStyle {
+        const colors = colorizer.getBreakpoints().map((breakpoint) => breakpoint.color);
+        const style = colorsToCssGradient(colors, angle);
+        return this.sanitizer.bypassSecurityTrustStyle(style);
+    }
+}
+
+/**
+ * Pipe to transform a RasterColorizer into a CSS gradient.
+ */
+@Pipe({name: 'geoengineRasterColorizerCssGradient'})
+export class RasterColorizerCssGradientPipe implements PipeTransform {
+    constructor(protected sanitizer: DomSanitizer) {}
+
+    transform(colorizer: RasterColorizer, angle = 180): SafeStyle {
         const colors = colorizer.getBreakpoints().map((breakpoint) => breakpoint.color);
         const style = colorsToCssGradient(colors, angle);
         return this.sanitizer.bypassSecurityTrustStyle(style);
@@ -25,7 +40,7 @@ export class ColorizerCssGradientPipe implements PipeTransform {
 export class ColorBreakpointsCssGradientPipe implements PipeTransform {
     constructor(protected sanitizer: DomSanitizer) {}
 
-    transform(breakpoints: Array<ColorBreakpoint>, angle: number = 180): SafeStyle {
+    transform(breakpoints: Array<ColorBreakpoint>, angle = 180): SafeStyle {
         const colors = breakpoints.map((breakpoint) => breakpoint.color);
         const style = colorsToCssGradient(colors, angle);
         return this.sanitizer.bypassSecurityTrustStyle(style);
@@ -39,7 +54,7 @@ export class ColorBreakpointsCssGradientPipe implements PipeTransform {
 export class RgbaArrayCssGradientPipe implements PipeTransform {
     constructor(protected sanitizer: DomSanitizer) {}
 
-    transform(rgbaColors: Array<RgbaTuple>, angle: number = 180): SafeStyle {
+    transform(rgbaColors: Array<RgbaTuple>, angle = 180): SafeStyle {
         const colors = rgbaColors.map((rgba) => Color.fromRgbaLike(rgba));
         const style = colorsToCssGradient(colors, angle);
         return this.sanitizer.bypassSecurityTrustStyle(style);
@@ -49,7 +64,7 @@ export class RgbaArrayCssGradientPipe implements PipeTransform {
 /**
  * Convert an array of colors to a CSS gradient.
  */
-function colorsToCssGradient(colors: Array<Color>, angle: number = 180): string {
+function colorsToCssGradient(colors: Array<Color>, angle = 180): string {
     const numColors = colors.length;
     const elementSize = 100.0 / numColors;
     const halfElementSize = elementSize / 2.0;

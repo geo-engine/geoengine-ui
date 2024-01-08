@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {Observable, combineLatest, BehaviorSubject} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ProjectService} from '../../project/project.service';
@@ -10,7 +10,7 @@ import {Time} from '../time.model';
     styleUrls: ['./time-step-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TimeStepSelectorComponent implements OnInit, OnChanges, OnDestroy {
+export class TimeStepSelectorComponent implements OnChanges {
     @Input() timeSteps?: Array<Time>;
     @Input() timeFormat = 'YYYY';
 
@@ -28,11 +28,15 @@ export class TimeStepSelectorComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Require services by using DI
      */
-    constructor(private readonly projectService: ProjectService, private readonly changeDetectorRef: ChangeDetectorRef) {
+    constructor(
+        private readonly projectService: ProjectService,
+        private readonly changeDetectorRef: ChangeDetectorRef,
+    ) {
         this.currentTimeFormatted = combineLatest([this.projectService.getTimeStream(), this.timeFormat$]).pipe(
             map(([time, format]) => {
                 if (this.timeSteps) {
                     this.currentTimeIndex = this.timeSteps.findIndex((t) => time.isSame(t));
+
                     setTimeout(() => this.changeDetectorRef.detectChanges());
                 }
 
@@ -40,8 +44,6 @@ export class TimeStepSelectorComponent implements OnInit, OnChanges, OnDestroy {
             }),
         );
     }
-
-    ngOnInit(): void {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.timeSteps) {
@@ -67,8 +69,6 @@ export class TimeStepSelectorComponent implements OnInit, OnChanges, OnDestroy {
             this.timeFormat$.next(this.timeFormat);
         }
     }
-
-    ngOnDestroy(): void {}
 
     /**
      * On a slider event, calculate the timestamp and set the new time for the app layers

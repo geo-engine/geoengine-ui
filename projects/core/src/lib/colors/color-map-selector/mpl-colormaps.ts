@@ -11,12 +11,12 @@ import {RgbaTuple} from '../color';
 /**
  * The color map names.
  */
-export type MplColormapName = 'MAGMA' | 'INFERNO' | 'PLASMA' | 'VIRIDIS';
+export type MplColormapName = 'MAGMA' | 'INFERNO' | 'PLASMA' | 'VIRIDIS' | 'GRAYS';
 
 /**
  * The list of available color map names.
  */
-export const MPL_COLORMAP_NAMES: Array<MplColormapName> = ['MAGMA', 'INFERNO', 'PLASMA', 'VIRIDIS'];
+export const MPL_COLORMAP_NAMES: Array<MplColormapName> = ['MAGMA', 'INFERNO', 'PLASMA', 'VIRIDIS', 'GRAYS'];
 
 export const COLORMAP_MAGMA_DATA: Array<[number, number, number]> = [
     [0.001462, 0.000466, 0.013866],
@@ -1054,6 +1054,11 @@ export const COLORMAP_VIRIDIS_DATA: Array<[number, number, number]> = [
     [0.993248, 0.906157, 0.143936],
 ];
 
+export const COLORMAP_GRAYS_DATA: Array<[number, number, number]> = [
+    [0, 0, 0],
+    [1, 1, 1],
+];
+
 const convertToRgbas = (colors: Array<[number, number, number]>): Array<RgbaTuple> =>
     colors.map(([r, g, b]) => {
         r = Math.round(r * 255);
@@ -1067,4 +1072,5 @@ export const MPL_COLORMAPS: {[name: string]: Array<RgbaTuple>} = {
     INFERNO: convertToRgbas(COLORMAP_INFERNO_DATA),
     PLASMA: convertToRgbas(COLORMAP_PLASMA_DATA),
     VIRIDIS: convertToRgbas(COLORMAP_VIRIDIS_DATA),
+    GRAYS: convertToRgbas(COLORMAP_GRAYS_DATA),
 };

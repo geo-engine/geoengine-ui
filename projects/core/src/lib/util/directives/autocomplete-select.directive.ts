@@ -51,5 +51,6 @@ export class AutocompleteSelectDirective<T> implements OnChanges, OnDestroy {
 
 export type AutocompleteSelectPredicateFunction<T> = (filter: string, element: T) => boolean;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const DEFAULT_PREDICATE_FN: AutocompleteSelectPredicateFunction<any> = (filter: string, element: any): boolean =>
     JSON.stringify(element).toLowerCase().includes(filter);

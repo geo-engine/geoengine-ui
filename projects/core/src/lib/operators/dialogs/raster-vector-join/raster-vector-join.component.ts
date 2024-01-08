@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
-import {UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Subscription} from 'rxjs';
 import {ResultTypes} from '../../result-type.model';
 import {RasterLayer, VectorLayer} from '../../../layers/layer.model';
@@ -16,6 +16,17 @@ import {RasterVectorJoinDict, RasterVectorJoinParams} from '../../../backend/ope
 type TemporalAggregation = 'none' | 'first' | 'mean';
 type FeatureAggregation = 'first' | 'mean';
 
+interface RasterVectorJoinForm {
+    vectorLayer: FormControl<VectorLayer | undefined>;
+    rasterLayers: FormControl<Array<RasterLayer> | undefined>;
+    valueNames: FormArray<FormControl<string>>;
+    temporalAggregation: FormControl<TemporalAggregation>;
+    temporalAggregationIgnoreNodata: FormControl<boolean>;
+    featureAggregation: FormControl<FeatureAggregation>;
+    featureAggregationIgnoreNodata: FormControl<boolean>;
+    name: FormControl<string>;
+}
+
 @Component({
     selector: 'geoengine-raster-vector-join',
     templateUrl: './raster-vector-join.component.html',
@@ -28,7 +39,7 @@ export class RasterVectorJoinComponent implements OnDestroy {
     allowedVectorTypes = [ResultTypes.POINTS, ResultTypes.POLYGONS];
     allowedRasterTypes = [ResultTypes.RASTER];
 
-    form: UntypedFormGroup;
+    form: FormGroup<RasterVectorJoinForm>;
 
     private vectorColumns: Array<string> = [];
     private valueNameUserChanges: Array<boolean> = [];
@@ -39,15 +50,23 @@ export class RasterVectorJoinComponent implements OnDestroy {
         private readonly projectService: ProjectService,
         private readonly randomColorService: RandomColorService,
         private readonly notificationService: NotificationService,
-        private readonly formBuilder: UntypedFormBuilder,
+        private readonly formBuilder: FormBuilder,
         private readonly changeDetectorRef: ChangeDetectorRef,
     ) {
-        this.form = this.formBuilder.group({
-            vectorLayer: [undefined, Validators.required],
-            rasterLayers: [undefined, Validators.required],
-            valueNames: this.formBuilder.array([]),
-            temporalAggregation: ['none', Validators.required],
-            featureAggregation: ['first', Validators.required],
+        this.form = this.formBuilder.nonNullable.group({
+            vectorLayer: new FormControl<VectorLayer | undefined>(undefined, {
+                nonNullable: true,
+                validators: [Validators.required],
+            }),
+            rasterLayers: new FormControl<Array<RasterLayer> | undefined>(undefined, {
+                nonNullable: true,
+                validators: [Validators.required],
+            }),
+            valueNames: this.formBuilder.nonNullable.array<FormControl<string>>([]),
+            temporalAggregation: ['none' as TemporalAggregation, Validators.required],
+            temporalAggregationIgnoreNodata: [false, Validators.required],
+            featureAggregation: ['first' as FeatureAggregation, Validators.required],
+            featureAggregationIgnoreNodata: [false, Validators.required],
             name: ['Vectors With Raster Values', [Validators.required, geoengineValidators.notOnlyWhitespace]],
         });
 
@@ -58,29 +77,38 @@ export class RasterVectorJoinComponent implements OnDestroy {
         this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     }
 
-    getValueNameControls(): Array<UntypedFormControl> {
+    getValueNameControls(): Array<FormControl> {
         const valueNames = this.form.get('valueNames');
 
-        if (!valueNames || !(valueNames instanceof UntypedFormArray)) {
+        if (!valueNames || !(valueNames instanceof FormArray)) {
             return [];
         }
 
-        return valueNames.controls as Array<UntypedFormControl>;
+        return valueNames.controls as Array<FormControl>;
     }
 
     add(): void {
-        const vectorLayer: VectorLayer = this.form.controls['vectorLayer'].value;
-        const rasterLayers: Array<RasterLayer> = this.form.controls['rasterLayers'].value;
-        const valueNames: Array<string> = this.form.controls['valueNames'].value;
-        const temporalAggregation: TemporalAggregation = this.form.controls['temporalAggregation'].value;
-        const featureAggregation: FeatureAggregation = this.form.controls['featureAggregation'].value;
+        const vectorLayer: VectorLayer | undefined = this.form.controls.vectorLayer.value;
+        const rasterLayers: Array<RasterLayer> | undefined = this.form.controls.rasterLayers.value;
+
+        if (!vectorLayer || !rasterLayers) {
+            return;
+        }
+
+        const valueNames: Array<string> = this.form.controls.valueNames.value;
+        const temporalAggregation: TemporalAggregation = this.form.controls.temporalAggregation.value;
+        const temporalAggregationIgnoreNoData = this.form.controls.temporalAggregationIgnoreNodata.value;
+        const featureAggregation: FeatureAggregation = this.form.controls.featureAggregation.value;
+        const featureAggregationIgnoreNoData = this.form.controls.featureAggregationIgnoreNodata.value;
 
         const outputLayerName: string = this.form.controls['name'].value;
 
         const params: RasterVectorJoinParams = {
             names: valueNames,
             temporalAggregation,
+            temporalAggregationIgnoreNoData,
             featureAggregation,
+            featureAggregationIgnoreNoData,
         };
 
         const sourceOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers([vectorLayer, ...rasterLayers]);
@@ -126,7 +154,7 @@ export class RasterVectorJoinComponent implements OnDestroy {
 
     private reCheckValueNames(): void {
         setTimeout(() => {
-            const valueNames = this.form.controls['valueNames'] as UntypedFormArray;
+            const valueNames = this.form.controls['valueNames'];
             valueNames.controls.forEach((control) => {
                 control.updateValueAndValidity({
                     onlySelf: false,
@@ -140,7 +168,7 @@ export class RasterVectorJoinComponent implements OnDestroy {
     private setupNameValidation(): void {
         const vectorLayerSubscription = this.form.controls['vectorLayer'].valueChanges
             .pipe(
-                filter((vectorLayer: VectorLayer) => !!vectorLayer),
+                filter((vectorLayer): vectorLayer is VectorLayer => !!vectorLayer),
                 mergeMap((vectorLayer: VectorLayer) => this.projectService.getLayerMetadata(vectorLayer)),
                 map((metadata) => {
                     if (!(metadata instanceof VectorLayerMetadata)) {
@@ -158,7 +186,11 @@ export class RasterVectorJoinComponent implements OnDestroy {
 
         // update valueNames
         const rasterLayersSubscription = this.form.controls['rasterLayers'].valueChanges.subscribe((rasters) => {
-            const valueNames = this.form.controls['valueNames'] as UntypedFormArray;
+            if (!rasters) {
+                return;
+            }
+
+            const valueNames = this.form.controls['valueNames'];
 
             if (valueNames.length > rasters.length) {
                 // remove name fields
@@ -169,12 +201,9 @@ export class RasterVectorJoinComponent implements OnDestroy {
             } else if (valueNames.length < rasters.length) {
                 // add name fields
                 for (let i = valueNames.length; i < rasters.length; i++) {
-                    const control = this.formBuilder.control(
+                    const control = this.formBuilder.nonNullable.control(
                         rasters[i].name,
-                        Validators.compose([
-                            Validators.required,
-                            this.valueNameCollision(this.form.controls['valueNames'] as UntypedFormArray),
-                        ]),
+                        Validators.compose([Validators.required, this.valueNameCollision(this.form.controls['valueNames'] as FormArray)]),
                     );
                     valueNames.push(control);
                     this.valueNameUserChanges.push(false);
@@ -194,7 +223,7 @@ export class RasterVectorJoinComponent implements OnDestroy {
                 // update names if not changed by user
                 for (let i = 0; i < rasters.length; i++) {
                     if (!this.valueNameUserChanges[i]) {
-                        (valueNames.at(i) as UntypedFormControl).setValue(rasters[i].name, {emitEvent: false});
+                        (valueNames.at(i) as FormControl).setValue(rasters[i].name, {emitEvent: false});
                     }
                 }
             }
@@ -208,8 +237,8 @@ export class RasterVectorJoinComponent implements OnDestroy {
      * Checks for collisions of value name.
      * Uses `startsWith` semantics.
      */
-    private valueNameCollision(valueNames: UntypedFormArray) {
-        return (control: UntypedFormControl): {[key: string]: boolean | undefined} | null => {
+    private valueNameCollision(valueNames: FormArray) {
+        return (control: FormControl): {[key: string]: boolean | undefined} | null => {
             const errors: {
                 duplicateName?: boolean;
             } = {};

@@ -8,8 +8,12 @@
 }
 
 .login {
-    margin: 0 auto;
     width: 24rem;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 mat-card-content {
@@ -37,4 +41,28 @@ mat-card-actions button {
 
 mat-spinner {
     margin: 0 auto;
+}
+
+img.logo {
+    height: 3rem;
+    width: auto;
+    margin: 0 1rem;
+}
+
+.homepage-wrapper {
+    width: 100%;
+    text-align: center;
+}
+
+.homepage-button {
+    margin: 1rem 1rem;
+
+    mat-icon {
+        color: inherit; // use color from button
+    }
+
+    img {
+        height: 1.5rem;
+        vertical-align: middle;
+    }
 }

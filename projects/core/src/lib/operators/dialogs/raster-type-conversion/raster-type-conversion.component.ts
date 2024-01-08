@@ -1,6 +1,6 @@
 import {RasterLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
@@ -18,7 +18,7 @@ import {Layer} from 'ol/layer';
     styleUrls: ['./raster-type-conversion.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RasterTypeConversionComponent implements OnInit, AfterViewInit, OnDestroy {
+export class RasterTypeConversionComponent implements AfterViewInit {
     readonly inputTypes = [ResultTypes.RASTER];
     readonly rasterDataTypes = RasterDataTypes.ALL_DATATYPES;
 
@@ -41,8 +41,6 @@ export class RasterTypeConversionComponent implements OnInit, AfterViewInit, OnD
         this.disallowSubmit = this.form.statusChanges.pipe(map((status) => status !== 'VALID'));
     }
 
-    ngOnInit(): void {}
-
     ngAfterViewInit(): void {
         setTimeout(() => {
             this.form.updateValueAndValidity();
@@ -50,8 +48,6 @@ export class RasterTypeConversionComponent implements OnInit, AfterViewInit, OnD
             this.form.controls['dataType'].updateValueAndValidity();
         });
     }
-
-    ngOnDestroy(): void {}
 
     add(): void {
         const inputLayer: RasterLayer = this.form.controls['layer'].value;

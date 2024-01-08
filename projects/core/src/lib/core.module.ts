@@ -40,7 +40,12 @@ import {SafeHtmlPipe} from './util/pipes/safe-html.pipe';
 import {TrimPipe} from './util/pipes/trim.pipe';
 import {CssStringToRgbaPipe} from './util/pipes/css-string-to-rgba.pipe';
 import {HighlightPipe} from './util/pipes/highlight.pipe';
-import {RgbaArrayCssGradientPipe, ColorBreakpointsCssGradientPipe, ColorizerCssGradientPipe} from './util/pipes/color-gradients.pipe';
+import {
+    RgbaArrayCssGradientPipe,
+    ColorBreakpointsCssGradientPipe,
+    ColorizerCssGradientPipe,
+    RasterColorizerCssGradientPipe,
+} from './util/pipes/color-gradients.pipe';
 import {RgbaToCssStringPipe} from './util/pipes/rgba-to-css-string.pipe';
 import {CommonModule} from '@angular/common';
 import {DialogHelpComponent} from './dialogs/dialog-help/dialog-help.component';
@@ -153,8 +158,13 @@ import {DownloadRasterLayerComponent} from './download-raster-layer/download-ras
 import {TimeIntervalInputComponent} from './time/time-interval-input/time-interval-input.component';
 import {QuotaInfoComponent} from './users/quota/quota-info/quota-info.component';
 import {FxFlexDirective, FxLayoutAlignDirective, FxLayoutDirective, FxLayoutGapDirective} from './util/directives/flexbox-legacy.directive';
+import {ColorTableEditorComponent} from './colors/color-table-editor/color-table-editor.component';
 import {LineSimplificationComponent} from './operators/dialogs/line-simplification/line-simplification.component';
 import {TaskListComponent} from './tasks/task-list/task-list.component';
+import {RgbaCompositeComponent} from './operators/dialogs/rgb-composite/rgb-composite.component';
+import {RasterGradientSymbologyEditorComponent} from './layers/symbology/raster-gradient-symbology-editor/raster-gradient-symbology-editor.component';
+import {RasterPaletteSymbologyEditorComponent} from './layers/symbology/raster-palette-symbology-editor/raster-palette-symbology-editor.component';
+import {RolesComponent} from './users/roles/roles.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -197,6 +207,7 @@ const CORE_PIPES = [
     CastMeasurementToContinuousPipe,
     ColorBreakpointsCssGradientPipe,
     ColorizerCssGradientPipe,
+    RasterColorizerCssGradientPipe,
     CssStringToRgbaPipe,
     HighlightPipe,
     RgbaArrayCssGradientPipe,
@@ -218,6 +229,7 @@ const CORE_COMPONENTS = [
     ColorAttributeInputComponent,
     ColorBreakpointInputComponent,
     ColorMapSelectorComponent,
+    ColorTableEditorComponent,
     ColorParamEditorComponent,
     ColumnRangeFilterComponent,
     DatasetComponent,
@@ -279,16 +291,18 @@ const CORE_COMPONENTS = [
     PolygonIconComponent,
     ProvenanceTableComponent,
     QuotaInfoComponent,
+    RasterGradientSymbologyEditorComponent,
     RasterIconComponent,
     RasterizationComponent,
     RasterLegendComponent,
     RasterLegendComponent,
+    RasterPaletteSymbologyEditorComponent,
     RasterScalingComponent,
     RasterSymbologyEditorComponent,
     RasterTypeConversionComponent,
     RasterVectorJoinComponent,
-    RasterVectorJoinComponent,
     RenameLayerComponent,
+    RgbaCompositeComponent,
     SaveProjectAsComponent,
     ScatterplotOperatorComponent,
     SidenavContainerComponent,
@@ -321,7 +335,7 @@ const CORE_COMPONENTS = [
 const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGapDirective, FxLayoutAlignDirective];
 
 @NgModule({
-    declarations: [...CORE_PIPES, ...CORE_COMPONENTS, ...FXFLEX_LEGACY_DIRECTIVES],
+    declarations: [...CORE_PIPES, ...CORE_COMPONENTS, ...FXFLEX_LEGACY_DIRECTIVES, RolesComponent],
     imports: [
         ...MATERIAL_MODULES,
         ColorPickerModule,

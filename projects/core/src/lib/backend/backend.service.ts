@@ -16,7 +16,6 @@ import {
     ProjectPermissionDict,
     RegisterWorkflowResultDict,
     RegistrationDict,
-    SessionDict,
     STRectangleDict,
     SrsString,
     TimeIntervalDict,
@@ -27,7 +26,7 @@ import {
     UploadResponseDict,
     CreateDatasetDict,
     AutoCreateDatasetDict,
-    DatasetIdResponseDict,
+    DatasetNameResponseDict,
     MetaDataSuggestionDict,
     SuggestMetaDataDict,
     ResultDescriptorDict,
@@ -37,13 +36,15 @@ import {
     DatasetOrderByDict,
     LayerDict,
     LayerCollectionDict,
-    AuthCodeRequestURL,
     BackendInfoDict,
     WcsParamsDict,
     QuotaDict,
     WorkflowIdResponseDict,
     TaskStatusDict,
     TaskStatusType,
+    UploadFilesResponseDict,
+    UploadFileLayersResponseDict,
+    RoleDescription,
 } from './backend.model';
 
 @Injectable({
@@ -53,38 +54,13 @@ export class BackendService {
     readonly wmsBaseUrl = `${this.config.API_URL}/wms`;
     readonly wcsBaseUrl = `${this.config.API_URL}/wcs`;
 
-    constructor(protected readonly http: HttpClient, protected readonly config: Config) {}
+    constructor(
+        protected readonly http: HttpClient,
+        protected readonly config: Config,
+    ) {}
 
     registerUser(request: {email: string; password: string; realName: string}): Observable<RegistrationDict> {
         return this.http.post<RegistrationDict>(this.config.API_URL + '/user', request);
-    }
-
-    loginUser(request: {email: string; password: string}): Observable<SessionDict> {
-        return this.http.post<SessionDict>(this.config.API_URL + '/login', request);
-    }
-
-    getSession(sessionId: UUID): Observable<SessionDict> {
-        return this.http.get<SessionDict>(this.config.API_URL + '/session', {
-            headers: new HttpHeaders().set('Authorization', `Bearer ${sessionId}`),
-        });
-    }
-
-    logoutUser(sessionId: UUID): Observable<void> {
-        return this.http.post<void>(this.config.API_URL + '/logout', null, {
-            headers: new HttpHeaders().set('Authorization', `Bearer ${sessionId}`),
-        });
-    }
-
-    createAnonymousUserSession(): Observable<SessionDict> {
-        return this.http.post<SessionDict>(this.config.API_URL + '/anonymous', null);
-    }
-
-    oidcInit(): Observable<AuthCodeRequestURL> {
-        return this.http.post<AuthCodeRequestURL>(this.config.API_URL + '/oidcInit', null);
-    }
-
-    oidcLogin(request: {sessionState: string; code: string; state: string}): Observable<SessionDict> {
-        return this.http.post<SessionDict>(this.config.API_URL + '/oidcLogin', request);
     }
 
     createProject(
@@ -251,7 +227,7 @@ export class BackendService {
             queryResolution?: number; // TODO: allow x and y seperately
         },
         sessionId: UUID,
-    ): Observable<any> {
+    ): Observable<JSON> {
         const params = new NullDiscardingHttpParams();
 
         params.set('service', 'WFS');
@@ -273,7 +249,7 @@ export class BackendService {
         params.set('filter', request.filter);
         params.set('propertyName', request.propertyName);
 
-        return this.http.get<any>(`${this.config.API_URL}/wfs/${request.workflowId}`, {
+        return this.http.get<JSON>(`${this.config.API_URL}/wfs/${request.workflowId}`, {
             headers: BackendService.authorizationHeader(sessionId),
             params: params.httpParams,
         });
@@ -302,18 +278,13 @@ export class BackendService {
         });
     }
 
-    getDataset(sessionId: UUID, datasetId: UUID): Observable<DatasetDict> {
-        return this.http.get<DatasetDict>(this.config.API_URL + `/dataset/${datasetId}`, {
+    getDataset(sessionId: UUID, datasetName: string): Observable<DatasetDict> {
+        return this.http.get<DatasetDict>(this.config.API_URL + `/dataset/${datasetName}`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
 
-    getDatasets(
-        sessionId: UUID,
-        offset: number = 0,
-        limit: number = 20,
-        order: DatasetOrderByDict = 'NameAsc',
-    ): Observable<Array<DatasetDict>> {
+    getDatasets(sessionId: UUID, offset = 0, limit = 20, order: DatasetOrderByDict = 'NameAsc'): Observable<Array<DatasetDict>> {
         const params = new NullDiscardingHttpParams();
         params.setMapped('offset', offset, (r) => r.toString());
         params.setMapped('limit', limit, (r) => r.toString());
@@ -333,14 +304,26 @@ export class BackendService {
         });
     }
 
-    createDataset(sessionId: UUID, createDataset: CreateDatasetDict): Observable<DatasetIdResponseDict> {
-        return this.http.post<DatasetIdResponseDict>(this.config.API_URL + '/dataset', createDataset, {
+    getUploadFiles(sessionId: UUID, uploadId: UUID): Observable<UploadFilesResponseDict> {
+        return this.http.get<UploadFilesResponseDict>(this.config.API_URL + `/uploads/${uploadId}/files`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
 
-    autoCreateDataset(sessionId: UUID, createDataset: AutoCreateDatasetDict): Observable<DatasetIdResponseDict> {
-        return this.http.post<DatasetIdResponseDict>(this.config.API_URL + '/dataset/auto', createDataset, {
+    getUploadFileLayers(sessionId: UUID, uploadId: UUID, fileName: string): Observable<UploadFileLayersResponseDict> {
+        return this.http.get<UploadFileLayersResponseDict>(this.config.API_URL + `/uploads/${uploadId}/files/${fileName}/layers`, {
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    createDataset(sessionId: UUID, createDataset: CreateDatasetDict): Observable<DatasetNameResponseDict> {
+        return this.http.post<DatasetNameResponseDict>(this.config.API_URL + '/dataset', createDataset, {
+            headers: BackendService.authorizationHeader(sessionId),
+        });
+    }
+
+    autoCreateDataset(sessionId: UUID, createDataset: AutoCreateDatasetDict): Observable<DatasetNameResponseDict> {
+        return this.http.post<DatasetNameResponseDict>(this.config.API_URL + '/dataset/auto', createDataset, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
@@ -349,6 +332,7 @@ export class BackendService {
         const params = new NullDiscardingHttpParams();
         params.set('upload', suggestMetaData.upload);
         params.set('mainFile', suggestMetaData.mainFile);
+        params.set('layerName', suggestMetaData.layerName);
 
         return this.http.get<MetaDataSuggestionDict>(this.config.API_URL + '/dataset/suggest', {
             params: params.httpParams,
@@ -374,13 +358,7 @@ export class BackendService {
         });
     }
 
-    getLayerCollectionItems(
-        sessionId: UUID,
-        provider: UUID,
-        collection: string,
-        offset: number = 0,
-        limit: number = 20,
-    ): Observable<LayerCollectionDict> {
+    getLayerCollectionItems(sessionId: UUID, provider: UUID, collection: string, offset = 0, limit = 20): Observable<LayerCollectionDict> {
         const params = new NullDiscardingHttpParams();
         params.setMapped('offset', offset, (r) => r.toString());
         params.setMapped('limit', limit, (r) => r.toString());
@@ -394,7 +372,7 @@ export class BackendService {
         );
     }
 
-    getRootLayerCollectionItems(sessionId: UUID, offset: number = 0, limit: number = 20): Observable<LayerCollectionDict> {
+    getRootLayerCollectionItems(sessionId: UUID, offset = 0, limit = 20): Observable<LayerCollectionDict> {
         const params = new NullDiscardingHttpParams();
         params.setMapped('offset', offset, (r) => r.toString());
         params.setMapped('limit', limit, (r) => r.toString());
@@ -443,13 +421,19 @@ export class BackendService {
         });
     }
 
-    abortTask(sessionId: UUID, taskId: UUID, force: boolean = false): Observable<void> {
+    abortTask(sessionId: UUID, taskId: UUID, force = false): Observable<void> {
         const params = new NullDiscardingHttpParams();
         params.setMapped('force', force, (r) => r.toString());
 
         return this.http.delete<void>(this.config.API_URL + `/tasks/${taskId}`, {
             headers: BackendService.authorizationHeader(sessionId),
             params: params.httpParams,
+        });
+    }
+
+    getRoleDescriptions(sessionId: UUID): Observable<Array<RoleDescription>> {
+        return this.http.get<Array<RoleDescription>>(this.config.API_URL + '/user/roles/descriptions', {
+            headers: BackendService.authorizationHeader(sessionId),
         });
     }
 }

@@ -14,6 +14,7 @@ import {UserService} from '../users/user.service';
 import {SpatialReferenceService, WGS_84} from '../spatial-references/spatial-reference.service';
 import {SpatialReferenceSpecification} from '../spatial-references/spatial-reference.model';
 import {first, mergeMap, tap} from 'rxjs/operators';
+import {Configuration, DefaultConfig} from '@geoengine/openapi-client';
 
 describe('test project methods in projectService', () => {
     let notificationServiceSpy: {get: jasmine.Spy};
@@ -31,10 +32,24 @@ describe('test project methods in projectService', () => {
         userServiceSpy = jasmine.createSpyObj('UserService', ['getSessionStream', 'getSessionTokenForRequest']);
         spatialReferenceSpy = jasmine.createSpyObj('SpatialRefernceService', ['getSpatialReferenceSpecification']);
 
+        const sessionToken = 'ffffffff-ffff-4fff-afff-ffffffffffff';
+
         // always return the same session
         userServiceSpy.getSessionStream.and.returnValue(
             of<Session>({
-                sessionToken: 'ffffffff-ffff-4fff-afff-ffffffffffff',
+                sessionToken,
+                apiConfiguration: new Configuration({
+                    basePath: DefaultConfig.basePath,
+                    fetchApi: DefaultConfig.fetchApi,
+                    middleware: DefaultConfig.middleware,
+                    queryParamsStringify: DefaultConfig.queryParamsStringify,
+                    username: DefaultConfig.username,
+                    password: DefaultConfig.password,
+                    apiKey: DefaultConfig.apiKey,
+                    accessToken: sessionToken,
+                    headers: DefaultConfig.headers,
+                    credentials: DefaultConfig.credentials,
+                }),
                 user: new User({
                     id: 'cccccccc-cccc-4ccc-accc-cccccccccccc',
                 }),
@@ -82,11 +97,11 @@ describe('test project methods in projectService', () => {
 
         projectService = new ProjectService(
             DEFAULT_CONFIG as Config,
-            notificationServiceSpy as any as NotificationService,
-            mapServiceSpy as any as MapService,
-            backendSpy as any as BackendService,
-            userServiceSpy as any as UserService,
-            spatialReferenceSpy as any as SpatialReferenceService,
+            notificationServiceSpy as unknown as NotificationService,
+            mapServiceSpy as unknown as MapService,
+            backendSpy as unknown as BackendService,
+            userServiceSpy as unknown as UserService,
+            spatialReferenceSpy as unknown as SpatialReferenceService,
         );
     });
 

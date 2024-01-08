@@ -12,7 +12,7 @@
         </a>
         <geoengine-time-step-selector
             class="mat-elevation-z4"
-            [timeSteps]="dataSelectionService.timeSteps | async | valueDefault : []"
+            [timeSteps]="dataSelectionService.timeSteps | async | valueDefault: []"
             [timeFormat]="dataSelectionService.timeFormat | async | stringSanitizer"
         ></geoengine-time-step-selector>
         <geoengine-zoom-handles (zoomIn)="map.zoomIn()" (zoomOut)="map.zoomOut()" class="mat-elevation-z4"></geoengine-zoom-handles>

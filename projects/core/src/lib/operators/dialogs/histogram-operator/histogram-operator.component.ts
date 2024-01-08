@@ -1,6 +1,6 @@
-import {Layer, VectorLayer} from '../../../layers/layer.model';
+import {Layer, RasterLayer, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
@@ -8,7 +8,7 @@ import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {Plot} from '../../../plots/plot.model';
 import {NotificationService} from '../../../notification.service';
-import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
+import {RasterLayerMetadata, VectorLayerMetadata} from '../../../layers/layer-metadata.model';
 import {WorkflowDict} from '../../../backend/backend.model';
 import {HistogramDict, HistogramParams} from '../../../backend/operator.model';
 import {VectorColumnDataTypes} from '../../datatype.model';
@@ -32,7 +32,7 @@ const isVectorLayer = (layer: Layer): boolean => {
     styleUrls: ['./histogram-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
+export class HistogramOperatorComponent implements AfterViewInit, OnDestroy {
     minNumberOfBuckets = 1;
     maxNumberOfBuckets = 100;
 
@@ -59,7 +59,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
         this.form = this.formBuilder.group({
             name: ['Filtered Values', [Validators.required, geoengineValidators.notOnlyWhitespace]],
             layer: layerControl,
-            attribute: [undefined, geoengineValidators.conditionalValidator(Validators.required, () => isVectorLayer(layerControl.value))],
+            attribute: [undefined, Validators.required],
             rangeType: rangeTypeControl,
             range: this.formBuilder.group(
                 {
@@ -94,6 +94,10 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
                                         .toArray(),
                                 ),
                             );
+                        } else if (layer instanceof RasterLayer) {
+                            return this.projectService
+                                .getRasterLayerMetadata(layer)
+                                .pipe(map((metadata: RasterLayerMetadata) => metadata.bands.map((band) => band.name)));
                         } else {
                             return of([]);
                         }
@@ -108,8 +112,6 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
 
         this.isVectorLayer$ = this.form.controls['layer'].valueChanges.pipe(map((layer) => isVectorLayer(layer)));
     }
-
-    ngOnInit(): void {}
 
     ngAfterViewInit(): void {
         setTimeout(() => {
@@ -169,7 +171,7 @@ export class HistogramOperatorComponent implements OnInit, AfterViewInit, OnDest
                         operator: {
                             type: 'Histogram',
                             params: {
-                                columnName: attributeName,
+                                attributeName: attributeName,
                                 buckets,
                                 bounds: range,
                             } as HistogramParams,

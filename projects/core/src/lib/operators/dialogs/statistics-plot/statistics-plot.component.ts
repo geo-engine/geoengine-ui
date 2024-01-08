@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy, OnInit} from '@angular/core';
+import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy} from '@angular/core';
 import {Validators, FormBuilder, FormControl, FormArray, FormGroup} from '@angular/forms';
 
 import {ProjectService} from '../../../project/project.service';
@@ -46,7 +46,7 @@ const isRasterLayer = (layer: Layer | null): boolean => {
     styleUrls: ['./statistics-plot.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy {
+export class StatisticsPlotComponent implements AfterViewInit, OnDestroy {
     readonly allowedLayerTypes = ResultTypes.LAYER_TYPES;
 
     readonly RASTER_TYPE = [ResultTypes.RASTER];
@@ -61,7 +61,10 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
 
     private subscriptions: Array<Subscription> = [];
 
-    constructor(private formBuilder: FormBuilder, private projectService: ProjectService) {
+    constructor(
+        private formBuilder: FormBuilder,
+        private projectService: ProjectService,
+    ) {
         const layerControl = this.formBuilder.control<Layer | null>(null, Validators.required);
         this.form = this.formBuilder.group({
             layer: layerControl,
@@ -109,8 +112,6 @@ export class StatisticsPlotComponent implements OnInit, AfterViewInit, OnDestroy
         this.isVectorLayer$ = this.form.controls['layer']?.valueChanges.pipe(map((layer) => isVectorLayer(layer)));
         this.isRasterLayer$ = this.form.controls['layer']?.valueChanges.pipe(map((layer) => isRasterLayer(layer)));
     }
-
-    ngOnInit(): void {}
 
     get columnNames(): FormArray<FormControl<string | null>> {
         return this.form.get('columnNames') as FormArray<FormControl<string | null>>;

@@ -1,6 +1,6 @@
-import {Layer, VectorLayer} from '../../../layers/layer.model';
+import {VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
@@ -29,7 +29,7 @@ interface PieChartForm {
     styleUrls: ['./pie-chart.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy {
+export class PieChartComponent implements AfterViewInit, OnDestroy {
     minNumberOfBuckets = 1;
     maxNumberOfBuckets = 100;
 
@@ -44,7 +44,10 @@ export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy {
     /**
      * DI for services
      */
-    constructor(private readonly projectService: ProjectService, private readonly notificationService: NotificationService) {
+    constructor(
+        private readonly projectService: ProjectService,
+        private readonly notificationService: NotificationService,
+    ) {
         this.form = new FormGroup({
             name: new FormControl('Filtered Values', {
                 validators: [Validators.required, geoengineValidators.notOnlyWhitespace],
@@ -71,10 +74,12 @@ export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy {
         this.form.controls['type'].disable(); // TODO: remove when other options are available
 
         this.subscriptions.push(
-            this.form.controls['layer'].valueChanges
+            this.form.controls.layer.valueChanges
                 .pipe(
-                    tap(() => this.form.controls['attribute'].setValue(undefined)),
-                    mergeMap((layer?: Layer) => {
+                    tap({
+                        next: () => this.form.controls.attribute.setValue(undefined),
+                    }),
+                    mergeMap((layer: VectorLayer | undefined) => {
                         if (!layer || !(layer instanceof VectorLayer)) {
                             return of([]);
                         }
@@ -87,8 +92,6 @@ export class PieChartComponent implements OnInit, AfterViewInit, OnDestroy {
                 .subscribe((attributes) => this.attributes$.next(attributes)),
         );
     }
-
-    ngOnInit(): void {}
 
     ngAfterViewInit(): void {
         setTimeout(() => {

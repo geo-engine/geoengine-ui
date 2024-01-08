@@ -2,7 +2,6 @@ import {
     Component,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
-    AfterViewInit,
     Input,
     forwardRef,
     OnChanges,
@@ -18,6 +17,10 @@ export interface ColorAttributeInput {
     readonly value: Color;
 }
 
+export interface ColorAttributeInputHinter {
+    colorHint(key: string): string | undefined;
+}
+
 @Component({
     selector: 'geoengine-color-attribute-input',
     templateUrl: './color-attribute-input.component.html',
@@ -26,11 +29,12 @@ export interface ColorAttributeInput {
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorAttributeInputComponent), multi: true}],
     encapsulation: ViewEncapsulation.Emulated,
 })
-export class ColorAttributeInputComponent implements ControlValueAccessor, AfterViewInit, OnChanges {
+export class ColorAttributeInputComponent implements ControlValueAccessor, OnChanges {
     @Input() readonlyAttribute = false;
     @Input() readonlyColor = false;
     @Input() attributePlaceholder = 'attribute';
     @Input() colorPlaceholder = 'color';
+    @Input() colorAttributeHinter?: ColorAttributeInputHinter;
 
     onTouched?: () => void;
     onChange?: (_: ColorAttributeInput) => void = undefined;
@@ -39,6 +43,20 @@ export class ColorAttributeInputComponent implements ControlValueAccessor, After
     cssString = '';
 
     constructor(private changeDetectorRef: ChangeDetectorRef) {}
+
+    hasColorHint(): boolean {
+        return this.colorAttributeHinter !== undefined;
+    }
+
+    colorHint(key: string | undefined): string | undefined {
+        if (!key) {
+            return undefined;
+        }
+        if (this.colorAttributeHinter) {
+            return this.colorAttributeHinter.colorHint(key);
+        }
+        return undefined;
+    }
 
     updateKey(key: string): void {
         if (!key || !this.input || key === this.input.key) {
@@ -67,10 +85,6 @@ export class ColorAttributeInputComponent implements ControlValueAccessor, After
         this.cssString = color.rgbaCssString();
 
         this.propagateChange();
-    }
-
-    ngAfterViewInit(): void {
-        // setTimeout(() => this.changeDetectorRef.markForCheck());
     }
 
     ngOnChanges(changes: SimpleChanges): void {

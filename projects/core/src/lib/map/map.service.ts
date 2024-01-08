@@ -64,8 +64,6 @@ export class MapService {
         }),
     );
 
-    constructor() {}
-
     /**
      * Returns events that indicate if the map is in grid or default mode
      */
@@ -117,7 +115,7 @@ export class MapService {
     /**
      * Stops a draw interaction on the map and returns the output vector as result
      */
-    public endDrawInteraction(): OlSourceVector<OlGeometry> | undefined {
+    public endDrawInteraction(): OlSourceVector<OlFeature> | undefined {
         if (!this.mapComponent) {
             throw new Error('no MapComponent registered');
         }

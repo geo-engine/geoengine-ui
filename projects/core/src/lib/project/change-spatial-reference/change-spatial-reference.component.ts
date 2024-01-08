@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy} from '@angular/core';
 import {ProjectService} from '../project.service';
 import {NamedSpatialReference, SpatialReference} from '../../spatial-references/spatial-reference.model';
 import {SpatialReferenceService} from '../../spatial-references/spatial-reference.service';
@@ -10,7 +10,7 @@ import {Subscription} from 'rxjs/internal/Subscription';
     styleUrls: ['./change-spatial-reference.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChangeSpatialReferenceComponent implements OnInit, OnDestroy {
+export class ChangeSpatialReferenceComponent implements OnDestroy {
     readonly SpatialReferences: Array<NamedSpatialReference>;
 
     spatialReference?: NamedSpatialReference;
@@ -43,6 +43,4 @@ export class ChangeSpatialReferenceComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.subscription.unsubscribe();
     }
-
-    ngOnInit(): void {}
 }

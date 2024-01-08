@@ -1,10 +1,10 @@
 import {HttpEventType} from '@angular/common/http';
-import {Component, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef} from '@angular/core';
-import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {Component, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef, OnDestroy} from '@angular/core';
+import {FormControl, FormGroup, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {MatChipInputEvent} from '@angular/material/chips';
 import {MatStepper} from '@angular/material/stepper';
-import {Subject} from 'rxjs';
-import {mergeMap} from 'rxjs/operators';
+import {Subject, Subscription, of, zip} from 'rxjs';
+import {map, mergeMap} from 'rxjs/operators';
 import {
     AddDatasetDict,
     CreateDatasetDict,
@@ -22,6 +22,13 @@ import {NotificationService} from '../../notification.service';
 import {ProjectService} from '../../project/project.service';
 import {timeStepGranularityOptions} from '../../time/time.model';
 import {DatasetService} from '../dataset.service';
+import {UserService} from '../../users/user.service';
+
+interface NameDescription {
+    name: FormControl<string>;
+    displayName: FormControl<string>;
+    description: FormControl<string>;
+}
 
 @Component({
     selector: 'geoengine-upload',
@@ -29,7 +36,7 @@ import {DatasetService} from '../dataset.service';
     styleUrls: ['./upload.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UploadComponent {
+export class UploadComponent implements OnDestroy {
     vectorDataTypes = ['Data', 'MultiPoint', 'MultiLineString', 'MultiPolygon'];
     timeDurationValueTypes = ['infinite', 'value', 'zero'];
     timeTypes = ['None', 'Start', 'Start/End', 'Start/Duration'];
@@ -45,17 +52,26 @@ export class UploadComponent {
     metaDataSuggestion$ = new Subject<MetaDataSuggestionDict>();
 
     uploadId?: UUID;
-    datasetId?: UUID;
+    datasetName?: UUID;
     selectedFiles?: Array<File>;
     selectedTimeType?: string;
 
+    uploadFiles?: Array<string>;
+
     formMetaData: UntypedFormGroup;
-    formNameDescription: UntypedFormGroup;
+    formNameDescription: FormGroup<NameDescription>;
+
+    userNamePrefix = '_';
+
+    uploadFileLayers: Array<string> = [];
+
+    private displayNameChangeSubscription: Subscription;
 
     constructor(
         protected datasetService: DatasetService,
         protected notificationService: NotificationService,
         protected projectService: ProjectService,
+        protected userService: UserService,
         protected changeDetectorRef: ChangeDetectorRef,
     ) {
         this.formMetaData = new UntypedFormGroup({
@@ -84,10 +100,47 @@ export class UploadComponent {
             spatialReference: new UntypedFormControl('EPSG:4326', Validators.required), // TODO: validate sref string
         });
 
-        this.formNameDescription = new UntypedFormGroup({
-            name: new UntypedFormControl('', Validators.required),
-            description: new UntypedFormControl(''),
+        this.formNameDescription = new FormGroup<NameDescription>({
+            name: new FormControl('', {
+                nonNullable: true,
+                validators: [Validators.required, Validators.pattern(/^[a-zA-Z0-9_]+$/), Validators.minLength(1)],
+            }),
+            displayName: new FormControl('', {
+                nonNullable: true,
+                validators: [Validators.required],
+            }),
+            description: new FormControl('', {
+                nonNullable: true,
+            }),
         });
+
+        this.userService.getSessionOnce().subscribe((session) => {
+            if (session.user) {
+                this.userNamePrefix = session.user.id;
+            }
+        });
+
+        /**
+         * Suggest a name based on the display name
+         */
+        this.displayNameChangeSubscription = this.formNameDescription.controls.displayName.valueChanges.subscribe((value) => {
+            const nameControl = this.formNameDescription.controls.name;
+
+            if (nameControl.dirty) {
+                return;
+            }
+
+            const src = /[^a-zA-Z0-9_]/g;
+            const target = '_';
+
+            const name = value.replace(src, target);
+
+            nameControl.setValue(name);
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.displayNameChangeSubscription?.unsubscribe();
     }
 
     changeTimeType(): void {
@@ -185,6 +238,26 @@ export class UploadComponent {
         form.timeDurationGranularity.updateValueAndValidity();
     }
 
+    changeMainFile(): void {
+        if (!this.uploadId) {
+            return;
+        }
+
+        const form = this.formMetaData.controls;
+        const mainFile = form.mainFile.value;
+        const layer = form.layerName.value;
+
+        this.datasetService.getUploadFileLayers(this.uploadId, mainFile).subscribe((layers) => {
+            this.uploadFileLayers = layers.layers;
+
+            if (this.uploadFileLayers.length > 0 && !this.uploadFileLayers.includes(layer)) {
+                form.layerName.setValue(this.uploadFileLayers[0]);
+            }
+
+            this.changeDetectorRef.markForCheck();
+        });
+    }
+
     removeText(column: string): void {
         const columns: Array<string> = this.formMetaData.controls.columnsText.value;
 
@@ -279,7 +352,7 @@ export class UploadComponent {
                     }
                     this.stepper.next();
 
-                    this.suggest();
+                    this.setUpMetadataSpecification(uploadId);
                 }
             },
             (err) => {
@@ -289,18 +362,18 @@ export class UploadComponent {
     }
 
     addToMap(): void {
-        if (!this.datasetId) {
+        if (!this.datasetName) {
             return;
         }
 
         this.datasetService
-            .getDataset(this.datasetId)
+            .getDataset(this.datasetName)
             .pipe(mergeMap((dataset) => this.datasetService.addDatasetToMap(dataset)))
             .subscribe();
     }
 
     reloadSuggestion(): void {
-        this.suggest(this.formMetaData.controls.mainFile.value);
+        this.suggest(this.formMetaData.controls.mainFile.value, this.formMetaData.controls.layerName.value);
     }
 
     submitCreate(): void {
@@ -337,7 +410,8 @@ export class UploadComponent {
         };
 
         const addData: AddDatasetDict = {
-            name: formDataset.name.value,
+            name: this.userNamePrefix + ':' + formDataset.name.value,
+            displayName: formDataset.displayName.value,
             description: formDataset.description.value,
             sourceOperator: 'OgrSource',
         };
@@ -356,7 +430,7 @@ export class UploadComponent {
 
         this.datasetService.createDataset(create).subscribe(
             (response) => {
-                this.datasetId = response.id;
+                this.datasetName = response.datasetName;
                 if (this.stepper.selected) {
                     this.stepper.selected.completed = true;
                     this.stepper.selected.editable = false;
@@ -377,40 +451,67 @@ export class UploadComponent {
         );
     }
 
-    private suggest(mainFile: string | undefined = undefined): void {
+    private setUpMetadataSpecification(uploadId: string): void {
+        let uploadFiles;
+
+        if (this.uploadFiles) {
+            uploadFiles = of(this.uploadFiles);
+        } else {
+            uploadFiles = this.datasetService.getUploadFiles(uploadId).pipe(map((files) => files.files));
+        }
+
+        zip(this.datasetService.suggestMetaData({upload: uploadId}), uploadFiles)
+            .pipe(
+                mergeMap(([suggest, files]) =>
+                    zip(of(suggest), of(files), this.datasetService.getUploadFileLayers(uploadId, suggest.mainFile)),
+                ),
+            )
+            .subscribe(([suggest, files, layers]) => {
+                this.uploadFiles = files;
+                this.uploadFileLayers = layers.layers;
+                this.fillMetaDataForm(suggest);
+                this.changeDetectorRef.markForCheck();
+            });
+    }
+
+    private fillMetaDataForm(suggest: MetaDataSuggestionDict): void {
+        const info = suggest.metaData.loadingInfo;
+        const start = this.getStartTime(info?.time);
+        const end = this.getEndTime(info?.time);
+        this.formMetaData.patchValue({
+            mainFile: suggest.mainFile,
+            layerName: info?.layerName,
+            dataType: info?.dataType,
+            timeType: info ? this.getTimeType(info.time) : 'None',
+            timeStartColumn: start ? start.startField : '',
+            timeStartFormat: start ? start.startFormat.format : '',
+            timeStartFormatCustom: start ? start.startFormat.customFormat : '',
+            timeStartFormatUnix: start ? start.startFormat.timestampType : '',
+            timeDurationColumn: info?.time.type === 'startDuration' ? info?.time.durationField : '',
+            timeDurationValue: info?.time.type === 'start' ? info?.time.duration : 1,
+            timeDurationValueType: info?.time.type === 'start' ? info?.time.duration.type : 'infinite',
+            timeEndColumn: end ? end.endField : '',
+            timeEndFormat: end ? end.endFormat.format : '',
+            timeEndFormatCustom: end ? end.endFormat.customFormat : '',
+            timeEndFormatUnix: end ? end.endFormat.timestampType : '',
+            columnsX: info?.columns?.x,
+            columnsY: info?.columns?.y,
+            columnsText: info?.columns?.text,
+            columnsFloat: info?.columns?.float,
+            columnsInt: info?.columns?.int,
+            errorHandling: info?.onError,
+            spatialReference: suggest.metaData.resultDescriptor.spatialReference,
+        });
+    }
+
+    private suggest(mainFile: string | undefined = undefined, layerName: string | undefined = undefined): void {
         if (!this.uploadId) {
             return;
         }
 
-        this.datasetService.suggestMetaData({upload: this.uploadId, mainFile}).subscribe(
+        this.datasetService.suggestMetaData({upload: this.uploadId, mainFile, layerName}).subscribe(
             (suggest) => {
-                const info = suggest.metaData.loadingInfo;
-                const start = this.getStartTime(info?.time);
-                const end = this.getEndTime(info?.time);
-                this.formMetaData.patchValue({
-                    mainFile: suggest.mainFile,
-                    layerName: info?.layerName,
-                    dataType: info?.dataType,
-                    timeType: info ? this.getTimeType(info.time) : 'None',
-                    timeStartColumn: start ? start.startField : '',
-                    timeStartFormat: start ? start.startFormat.format : '',
-                    timeStartFormatCustom: start ? start.startFormat.customFormat : '',
-                    timeStartFormatUnix: start ? start.startFormat.timestampType : '',
-                    timeDurationColumn: info?.time.type === 'start+duration' ? info?.time.durationField : '',
-                    timeDurationValue: info?.time.type === 'start' ? info?.time.duration : 1,
-                    timeDurationValueType: info?.time.type === 'start' ? info?.time.duration.type : 'infinite',
-                    timeEndColumn: end ? end.endField : '',
-                    timeEndFormat: end ? end.endFormat.format : '',
-                    timeEndFormatCustom: end ? end.endFormat.customFormat : '',
-                    timeEndFormatUnix: end ? end.endFormat.timestampType : '',
-                    columnsX: info?.columns?.x,
-                    columnsY: info?.columns?.y,
-                    columnsText: info?.columns?.text,
-                    columnsFloat: info?.columns?.float,
-                    columnsInt: info?.columns?.int,
-                    errorHandling: info?.onError,
-                    spatialReference: suggest.metaData.resultDescriptor.spatialReference,
-                });
+                this.fillMetaDataForm(suggest);
                 this.changeDetectorRef.markForCheck();
             },
             (err) => this.notificationService.error(err.message),
@@ -434,7 +535,7 @@ export class UploadComponent {
             return undefined;
         }
 
-        if (time.type === 'start+end') {
+        if (time.type === 'startEnd') {
             return time;
         }
 
@@ -544,7 +645,7 @@ export class UploadComponent {
             }
 
             time = {
-                type: 'start+end',
+                type: 'startEnd',
                 startField: formMeta.timeStartColumn.value,
                 startFormat,
                 endField: formMeta.timeEndColumn.value,
@@ -562,7 +663,7 @@ export class UploadComponent {
             }
 
             time = {
-                type: 'start+duration',
+                type: 'startDuration',
                 startField: formMeta.timeStartColumn.value,
                 startFormat: format,
                 durationField: formMeta.timeDurationColumn.value,
@@ -577,9 +678,9 @@ export class UploadComponent {
         }
         if (time.type === 'start') {
             return 'Start';
-        } else if (time.type === 'start+duration') {
+        } else if (time.type === 'startDuration') {
             return 'Start/Duration';
-        } else if (time.type === 'start+end') {
+        } else if (time.type === 'startEnd') {
             return 'Start/End';
         }
         return 'None';

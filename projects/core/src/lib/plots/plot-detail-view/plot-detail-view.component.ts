@@ -26,7 +26,10 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit, OnDestroy
 
     private dataSubscription?: Subscription;
 
-    constructor(public projectService: ProjectService, @Inject(MAT_DIALOG_DATA) public plot: Plot) {}
+    constructor(
+        public projectService: ProjectService,
+        @Inject(MAT_DIALOG_DATA) public plot: Plot,
+    ) {}
 
     ngOnInit(): void {
         this.dataSubscription = this.projectService.getPlotDataStream(this.plot).subscribe((plotData) => {

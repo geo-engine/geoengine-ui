@@ -25,22 +25,22 @@ import {SpatialReference} from '../spatial-references/spatial-reference.model';
 import {RasterData} from '../layers/layer-data.model';
 import {BackendService} from '../backend/backend.service';
 import {UUID} from '../backend/backend.model';
-import {RasterSymbology, Symbology, VectorSymbology} from '../layers/symbology/symbology.model';
-import {Colorizer} from '../colors/colorizer.model';
-import OlGeometry from 'ol/geom/Geometry';
+import {RasterColorizer, RasterSymbology, Symbology, VectorSymbology} from '../layers/symbology/symbology.model';
+import OlFeature from 'ol/Feature';
 import {olExtentToTuple} from '../util/conversions';
 import TileState from 'ol/TileState';
 import {Extent} from './map.service';
 import {Projection} from 'ol/proj';
 import {NotificationService} from '../notification.service';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type VectorData = any; // TODO: use correct type
 
 /**
  * The `ol-layer` component represents a single layer object of open layers.
  */
 @Directive()
-// eslint-disable-next-line @angular-eslint/directive-class-suffix
+// eslint-disable-next-line @angular-eslint/directive-class-suffix, @typescript-eslint/no-explicit-any
 export abstract class MapLayerComponent<OL extends OlLayer<OS, any>, OS extends OlSource> {
     @Input() layerId!: number;
     @Input() isVisible = true;
@@ -61,7 +61,11 @@ export abstract class MapLayerComponent<OL extends OlLayer<OS, any>, OS extends 
     /**
      * Setup of DI
      */
-    protected constructor(protected projectService: ProjectService, source: OS, layer: (_: OS) => OL) {
+    protected constructor(
+        protected projectService: ProjectService,
+        source: OS,
+        layer: (_: OS) => OL,
+    ) {
         this.source = source;
         this._mapLayer = layer(source);
     }
@@ -101,7 +105,7 @@ export abstract class MapLayerComponent<OL extends OlLayer<OS, any>, OS extends 
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OlVectorLayerComponent
-    extends MapLayerComponent<OlLayerVector<OlVectorSource<OlGeometry>>, OlVectorSource<OlGeometry>>
+    extends MapLayerComponent<OlLayerVector<OlVectorSource<OlFeature>>, OlVectorSource<OlFeature>>
     implements OnInit, OnDestroy, OnChanges
 {
     override symbology?: VectorSymbology;
@@ -264,7 +268,7 @@ export class OlRasterLayerComponent
         if (changes.symbology && this.symbology) {
             this._mapLayer.setOpacity(this.symbology.opacity);
             this.source.updateParams({
-                STYLES: this.stylesFromColorizer(this.symbology.colorizer),
+                STYLES: this.stylesFromColorizer(this.symbology.rasterColorizer),
             });
         }
         if (changes.workflow !== undefined || changes.sessionToken !== undefined) {
@@ -292,7 +296,7 @@ export class OlRasterLayerComponent
         if (this.source && this.time && this.symbology) {
             this.source.updateParams({
                 time: this.time.asRequestString(),
-                STYLES: this.stylesFromColorizer(this.symbology.colorizer),
+                STYLES: this.stylesFromColorizer(this.symbology.rasterColorizer),
             });
         }
     }
@@ -314,7 +318,7 @@ export class OlRasterLayerComponent
             params: {
                 layers: this.workflow,
                 time: this.time.asRequestString(),
-                STYLES: this.stylesFromColorizer(this.symbology.colorizer),
+                STYLES: this.stylesFromColorizer(this.symbology.rasterColorizer),
                 EXCEPTIONS: 'application/json',
             },
             projection: this.spatialReference.srsString,
@@ -364,7 +368,7 @@ export class OlRasterLayerComponent
         this.initializeOrUpdateOlMapLayer();
     }
 
-    private stylesFromColorizer(colorizer: Colorizer): string {
+    private stylesFromColorizer(colorizer: RasterColorizer): string {
         return 'custom:' + JSON.stringify(colorizer.toDict());
     }
 

@@ -1,9 +1,10 @@
 import {Observable, Observer} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {AbstractControl, AsyncValidatorFn, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidatorFn, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {Moment} from 'moment';
 
-const isFiniteNumber = (value: any): boolean => value !== null && value !== undefined && !isNaN(value) && isFinite(value);
+const isFiniteNumber = (value: null | undefined | number): boolean =>
+    value !== null && value !== undefined && !isNaN(value) && isFinite(value);
 
 /**
  * A validator that validates a form group that contains min/max number fields.
@@ -192,7 +193,7 @@ const isNumber = (control: AbstractControl): {isNoNumber: true} | null => {
 /**
  * checks if a value is undefined or null
  */
-const nullOrUndefined = (value: any): boolean => value === undefined || value === null;
+const nullOrUndefined = (value: unknown): boolean => value === undefined || value === null;
 
 /**
  * This Validator checks the relation of a value compared to another value.
@@ -343,7 +344,7 @@ const notZero = (control: AbstractControl): ValidationErrors | null => {
  * The field must be a `FormGroup` with the fields `start` and `end` of type `Moment`.
  */
 const startBeforeEndValidator = (control: AbstractControl): ValidationErrors | null => {
-    if (!(control instanceof FormGroup<{start: FormControl<Moment>; end: FormControl<Moment>; timeAsPoint: FormControl<boolean>}>)) {
+    if (!(control instanceof FormGroup)) {
         throw Error('The field must be a FormGroup with the fields `start` and `end` of type Moment and `timeAsPoint` of type boolean.');
     }
     if (!control.controls.start || !control.controls.end) {

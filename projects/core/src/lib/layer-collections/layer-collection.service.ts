@@ -19,17 +19,10 @@ import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers
 import {ProjectService} from '../project/project.service';
 import {NotificationService} from '../notification.service';
 import {Layer, RasterLayer, VectorLayer} from '../layers/layer.model';
-import {
-    ClusteredPointSymbology,
-    LineSymbology,
-    PointSymbology,
-    PolygonSymbology,
-    RasterSymbology,
-    VectorSymbology,
-} from '../layers/symbology/symbology.model';
-import {colorToDict} from '../colors/color';
+import {RasterSymbology, VectorSymbology} from '../layers/symbology/symbology.model';
 import {RandomColorService} from '../util/services/random-color.service';
 import {subscribeAndProvide} from '../util/conversions';
+import {createVectorSymbology} from '../util/symbologies';
 
 @Injectable({
     providedIn: 'root',
@@ -116,9 +109,12 @@ export class LayerCollectionService {
                         isLegendVisible: false,
                         symbology: layer.symbology
                             ? VectorSymbology.fromVectorSymbologyDict(layer.symbology as VectorSymbologyDict)
-                            : this.createVectorSymbology((resultDescriptorDict as VectorResultDescriptorDict).dataType),
+                            : createVectorSymbology(
+                                  (resultDescriptorDict as VectorResultDescriptorDict).dataType,
+                                  this.randomColorService.getRandomColorRgba(),
+                              ),
                     });
-                } else if (keys.includes('measurement')) {
+                } else if (keys.includes('bands')) {
                     return new RasterLayer({
                         name: layer.name,
                         workflowId,
@@ -129,15 +125,19 @@ export class LayerCollectionService {
                             : RasterSymbology.fromRasterSymbologyDict({
                                   type: 'raster',
                                   opacity: 1.0,
-                                  colorizer: {
-                                      type: 'linearGradient',
-                                      breakpoints: [
-                                          {value: 1, color: [0, 0, 0, 255]},
-                                          {value: 255, color: [255, 255, 255, 255]},
-                                      ],
-                                      overColor: [255, 255, 255, 127],
-                                      underColor: [0, 0, 0, 127],
-                                      noDataColor: [0, 0, 0, 0],
+                                  rasterColorizer: {
+                                      type: 'singleBand',
+                                      band: 0,
+                                      bandColorizer: {
+                                          type: 'linearGradient',
+                                          breakpoints: [
+                                              {value: 1, color: [0, 0, 0, 255]},
+                                              {value: 255, color: [255, 255, 255, 255]},
+                                          ],
+                                          overColor: [255, 255, 255, 127],
+                                          underColor: [0, 0, 0, 127],
+                                          noDataColor: [0, 0, 0, 0],
+                                      },
                                   },
                               }),
                     });
@@ -147,42 +147,5 @@ export class LayerCollectionService {
                 }
             }),
         );
-    }
-
-    private createVectorSymbology(dataType: 'Data' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon'): VectorSymbology {
-        switch (dataType) {
-            case 'Data':
-                // TODO: cope with that
-                throw Error('we cannot add data layers here, yet');
-            case 'MultiPoint':
-                return ClusteredPointSymbology.fromPointSymbologyDict({
-                    type: 'point',
-                    radius: {type: 'static', value: PointSymbology.DEFAULT_POINT_RADIUS},
-                    stroke: {
-                        width: {type: 'static', value: 1},
-                        color: {type: 'static', color: [0, 0, 0, 255]},
-                    },
-                    fillColor: {type: 'static', color: colorToDict(this.randomColorService.getRandomColorRgba())},
-                });
-            case 'MultiLineString':
-                return LineSymbology.fromLineSymbologyDict({
-                    type: 'line',
-                    stroke: {
-                        width: {type: 'static', value: 1},
-                        color: {type: 'static', color: [0, 0, 0, 255]},
-                    },
-                    autoSimplified: true,
-                });
-            case 'MultiPolygon':
-                return PolygonSymbology.fromPolygonSymbologyDict({
-                    type: 'polygon',
-                    stroke: {
-                        width: {type: 'static', value: 1},
-                        color: {type: 'static', color: [0, 0, 0, 255]},
-                    },
-                    fillColor: {type: 'static', color: colorToDict(this.randomColorService.getRandomColorRgba())},
-                    autoSimplified: true,
-                });
-        }
     }
 }

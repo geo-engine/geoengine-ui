@@ -8,7 +8,11 @@ import {Subscription} from 'rxjs';
 export class IfLoggedInDirective implements OnDestroy {
     private subscription: Subscription;
 
-    constructor(private userService: UserService, private templateRef: TemplateRef<Component>, private viewContainer: ViewContainerRef) {
+    constructor(
+        private userService: UserService,
+        private templateRef: TemplateRef<Component>,
+        private viewContainer: ViewContainerRef,
+    ) {
         this.subscription = this.userService.isGuestUserStream().subscribe((isGuest) => {
             this.viewContainer.clear();
             if (!isGuest) {

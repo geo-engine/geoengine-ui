@@ -12,15 +12,6 @@ export interface RegistrationDict {
     id: UUID;
 }
 
-export interface SessionDict {
-    id: UUID;
-    user?: UserDict;
-    created: TimestampString;
-    validUntil: TimestampString;
-    project?: UUID;
-    view?: STRectangleDict;
-}
-
 export interface UserDict {
     id: UUID;
     email?: string;
@@ -163,7 +154,15 @@ export type VectorSymbologyDict = PointSymbologyDict | LineSymbologyDict | Polyg
 export interface RasterSymbologyDict {
     type: 'raster';
     opacity: number;
-    colorizer: ColorizerDict;
+    rasterColorizer: RasterColorizerDict;
+}
+
+export type RasterColorizerDict = SingleBandRasterColorizerDict /* TODO: | MultiBandRasterColorizerDict */;
+
+export interface SingleBandRasterColorizerDict {
+    type: 'singleBand';
+    band: number;
+    bandColorizer: ColorizerDict;
 }
 
 export interface TextSymbologyDict {
@@ -274,10 +273,12 @@ export interface OperatorParams {
     [key: string]: ParamTypes;
 }
 
+export type NamedDataDict = string;
+
 export interface SourceOperatorDict {
     type: string;
     params: {
-        data: DataIdDict;
+        data: NamedDataDict;
     };
 }
 
@@ -291,6 +292,7 @@ export type TimeStepGranularityDict = 'millis' | 'seconds' | 'minutes' | 'hours'
 export interface DatasetDict {
     id: UUID;
     name: string;
+    displayName: string;
     description: string;
     resultDescriptor: TypedResultDescriptorDict;
     sourceOperator: string;
@@ -314,6 +316,7 @@ export type DatasetOrderByDict = 'NameAsc' | 'NameDesc';
 export interface PlotDataDict {
     plotType: string;
     outputFormat: 'JsonPlain' | 'JsonVega' | 'ImagePng';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any;
 }
 
@@ -325,10 +328,15 @@ export interface ResultDescriptorDict {
 
 export type TypedResultDescriptorDict = VectorResultDescriptorDict | RasterResultDescriptorDict;
 
+export interface RasterBandDescriptorDict {
+    name: string;
+    measurement: MeasurementDict;
+}
+
 export interface RasterResultDescriptorDict extends ResultDescriptorDict {
     type: 'raster';
     dataType: 'U8' | 'U16' | 'U32' | 'U64' | 'I8' | 'I16' | 'I32' | 'I64' | 'F32' | 'F64';
-    measurement: MeasurementDict;
+    bands: RasterBandDescriptorDict[];
     time?: TimeIntervalDict;
     bbox?: SpatialPartitionDict;
     resolution?: SpatialResolution;
@@ -376,8 +384,8 @@ export interface UploadResponseDict {
     id: UUID;
 }
 
-export interface DatasetIdResponseDict {
-    id: UUID;
+export interface DatasetNameResponseDict {
+    datasetName: string;
 }
 
 export interface WorkflowIdResponseDict {
@@ -397,8 +405,8 @@ export interface DatasetDefinitionDict {
 }
 
 export interface AddDatasetDict {
-    id?: DataIdDict;
-    name: string;
+    name?: string;
+    displayName: string;
     description: string;
     sourceOperator: string;
     symbology?: SymbologyDict;
@@ -409,16 +417,27 @@ export interface AutoCreateDatasetDict {
     datasetName: string;
     datasetDescription: string;
     mainFile: string;
+    layerName?: string;
 }
 
 export interface SuggestMetaDataDict {
     upload: UUID;
     mainFile?: string;
+    layerName?: string;
 }
 
 export interface MetaDataSuggestionDict {
     mainFile: string;
+    layerName: string;
     metaData: MetaDataDefinitionDict;
+}
+
+export interface UploadFilesResponseDict {
+    files: Array<string>;
+}
+
+export interface UploadFileLayersResponseDict {
+    layers: Array<string>;
 }
 
 export type MetaDataDefinitionDict = OgrMetaDataDict;
@@ -457,7 +476,7 @@ export interface StartOgrSourceDatasetTimeTypeDict {
 }
 
 export interface StartEndOgrSourceDatasetTimeTypeDict {
-    type: 'start+end';
+    type: 'startEnd';
     startField: string;
     startFormat: OgrSourceTimeFormatDict;
     endField: string;
@@ -465,7 +484,7 @@ export interface StartEndOgrSourceDatasetTimeTypeDict {
 }
 
 export interface StartDurationOgrSourceDatasetTimeTypeDict {
-    type: 'start+duration';
+    type: 'startDuration';
     startField: string;
     startFormat: OgrSourceTimeFormatDict;
     durationField: string;
@@ -634,6 +653,7 @@ export interface TaskRunningDict extends TaskStatusDict {
     timeStarted: string;
     estimatedTimeRemaining: string;
     pctComplete: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     info: any; // TODO: better type in backend
 }
 
@@ -641,17 +661,21 @@ export interface TaskCompletedDict extends TaskStatusDict {
     status: 'completed';
     timeStarted: string;
     timeTotal: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     info: any; // TODO: better type in backend
 }
 
 export interface TaskAbortedDict extends TaskStatusDict {
     status: 'aborted';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cleanUp: any; // TODO: better type in backend
 }
 
 export interface TaskFailedDict extends TaskStatusDict {
     status: 'failed';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cleanUp: any; // TODO: better type in backend
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     error: any; // TODO: better type in backend
 }
 
@@ -661,15 +685,27 @@ export interface TaskCleanUpDict {
 
 export interface TaskCleanUpCompletedDict extends TaskCleanUpDict {
     status: 'completed';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     info: any; // TODO: better type in backend
 }
 
 export interface TaskCleanUpAbortedDict extends TaskCleanUpDict {
     status: 'aborted';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     info: any; // TODO: better type in backend
 }
 
 export interface TaskCleanUpFailedDict extends TaskCleanUpDict {
     status: 'failed';
     error: string;
+}
+
+export interface Role {
+    id: UUID;
+    name: string;
+}
+
+export interface RoleDescription {
+    role: Role;
+    individual: boolean;
 }

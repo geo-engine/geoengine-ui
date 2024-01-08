@@ -8,11 +8,11 @@
                 <img matListItemIcon [src]="operator.type.ICON_URL" [alt]="operator.type.NAME" />
                 <h4
                     matListItemTitle
-                    bind-innerHtml="operator.type.NAME | geoengineHighlightPipe : (searchString$ | async) | geoengineSafeHtml"
+                    bind-innerHtml="operator.type.NAME | geoengineHighlightPipe: (searchString$ | async) | geoengineSafeHtml"
                 ></h4>
                 <p
                     matListItemLine
-                    bind-innerHtml="operator.description | geoengineHighlightPipe : (searchString$ | async) | geoengineSafeHtml"
+                    bind-innerHtml="operator.description | geoengineHighlightPipe: (searchString$ | async) | geoengineSafeHtml"
                 ></p>
             </mat-list-item>
         </ng-template>

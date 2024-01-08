@@ -9,7 +9,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 export class SafeStylePipe implements PipeTransform {
     constructor(private sanitizer: DomSanitizer) {}
 
-    transform(style: any): SafeHtml {
+    transform(style: string): SafeHtml {
         return this.sanitizer.bypassSecurityTrustStyle(style);
     }
 }

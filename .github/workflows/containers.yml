@@ -23,7 +23,7 @@ jobs:
 
     strategy:
       matrix:
-        app: ["gis", "gfbio", "data-atlas", "nfdi-gdo", "ebv-analyzer"]
+        app: ["gis", "gfbio", "data-atlas", "nfdi-portal-demo", "ebv-analyzer"]
 
     runs-on: ubuntu-22.04
 

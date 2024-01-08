@@ -1,7 +1,6 @@
 import {CdkPortalOutlet, ComponentPortal} from '@angular/cdk/portal';
 import {
     Component,
-    OnInit,
     ChangeDetectionStrategy,
     HostBinding,
     Input,
@@ -11,7 +10,6 @@ import {
     ViewChild,
     ComponentFactoryResolver,
     Injector,
-    AfterViewInit,
     ChangeDetectorRef,
 } from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
@@ -30,7 +28,7 @@ const TAB_WIDTH_PCT_MAX = 20;
     styleUrls: ['./tabs.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TabsComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
+export class TabsComponent implements OnChanges, OnDestroy {
     @HostBinding('class.mat-elevation-z4') elevationStyle = true;
     @ViewChild(CdkPortalOutlet) portalOutlet!: CdkPortalOutlet;
 
@@ -66,10 +64,6 @@ export class TabsComponent implements OnInit, OnChanges, OnDestroy, AfterViewIni
 
         this.tabWidthPct = this.tabsService.tabs.pipe(map((tabs) => clamp(100 / tabs.length, TAB_WIDTH_PCT_MIN, TAB_WIDTH_PCT_MAX)));
     }
-
-    ngOnInit(): void {}
-
-    ngAfterViewInit(): void {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.maxHeight || changes.visible) {

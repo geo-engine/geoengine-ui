@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {Layer, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
@@ -26,7 +26,7 @@ interface LineSimplificationForm {
     styleUrls: ['./line-simplification.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LineSimplificationComponent implements OnInit, OnDestroy {
+export class LineSimplificationComponent implements OnInit {
     selected = new FormControl(0, {validators: [Validators.required], nonNullable: true});
 
     readonly inputTypes = [ResultTypes.LINES, ResultTypes.POLYGONS];
@@ -54,8 +54,6 @@ export class LineSimplificationComponent implements OnInit, OnDestroy {
             this.form.controls.layer.updateValueAndValidity();
         });
     }
-
-    ngOnDestroy(): void {}
 
     epsilonChecked(autoEpsilon: boolean): void {
         if (autoEpsilon) {

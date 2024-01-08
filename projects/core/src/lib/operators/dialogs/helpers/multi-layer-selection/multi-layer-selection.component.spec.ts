@@ -13,6 +13,7 @@ import {MATERIAL_MODULES} from '../../../../core.module';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {By} from '@angular/platform-browser';
 import {WGS_84} from '../../../../spatial-references/spatial-reference.service';
+import {RasterBandDescriptor} from '../../../../datasets/dataset.model';
 
 describe('MultiLayerSelectionComponent', () => {
     let component: MultiLayerSelectionComponent;
@@ -29,15 +30,19 @@ describe('MultiLayerSelectionComponent', () => {
         symbology: RasterSymbology.fromRasterSymbologyDict({
             type: 'raster',
             opacity: 1.0,
-            colorizer: {
-                type: 'linearGradient',
-                breakpoints: [
-                    {value: 1, color: [0, 0, 0, 255]},
-                    {value: 255, color: [255, 255, 255, 255]},
-                ],
-                overColor: [255, 255, 255, 127],
-                underColor: [0, 0, 0, 127],
-                noDataColor: [0, 0, 0, 0],
+            rasterColorizer: {
+                type: 'singleBand',
+                band: 0,
+                bandColorizer: {
+                    type: 'linearGradient',
+                    breakpoints: [
+                        {value: 1, color: [0, 0, 0, 255]},
+                        {value: 255, color: [255, 255, 255, 255]},
+                    ],
+                    overColor: [255, 255, 255, 127],
+                    underColor: [0, 0, 0, 127],
+                    noDataColor: [0, 0, 0, 0],
+                },
             },
         }),
     });
@@ -49,15 +54,19 @@ describe('MultiLayerSelectionComponent', () => {
         symbology: RasterSymbology.fromRasterSymbologyDict({
             type: 'raster',
             opacity: 1.0,
-            colorizer: {
-                type: 'linearGradient',
-                breakpoints: [
-                    {value: 1, color: [0, 0, 0, 255]},
-                    {value: 255, color: [255, 255, 255, 255]},
-                ],
-                overColor: [255, 255, 255, 127],
-                underColor: [0, 0, 0, 127],
-                noDataColor: [0, 0, 0, 0],
+            rasterColorizer: {
+                type: 'singleBand',
+                band: 0,
+                bandColorizer: {
+                    type: 'linearGradient',
+                    breakpoints: [
+                        {value: 1, color: [0, 0, 0, 255]},
+                        {value: 255, color: [255, 255, 255, 255]},
+                    ],
+                    overColor: [255, 255, 255, 127],
+                    underColor: [0, 0, 0, 127],
+                    noDataColor: [0, 0, 0, 0],
+                },
             },
         }),
     });
@@ -69,15 +78,19 @@ describe('MultiLayerSelectionComponent', () => {
         symbology: RasterSymbology.fromRasterSymbologyDict({
             type: 'raster',
             opacity: 1.0,
-            colorizer: {
-                type: 'linearGradient',
-                breakpoints: [
-                    {value: 1, color: [0, 0, 0, 255]},
-                    {value: 255, color: [255, 255, 255, 255]},
-                ],
-                overColor: [255, 255, 255, 127],
-                underColor: [0, 0, 0, 127],
-                noDataColor: [0, 0, 0, 0],
+            rasterColorizer: {
+                type: 'singleBand',
+                band: 0,
+                bandColorizer: {
+                    type: 'linearGradient',
+                    breakpoints: [
+                        {value: 1, color: [0, 0, 0, 255]},
+                        {value: 255, color: [255, 255, 255, 255]},
+                    ],
+                    overColor: [255, 255, 255, 127],
+                    underColor: [0, 0, 0, 127],
+                    noDataColor: [0, 0, 0, 0],
+                },
             },
         }),
     });
@@ -92,7 +105,11 @@ describe('MultiLayerSelectionComponent', () => {
         /** ProjectService returns Mock Layers **/
         projectServiceSpy.getLayerStream.and.returnValue(of<Array<Layer>>(mockLayers));
         projectServiceSpy.getLayerMetadata.and.returnValue(
-            of<RasterLayerMetadata>(new RasterLayerMetadata(RasterDataTypes.Byte, WGS_84.spatialReference, new UnitlessMeasurement())),
+            of<RasterLayerMetadata>(
+                new RasterLayerMetadata(RasterDataTypes.Byte, WGS_84.spatialReference, [
+                    new RasterBandDescriptor('band', new UnitlessMeasurement()),
+                ]),
+            ),
         );
 
         await TestBed.configureTestingModule({

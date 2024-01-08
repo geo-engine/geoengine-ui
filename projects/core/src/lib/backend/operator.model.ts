@@ -1,6 +1,6 @@
 import {
-    DataIdDict,
     MeasurementDict,
+    NamedDataDict,
     OperatorDict,
     OperatorParams,
     SourceOperatorDict,
@@ -36,6 +36,26 @@ export interface ExpressionDict extends OperatorDict {
     };
 }
 
+export interface RgbDict extends OperatorDict {
+    type: 'Rgb';
+    params: {
+        redMin: number;
+        redMax: number;
+        redScale: number;
+        greenMin: number;
+        greenMax: number;
+        greenScale: number;
+        blueMin: number;
+        blueMax: number;
+        blueScale: number;
+    };
+    sources: {
+        red: OperatorDict | SourceOperatorDict;
+        green: OperatorDict | SourceOperatorDict;
+        blue: OperatorDict | SourceOperatorDict;
+    };
+}
+
 export interface NeighborhoodAggregateDict extends OperatorDict {
     type: 'NeighborhoodAggregate';
     params: {
@@ -59,7 +79,7 @@ export interface FeatureAttributeOverTimeDict extends OperatorDict {
 }
 
 export interface HistogramParams extends OperatorParams {
-    columnName?: string;
+    attributeName: string;
     bounds:
         | {
               min: number;
@@ -202,7 +222,9 @@ export interface ColumnRangeFilterDict extends OperatorDict {
 export interface RasterVectorJoinParams extends OperatorParams {
     names: Array<string>;
     temporalAggregation: 'none' | 'first' | 'mean';
+    temporalAggregationIgnoreNoData?: boolean;
     featureAggregation: 'first' | 'mean';
+    featureAggregationIgnoreNoData?: boolean;
 }
 
 export interface RasterVectorJoinDict extends OperatorDict {
@@ -274,7 +296,7 @@ export interface VisualPointClusteringParams extends OperatorParams {
 export interface OgrSourceDict extends SourceOperatorDict {
     type: 'OgrSource';
     params: {
-        data: DataIdDict;
+        data: NamedDataDict;
         attributeProjection?: Array<string>;
         attributeFilters?: Array<AttributeFilterDict>;
     };

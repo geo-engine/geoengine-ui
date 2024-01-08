@@ -24,7 +24,11 @@ export const WGS_84 = new NamedSpatialReference('WGS 84', 'EPSG:4326');
 export class SpatialReferenceService {
     private specs = new Map<string, SpatialReferenceSpecification>();
 
-    constructor(protected backend: BackendService, protected userService: UserService, protected readonly config: Config) {
+    constructor(
+        protected backend: BackendService,
+        protected userService: UserService,
+        protected readonly config: Config,
+    ) {
         this.registerDefaults();
     }
 

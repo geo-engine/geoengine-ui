@@ -15,7 +15,7 @@
         </a>
 
         <ng-container operatorParameters>
-            <mat-form-field *ngIf="isVectorLayer$ | async">
+            <mat-form-field>
                 <mat-select placeholder="Attribute" formControlName="attribute">
                     <mat-option *ngFor="let attribute of attributes$ | async" [value]="attribute">{{ attribute }}</mat-option>
                 </mat-select>

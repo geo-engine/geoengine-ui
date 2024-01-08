@@ -1,6 +1,6 @@
 import {RasterLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
@@ -33,7 +33,7 @@ interface TemporalRasterAggregationForm {
     styleUrls: ['./temporal-raster-aggregation.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TemporalRasterAggregationComponent implements AfterViewInit {
     readonly inputTypes = [ResultTypes.RASTER];
     readonly rasterDataTypes = RasterDataTypes.ALL_DATATYPES;
 
@@ -88,16 +88,12 @@ export class TemporalRasterAggregationComponent implements OnInit, AfterViewInit
         );
     }
 
-    ngOnInit(): void {}
-
     ngAfterViewInit(): void {
         setTimeout(() => {
             this.form.updateValueAndValidity();
             this.form.controls['layer'].updateValueAndValidity();
         });
     }
-
-    ngOnDestroy(): void {}
 
     add(): void {
         if (this.loading$.value) {

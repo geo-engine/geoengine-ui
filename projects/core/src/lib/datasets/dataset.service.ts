@@ -8,10 +8,12 @@ import {HttpEvent} from '@angular/common/http';
 import {
     AutoCreateDatasetDict,
     CreateDatasetDict,
-    DatasetIdResponseDict,
+    DatasetNameResponseDict,
     DataSetProviderListingDict,
     MetaDataSuggestionDict,
     SuggestMetaDataDict,
+    UploadFileLayersResponseDict,
+    UploadFilesResponseDict,
     UploadResponseDict,
     UUID,
     WorkflowDict,
@@ -52,9 +54,9 @@ export class DatasetService {
         return this.userService.getSessionStream().pipe(mergeMap((session) => this.backend.getDatasetProviders(session.sessionToken)));
     }
 
-    getDataset(id: UUID): Observable<Dataset> {
+    getDataset(name: string): Observable<Dataset> {
         return this.userService.getSessionTokenForRequest().pipe(
-            mergeMap((token) => this.backend.getDataset(token, id)),
+            mergeMap((token) => this.backend.getDataset(token, name)),
             map((dict) => Dataset.fromDict(dict)),
         );
     }
@@ -62,11 +64,21 @@ export class DatasetService {
         return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.upload(token, form)));
     }
 
-    createDataset(create: CreateDatasetDict): Observable<DatasetIdResponseDict> {
+    getUploadFiles(uploadId: UUID): Observable<UploadFilesResponseDict> {
+        return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.getUploadFiles(token, uploadId)));
+    }
+
+    getUploadFileLayers(uploadId: UUID, fileName: string): Observable<UploadFileLayersResponseDict> {
+        return this.userService
+            .getSessionTokenForRequest()
+            .pipe(mergeMap((token) => this.backend.getUploadFileLayers(token, uploadId, fileName)));
+    }
+
+    createDataset(create: CreateDatasetDict): Observable<DatasetNameResponseDict> {
         return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.createDataset(token, create)));
     }
 
-    autoCreateDataset(create: AutoCreateDatasetDict): Observable<DatasetIdResponseDict> {
+    autoCreateDataset(create: AutoCreateDatasetDict): Observable<DatasetNameResponseDict> {
         return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.autoCreateDataset(token, create)));
     }
 
@@ -97,21 +109,25 @@ export class DatasetService {
             const symbology = dataset.symbology as RasterSymbology;
             return new RasterLayer({
                 workflowId,
-                name: dataset.name,
+                name: dataset.displayName,
                 symbology: symbology
                     ? symbology
                     : RasterSymbology.fromRasterSymbologyDict({
                           type: 'raster',
                           opacity: 1.0,
-                          colorizer: {
-                              type: 'linearGradient',
-                              breakpoints: [
-                                  {value: 1, color: [0, 0, 0, 255]},
-                                  {value: 255, color: [255, 255, 255, 255]},
-                              ],
-                              overColor: [255, 255, 255, 127],
-                              underColor: [0, 0, 0, 127],
-                              noDataColor: [0, 0, 0, 0],
+                          rasterColorizer: {
+                              type: 'singleBand',
+                              band: 0,
+                              bandColorizer: {
+                                  type: 'linearGradient',
+                                  breakpoints: [
+                                      {value: 1, color: [0, 0, 0, 255]},
+                                      {value: 255, color: [255, 255, 255, 255]},
+                                  ],
+                                  overColor: [255, 255, 255, 127],
+                                  underColor: [0, 0, 0, 127],
+                                  noDataColor: [0, 0, 0, 0],
+                              },
                           },
                       }),
                 isLegendVisible: false,
@@ -191,7 +207,7 @@ export class DatasetService {
 
             return new VectorLayer({
                 workflowId,
-                name: dataset.name,
+                name: dataset.displayName,
                 symbology,
                 isLegendVisible: false,
                 isVisible: true,

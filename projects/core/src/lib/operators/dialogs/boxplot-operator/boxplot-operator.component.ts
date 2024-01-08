@@ -1,6 +1,6 @@
 import {Layer, RasterLayer, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators, UntypedFormControl} from '@angular/forms';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
@@ -42,7 +42,7 @@ const isRasterLayer = (layer: Layer): boolean => {
     styleUrls: ['./boxplot-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestroy {
+export class BoxPlotOperatorComponent implements AfterViewInit, OnDestroy {
     readonly inputTypes = ResultTypes.INPUT_TYPES;
 
     readonly RASTER_TYPE = [ResultTypes.RASTER];
@@ -109,8 +109,6 @@ export class BoxPlotOperatorComponent implements OnInit, AfterViewInit, OnDestro
         this.isVectorLayer$ = this.form.controls['layer'].valueChanges.pipe(map((layer) => isVectorLayer(layer)));
         this.isRasterLayer$ = this.form.controls['layer'].valueChanges.pipe(map((layer) => isRasterLayer(layer)));
     }
-
-    ngOnInit(): void {}
 
     ngAfterViewInit(): void {
         setTimeout(() => {

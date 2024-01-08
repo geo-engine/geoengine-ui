@@ -1,4 +1,4 @@
-import {Component, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, OnChanges, SimpleChanges, Input} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ChangeDetectorRef, Input} from '@angular/core';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {MatDialog} from '@angular/material/dialog';
 import {Layer, RasterLayer, VectorLayer} from '../../layer.model';
@@ -13,7 +13,6 @@ import {ProvenanceTableComponent} from '../../../provenance/table/provenance-tab
 import {DataTableComponent} from '../../../datatable/table/table.component';
 import {RasterSymbologyEditorComponent} from '../../symbology/raster-symbology-editor/raster-symbology-editor.component';
 import {VectorSymbologyEditorComponent} from '../../symbology/vector-symbology-editor/vector-symbology-editor.component';
-import {Measurement} from '../../measurement';
 import {RasterLayerMetadata} from '../../layer-metadata.model';
 import {NotificationService} from '../../../notification.service';
 import {RenameLayerComponent} from '../../rename-layer/rename-layer.component';
@@ -24,6 +23,7 @@ import {UserService} from '../../../users/user.service';
 import {HttpEventType} from '@angular/common/http';
 import {filenameFromHttpHeaders} from '../../../util/http';
 import {DownloadRasterLayerComponent} from '../../../download-raster-layer/download-raster-layer.component';
+import {RasterBandDescriptor} from '../../../datasets/dataset.model';
 /**
  * The layer list component displays active layers, legends and other controlls.
  */
@@ -33,7 +33,7 @@ import {DownloadRasterLayerComponent} from '../../../download-raster-layer/downl
     styleUrls: ['./layer-list-element.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LayerListElementComponent implements OnDestroy, OnChanges {
+export class LayerListElementComponent {
     @Input()
     layer!: Layer;
 
@@ -64,17 +64,10 @@ export class LayerListElementComponent implements OnDestroy, OnChanges {
         protected readonly notificationService: NotificationService,
     ) {}
 
-    ngOnChanges(_changes: SimpleChanges): void {}
-
-    ngOnDestroy(): void {
-        // this.subscriptions.forEach((s) => s.unsubscribe());
-    }
-
     /**
      * select a layer
      */
     toggleLegend(layer: Layer): void {
-        this.layer = this.layer.updateFields({isLegendVisible: !this.layer.isLegendVisible});
         this.projectService.toggleLegend(layer);
     }
 
@@ -112,7 +105,7 @@ export class LayerListElementComponent implements OnDestroy, OnChanges {
         const name = this.projectService.getLayerChangesStream(layer).pipe(map((l) => 'Provenance of ' + l.name));
         const removeTrigger = this.projectService.getLayerChangesStream(layer).pipe(
             last(),
-            map(() => {}),
+            map(() => undefined),
         );
         this.tabsService.addComponent({
             name,
@@ -127,7 +120,7 @@ export class LayerListElementComponent implements OnDestroy, OnChanges {
         const name = this.projectService.getLayerChangesStream(layer).pipe(map((l) => l.name));
         const removeTrigger = this.projectService.getLayerChangesStream(layer).pipe(
             last(),
-            map(() => {}),
+            map(() => undefined),
         );
         this.tabsService.addComponent({
             name,
@@ -148,10 +141,10 @@ export class LayerListElementComponent implements OnDestroy, OnChanges {
         }
     }
 
-    getMeasurement(layer: Layer): Observable<Measurement> {
+    getBands(layer: Layer): Observable<Array<RasterBandDescriptor>> {
         return this.projectService.getLayerMetadata(layer).pipe(
             map((metaData) => metaData as RasterLayerMetadata),
-            map((metaData) => metaData.measurement),
+            map((metaData) => metaData.bands),
         );
     }
 

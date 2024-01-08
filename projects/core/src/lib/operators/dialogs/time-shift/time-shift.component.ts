@@ -1,6 +1,6 @@
 import {Layer, RasterLayer, VectorLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
@@ -32,7 +32,7 @@ interface TimeShiftForm {
     styleUrls: ['./time-shift.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TimeShiftComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TimeShiftComponent implements AfterViewInit {
     readonly inputTypes = [ResultTypes.RASTER, ...ResultTypes.VECTOR_TYPES];
 
     readonly timeGranularityOptions: Array<TimeStepGranularityDict> = timeStepGranularityOptions;
@@ -45,7 +45,10 @@ export class TimeShiftComponent implements OnInit, AfterViewInit, OnDestroy {
     form: FormGroup<TimeShiftForm>;
     disallowSubmit: Observable<boolean>;
 
-    constructor(private readonly projectService: ProjectService, private readonly notificationService: NotificationService) {
+    constructor(
+        private readonly projectService: ProjectService,
+        private readonly notificationService: NotificationService,
+    ) {
         const form: FormGroup<TimeShiftForm> = new FormGroup({
             name: new FormControl('Time Shift', {
                 validators: [Validators.required, geoengineValidators.notOnlyWhitespace],
@@ -71,16 +74,12 @@ export class TimeShiftComponent implements OnInit, AfterViewInit, OnDestroy {
         this.disallowSubmit = this.form.statusChanges.pipe(map((status) => status !== 'VALID'));
     }
 
-    ngOnInit(): void {}
-
     ngAfterViewInit(): void {
         setTimeout(() => {
             this.form.updateValueAndValidity();
             this.form.controls['source'].updateValueAndValidity();
         });
     }
-
-    ngOnDestroy(): void {}
 
     changeShiftType(type: TimeShiftFormType): void {
         if (type === 'relative') {

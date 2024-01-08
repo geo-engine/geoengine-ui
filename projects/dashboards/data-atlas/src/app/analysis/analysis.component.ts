@@ -1,9 +1,8 @@
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {
     BackendService,
     BBoxDict,
     ProjectService,
-    RandomColorService,
     UserService,
     VectorLayer,
     WorkflowDict,
@@ -28,10 +27,11 @@ import {CountryData, COUNTRY_DATA_LIST, COUNTRY_METADATA} from './country-data.m
     styleUrls: ['./analysis.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AnalysisComponent implements OnInit {
+export class AnalysisComponent {
     countries = new Array<string>();
 
     cannotComputePlot$: Observable<boolean>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     plotData = new BehaviorSubject<any>(undefined);
     plotLoading = new BehaviorSubject(false);
 
@@ -41,7 +41,6 @@ export class AnalysisComponent implements OnInit {
     constructor(
         private readonly projectService: ProjectService,
         private readonly dataSelectionService: DataSelectionService,
-        private readonly randomColorService: RandomColorService,
         private readonly backend: BackendService,
         private readonly userService: UserService,
     ) {
@@ -55,8 +54,6 @@ export class AnalysisComponent implements OnInit {
         this.countries.sort();
     }
 
-    ngOnInit(): void {}
-
     selectCountry(country: string): void {
         this.selectedCountryName = country;
         this.selectedCountry = COUNTRY_DATA_LIST[country];
@@ -66,10 +63,7 @@ export class AnalysisComponent implements OnInit {
             operator: {
                 type: 'OgrSource',
                 params: {
-                    data: {
-                        type: 'internal',
-                        datasetId: this.selectedCountry.polygon,
-                    },
+                    data: this.selectedCountry.polygon,
                 },
             },
         };
@@ -139,10 +133,7 @@ export class AnalysisComponent implements OnInit {
         const countryRasterWorkflow: SourceOperatorDict = {
             type: 'GdalSource',
             params: {
-                data: {
-                    type: 'internal',
-                    datasetId: this.selectedCountry.raster,
-                },
+                data: this.selectedCountry.raster,
             },
         };
 
@@ -193,7 +184,7 @@ export class AnalysisComponent implements OnInit {
                                         expression: 'if B != 0 { A } else { NODATA }',
                                         // TODO: get data type from data
                                         outputType: RasterDataTypes.Float64.getCode(),
-                                        outputMeasurement: rasterResultDescriptor.measurement,
+                                        outputMeasurement: rasterResultDescriptor.bands[0].measurement,
                                         mapNoData: false,
                                     },
                                     sources: {

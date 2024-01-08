@@ -12,6 +12,7 @@ enum FormStatus {
     LoggedOut,
     LoggedIn,
     Loading,
+    Oidc,
 }
 
 @Component({
@@ -31,11 +32,13 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     user?: User;
     invalidCredentials$ = new BehaviorSubject<boolean>(false);
 
+    private oidcUrl = '';
+
     private formStatusSubscription?: Subscription;
 
     constructor(
+        @Inject(Config) readonly config: AppConfig,
         private readonly changeDetectorRef: ChangeDetectorRef,
-        @Inject(Config) private readonly config: AppConfig,
         private readonly userService: UserService,
         private readonly notificationService: NotificationService,
         private readonly router: Router,
@@ -50,17 +53,27 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.userService
-            .getSessionOrUndefinedStream()
-            .pipe(first())
-            .subscribe((session) => {
-                if (!session || !session.user || session.user.isGuest) {
-                    this.formStatus$.next(FormStatus.LoggedOut);
-                } else {
-                    this.user = session.user;
-                    this.formStatus$.next(FormStatus.LoggedIn);
-                }
-            });
+        // check if OIDC login is enabled
+        this.userService.oidcInit().subscribe(
+            (idr) => {
+                this.oidcUrl = idr.url;
+                this.formStatus$.next(FormStatus.Oidc);
+            },
+            (_error) => {
+                // OIDC login failed show local login
+                this.userService
+                    .getSessionOrUndefinedStream()
+                    .pipe(first())
+                    .subscribe((session) => {
+                        if (!session || !session.user || session.user.isGuest) {
+                            this.formStatus$.next(FormStatus.LoggedOut);
+                        } else {
+                            this.user = session.user;
+                            this.formStatus$.next(FormStatus.LoggedIn);
+                        }
+                    });
+            },
+        );
 
         // this essentially allows checking for the sidenav-header component on status changes
         this.formStatusSubscription = this.formStatus$.subscribe(() => setTimeout(() => this.changeDetectorRef.markForCheck()));
@@ -75,6 +88,11 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.formStatusSubscription) {
             this.formStatusSubscription.unsubscribe();
         }
+    }
+
+    oidcLogin(): void {
+        this.formStatus$.next(FormStatus.Loading);
+        window.location.href = this.oidcUrl;
     }
 
     login(): void {

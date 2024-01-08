@@ -15,7 +15,7 @@ import {Time} from '../../../time/time.model';
 import {UserService} from '../../../users/user.service';
 import {extentToBboxDict} from '../../../util/conversions';
 import {RasterLayer} from '../../layer.model';
-import {RasterSymbology} from '../symbology.model';
+import {RasterSymbology, SingleBandRasterColorizer} from '../symbology.model';
 
 export enum SymbologyCreationType {
     AS_INPUT = 'AS_INPUT',
@@ -89,26 +89,13 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
         if (!this.enableCopyInputSymbology) {
             this.value.setValue(this.COMPUTE_LINEAR_GRADIENT);
         }
-        switch (this.colorMapName) {
-            case 'magma': {
-                this.colorMap = MPL_COLORMAPS.MAGMA;
-                break;
-            }
-            case 'inferno': {
-                this.colorMap = MPL_COLORMAPS.INFERNO;
-                break;
-            }
-            case 'plasma': {
-                this.colorMap = MPL_COLORMAPS.PLASMA;
-                break;
-            }
-            case 'viridis': {
-                this.colorMap = MPL_COLORMAPS.VIRIDIS;
-                break;
-            }
-            default:
-                throw new Error('Unsupported color map name ' + this.colorMapName);
+
+        if (this.colorMapName.toUpperCase() in MPL_COLORMAPS) {
+            this.colorMap = MPL_COLORMAPS[this.colorMapName.toUpperCase()];
+        } else {
+            throw new Error('Unsupported color map name ' + this.colorMapName);
         }
+
         if (this.opacity < 0 || this.opacity > 1) {
             throw new Error('The opacity needs to be in [0, 1]');
         }
@@ -119,27 +106,27 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
         this.unsubscribe$.complete();
     }
 
-    writeValue(obj: any): void {
+    writeValue(obj: SymbologyCreationType | null): void {
         if (obj === null) {
             this.value.setValue(null);
             return;
         }
 
-        if (!SymbologyCreationType.hasOwnProperty(obj)) {
+        if (!(obj in SymbologyCreationType)) {
             throw new Error('Value must be of type `SymbologyCreationType`.');
         }
 
         this.value.setValue(obj);
     }
 
-    registerOnChange(fn: any): void {
+    registerOnChange(fn: (value: SymbologyCreationType | null) => void): void {
         if (typeof fn !== 'function') {
             throw new Error('Expected a function.');
         }
         this._onChange = fn;
     }
 
-    registerOnTouched(fn: any): void {
+    registerOnTouched(fn: () => void): void {
         if (typeof fn !== 'function') {
             throw new Error('Expected a function.');
         }
@@ -178,7 +165,12 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
                 return this.computeSymbologyForRasterLayer(workflowId);
             }
             case SymbologyCreationType.LINEAR_GRADIENT_FROM_MIN_MAX: {
-                return of(new RasterSymbology(this.opacity, this.colorizerForMinMax(this.min.getRawValue(), this.max.getRawValue())));
+                return of(
+                    new RasterSymbology(
+                        this.opacity,
+                        new SingleBandRasterColorizer(0, this.colorizerForMinMax(this.min.getRawValue(), this.max.getRawValue())),
+                    ),
+                );
             }
         }
     }
@@ -270,7 +262,7 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
                     throw new Error('Sample statistics do not have valid min/max values.');
                 }
 
-                return new RasterSymbology(this.opacity, this.colorizerForMinMax(min, max));
+                return new RasterSymbology(this.opacity, new SingleBandRasterColorizer(0, this.colorizerForMinMax(min, max)));
             }),
         );
     }

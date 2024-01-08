@@ -37,7 +37,10 @@
 .cdk-drag-preview {
     box-sizing: border-box;
     border-radius: 4px;
-    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+    box-shadow:
+        0 5px 5px -3px rgba(0, 0, 0, 0.2),
+        0 8px 10px 1px rgba(0, 0, 0, 0.14),
+        0 3px 14px 2px rgba(0, 0, 0, 0.12);
 }
 
 .layer-list-element-custom-placeholder {
@@ -93,5 +96,7 @@ mat-toolbar ::ng-deep mat-toolbar-row:first-child {
 .lineThrough {
     background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' preserveAspectRatio='none' viewBox='0 0 20 20'><line x1='5%' y1='95%' x2='95%' y2='5%' style='stroke:rgba(0, 0, 0, 0.87); stroke-width: 2px;'/></svg>")
         no-repeat center center;
-    background-size: 100% 100%, auto;
+    background-size:
+        100% 100%,
+        auto;
 }

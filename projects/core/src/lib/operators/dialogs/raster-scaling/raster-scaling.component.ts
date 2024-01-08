@@ -1,6 +1,6 @@
 import {RasterLayer} from '../../../layers/layer.model';
 import {ResultTypes} from '../../result-type.model';
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
 import {FormControl, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
@@ -34,7 +34,7 @@ interface SlopeOffsetForm {
     styleUrls: ['./raster-scaling.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy {
+export class RasterScalingComponent implements AfterViewInit {
     readonly inputTypes = [ResultTypes.RASTER];
     readonly rasterDataTypes = RasterDataTypes.ALL_DATATYPES;
 
@@ -56,7 +56,10 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
     form: FormGroup<RasterScalingForm>;
     disallowSubmit: Observable<boolean>;
 
-    constructor(private readonly projectService: ProjectService, private readonly notificationService: NotificationService) {
+    constructor(
+        private readonly projectService: ProjectService,
+        private readonly notificationService: NotificationService,
+    ) {
         this.form = new FormGroup<RasterScalingForm>({
             name: new FormControl<string>('', {
                 nonNullable: true,
@@ -127,8 +130,6 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
         return {numberOrMetadataKey: true};
     };
 
-    ngOnInit(): void {}
-
     ngAfterViewInit(): void {
         setTimeout(() => {
             this.form.updateValueAndValidity();
@@ -136,8 +137,6 @@ export class RasterScalingComponent implements OnInit, AfterViewInit, OnDestroy 
             this.form.controls['scaleType'].updateValueAndValidity();
         });
     }
-
-    ngOnDestroy(): void {}
 
     formGroupToDict(fg: AbstractControl): RasterMetadataKey | {type: 'constant'; value: number} | {type: 'auto'} {
         if (fg.get('slopeOffsetSelection')?.value === 'auto') {

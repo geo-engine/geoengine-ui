@@ -102,7 +102,7 @@ export class Color implements IRgba, RgbaStruct {
      * @param rgba: the rgba like input
      * @param clone: clone if already an instance of Color. Defaults to TRUE!
      */
-    static fromRgbaLike(rgba: RgbaLike, clone: boolean = true): Color {
+    static fromRgbaLike(rgba: RgbaLike, clone = true): Color {
         if (!rgba) {
             // return some default on empty deserialization
             return BLACK;
@@ -119,7 +119,11 @@ export class Color implements IRgba, RgbaStruct {
             return new Color(Color.rgbaTupleToStruct(rgba));
         }
 
-        if ('rgbaStruct' in (rgba as IRgba)) {
+        if (typeof rgba === 'string') {
+            rgba = stringToRgbaStruct(rgba);
+        }
+
+        if (typeof rgba === 'object' && 'rgbaStruct' in (rgba as IRgba)) {
             return new Color((rgba as IRgba).rgbaStruct());
         }
 

@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, OnDestroy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnDestroy} from '@angular/core';
 import {ResultTypes} from '../../result-type.model';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
@@ -6,10 +6,8 @@ import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap} from 'rxjs/operators';
 import {Layer, VectorLayer} from '../../../layers/layer.model';
 import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
-import {VectorColumnDataType, VectorColumnDataTypes} from '../../datatype.model';
+import {VectorColumnDataType, VectorColumnDataTypes, VectorDataType, VectorDataTypes} from '../../datatype.model';
 import {UUID, WorkflowDict} from '../../../backend/backend.model';
-import {ClusteredPointSymbology, PointSymbology} from '../../../layers/symbology/symbology.model';
-import {colorToDict} from '../../../colors/color';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {ColumnRangeFilterDict, HistogramDict, HistogramParams} from '../../../backend/operator.model';
 import {VegaChartData} from '../../../plots/vega-viewer/vega-viewer.component';
@@ -18,6 +16,7 @@ import {BackendService} from '../../../backend/backend.service';
 import {UserService} from '../../../users/user.service';
 import {extentToBboxDict} from '../../../util/conversions';
 import {geoengineValidators} from '../../../util/form.validators';
+import {createVectorSymbology} from '../../../util/symbologies';
 
 interface ColumnRangeFilterForm {
     layer: FormControl<Layer | null>;
@@ -42,7 +41,7 @@ interface RangeForm {
     styleUrls: ['./column-range-filter.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
+export class ColumnRangeFilterComponent implements OnDestroy {
     readonly inputTypes = ResultTypes.VECTOR_TYPES;
 
     attributes$ = new ReplaySubject<Array<string>>(1);
@@ -52,6 +51,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
     private subscriptions: Array<Subscription> = [];
     private columnTypes = new Map<string, VectorColumnDataType | undefined>();
     private currentLayerid = -1;
+    private dataType: VectorDataType = VectorDataTypes.MultiPoint;
 
     constructor(
         private readonly projectService: ProjectService,
@@ -78,9 +78,11 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                             this.currentLayerid = layer.id;
                             return this.projectService.getVectorLayerMetadata(layer).pipe(
                                 map((metadata: VectorLayerMetadata) => {
+                                    this.dataType = metadata.dataType;
+
                                     const attribs = metadata.dataTypes
                                         .filter(
-                                            (columnType: any) =>
+                                            (columnType: VectorColumnDataType) =>
                                                 columnType === VectorColumnDataTypes.Float ||
                                                 columnType === VectorColumnDataTypes.Int ||
                                                 columnType === VectorColumnDataTypes.Text,
@@ -187,7 +189,6 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
             }
         }
     }
-    ngOnInit(): void {}
 
     ngOnDestroy(): void {
         this.subscriptions.forEach((subscription) => subscription.unsubscribe());
@@ -233,7 +234,9 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     createWorkflow(filterValues: any, index: number, inputWorkflow: WorkflowDict): WorkflowDict {
+        // TODO: create a type for filterValues
         if (index === filterValues.length) return inputWorkflow;
         const attribute = filterValues[index]['attribute'] as string;
         return {
@@ -252,9 +255,14 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
         } as WorkflowDict;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     extractRanges(formRanges: any, attribute: string): any[][] {
+        // TODO: create a type for formRanges
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const filterRanges: any[][] = [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         formRanges.forEach((range: any) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const minMax: any[] = [];
             if (this.isAttributeText(attribute)) {
                 minMax.push(range.min);
@@ -277,29 +285,9 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
             new VectorLayer({
                 workflowId,
                 name,
-                symbology: ClusteredPointSymbology.fromPointSymbologyDict({
-                    type: 'point',
-                    radius: {
-                        type: 'static',
-                        value: PointSymbology.DEFAULT_POINT_RADIUS,
-                    },
-                    stroke: {
-                        width: {
-                            type: 'static',
-                            value: 1,
-                        },
-                        color: {
-                            type: 'static',
-                            color: [0, 0, 0, 255],
-                        },
-                    },
-                    fillColor: {
-                        type: 'static',
-                        color: colorToDict(this.randomColorService.getRandomColorRgba()),
-                    },
-                }),
-                isLegendVisible: false,
                 isVisible: true,
+                isLegendVisible: false,
+                symbology: createVectorSymbology(this.dataType.getCode(), this.randomColorService.getRandomColorRgba()),
             }),
         );
     }
@@ -355,7 +343,7 @@ export class ColumnRangeFilterComponent implements OnInit, OnDestroy {
                         operator: {
                             type: 'Histogram',
                             params: {
-                                columnName: attributeName,
+                                attributeName: attributeName,
                                 bounds: 'data',
                                 buckets: {
                                     type: 'squareRootChoiceRule',

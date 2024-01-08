@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
+import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
 import {BLACK, Color} from '../../../colors/color';
 import {IconStyle} from '../../symbology/symbology.model';
 
@@ -20,7 +20,7 @@ export interface LineIconStyle extends IconStyle {
     styleUrls: ['./line-icon.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LineIconComponent implements OnInit {
+export class LineIconComponent {
     // the style to use for the icon
     @Input()
     iconStyle: LineIconStyle = {
@@ -28,8 +28,4 @@ export class LineIconComponent implements OnInit {
         // strokeDashArray: Array<number> = [];
         strokeRGBA: BLACK,
     };
-
-    constructor() {}
-
-    ngOnInit(): void {}
 }

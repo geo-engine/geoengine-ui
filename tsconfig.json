@@ -9,7 +9,7 @@
         "experimentalDecorators": true,
         "module": "ES2022",
         "moduleResolution": "node",
-        "importHelpers": true,
+        "importHelpers": false,
         "target": "ES2022",
         "lib": ["ES2022", "dom"],
         "paths": {
@@ -23,8 +23,6 @@
         "noImplicitReturns": true,
         // this is `true` for angular in general, but is maybe inconvenient for us
         "noPropertyAccessFromIndexSignature": false,
-        // TODO: `vis-data` fails to fulfill this, cf. https://github.com/visjs/vis-data/issues/985
-        "skipLibCheck": true,
         "noFallthroughCasesInSwitch": true,
         "useDefineForClassFields": false
     },

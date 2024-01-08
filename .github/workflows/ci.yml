@@ -1,29 +1,26 @@
 name: Node.js CI
 
 on:
-    push:
-        branches: [ main, trying, staging ]
     pull_request:
-        branches: [ main, trying, staging ]
+    merge_group:
 
 jobs:
     build:
 
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
 
         strategy:
             matrix:
-                node-version: [ 16.x ] # Include version 18 once upgraded to Angular 15
-                app: [ gis, dashboards/gfbio, dashboards/data-atlas, dashboards/nfdi-gdo, dashboards/ebv-analyzer ]
+                node-version: [ 18.13.x, 20.9.x ]
+                app: [ gis, dashboards/gfbio, dashboards/data-atlas, dashboards/nfdi-portal-demo, dashboards/ebv-analyzer ]
 
         steps:
-            -   uses: actions/checkout@v3
+            -   uses: actions/checkout@v4
             -   name: Use Node.js ${{ matrix.node-version }}
-                uses: actions/setup-node@v3
+                uses: actions/setup-node@v4
                 with:
                     node-version: ${{ matrix.node-version }}
-                    # cache: 'npm' # can be used only with a lockfile
-            #            -   run: npm ci    # use instead of install if we choose to commit the `package-lock.json`
+                    cache: 'npm' # can be used only with a lockfile
             -   run: npm ci
             -   name: Build core
                 run: npm run build-prod:core
@@ -35,10 +32,10 @@ jobs:
 
     codestyle:
         name: Code Format and Lints
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         steps:
             -   name: Checkout
-                uses: actions/checkout@v3
+                uses: actions/checkout@v4
             -   name: Install Dependencies
                 run: npm ci
             -   name: Code Format Check with Prettier

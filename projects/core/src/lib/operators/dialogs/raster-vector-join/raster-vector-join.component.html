@@ -2,10 +2,9 @@
 
 <form [formGroup]="form" (ngSubmit)="$event.preventDefault(); add()">
     <geoengine-operator-dialog-container>
-        <!-- TODO: add -->
-        <!-- <a mat-icon-button operatorInputIcon href="https://docs.geoengine.io/operators/rastervectorjoin.html" target="_blank">
+        <a mat-icon-button operatorInputIcon href="https://docs.geoengine.io/operators/rastervectorjoin.html" target="_blank">
             <mat-icon>help_center</mat-icon>
-        </a> -->
+        </a>
 
         <ng-container operatorInput>
             <geoengine-layer-selection [types]="allowedVectorTypes" formControlName="vectorLayer"></geoengine-layer-selection>
@@ -17,10 +16,9 @@
             ></geoengine-multi-layer-selection>
         </ng-container>
 
-        <!-- TODO: add -->
-        <!-- <a mat-icon-button operatorParametersIcon href="https://docs.geoengine.io/operators/rastervectorjoin.html" target="_blank">
+        <a mat-icon-button operatorParametersIcon href="https://docs.geoengine.io/operators/rastervectorjoin.html" target="_blank">
             <mat-icon>help_center</mat-icon>
-        </a> -->
+        </a>
 
         <ng-container operatorParameters>
             <div formArrayName="valueNames" fxLayout="column" fxLayoutAlign="start stretch">
@@ -39,6 +37,7 @@
                     <mat-radio-button value="first">Use first value</mat-radio-button>
                     <mat-radio-button value="mean">Average value</mat-radio-button>
                 </mat-radio-group>
+                <mat-checkbox formControlName="temporalAggregationIgnoreNodata">Ignore no data values</mat-checkbox>
             </section>
             <section>
                 <label>Feature Aggregation Method:</label>
@@ -46,6 +45,7 @@
                     <mat-radio-button value="first">Use first value</mat-radio-button>
                     <mat-radio-button value="mean">Average value</mat-radio-button>
                 </mat-radio-group>
+                <mat-checkbox formControlName="featureAggregationIgnoreNodata">Ignore no data values</mat-checkbox>
             </section>
         </ng-container>
 

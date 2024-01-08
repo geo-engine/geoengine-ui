@@ -4,12 +4,11 @@ import {
     UUID,
     WorkflowDict,
     SrsString,
-    DataIdDict,
-    ExternalDataIdDict,
     RasterResultDescriptorDict,
     VectorResultDescriptorDict,
     SourceOperatorDict,
     BBoxDict,
+    RasterBandDescriptorDict,
 } from '../backend/backend.model';
 import {Measurement} from '../layers/measurement';
 import {Symbology} from '../layers/symbology/symbology.model';
@@ -26,6 +25,7 @@ import {Time} from '../time/time.model';
 export class Dataset {
     readonly id: UUID;
     readonly name: string;
+    readonly displayName: string;
     readonly description: string;
     readonly resultDescriptor: ResultDescriptor;
     readonly sourceOperator: string;
@@ -34,6 +34,7 @@ export class Dataset {
     constructor(config: DatasetDict) {
         this.id = config.id;
         this.name = config.name;
+        this.displayName = config.displayName;
         this.description = config.description;
         this.resultDescriptor = ResultDescriptor.fromDict(config.resultDescriptor);
         this.sourceOperator = config.sourceOperator;
@@ -48,10 +49,7 @@ export class Dataset {
         return this.createSourceWorkflowWithOperator({
             type: this.sourceOperator,
             params: {
-                data: {
-                    type: 'internal',
-                    datasetId: this.id,
-                },
+                data: this.name,
             },
         });
     }
@@ -60,61 +58,6 @@ export class Dataset {
         return {
             type: this.resultDescriptor.getTypeString(),
             operator,
-        };
-    }
-}
-
-export abstract class DatasetId {
-    static fromDict(dict: DataIdDict): DatasetId {
-        if (dict.type === 'internal') {
-            return InternalDatasetId.fromDict(dict.datasetId);
-        } else if (dict.type === 'external') {
-            return ExternalDataId.fromDict(dict);
-        }
-
-        throw Error('Unknown DatasetId type');
-    }
-
-    abstract toDict(): DataIdDict;
-}
-
-export class InternalDatasetId {
-    id: UUID;
-
-    constructor(id: UUID) {
-        this.id = id;
-    }
-
-    static fromDict(config: UUID): InternalDatasetId {
-        return new InternalDatasetId(config);
-    }
-
-    toDict(): DataIdDict {
-        return {
-            type: 'internal',
-            datasetId: this.id,
-        };
-    }
-}
-
-export class ExternalDataId {
-    providerId: UUID;
-    layerId: string;
-
-    constructor(config: ExternalDataIdDict) {
-        this.providerId = config.providerId;
-        this.layerId = config.layerId;
-    }
-
-    static fromDict(config: ExternalDataIdDict): ExternalDataId {
-        return new ExternalDataId(config);
-    }
-
-    toDict(): DataIdDict {
-        return {
-            type: 'external',
-            providerId: this.providerId,
-            layerId: this.layerId,
         };
     }
 }
@@ -141,12 +84,14 @@ export abstract class ResultDescriptor {
 
 export class RasterResultDescriptor extends ResultDescriptor {
     readonly dataType: RasterDataType;
+    readonly bands: Array<RasterBandDescriptor>;
     readonly bbox?: BBoxDict;
     readonly time?: Time;
 
     constructor(config: RasterResultDescriptorDict) {
         super(config.spatialReference);
         this.dataType = RasterDataTypes.fromCode(config.dataType);
+        this.bands = config.bands.map((band) => RasterBandDescriptor.fromDict(band));
         if (config.bbox) {
             this.bbox = {
                 lowerLeftCoordinate: {
@@ -168,6 +113,20 @@ export class RasterResultDescriptor extends ResultDescriptor {
 
     getTypeString(): 'Vector' | 'Raster' {
         return 'Raster';
+    }
+}
+
+export class RasterBandDescriptor {
+    readonly name: string;
+    readonly measurement: Measurement;
+
+    constructor(name: string, measurement: Measurement) {
+        this.name = name;
+        this.measurement = measurement;
+    }
+
+    static fromDict(dict: RasterBandDescriptorDict): RasterBandDescriptor {
+        return new RasterBandDescriptor(dict.name, Measurement.fromDict(dict.measurement));
     }
 }
 

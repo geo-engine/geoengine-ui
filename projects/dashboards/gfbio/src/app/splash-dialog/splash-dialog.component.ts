@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 
 @Component({
     selector: 'geoengine-gfbio-splash-dialog',
@@ -6,12 +6,8 @@ import {Component, ChangeDetectionStrategy, OnInit} from '@angular/core';
     styleUrls: ['./splash-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SplashDialogComponent implements OnInit {
+export class SplashDialogComponent {
     static SPLASH_DIALOG_NAME = 'showStartupSplashScreen';
-
-    constructor() {}
-
-    ngOnInit(): void {}
 
     get splashName(): string {
         return SplashDialogComponent.SPLASH_DIALOG_NAME;
