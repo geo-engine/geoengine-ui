@@ -23,7 +23,13 @@ import {RasterSymbology, VectorSymbology} from '../layers/symbology/symbology.mo
 import {RandomColorService} from '../util/services/random-color.service';
 import {subscribeAndProvide} from '../util/conversions';
 import {createVectorSymbology} from '../util/symbologies';
-import {AutocompleteHandlerRequest, LayerCollection, LayersApi, SearchCapabilities, SearchHandlerRequest} from '@geoengine/openapi-client';
+import {
+    AutocompleteHandlerRequest,
+    LayerCollection,
+    LayersApi,
+    ProviderCapabilities,
+    SearchHandlerRequest,
+} from '@geoengine/openapi-client';
 
 @Injectable({
     providedIn: 'root',
@@ -99,12 +105,12 @@ export class LayerCollectionService {
     }
 
     /**
-     * Fetches the search capabilities of a layer provider.
+     * Fetches the capabilities of a layer provider.
      */
-    async searchCapabilities(providerId: UUID, options?: {abortController?: AbortController}): Promise<SearchCapabilities> {
+    async capabilities(providerId: UUID, options?: {abortController?: AbortController}): Promise<ProviderCapabilities> {
         const layersApi = await firstValueFrom(this.layersApi);
 
-        return await layersApi.searchCapabilitiesHandler(
+        return await layersApi.providerCapabilitiesHandler(
             {provider: providerId},
             {
                 signal: options?.abortController?.signal,

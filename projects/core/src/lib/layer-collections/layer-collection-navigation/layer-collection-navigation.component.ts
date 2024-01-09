@@ -277,7 +277,7 @@ class Search {
             return; // same provider, no need to re-query
         }
 
-        this.searchCapabilities = await this.layerCollectionService.searchCapabilities(providerId);
+        this.searchCapabilities = (await this.layerCollectionService.capabilities(providerId)).search;
         this.searchCapabilitiesProviderId = providerId;
 
         // set some default settings
