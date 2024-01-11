@@ -73,8 +73,8 @@ export class UserService {
                         },
                         error: (error) => {
                             // only show error if we did not expect it
-                            if (error && error.error.error !== 'Unauthorized') {
-                                this.notificationService.error(error.error.message);
+                            if (error?.error?.error !== 'Unauthorized') {
+                                this.notificationService.error(error?.error?.message);
                             }
                             this.session$.next(undefined);
                         },
