@@ -1,12 +1,11 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, Input, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {Layer} from '../../../../layers/layer.model';
-import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../../../../layers/layer-metadata.model';
+import {LayerMetadata} from '../../../../layers/layer-metadata.model';
 import {BehaviorSubject, forkJoin, Observable, of, ReplaySubject, Subject, Subscription, zip} from 'rxjs';
 import {ResultType, ResultTypes} from '../../../result-type.model';
 import {ProjectService} from '../../../../project/project.service';
 import {first, map, mergeMap} from 'rxjs/operators';
-import {LayerCollectionService} from '../../../../layer-collections/layer-collection.service';
 
 /**
  * This component allows selecting one layer.
@@ -42,13 +41,12 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
     selectedLayer = new BehaviorSubject<Layer | undefined>(undefined);
 
     expanded = false;
-    metadata?: RasterLayerMetadata | VectorLayerMetadata;
+    metadata?: LayerMetadata;
 
     private subscriptions: Array<Subscription> = [];
 
     constructor(
         private readonly projectService: ProjectService,
-        private readonly layerService: LayerCollectionService,
         private readonly changeDetectorRef: ChangeDetectorRef,
     ) {
         this.subscriptions.push(
@@ -153,7 +151,7 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
         if (this.selectedLayer.value) {
             this.expanded = !this.expanded;
             if (!this.metadata) {
-                this.layerService.getWorkflowIdMetadata(this.selectedLayer.value.workflowId).subscribe((resultDescriptor) => {
+                this.projectService.getLayerMetadata(this.selectedLayer.value).subscribe((resultDescriptor) => {
                     this.metadata = resultDescriptor;
                     this.changeDetectorRef.markForCheck();
                 });

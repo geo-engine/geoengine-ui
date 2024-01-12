@@ -13,10 +13,9 @@ import {
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {Layer} from '../../../../layers/layer.model';
-import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../../../../layers/layer-metadata.model';
+import {LayerMetadata} from '../../../../layers/layer-metadata.model';
 import {ResultType, ResultTypes} from '../../../result-type.model';
 import {ProjectService} from '../../../../project/project.service';
-import {LayerCollectionService} from '../../../../layer-collections/layer-collection.service';
 
 /**
  * Singleton for a letter to number converter for ids.
@@ -53,7 +52,7 @@ export const LetterNumberConverter = {
 export interface LayerDetails {
     expanded: boolean;
     description?: string;
-    metadata?: RasterLayerMetadata | VectorLayerMetadata;
+    metadata?: LayerMetadata;
 }
 
 @Component({
@@ -106,7 +105,6 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
 
     constructor(
         private projectService: ProjectService,
-        private layerService: LayerCollectionService,
         private changeDetectorRef: ChangeDetectorRef,
     ) {
         this.selectionSubscription = this.selectedLayers.subscribe((selectedLayers) => {
@@ -277,7 +275,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
         if (layer) {
             details.expanded = !details.expanded;
             if (!details.metadata) {
-                this.layerService.getWorkflowIdMetadata(layer.workflowId).subscribe((resultDescriptor) => {
+                this.projectService.getLayerMetadata(layer).subscribe((resultDescriptor) => {
                     details.metadata = resultDescriptor;
                     this.changeDetectorRef.markForCheck();
                 });

@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
-import {RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metadata.model';
+import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metadata.model';
 import {VectorDataTypes} from '../../operators/datatype.model';
 import {LayerCollectionService} from '../layer-collection.service';
 import {Colorizer} from '../../colors/colorizer.model';
@@ -12,7 +12,7 @@ import {Colorizer} from '../../colors/colorizer.model';
 })
 export class LayerCollectionLayerDetailsComponent {
     @Input() description: string | undefined;
-    @Input() layerMetadata: RasterLayerMetadata | VectorLayerMetadata | undefined = undefined;
+    @Input() layerMetadata: LayerMetadata | undefined = undefined;
 
     readonly VectorDataTypes = VectorDataTypes;
 
