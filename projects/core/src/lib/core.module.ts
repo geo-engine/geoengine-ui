@@ -151,6 +151,7 @@ import {SymbologyCreatorComponent} from './layers/symbology/symbology-creator/sy
 import {OperatorDialogContainerComponent} from './operators/dialogs/helpers/operator-dialog-container/operator-dialog-container.component';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
 import {LayerCollectionLayerComponent} from './layer-collections/layer-collection-layer/layer-collection-layer.component';
+import {LayerCollectionLayerDetailsComponent} from './layer-collections/layer-collection-layer-details/layer-collection-layer-details.component';
 import {TimeShiftComponent} from './operators/dialogs/time-shift/time-shift.component';
 import {PieChartComponent} from './operators/dialogs/pie-chart/pie-chart.component';
 import {RasterizationComponent} from './operators/dialogs/rasterization/rasterization.component';
@@ -252,6 +253,7 @@ const CORE_COMPONENTS = [
     InterpolationComponent,
     LayerCollectionDropdownComponent,
     LayerCollectionLayerComponent,
+    LayerCollectionLayerDetailsComponent,
     LayerCollectionListComponent,
     LayerCollectionNavigationComponent,
     LayerListComponent,

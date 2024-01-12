@@ -44,6 +44,7 @@ export * from './lib/dialogs/dialog-splash-checkbox/dialog-splash-checkbox.compo
 export * from './lib/download-raster-layer/download-raster-layer.component';
 export * from './lib/layer-collections/layer-collection-dropdown/layer-collection-dropdown.component';
 export * from './lib/layer-collections/layer-collection-layer/layer-collection-layer.component';
+export * from './lib/layer-collections/layer-collection-layer-details/layer-collection-layer-details.component';
 export * from './lib/layer-collections/layer-collection-list/layer-collection-list.component';
 export * from './lib/layer-collections/layer-collection-navigation/layer-collection-navigation.component';
 export * from './lib/layers/layer-icons/line-icon/line-icon.component';

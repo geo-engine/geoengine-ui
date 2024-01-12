@@ -1,0 +1,77 @@
+<span class="details-content" fxLayout="column" fxLayoutAlign="center start">
+    <span *ngIf="description" class="details-row" fxLayout="row" fxLayoutAlign="start center">
+        <mat-icon class="details-row-icon">info</mat-icon>
+        <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
+            <p class="details-row-text-line">Description</p>
+            <p class="details-row-text-multi-line">{{ description }}</p>
+        </span>
+    </span>
+
+    <ng-template [ngIf]="layerMetadata">
+        <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
+            <mat-icon class="details-row-icon">language</mat-icon>
+            <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
+                <p class="details-row-text-line">SRS</p>
+                <p class="details-row-text-line">{{ layerMetadata.spatialReference.srsString }}</p>
+            </span>
+        </span>
+        <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
+            <mat-icon class="details-row-icon">fullscreen</mat-icon>
+            <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
+                <p class="details-row-text-line">Spatial bounds</p>
+                <ng-template [ngIf]="bboxLowerLeftString">
+                    <p class="details-row-text-line">{{ bboxLowerLeftString }}</p>
+                    <p class="details-row-text-line">{{ bboxUpperRightString }}</p>
+                </ng-template>
+                <ng-template [ngIf]="!bboxLowerLeftString">
+                    <p class="details-row-text-line">undefined</p>
+                </ng-template>
+            </span>
+        </span>
+        <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
+            <mat-icon class="details-row-icon">date_range</mat-icon>
+            <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
+                <p class="details-row-text-line">Temporal bounds</p>
+                <p class="details-row-text-line">{{ timeString }}</p>
+            </span>
+        </span>
+    </ng-template>
+
+    <ng-template [ngIf]="rasterLayerMetadata">
+        <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
+            <mat-icon class="details-row-icon"
+                ><geoengine-raster-icon [xCells]="4" [yCells]="4" [colorizer]="rasterColorizer"></geoengine-raster-icon
+            ></mat-icon>
+            <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
+                <p class="details-row-text-line">Raster type</p>
+                <p class="details-row-text-line">{{ rasterLayerMetadata.dataType.toString() }}</p>
+            </span>
+        </span>
+        <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
+            <mat-icon class="details-row-icon">reorder</mat-icon>
+            <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
+                <p class="details-row-text-line">Number of bands</p>
+                <p class="details-row-text-line">{{ rasterLayerMetadata.bands.length }}</p>
+            </span>
+        </span>
+    </ng-template>
+    <ng-template [ngIf]="vectorLayerMetadata">
+        <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
+            <ng-container [ngSwitch]="vectorLayerMetadata.dataType">
+                <mat-icon *ngSwitchCase="VectorDataTypes.MultiPoint" class="details-row-icon"
+                    ><geoengine-point-icon></geoengine-point-icon
+                ></mat-icon>
+                <mat-icon *ngSwitchCase="VectorDataTypes.MultiLineString" class="details-row-icon"
+                    ><geoengine-line-icon></geoengine-line-icon
+                ></mat-icon>
+                <mat-icon *ngSwitchCase="VectorDataTypes.MultiPolygon" class="details-row-icon"
+                    ><geoengine-polygon-icon></geoengine-polygon-icon
+                ></mat-icon>
+            </ng-container>
+            <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
+                <p class="details-row-text-line">Vector type</p>
+                <p class="details-row-text-line">{{ vectorLayerMetadata.dataType.toString() }}</p>
+            </span>
+        </span>
+    </ng-template>
+</span>
