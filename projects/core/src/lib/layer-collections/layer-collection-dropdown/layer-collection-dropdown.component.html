@@ -1,37 +1,37 @@
-<div *ngIf="layersAvailable()">
-    <ng-container *ngFor="let collection of collections; index as i">
+@if (layersAvailable) {
+    @for (collection of collectionsAndSelected | async; track collection) {
         <mat-form-field>
-            <mat-label>{{ collection.entryLabel ?? 'Entries' }}</mat-label>
-            <mat-select (valueChange)="selectItem($event, i)" [(value)]="selections[i]">
+            <mat-label>{{ collection.collection.entryLabel ?? 'Entries' }}</mat-label>
+            <mat-select (valueChange)="selectItem($event, $index)" [value]="collection.selected">
                 <mat-option>
                     <ngx-mat-select-search
                         [formControl]="geoengineAutocompleteSelect.filterFormControl"
                         geoengineAutocompleteSelect
-                        [geoengineAutocompleteSelectAllValues]="collection.items"
+                        [geoengineAutocompleteSelectAllValues]="collection.collection.items"
                         [geoengineAutocompleteSelectSearchPredicate]="searchPredicate"
                         #geoengineAutocompleteSelect="geoengineAutocompleteSelect"
                         ngDefaultControl
                     ></ngx-mat-select-search>
                 </mat-option>
-                <mat-option *ngFor="let item of geoengineAutocompleteSelect.filteredValues | async" [value]="item">{{
-                    item.name
-                }}</mat-option>
+                @for (item of geoengineAutocompleteSelect.filteredValues | async; track item) {
+                    <mat-option [value]="item">{{ item.name }}</mat-option>
+                }
             </mat-select>
         </mat-form-field>
 
-        <div *ngIf="collections[i + 1] as selected">
-            <div *ngFor="let prop of selected.properties">
+        @if (collection.selected) {
+            @for (property of collection.selected.properties; track property) {
                 <p>
-                    <em
-                        ><span class="label">{{ prop[0] }}</span> {{ prop[1] }}</em
-                    >
+                    <em>
+                        <span class="label">{{ property[0] }}</span> {{ property[1] }}
+                    </em>
                 </p>
-            </div>
-            <div *ngIf="selected.description.length > 0">
-                <p class="mat-caption label justify">{{ selected.description }}</p>
-            </div>
-        </div>
-    </ng-container>
-</div>
-
-<p *ngIf="!layersAvailable()" class="empty"><em>no layers available</em></p>
+            }
+            @if (collection.selected.description.length) {
+                <p class="mat-caption label justify">{{ collection.selected.description }}</p>
+            }
+        }
+    }
+} @else {
+    <p class="empty"><em>no layers available</em></p>
+}
