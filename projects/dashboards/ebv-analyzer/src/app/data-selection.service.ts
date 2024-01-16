@@ -85,7 +85,7 @@ export class DataSelectionService {
             tap(() => {
                 this._rasterLayer.next(layer);
                 this.timeSteps.next(timeSteps);
-                this.timeFormat.next(this.estimateTimeFormat(timeSteps));
+                this.timeFormat.next(estimateTimeFormat(timeSteps));
                 this.projectService.setTime(timeSteps[0]);
                 this.dataRange.next(dataRange);
             }),
@@ -120,33 +120,33 @@ export class DataSelectionService {
             tap(() => this._polygonLayer.next(layer)),
         );
     }
+}
 
-    /**
-     * Checks if the `timeSteps` contain information about months or days.
-     * For instance, for the steps 2019-01-01, 2019-02-01, 2019-03-01, the format would be 'YYYY-MM'.
-     */
-    protected estimateTimeFormat(timeSteps: Array<Time>): string {
-        let useMonth = false;
-        let useDay = false;
-        for (const timeStep of timeSteps) {
-            // in range [1, 31]
-            if (timeStep.start.date() > 1) {
-                useDay = useMonth = true;
-                break;
-            }
-            // in range [0, 11]
-            if (timeStep.start.month() > 0) {
-                useMonth = true;
-                // we cannot break, it could still be that we need to use days
-            }
+/**
+ * Checks if the `timeSteps` contain information about months or days.
+ * For instance, for the steps 2019-01-01, 2019-02-01, 2019-03-01, the format would be 'YYYY-MM'.
+ */
+export function estimateTimeFormat(timeSteps: Array<Time>): string {
+    let useMonth = false;
+    let useDay = false;
+    for (const timeStep of timeSteps) {
+        // in range [1, 31]
+        if (timeStep.start.date() > 1) {
+            useDay = useMonth = true;
+            break;
         }
+        // in range [0, 11]
+        if (timeStep.start.month() > 0) {
+            useMonth = true;
+            // we cannot break, it could still be that we need to use days
+        }
+    }
 
-        if (useDay) {
-            return 'YYYY-MM-DD';
-        } else if (useMonth) {
-            return 'YYYY-MM';
-        } else {
-            return 'YYYY'; // default: yearly
-        }
+    if (useDay) {
+        return 'YYYY-MM-DD';
+    } else if (useMonth) {
+        return 'YYYY-MM';
+    } else {
+        return 'YYYY'; // default: yearly
     }
 }
