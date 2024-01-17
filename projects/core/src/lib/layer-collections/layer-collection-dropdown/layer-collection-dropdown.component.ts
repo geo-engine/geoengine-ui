@@ -1,4 +1,15 @@
-import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, Input, EventEmitter, Output} from '@angular/core';
+import {
+    Component,
+    OnInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Input,
+    EventEmitter,
+    Output,
+    OnChanges,
+    OnDestroy,
+    SimpleChanges,
+} from '@angular/core';
 import {
     LayerCollectionDict,
     LayerCollectionListingDict,
@@ -7,6 +18,15 @@ import {
     ProviderLayerIdDict,
 } from '../../backend/backend.model';
 import {LayerCollectionService} from '../layer-collection.service';
+import {BehaviorSubject, Observable, Subject, firstValueFrom, map, takeUntil} from 'rxjs';
+
+interface CollectionAndSelected {
+    collection: LayerCollectionDict;
+    selected?: LayerCollectionItemDict;
+}
+
+// TODO: use pagination
+const FETCH_SIZE = 9999;
 
 @Component({
     selector: 'geoengine-layer-collection-dropdown',
@@ -14,85 +34,119 @@ import {LayerCollectionService} from '../layer-collection.service';
     styleUrls: ['./layer-collection-dropdown.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LayerCollectionDropdownComponent implements OnInit {
+export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDestroy {
     @Input() root?: ProviderLayerCollectionIdDict = undefined;
     @Input() preselectedPath: Array<string | number> = []; // preselect entries in hierarchy either by name or index
 
     @Output() layerSelected = new EventEmitter<ProviderLayerIdDict>();
+    @Output() pathChange = new EventEmitter<Array<LayerCollectionDict>>();
 
-    readonly collections: Array<LayerCollectionDict> = [];
-
+    readonly collections = new BehaviorSubject<Array<LayerCollectionDict>>([]);
     selections: Array<LayerCollectionItemDict> = [];
+
+    readonly collectionsAndSelected: Observable<Array<CollectionAndSelected>>;
+
+    private onDestroy$: Subject<boolean> = new Subject();
 
     constructor(
         protected readonly layerCollectionService: LayerCollectionService,
         private readonly changeDetectorRef: ChangeDetectorRef,
-    ) {}
+    ) {
+        this.collections.pipe(takeUntil(this.onDestroy$)).subscribe((collections) => {
+            this.pathChange.emit(collections);
+        });
 
-    ngOnInit(): void {
-        if (this.root) {
-            this.layerCollectionService
-                .getLayerCollectionItems(this.root.providerId, this.root.collectionId, 0, 9999)
-                .subscribe((collection) => {
-                    this.collections.push(collection);
+        this.collectionsAndSelected = this.collections.pipe(
+            map((collections) => {
+                const result: Array<CollectionAndSelected> = [];
 
-                    this.preselect(this.preselectedPath);
+                for (let i = 0; i < collections.length; ++i) {
+                    const collection = collections[i];
+                    const selected = this.selections[i];
 
-                    this.changeDetectorRef.markForCheck();
-                });
-        } else {
-            this.layerCollectionService.getRootLayerCollectionItems(0, 9999).subscribe((collection) => {
-                this.collections.push(collection);
-
-                this.preselect(this.preselectedPath);
-
-                this.changeDetectorRef.markForCheck();
-            });
-        }
-    }
-
-    layersAvailable(): boolean {
-        return this.collections.length > 0 && this.collections[0].items.length > 0;
-    }
-
-    preselect(path: Array<string | number>): void {
-        const selection = path.shift();
-
-        const currentCollection = this.collections[this.collections.length - 1];
-
-        let found: LayerCollectionItemDict | undefined;
-        if (typeof selection === 'string') {
-            found = currentCollection.items.find((entry) => entry.name === selection);
-        } else if (typeof selection === 'number') {
-            found = currentCollection.items[selection];
-        }
-
-        if (!found) {
-            return;
-        }
-
-        const item = found as LayerCollectionItemDict;
-        this.selections.push(item);
-
-        if (found.type === 'layer') {
-            this.layerSelected.emit(found.id as ProviderLayerIdDict);
-            this.changeDetectorRef.markForCheck();
-            return;
-        }
-
-        const collection = found as LayerCollectionListingDict;
-
-        this.layerCollectionService
-            .getLayerCollectionItems(collection.id.providerId, collection.id.collectionId, 0, 9999)
-            .subscribe((c) => {
-                this.collections.push(c);
-
-                if (path.length > 0) {
-                    this.preselect(path);
-                } else {
-                    this.changeDetectorRef.markForCheck();
+                    result.push({collection, selected});
                 }
-            });
+
+                return result;
+            }),
+        );
+    }
+
+    async ngOnInit(): Promise<void> {
+        await this.setupRoot();
+        await this.preselect(this.preselectedPath);
+    }
+
+    async ngOnChanges(changes: SimpleChanges): Promise<void> {
+        if (changes.root && changes.root.currentValue !== changes.root.previousValue) {
+            await this.setupRoot();
+            await this.preselect(this.preselectedPath);
+        }
+
+        if (
+            changes.preselectedPath &&
+            this.collections.value.length // we need to wait for the root collection to be loaded
+        ) {
+            await this.preselect(this.preselectedPath);
+        }
+    }
+
+    ngOnDestroy(): void {
+        this.onDestroy$.next(true);
+        this.onDestroy$.complete();
+    }
+
+    get layersAvailable(): boolean {
+        return this.collections.value.length > 0 && this.collections.value[0].items.length > 0;
+    }
+
+    /** Select a path, starting from the root */
+    async preselect(path: Array<string | number>): Promise<void> {
+        const newCollections = [this.collections.value[0]]; // root collection
+        const newSelections = [];
+        for (let i = 0; i < path.length; ++i) {
+            const selection = path[i];
+            const previousCollection = newCollections[i];
+            const currentCollection: LayerCollectionDict | undefined = this.collections.value[i + 1];
+
+            if (typeof selection === 'string' && currentCollection?.name === selection) {
+                newCollections.push(currentCollection);
+                newSelections.push(this.selections[i]);
+                continue; // already selected
+            }
+
+            let found: LayerCollectionItemDict | undefined;
+            if (typeof selection === 'string') {
+                found = previousCollection.items.find((entry) => entry.name === selection);
+            } else if (typeof selection === 'number') {
+                found = previousCollection.items[selection];
+            }
+
+            if (!found) {
+                break; // we cannot continue selecting the next item
+            }
+
+            newSelections.push(found as LayerCollectionItemDict);
+
+            if (found.type === 'layer') {
+                this.layerSelected.emit(found.id as ProviderLayerIdDict);
+
+                break;
+            }
+
+            const collection = found as LayerCollectionListingDict;
+
+            const collectionItems = await firstValueFrom(
+                this.layerCollectionService.getLayerCollectionItems(collection.id.providerId, collection.id.collectionId, 0, FETCH_SIZE),
+            );
+
+            newCollections.push(collectionItems);
+        }
+
+        this.selections = newSelections;
+        this.collections.next(newCollections);
+
+        this.changeDetectorRef.markForCheck();
     }
 
     selectItem(item: LayerCollectionItemDict, index: number): void {
@@ -106,10 +160,17 @@ export class LayerCollectionDropdownComponent implements OnInit {
         this.layerSelected.emit(undefined);
 
         this.layerCollectionService
-            .getLayerCollectionItems(collection.id.providerId, collection.id.collectionId, 0, 9999)
+            .getLayerCollectionItems(collection.id.providerId, collection.id.collectionId, 0, FETCH_SIZE)
             .subscribe((c) => {
-                this.collections.splice(index + 1);
-                this.collections.push(c);
+                const selections = this.selections;
+                selections.splice(index);
+                selections.push(item);
+                this.selections = selections;
+
+                const collections = this.collections.value;
+                collections.splice(index + 1);
+                collections.push(c);
+                this.collections.next(collections);
 
                 this.changeDetectorRef.markForCheck();
             });
@@ -117,5 +178,14 @@ export class LayerCollectionDropdownComponent implements OnInit {
 
     searchPredicate(filter: string, element: LayerCollectionItemDict): boolean {
         return element.name.toLowerCase().includes(filter);
+    }
+
+    protected async setupRoot(): Promise<void> {
+        const collection$ = this.root
+            ? this.layerCollectionService.getLayerCollectionItems(this.root.providerId, this.root.collectionId, 0, FETCH_SIZE)
+            : this.layerCollectionService.getRootLayerCollectionItems(0, FETCH_SIZE);
+        const collection = await firstValueFrom(collection$);
+
+        this.collections.next([collection]);
     }
 }
