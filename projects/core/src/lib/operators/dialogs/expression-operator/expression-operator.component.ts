@@ -13,7 +13,8 @@ import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-laye
 import {ExpressionDict} from '../../../backend/operator.model';
 import {LayoutService, SidenavConfig} from '../../../layout.service';
 import {SymbologyCreationType, SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
-import {RasterSymbology} from '../../../layers/symbology/symbology.model';
+import {RasterSymbology, SingleBandRasterColorizer} from '../../../layers/symbology/symbology.model';
+import {GeoEngineError} from '../../../util/errors';
 
 interface ExpressionForm {
     rasterLayer: FormControl<RasterLayer | undefined>;
@@ -216,17 +217,22 @@ export class ExpressionOperatorComponent implements AfterViewInit {
                     const symbology$: Observable<RasterSymbology> = this.symbologyCreator.symbologyForRasterLayer(workflowId, rasterLayer);
                     return combineLatest([of(workflowId), symbology$]);
                 }),
-                mergeMap(([workflowId, symbology]: [UUID, RasterSymbology]) =>
-                    this.projectService.addLayer(
-                        new RasterLayer({
-                            workflowId,
-                            name,
-                            symbology,
-                            isLegendVisible: false,
-                            isVisible: true,
-                        }),
-                    ),
-                ),
+                mergeMap(([workflowId, symbology]: [UUID, RasterSymbology]) => {
+                    if (symbology.rasterColorizer instanceof SingleBandRasterColorizer) {
+                        const outSymbology = new RasterSymbology(symbology.opacity, symbology.rasterColorizer.replaceBand(0));
+                        return this.projectService.addLayer(
+                            new RasterLayer({
+                                workflowId,
+                                name,
+                                symbology: outSymbology,
+                                isLegendVisible: false,
+                                isVisible: true,
+                            }),
+                        );
+                    } else {
+                        throw new GeoEngineError('SymbologyError', 'The input Symbology must be a single band colorizer.');
+                    }
+                }),
             )
             .subscribe({
                 next: () => {

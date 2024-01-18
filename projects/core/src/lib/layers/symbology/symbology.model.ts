@@ -717,6 +717,10 @@ export class SingleBandRasterColorizer extends RasterColorizer {
     override getColorAtIndex(index: number): Color {
         return this.bandColorizer.getColorAtIndex(index);
     }
+
+    replaceBand(band: number): SingleBandRasterColorizer {
+        return new SingleBandRasterColorizer(band, this.bandColorizer.clone());
+    }
 }
 
 export abstract class ColorParam {
