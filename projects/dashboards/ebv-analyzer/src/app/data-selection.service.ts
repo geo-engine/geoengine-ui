@@ -123,7 +123,7 @@ export class DataSelectionService {
 }
 
 // we use this non-breaking hyphen to avoid line breaks in the time format
-const NON_BREAKING_HYPHEN: string = '‑';
+export const NON_BREAKING_HYPHEN: string = '‑';
 
 /**
  * Checks if the `timeSteps` contain information about months or days.
