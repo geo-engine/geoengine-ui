@@ -113,7 +113,7 @@ $gfbio-green: (
 );
 
 // Define App Theme
-$geoengine-primary: mat.define-palette($gfbio-lightblue);
+$geoengine-primary: mat.define-palette($gfbio-darkblue);
 $geoengine-accent: mat.define-palette($gfbio-green, A200, A100, A400);
 $geoengine-warn: mat.define-palette(mat.$red-palette);
 
