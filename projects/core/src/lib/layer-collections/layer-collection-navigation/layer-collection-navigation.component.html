@@ -32,7 +32,8 @@
     <mat-menu #searchSettingsMenu="matMenu">
         <mat-form-field class="menu-form">
             <mat-label>Search type</mat-label>
-            <mat-select [(value)]="search.searchSettings.searchType">
+            <!-- Stopping the click event propagation hinders the menu to disappear once the select was clicked. -->
+            <mat-select [(value)]="search.searchSettings.searchType" (click)="$event.stopPropagation()">
                 @if (search.searchCapabilities.searchTypes.fulltext) {
                     <mat-option value="fulltext">Fulltext</mat-option>
                 }
