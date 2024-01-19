@@ -122,6 +122,9 @@ export class DataSelectionService {
     }
 }
 
+// we use this non-breaking hyphen to avoid line breaks in the time format
+const NON_BREAKING_HYPHEN: string = '‑';
+
 /**
  * Checks if the `timeSteps` contain information about months or days.
  * For instance, for the steps 2019-01-01, 2019-02-01, 2019-03-01, the format would be 'YYYY-MM'.
@@ -143,9 +146,9 @@ export function estimateTimeFormat(timeSteps: Array<Time>): string {
     }
 
     if (useDay) {
-        return 'YYYY-MM-DD';
+        return `YYYY${NON_BREAKING_HYPHEN}MM${NON_BREAKING_HYPHEN}DD`;
     } else if (useMonth) {
-        return 'YYYY-MM';
+        return `YYYY${NON_BREAKING_HYPHEN}MM`;
     } else {
         return 'YYYY'; // default: yearly
     }
