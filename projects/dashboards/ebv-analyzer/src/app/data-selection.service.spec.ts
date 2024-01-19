@@ -1,5 +1,5 @@
 import moment from 'moment';
-import {estimateTimeFormat} from './data-selection.service';
+import {NON_BREAKING_HYPHEN, estimateTimeFormat} from './data-selection.service';
 import {Time} from '@geoengine/core';
 
 describe('DataSelectionService', () => {
@@ -18,13 +18,13 @@ describe('DataSelectionService', () => {
                 new Time(moment.utc('2001-01-01T00:00:00Z')),
                 new Time(moment.utc('2002-02-01T00:00:00Z')),
             ]),
-        ).toEqual('YYYY-MM');
+        ).toEqual('YYYY-MM'.replaceAll('-', NON_BREAKING_HYPHEN));
         expect(
             estimateTimeFormat([
                 new Time(moment.utc('2000-01-01T00:00:00Z')),
                 new Time(moment.utc('2000-01-02T00:00:00Z')),
                 new Time(moment.utc('2000-01-03T00:00:00Z')),
             ]),
-        ).toEqual('YYYY-MM-DD');
+        ).toEqual('YYYY-MM-DD'.replaceAll('-', NON_BREAKING_HYPHEN));
     });
 });

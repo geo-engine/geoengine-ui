@@ -24,6 +24,7 @@ import {CountrySelectorComponent} from './country-selector/country-selector.comp
 import {EbvSelectorComponent} from './ebv-selector/ebv-selector.component';
 import {DataSelectionService} from './data-selection.service';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
+import {LayoutModule} from '@angular/cdk/layout';
 
 @NgModule({
     declarations: [AppComponent, AttributionsComponent, LegendComponent, CountrySelectorComponent, EbvSelectorComponent],
@@ -35,6 +36,7 @@ import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
         CoreModule,
         PortalModule,
         NgxMatSelectSearchModule,
+        LayoutModule,
     ],
     providers: [
         {provide: Config, useClass: AppConfig},

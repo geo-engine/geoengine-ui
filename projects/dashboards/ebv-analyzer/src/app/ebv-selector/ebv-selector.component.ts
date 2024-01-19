@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {
     Config,
@@ -24,9 +24,9 @@ import {
     RasterResultDescriptorDict,
     LayerCollectionDict,
 } from '@geoengine/core';
-import {BehaviorSubject, combineLatest, firstValueFrom, from, Observable, of} from 'rxjs';
+import {BehaviorSubject, combineLatest, firstValueFrom, from, Observable, of, Subscription} from 'rxjs';
 import {AppConfig} from '../app-config.service';
-import {filter, first, map, mergeMap} from 'rxjs/operators';
+import {filter, map, mergeMap} from 'rxjs/operators';
 import {CountryProviderService} from '../country-provider.service';
 import {DataSelectionService, DataRange} from '../data-selection.service';
 import {ActivatedRoute} from '@angular/router';
@@ -38,7 +38,7 @@ import {COUNTRY_DATA_LIST} from '../country-selector/country-data.model';
     styleUrls: ['./ebv-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EbvSelectorComponent implements OnInit {
+export class EbvSelectorComponent implements OnInit, OnDestroy {
     readonly SUBGROUP_SEARCH_THRESHOLD = 5;
 
     @ViewChild('container', {static: true})
@@ -61,6 +61,8 @@ export class EbvSelectorComponent implements OnInit {
     readonly plotData = new BehaviorSubject<any>(undefined);
     readonly plotLoading = new BehaviorSubject(false);
 
+    protected queryParamsSubscription?: Subscription;
+
     constructor(
         private readonly userService: UserService,
         @Inject(Config) private readonly config: AppConfig,
@@ -80,7 +82,11 @@ export class EbvSelectorComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.handleQueryParams();
+        this.queryParamsSubscription = this.handleQueryParams();
+    }
+
+    ngOnDestroy(): void {
+        this.queryParamsSubscription?.unsubscribe();
     }
 
     editSymbology(): void {
@@ -276,11 +282,10 @@ export class EbvSelectorComponent implements OnInit {
         );
     }
 
-    private handleQueryParams(): void {
-        this.route.queryParams
+    private handleQueryParams(): Subscription {
+        return this.route.queryParams
             .pipe(
                 filter((params) => params.id),
-                first(),
                 mergeMap((params) => this.http.get<EbvDatasetResponse>(`https://portal.geobon.org/api/v1/datasets/${params.id}`)),
             )
             .subscribe((response) => {
