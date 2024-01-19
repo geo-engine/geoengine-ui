@@ -26,33 +26,10 @@ mat-toolbar.navbar {
 }
 
 .logo {
-    line-height: 100%;
-    margin: 0.5rem 1rem 0 1rem;
-
-    .title {
-        font-family: 'Pacifico', cursive;
-        color: var(--geoengine-primary-color);
-        vertical-align: middle;
-        margin-left: 0.5rem;
-    }
-
-    .subtitle {
-        display: inline-block;
-        font-style: italic;
-        vertical-align: top;
-        padding-left: 0.5rem;
-        box-sizing: content-box;
-        line-height: 1rem;
-    }
-
-    .mat-icon {
-        vertical-align: middle;
-
-        ::ng-deep svg {
-            border: none;
-            border-radius: unset;
-        }
-    }
+    padding: 1rem;
+    width: auto;
+    height: 100%;
+    box-sizing: border-box;
 }
 
 geoengine-layer-list {
