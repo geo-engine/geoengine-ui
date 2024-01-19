@@ -19,7 +19,7 @@ import {
 import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {DataSelectionService} from '../data-selection.service';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {CountryData, COUNTRY_DATA_LIST, COUNTRY_METADATA} from './country-data.model';
+import {COUNTRY_METADATA, countryDatasetName} from './country-data.model';
 
 @Component({
     selector: 'geoengine-analysis',
@@ -36,7 +36,6 @@ export class AnalysisComponent {
     plotLoading = new BehaviorSubject(false);
 
     private selectedCountryName?: string = undefined;
-    private selectedCountry?: CountryData = undefined;
 
     constructor(
         private readonly projectService: ProjectService,
@@ -48,22 +47,21 @@ export class AnalysisComponent {
             map(([rasterLayer, polygonLayer]) => !rasterLayer || !polygonLayer),
         );
 
-        for (const countryName of Object.keys(COUNTRY_DATA_LIST)) {
-            this.countries.push(countryName);
+        for (const country of Object.keys(COUNTRY_METADATA)) {
+            this.countries.push(country[0]);
         }
         this.countries.sort();
     }
 
     selectCountry(country: string): void {
         this.selectedCountryName = country;
-        this.selectedCountry = COUNTRY_DATA_LIST[country];
 
         const workflow: WorkflowDict = {
             type: 'Vector',
             operator: {
                 type: 'OgrSource',
                 params: {
-                    data: this.selectedCountry.polygon,
+                    data: 'polygon_country_' + countryDatasetName(this.selectedCountryName),
                 },
             },
         };
@@ -110,7 +108,7 @@ export class AnalysisComponent {
     }
 
     computePlot(): void {
-        if (!this.selectedCountry) {
+        if (!this.selectedCountryName) {
             return;
         }
 
@@ -133,7 +131,7 @@ export class AnalysisComponent {
         const countryRasterWorkflow: SourceOperatorDict = {
             type: 'GdalSource',
             params: {
-                data: this.selectedCountry.raster,
+                data: 'raster_country_' + countryDatasetName(this.selectedCountryName),
             },
         };
 

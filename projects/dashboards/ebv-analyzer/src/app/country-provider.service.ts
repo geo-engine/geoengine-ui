@@ -3,7 +3,7 @@ import {BehaviorSubject, mergeMap, Observable} from 'rxjs';
 import {COUNTRY_LIST} from './country-selector/country-selector-data.model';
 import {PolygonSymbology, ProjectService, VectorLayer, WorkflowDict} from '@geoengine/core';
 import {DataSelectionService} from './data-selection.service';
-import {COUNTRY_DATA_LIST} from './country-selector/country-data.model';
+import {countryDatasetName} from './country-selector/country-data.model';
 
 export interface Country {
     name: string;
@@ -35,7 +35,7 @@ export class CountryProviderService {
                 maxy,
                 tifChannelId,
             };
-        });
+        }).sort((a, b) => a.name.localeCompare(b.name));
     }
 
     public setSelectedCountry(country: Country): void {
@@ -46,7 +46,7 @@ export class CountryProviderService {
             operator: {
                 type: 'OgrSource',
                 params: {
-                    data: COUNTRY_DATA_LIST[country.name].polygon,
+                    data: 'polygon_country_' + countryDatasetName(country.name),
                 },
             },
         };

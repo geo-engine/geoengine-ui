@@ -30,7 +30,7 @@ import {filter, map, mergeMap} from 'rxjs/operators';
 import {CountryProviderService} from '../country-provider.service';
 import {DataSelectionService, DataRange} from '../data-selection.service';
 import {ActivatedRoute} from '@angular/router';
-import {COUNTRY_DATA_LIST} from '../country-selector/country-data.model';
+import {countryDatasetName} from '../country-selector/country-data.model';
 
 @Component({
     selector: 'geoengine-ebv-ebv-selector',
@@ -241,7 +241,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                             b: {
                                 type: 'GdalSource',
                                 params: {
-                                    data: COUNTRY_DATA_LIST[selectedCountry.name].raster,
+                                    data: 'raster_country_' + countryDatasetName(selectedCountry.name),
                                 },
                             },
                         },
