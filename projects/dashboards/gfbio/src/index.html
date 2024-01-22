@@ -22,20 +22,18 @@
 
                 h1 {
                     text-align: center;
-                    font-family: 'Pacifico', cursive;
-                    font-size: 20vh;
                     height: 20vh;
                     line-height: 20vh;
                     margin: 30vh 0 0 0;
                 }
 
                 h1 span {
-                    background: url('assets/vat_logo.svg') right no-repeat;
-                    background-size: 18vh 18vh;
-                    height: calc(18vh - 1px);
-                    width: calc(18vh - 1px);
-                    border: 1px solid whitesmoke;
-                    border-radius: 18vh;
+                    --logo-ratio: calc(3202.6741 / 512);
+                    --logo-width: 50vh;
+                    background: url('assets/vat_logo_white.svg') right no-repeat;
+                    background-size: calc(var(--logo-width) - 1px) calc(var(--logo-width) / var(--logo-ratio) - 1px);
+                    height: calc((var(--logo-width) / var(--logo-ratio)) - 1px);
+                    width: calc(var(--logo-width) - 1px);
                     display: inline-block;
                     filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.12)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.24));
                 }
@@ -75,7 +73,7 @@
                     animation-delay: 0.4s;
                 }
             </style>
-            <h1><span class="logo"></span>VAT</h1>
+            <h1><span class="logo"></span></h1>
             <div class="dots">
                 <span>&middot;</span>
                 <span>&middot;</span>
