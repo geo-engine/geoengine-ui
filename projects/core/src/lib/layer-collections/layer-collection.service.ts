@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BackendService} from '../backend/backend.service';
-import {combineLatest, Observable, of, zip} from 'rxjs';
+import {combineLatest, firstValueFrom, Observable, of, ReplaySubject, zip} from 'rxjs';
 import {UserService} from '../users/user.service';
 import {map, mergeMap} from 'rxjs/operators';
 import {
@@ -23,18 +23,31 @@ import {RasterSymbology, VectorSymbology} from '../layers/symbology/symbology.mo
 import {RandomColorService} from '../util/services/random-color.service';
 import {subscribeAndProvide} from '../util/conversions';
 import {createVectorSymbology} from '../util/symbologies';
+import {
+    AutocompleteHandlerRequest,
+    LayerCollection,
+    LayersApi,
+    ProviderCapabilities,
+    SearchHandlerRequest,
+} from '@geoengine/openapi-client';
 
 @Injectable({
     providedIn: 'root',
 })
 export class LayerCollectionService {
+    layersApi = new ReplaySubject<LayersApi>(1);
+
     constructor(
         protected backend: BackendService,
         protected userService: UserService,
         protected projectService: ProjectService,
         protected notificationService: NotificationService,
         protected randomColorService: RandomColorService,
-    ) {}
+    ) {
+        this.userService.getSessionStream().subscribe({
+            next: (session) => this.layersApi.next(new LayersApi(session.apiConfiguration)),
+        });
+    }
 
     getLayerCollectionItems(provider: UUID, collection: string, offset = 0, limit = 20): Observable<LayerCollectionDict> {
         return this.userService
@@ -89,6 +102,52 @@ export class LayerCollectionService {
      */
     addLayerToProject(layerId: ProviderLayerIdDict): Observable<void> {
         return subscribeAndProvide(this.resolveLayer(layerId).pipe(mergeMap((layer: Layer) => this.projectService.addLayer(layer))));
+    }
+
+    /**
+     * Fetches the capabilities of a layer provider.
+     */
+    async capabilities(providerId: UUID, options?: {abortController?: AbortController}): Promise<ProviderCapabilities> {
+        const layersApi = await firstValueFrom(this.layersApi);
+
+        return await layersApi.providerCapabilitiesHandler(
+            {provider: providerId},
+            {
+                signal: options?.abortController?.signal,
+            },
+        );
+    }
+
+    /**
+     * Searches a layer collection with autocomplete.
+     *
+     * @returns an array of matching layer (collection) names
+     *
+     * Returns an empty array…
+     * - on success, when no results are found
+     * - on error, e.g., when autocomplete is not supported by the backend
+     * - on abort, e.g., when `options.abortController` is aborted
+     */
+    async autocompleteSearch(request: AutocompleteHandlerRequest, options?: {abortController?: AbortController}): Promise<Array<string>> {
+        const layersApi = await firstValueFrom(this.layersApi);
+        return await layersApi
+            .autocompleteHandler(request, {
+                signal: options?.abortController?.signal,
+            })
+            // on error or abort, just return an empty result
+            .catch(() => []);
+    }
+
+    /**
+     * Searches a layer collection.
+     *
+     * @returns a virtual layer collection of matching layers and layer collections
+     */
+    async search(request: SearchHandlerRequest, options?: {abortController?: AbortController}): Promise<LayerCollection> {
+        const layersApi = await firstValueFrom(this.layersApi);
+        return await layersApi.searchHandler(request, {
+            signal: options?.abortController?.signal,
+        });
     }
 
     private resolveLayer(layerId: ProviderLayerIdDict): Observable<Layer> {

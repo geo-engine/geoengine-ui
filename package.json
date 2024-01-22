@@ -47,7 +47,7 @@
         "@angular/platform-browser": "^17.0.7",
         "@angular/router": "^17.0.7",
         "@egjs/hammerjs": "^2.0.17",
-        "@geoengine/openapi-client": "0.0.2",
+        "@geoengine/openapi-client": "0.0.4",
         "codemirror": "~5.65.16",
         "d3": "~7.8.5",
         "dagre-d3": "~0.6.4",
