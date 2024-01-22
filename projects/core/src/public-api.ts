@@ -44,6 +44,7 @@ export * from './lib/dialogs/dialog-splash-checkbox/dialog-splash-checkbox.compo
 export * from './lib/download-raster-layer/download-raster-layer.component';
 export * from './lib/layer-collections/layer-collection-dropdown/layer-collection-dropdown.component';
 export * from './lib/layer-collections/layer-collection-layer/layer-collection-layer.component';
+export * from './lib/layer-collections/layer-collection-layer-details/layer-collection-layer-details.component';
 export * from './lib/layer-collections/layer-collection-list/layer-collection-list.component';
 export * from './lib/layer-collections/layer-collection-navigation/layer-collection-navigation.component';
 export * from './lib/layers/layer-icons/line-icon/line-icon.component';
@@ -85,6 +86,7 @@ export * from './lib/operators/dialogs/operator-list/operator-list.component';
 export * from './lib/operators/dialogs/pie-chart/pie-chart.component';
 export * from './lib/operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
 export * from './lib/operators/dialogs/raster-scaling/raster-scaling.component';
+export * from './lib/operators/dialogs/raster-stacker/raster-stacker.component';
 export * from './lib/operators/dialogs/raster-type-conversion/raster-type-conversion.component';
 export * from './lib/operators/dialogs/raster-vector-join/raster-vector-join.component';
 export * from './lib/operators/dialogs/rasterization/rasterization.component';

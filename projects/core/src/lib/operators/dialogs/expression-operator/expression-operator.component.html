@@ -7,12 +7,7 @@
         </a>
 
         <ng-container operatorInput>
-            <geoengine-multi-layer-selection
-                [types]="RASTER_TYPE"
-                formControlName="rasterLayers"
-                [min]="1"
-                [max]="8"
-            ></geoengine-multi-layer-selection>
+            <geoengine-layer-selection [types]="RASTER_TYPE" formControlName="rasterLayer"></geoengine-layer-selection>
         </ng-container>
 
         <a mat-icon-button operatorParametersIcon href="https://docs.geoengine.io/operators/expression.html" target="_blank">
@@ -20,7 +15,7 @@
         </a>
 
         <ng-container operatorParameters>
-            <p>Use A to reference the existing pixel of the first raster, B for the second one, etc.</p>
+            <p>Use A to reference the existing pixel of the first band, B for the second one, etc.</p>
 
             <geoengine-code-editor
                 formControlName="expression"

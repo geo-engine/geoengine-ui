@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, forwardRef, Input, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, Input, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {Layer} from '../../../../layers/layer.model';
 import {LayerMetadata} from '../../../../layers/layer-metadata.model';
@@ -40,9 +40,15 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
     hasLayers: Observable<boolean>;
     selectedLayer = new BehaviorSubject<Layer | undefined>(undefined);
 
+    expanded = false;
+    metadata?: LayerMetadata;
+
     private subscriptions: Array<Subscription> = [];
 
-    constructor(private readonly projectService: ProjectService) {
+    constructor(
+        private readonly projectService: ProjectService,
+        private readonly changeDetectorRef: ChangeDetectorRef,
+    ) {
         this.subscriptions.push(
             this.filteredLayers.subscribe((filteredLayers) => {
                 if (filteredLayers.length > 0) {
@@ -138,5 +144,18 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
 
     setSelectedLayer(layer: Layer): void {
         this.selectedLayer.next(layer);
+        this.expanded = false;
+    }
+
+    toggleExpand(): void {
+        if (this.selectedLayer.value) {
+            this.expanded = !this.expanded;
+            if (!this.metadata) {
+                this.projectService.getLayerMetadata(this.selectedLayer.value).subscribe((resultDescriptor) => {
+                    this.metadata = resultDescriptor;
+                    this.changeDetectorRef.markForCheck();
+                });
+            }
+        }
     }
 }

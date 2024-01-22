@@ -850,7 +850,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                                             mapNoData: false,
                                         },
                                         sources: {
-                                            a: rasterOperator,
+                                            raster: rasterOperator,
                                         },
                                     } as ExpressionDict,
                                 ],

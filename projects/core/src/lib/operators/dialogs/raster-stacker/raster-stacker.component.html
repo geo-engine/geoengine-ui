@@ -1,0 +1,53 @@
+<geoengine-sidenav-header>Raster Stacker</geoengine-sidenav-header>
+
+<form [formGroup]="form" (ngSubmit)="add()">
+    <geoengine-operator-dialog-container>
+        <a mat-icon-button operatorInputIcon href="https://docs.geoengine.io/operators/rasterstacker.html" target="_blank">
+            <mat-icon>help_center</mat-icon>
+        </a>
+
+        <ng-container operatorInput>
+            <geoengine-multi-layer-selection
+                [types]="inputTypes"
+                formControlName="rasterLayers"
+                [min]="2"
+                [max]="8"
+            ></geoengine-multi-layer-selection>
+        </ng-container>
+
+        <a mat-icon-button operatorParametersIcon href="https://docs.geoengine.io/operators/rasterstacker.html" target="_blank">
+            <mat-icon>help_center</mat-icon>
+        </a>
+
+        <ng-container operatorParameters>
+            <p>
+                If the input rasters have different datatypes, you must select one common datatype the rasters are converted to before
+                stacking.
+            </p>
+            <mat-form-field>
+                <mat-label>Data Type</mat-label>
+                <mat-select formControlName="dataType">
+                    <mat-option *ngFor="let dataType of outputDataTypes$ | async" [value]="dataType[0]">
+                        {{ dataType[0] }} {{ dataType[1] }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </ng-container>
+
+        <ng-container layerSpecification>
+            <geoengine-operator-output-name formControlName="name">
+                <mat-hint
+                    align="end"
+                    class="error"
+                    *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
+                >
+                    The name must be non-empty.
+                </mat-hint>
+            </geoengine-operator-output-name>
+        </ng-container>
+
+        <ng-container actions>
+            <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid || (loading$ | async)">Create</button>
+        </ng-container>
+    </geoengine-operator-dialog-container>
+</form>

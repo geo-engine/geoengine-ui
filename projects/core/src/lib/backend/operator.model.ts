@@ -25,14 +25,7 @@ export interface ExpressionDict extends OperatorDict {
         mapNoData: boolean;
     };
     sources: {
-        a: OperatorDict | SourceOperatorDict;
-        b?: OperatorDict | SourceOperatorDict;
-        c?: OperatorDict | SourceOperatorDict;
-        d?: OperatorDict | SourceOperatorDict;
-        e?: OperatorDict | SourceOperatorDict;
-        f?: OperatorDict | SourceOperatorDict;
-        g?: OperatorDict | SourceOperatorDict;
-        h?: OperatorDict | SourceOperatorDict;
+        raster: SourceOperatorDict | OperatorDict;
     };
 }
 
@@ -272,6 +265,11 @@ export interface TemporalRasterAggregationDict extends OperatorDict {
 }
 
 export type TemporalRasterAggregationDictAgregationType = 'min' | 'max' | 'first' | 'last' | 'mean' | 'sum' | 'count';
+
+export interface RasterStackerDict extends OperatorDict {
+    type: 'RasterStacker';
+    params: Record<string, never>; // just an empty object (for now)
+}
 
 export interface RasterTypeConversionDict extends OperatorDict {
     type: 'RasterTypeConversion';

@@ -1,5 +1,5 @@
-import {map, mergeMap, tap} from 'rxjs/operators';
-import {BehaviorSubject, combineLatest, EMPTY, Observable, of} from 'rxjs';
+import {map, mergeMap} from 'rxjs/operators';
+import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, Input, ViewChild} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {ResultTypes} from '../../result-type.model';
@@ -7,16 +7,17 @@ import {RasterDataType, RasterDataTypes} from '../../datatype.model';
 import {Layer, RasterLayer} from '../../../layers/layer.model';
 import {geoengineValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
-import {OperatorDict, SourceOperatorDict, UUID, WorkflowDict} from '../../../backend/backend.model';
+import {UUID, WorkflowDict} from '../../../backend/backend.model';
 import {RasterLayerMetadata} from '../../../layers/layer-metadata.model';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {ExpressionDict} from '../../../backend/operator.model';
 import {LayoutService, SidenavConfig} from '../../../layout.service';
 import {SymbologyCreationType, SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
-import {RasterSymbology} from '../../../layers/symbology/symbology.model';
+import {RasterSymbology, SingleBandRasterColorizer} from '../../../layers/symbology/symbology.model';
+import {GeoEngineError} from '../../../util/errors';
 
 interface ExpressionForm {
-    rasterLayers: FormControl<Array<RasterLayer> | undefined>;
+    rasterLayer: FormControl<RasterLayer | undefined>;
     expression: FormControl<string>;
     dataType: FormControl<RasterDataType | undefined>;
     name: FormControl<string>;
@@ -64,7 +65,7 @@ export class ExpressionOperatorComponent implements AfterViewInit {
         protected readonly layoutService: LayoutService,
     ) {
         this.form = new FormGroup<ExpressionForm>({
-            rasterLayers: new FormControl<Array<RasterLayer> | undefined>(undefined, {
+            rasterLayer: new FormControl<RasterLayer | undefined>(undefined, {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
@@ -91,61 +92,51 @@ export class ExpressionOperatorComponent implements AfterViewInit {
             // TODO: add unit related inputs
         });
 
-        this.outputDataTypes$ = this.form.controls.rasterLayers.valueChanges.pipe(
-            mergeMap((rasterLayers: Array<RasterLayer> | undefined) => {
-                if (!rasterLayers) {
-                    return EMPTY;
+        // TODO on selected raster update the data type (like input)
+        this.outputDataTypes$ = this.form.controls.rasterLayer.valueChanges.pipe(
+            mergeMap((rasterLayer: RasterLayer | undefined) => {
+                if (!rasterLayer) {
+                    return of(undefined);
                 }
 
-                const metaData = rasterLayers.map((l) => this.projectService.getRasterLayerMetadata(l));
-                return combineLatest(metaData);
+                return this.projectService.getRasterLayerMetadata(rasterLayer);
             }),
-            map((rasterLayers: Array<RasterLayerMetadata>) => {
+            map((rasterLayer: RasterLayerMetadata | undefined) => {
                 const outputDataTypes: Array<[RasterDataType, string]> = RasterDataTypes.ALL_DATATYPES.map((dataType: RasterDataType) => [
                     dataType,
                     '',
                 ]);
 
+                if (!rasterLayer) {
+                    return outputDataTypes;
+                }
+
                 for (const output of outputDataTypes) {
                     const outputDataType = output[0];
 
-                    const indices = rasterLayers
-                        .map((layer, index) => (layer.dataType === outputDataType ? index : -1))
-                        .filter((index) => index >= 0)
-                        .map((index) => LetterNumberConverter.toLetters(index + 1));
+                    if (outputDataType === rasterLayer?.dataType) {
+                        output[1] = '(like input)';
 
-                    if (indices.length > 0) {
-                        output[1] = `(like ${indices.length > 1 ? 'layers' : 'layer'} ${indices.join(', ')})`;
+                        const dataTypeControl = this.form.controls.dataType;
+                        setTimeout(() => {
+                            dataTypeControl.setValue(outputDataType);
+                        });
                     }
                 }
-                return [rasterLayers, outputDataTypes] as [Array<RasterLayerMetadata>, Array<[RasterDataType, string]>];
+
+                return outputDataTypes;
             }),
-            tap(([rasterLayers, outputDataTypes]: [Array<RasterLayerMetadata>, Array<[RasterDataType, string]>]) => {
-                const dataTypeControl = this.form.controls.dataType;
-                const currentDataType: RasterDataType | undefined = dataTypeControl.value;
-                const rasterDataTypes = rasterLayers.map((layer) => layer.dataType);
-                if (currentDataType && rasterDataTypes.includes(currentDataType)) {
-                    // is already set at a meaningful type
-                    return;
-                }
-                let selectedDataType: RasterDataType = currentDataType ? currentDataType : outputDataTypes[0][0]; // use default
-                if (rasterDataTypes.length) {
-                    selectedDataType = rasterDataTypes[0];
-                }
-                setTimeout(() => {
-                    dataTypeControl.setValue(selectedDataType);
-                });
-            }),
-            map(([_rasterLayers, outputDataTypes]: [Array<RasterLayerMetadata>, Array<[RasterDataType, string]>]) => outputDataTypes),
         );
 
-        this.rasterVariables$ = this.form.controls.rasterLayers.valueChanges.pipe(
-            map((rasterLayers: Array<RasterLayer> | undefined) => {
-                if (!rasterLayers) {
-                    return [];
+        this.rasterVariables$ = this.form.controls.rasterLayer.valueChanges.pipe(
+            mergeMap((rasterLayer: RasterLayer | undefined) => {
+                if (!rasterLayer) {
+                    return of([]);
                 }
 
-                return rasterLayers.map((_, index) => LetterNumberConverter.toLetters(index + 1));
+                return this.projectService
+                    .getRasterLayerMetadata(rasterLayer)
+                    .pipe(map((meta) => meta.bands.map((_, index) => LetterNumberConverter.toLetters(index + 1))));
             }),
         );
 
@@ -158,7 +149,7 @@ export class ExpressionOperatorComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {
         setTimeout(() =>
-            this.form.controls['rasterLayers'].updateValueAndValidity({
+            this.form.controls['rasterLayer'].updateValueAndValidity({
                 onlySelf: false,
                 emitEvent: true,
             }),
@@ -190,24 +181,19 @@ export class ExpressionOperatorComponent implements AfterViewInit {
         if (this.loading$.value) {
             return; // don't add while loading
         }
-
         const name: string = this.form.controls['name'].value;
         const dataType: RasterDataType | undefined = this.form.controls['dataType'].value;
         const expression: string = this.form.controls['expression'].value;
-        const rasterLayers: Array<RasterLayer> | undefined = this.form.controls['rasterLayers'].value;
+        const rasterLayer: RasterLayer | undefined = this.form.controls['rasterLayer'].value;
         const mapNoData: boolean = this.form.controls['mapNoData'].value;
-
-        if (!dataType || !rasterLayers) {
+        if (!dataType || !rasterLayer) {
             return; // checked by form validator
         }
 
-        const sourceOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers(rasterLayers);
-
-        this.loading$.next(true);
-
-        sourceOperators
+        this.projectService
+            .getWorkflow(rasterLayer.workflowId)
             .pipe(
-                mergeMap((operators: Array<OperatorDict | SourceOperatorDict>) => {
+                mergeMap((inputWorkflow) => {
                     const workflow: WorkflowDict = {
                         type: 'Raster',
                         operator: {
@@ -220,49 +206,42 @@ export class ExpressionOperatorComponent implements AfterViewInit {
                                 mapNoData,
                             },
                             sources: {
-                                a: operators[0],
-                                b: operators.length >= 2 ? operators[1] : undefined,
-                                c: operators.length >= 3 ? operators[2] : undefined,
-                                d: operators.length >= 4 ? operators[3] : undefined,
-                                e: operators.length >= 5 ? operators[4] : undefined,
-                                f: operators.length >= 6 ? operators[5] : undefined,
-                                g: operators.length >= 7 ? operators[6] : undefined,
-                                h: operators.length >= 8 ? operators[7] : undefined,
+                                raster: inputWorkflow.operator,
                             },
                         } as ExpressionDict,
-                    };
+                    } as WorkflowDict;
 
                     return this.projectService.registerWorkflow(workflow);
                 }),
                 mergeMap((workflowId: UUID) => {
-                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator.symbologyForRasterLayer(
-                        workflowId,
-                        rasterLayers[0],
-                    );
+                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator.symbologyForRasterLayer(workflowId, rasterLayer);
                     return combineLatest([of(workflowId), symbology$]);
                 }),
-                mergeMap(([workflowId, symbology]: [UUID, RasterSymbology]) =>
-                    this.projectService.addLayer(
-                        new RasterLayer({
-                            workflowId,
-                            name,
-                            symbology,
-                            isLegendVisible: false,
-                            isVisible: true,
-                        }),
-                    ),
-                ),
+                mergeMap(([workflowId, symbology]: [UUID, RasterSymbology]) => {
+                    if (symbology.rasterColorizer instanceof SingleBandRasterColorizer) {
+                        const outSymbology = new RasterSymbology(symbology.opacity, symbology.rasterColorizer.replaceBand(0));
+                        return this.projectService.addLayer(
+                            new RasterLayer({
+                                workflowId,
+                                name,
+                                symbology: outSymbology,
+                                isLegendVisible: false,
+                                isVisible: true,
+                            }),
+                        );
+                    } else {
+                        throw new GeoEngineError('SymbologyError', 'The input Symbology must be a single band colorizer.');
+                    }
+                }),
             )
             .subscribe({
                 next: () => {
                     // everything worked well
-
                     this.lastError$.next(undefined);
                     this.loading$.next(false);
                 },
                 error: (error) => {
                     const errorMsg = error.error.message;
-
                     this.lastError$.next(errorMsg);
                     this.loading$.next(false);
                 },

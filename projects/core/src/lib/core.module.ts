@@ -100,6 +100,7 @@ import {LineageGraphComponent} from './provenance/lineage-graph/lineage-graph.co
 // eslint-disable-next-line max-len
 import {MeanRasterPixelValuesOverTimeDialogComponent} from './operators/dialogs/mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
 import {RasterVectorJoinComponent} from './operators/dialogs/raster-vector-join/raster-vector-join.component';
+import {RasterStackerComponent} from './operators/dialogs/raster-stacker/raster-stacker.component';
 import {RasterTypeConversionComponent} from './operators/dialogs/raster-type-conversion/raster-type-conversion.component';
 import {RasterScalingComponent} from './operators/dialogs/raster-scaling/raster-scaling.component';
 import {PointInPolygonFilterOperatorComponent} from './operators/dialogs/point-in-polygon-filter/point-in-polygon-filter.component';
@@ -150,6 +151,7 @@ import {SymbologyCreatorComponent} from './layers/symbology/symbology-creator/sy
 import {OperatorDialogContainerComponent} from './operators/dialogs/helpers/operator-dialog-container/operator-dialog-container.component';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
 import {LayerCollectionLayerComponent} from './layer-collections/layer-collection-layer/layer-collection-layer.component';
+import {LayerCollectionLayerDetailsComponent} from './layer-collections/layer-collection-layer-details/layer-collection-layer-details.component';
 import {TimeShiftComponent} from './operators/dialogs/time-shift/time-shift.component';
 import {PieChartComponent} from './operators/dialogs/pie-chart/pie-chart.component';
 import {RasterizationComponent} from './operators/dialogs/rasterization/rasterization.component';
@@ -251,6 +253,7 @@ const CORE_COMPONENTS = [
     InterpolationComponent,
     LayerCollectionDropdownComponent,
     LayerCollectionLayerComponent,
+    LayerCollectionLayerDetailsComponent,
     LayerCollectionListComponent,
     LayerCollectionNavigationComponent,
     LayerListComponent,
@@ -298,6 +301,7 @@ const CORE_COMPONENTS = [
     RasterLegendComponent,
     RasterPaletteSymbologyEditorComponent,
     RasterScalingComponent,
+    RasterStackerComponent,
     RasterSymbologyEditorComponent,
     RasterTypeConversionComponent,
     RasterVectorJoinComponent,

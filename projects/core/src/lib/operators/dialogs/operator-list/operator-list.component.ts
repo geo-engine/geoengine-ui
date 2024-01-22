@@ -26,6 +26,7 @@ import {PieChartComponent} from '../pie-chart/pie-chart.component';
 import {RasterizationComponent} from '../rasterization/rasterization.component';
 import {LineSimplificationComponent} from '../line-simplification/line-simplification.component';
 import {RgbaCompositeComponent as RgbaCompositeComponent} from '../rgb-composite/rgb-composite.component';
+import {RasterStackerComponent} from '../raster-stacker/raster-stacker.component';
 
 /**
  * This type encapsulates…
@@ -180,6 +181,14 @@ export class OperatorListComponent implements OnInit, OnChanges {
                 ICON_URL: createIconDataUrl('Temporal Raster Aggregation'),
             },
             description: 'Aggregate raster time series',
+        },
+        {
+            component: RasterStackerComponent,
+            type: {
+                NAME: 'Raster Stacker',
+                ICON_URL: createIconDataUrl('Raster Stacker'),
+            },
+            description: 'Stacks bands of a raster to create a new time series',
         },
         {
             component: RasterTypeConversionComponent,

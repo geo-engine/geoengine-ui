@@ -1,6 +1,16 @@
 import {combineLatest, Observable, ReplaySubject, Subject, BehaviorSubject, Subscription, of, zip, forkJoin} from 'rxjs';
 import {first, map, mergeMap} from 'rxjs/operators';
-import {Component, ChangeDetectionStrategy, forwardRef, SimpleChange, Input, OnChanges, OnDestroy, OnInit} from '@angular/core';
+import {
+    Component,
+    ChangeDetectionStrategy,
+    forwardRef,
+    SimpleChange,
+    Input,
+    OnChanges,
+    OnDestroy,
+    OnInit,
+    ChangeDetectorRef,
+} from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {Layer} from '../../../../layers/layer.model';
 import {LayerMetadata} from '../../../../layers/layer-metadata.model';
@@ -38,6 +48,12 @@ export const LetterNumberConverter = {
         return out;
     },
 };
+
+export interface LayerDetails {
+    expanded: boolean;
+    description?: string;
+    metadata?: LayerMetadata;
+}
 
 @Component({
     selector: 'geoengine-multi-layer-selection',
@@ -82,10 +98,15 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
     layersAtMin: Observable<boolean>;
     layersAtMax: Observable<boolean>;
 
+    layerDetails: Array<LayerDetails> = [];
+
     private selectionSubscription: Subscription;
     private layerChangesSubscription?: Subscription;
 
-    constructor(private projectService: ProjectService) {
+    constructor(
+        private projectService: ProjectService,
+        private changeDetectorRef: ChangeDetectorRef,
+    ) {
         this.selectionSubscription = this.selectedLayers.subscribe((selectedLayers) => {
             if (this.onChange) {
                 this.onChange(selectedLayers);
@@ -163,7 +184,10 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
     }
 
     updateLayer(index: number, layer: Layer): void {
-        this.selectedLayers.value[index] = layer;
+        const newSelectedLayers = [...this.selectedLayers.value];
+        newSelectedLayers[index] = layer;
+        this.selectedLayers.next(newSelectedLayers);
+        this.layerDetails[index] = {expanded: false};
     }
 
     updateLayersForSelection(): void {
@@ -176,10 +200,16 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
                     // remove selected layers
                     const difference = amountOfLayers - this.max;
                     this.selectedLayers.next(selectedLayers.slice(0, amountOfLayers - difference));
+                    this.layerDetails = this.layerDetails.slice(0, amountOfLayers - difference);
                 } else if (this.min > amountOfLayers) {
                     // add selected layers
                     const difference = this.min - amountOfLayers;
                     this.selectedLayers.next(selectedLayers.concat(this.layersForInitialSelection(filteredLayers, [], difference)));
+                    this.layerDetails = this.layerDetails.concat(
+                        Array(difference)
+                            .fill(null)
+                            .map(() => ({expanded: false})),
+                    );
                 }
             });
     }
@@ -197,7 +227,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
             .pipe(first())
             .subscribe(([filteredLayers, selectedLayers]) => {
                 this.selectedLayers.next(selectedLayers.concat(this.layersForInitialSelection(filteredLayers, selectedLayers, 1)));
-
+                this.layerDetails = this.layerDetails.concat([{expanded: false}]);
                 this.onBlur();
             });
     }
@@ -205,7 +235,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
     remove(): void {
         this.selectedLayers.pipe(first()).subscribe((selectedLayers) => {
             this.selectedLayers.next(selectedLayers.slice(0, selectedLayers.length - 1));
-
+            this.layerDetails = this.layerDetails.slice(0, selectedLayers.length - 1);
             this.onBlur();
         });
     }
@@ -237,6 +267,20 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
     // noinspection JSMethodCanBeStatic
     toLetters(i: number): string {
         return LetterNumberConverter.toLetters(i + 1);
+    }
+
+    toggleExpand(i: number): void {
+        const layer = this.selectedLayers.value[i];
+        const details = this.layerDetails[i];
+        if (layer) {
+            details.expanded = !details.expanded;
+            if (!details.metadata) {
+                this.projectService.getLayerMetadata(layer).subscribe((resultDescriptor) => {
+                    details.metadata = resultDescriptor;
+                    this.changeDetectorRef.markForCheck();
+                });
+            }
+        }
     }
 
     private layersForInitialSelection(layers: Array<Layer>, blacklist: Array<Layer>, amount: number): Array<Layer> {
