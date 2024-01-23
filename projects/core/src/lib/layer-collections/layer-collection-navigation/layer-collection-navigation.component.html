@@ -25,15 +25,31 @@
         matTooltip="Search Settings"
         matTooltipPosition="below"
         [matMenuTriggerFor]="searchSettingsMenu"
+        #searchSettingsMenuTrigger="matMenuTrigger"
     >
         <mat-icon>tune</mat-icon>
     </button>
 
     <mat-menu #searchSettingsMenu="matMenu">
-        <mat-form-field class="menu-form">
+        <!-- Stopping the click event propagation hinders the menu to disappear once the toolbar was clicked. -->
+        <mat-toolbar class="options-toolbar" (click)="$event.stopPropagation()">
+            <span>Options</span>
+            <span class="spacer"></span>
+            <button
+                mat-button
+                class="options-close-btn small-btn"
+                matTooltip="Close"
+                matTooltipPosition="below"
+                (click)="searchSettingsMenuTrigger.closeMenu()"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-toolbar>
+
+        <!-- Stopping the click event propagation hinders the menu to disappear once the select was clicked. -->
+        <mat-form-field class="menu-form" (click)="$event.stopPropagation()">
             <mat-label>Search type</mat-label>
-            <!-- Stopping the click event propagation hinders the menu to disappear once the select was clicked. -->
-            <mat-select [(value)]="search.searchSettings.searchType" (click)="$event.stopPropagation()">
+            <mat-select [(value)]="search.searchSettings.searchType">
                 @if (search.searchCapabilities.searchTypes.fulltext) {
                     <mat-option value="fulltext">Fulltext</mat-option>
                 }
