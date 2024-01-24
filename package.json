@@ -20,6 +20,8 @@
         "serve:dashboards/nfdi-portal-demo:nightly": "ng serve --configuration development nfdi-portal-demo --proxy-config proxy-nfdi-portal-demo.conf.json",
         "serve:gis:local": "npm run ng-serve-local gis",
         "serve:gis:nightly": "ng serve --configuration development gis --proxy-config proxy-geoengine.conf.json",
+        "serve:manager:local": "npm run ng-serve-local manager",
+        "serve:manager:nightly": "ng serve --configuration development manager --proxy-config proxy-geoengine.conf.json",
         "build-prod:dashboards/data-atlas": "ng build --configuration production data-atlas",
         "build-prod:dashboards/ebv-analyzer": "ng build --configuration production ebv-analyzer",
         "build-prod:dashboards/gfbio": "ng build --configuration production gfbio",
