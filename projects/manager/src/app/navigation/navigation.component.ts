@@ -4,12 +4,12 @@ import {Observable} from 'rxjs';
 import {map, shareReplay} from 'rxjs/operators';
 
 @Component({
-    selector: 'app-navigation',
+    selector: 'geoengine-manager-navigation',
     templateUrl: './navigation.component.html',
     styleUrls: ['./navigation.component.scss'],
 })
 export class NavigationComponent {
-    private breakpointObserver = inject(BreakpointObserver);
+    breakpointObserver = inject(BreakpointObserver);
 
     isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
         map((result) => result.matches),
