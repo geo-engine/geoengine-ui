@@ -5,10 +5,32 @@ import {mergeWith} from 'immutable';
 
 export interface ConfigStructure {
     readonly API_URL: string;
+    readonly BRANDING: Branding;
+}
+
+interface Branding {
+    readonly LOGO_URL: string;
+    readonly LOGO_ICON_URL: string;
+    readonly LOGO_ALT_URL: string;
+    readonly PAGE_TITLE: string;
+    readonly HOMEPAGE?: Homepage;
+}
+
+interface Homepage {
+    readonly URL: string;
+    readonly BUTTON_IMAGE_URL: string;
+    readonly BUTTON_ALT_TEXT: string;
+    readonly BUTTON_TOOLTIP_TEXT: string;
 }
 
 export const DEFAULT_CONFIG: ConfigStructure = {
     API_URL: '/api',
+    BRANDING: {
+        LOGO_URL: 'assets/geoengine.svg',
+        LOGO_ICON_URL: 'assets/geoengine-favicon-white.svg',
+        LOGO_ALT_URL: 'assets/geoengine-white.svg',
+        PAGE_TITLE: 'Geo Engine',
+    },
 };
 
 @Injectable()
@@ -16,6 +38,10 @@ export class AppConfig {
     static readonly CONFIG_FILE = 'assets/config.json';
 
     protected config!: ConfigStructure;
+
+    get BRANDING(): Branding {
+        return this.config.BRANDING;
+    }
 
     // noinspection JSUnusedGlobalSymbols <- function used in parent app
     /**

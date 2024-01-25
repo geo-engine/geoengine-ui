@@ -12,7 +12,7 @@ jobs:
         strategy:
             matrix:
                 node-version: [ 18.13.x, 20.9.x ]
-                app: [ gis, dashboards/gfbio, dashboards/data-atlas, dashboards/nfdi-portal-demo, dashboards/ebv-analyzer ]
+                app: [ gis, manager, dashboards/gfbio, dashboards/data-atlas, dashboards/nfdi-portal-demo, dashboards/ebv-analyzer ]
 
         steps:
             -   uses: actions/checkout@v4

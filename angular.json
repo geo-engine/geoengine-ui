@@ -807,8 +807,21 @@
                         "polyfills": ["zone.js"],
                         "tsConfig": "projects/manager/tsconfig.app.json",
                         "inlineStyleLanguage": "scss",
-                        "assets": ["projects/manager/src/favicon.ico", "projects/manager/src/assets"],
-                        "styles": ["projects/manager/src/styles.scss"],
+                        "assets": [
+                            "projects/manager/src/favicon.ico",
+                            "projects/manager/src/assets",
+                            {
+                                "glob": "**/*",
+                                "input": "dist/core/assets",
+                                "output": "assets"
+                            }
+                        ],
+                        "styles": [
+                            "projects/manager/src/styles.scss",
+                            "dist/core/assets/fonts/poppins/poppins.css",
+                            "dist/core/assets/fonts/pacifico/pacifico.css",
+                            "dist/core/assets/fonts/material-design-icons/material-icons.css"
+                        ],
                         "scripts": []
                     },
                     "configurations": {

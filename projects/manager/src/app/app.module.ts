@@ -36,6 +36,11 @@ import {MatTabsModule} from '@angular/material/tabs';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AppConfig} from './app-config.service';
+import {DatasetsComponent} from './datasets/datasets.component';
+import {LayersComponent} from './layers/layers.component';
+import {ScrollingModule} from '@angular/cdk/scrolling';
+import {DatasetListComponent} from './datasets/dataset-list/dataset-list.component';
+import {DatasetEditorComponent} from './datasets/dataset-editor/dataset-editor.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -70,7 +75,15 @@ export const MATERIAL_MODULES = [
 ];
 
 @NgModule({
-    declarations: [AppComponent, NavigationComponent, LoginComponent],
+    declarations: [
+        AppComponent,
+        NavigationComponent,
+        LoginComponent,
+        DatasetsComponent,
+        LayersComponent,
+        DatasetListComponent,
+        DatasetEditorComponent,
+    ],
     imports: [
         ...MATERIAL_MODULES,
         FormsModule,
@@ -83,6 +96,7 @@ export const MATERIAL_MODULES = [
         MatIconModule,
         MatListModule,
         BrowserAnimationsModule,
+        ScrollingModule,
     ],
     providers: [
         {provide: AppConfig, useClass: AppConfig},

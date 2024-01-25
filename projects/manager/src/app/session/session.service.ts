@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Configuration, DefaultConfig, SessionApi, UserSession} from '@geoengine/openapi-client';
-import {Observable, ReplaySubject, first, from, map, tap} from 'rxjs';
+import {Observable, ReplaySubject, filter, first, from, map, tap} from 'rxjs';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
@@ -26,6 +26,21 @@ export class SessionService {
                 this.session$.next(undefined);
             },
         });
+    }
+
+    getSessionTokenStream(): Observable<string> {
+        return this.getSessionStream().pipe(map((session) => session.id));
+    }
+
+    getSessionTokenForRequest(): Observable<string> {
+        return this.getSessionTokenStream().pipe(first());
+    }
+
+    /**
+     * @returns Retrieve a stream that notifies about the current session.
+     */
+    getSessionStream(): Observable<UserSession> {
+        return this.session$.pipe(filter(isDefined));
     }
 
     isLoggedIn(): Observable<boolean> {
@@ -89,7 +104,7 @@ function isDefined<T>(arg: T | null | undefined): arg is T {
     return arg !== null && arg !== undefined;
 }
 
-const apiConfigurationWithAccessKey = (accessToken: string): Configuration =>
+export const apiConfigurationWithAccessKey = (accessToken: string): Configuration =>
     new Configuration({
         basePath: DefaultConfig.basePath,
         fetchApi: DefaultConfig.fetchApi,
