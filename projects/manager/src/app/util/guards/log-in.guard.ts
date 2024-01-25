@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree} from '@angular/router';
-import {Observable} from 'rxjs';
+import {Observable, map} from 'rxjs';
 import {SessionService} from '../../session/session.service';
 
 @Injectable({
@@ -16,13 +16,14 @@ export class LogInGuard implements CanActivate {
         _route: ActivatedRouteSnapshot,
         _state: RouterStateSnapshot,
     ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-        const isLoggedIn = this.sessionService.isLoggedIn();
-
-        if (!isLoggedIn) {
-            this.router.navigate(['/signin']);
-            return false;
-        }
-
-        return true;
+        const loggedInOrRedirect = this.sessionService.isLoggedIn().pipe(
+            map((loggedIn) => {
+                if (loggedIn) {
+                    return true;
+                }
+                return this.router.createUrlTree(['/signin']);
+            }),
+        );
+        return loggedInOrRedirect;
     }
 }

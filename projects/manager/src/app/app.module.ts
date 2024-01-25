@@ -1,4 +1,4 @@
-import {NgModule} from '@angular/core';
+import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {MatButtonModule} from '@angular/material/button';
@@ -35,6 +35,7 @@ import {MatTableModule} from '@angular/material/table';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {AppConfig} from './app-config.service';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -83,7 +84,15 @@ export const MATERIAL_MODULES = [
         MatListModule,
         BrowserAnimationsModule,
     ],
-    providers: [],
+    providers: [
+        {provide: AppConfig, useClass: AppConfig},
+        {
+            provide: APP_INITIALIZER,
+            useFactory: (config: AppConfig) => (): Promise<void> => config.load(),
+            deps: [AppConfig],
+            multi: true,
+        },
+    ],
     bootstrap: [AppComponent],
 })
 export class AppModule {}

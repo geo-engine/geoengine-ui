@@ -22,6 +22,9 @@ export class SessionService {
             next: (session) => {
                 this.session$.next(session);
             },
+            error: () => {
+                this.session$.next(undefined);
+            },
         });
     }
 
