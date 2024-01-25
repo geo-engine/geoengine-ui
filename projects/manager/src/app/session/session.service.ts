@@ -56,6 +56,10 @@ export class SessionService {
         return result.asObservable();
     }
 
+    logout(): void {
+        this.session$.next(undefined);
+    }
+
     createSessionWithToken(sessionToken: string): Observable<UserSession> {
         return from(new SessionApi(apiConfigurationWithAccessKey(sessionToken)).sessionHandler()).pipe(
             tap((session) => this.session$.next(session)),
