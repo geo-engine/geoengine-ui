@@ -13,3 +13,17 @@ mat-card-content {
 mat-form-field {
     width: 100%;
 }
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.bottom {
+    flex-grow: 1;
+}
+
+.bottom mat-card-content {
+    height: 100%;
+}

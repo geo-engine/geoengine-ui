@@ -1,6 +1,7 @@
-import {Component} from '@angular/core';
+import {Component, Inject} from '@angular/core';
 import {Router} from '@angular/router';
 import {SessionService} from '../session/session.service';
+import {AppConfig} from '../app-config.service';
 
 @Component({
     selector: 'geoengine-manager-login',
@@ -14,6 +15,7 @@ export class LoginComponent {
     constructor(
         private router: Router,
         private sessionService: SessionService,
+        @Inject(AppConfig) readonly config: AppConfig,
     ) {}
 
     login(): void {

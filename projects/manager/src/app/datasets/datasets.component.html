@@ -4,6 +4,6 @@
     @if (selectedDataset$ | async; as dataset) {
         <geoengine-manager-dataset-editor [dataset]="dataset"></geoengine-manager-dataset-editor>
     } @else {
-        <div>Please select a dataset</div>
+        <div class="no-dataset">Please select a dataset</div>
     }
 </div>

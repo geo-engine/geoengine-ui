@@ -1,0 +1,12 @@
+<cdk-virtual-scroll-viewport [itemSize]="itemSizePx" (scrolledIndexChange)="onScrolledIndexChange($event)">
+    <mat-nav-list>
+        <ng-container *cdkVirtualFor="let item of source; trackBy: trackById">
+            <mat-list-item>
+                <h4 matListItemTitle>{{ item.role.name }} [{{ item.role.id }}]</h4>
+                <p matListItemLine>{{ item.permission }}</p>
+            </mat-list-item>
+        </ng-container>
+    </mat-nav-list>
+
+    <mat-spinner [diameter]="loadingSpinnerDiameterPx" *ngIf="source?.loading$ | async"></mat-spinner>
+</cdk-virtual-scroll-viewport>

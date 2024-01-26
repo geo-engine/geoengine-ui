@@ -1,13 +1,40 @@
 <form (ngSubmit)="login()">
-    <mat-form-field appearance="fill">
-        <mat-label>Username</mat-label>
-        <input matInput type="text" [(ngModel)]="email" name="email" required />
-    </mat-form-field>
+    <div class="container" fxLayout="column" fxLayoutAlign="space-around">
+        <div class="login">
+            <mat-card appearance="outlined">
+                <mat-card-header>
+                    <mat-card-title><img [src]="config.BRANDING.LOGO_URL" class="logo" /></mat-card-title>
+                    <mat-card-subtitle> Manager </mat-card-subtitle>
+                </mat-card-header>
 
-    <mat-form-field appearance="fill">
-        <mat-label>Password</mat-label>
-        <input matInput type="password" [(ngModel)]="password" name="password" required />
-    </mat-form-field>
+                <mat-card-content>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Username</mat-label>
+                        <input matInput type="text" [(ngModel)]="email" name="email" required />
+                    </mat-form-field>
 
-    <button mat-raised-button color="primary" type="submit">Login</button>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Password</mat-label>
+                        <input matInput type="password" [(ngModel)]="password" name="password" required />
+                    </mat-form-field>
+
+                    <button mat-raised-button color="primary" type="submit">Login</button>
+                </mat-card-content>
+            </mat-card>
+
+            @if (config.BRANDING.HOMEPAGE; as homepage) {
+                <div class="homepage-wrapper">
+                    <a [href]="homepage.URL" mat-flat-button color="accent" class="homepage-button">
+                        <mat-icon>keyboard_return</mat-icon>
+                        <span></span>
+                        <img
+                            [src]="homepage.BUTTON_IMAGE_URL"
+                            [alt]="homepage.BUTTON_ALT_TEXT"
+                            [matTooltip]="homepage.BUTTON_TOOLTIP_TEXT"
+                        />
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
 </form>

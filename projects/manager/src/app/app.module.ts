@@ -41,6 +41,7 @@ import {LayersComponent} from './layers/layers.component';
 import {ScrollingModule} from '@angular/cdk/scrolling';
 import {DatasetListComponent} from './datasets/dataset-list/dataset-list.component';
 import {DatasetEditorComponent} from './datasets/dataset-editor/dataset-editor.component';
+import {PermissionsComponent} from './permissions/permissions.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -83,6 +84,7 @@ export const MATERIAL_MODULES = [
         LayersComponent,
         DatasetListComponent,
         DatasetEditorComponent,
+        PermissionsComponent,
     ],
     imports: [
         ...MATERIAL_MODULES,
