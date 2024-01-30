@@ -3,11 +3,17 @@ import {Configuration, DefaultConfig} from '@geoengine/openapi-client';
 import Immutable from 'immutable';
 import {mergeWith} from 'immutable';
 
+/**
+ * The structure of the config file containing the URL of the backend API and the branding information.
+ */
 export interface ConfigStructure {
     readonly API_URL: string;
     readonly BRANDING: Branding;
 }
 
+/**
+ * Information about the branding of the Geo Engine instance.
+ */
 interface Branding {
     readonly LOGO_URL: string;
     readonly LOGO_ICON_URL: string;
@@ -16,6 +22,9 @@ interface Branding {
     readonly HOMEPAGE?: Homepage;
 }
 
+/**
+ * (Optional) information about the homepage (e.g. project website) of the Geo Engine instance.
+ */
 interface Homepage {
     readonly URL: string;
     readonly BUTTON_IMAGE_URL: string;
