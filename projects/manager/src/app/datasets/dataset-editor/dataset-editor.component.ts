@@ -1,8 +1,15 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {DatasetListing} from '@geoengine/openapi-client';
+import {
+    DatasetListing,
+    RasterResultDescriptorWithType,
+    TypedResultDescriptor,
+    VectorResultDescriptorWithType,
+} from '@geoengine/openapi-client';
 
 interface Dataset {
+    layerType: FormControl<'plot' | 'raster' | 'vector'>;
+    dataType: FormControl<string>;
     name: FormControl<string>;
     displayName: FormControl<string>;
     description: FormControl<string>;
@@ -31,8 +38,35 @@ export class DatasetEditorComponent implements OnInit, OnChanges {
         }
     }
 
+    private dataTypeFromResultDescriptor(rd: TypedResultDescriptor): string {
+        if (rd.type === 'raster') {
+            return (rd as RasterResultDescriptorWithType).dataType;
+        }
+
+        if (rd.type === 'vector') {
+            return (rd as VectorResultDescriptorWithType).dataType;
+        }
+
+        // There are no plot datasets so this should never happen
+        return '';
+    }
+
     private setUpForm(): void {
         this.form = new FormGroup<Dataset>({
+            layerType: new FormControl(
+                {value: this.dataset.resultDescriptor.type, disabled: true},
+                {
+                    nonNullable: true,
+                    validators: [Validators.required],
+                },
+            ),
+            dataType: new FormControl(
+                {value: this.dataTypeFromResultDescriptor(this.dataset.resultDescriptor), disabled: true},
+                {
+                    nonNullable: true,
+                    validators: [Validators.required],
+                },
+            ),
             name: new FormControl(this.dataset.name, {
                 nonNullable: true,
                 validators: [Validators.required, Validators.pattern(/^[a-zA-Z0-9_]+$/), Validators.minLength(1)],
