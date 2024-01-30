@@ -12,7 +12,7 @@ import {AppComponent} from './app.component';
 import {LoginComponent} from './login/login.component';
 import {NavigationComponent} from './navigation/navigation.component';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
-import {MatCardModule} from '@angular/material/card';
+import {MAT_CARD_CONFIG, MatCardModule} from '@angular/material/card';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatChipsModule} from '@angular/material/chips';
@@ -108,6 +108,7 @@ export const MATERIAL_MODULES = [
             deps: [AppConfig],
             multi: true,
         },
+        {provide: MAT_CARD_CONFIG, useValue: {appearance: 'outlined'}},
     ],
     bootstrap: [AppComponent],
 })
