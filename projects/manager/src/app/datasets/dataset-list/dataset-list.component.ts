@@ -21,7 +21,7 @@ export class DatasetListComponent implements AfterContentInit {
 
     readonly loadingSpinnerDiameterPx: number = 3 * parseFloat(getComputedStyle(document.documentElement).fontSize);
 
-    source?: LayerCollectionItemDataSource;
+    source?: DatasetDataSource;
 
     selectedDataset$ = new BehaviorSubject<DatasetListing | undefined>(undefined);
 
@@ -54,7 +54,7 @@ export class DatasetListComponent implements AfterContentInit {
     }
 
     protected setUpSource(): void {
-        this.source = new LayerCollectionItemDataSource(this.datasetsService);
+        this.source = new DatasetDataSource(this.datasetsService);
 
         setTimeout(() => {
             this.source?.init(this.calculateInitialNumberOfElements());
@@ -72,7 +72,7 @@ export class DatasetListComponent implements AfterContentInit {
 /**
  * A custom data source that allows fetching datasets for a virtual scroll source.
  */
-class LayerCollectionItemDataSource extends DataSource<DatasetListing> {
+class DatasetDataSource extends DataSource<DatasetListing> {
     // cannot increase this, since it is limited by the server
     readonly scrollFetchSize = 20;
 
