@@ -42,6 +42,8 @@ import {ScrollingModule} from '@angular/cdk/scrolling';
 import {DatasetListComponent} from './datasets/dataset-list/dataset-list.component';
 import {DatasetEditorComponent} from './datasets/dataset-editor/dataset-editor.component';
 import {PermissionsComponent} from './permissions/permissions.component';
+import {RasterResultDescriptorComponent} from './result-descriptors/raster-result-descriptor/raster-result-descriptor.component';
+import {VectorResultDescriptorComponent} from './result-descriptors/vector-result-descriptor/vector-result-descriptor.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -85,6 +87,8 @@ export const MATERIAL_MODULES = [
         DatasetListComponent,
         DatasetEditorComponent,
         PermissionsComponent,
+        RasterResultDescriptorComponent,
+        VectorResultDescriptorComponent,
     ],
     imports: [
         ...MATERIAL_MODULES,

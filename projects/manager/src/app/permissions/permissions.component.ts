@@ -1,38 +1,33 @@
 import {DataSource} from '@angular/cdk/collections';
-import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
-import {AfterContentInit, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
-import {DatasetListing, PermissionListing} from '@geoengine/openapi-client';
-import {BehaviorSubject, EMPTY, Observable, Subject, concatMap, range, scan, startWith, tap} from 'rxjs';
+import {AfterViewInit, Component, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
+import {PermissionListing} from '@geoengine/openapi-client';
+import {BehaviorSubject, Observable, Subject, tap} from 'rxjs';
 import {PermissionsService} from './permissions.service';
+import {MatPaginator} from '@angular/material/paginator';
 
 @Component({
     selector: 'geoengine-manager-permissions',
     templateUrl: './permissions.component.html',
     styleUrl: './permissions.component.scss',
 })
-export class PermissionsComponent implements AfterContentInit, OnChanges {
-    @ViewChild(CdkVirtualScrollViewport)
-    viewport!: CdkVirtualScrollViewport;
-
+export class PermissionsComponent implements AfterViewInit, OnChanges {
     @Input()
     resourceType!: string;
     @Input()
     resourceId!: string;
 
-    @Output()
-    selectDataset = new EventEmitter<DatasetListing>();
-
-    readonly itemSizePx = 72;
+    @ViewChild(MatPaginator) paginator!: MatPaginator;
 
     readonly loadingSpinnerDiameterPx: number = 3 * parseFloat(getComputedStyle(document.documentElement).fontSize);
 
-    source?: PermissionDataSource;
+    source!: PermissionDataSource;
 
-    selectedDataset$ = new BehaviorSubject<DatasetListing | undefined>(undefined);
+    displayedColumns: string[] = ['roleName', 'roleId', 'permission'];
 
     constructor(private readonly permissionsService: PermissionsService) {}
 
-    ngAfterContentInit(): void {
+    ngAfterViewInit(): void {
+        this.paginator.page.pipe(tap(() => this.loadPermissionsPage())).subscribe();
         this.setUpSource();
     }
 
@@ -44,41 +39,13 @@ export class PermissionsComponent implements AfterContentInit, OnChanges {
         }
     }
 
-    /**
-     * Fetch new data when scrolled to the end of the list.
-     */
-    onScrolledIndexChange(_scrolledIndex: number): void {
-        const end = this.viewport.getRenderedRange().end;
-        const total = this.viewport.getDataLength();
-
-        // only fetch when scrolled to the end
-        if (end >= total) {
-            this.source?.fetchMoreData(1);
-        }
-    }
-
-    trackById(_index: number, item: PermissionListing): string {
-        return item.role.id;
-    }
-
-    select(item: DatasetListing): void {
-        this.selectedDataset$.next(item);
-        this.selectDataset.emit(item);
+    protected loadPermissionsPage(): void {
+        this.source.loadPermissions(this.paginator.pageIndex, this.paginator.pageSize);
     }
 
     protected setUpSource(): void {
-        this.source = new PermissionDataSource(this.permissionsService, this.resourceType, this.resourceId);
-
-        setTimeout(() => {
-            this.source?.init(this.calculateInitialNumberOfElements());
-        });
-    }
-
-    protected calculateInitialNumberOfElements(): number {
-        const element = this.viewport.elementRef.nativeElement;
-        const numberOfElements = Math.ceil(element.clientHeight / this.itemSizePx);
-        // add one such that scrolling happens
-        return numberOfElements + 1;
+        this.source = new PermissionDataSource(this.permissionsService, this.paginator, this.resourceType, this.resourceId);
+        this.source.loadPermissions(0, 5);
     }
 }
 
@@ -86,66 +53,44 @@ export class PermissionsComponent implements AfterContentInit, OnChanges {
  * A custom data source that allows fetching datasets for a virtual scroll source.
  */
 class PermissionDataSource extends DataSource<PermissionListing> {
-    // cannot increase this, since it is limited by the server
-    readonly scrollFetchSize = 20;
-
     readonly loading$ = new BehaviorSubject(false);
 
-    protected nextBatch$ = new Subject<number>();
-    protected noMoreData = false;
-    protected offset = 0;
+    protected permissions$ = new Subject<Array<PermissionListing>>();
 
     constructor(
         private permissionsService: PermissionsService,
+        private paginator: MatPaginator,
         private resourceType: string,
         private resourceId: string,
     ) {
         super();
     }
 
-    init(numberOfElements: number): void {
-        this.fetchMoreData(Math.ceil(numberOfElements / this.scrollFetchSize)); // initially populate source
-    }
-
     connect(): Observable<Array<PermissionListing>> {
-        return this.nextBatch$.pipe(
-            concatMap((numberOfTimes) => range(0, numberOfTimes)),
-            concatMap(() => this.getMoreDataFromServer()),
-            scan((acc, newValues) => [...acc, ...newValues]),
-            startWith([]), // emit empty array initially to trigger loading animation properly
-        );
+        return this.permissions$.asObservable();
     }
 
     /**
      * Clean up resources
      */
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    disconnect(): void {}
-
-    fetchMoreData(numberOfTimes: number): void {
-        this.nextBatch$.next(numberOfTimes);
+    disconnect(): void {
+        this.permissions$.complete();
     }
 
-    protected getMoreDataFromServer(): Observable<Array<PermissionListing>> {
-        if (this.noMoreData) {
-            return EMPTY;
-        }
+    loadPermissions(pageIndex: number, pageSize: number): void {
+        this.loading$.next(false);
 
-        this.loading$.next(true);
-
-        const offset = this.offset;
-        const limit = this.scrollFetchSize;
-
-        return this.permissionsService.getPermissions(this.resourceType, this.resourceId, offset, limit).pipe(
-            tap((items) => {
-                this.offset += items.length;
-
-                if (items.length < limit) {
-                    this.noMoreData = true;
-                }
-
-                this.loading$.next(false);
-            }),
-        );
+        this.permissionsService
+            .getPermissions(this.resourceType, this.resourceId, pageIndex * pageSize, pageSize)
+            .pipe(
+                tap((permissions) => {
+                    this.loading$.next(false);
+                    if (this.paginator && permissions.length === pageSize) {
+                        // we do not know the number of items in total, so instead for each full page set the length to show the "next" button
+                        this.paginator.length = (pageIndex + 1) * pageSize + 1;
+                    }
+                }),
+            )
+            .subscribe((permissions) => this.permissions$.next(permissions));
     }
 }

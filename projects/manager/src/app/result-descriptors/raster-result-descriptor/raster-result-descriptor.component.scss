@@ -1,11 +1,9 @@
 :host {
     width: 100%;
-    overflow-y: auto;
-    height: 100%;
 }
 
 mat-card {
-    margin: 1rem 1rem 0rem 1rem;
+    margin: 1rem;
 }
 
 mat-card-content {
@@ -16,8 +14,11 @@ mat-form-field {
     width: 100%;
 }
 
-.container {
+.flex-container {
     display: flex;
-    flex-direction: column;
-    height: 100%;
+    justify-content: space-between;
+}
+
+table {
+    width: 100%;
 }

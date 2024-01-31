@@ -53,20 +53,14 @@ export class DatasetEditorComponent implements OnInit, OnChanges {
 
     private setUpForm(): void {
         this.form = new FormGroup<Dataset>({
-            layerType: new FormControl(
-                {value: this.dataset.resultDescriptor.type, disabled: true},
-                {
-                    nonNullable: true,
-                    validators: [Validators.required],
-                },
-            ),
-            dataType: new FormControl(
-                {value: this.dataTypeFromResultDescriptor(this.dataset.resultDescriptor), disabled: true},
-                {
-                    nonNullable: true,
-                    validators: [Validators.required],
-                },
-            ),
+            layerType: new FormControl(this.dataset.resultDescriptor.type, {
+                nonNullable: true,
+                validators: [Validators.required],
+            }),
+            dataType: new FormControl(this.dataTypeFromResultDescriptor(this.dataset.resultDescriptor), {
+                nonNullable: true,
+                validators: [Validators.required],
+            }),
             name: new FormControl(this.dataset.name, {
                 nonNullable: true,
                 validators: [Validators.required, Validators.pattern(/^[a-zA-Z0-9_]+$/), Validators.minLength(1)],
