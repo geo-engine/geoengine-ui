@@ -23,7 +23,7 @@ interface Branding {
 }
 
 /**
- * (Optional) information about the homepage (e.g. project website) of the Geo Engine instance.
+ * Specifies a link to a homepage (e.g. project website) and a button image.
  */
 interface Homepage {
     readonly URL: string;
