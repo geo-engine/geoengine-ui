@@ -73,15 +73,15 @@
         <ng-container matColumnDef="measurement">
             <th mat-header-cell *matHeaderCellDef>Measurement</th>
             <td mat-cell *matCellDef="let band">
-                @if ("band.measurement.type === 'classification'") {
+                @if (band.measurement.type === 'classification') {
                     {{ band.measurement.measurement }}
                     <!-- TODO classes -->
                 }
-                @if ("band.measurement.type === 'continuous'") {
+                @if (band.measurement.type === 'continuous') {
                     {{ band.measurement.measurement }}
                     <!-- TODO unit -->
                 }
-                @if ("band.measurement.type === 'unitless'") {
+                @if (band.measurement.type === 'unitless') {
                     Unitless
                 }
             </td></ng-container
