@@ -15,13 +15,14 @@ export class DatasetsService {
         });
     }
 
-    getDatasets(offset = 0, limit = 20): Observable<DatasetListing[]> {
+    getDatasets(offset = 0, limit = 20, filter?: string): Observable<DatasetListing[]> {
         return this.datasetApi.pipe(
             mergeMap((api) =>
                 api.listDatasetsHandler({
                     order: OrderBy.NameAsc,
                     offset,
                     limit,
+                    filter,
                 }),
             ),
         );

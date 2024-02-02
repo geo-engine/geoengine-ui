@@ -2,7 +2,19 @@ import {DataSource} from '@angular/cdk/collections';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {AfterContentInit, Component, EventEmitter, Output, ViewChild} from '@angular/core';
 import {DatasetListing} from '@geoengine/openapi-client';
-import {BehaviorSubject, EMPTY, Observable, Subject, concatMap, range, scan, startWith, tap} from 'rxjs';
+import {
+    BehaviorSubject,
+    EMPTY,
+    Observable,
+    Subject,
+    concatMap,
+    debounceTime,
+    distinctUntilChanged,
+    range,
+    scan,
+    startWith,
+    tap,
+} from 'rxjs';
 import {DatasetsService} from '../datasets.service';
 
 @Component({
@@ -25,7 +37,13 @@ export class DatasetListComponent implements AfterContentInit {
 
     selectedDataset$ = new BehaviorSubject<DatasetListing | undefined>(undefined);
 
-    constructor(private readonly datasetsService: DatasetsService) {}
+    private searchSubject$ = new BehaviorSubject<string | undefined>(undefined);
+
+    constructor(private readonly datasetsService: DatasetsService) {
+        this.searchSubject$.pipe(debounceTime(500), distinctUntilChanged()).subscribe((_searchText) => {
+            this.setUpSource();
+        });
+    }
 
     ngAfterContentInit(): void {
         this.setUpSource();
@@ -53,8 +71,19 @@ export class DatasetListComponent implements AfterContentInit {
         this.selectDataset.emit(item);
     }
 
+    onSearchChange(event: Event): void {
+        if (event.target instanceof HTMLInputElement) {
+            const searchValue = event.target.value;
+            if (searchValue === '') {
+                this.searchSubject$.next(undefined);
+            } else {
+                this.searchSubject$.next(searchValue);
+            }
+        }
+    }
+
     protected setUpSource(): void {
-        this.source = new DatasetDataSource(this.datasetsService);
+        this.source = new DatasetDataSource(this.datasetsService, this.searchSubject$.value);
 
         // calculate initial number of elements to display in `setTimeout` because the viewport is not yet initialized
         setTimeout(() => {
@@ -83,7 +112,10 @@ class DatasetDataSource extends DataSource<DatasetListing> {
     protected noMoreData = false;
     protected offset = 0;
 
-    constructor(private datasetsService: DatasetsService) {
+    constructor(
+        private datasetsService: DatasetsService,
+        private filterValue?: string,
+    ) {
         super();
     }
 
@@ -120,7 +152,7 @@ class DatasetDataSource extends DataSource<DatasetListing> {
         const offset = this.offset;
         const limit = this.scrollFetchSize;
 
-        return this.datasetsService.getDatasets(offset, limit).pipe(
+        return this.datasetsService.getDatasets(offset, limit, this.filterValue).pipe(
             tap((items) => {
                 this.offset += items.length;
 
