@@ -6,22 +6,26 @@
 
         <mat-card-content>
             <form [formGroup]="form">
-                <mat-form-field appearance="fill">
-                    <mat-label>Layer Type</mat-label>
-                    <input matInput type="text" readonly formControlName="layerType" />
-                </mat-form-field>
-                <mat-form-field appearance="fill">
-                    <mat-label>Data Type</mat-label>
-                    <input matInput type="text" readonly formControlName="dataType" />
-                </mat-form-field>
-                <mat-form-field appearance="fill">
-                    <mat-label>Name</mat-label>
-                    <input matInput type="text" formControlName="name" />
-                </mat-form-field>
-                <mat-form-field appearance="fill">
-                    <mat-label>Display Name</mat-label>
-                    <input matInput type="text" formControlName="displayName" />
-                </mat-form-field>
+                <div class="flex-container">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Name</mat-label>
+                        <input matInput type="text" formControlName="name" />
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Display Name</mat-label>
+                        <input matInput type="text" formControlName="displayName" />
+                    </mat-form-field>
+                </div>
+                <div class="flex-container">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Layer Type</mat-label>
+                        <input matInput type="text" readonly formControlName="layerType" />
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Data Type</mat-label>
+                        <input matInput type="text" readonly formControlName="dataType" />
+                    </mat-form-field>
+                </div>
                 <mat-form-field appearance="fill">
                     <mat-label>Dataset Description</mat-label>
                     <textarea matInput formControlName="description"></textarea>

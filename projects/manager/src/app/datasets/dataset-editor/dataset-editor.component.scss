@@ -21,3 +21,8 @@ mat-form-field {
     flex-direction: column;
     height: 100%;
 }
+
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+}
