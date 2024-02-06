@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Configuration, DefaultConfig, SessionApi, UserSession} from '@geoengine/openapi-client';
-import {Observable, ReplaySubject, filter, first, from, map, tap} from 'rxjs';
+import {Observable, ReplaySubject, filter, first, map} from 'rxjs';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
@@ -18,14 +18,13 @@ export class SessionService {
             this.saveSessionInBrowser(session);
         });
 
-        this.restoreSessionFromBrowser().subscribe({
-            next: (session) => {
+        this.restoreSessionFromBrowser()
+            .then((session) => {
                 this.session$.next(session);
-            },
-            error: () => {
+            })
+            .catch(() => {
                 this.session$.next(undefined);
-            },
-        });
+            });
     }
 
     getSessionTokenStream(): Observable<string> {
@@ -69,10 +68,11 @@ export class SessionService {
         this.session$.next(undefined);
     }
 
-    createSessionWithToken(sessionToken: string): Observable<UserSession> {
-        return from(new SessionApi(apiConfigurationWithAccessKey(sessionToken)).sessionHandler()).pipe(
-            tap((session) => this.session$.next(session)),
-        );
+    async createSessionWithToken(sessionToken: string): Promise<UserSession> {
+        return new SessionApi(apiConfigurationWithAccessKey(sessionToken)).sessionHandler().then((session) => {
+            this.session$.next(session);
+            return session;
+        });
     }
 
     protected saveSessionInBrowser(session: UserSession | undefined): void {
@@ -83,7 +83,7 @@ export class SessionService {
         }
     }
 
-    protected restoreSessionFromBrowser(): Observable<UserSession> {
+    protected async restoreSessionFromBrowser(): Promise<UserSession> {
         const sessionToken = localStorage.getItem(PATH_PREFIX + 'session') ?? '';
 
         return this.createSessionWithToken(sessionToken);
