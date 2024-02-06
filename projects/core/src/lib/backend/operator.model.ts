@@ -251,6 +251,37 @@ export interface StatisticsDict extends OperatorDict {
     };
 }
 
+export interface VectorExpressionDict extends OperatorDict {
+    type: 'VectorExpression';
+    params: VectorExpressionParams;
+    sources: {
+        vector: SourceOperatorDict | OperatorDict;
+    };
+}
+
+export interface VectorExpressionParams extends OperatorParams {
+    inputColumns: Array<string>;
+    expression: string;
+    outputColumn: GeometryOutputColumn | ColumnOutputColumn;
+    outputMeasurement: MeasurementDict;
+    geometryColumnName?: string;
+}
+
+export interface OutputColumn {
+    type: 'geometry' | 'column';
+    value: string | ('MultiPoint' | 'MultiLineString' | 'MultiPolygon');
+}
+
+export interface ColumnOutputColumn extends OutputColumn {
+    type: 'column';
+    value: string;
+}
+
+export interface GeometryOutputColumn extends OutputColumn {
+    type: 'geometry';
+    value: 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
+}
+
 export interface TemporalRasterAggregationDict extends OperatorDict {
     type: 'TemporalRasterAggregation';
     params: {

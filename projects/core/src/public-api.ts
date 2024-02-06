@@ -95,6 +95,7 @@ export * from './lib/operators/dialogs/scatterplot-operator/scatterplot-operator
 export * from './lib/operators/dialogs/statistics-plot/statistics-plot.component';
 export * from './lib/operators/dialogs/temporal-raster-aggregation/temporal-raster-aggregation.component';
 export * from './lib/operators/dialogs/time-shift/time-shift.component';
+export * from './lib/operators/dialogs/vector-expression/vector-expression.component';
 export * from './lib/plots/plot-detail-view/plot-detail-view.component';
 export * from './lib/plots/plot-list-entry/plot-list-entry.component';
 export * from './lib/plots/plot-list/plot-list.component';

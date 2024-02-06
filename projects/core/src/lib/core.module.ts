@@ -167,6 +167,7 @@ import {RgbaCompositeComponent} from './operators/dialogs/rgb-composite/rgb-comp
 import {RasterGradientSymbologyEditorComponent} from './layers/symbology/raster-gradient-symbology-editor/raster-gradient-symbology-editor.component';
 import {RasterPaletteSymbologyEditorComponent} from './layers/symbology/raster-palette-symbology-editor/raster-palette-symbology-editor.component';
 import {RolesComponent} from './users/roles/roles.component';
+import {VectorExpressionComponent} from './operators/dialogs/vector-expression/vector-expression.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -329,6 +330,7 @@ const CORE_COMPONENTS = [
     UploadComponent,
     UserSessionComponent,
     VatLogoComponent,
+    VectorExpressionComponent,
     VectorLegendComponent,
     VectorSymbologyEditorComponent,
     VegaViewerComponent,
