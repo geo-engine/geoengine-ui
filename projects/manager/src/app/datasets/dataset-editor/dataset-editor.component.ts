@@ -21,9 +21,9 @@ interface Dataset {
     styleUrl: './dataset-editor.component.scss',
 })
 export class DatasetEditorComponent implements OnInit, OnChanges {
-    @Input() dataset!: DatasetListing;
+    @Input({required: true}) dataset!: DatasetListing;
 
-    form!: FormGroup<Dataset>;
+    form: FormGroup<Dataset> = this.placeholderForm();
 
     constructor() {}
 
@@ -70,6 +70,30 @@ export class DatasetEditorComponent implements OnInit, OnChanges {
                 validators: [Validators.required],
             }),
             description: new FormControl(this.dataset.description, {
+                nonNullable: true,
+            }),
+        });
+    }
+
+    private placeholderForm(): FormGroup<Dataset> {
+        return new FormGroup<Dataset>({
+            layerType: new FormControl('raster', {
+                nonNullable: true,
+                validators: [Validators.required],
+            }),
+            dataType: new FormControl('U8', {
+                nonNullable: true,
+                validators: [Validators.required],
+            }),
+            name: new FormControl('name', {
+                nonNullable: true,
+                validators: [Validators.required, Validators.pattern(/^[a-zA-Z0-9_]+$/), Validators.minLength(1)],
+            }),
+            displayName: new FormControl('displayName', {
+                nonNullable: true,
+                validators: [Validators.required],
+            }),
+            description: new FormControl('description', {
                 nonNullable: true,
             }),
         });
