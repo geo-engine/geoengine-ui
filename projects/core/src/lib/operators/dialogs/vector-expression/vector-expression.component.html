@@ -36,10 +36,10 @@
                                     <!-- we need to provide the current value because it 
                                         won't be in `availableAttributes$` anymore -->
                                     @if (column.value !== null) {
-                                        <mat-option [value]="column.value">{{ column.value }}</mat-option>
+                                        <mat-option [value]="column.value">{{ column.value }} <em>(number)</em></mat-option>
                                     }
                                     @for (attribute of availableAttributes$ | async; track attribute) {
-                                        <mat-option [value]="attribute">{{ attribute }}</mat-option>
+                                        <mat-option [value]="attribute">{{ attribute }} <em>(number)</em></mat-option>
                                     }
                                 </mat-select>
                             </mat-form-field>
@@ -58,21 +58,36 @@
                 ></geoengine-dialog-section-heading>
 
                 <mat-radio-group formControlName="outputColumnType">
-                    <mat-radio-button value="column">Float Column (add)</mat-radio-button>
+                    <mat-radio-button value="column">I want to add a new number column</mat-radio-button>
+                    <mat-radio-button value="geometry">I want to replace the geometries</mat-radio-button>
+                </mat-radio-group>
+
+                <!-- <mat-select>
                     <mat-radio-button value="MultiPoint">Multi Point (replace)</mat-radio-button>
                     <mat-radio-button value="MultiLineString">Multi Line String (replace)</mat-radio-button>
                     <mat-radio-button value="MultiPolygon">Multi Polygon (replace)</mat-radio-button>
-                </mat-radio-group>
+                </mat-select> -->
 
-                @if (outputColumnType.value === 'column') {
-                    <mat-form-field>
-                        <mat-label>Output column name</mat-label>
-                        <input matInput formControlName="outputColumnName" />
+                @switch (outputColumnType.value) {
+                    @case ('column') {
+                        <mat-form-field>
+                            <mat-label>Output column name</mat-label>
+                            <input matInput formControlName="outputColumnName" />
 
-                        @if (outputColumnName.errors?.duplicateName) {
-                            <mat-hint align="end" class="error">A column with this name already exists.</mat-hint>
-                        }
-                    </mat-form-field>
+                            @if (outputColumnName.errors?.duplicateName) {
+                                <mat-hint align="end" class="error">A column with this name already exists.</mat-hint>
+                            }
+                        </mat-form-field>
+                    }
+                    @case ('geometry') {
+                        <mat-form-field>
+                            <mat-select placeholder="Attribute" formControlName="outputGeometryType">
+                                <mat-option value="MultiPoint">Multi Point</mat-option>
+                                <mat-option value="MultiLineString">Multi Line String</mat-option>
+                                <mat-option value="MultiPolygon">Multi Polygon</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    }
                 }
             </div>
 

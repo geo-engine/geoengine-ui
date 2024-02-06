@@ -23,13 +23,15 @@ interface VectorExpressionForm {
     inputColumns: FormArray<FormControl<string | null>>;
     outputColumnType: FormControl<OutputColumnType>;
     outputColumnName: FormControl<string>;
+    outputGeometryType: FormControl<GeometryType>;
     expression: FormControl<string>;
     geometryColumnName: FormControl<string>;
     outputMeasurement: FormControl<Measurement>;
     layerName: FormControl<string>;
 }
 
-type OutputColumnType = 'column' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
+type OutputColumnType = 'column' | 'geometry';
+type GeometryType = 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
 
 @Component({
     selector: 'geoengine-vector-expression',
@@ -92,6 +94,10 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
 
             outputColumnType: this.outputColumnType,
             outputColumnName: this.outputColumnName,
+            outputGeometryType: this.formBuilder.nonNullable.control<GeometryType>(
+                'MultiPoint',
+                geoengineValidators.conditionalValidator(Validators.required, () => this.outputColumnType.value === 'geometry'),
+            ),
 
             expression: this.expression,
 
@@ -151,11 +157,13 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
         this.fnSignature = combineLatest({
             columns: this.columnNames.valueChanges,
             geometryName: this.form.controls.geometryColumnName.valueChanges,
+            outputGeometryType: this.form.controls.outputGeometryType.valueChanges,
         }).pipe(
-            map(({columns, geometryName}) => {
+            map(({columns, geometryName, outputGeometryType}) => {
                 const variables = columns.filter((c) => c !== null).map((c) => canonicalizeVariableName(c as string));
                 const geometryComma = variables.length > 0 ? ', ' : '';
-                return `fn(${geometryName}${geometryComma}${variables.join(', ')}) {`;
+                const returnType = this.outputColumnType.value === 'column' ? 'number' : outputGeometryType;
+                return `fn(${geometryName}${geometryComma}${variables.join(', ')}) -> ${returnType} {`;
             }),
         );
 
@@ -163,13 +171,15 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
         this.subscriptions.push(
             this.outputColumnType.valueChanges.subscribe(() => {
                 this.outputColumnName.updateValueAndValidity();
+                this.form.controls.outputGeometryType.updateValueAndValidity();
             }),
         );
 
-        // trigger `geometryColumnName` & `columnNames` to start submitting `valueChanges
+        // trigger `geometryColumnName`, `outputGeometryType` & `columnNames` to start submitting `valueChanges
         setTimeout(() => {
             this.form.controls.geometryColumnName.updateValueAndValidity();
             this.columnNames.updateValueAndValidity();
+            this.form.controls.outputGeometryType.updateValueAndValidity();
         });
     }
 
@@ -201,16 +211,17 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
         const inputColumns = this.columnNames.controls.map((fc) => (fc ? fc.value?.toString() : ''));
 
         const outputColumnType = this.form.controls.outputColumnType.value;
+        const outputGeometryType = this.form.controls.outputGeometryType.value;
         let outputColumn: ColumnOutputColumn | GeometryOutputColumn;
         if (outputColumnType === 'column') {
             outputColumn = {
                 type: 'column',
                 value: this.form.controls.outputColumnName.value,
             } as ColumnOutputColumn;
-        } else {
+        } else if (outputColumnType === 'geometry') {
             outputColumn = {
                 type: 'geometry',
-                value: outputColumnType,
+                value: outputGeometryType,
             } as GeometryOutputColumn;
         }
 
@@ -246,7 +257,12 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
                         new VectorLayer({
                             workflowId,
                             name: layerName,
-                            symbology: createSymbology(this.randomColorService, sourceLayer.symbology, outputColumnType),
+                            symbology: createSymbology(
+                                this.randomColorService,
+                                sourceLayer.symbology,
+                                outputColumnType,
+                                outputGeometryType,
+                            ),
                             isLegendVisible: false,
                             isVisible: true,
                         }),
@@ -298,14 +314,15 @@ function canonicalizeVariableName(name: string): string {
 function createSymbology(
     randomColorService: RandomColorService,
     oldSymbology: VectorSymbology,
-    _newSymbologyType: 'column' | 'MultiPoint' | 'MultiLineString' | 'MultiPolygon',
+    newOutputType: OutputColumnType,
+    newGeometryType: GeometryType,
 ): VectorSymbology {
-    if (_newSymbologyType === 'column') {
+    if (newOutputType === 'column') {
         return oldSymbology.clone();
     }
 
     let newSymbologyType: SymbologyType;
-    switch (_newSymbologyType) {
+    switch (newGeometryType) {
         case 'MultiPoint':
             newSymbologyType = SymbologyType.POINT;
             break;
@@ -320,7 +337,7 @@ function createSymbology(
     if (oldSymbology.getSymbologyType() === newSymbologyType) {
         return oldSymbology.clone();
     }
-    return createVectorSymbology(_newSymbologyType, randomColorService.getRandomColorRgba());
+    return createVectorSymbology(newGeometryType, randomColorService.getRandomColorRgba());
 }
 
 /**
