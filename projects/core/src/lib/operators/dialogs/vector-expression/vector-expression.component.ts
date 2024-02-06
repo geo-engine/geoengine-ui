@@ -53,7 +53,6 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
     readonly fnSignature: Observable<string>;
     readonly lastError$ = new BehaviorSubject<string | undefined>(undefined);
 
-    // TODO: use
     readonly loading$ = new BehaviorSubject<boolean>(false);
 
     protected readonly allAttributes$ = new ReplaySubject<Array<string>>(1);
@@ -96,13 +95,13 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
 
             expression: this.expression,
 
-            // TODO: form component
+            // TODO: add form component (for cases where geom is already used)
             geometryColumnName: this.formBuilder.nonNullable.control<string>('geom', [
                 Validators.required,
                 geoengineValidators.notOnlyWhitespace,
             ]),
 
-            // TODO: form component
+            // TODO: add form component (build generic one)
             outputMeasurement: this.formBuilder.nonNullable.control<Measurement>(new UnitlessMeasurement(), Validators.required),
 
             layerName: this.layerName,
