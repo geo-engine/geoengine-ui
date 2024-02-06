@@ -54,21 +54,15 @@ export class SessionService {
      * @param credentials.password The user's password.
      * @returns `true` if the login was successful, `false` otherwise.
      */
-    login(userCredentials: {email: string; password: string}): Observable<UserSession> {
-        const result = new ReplaySubject<UserSession>();
-
-        new SessionApi()
+    async login(userCredentials: {email: string; password: string}): Promise<UserSession> {
+        return new SessionApi()
             .loginHandler({
                 userCredentials,
             })
             .then((session) => {
                 this.session$.next(session);
-                result.next(session);
-                result.complete();
-            })
-            .catch((error) => result.error(error));
-
-        return result.asObservable();
+                return session;
+            });
     }
 
     logout(): void {

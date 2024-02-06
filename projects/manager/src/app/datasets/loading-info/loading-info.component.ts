@@ -30,7 +30,7 @@ export class LoadingInfoComponent implements AfterViewInit, OnChanges {
             return;
         }
 
-        this.datasetsService.getLoadingInfo(this.datasetName).subscribe((info) => {
+        this.datasetsService.getLoadingInfo(this.datasetName).then((info) => {
             this.loadingInfo$.next(JSON.stringify(info, null, 2));
         });
     }

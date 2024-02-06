@@ -80,17 +80,14 @@ class PermissionDataSource extends DataSource<PermissionListing> {
     loadPermissions(pageIndex: number, pageSize: number): void {
         this.loading$.next(false);
 
-        this.permissionsService
-            .getPermissions(this.resourceType, this.resourceId, pageIndex * pageSize, pageSize)
-            .pipe(
-                tap((permissions) => {
-                    this.loading$.next(false);
-                    if (this.paginator && permissions.length === pageSize) {
-                        // we do not know the number of items in total, so instead for each full page set the length to show the "next" button
-                        this.paginator.length = (pageIndex + 1) * pageSize + 1;
-                    }
-                }),
-            )
-            .subscribe((permissions) => this.permissions$.next(permissions));
+        this.permissionsService.getPermissions(this.resourceType, this.resourceId, pageIndex * pageSize, pageSize).then((permissions) => {
+            this.loading$.next(false);
+            if (this.paginator && permissions.length === pageSize) {
+                // we do not know the number of items in total, so instead for each full page set the length to show the "next" button
+                this.paginator.length = (pageIndex + 1) * pageSize + 1;
+            }
+
+            this.permissions$.next(permissions);
+        });
     }
 }

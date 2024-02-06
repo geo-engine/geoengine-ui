@@ -19,9 +19,9 @@ export class LoginComponent {
     ) {}
 
     login(): void {
-        this.sessionService.login({email: this.email, password: this.password}).subscribe({
-            next: (_session) => this.router.navigate(['navigation']),
-            error: (error) => console.error(error),
-        });
+        this.sessionService
+            .login({email: this.email, password: this.password})
+            .then((_session) => this.router.navigate(['navigation']))
+            .catch((error) => console.error(error));
     }
 }

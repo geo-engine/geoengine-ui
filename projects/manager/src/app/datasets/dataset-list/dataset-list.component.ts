@@ -2,19 +2,7 @@ import {DataSource} from '@angular/cdk/collections';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {AfterContentInit, Component, EventEmitter, Output, ViewChild} from '@angular/core';
 import {DatasetListing} from '@geoengine/openapi-client';
-import {
-    BehaviorSubject,
-    EMPTY,
-    Observable,
-    Subject,
-    concatMap,
-    debounceTime,
-    distinctUntilChanged,
-    range,
-    scan,
-    startWith,
-    tap,
-} from 'rxjs';
+import {BehaviorSubject, Observable, Subject, concatMap, debounceTime, distinctUntilChanged, range, scan, skip, startWith} from 'rxjs';
 import {DatasetsService} from '../datasets.service';
 
 @Component({
@@ -40,7 +28,7 @@ export class DatasetListComponent implements AfterContentInit {
     private searchSubject$ = new BehaviorSubject<string | undefined>(undefined);
 
     constructor(private readonly datasetsService: DatasetsService) {
-        this.searchSubject$.pipe(debounceTime(500), distinctUntilChanged()).subscribe((_searchText) => {
+        this.searchSubject$.pipe(skip(1), debounceTime(500), distinctUntilChanged()).subscribe((_searchText) => {
             this.setUpSource();
         });
     }
@@ -139,12 +127,15 @@ class DatasetDataSource extends DataSource<DatasetListing> {
     disconnect(): void {}
 
     fetchMoreData(numberOfTimes: number): void {
+        if (this.noMoreData) {
+            return;
+        }
         this.nextBatch$.next(numberOfTimes);
     }
 
-    protected getMoreDataFromServer(): Observable<Array<DatasetListing>> {
+    protected async getMoreDataFromServer(): Promise<Array<DatasetListing>> {
         if (this.noMoreData) {
-            return EMPTY;
+            return [];
         }
 
         this.loading$.next(true);
@@ -152,16 +143,16 @@ class DatasetDataSource extends DataSource<DatasetListing> {
         const offset = this.offset;
         const limit = this.scrollFetchSize;
 
-        return this.datasetsService.getDatasets(offset, limit, this.filterValue).pipe(
-            tap((items) => {
-                this.offset += items.length;
+        return this.datasetsService.getDatasets(offset, limit, this.filterValue).then((items) => {
+            this.offset += items.length;
 
-                if (items.length < limit) {
-                    this.noMoreData = true;
-                }
+            if (items.length < limit) {
+                this.noMoreData = true;
+            }
 
-                this.loading$.next(false);
-            }),
-        );
+            this.loading$.next(false);
+
+            return items;
+        });
     }
 }

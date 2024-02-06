@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {DatasetListing, DatasetsApi, MetaDataDefinition, OrderBy} from '@geoengine/openapi-client';
 import {SessionService, apiConfigurationWithAccessKey} from '../session/session.service';
-import {Observable, ReplaySubject, mergeMap} from 'rxjs';
+import {ReplaySubject, firstValueFrom} from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -15,26 +15,22 @@ export class DatasetsService {
         });
     }
 
-    getDatasets(offset = 0, limit = 20, filter?: string): Observable<DatasetListing[]> {
-        return this.datasetApi.pipe(
-            mergeMap((api) =>
-                api.listDatasetsHandler({
-                    order: OrderBy.NameAsc,
-                    offset,
-                    limit,
-                    filter,
-                }),
-            ),
-        );
+    async getDatasets(offset = 0, limit = 20, filter?: string): Promise<DatasetListing[]> {
+        const datasetApi = await firstValueFrom(this.datasetApi);
+
+        return datasetApi.listDatasetsHandler({
+            order: OrderBy.NameAsc,
+            offset,
+            limit,
+            filter,
+        });
     }
 
-    getLoadingInfo(datasetName: string): Observable<MetaDataDefinition> {
-        return this.datasetApi.pipe(
-            mergeMap((api) =>
-                api.getLoadingInfoHandler({
-                    dataset: datasetName,
-                }),
-            ),
-        );
+    async getLoadingInfo(datasetName: string): Promise<MetaDataDefinition> {
+        const datasetApi = await firstValueFrom(this.datasetApi);
+
+        return datasetApi.getLoadingInfoHandler({
+            dataset: datasetName,
+        });
     }
 }

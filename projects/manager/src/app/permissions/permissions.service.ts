@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {PermissionListing, PermissionsApi} from '@geoengine/openapi-client';
-import {Observable, ReplaySubject, mergeMap} from 'rxjs';
+import {ReplaySubject, firstValueFrom} from 'rxjs';
 import {SessionService, apiConfigurationWithAccessKey} from '../session/session.service';
 
 @Injectable({
@@ -15,16 +15,14 @@ export class PermissionsService {
         });
     }
 
-    getPermissions(resourceType: string, resourceId: string, offset = 0, limit = 20): Observable<PermissionListing[]> {
-        return this.permissionsApi.pipe(
-            mergeMap((api) =>
-                api.getResourcePermissionsHandler({
-                    resourceType,
-                    resourceId,
-                    offset,
-                    limit,
-                }),
-            ),
-        );
+    async getPermissions(resourceType: string, resourceId: string, offset = 0, limit = 20): Promise<PermissionListing[]> {
+        const permissionsApi = await firstValueFrom(this.permissionsApi);
+
+        return permissionsApi.getResourcePermissionsHandler({
+            resourceType,
+            resourceId,
+            offset,
+            limit,
+        });
     }
 }
