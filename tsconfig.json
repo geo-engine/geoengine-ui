@@ -13,7 +13,8 @@
         "target": "ES2022",
         "lib": ["ES2022", "dom"],
         "paths": {
-            "@geoengine/core": ["dist/core"]
+            "@geoengine/core": ["dist/core"],
+            "@geoengine/common": ["dist/common"]
         },
         // TODO: set to false if no longer needed for moment and proj4
         "allowSyntheticDefaultImports": true,
