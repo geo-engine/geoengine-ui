@@ -1,0 +1,27 @@
+<mat-sidenav-container fullscreen class="sidenav-container">
+    <mat-sidenav
+        #drawer
+        class="sidenav"
+        fixedInViewport
+        [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+        [mode]="(isHandset$ | async) ? 'over' : 'side'"
+        [opened]="(isHandset$ | async) === false"
+    >
+        <mat-toolbar><img [src]="config.BRANDING.LOGO_URL" class="logo" /></mat-toolbar>
+        <mat-nav-list>
+            <a mat-list-item (click)="toggleSelection(NavigationType.Datasets)"
+                ><span [class.selected]="selectedType === NavigationType.Datasets">Dataset</span></a
+            >
+            <a mat-list-item (click)="toggleSelection(NavigationType.Layers)"
+                ><span [class.selected]="selectedType === NavigationType.Layers">Layers</span></a
+            >
+            <a mat-list-item (click)="logout()" class="logout">Logout</a>
+        </mat-nav-list>
+    </mat-sidenav>
+    <mat-sidenav-content>
+        <ng-container [ngSwitch]="selectedType">
+            <geoengine-manager-datasets *ngSwitchCase="NavigationType.Datasets"></geoengine-manager-datasets>
+            <geoengine-manager-layers *ngSwitchCase="NavigationType.Layers"></geoengine-manager-layers>
+        </ng-container>
+    </mat-sidenav-content>
+</mat-sidenav-container>

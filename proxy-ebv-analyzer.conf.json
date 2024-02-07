@@ -1,5 +1,5 @@
 {
-    "/api/*": {
+    "/api/**": {
         "target": "https://ebv.app.geoengine.io/",
         "changeOrigin": true,
         "secure": false,

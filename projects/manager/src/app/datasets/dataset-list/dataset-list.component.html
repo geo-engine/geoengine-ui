@@ -1,0 +1,20 @@
+<div class="container">
+    <div>
+        <mat-form-field appearance="fill">
+            <mat-label>Filter by name</mat-label>
+            <input matInput type="text" (input)="onSearchChange($event)" />
+        </mat-form-field>
+    </div>
+    <cdk-virtual-scroll-viewport class="bottom" [itemSize]="itemSizePx" (scrolledIndexChange)="onScrolledIndexChange($event)">
+        <mat-nav-list>
+            <ng-container *cdkVirtualFor="let item of source; trackBy: trackById">
+                <mat-list-item [class.selected]="(selectedDataset$ | async) === item" (click)="select(item)">
+                    <h4 matListItemTitle>{{ item.displayName }} [{{ item.name }}]</h4>
+                    <p matListItemLine>{{ item.description }}</p>
+                </mat-list-item>
+            </ng-container>
+        </mat-nav-list>
+
+        <mat-spinner [diameter]="loadingSpinnerDiameterPx" *ngIf="source?.loading$ | async"></mat-spinner>
+    </cdk-virtual-scroll-viewport>
+</div>
