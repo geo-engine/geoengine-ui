@@ -9,7 +9,7 @@ import {WorkflowDict} from '../../../backend/backend.model';
 import {map, mergeMap, startWith} from 'rxjs/operators';
 import {ColumnOutputColumn, GeometryOutputColumn, VectorExpressionDict, VectorExpressionParams} from '../../../backend/operator.model';
 import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
-import {VectorColumnDataTypes} from '../../datatype.model';
+import {VectorColumnDataType, VectorColumnDataTypes} from '../../datatype.model';
 import {Measurement, UnitlessMeasurement} from '../../../layers/measurement';
 import {SymbologyType, VectorSymbology} from '../../../layers/symbology/symbology.model';
 import {createVectorSymbology} from '../../../util/symbologies';
@@ -33,6 +33,11 @@ interface VectorExpressionForm {
 type OutputColumnType = 'column' | 'geometry';
 type GeometryType = 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
 
+interface VectorColumn {
+    name: string;
+    datatype: VectorColumnDataType;
+}
+
 @Component({
     selector: 'geoengine-vector-expression',
     templateUrl: './vector-expression.component.html',
@@ -42,7 +47,9 @@ type GeometryType = 'MultiPoint' | 'MultiLineString' | 'MultiPolygon';
 export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
     readonly allowedLayerTypes = ResultTypes.VECTOR_TYPES;
 
-    readonly availableAttributes$ = new ReplaySubject<Array<string>>(1);
+    readonly inputGeometryType = new BehaviorSubject<GeometryType | undefined>(undefined);
+
+    readonly availableAttributes$ = new ReplaySubject<Array<VectorColumn>>(1);
 
     readonly form: FormGroup<VectorExpressionForm>;
 
@@ -57,7 +64,7 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
 
-    protected readonly allAttributes$ = new ReplaySubject<Array<string>>(1);
+    protected readonly allAttributes$ = new ReplaySubject<Immutable.Map<string, VectorColumnDataType>>(1);
 
     protected readonly subscriptions: Array<Subscription> = [];
 
@@ -77,7 +84,7 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
                 geoengineValidators.notOnlyWhitespace,
             ],
             geoengineValidators.conditionalAsyncValidator(
-                attributeNameCollision(this.allAttributes$),
+                attributeNameCollision(this.allAttributes$.pipe(map((attributes) => attributes.keySeq().toArray()))),
                 async () => this.outputColumnType.value === 'column',
             ),
         );
@@ -101,8 +108,7 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
 
             expression: this.expression,
 
-            // TODO: add form component (for cases where geom is already used)
-            geometryColumnName: this.formBuilder.nonNullable.control<string>('geom', [
+            geometryColumnName: this.formBuilder.nonNullable.control<string>({value: 'geom', disabled: true}, [
                 Validators.required,
                 geoengineValidators.notOnlyWhitespace,
             ]),
@@ -117,9 +123,28 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
         const inputColumns$: Observable<Array<string | null>> = this.columnNames.valueChanges.pipe(startWith(this.columnNames.value));
 
         this.subscriptions.push(
-            source$.subscribe(() => {
+            source$.subscribe((source) => {
                 // reset
                 this.columnNames.clear();
+
+                if (!source) {
+                    this.inputGeometryType.next(undefined);
+                    return;
+                }
+
+                switch (source.symbology.getSymbologyType()) {
+                    case SymbologyType.POINT:
+                        this.inputGeometryType.next('MultiPoint');
+                        break;
+                    case SymbologyType.LINE:
+                        this.inputGeometryType.next('MultiLineString');
+                        break;
+                    case SymbologyType.POLYGON:
+                        this.inputGeometryType.next('MultiPolygon');
+                        break;
+                    default:
+                        this.inputGeometryType.next(undefined);
+                }
             }),
         );
 
@@ -137,20 +162,23 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
                         const usedColumns = inputColumns.filter((column) => column !== null) as Array<string>;
 
                         return this.projectService.getVectorLayerMetadata(source).pipe(
-                            map((metadata: VectorLayerMetadata) => [
-                                metadata.dataTypes
-                                    .filter((columnType) => ALLOWED_EXPRESSION_COLUMN_TYPES.indexOf(columnType) >= 0)
-                                    .keySeq()
-                                    .filter((columnName) => usedColumns.indexOf(columnName) < 0)
-                                    .toArray(),
-                                metadata.dataTypes.keySeq().toArray(),
-                            ]),
+                            map<VectorLayerMetadata, [Array<VectorColumn>, Immutable.Map<string, VectorColumnDataType>]>(
+                                (metadata: VectorLayerMetadata) => [
+                                    metadata.dataTypes
+                                        .filter((columnType) => ALLOWED_EXPRESSION_COLUMN_TYPES.indexOf(columnType) >= 0)
+                                        .entrySeq()
+                                        .filter(([columnName, _columnType]) => usedColumns.indexOf(columnName) < 0)
+                                        .map(([columnName, columnType]) => ({name: columnName, datatype: columnType}))
+                                        .toArray(),
+                                    metadata.dataTypes,
+                                ],
+                            ),
                         );
                     }),
                 )
                 .subscribe(([availableAttributes, allAttributes]) => {
                     this.availableAttributes$.next(availableAttributes);
-                    this.allAttributes$.next(allAttributes);
+                    this.allAttributes$.next(allAttributes as Immutable.Map<string, VectorColumnDataType>);
                 }),
         );
 
@@ -162,7 +190,7 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
             map(({columns, geometryName, outputGeometryType}) => {
                 const variables = columns.filter((c) => c !== null).map((c) => canonicalizeVariableName(c as string));
                 const geometryComma = variables.length > 0 ? ', ' : '';
-                const returnType = this.outputColumnType.value === 'column' ? 'number' : outputGeometryType;
+                const returnType = this.outputColumnType.value === 'column' ? VectorColumnDataTypes.Float : outputGeometryType;
                 return `fn(${geometryName}${geometryComma}${variables.join(', ')}) -> ${returnType} {`;
             }),
         );
@@ -198,6 +226,10 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
 
     removeColumn(i: number): void {
         this.columnNames.removeAt(i);
+    }
+
+    typeOfColumn(column: string): Observable<VectorColumnDataType | undefined> {
+        return this.allAttributes$.pipe(map((attributes) => attributes.get(column) ?? undefined));
     }
 
     add(): void {

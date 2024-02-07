@@ -15,6 +15,19 @@
         </a>
 
         <ng-container operatorParameters>
+            <div>
+                <geoengine-dialog-section-heading
+                    title="Geometry input"
+                    subtitle="Info about the geometry."
+                ></geoengine-dialog-section-heading>
+
+                <mat-form-field>
+                    <mat-label>Input geometry variable</mat-label>
+                    <input matInput formControlName="geometryColumnName" />
+                    <mat-hint>Type: {{ inputGeometryType | async }}</mat-hint>
+                </mat-form-field>
+            </div>
+
             <div formArrayName="inputColumns">
                 <div fxLayout="row">
                     <geoengine-dialog-section-heading
@@ -36,12 +49,17 @@
                                     <!-- we need to provide the current value because it 
                                         won't be in `availableAttributes$` anymore -->
                                     @if (column.value !== null) {
-                                        <mat-option [value]="column.value">{{ column.value }} <em>(number)</em></mat-option>
+                                        <mat-option [value]="column.value">{{ column.value }}</mat-option>
                                     }
                                     @for (attribute of availableAttributes$ | async; track attribute) {
-                                        <mat-option [value]="attribute">{{ attribute }} <em>(number)</em></mat-option>
+                                        <mat-option [value]="attribute.name"
+                                            >{{ attribute.name }} <em>({{ attribute.datatype }})</em></mat-option
+                                        >
                                     }
                                 </mat-select>
+                                @if (column.value !== null) {
+                                    <mat-hint>Type: {{ typeOfColumn(column.value) | async }}</mat-hint>
+                                }
                             </mat-form-field>
                             <button type="button" (click)="removeColumn(i)" mat-button color="primary">
                                 <mat-icon>remove_circle_outline</mat-icon>
@@ -61,12 +79,6 @@
                     <mat-radio-button value="column">I want to add a new number column</mat-radio-button>
                     <mat-radio-button value="geometry">I want to replace the geometries</mat-radio-button>
                 </mat-radio-group>
-
-                <!-- <mat-select>
-                    <mat-radio-button value="MultiPoint">Multi Point (replace)</mat-radio-button>
-                    <mat-radio-button value="MultiLineString">Multi Line String (replace)</mat-radio-button>
-                    <mat-radio-button value="MultiPolygon">Multi Polygon (replace)</mat-radio-button>
-                </mat-select> -->
 
                 @switch (outputColumnType.value) {
                     @case ('column') {
