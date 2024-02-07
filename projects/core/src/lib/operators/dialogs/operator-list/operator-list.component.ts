@@ -27,6 +27,7 @@ import {RasterizationComponent} from '../rasterization/rasterization.component';
 import {LineSimplificationComponent} from '../line-simplification/line-simplification.component';
 import {RgbaCompositeComponent as RgbaCompositeComponent} from '../rgb-composite/rgb-composite.component';
 import {RasterStackerComponent} from '../raster-stacker/raster-stacker.component';
+import {VectorExpressionComponent} from '../vector-expression/vector-expression.component';
 
 /**
  * This type encapsulates…
@@ -264,6 +265,14 @@ export class OperatorListComponent implements OnInit, OnChanges {
                 ICON_URL: createIconDataUrl('Line Simplification'),
             },
             description: 'Reduce vertices of (multi-)line strings and (multi-)polygons',
+        },
+        {
+            component: VectorExpressionComponent,
+            type: {
+                NAME: 'Vector Expression',
+                ICON_URL: createIconDataUrl('Vector Expression'),
+            },
+            description: 'Calculate an expression on feature collections',
         },
     ];
 

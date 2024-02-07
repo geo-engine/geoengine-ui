@@ -137,6 +137,19 @@ const conditionalValidator =
     };
 
 /**
+ * A validator that invokes the underlying one only if the condition holds.
+ */
+const conditionalAsyncValidator =
+    (validator: AsyncValidatorFn, condition: () => Promise<boolean>): AsyncValidatorFn =>
+    async (control: AbstractControl): Promise<ValidationErrors | null> => {
+        if (!(await condition())) {
+            return null;
+        }
+
+        return validator(control);
+    };
+
+/**
  * Checks if keyword is a reserved keyword.
  */
 const keywordValidator =
@@ -365,6 +378,7 @@ const startBeforeEndValidator = (control: AbstractControl): ValidationErrors | n
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const geoengineValidators = {
     conditionalValidator,
+    conditionalAsyncValidator,
     isNumber,
     keyword: keywordValidator,
     minAndMax,
