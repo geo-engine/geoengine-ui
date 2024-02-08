@@ -1,3 +1,3 @@
-# Common
+# geoengine common
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.0.
+This library provides functionality common to both map-based (gis, dashboards) and non-map-based (manager) Geo Engine UI applications.
