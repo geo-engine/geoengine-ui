@@ -22,6 +22,8 @@ jobs:
                     node-version: ${{ matrix.node-version }}
                     cache: 'npm' # can be used only with a lockfile
             -   run: npm ci
+            -   name: Build common
+                run: npm run build-prod:common
             -   name: Build core
                 run: npm run build-prod:core
             -   name: Build app ${{ matrix.app }}
