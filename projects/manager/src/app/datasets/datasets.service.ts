@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {DatasetListing, DatasetsApi, MetaDataDefinition, OrderBy} from '@geoengine/openapi-client';
-import {SessionService, apiConfigurationWithAccessKey} from '../session/session.service';
+import {SessionService, apiConfigurationWithAccessKey} from '@geoengine/common';
+import {Dataset, DatasetListing, DatasetsApi, MetaDataDefinition, OrderBy} from '@geoengine/openapi-client';
 import {ReplaySubject, firstValueFrom} from 'rxjs';
 
 @Injectable({
@@ -12,6 +12,14 @@ export class DatasetsService {
     constructor(private sessionService: SessionService) {
         this.sessionService.getSessionStream().subscribe({
             next: (session) => this.datasetApi.next(new DatasetsApi(apiConfigurationWithAccessKey(session.id))),
+        });
+    }
+
+    async getDataset(name: string): Promise<Dataset> {
+        const datasetApi = await firstValueFrom(this.datasetApi);
+
+        return datasetApi.getDatasetHandler({
+            dataset: name,
         });
     }
 

@@ -1,0 +1,43 @@
+.outer {
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+
+    .container {
+        overflow-y: auto;
+        padding: 0rem 1rem 1rem 1rem;
+    }
+
+    .actions {
+        text-align: right;
+        height: 3rem;
+        padding: 1rem;
+
+        button {
+            margin: 0.5rem;
+        }
+    }
+}
+
+mat-divider {
+    padding-bottom: 1rem;
+}
+
+.slider-row {
+    display: flex;
+    gap: 1rem;
+
+    mat-slider {
+        min-width: unset;
+        width: 100%;
+    }
+}
+
+#colorizer-type {
+    display: flex;
+    flex-wrap: wrap;
+
+    mat-button-toggle {
+        flex: 1;
+    }
+}

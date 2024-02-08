@@ -1,11 +1,15 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {RasterSymbology, Symbology, SymbologyWorkflow, WorkflowsService} from '@geoengine/common';
 import {
     DatasetListing,
     RasterResultDescriptorWithType,
     TypedResultDescriptor,
     VectorResultDescriptorWithType,
 } from '@geoengine/openapi-client';
+import {DatasetsService} from '../datasets.service';
+import {BehaviorSubject} from 'rxjs';
+import {Raster} from 'ol/source';
 
 interface Dataset {
     layerType: FormControl<'plot' | 'raster' | 'vector'>;
@@ -25,7 +29,12 @@ export class DatasetEditorComponent implements OnInit, OnChanges {
 
     form: FormGroup<Dataset> = this.placeholderForm();
 
-    constructor() {}
+    symbologyWorkflow$ = new BehaviorSubject<SymbologyWorkflow<RasterSymbology> | undefined>(undefined);
+
+    constructor(
+        private datasetsService: DatasetsService,
+        private workflowsService: WorkflowsService,
+    ) {}
 
     ngOnInit(): void {
         this.setUpForm();
@@ -72,6 +81,35 @@ export class DatasetEditorComponent implements OnInit, OnChanges {
             description: new FormControl(this.dataset.description, {
                 nonNullable: true,
             }),
+        });
+
+        this.datasetsService.getDataset(this.dataset.name).then((dataset) => {
+            if (!dataset.symbology) {
+                return;
+            }
+
+            const symbology = Symbology.fromDict(dataset.symbology);
+
+            if (!(symbology instanceof RasterSymbology)) {
+                return;
+            }
+
+            this.workflowsService
+                .registerWorkflow({
+                    type: 'Raster',
+                    operator: {
+                        type: 'GdalSource',
+                        params: {
+                            data: dataset.name,
+                        },
+                    },
+                })
+                .then((workflowId) => {
+                    this.symbologyWorkflow$.next({
+                        symbology,
+                        workflowId,
+                    });
+                });
         });
     }
 

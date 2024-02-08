@@ -1,5 +1,4 @@
 <div class="container">
-    <lib-common></lib-common>
     <mat-card class="top">
         <mat-card-header>
             <mat-card-title>Dataset Details</mat-card-title>
@@ -32,6 +31,23 @@
                     <textarea matInput formControlName="description"></textarea>
                 </mat-form-field>
             </form>
+        </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>Symbology</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+            @if (symbologyWorkflow$ | async; as symbologyWorkflow) {
+                <geoengine-raster-symbology-editor
+                    *ngIf="dataset.resultDescriptor.type === 'raster'"
+                    [symbologyWorkflow]="symbologyWorkflow"
+                ></geoengine-raster-symbology-editor>
+
+                <geoengine-vector-symbology-editor *ngIf="dataset.resultDescriptor.type === 'vector'"></geoengine-vector-symbology-editor>
+            }
         </mat-card-content>
     </mat-card>
 

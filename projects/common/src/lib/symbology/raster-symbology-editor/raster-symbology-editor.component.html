@@ -1,0 +1,95 @@
+<!-- <geoengine-sidenav-header>Symbology Editor</geoengine-sidenav-header> -->
+
+<div class="outer" fxLayout="column">
+    <div fxFlex class="container">
+        <!-- <geoengine-dialog-help>
+            <p>The Symbology Editor enables customization of the style for raster layers.</p>
+            <p>
+                The <i>Global Layer Properties</i> define the default visualization parameters. The layer <i>Opacity</i> is adjustable in a
+                range from 0 to 100 %. You can choose a <i>NoData</i> color for pixels with the nodata value. Use the picker tool to select
+                the desired RGB color and opacity. This also applies to the <i>Overflow</i> color, which indicates the pixels with values
+                without coloring rules.
+            </p>
+            <p>
+                The <i>Color Map</i> section provides an overview of the pixel values with a frequency plot, which also allows to adapt the
+                color with respect to the raster values. The plot refers to the field of view shown in the map. If
+                <i>Sync map and histogram </i> is turned on, the histogram updates if the map view changes. To specify the value range of
+                interest, you can set a minimum and maximum pixel value. You can choose a color ramp from a variety of color schemes (<i
+                    >Colormap name</i
+                >) and reverse it, if desired. Additionally, different functions for the step distribution can be selected (linear,
+                logarithmic, square root function, square function). Consider that the logarithmic function requires positive values (>0).
+                The number of Color steps is also kept flexible and can be set to a number between 2 and 16. Click
+                <i>Create color table</i> to apply your adjustments.
+            </p>
+            <p>
+                The <i> Color Table section </i> allows fine grained changes to colors. The gradient defines the interpolation between
+                values. You can dynamically add and remove color steps by clicking the minus and plus symbols or select distinct RGBA values
+                for a specific color step value.
+            </p>
+        </geoengine-dialog-help> -->
+
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title-group>
+                    <mat-card-title>Global Layer Properties</mat-card-title>
+                    <mat-card-subtitle>Symbology properties for all raster layers</mat-card-subtitle>
+                    <mat-icon class="icon">map</mat-icon>
+                </mat-card-title-group>
+            </mat-card-header>
+            <mat-card-content>
+                <div class="slider-row">
+                    <p>Opacity</p>
+                    <mat-slider fxFlex max="100" min="1" step="1" thumbLabel discrete>
+                        <input matSliderThumb #opacitySliderInput [ngModel]="getOpacity()" (ngModelChange)="updateOpacity($event)" />
+                    </mat-slider>
+                    <span>{{ opacitySliderInput.value }} %</span>
+                </div>
+
+                <div>
+                    <p>Raster band:</p>
+
+                    <!-- <mat-select [ngModel]="selectedBand" (ngModelChange)="setSelectedBand($event)" placeholder="Bands">
+                        <mat-option *ngFor="let band of bands$ | async" [value]="band">{{ band.name }}</mat-option>
+                    </mat-select> -->
+                </div>
+
+                <mat-divider></mat-divider>
+
+                <p>Colorizer:</p>
+
+                <div>
+                    <mat-button-toggle-group
+                        id="colorizer-type"
+                        [multiple]="false"
+                        [ngModel]="getColorizerType()"
+                        (ngModelChange)="updateColorizerType($event)"
+                    >
+                        <mat-button-toggle [value]="linearGradientColorizerType">Linear Gradient</mat-button-toggle>
+                        <mat-button-toggle [value]="logarithmicGradientColorizerType">Logarithmic Gradient</mat-button-toggle>
+                        <mat-button-toggle [value]="paletteColorizerType">Palette</mat-button-toggle>
+                        <mat-button-toggle [value]="rgbaColorizerType">RGBA</mat-button-toggle>
+                    </mat-button-toggle-group>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+        <geoengine-raster-gradient-symbology-editor
+            *ngIf="gradientColorizer"
+            [colorizer]="gradientColorizer"
+            (colorizerChange)="updateColorizer($event)"
+        ></geoengine-raster-gradient-symbology-editor>
+
+        <geoengine-raster-palette-symbology-editor
+            *ngIf="paletteColorizer"
+            [colorizer]="paletteColorizer"
+            (colorizerChange)="updateColorizer($event)"
+        >
+        </geoengine-raster-palette-symbology-editor>
+    </div>
+
+    <div class="actions">
+        <!-- <button mat-raised-button (click)="resetChanges(layer)" [disabled]="unchangedSymbology | async">Reset</button> -->
+
+        <button mat-raised-button color="primary" (click)="applyChanges()" [disabled]="unchangedSymbology | async">Apply</button>
+    </div>
+</div>

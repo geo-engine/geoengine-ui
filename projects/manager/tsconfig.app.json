@@ -3,11 +3,11 @@
     "extends": "../../tsconfig.json",
     "compilerOptions": {
         "outDir": "../../out-tsc/app",
-        "types": []
+        "types": [],
+        "paths": {
+            "@geoengine/common": ["dist/common"]
+        }
     },
     "files": ["src/main.ts"],
-    "include": [],
-    "paths": {
-        "@geoengine/common": ["dist/common"]
-    }
+    "include": []
 }

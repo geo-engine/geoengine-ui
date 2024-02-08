@@ -53,7 +53,7 @@
         "@angular/platform-browser-dynamic": "^17.0.7",
         "@angular/router": "^17.0.7",
         "@egjs/hammerjs": "^2.0.17",
-        "@geoengine/openapi-client": "0.0.5",
+        "@geoengine/openapi-client": "https://gitpkg.now.sh/geo-engine/openapi-client/typescript?symbology-manager",
         "codemirror": "~5.65.16",
         "d3": "~7.8.5",
         "dagre": "~0.8.5",

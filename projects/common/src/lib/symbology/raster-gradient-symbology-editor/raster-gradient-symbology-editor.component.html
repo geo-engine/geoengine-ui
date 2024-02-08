@@ -1,0 +1,92 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title-group>
+            <mat-card-title>Gradient Layer Properties</mat-card-title>
+            <mat-card-subtitle>Gradient properties</mat-card-subtitle>
+            <mat-icon class="icon">map</mat-icon>
+        </mat-card-title-group>
+    </mat-card-header>
+    <mat-card-content>
+        <div>
+            <geoengine-color-attribute-input
+                [ngModel]="getNoDataColor()"
+                (ngModelChange)="updateNoDataColor($event)"
+                attributePlaceholder=""
+                [readonlyAttribute]="true"
+            >
+            </geoengine-color-attribute-input>
+            <geoengine-color-attribute-input
+                [ngModel]="getUnderColor()"
+                (ngModelChange)="updateUnderColor($event)"
+                attributePlaceholder=""
+                [readonlyAttribute]="true"
+            >
+            </geoengine-color-attribute-input>
+            <geoengine-color-attribute-input
+                [ngModel]="getOverColor()"
+                (ngModelChange)="updateOverColor($event)"
+                attributePlaceholder=""
+                [readonlyAttribute]="true"
+            >
+            </geoengine-color-attribute-input>
+        </div>
+    </mat-card-content>
+
+    <!-- <div class="colorizer-preview" [style.background]="colorizer | geoengineColorizerCssGradient: 90"></div> -->
+</mat-card>
+
+<mat-card>
+    <mat-card-header>
+        <mat-card-title-group>
+            <mat-card-title>Create Color Table</mat-card-title>
+            <mat-card-subtitle>Create a new color table</mat-card-subtitle>
+            <mat-icon class="icon">looks</mat-icon>
+        </mat-card-title-group>
+    </mat-card-header>
+    <mat-card-content>
+        <div class="histogram" *ngIf="histogramCreated === true">
+            <!-- <ng-container *ngIf="histogramData | async as histogramData"> -->
+            <!-- <geoengine-vega-viewer [chartData]="histogramData" (interactionChange)="updateBounds($any($event))"></geoengine-vega-viewer> -->
+            <!-- </ng-container> -->
+            <mat-progress-bar mode="indeterminate" *ngIf="histogramLoading | async"></mat-progress-bar>
+        </div>
+        <div class="histogram-actions">
+            <button mat-stroked-button (click)="updateHistogram()">
+                <ng-container *ngIf="histogramCreated; then createdBlock; else notCreatedBlock"></ng-container>
+                <!-- Only displayed before any histogram is created -->
+                <ng-template #createdBlock>Update Histogram</ng-template>
+                <!-- Only displayed after histogram is created -->
+                <ng-template #notCreatedBlock>Create Histogram</ng-template>
+            </button>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <geoengine-color-map-selector
+            (breakpointsChange)="updateBreakpoints($event)"
+            [minValue]="layerMinValue"
+            [maxValue]="layerMaxValue"
+            [scale]="scale"
+        >
+        </geoengine-color-map-selector>
+
+        <mat-divider></mat-divider>
+
+        <button mat-stroked-button (click)="createColorTable()">Create color table</button>
+    </mat-card-content>
+</mat-card>
+<mat-card>
+    <mat-card-header>
+        <mat-card-title-group>
+            <mat-card-title>Color Table</mat-card-title>
+            <mat-card-subtitle>Edit the color table</mat-card-subtitle>
+            <mat-icon class="icon">looks</mat-icon>
+        </mat-card-title-group>
+    </mat-card-header>
+    <mat-card-content>
+        <geoengine-color-table-editor
+            [colorTable]="colorTable"
+            (colorTableChanged)="updateColorTable($event)"
+        ></geoengine-color-table-editor>
+    </mat-card-content>
+</mat-card>
