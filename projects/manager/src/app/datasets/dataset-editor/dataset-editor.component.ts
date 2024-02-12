@@ -47,6 +47,10 @@ export class DatasetEditorComponent implements OnInit, OnChanges {
         }
     }
 
+    changeRasterSymbology(_symbology: RasterSymbology): void {
+        // TODO: update via API
+    }
+
     private dataTypeFromResultDescriptor(rd: TypedResultDescriptor): string {
         if (rd.type === 'raster') {
             return (rd as RasterResultDescriptorWithType).dataType;

@@ -1,4 +1,15 @@
-import {Component, Input, ChangeDetectionStrategy, OnInit, OnDestroy} from '@angular/core';
+import {
+    Component,
+    Input,
+    ChangeDetectionStrategy,
+    OnInit,
+    OnDestroy,
+    OnChanges,
+    SimpleChanges,
+    ChangeDetectorRef,
+    Output,
+    EventEmitter,
+} from '@angular/core';
 import {RasterSymbology, SingleBandRasterColorizer, SymbologyWorkflow} from '../symbology.model';
 import {Colorizer, ColorizerType, LinearGradient, LogarithmicGradient, PaletteColorizer, RgbaColorizer} from '../../colors/colorizer.model';
 import {Color, TRANSPARENT, WHITE} from '../../colors/color';
@@ -16,8 +27,10 @@ import {WorkflowsService} from '../../workflows/workflows.service';
     styleUrls: ['raster-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RasterSymbologyEditorComponent implements OnInit, OnDestroy {
+export class RasterSymbologyEditorComponent implements OnChanges {
     @Input({required: true}) symbologyWorkflow!: SymbologyWorkflow<RasterSymbology>;
+
+    @Output() changedSymbology: EventEmitter<RasterSymbology> = new EventEmitter();
 
     symbology!: RasterSymbology; // TODO: remove `!` and use placeholder
 
@@ -33,22 +46,16 @@ export class RasterSymbologyEditorComponent implements OnInit, OnDestroy {
     unappliedChanges = new BehaviorSubject(false);
     unchangedSymbology = this.unappliedChanges.pipe(map((unapplied) => !unapplied));
 
-    constructor(private readonly workflowsService: WorkflowsService) {}
+    constructor(
+        private readonly workflowsService: WorkflowsService,
+        private readonly changeDetectorRef: ChangeDetectorRef,
+    ) {}
 
-    ngOnInit(): void {
-        // always work on a copy in order to being able to reset changes
-        this.symbology = this.symbologyWorkflow.symbology.clone();
-        const bandIndex = (this.symbology.rasterColorizer as SingleBandRasterColorizer).band;
-        this.workflowsService.getMetadata(this.symbologyWorkflow.workflowId).then((resultDescriptor) => {
-            if (resultDescriptor.type === 'raster') {
-                const rd = resultDescriptor as RasterResultDescriptorDict;
-                this.bands$.next(rd.bands);
-                this.selectedBand = rd.bands[bandIndex];
-            }
-        });
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.symbologyWorkflow) {
+            this.setUp();
+        }
     }
-
-    ngOnDestroy(): void {}
 
     /**
      * Get the opacity in the range [0, 100]
@@ -69,24 +76,22 @@ export class RasterSymbologyEditorComponent implements OnInit, OnDestroy {
     }
 
     updateColorizer(colorizer: Colorizer): void {
-        // const rasterColorizer = new SingleBandRasterColorizer(this.getSelectedBandIndex(), colorizer);
-        // this.symbology = this.symbology.cloneWith({colorizer: rasterColorizer});
-        // this.unappliedChanges.next(true);
+        const rasterColorizer = new SingleBandRasterColorizer(this.getSelectedBandIndex(), colorizer);
+        this.symbology = this.symbology.cloneWith({colorizer: rasterColorizer});
+        this.unappliedChanges.next(true);
     }
 
     applyChanges(): void {
         this.unappliedChanges.next(false);
-        // this.projectService.changeLayer(this.layer, {symbology: this.symbology});
+        this.changedSymbology.emit(this.symbology);
 
         // TODO: get layer with updated symbology
     }
 
-    // resetChanges(layer: Layer): void {
-    // this.layoutService.setSidenavContentComponent({
-    //     component: RasterSymbologyEditorComponent,
-    //     config: {layer},
-    // });
-    // }
+    resetChanges(): void {
+        this.setUp();
+        this.unappliedChanges.next(false);
+    }
 
     getColorizerType(): ColorizerType {
         const colorizer = this.getActualColorizer();
@@ -110,16 +115,16 @@ export class RasterSymbologyEditorComponent implements OnInit, OnDestroy {
         throw Error('unknown colorizer type');
     }
 
-    // setSelectedBand(band: RasterBandDescriptor): void {
-    // this.selectedBand = band;
-    // if (this.symbology.rasterColorizer instanceof SingleBandRasterColorizer) {
-    //     const index = this.getSelectedBandIndex();
-    //     this.symbology = new RasterSymbology(
-    //         this.getOpacity(),
-    //         new SingleBandRasterColorizer(index, this.symbology.rasterColorizer.bandColorizer),
-    //     );
-    // }
-    // }
+    setSelectedBand(band: RasterBandDescriptor): void {
+        this.selectedBand = band;
+        if (this.symbology.rasterColorizer instanceof SingleBandRasterColorizer) {
+            const index = this.getSelectedBandIndex();
+            this.symbology = new RasterSymbology(
+                this.getOpacity(),
+                new SingleBandRasterColorizer(index, this.symbology.rasterColorizer.bandColorizer),
+            );
+        }
+    }
 
     get paletteColorizer(): PaletteColorizer | undefined {
         const colorizer = this.getActualColorizer();
@@ -169,18 +174,30 @@ export class RasterSymbologyEditorComponent implements OnInit, OnDestroy {
                 colorizer = new RgbaColorizer();
         }
 
-        // const rasterColorizer = new SingleBandRasterColorizer(this.getSelectedBandIndex(), colorizer);
+        const rasterColorizer = new SingleBandRasterColorizer(this.getSelectedBandIndex(), colorizer);
 
-        // this.symbology = this.symbology.cloneWith({colorizer: rasterColorizer});
+        this.symbology = this.symbology.cloneWith({colorizer: rasterColorizer});
         this.unappliedChanges.next(true);
     }
 
-    // protected getSelectedBandIndex(): number {
-    // if (this.selectedBand) {
-    //     return this.bands$.value.indexOf(this.selectedBand);
-    // }
-    // return 0;
-    // }
+    private setUp() {
+        this.symbology = this.symbologyWorkflow.symbology.clone();
+        const bandIndex = (this.symbology.rasterColorizer as SingleBandRasterColorizer).band;
+        this.workflowsService.getMetadata(this.symbologyWorkflow.workflowId).then((resultDescriptor) => {
+            if (resultDescriptor.type === 'raster') {
+                const rd = resultDescriptor as RasterResultDescriptorDict;
+                this.bands$.next(rd.bands);
+                this.selectedBand = rd.bands[bandIndex];
+            }
+        });
+    }
+
+    protected getSelectedBandIndex(): number {
+        if (this.selectedBand) {
+            return this.bands$.value.indexOf(this.selectedBand);
+        }
+        return 0;
+    }
 
     protected getActualColorizer(): Colorizer {
         if (!(this.symbology.rasterColorizer instanceof SingleBandRasterColorizer)) {

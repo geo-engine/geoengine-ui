@@ -1,10 +1,11 @@
-import {Component, Input, ChangeDetectionStrategy, OnInit, ViewChild, Output, EventEmitter} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy, OnInit, ViewChild, Output, EventEmitter, OnChanges, SimpleChanges} from '@angular/core';
 import {PaletteColorizer} from '../../colors/colorizer.model';
 import {ColorAttributeInput} from '../../colors/color-attribute-input/color-attribute-input.component';
 import {Color} from '../../colors/color';
 import {ColorMapSelectorComponent} from '../../colors/color-map-selector/color-map-selector.component';
 import {ColorTableEditorComponent} from '../../colors/color-table-editor/color-table-editor.component';
 import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
+import {Measurement} from '@geoengine/openapi-client';
 // import {Measurement} from '../../measurement';
 
 /**
@@ -16,7 +17,7 @@ import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
     styleUrls: ['raster-palette-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RasterPaletteSymbologyEditorComponent implements OnInit {
+export class RasterPaletteSymbologyEditorComponent implements OnInit, OnChanges {
     @ViewChild(ColorMapSelectorComponent)
     colorMapSelector!: ColorMapSelectorComponent;
 
@@ -26,7 +27,7 @@ export class RasterPaletteSymbologyEditorComponent implements OnInit {
     // @Input() layer!: RasterLayer;
 
     @Input() colorizer!: PaletteColorizer;
-    // @Input() measurement!: Measurement;
+    @Input() measurement!: Measurement;
 
     @Output() colorizerChange = new EventEmitter<PaletteColorizer>();
 
@@ -35,24 +36,21 @@ export class RasterPaletteSymbologyEditorComponent implements OnInit {
     // The max value used for color table generation
     layerMaxValue: number | undefined = undefined;
 
+    colorTable: Array<ColorBreakpoint> = [];
+
     protected defaultColor?: ColorAttributeInput;
     protected noDataColor?: ColorAttributeInput;
 
-    constructor() // protected readonly projectService: ProjectService,
-    // protected readonly backend: BackendService,
-    // protected readonly layoutService: LayoutService,
-    // protected readonly userService: UserService,
-    // protected readonly mapService: MapService,
-    // protected readonly config: Config,
-    {}
+    constructor() {} // protected readonly config: Config, // protected readonly mapService: MapService, // protected readonly userService: UserService, // protected readonly layoutService: LayoutService, // protected readonly backend: BackendService, // protected readonly projectService: ProjectService,
 
-    ngOnInit(): void {
-        this.updateNodataAndDefaultColor();
-        this.updateLayerMinMaxFromColorizer();
-    }
+    ngOnInit(): void {}
 
-    get colorTable(): Array<ColorBreakpoint> {
-        return this.colorizer.getBreakpoints();
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.colorizer) {
+            this.colorTable = this.colorizer.getBreakpoints();
+            this.updateNodataAndDefaultColor();
+            this.updateLayerMinMaxFromColorizer();
+        }
     }
 
     updateColorTable(colorTable: Array<ColorBreakpoint>): void {

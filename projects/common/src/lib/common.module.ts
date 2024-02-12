@@ -31,13 +31,6 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ScrollingModule} from '@angular/cdk/scrolling';
-import {
-    FxFlexDirective,
-    FxLayoutDirective,
-    FxLayoutGapDirective,
-    FxLayoutAlignDirective,
-} from 'dist/core/lib/util/directives/flexbox-legacy.directive';
-
 import {ColorPickerModule} from 'ngx-color-picker';
 import {AsyncValueDefault} from './util/pipes/async-converters.pipe';
 import {ColorAttributeInputComponent} from './colors/color-attribute-input/color-attribute-input.component';
@@ -51,6 +44,7 @@ import {RasterSymbologyEditorComponent} from './symbology/raster-symbology-edito
 import {SymbologyCreatorComponent} from './symbology/symbology-creator/symbology-creator.component';
 import {VectorSymbologyEditorComponent} from './symbology/vector-symbology-editor/vector-symbology-editor.component';
 import {NumberParamEditorComponent} from './symbology/number-param-editor/number-param-editor.component';
+import {ColorizerCssGradientPipe} from './util/pipes/color-gradients.pipe';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -85,7 +79,6 @@ export const MATERIAL_MODULES = [
 ];
 
 const COMMON_COMPONENTS = [
-    CommonComponent,
     ColorAttributeInputComponent,
     ColorBreakpointInputComponent,
     ColorMapSelectorComponent,
@@ -99,7 +92,7 @@ const COMMON_COMPONENTS = [
     NumberParamEditorComponent,
 ];
 
-const COMMON_PIPES = [AsyncValueDefault];
+const COMMON_PIPES = [AsyncValueDefault, ColorizerCssGradientPipe];
 
 // const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGapDirective, FxLayoutAlignDirective];
 

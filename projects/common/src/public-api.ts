@@ -9,7 +9,6 @@ export * from './lib/session/session.service';
 export * from './lib/workflows/workflows.service';
 
 // Components
-export * from './lib/common/common.component';
 export * from './lib/colors/color-attribute-input/color-attribute-input.component';
 export * from './lib/colors/color-breakpoint-input/color-breakpoint-input.component';
 export * from './lib/colors/color-map-selector/color-map-selector.component';
@@ -30,6 +29,6 @@ export * from './lib/symbology/symbology.model';
 
 // Pipes
 export * from './lib/util/pipes/async-converters.pipe';
-
+export * from './lib/util/pipes/color-gradients.pipe';
 // Misc
 export * from './lib/util/form.validators';

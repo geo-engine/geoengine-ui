@@ -48,9 +48,9 @@
                 <div>
                     <p>Raster band:</p>
 
-                    <!-- <mat-select [ngModel]="selectedBand" (ngModelChange)="setSelectedBand($event)" placeholder="Bands">
+                    <mat-select [ngModel]="selectedBand" (ngModelChange)="setSelectedBand($event)" placeholder="Bands">
                         <mat-option *ngFor="let band of bands$ | async" [value]="band">{{ band.name }}</mat-option>
-                    </mat-select> -->
+                    </mat-select>
                 </div>
 
                 <mat-divider></mat-divider>
@@ -88,7 +88,7 @@
     </div>
 
     <div class="actions">
-        <!-- <button mat-raised-button (click)="resetChanges(layer)" [disabled]="unchangedSymbology | async">Reset</button> -->
+        <button mat-raised-button (click)="resetChanges()" [disabled]="unchangedSymbology | async">Reset</button>
 
         <button mat-raised-button color="primary" (click)="applyChanges()" [disabled]="unchangedSymbology | async">Apply</button>
     </div>
