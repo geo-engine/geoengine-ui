@@ -1,4 +1,4 @@
-import {Color, TRANSPARENT, rgbaColorFromDict} from './color';
+import {Color, RgbaColorDict, TRANSPARENT, colorToDict, rgbaColorFromDict} from './color';
 import {ColorBreakpoint} from './color-breakpoint.model';
 import {
     Colorizer as ColorizerDict,
@@ -35,7 +35,7 @@ export abstract class Colorizer {
 
     abstract clone(): Colorizer;
 
-    // abstract toDict(): ColorizerDict;
+    abstract toDict(): ColorizerDict;
 
     abstract isGradient(): boolean;
 
@@ -157,15 +157,15 @@ export class LinearGradient extends Colorizer {
         );
     }
 
-    // toDict(): ColorizerDict {
-    //     return {
-    //         type: LinearGradient.TYPE_NAME,
-    //         breakpoints: this.breakpoints.map((b) => b.toDict()),
-    //         noDataColor: colorToDict(this.noDataColor),
-    //         overColor: colorToDict(this.overColor),
-    //         underColor: colorToDict(this.underColor),
-    //     };
-    // }
+    toDict(): ColorizerDict {
+        return {
+            type: LinearGradient.TYPE_NAME,
+            breakpoints: this.breakpoints.map((b) => b.toDict()),
+            noDataColor: colorToDict(this.noDataColor),
+            overColor: colorToDict(this.overColor),
+            underColor: colorToDict(this.underColor),
+        };
+    }
 
     isGradient(): boolean {
         return true;
@@ -286,15 +286,15 @@ export class LogarithmicGradient extends Colorizer {
         );
     }
 
-    // toDict(): ColorizerDict {
-    //     return {
-    //         type: LogarithmicGradient.TYPE_NAME,
-    //         breakpoints: this.breakpoints.map((b) => b.toDict()),
-    //         noDataColor: colorToDict(this.noDataColor),
-    //         overColor: colorToDict(this.overColor),
-    //         underColor: colorToDict(this.underColor),
-    //     };
-    // }
+    toDict(): ColorizerDict {
+        return {
+            type: LogarithmicGradient.TYPE_NAME,
+            breakpoints: this.breakpoints.map((b) => b.toDict()),
+            noDataColor: colorToDict(this.noDataColor),
+            overColor: colorToDict(this.overColor),
+            underColor: colorToDict(this.underColor),
+        };
+    }
 
     isGradient(): boolean {
         return true;
@@ -403,22 +403,22 @@ export class PaletteColorizer extends Colorizer {
         );
     }
 
-    // toDict(): ColorizerDict {
-    //     const colors: {
-    //         [numberValue: string]: RgbaColorDict;
-    //     } = {};
+    toDict(): ColorizerDict {
+        const colors: {
+            [numberValue: string]: RgbaColorDict;
+        } = {};
 
-    //     for (const [i, color] of this.colors.entries()) {
-    //         colors[i] = colorToDict(color);
-    //     }
+        for (const [i, color] of this.colors.entries()) {
+            colors[i] = colorToDict(color);
+        }
 
-    //     return {
-    //         type: PaletteColorizer.TYPE_NAME,
-    //         colors,
-    //         noDataColor: colorToDict(this.noDataColor),
-    //         defaultColor: colorToDict(this.defaultColor),
-    //     };
-    // }
+        return {
+            type: PaletteColorizer.TYPE_NAME,
+            colors,
+            noDataColor: colorToDict(this.noDataColor),
+            defaultColor: colorToDict(this.defaultColor),
+        };
+    }
 
     isGradient(): boolean {
         return false;
@@ -486,11 +486,11 @@ export class RgbaColorizer extends Colorizer {
     override clone(): Colorizer {
         return new RgbaColorizer();
     }
-    // override toDict(): ColorizerDict {
-    //     return {
-    //         type: RgbaColorizer.TYPE_NAME,
-    //     } as RgbaColorizerDict;
-    // }
+    override toDict(): ColorizerDict {
+        return {
+            type: RgbaColorizer.TYPE_NAME,
+        } as RgbaColorizerDict;
+    }
     override isGradient(): boolean {
         return false;
     }

@@ -6,8 +6,8 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, On
 import {OperatorListComponent} from '../../operators/dialogs/operator-list/operator-list.component';
 import {ProjectService} from '../../project/project.service';
 import {LayoutService} from '../../layout.service';
-import {Plot} from '../plot.model';
 import {LoadingState} from '../../project/loading-state.model';
+import {Plot} from '@geoengine/common';
 
 /**
  * This component lists all current plots.

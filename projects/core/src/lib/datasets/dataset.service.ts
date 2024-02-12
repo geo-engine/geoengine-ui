@@ -1,13 +1,11 @@
 import {Injectable} from '@angular/core';
 import {BackendService} from '../backend/backend.service';
 import {Observable} from 'rxjs';
-import {Dataset, VectorResultDescriptor} from './dataset.model';
 import {UserService} from '../users/user.service';
 import {map, mergeMap} from 'rxjs/operators';
 import {HttpEvent} from '@angular/common/http';
 import {
     AutoCreateDatasetDict,
-    CreateDatasetDict,
     DatasetNameResponseDict,
     DataSetProviderListingDict,
     MetaDataSuggestionDict,
@@ -19,18 +17,22 @@ import {
     WorkflowDict,
 } from '../backend/backend.model';
 import {RandomColorService} from '../util/services/random-color.service';
-import {Layer, RasterLayer, VectorLayer} from '../layers/layer.model';
+import {ProjectService} from '../project/project.service';
 import {
     ClusteredPointSymbology,
+    Dataset,
+    Layer,
     LineSymbology,
     PointSymbology,
     PolygonSymbology,
+    RasterLayer,
     RasterSymbology,
+    VectorDataTypes,
+    VectorLayer,
+    VectorResultDescriptor,
     VectorSymbology,
-} from '../layers/symbology/symbology.model';
-import {VectorDataTypes} from '../operators/datatype.model';
-import {colorToDict} from '../colors/color';
-import {ProjectService} from '../project/project.service';
+    colorToDict,
+} from '@geoengine/common';
 
 @Injectable({
     providedIn: 'root',
@@ -48,10 +50,6 @@ export class DatasetService {
             mergeMap((session) => this.backend.getDatasets(session.sessionToken, offset, limit)),
             map((datasetDicts) => datasetDicts.map((dict) => Dataset.fromDict(dict))),
         );
-    }
-
-    getDatasetProviders(): Observable<Array<DataSetProviderListingDict>> {
-        return this.userService.getSessionStream().pipe(mergeMap((session) => this.backend.getDatasetProviders(session.sessionToken)));
     }
 
     getDataset(name: string): Observable<Dataset> {
@@ -74,9 +72,9 @@ export class DatasetService {
             .pipe(mergeMap((token) => this.backend.getUploadFileLayers(token, uploadId, fileName)));
     }
 
-    createDataset(create: CreateDatasetDict): Observable<DatasetNameResponseDict> {
-        return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.createDataset(token, create)));
-    }
+    // createDataset(create: CreateDatasetDict): Observable<DatasetNameResponseDict> {
+    //     return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.createDataset(token, create)));
+    // }
 
     autoCreateDataset(create: AutoCreateDatasetDict): Observable<DatasetNameResponseDict> {
         return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.autoCreateDataset(token, create)));
@@ -86,23 +84,23 @@ export class DatasetService {
         return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.suggestMetaData(token, suggest)));
     }
 
-    addDatasetToMap(dataset: Dataset): Observable<void> {
-        const workflow = dataset.createSourceWorkflow();
-        return this.addDatasetToMapWithSourceWorkflow(dataset, workflow);
-    }
+    // addDatasetToMap(dataset: Dataset): Observable<void> {
+    //     const workflow = dataset.createSourceWorkflow();
+    //     return this.addDatasetToMapWithSourceWorkflow(dataset, workflow);
+    // }
 
-    addDatasetToMapWithSourceWorkflow(dataset: Dataset, workflow: WorkflowDict): Observable<void> {
-        return this.createLayerFromDatasetWithWorkflow(dataset, workflow).pipe(mergeMap((layer) => this.projectService.addLayer(layer)));
-    }
+    // addDatasetToMapWithSourceWorkflow(dataset: Dataset, workflow: WorkflowDict): Observable<void> {
+    //     return this.createLayerFromDatasetWithWorkflow(dataset, workflow).pipe(mergeMap((layer) => this.projectService.addLayer(layer)));
+    // }
 
-    createLayerFromDataset(dataset: Dataset): Observable<Layer> {
-        const workflow = dataset.createSourceWorkflow();
-        return this.createLayerFromDatasetWithWorkflow(dataset, workflow);
-    }
+    // createLayerFromDataset(dataset: Dataset): Observable<Layer> {
+    //     const workflow = dataset.createSourceWorkflow();
+    //     return this.createLayerFromDatasetWithWorkflow(dataset, workflow);
+    // }
 
-    createLayerFromDatasetWithWorkflow(dataset: Dataset, workflow: WorkflowDict): Observable<Layer> {
-        return this.projectService.registerWorkflow(workflow).pipe(map((workflowId) => this.createLayer(workflowId, dataset)));
-    }
+    // createLayerFromDatasetWithWorkflow(dataset: Dataset, workflow: WorkflowDict): Observable<Layer> {
+    //     return this.projectService.registerWorkflow(workflow).pipe(map((workflowId) => this.createLayer(workflowId, dataset)));
+    // }
 
     createLayer(workflowId: string, dataset: Dataset): Layer {
         if (dataset.resultDescriptor.getTypeString() === 'Raster') {

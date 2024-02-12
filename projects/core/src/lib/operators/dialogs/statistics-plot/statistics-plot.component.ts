@@ -3,15 +3,11 @@ import {Validators, FormBuilder, FormControl, FormArray, FormGroup} from '@angul
 
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
-import {ResultTypes} from '../../result-type.model';
-import {Layer, RasterLayer, VectorLayer} from '../../../layers/layer.model';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {OperatorDict, SourceOperatorDict} from '../../../backend/backend.model';
 import {map, mergeMap, tap} from 'rxjs/operators';
-import {Plot} from '../../../plots/plot.model';
 import {StatisticsDict, StatisticsParams} from '../../../backend/operator.model';
-import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
-import {VectorColumnDataTypes} from '../../datatype.model';
+import {Layer, Plot, RasterLayer, ResultTypes, VectorColumnDataTypes, VectorLayer, VectorLayerMetadata} from '@geoengine/common';
 
 interface StatisticsPlotForm {
     layer: FormControl<Layer | null>;

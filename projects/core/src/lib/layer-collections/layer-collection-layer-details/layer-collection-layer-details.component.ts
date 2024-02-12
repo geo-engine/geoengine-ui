@@ -1,8 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
-import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metadata.model';
-import {VectorDataTypes} from '../../operators/datatype.model';
 import {LayerCollectionService} from '../layer-collection.service';
-import {Colorizer} from '../../colors/colorizer.model';
+import {Colorizer, LayerMetadata, RasterLayerMetadata, VectorDataTypes, VectorLayerMetadata} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-layer-collection-layer-details',

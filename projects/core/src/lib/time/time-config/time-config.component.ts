@@ -1,11 +1,11 @@
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {ProjectService} from '../../project/project.service';
 import {Observable, Subscription} from 'rxjs';
-import {Time, TimeStepDuration} from '../time.model';
 import {FormControl, FormGroup, NonNullableFormBuilder, Validators} from '@angular/forms';
 import {Config} from '../../config.service';
 import moment from 'moment';
 import {TimeInterval} from '../time-interval-input/time-interval-input.component';
+import {Time, TimeStepDuration} from '@geoengine/common';
 
 export interface TimeConfigForm {
     timeInterval: FormControl<TimeInterval>;

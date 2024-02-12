@@ -21,10 +21,6 @@ export * from './lib/users/user.service';
 export * from './lib/util/services/random-color.service';
 
 // Components
-export * from './lib/colors/color-attribute-input/color-attribute-input.component';
-export * from './lib/colors/color-breakpoint-input/color-breakpoint-input.component';
-export * from './lib/colors/color-map-selector/color-map-selector.component';
-export * from './lib/colors/color-table-editor/color-table-editor.component';
 export * from './lib/datasets/add-data/add-data.component';
 export * from './lib/datasets/add-workflow/add-workflow.component';
 export * from './lib/datasets/dataset-list/dataset-list.component';
@@ -47,23 +43,13 @@ export * from './lib/layer-collections/layer-collection-layer/layer-collection-l
 export * from './lib/layer-collections/layer-collection-layer-details/layer-collection-layer-details.component';
 export * from './lib/layer-collections/layer-collection-list/layer-collection-list.component';
 export * from './lib/layer-collections/layer-collection-navigation/layer-collection-navigation.component';
-export * from './lib/layers/layer-icons/line-icon/line-icon.component';
-export * from './lib/layers/layer-icons/point-icon/point-icon.component';
-export * from './lib/layers/layer-icons/polygon-icon/polygon-icon.component';
-export * from './lib/layers/layer-icons/raster-icon/raster-icon.component';
 export * from './lib/layers/layer-list/layer-list-element/layer-list-element.component';
 export * from './lib/layers/layer-list/layer-list-menu/layer-list-menu.component';
 export * from './lib/layers/layer-list/layer-list.component';
 export * from './lib/layers/legend/legend-raster/raster-legend.component';
 export * from './lib/layers/legend/legend-vector/vector-legend.component';
 export * from './lib/layers/rename-layer/rename-layer.component';
-export * from './lib/layers/symbology/color-param-editor/color-param-editor.component';
-export * from './lib/layers/symbology/number-param-editor/number-param-editor.component';
-export * from './lib/layers/symbology/raster-gradient-symbology-editor/raster-gradient-symbology-editor.component';
-export * from './lib/layers/symbology/raster-palette-symbology-editor/raster-palette-symbology-editor.component';
-export * from './lib/layers/symbology/raster-symbology-editor/raster-symbology-editor.component';
 export * from './lib/layers/symbology/symbology-creator/symbology-creator.component';
-export * from './lib/layers/symbology/vector-symbology-editor/vector-symbology-editor.component';
 export * from './lib/logo.component';
 export * from './lib/map/map-container/map-container.component';
 export * from './lib/map/map-layer.component';
@@ -145,22 +131,8 @@ export * from './lib/util/pipes/trim.pipe';
 // Models
 export * from './lib/backend/backend.model';
 export * from './lib/backend/operator.model';
-export * from './lib/colors/color-breakpoint.model';
-export * from './lib/colors/color';
-export * from './lib/colors/colorizer.model';
-export * from './lib/datasets/dataset.model';
-export * from './lib/layers/layer-data.model';
-export * from './lib/layers/layer-metadata.model';
-export * from './lib/layers/layer.model';
-export * from './lib/layers/measurement';
-export * from './lib/layers/symbology/symbology.model';
-export * from './lib/operators/datatype.model';
-export * from './lib/operators/operator-type.model';
-export * from './lib/operators/result-type.model';
-export * from './lib/plots/plot.model';
+
 export * from './lib/project/loading-state.model';
-export * from './lib/spatial-references/spatial-reference.model';
-export * from './lib/time/time.model';
 export * from './lib/users/session.model';
 export * from './lib/users/user.model';
 
@@ -171,7 +143,6 @@ export * from './lib/util/guards/backend-available.guard';
 // Misc
 export * from './lib/util/directives/if-guest.directive';
 export * from './lib/util/directives/if-logged-in.directive';
-export * from './lib/util/conversions';
 export * from './lib/util/errors';
 export * from './lib/util/form.validators';
 export * from './lib/util/icons';

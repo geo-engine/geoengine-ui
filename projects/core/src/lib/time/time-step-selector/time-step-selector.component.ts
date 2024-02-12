@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges,
 import {Observable, combineLatest, BehaviorSubject} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ProjectService} from '../../project/project.service';
-import {Time} from '../time.model';
+import {Time} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-time-step-selector',

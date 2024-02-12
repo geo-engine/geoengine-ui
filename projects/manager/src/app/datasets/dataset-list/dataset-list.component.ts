@@ -3,7 +3,7 @@ import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {AfterContentInit, Component, EventEmitter, Output, ViewChild} from '@angular/core';
 import {DatasetListing} from '@geoengine/openapi-client';
 import {BehaviorSubject, Observable, Subject, concatMap, debounceTime, distinctUntilChanged, range, scan, skip, startWith} from 'rxjs';
-import {DatasetsService} from '../datasets.service';
+import {DatasetsService} from '../../../../../common/src/lib/datasets/datasets.service';
 
 @Component({
     selector: 'geoengine-manager-dataset-list',

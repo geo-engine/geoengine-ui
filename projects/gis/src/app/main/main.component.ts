@@ -19,7 +19,6 @@ import {MatTabGroup} from '@angular/material/tabs';
 import {
     AddDataComponent,
     AddDataButton,
-    Layer,
     SidenavContainerComponent,
     LayoutService,
     UserService,
@@ -44,6 +43,7 @@ import {
 import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from '../app-config.service';
 import {ReplaySubject} from 'rxjs';
+import {Layer} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-main',

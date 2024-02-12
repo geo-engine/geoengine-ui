@@ -1,7 +1,4 @@
 import {ChangeDetectionStrategy, Component, OnDestroy, ViewChild} from '@angular/core';
-import {Layer, RasterLayer} from '../../../layers/layer.model';
-import {ResultTypes} from '../../result-type.model';
-import {RasterSymbology} from '../../../layers/symbology/symbology.model';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {geoengineValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
@@ -10,6 +7,7 @@ import {UUID, WorkflowDict} from '../../../backend/backend.model';
 import {DensityRasterizationDict, GridRasterizationDict, RasterizationDict} from '../../../backend/operator.model';
 import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
 import {NotificationService} from '../../../notification.service';
+import {Layer, RasterLayer, RasterSymbology, ResultTypes} from '@geoengine/common';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 
 interface RasterizationForm {

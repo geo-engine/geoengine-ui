@@ -1,11 +1,8 @@
-import {Color, RgbaTuple, WHITE, BLACK, rgbaColorFromDict} from '../colors/color';
+import {Color, RgbaTuple, WHITE, BLACK, rgbaColorFromDict, colorToDict} from '../colors/color';
 import {Feature as OlFeature} from 'ol';
 import {Circle as OlStyleCircle, Fill as OlStyleFill, Stroke as OlStyleStroke, Style as OlStyle, Text as OlStyleText} from 'ol/style';
 import {StyleFunction as OlStyleFunction} from 'ol/style/Style';
 import {Colorizer, LinearGradient, LogarithmicGradient, PaletteColorizer} from '../colors/colorizer.model';
-// import {PointIconStyle} from '../layer-icons/point-icon/point-icon.component';
-// import {LineIconStyle} from '../layer-icons/line-icon/line-icon.component';
-// import {PolygonIconStyle} from '../layer-icons/polygon-icon/polygon-icon.component';
 import {FeatureLike} from 'ol/Feature';
 import OlGeometry from 'ol/geom/Geometry';
 import {ColorBreakpoint} from '../colors/color-breakpoint.model';
@@ -23,6 +20,9 @@ import {
     RasterSymbologyWithType as RasterSymbologyDict,
     RasterColorizer as RasterColorizerDict,
 } from '@geoengine/openapi-client';
+import {PointIconStyle} from '../layer-icons/point-icon/point-icon.component';
+import {LineIconStyle} from '../layer-icons/line-icon/line-icon.component';
+import {PolygonIconStyle} from '../layer-icons/polygon-icon/polygon-icon.component';
 
 /**
  * List of the symbology types used in geoengine
@@ -76,7 +76,7 @@ export abstract class Symbology {
         throw new Error('Invalid Symbology type.');
     }
 
-    // abstract toDict(): SymbologyDict;
+    abstract toDict(): SymbologyDict;
 
     abstract clone(): Symbology;
 
@@ -84,11 +84,11 @@ export abstract class Symbology {
 
     abstract getSymbologyType(): SymbologyType;
 
-    // abstract getIconStyle(): IconStyle;
+    abstract getIconStyle(): IconStyle;
 
-    // get iconStyle(): IconStyle {
-    //     return this.getIconStyle();
-    // }
+    get iconStyle(): IconStyle {
+        return this.getIconStyle();
+    }
 
     get symbologyType(): SymbologyType {
         return this.getSymbologyType();
@@ -381,28 +381,28 @@ export class PointSymbology extends VectorSymbology {
         );
     }
 
-    // toDict(): SymbologyDict {
-    //     return {
-    //         type: 'point',
-    //         radius: this.radius.toDict(),
-    //         fillColor: this.fillColor.toDict(),
-    //         stroke: this.stroke.toDict(),
-    //         text: this.text ? this.text.toDict() : undefined,
-    //     };
-    // }
+    toDict(): SymbologyDict {
+        return {
+            type: 'point',
+            radius: this.radius.toDict(),
+            fillColor: this.fillColor.toDict(),
+            stroke: this.stroke.toDict(),
+            text: this.text ? this.text.toDict() : undefined,
+        };
+    }
 
     getSymbologyType(): SymbologyType {
         return SymbologyType.POINT;
     }
 
-    // getIconStyle(): PointIconStyle {
-    //     return {
-    //         strokeWidth: this.stroke.width.getDefault(),
-    //         // strokeDashStyle: StrokeDashStyle;
-    //         strokeRGBA: this.stroke.color.getDefault(),
-    //         fillRGBA: this.fillColor.getDefault(),
-    //     };
-    // }
+    getIconStyle(): PointIconStyle {
+        return {
+            strokeWidth: this.stroke.width.getDefault(),
+            // strokeDashStyle: StrokeDashStyle;
+            strokeRGBA: this.stroke.color.getDefault(),
+            fillRGBA: this.fillColor.getDefault(),
+        };
+    }
 }
 
 export class ClusteredPointSymbology extends VectorSymbology {
@@ -450,28 +450,28 @@ export class ClusteredPointSymbology extends VectorSymbology {
         return new ClusteredPointSymbology(this.fillColor.clone(), this.stroke.clone());
     }
 
-    // toDict(): SymbologyDict {
-    //     return {
-    //         type: 'point',
-    //         radius: this.radius.toDict(),
-    //         fillColor: this.fillColor.toDict(),
-    //         stroke: this.stroke.toDict(),
-    //         text: this.text ? this.text.toDict() : undefined,
-    //     };
-    // }
+    toDict(): SymbologyDict {
+        return {
+            type: 'point',
+            radius: this.radius.toDict(),
+            fillColor: this.fillColor.toDict(),
+            stroke: this.stroke.toDict(),
+            text: this.text ? this.text.toDict() : undefined,
+        };
+    }
 
     getSymbologyType(): SymbologyType {
         return SymbologyType.POINT;
     }
 
-    // getIconStyle(): PointIconStyle {
-    //     return {
-    //         strokeWidth: this.stroke.width.getDefault(),
-    //         // strokeDashStyle: StrokeDashStyle;
-    //         strokeRGBA: this.stroke.color.getDefault(),
-    //         fillRGBA: this.fillColor.getDefault(),
-    //     };
-    // }
+    getIconStyle(): PointIconStyle {
+        return {
+            strokeWidth: this.stroke.width.getDefault(),
+            // strokeDashStyle: StrokeDashStyle;
+            strokeRGBA: this.stroke.color.getDefault(),
+            fillRGBA: this.fillColor.getDefault(),
+        };
+    }
 }
 
 export class LineSymbology extends VectorSymbology {
@@ -505,26 +505,26 @@ export class LineSymbology extends VectorSymbology {
         return new LineSymbology(this.stroke.clone(), this.text ? this.text.clone() : undefined);
     }
 
-    // toDict(): SymbologyDict {
-    //     return {
-    //         type: 'line',
-    //         stroke: this.stroke.toDict(),
-    //         text: this.text ? this.text.toDict() : undefined,
-    //         autoSimplified: this.autoSimplified,
-    //     };
-    // }
+    toDict(): SymbologyDict {
+        return {
+            type: 'line',
+            stroke: this.stroke.toDict(),
+            text: this.text ? this.text.toDict() : undefined,
+            autoSimplified: this.autoSimplified,
+        };
+    }
 
     getSymbologyType(): SymbologyType {
         return SymbologyType.LINE;
     }
 
-    // getIconStyle(): LineIconStyle {
-    //     return {
-    //         strokeWidth: this.stroke.width.getDefault(),
-    //         // strokeDashStyle: StrokeDashStyle;
-    //         strokeRGBA: this.stroke.color.getDefault(),
-    //     };
-    // }
+    getIconStyle(): LineIconStyle {
+        return {
+            strokeWidth: this.stroke.width.getDefault(),
+            // strokeDashStyle: StrokeDashStyle;
+            strokeRGBA: this.stroke.color.getDefault(),
+        };
+    }
 }
 
 export class PolygonSymbology extends VectorSymbology {
@@ -573,28 +573,28 @@ export class PolygonSymbology extends VectorSymbology {
         return new PolygonSymbology(this.fillColor.clone(), this.stroke.clone(), this.text ? this.text.clone() : undefined);
     }
 
-    // toDict(): SymbologyDict {
-    //     return {
-    //         type: 'polygon',
-    //         fillColor: this.fillColor.toDict(),
-    //         stroke: this.stroke.toDict(),
-    //         text: this.text ? this.text.toDict() : undefined,
-    //         autoSimplified: this.autoSimplified,
-    //     };
-    // }
+    toDict(): SymbologyDict {
+        return {
+            type: 'polygon',
+            fillColor: this.fillColor.toDict(),
+            stroke: this.stroke.toDict(),
+            text: this.text ? this.text.toDict() : undefined,
+            autoSimplified: this.autoSimplified,
+        };
+    }
 
     getSymbologyType(): SymbologyType {
         return SymbologyType.POLYGON;
     }
 
-    // getIconStyle(): PolygonIconStyle {
-    //     return {
-    //         strokeWidth: this.stroke.width.getDefault(),
-    //         // strokeDashStyle: StrokeDashStyle;
-    //         strokeRGBA: this.stroke.color.getDefault(),
-    //         fillRGBA: this.fillColor.getDefault(),
-    //     };
-    // }
+    getIconStyle(): PolygonIconStyle {
+        return {
+            strokeWidth: this.stroke.width.getDefault(),
+            // strokeDashStyle: StrokeDashStyle;
+            strokeRGBA: this.stroke.color.getDefault(),
+            fillRGBA: this.fillColor.getDefault(),
+        };
+    }
 }
 
 export class RasterSymbology extends Symbology {
@@ -625,13 +625,13 @@ export class RasterSymbology extends Symbology {
         return new RasterSymbology(updates.opacity ?? this.opacity, updates.colorizer ?? this.rasterColorizer.clone());
     }
 
-    // toDict(): SymbologyDict {
-    //     return {
-    //         type: 'raster',
-    //         opacity: this.opacity,
-    //         rasterColorizer: this.rasterColorizer.toDict(),
-    //     };
-    // }
+    toDict(): SymbologyDict {
+        return {
+            type: 'raster',
+            opacity: this.opacity,
+            rasterColorizer: this.rasterColorizer.toDict(),
+        };
+    }
 
     getSymbologyType(): SymbologyType {
         return SymbologyType.RASTER;
@@ -660,7 +660,7 @@ export abstract class RasterColorizer {
 
     abstract clone(): RasterColorizer;
 
-    // abstract toDict(): RasterColorizerDict;
+    abstract toDict(): RasterColorizerDict;
 
     abstract getBreakpoints(): Array<ColorBreakpoint>;
 
@@ -696,13 +696,13 @@ export class SingleBandRasterColorizer extends RasterColorizer {
     override clone(): RasterColorizer {
         return new SingleBandRasterColorizer(this.band, this.bandColorizer.clone());
     }
-    // override toDict(): RasterColorizerDict {
-    //     return {
-    //         type: 'singleBand',
-    //         band: this.band,
-    //         bandColorizer: this.bandColorizer.toDict(),
-    //     };
-    // }
+    override toDict(): RasterColorizerDict {
+        return {
+            type: 'singleBand',
+            band: this.band,
+            bandColorizer: this.bandColorizer.toDict(),
+        };
+    }
 
     getBreakpoints(): Array<ColorBreakpoint> {
         return this.bandColorizer.getBreakpoints();
@@ -744,7 +744,7 @@ export abstract class ColorParam {
 
     abstract clone(): ColorParam;
 
-    // abstract toDict(): ColorParamDict;
+    abstract toDict(): ColorParamDict;
 
     abstract getColor(feature: OlFeature<OlGeometry>): Color;
 
@@ -766,7 +766,7 @@ export abstract class NumberParam {
 
     abstract clone(): NumberParam;
 
-    // abstract toDict(): NumberParamDict;
+    abstract toDict(): NumberParamDict;
 
     abstract getNumber(feature: OlFeature<OlGeometry>): number;
 
@@ -796,12 +796,12 @@ export class StaticColor extends ColorParam {
         return new StaticColor(this.color.clone());
     }
 
-    // toDict(): ColorParamDict {
-    //     return {
-    //         type: 'static',
-    //         color: colorToDict(this.color),
-    //     };
-    // }
+    toDict(): ColorParamDict {
+        return {
+            type: 'static',
+            color: colorToDict(this.color),
+        };
+    }
 
     getDefault(): Color {
         return this.color;
@@ -831,12 +831,12 @@ export class StaticNumber extends NumberParam {
         return new StaticNumber(this.num);
     }
 
-    // toDict(): NumberParamDict {
-    //     return {
-    //         type: 'static',
-    //         value: this.num,
-    //     };
-    // }
+    toDict(): NumberParamDict {
+        return {
+            type: 'static',
+            value: this.num,
+        };
+    }
 
     getDefault(): number {
         return this.num;
@@ -871,13 +871,13 @@ export class DerivedColor implements ColorParam {
         return new DerivedColor(this.attribute, this.colorizer.clone()) as ColorParam;
     }
 
-    // toDict(): ColorParamDict {
-    //     return {
-    //         type: 'derived',
-    //         attribute: this.attribute,
-    //         colorizer: this.colorizer.toDict(),
-    //     };
-    // }
+    toDict(): ColorParamDict {
+        return {
+            type: 'derived',
+            attribute: this.attribute,
+            colorizer: this.colorizer.toDict(),
+        };
+    }
 
     getDefault(): Color {
         if (this.colorizer instanceof LinearGradient || this.colorizer instanceof LogarithmicGradient) {
@@ -924,14 +924,14 @@ export class DerivedNumber extends NumberParam {
         return new DerivedNumber(this.attribute, this.factor, this.defaultValue);
     }
 
-    // toDict(): NumberParamDict {
-    //     return {
-    //         type: 'derived',
-    //         attribute: this.attribute,
-    //         factor: this.factor,
-    //         defaultValue: this.defaultValue,
-    //     };
-    // }
+    toDict(): NumberParamDict {
+        return {
+            type: 'derived',
+            attribute: this.attribute,
+            factor: this.factor,
+            defaultValue: this.defaultValue,
+        };
+    }
 
     getDefault(): number {
         return this.defaultValue;
@@ -967,12 +967,12 @@ export class Stroke {
         return new Stroke(this.width.clone(), this.color.clone());
     }
 
-    // toDict(): StrokeParamDict {
-    //     return {
-    //         width: this.width.toDict(),
-    //         color: this.color.toDict(),
-    //     };
-    // }
+    toDict(): StrokeParamDict {
+        return {
+            width: this.width.toDict(),
+            color: this.color.toDict(),
+        };
+    }
 
     createStyler(feature: OlFeature<OlGeometry>): StrokeStyler {
         return new StrokeStyler(this.width.getNumber(feature), this.color.getColor(feature).rgbaTuple());
@@ -1023,13 +1023,13 @@ export class TextSymbology {
         return new TextSymbology(this.attribute, this.fillColor.clone(), this.stroke.clone());
     }
 
-    // toDict(): TextSymbologyDict {
-    //     return {
-    //         attribute: this.attribute,
-    //         fillColor: this.fillColor.toDict(),
-    //         stroke: this.stroke.toDict(),
-    //     };
-    // }
+    toDict(): TextSymbologyDict {
+        return {
+            attribute: this.attribute,
+            fillColor: this.fillColor.toDict(),
+            stroke: this.stroke.toDict(),
+        };
+    }
 }
 
 function textSymbologyEquality(a?: TextSymbology, b?: TextSymbology): boolean {

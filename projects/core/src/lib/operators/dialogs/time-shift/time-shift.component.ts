@@ -1,5 +1,3 @@
-import {Layer, RasterLayer, VectorLayer} from '../../../layers/layer.model';
-import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
@@ -10,8 +8,16 @@ import {TimeStepGranularityDict, WorkflowDict} from '../../../backend/backend.mo
 import {BehaviorSubject, Observable} from 'rxjs';
 import {AbsoluteTimeShiftDictParams, RelativeTimeShiftDictParams, TimeShiftDict} from '../../../backend/operator.model';
 import moment from 'moment';
-import {RasterSymbology, VectorSymbology} from '../../../layers/symbology/symbology.model';
-import {Time, timeStepGranularityOptions} from '../../../time/time.model';
+import {
+    Layer,
+    RasterLayer,
+    RasterSymbology,
+    ResultTypes,
+    Time,
+    VectorLayer,
+    VectorSymbology,
+    timeStepGranularityOptions,
+} from '@geoengine/common';
 
 type TimeShiftFormType = 'relative' | 'absolute';
 

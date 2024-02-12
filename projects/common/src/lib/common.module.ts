@@ -1,6 +1,5 @@
 import {NgModule} from '@angular/core';
 import {CommonModule as AngularCommonModule} from '@angular/common';
-import {CommonComponent} from './common/common.component';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
@@ -41,10 +40,14 @@ import {ColorParamEditorComponent} from './symbology/color-param-editor/color-pa
 import {RasterGradientSymbologyEditorComponent} from './symbology/raster-gradient-symbology-editor/raster-gradient-symbology-editor.component';
 import {RasterPaletteSymbologyEditorComponent} from './symbology/raster-palette-symbology-editor/raster-palette-symbology-editor.component';
 import {RasterSymbologyEditorComponent} from './symbology/raster-symbology-editor/raster-symbology-editor.component';
-import {SymbologyCreatorComponent} from './symbology/symbology-creator/symbology-creator.component';
 import {VectorSymbologyEditorComponent} from './symbology/vector-symbology-editor/vector-symbology-editor.component';
 import {NumberParamEditorComponent} from './symbology/number-param-editor/number-param-editor.component';
 import {ColorizerCssGradientPipe} from './util/pipes/color-gradients.pipe';
+import {PointIconComponent} from './layer-icons/point-icon/point-icon.component';
+import {LineIconComponent} from './layer-icons/line-icon/line-icon.component';
+import {PolygonIconComponent} from './layer-icons/polygon-icon/polygon-icon.component';
+import {RasterIconComponent} from './layer-icons/raster-icon/raster-icon.component';
+import {BreakpointToCssStringPipe} from './util/pipes/breakpoint-to-css-string.pipe';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -87,12 +90,15 @@ const COMMON_COMPONENTS = [
     RasterGradientSymbologyEditorComponent,
     RasterPaletteSymbologyEditorComponent,
     RasterSymbologyEditorComponent,
-    SymbologyCreatorComponent,
     VectorSymbologyEditorComponent,
     NumberParamEditorComponent,
+    PointIconComponent,
+    LineIconComponent,
+    PolygonIconComponent,
+    RasterIconComponent,
 ];
 
-const COMMON_PIPES = [AsyncValueDefault, ColorizerCssGradientPipe];
+const COMMON_PIPES = [AsyncValueDefault, BreakpointToCssStringPipe, ColorizerCssGradientPipe];
 
 // const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGapDirective, FxLayoutAlignDirective];
 

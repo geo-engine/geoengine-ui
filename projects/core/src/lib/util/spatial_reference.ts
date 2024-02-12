@@ -1,4 +1,4 @@
-import {SpatialReference} from '../spatial-references/spatial-reference.model';
+import {SpatialReference} from '@geoengine/common';
 import {WGS_84} from '../spatial-references/spatial-reference.service';
 
 /**

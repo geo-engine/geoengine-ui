@@ -47,7 +47,7 @@ import {
     RasterColorizerCssGradientPipe,
 } from './util/pipes/color-gradients.pipe';
 import {RgbaToCssStringPipe} from './util/pipes/rgba-to-css-string.pipe';
-import {CommonModule} from '@angular/common';
+import {CommonModule as AngularCommonModule} from '@angular/common';
 import {DialogHelpComponent} from './dialogs/dialog-help/dialog-help.component';
 import {SidenavHeaderComponent} from './sidenav/sidenav-header/sidenav-header.component';
 import {SidenavContainerComponent} from './sidenav/sidenav-container/sidenav-container.component';
@@ -60,10 +60,6 @@ import {RenameLayerComponent} from './layers/rename-layer/rename-layer.component
 import {VectorLegendComponent} from './layers/legend/legend-vector/vector-legend.component';
 import {LayerListComponent} from './layers/layer-list/layer-list.component';
 import {LayerListElementComponent} from './layers/layer-list/layer-list-element/layer-list-element.component';
-import {PointIconComponent} from './layers/layer-icons/point-icon/point-icon.component';
-import {LineIconComponent} from './layers/layer-icons/line-icon/line-icon.component';
-import {RasterIconComponent} from './layers/layer-icons/raster-icon/raster-icon.component';
-import {PolygonIconComponent} from './layers/layer-icons/polygon-icon/polygon-icon.component';
 import {
     CastMeasurementToClassificationPipe,
     CastMeasurementToContinuousPipe,
@@ -108,15 +104,8 @@ import {UploadComponent} from './datasets/upload/upload.component';
 import {DataTableComponent} from './datatable/table/table.component';
 import {TabsComponent} from './tabs/tabs.component';
 import {PortalModule} from '@angular/cdk/portal';
-import {RasterSymbologyEditorComponent} from './layers/symbology/raster-symbology-editor/raster-symbology-editor.component';
-import {ColorAttributeInputComponent} from './colors/color-attribute-input/color-attribute-input.component';
-import {ColorMapSelectorComponent} from './colors/color-map-selector/color-map-selector.component';
 import {DrawFeaturesComponent} from './datasets/draw-features/draw-features.component';
-import {ColorBreakpointInputComponent} from './colors/color-breakpoint-input/color-breakpoint-input.component';
 import {AsyncNumberSanitizer, AsyncStringSanitizer, AsyncValueDefault} from './util/pipes/async-converters.pipe';
-import {VectorSymbologyEditorComponent} from './layers/symbology/vector-symbology-editor/vector-symbology-editor.component';
-import {ColorParamEditorComponent} from './layers/symbology/color-param-editor/color-param-editor.component';
-import {NumberParamEditorComponent} from './layers/symbology/number-param-editor/number-param-editor.component';
 import {FeatureAttributeOvertimeComponent} from './operators/dialogs/feature-attribute-over-time/feature-attribute-over-time.component';
 import {NotificationsComponent} from './project/notifications/notifications.component';
 import {TemporalRasterAggregationComponent} from './operators/dialogs/temporal-raster-aggregation/temporal-raster-aggregation.component';
@@ -160,14 +149,12 @@ import {DownloadRasterLayerComponent} from './download-raster-layer/download-ras
 import {TimeIntervalInputComponent} from './time/time-interval-input/time-interval-input.component';
 import {QuotaInfoComponent} from './users/quota/quota-info/quota-info.component';
 import {FxFlexDirective, FxLayoutAlignDirective, FxLayoutDirective, FxLayoutGapDirective} from './util/directives/flexbox-legacy.directive';
-import {ColorTableEditorComponent} from './colors/color-table-editor/color-table-editor.component';
 import {LineSimplificationComponent} from './operators/dialogs/line-simplification/line-simplification.component';
 import {TaskListComponent} from './tasks/task-list/task-list.component';
 import {RgbaCompositeComponent} from './operators/dialogs/rgb-composite/rgb-composite.component';
-import {RasterGradientSymbologyEditorComponent} from './layers/symbology/raster-gradient-symbology-editor/raster-gradient-symbology-editor.component';
-import {RasterPaletteSymbologyEditorComponent} from './layers/symbology/raster-palette-symbology-editor/raster-palette-symbology-editor.component';
 import {RolesComponent} from './users/roles/roles.component';
 import {VectorExpressionComponent} from './operators/dialogs/vector-expression/vector-expression.component';
+import {CommonModule} from '@geoengine/common';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -229,11 +216,7 @@ const CORE_COMPONENTS = [
     ChangeSpatialReferenceComponent,
     ClassHistogramOperatorComponent,
     CodeEditorComponent,
-    ColorAttributeInputComponent,
-    ColorBreakpointInputComponent,
-    ColorMapSelectorComponent,
-    ColorTableEditorComponent,
-    ColorParamEditorComponent,
+
     ColumnRangeFilterComponent,
     DatasetComponent,
     DatasetListComponent,
@@ -263,7 +246,6 @@ const CORE_COMPONENTS = [
     LayerSelectionComponent,
     LineageGraphComponent,
     LineageGraphComponent,
-    LineIconComponent,
     LineSimplificationComponent,
     LoadProjectComponent,
     LoginComponent,
@@ -279,7 +261,7 @@ const CORE_COMPONENTS = [
     NewProjectComponent,
     NotFoundPageComponent,
     NotificationsComponent,
-    NumberParamEditorComponent,
+
     OidcComponent,
     OlRasterLayerComponent,
     OlVectorLayerComponent,
@@ -290,20 +272,17 @@ const CORE_COMPONENTS = [
     PlotDetailViewComponent,
     PlotListComponent,
     PlotListEntryComponent,
-    PointIconComponent,
     PointInPolygonFilterOperatorComponent,
-    PolygonIconComponent,
     ProvenanceTableComponent,
     QuotaInfoComponent,
-    RasterGradientSymbologyEditorComponent,
-    RasterIconComponent,
+
     RasterizationComponent,
     RasterLegendComponent,
     RasterLegendComponent,
-    RasterPaletteSymbologyEditorComponent,
+
     RasterScalingComponent,
     RasterStackerComponent,
-    RasterSymbologyEditorComponent,
+
     RasterTypeConversionComponent,
     RasterVectorJoinComponent,
     RenameLayerComponent,
@@ -332,7 +311,7 @@ const CORE_COMPONENTS = [
     VatLogoComponent,
     VectorExpressionComponent,
     VectorLegendComponent,
-    VectorSymbologyEditorComponent,
+
     VegaViewerComponent,
     WorkspaceSettingsComponent,
     ZoomHandlesComponent,
@@ -345,6 +324,7 @@ const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGa
     imports: [
         ...MATERIAL_MODULES,
         ColorPickerModule,
+        AngularCommonModule,
         CommonModule,
         DragDropModule,
         FormsModule,

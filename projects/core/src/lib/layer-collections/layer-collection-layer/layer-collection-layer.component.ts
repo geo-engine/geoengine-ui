@@ -1,9 +1,8 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import {mergeMap} from 'rxjs';
 import {LayerCollectionLayerDict, ProviderLayerIdDict} from '../../backend/backend.model';
-import {RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metadata.model';
-import {VectorDataTypes} from '../../operators/datatype.model';
 import {LayerCollectionService} from '../layer-collection.service';
+import {RasterLayerMetadata, VectorDataTypes, VectorLayerMetadata} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-layer-collection-layer',

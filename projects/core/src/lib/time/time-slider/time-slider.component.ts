@@ -6,8 +6,7 @@ import {LayoutService} from '../../layout.service';
 import {ProjectService} from '../../project/project.service';
 import moment, {DurationInputArg2, Moment} from 'moment';
 import {Subscription} from 'rxjs';
-import {Time} from '../time.model';
-import {Layer} from '../../layers/layer.model';
+import {Layer, Time} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-time-slider',

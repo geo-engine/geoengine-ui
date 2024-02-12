@@ -7,21 +7,15 @@ import {
     LayerCollectionDict,
     LayerCollectionItemDict,
     LayerCollectionLayerDict,
-    LayerDict,
     ProviderLayerIdDict,
     RasterSymbologyDict,
     ResultDescriptorDict,
     UUID,
     VectorResultDescriptorDict,
-    VectorSymbologyDict,
 } from '../backend/backend.model';
-import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata.model';
 import {ProjectService} from '../project/project.service';
 import {NotificationService} from '../notification.service';
-import {Layer, RasterLayer, VectorLayer} from '../layers/layer.model';
-import {RasterSymbology, VectorSymbology} from '../layers/symbology/symbology.model';
 import {RandomColorService} from '../util/services/random-color.service';
-import {subscribeAndProvide} from '../util/conversions';
 import {createVectorSymbology} from '../util/symbologies';
 import {
     AutocompleteHandlerRequest,
@@ -29,7 +23,20 @@ import {
     LayersApi,
     ProviderCapabilities,
     SearchHandlerRequest,
+    Layer as LayerDict,
 } from '@geoengine/openapi-client';
+import {
+    Layer,
+    LayerMetadata,
+    RasterLayer,
+    RasterLayerMetadata,
+    RasterSymbology,
+    subscribeAndProvide,
+    VectorLayer,
+    VectorLayerMetadata,
+    VectorSymbology,
+    VectorSymbologyDict,
+} from '@geoengine/common';
 
 @Injectable({
     providedIn: 'root',

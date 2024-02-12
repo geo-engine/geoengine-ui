@@ -1,15 +1,13 @@
-import {RasterLayer} from '../../../layers/layer.model';
-import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap} from 'rxjs/operators';
-import {Plot} from '../../../plots/plot.model';
 import {NotificationService} from '../../../notification.service';
 import {WorkflowDict} from '../../../backend/backend.model';
 import {Observable} from 'rxjs';
 import {MeanRasterPixelValuesOverTimeDict, MeanRasterPixelValuesOverTimeParams} from '../../../backend/operator.model';
+import {Plot, RasterLayer, ResultTypes} from '@geoengine/common';
 
 type TimePosition = 'start' | 'center' | 'end';
 

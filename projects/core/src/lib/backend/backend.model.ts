@@ -83,27 +83,6 @@ export type ProjectFilterDict = 'None' | {name: {term: string}} | {description: 
 
 export type ProjectOrderByDict = 'DateAsc' | 'DateDesc' | 'NameAsc' | 'NameDesc';
 
-export interface ProjectDict {
-    id: UUID;
-    version?: ProjectVersion;
-    name: string;
-    description: string;
-    layers: Array<ProjectLayerDict>;
-    plots: Array<PlotDict>;
-    bounds: STRectangleDict;
-    timeStep: TimeStepDict;
-}
-
-export interface ProjectLayerDict {
-    workflow: UUID;
-    name: string;
-    visibility: {
-        data: boolean;
-        legend: boolean;
-    };
-    symbology: SymbologyDict;
-}
-
 export interface PlotDict {
     workflow: UUID;
     name: string;
@@ -147,9 +126,6 @@ export interface PaletteDict {
 }
 
 export type RgbaColorDict = [number, number, number, number];
-
-export type SymbologyDict = RasterSymbologyDict | VectorSymbologyDict;
-export type VectorSymbologyDict = PointSymbologyDict | LineSymbologyDict | PolygonSymbologyDict;
 
 export interface RasterSymbologyDict {
     type: 'raster';
@@ -289,16 +265,6 @@ export interface TimeStepDict {
 
 export type TimeStepGranularityDict = 'millis' | 'seconds' | 'minutes' | 'hours' | 'days' | 'months' | 'years';
 
-export interface DatasetDict {
-    id: UUID;
-    name: string;
-    displayName: string;
-    description: string;
-    resultDescriptor: TypedResultDescriptorDict;
-    sourceOperator: string;
-    symbology?: SymbologyDict;
-}
-
 export type DataIdDict = InternalDataIdDict | ExternalDataIdDict;
 
 export interface InternalDataIdDict {
@@ -390,26 +356,6 @@ export interface DatasetNameResponseDict {
 
 export interface WorkflowIdResponseDict {
     id: UUID;
-}
-
-export interface CreateDatasetDict {
-    dataPath: {
-        upload: UUID;
-    };
-    definition: DatasetDefinitionDict;
-}
-
-export interface DatasetDefinitionDict {
-    properties: AddDatasetDict;
-    metaData: MetaDataDefinitionDict;
-}
-
-export interface AddDatasetDict {
-    name?: string;
-    displayName: string;
-    description: string;
-    sourceOperator: string;
-    symbology?: SymbologyDict;
 }
 
 export interface AutoCreateDatasetDict {
@@ -597,17 +543,6 @@ export interface LayerCollectionListingDict extends LayerCollectionItemDict {
 export interface LayerCollectionLayerDict extends LayerCollectionItemDict {
     type: 'layer';
     id: ProviderLayerIdDict;
-}
-
-export interface LayerDict {
-    id: UUID;
-    name: string;
-    description: string;
-    workflow: WorkflowDict;
-    symbology: SymbologyDict;
-    metadata: {
-        [key: string]: string;
-    };
 }
 
 export interface LayerCollectionDict {

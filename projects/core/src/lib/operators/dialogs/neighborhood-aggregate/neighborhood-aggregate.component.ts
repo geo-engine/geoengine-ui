@@ -2,15 +2,13 @@ import {map, mergeMap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy, ViewChild} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {ResultTypes} from '../../result-type.model';
-import {Layer, RasterLayer} from '../../../layers/layer.model';
 import {ProjectService} from '../../../project/project.service';
 import {UUID, WorkflowDict} from '../../../backend/backend.model';
 import {NeighborhoodAggregateDict} from '../../../backend/operator.model';
 import {LayoutService, SidenavConfig} from '../../../layout.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
-import {RasterSymbology} from '../../../layers/symbology/symbology.model';
+import {Layer, RasterLayer, RasterSymbology, ResultTypes} from '@geoengine/common';
 
 interface NeighborhoodAggregateForm {
     rasterLayer: FormControl<RasterLayer | undefined>;

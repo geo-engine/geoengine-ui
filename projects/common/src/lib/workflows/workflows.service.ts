@@ -15,6 +15,14 @@ export class WorkflowsService {
         });
     }
 
+    async getWorkflow(id: string): Promise<Workflow> {
+        const workflowApi = await firstValueFrom(this.workflowApi);
+
+        return workflowApi.loadWorkflowHandler({
+            id,
+        });
+    }
+
     async getMetadata(id: string): Promise<TypedResultDescriptor> {
         const workflowApi = await firstValueFrom(this.workflowApi);
 

@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {DatasetListing} from '@geoengine/openapi-client';
 import {BehaviorSubject} from 'rxjs';
-import {DatasetsService} from './datasets.service';
+import {DatasetsService} from '../../../../common/src/lib/datasets/datasets.service';
 
 @Component({
     selector: 'geoengine-manager-datasets',

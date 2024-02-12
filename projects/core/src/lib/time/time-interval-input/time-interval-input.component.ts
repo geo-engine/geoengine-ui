@@ -1,7 +1,6 @@
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef} from '@angular/core';
 import {ProjectService} from '../../project/project.service';
 import {Subscription} from 'rxjs';
-import {Time, TimeStepDuration} from '../time.model';
 import moment, {Moment} from 'moment';
 import {
     AbstractControl,
@@ -17,6 +16,7 @@ import {
     Validators,
 } from '@angular/forms';
 import {Config} from '../../config.service';
+import {Time, TimeStepDuration} from '@geoengine/common';
 
 const startBeforeEndValidator = (control: AbstractControl): ValidationErrors | null => {
     if (!(control instanceof UntypedFormGroup)) {

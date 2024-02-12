@@ -2,8 +2,6 @@ import {map, mergeMap, tap} from 'rxjs/operators';
 import {BehaviorSubject, Observable, combineLatest, firstValueFrom, from} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {ResultTypes} from '../../result-type.model';
-import {Layer, RasterLayer} from '../../../layers/layer.model';
 import {geoengineValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
 import {
@@ -18,14 +16,20 @@ import {
 } from '../../../backend/backend.model';
 import {RgbDict, StatisticsDict} from '../../../backend/operator.model';
 import {LayoutService, SidenavConfig} from '../../../layout.service';
-import {RasterSymbology, SingleBandRasterColorizer} from '../../../layers/symbology/symbology.model';
 import {NotificationService} from '../../../notification.service';
-import {RgbaColorizer} from '../../../colors/colorizer.model';
 import {BackendService} from '../../../backend/backend.service';
 import {UserService} from '../../../users/user.service';
-import {RasterResultDescriptor} from '../../../datasets/dataset.model';
 import {SpatialReferenceService} from '../../../spatial-references/spatial-reference.service';
-import {extentToBboxDict} from '../../../util/conversions';
+import {
+    Layer,
+    RasterLayer,
+    RasterResultDescriptor,
+    RasterSymbology,
+    ResultTypes,
+    RgbaColorizer,
+    SingleBandRasterColorizer,
+    extentToBboxDict,
+} from '@geoengine/common';
 
 interface RgbCompositeForm {
     rasterLayers: FormControl<Array<RasterLayer> | undefined>;

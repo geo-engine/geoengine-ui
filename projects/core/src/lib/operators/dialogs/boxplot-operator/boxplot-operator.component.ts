@@ -1,17 +1,13 @@
-import {Layer, RasterLayer, VectorLayer} from '../../../layers/layer.model';
-import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators, UntypedFormControl} from '@angular/forms';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap, tap} from 'rxjs/operators';
-import {Plot} from '../../../plots/plot.model';
 import {NotificationService} from '../../../notification.service';
-import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
 import {OperatorDict, SourceOperatorDict} from '../../../backend/backend.model';
 import {BoxPlotDict, BoxPlotParams} from '../../../backend/operator.model';
-import {VectorColumnDataTypes} from '../../datatype.model';
+import {Layer, Plot, RasterLayer, ResultTypes, VectorColumnDataTypes, VectorLayer, VectorLayerMetadata} from '@geoengine/common';
 
 /**
  * Checks whether the layer is a vector layer (points, lines, polygons).

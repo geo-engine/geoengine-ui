@@ -1,5 +1,3 @@
-import {RasterLayer} from '../../../layers/layer.model';
-import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, ViewChild} from '@angular/core';
 import {FormControl, FormBuilder, FormGroup, Validators, ValidatorFn} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
@@ -9,10 +7,9 @@ import {NotificationService} from '../../../notification.service';
 import {UUID, WorkflowDict} from '../../../backend/backend.model';
 import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
 import {InputResolutionDict, InterpolationDict} from '../../../backend/operator.model';
-import {RasterDataTypes} from '../../datatype.model';
 import {Layer} from 'ol/layer';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
-import {RasterSymbology} from '../../../layers/symbology/symbology.model';
+import {RasterDataTypes, RasterLayer, RasterSymbology, ResultTypes} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-interpolation',

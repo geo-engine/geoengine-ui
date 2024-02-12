@@ -51,16 +51,14 @@ import OlGeometry from 'ol/geom/Geometry';
 
 import {MapLayerComponent} from '../map-layer.component';
 
-import {SpatialReference} from '../../spatial-references/spatial-reference.model';
 import {FeatureSelection, ProjectService} from '../../project/project.service';
 import {Extent, MapService} from '../map.service';
 import {Config} from '../../config.service';
 import {MatGridList, MatGridTile} from '@angular/material/grid-list';
-import {VectorSymbology} from '../../layers/symbology/symbology.model';
 import {SpatialReferenceService, WGS_84} from '../../spatial-references/spatial-reference.service';
 import {containsCoordinate, getCenter} from 'ol/extent';
-import {olExtentToTuple} from '../../util/conversions';
 import {applyBackground, stylefunction} from 'ol-mapbox-style';
+import {olExtentToTuple, SpatialReference, VectorSymbology} from '@geoengine/common';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type MapLayer = MapLayerComponent<OlLayer<OlSource, any>, OlSource>;

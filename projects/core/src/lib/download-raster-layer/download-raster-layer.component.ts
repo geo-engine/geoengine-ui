@@ -5,18 +5,15 @@ import moment from 'moment';
 import {combineLatest, mergeMap, Subscription} from 'rxjs';
 import {RasterResultDescriptorDict, ResultDescriptorDict, WcsParamsDict} from '../backend/backend.model';
 import {BackendService} from '../backend/backend.service';
-import {RasterLayer} from '../layers/layer.model';
 import {MapService} from '../map/map.service';
 import {NotificationService} from '../notification.service';
 import {ProjectService} from '../project/project.service';
-import {SpatialReference} from '../spatial-references/spatial-reference.model';
 import {SpatialReferenceService} from '../spatial-references/spatial-reference.service';
 import {TimeInterval} from '../time/time-interval-input/time-interval-input.component';
-import {Time} from '../time/time.model';
 import {UserService} from '../users/user.service';
-import {olExtentToTuple} from '../util/conversions';
 import {geoengineValidators} from '../util/form.validators';
 import {bboxAsOgcString, gridOffsetsAsOgcString, gridOriginAsOgcString} from '../util/spatial_reference';
+import {RasterLayer, SpatialReference, Time, olExtentToTuple} from '@geoengine/common';
 
 export interface DownloadRasterLayerForm {
     bboxMinX: FormControl<number>;

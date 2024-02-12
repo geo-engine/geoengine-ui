@@ -13,20 +13,26 @@ import {
 } from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
 import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
-import {RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metadata.model';
-import {Layer, RasterLayer, VectorLayer} from '../../layers/layer.model';
-import {ResultTypes} from '../../operators/result-type.model';
 import {Feature as OlFeature} from 'ol';
 import {FeatureSelection, ProjectService} from '../../project/project.service';
-import {VectorData} from '../../layers/layer-data.model';
 import {DataSource} from '@angular/cdk/collections';
 import OlGeometry from 'ol/geom/Geometry';
 import OlPolygon from 'ol/geom/Polygon';
 import {MatDialog} from '@angular/material/dialog';
 import {FullDisplayComponent} from './full-display/full-display.component';
 import {MediaviewComponent} from '../mediaview/mediaview.component';
-import {VectorColumnDataType, VectorColumnDataTypes} from '../../operators/datatype.model';
-import {Time} from '../../time/time.model';
+import {
+    Layer,
+    RasterLayer,
+    RasterLayerMetadata,
+    ResultTypes,
+    Time,
+    VectorColumnDataType,
+    VectorColumnDataTypes,
+    VectorData,
+    VectorLayer,
+    VectorLayerMetadata,
+} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-datatable',

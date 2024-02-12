@@ -2,19 +2,24 @@ import {map, mergeMap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, Input, ViewChild} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
-import {ResultTypes} from '../../result-type.model';
-import {RasterDataType, RasterDataTypes} from '../../datatype.model';
-import {Layer, RasterLayer} from '../../../layers/layer.model';
 import {geoengineValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
 import {UUID, WorkflowDict} from '../../../backend/backend.model';
-import {RasterLayerMetadata} from '../../../layers/layer-metadata.model';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {ExpressionDict} from '../../../backend/operator.model';
 import {LayoutService, SidenavConfig} from '../../../layout.service';
-import {SymbologyCreationType, SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
-import {RasterSymbology, SingleBandRasterColorizer} from '../../../layers/symbology/symbology.model';
 import {GeoEngineError} from '../../../util/errors';
+import {
+    Layer,
+    RasterDataType,
+    RasterDataTypes,
+    RasterLayer,
+    RasterLayerMetadata,
+    RasterSymbology,
+    ResultTypes,
+    SingleBandRasterColorizer,
+} from '@geoengine/common';
+import {SymbologyCreationType, SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 
 interface ExpressionForm {
     rasterLayer: FormControl<RasterLayer | undefined>;

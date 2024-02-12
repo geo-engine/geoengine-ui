@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
+import {ColorBreakpoint} from '@geoengine/common';
 
 @Pipe({name: 'breakpointToCssStringPipe'})
 export class BreakpointToCssStringPipe implements PipeTransform {

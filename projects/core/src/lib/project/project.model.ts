@@ -1,13 +1,21 @@
-import {SpatialReference} from '../spatial-references/spatial-reference.model';
-import {Time, timeStepDictTotimeStepDuration, TimeStepDuration, timeStepDurationToTimeStepDict} from '../time/time.model';
-import {Layer} from '../layers/layer.model';
-import {UUID, ToDict, ProjectDict, STRectangleDict, BBoxDict} from '../backend/backend.model';
-import {Plot} from '../plots/plot.model';
+import {UUID, ToDict, STRectangleDict, BBoxDict} from '../backend/backend.model';
+import {
+    Layer,
+    Plot,
+    SpatialReference,
+    Time,
+    TimeStepDuration,
+    timeStepDictTotimeStepDuration,
+    timeStepDurationToTimeStepDict,
+} from '@geoengine/common';
+import {Project as ProjectDict, ProjectVersion} from '@geoengine/openapi-client';
 
 export class Project implements ToDict<ProjectDict> {
     readonly id: UUID;
     readonly name: string;
     readonly description: string;
+
+    readonly version: ProjectVersion;
 
     readonly _bbox: BBoxDict;
 
@@ -30,6 +38,7 @@ export class Project implements ToDict<ProjectDict> {
         layers: Array<Layer>;
         timeStepDuration: TimeStepDuration;
         bbox: BBoxDict;
+        version: ProjectVersion;
     }) {
         this.id = config.id;
         this.name = config.name;
@@ -40,6 +49,7 @@ export class Project implements ToDict<ProjectDict> {
         this._layers = config.layers;
         this._timeStepDuration = config.timeStepDuration;
         this._bbox = config.bbox;
+        this.version = config.version;
     }
 
     static fromDict(dict: ProjectDict): Project {
@@ -53,6 +63,7 @@ export class Project implements ToDict<ProjectDict> {
             layers: dict.layers.map(Layer.fromDict),
             timeStepDuration: timeStepDictTotimeStepDuration(dict.timeStep),
             bbox: dict.bounds.boundingBox,
+            version: dict.version,
         });
     }
 
@@ -67,6 +78,7 @@ export class Project implements ToDict<ProjectDict> {
         layers?: Array<Layer>;
         timeStepDuration?: TimeStepDuration;
         bbox?: BBoxDict;
+        version?: ProjectVersion;
     }): Project {
         return new Project({
             id: changes.id ?? this.id,
@@ -78,6 +90,7 @@ export class Project implements ToDict<ProjectDict> {
             layers: changes.layers ?? this.layers,
             timeStepDuration: changes.timeStepDuration ?? this.timeStepDuration,
             bbox: changes.bbox ?? this._bbox,
+            version: changes.version ?? this.version,
         });
     }
 
@@ -108,7 +121,7 @@ export class Project implements ToDict<ProjectDict> {
             id: this.id,
             name: this.name,
             description: this.description,
-            version: undefined, // TODO: get rid of version?
+            version: this.version, // TODO: get rid of version?
             bounds: this.toBoundsDict(),
             layers: this._layers.map((layer) => layer.toDict()),
             plots: this._plots.map((plot) => plot.toDict()),

@@ -1,8 +1,8 @@
 import {Component, OnInit, ChangeDetectionStrategy, Inject} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
-import {Layer} from '../layer.model';
 import {ProjectService} from '../../project/project.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Layer} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-rename-layer',

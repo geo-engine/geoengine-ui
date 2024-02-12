@@ -1,13 +1,12 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormGroup, UntypedFormControl, Validators} from '@angular/forms';
 import {GeoEngineErrorDict, RasterResultDescriptorDict, UUID, VectorResultDescriptorDict} from '../../backend/backend.model';
-import {RasterLayer, VectorLayer} from '../../layers/layer.model';
-import {RasterSymbology} from '../../layers/symbology/symbology.model';
 import {NotificationService} from '../../notification.service';
 import {ProjectService} from '../../project/project.service';
 import {isValidUuid} from '../../util/form.validators';
 import {RandomColorService} from '../../util/services/random-color.service';
 import {createVectorSymbology} from '../../util/symbologies';
+import {RasterLayer, RasterSymbology, VectorLayer} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-add-workflow',

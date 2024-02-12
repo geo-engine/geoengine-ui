@@ -1,11 +1,12 @@
-import {Color, colorToDict} from '../colors/color';
 import {
     ClusteredPointSymbology,
+    Color,
     LineSymbology,
     PointSymbology,
     PolygonSymbology,
     VectorSymbology,
-} from '../layers/symbology/symbology.model';
+    colorToDict,
+} from '@geoengine/common';
 
 /**
  * @returns a vector symbology for the given data type and using the given color as fill color (points, polygons) or stroke color (lines)

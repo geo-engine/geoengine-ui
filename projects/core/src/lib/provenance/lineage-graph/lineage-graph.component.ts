@@ -4,11 +4,11 @@ import {Component, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit
 import * as dagreD3 from 'dagre-d3';
 import * as d3 from 'd3';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {Layer} from '../../layers/layer.model';
 import {OperatorDict, OperatorParams, SourceOperatorDict} from '../../backend/backend.model';
 import {LayoutService} from '../../layout.service';
 import {ProjectService} from '../../project/project.service';
 import {createIconDataUrl} from '../../util/icons';
+import {Layer} from '@geoengine/common';
 
 const GRAPH_STYLE = {
     general: {

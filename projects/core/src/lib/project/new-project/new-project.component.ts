@@ -4,10 +4,8 @@ import {Component, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
 import {UntypedFormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
 import {ProjectService} from '../project.service';
 import {NotificationService} from '../../notification.service';
-import {NamedSpatialReference, SpatialReferenceSpecification} from '../../spatial-references/spatial-reference.model';
 import {SpatialReferenceService, WEB_MERCATOR} from '../../spatial-references/spatial-reference.service';
-import {Time} from '../../time/time.model';
-import {extentToBboxDict} from '../../util/conversions';
+import {NamedSpatialReference, SpatialReferenceSpecification, Time, extentToBboxDict} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-new-project',

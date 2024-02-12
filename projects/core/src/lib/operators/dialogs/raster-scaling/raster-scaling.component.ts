@@ -1,5 +1,3 @@
-import {RasterLayer} from '../../../layers/layer.model';
-import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
 import {FormControl, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
@@ -9,9 +7,8 @@ import {NotificationService} from '../../../notification.service';
 import {UUID, WorkflowDict} from '../../../backend/backend.model';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {RasterMetadataKey, RasterUnScalingDict} from '../../../backend/operator.model';
-import {RasterDataTypes} from '../../datatype.model';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
-import {RasterSymbology} from '../../../layers/symbology/symbology.model';
+import {RasterDataTypes, RasterLayer, RasterSymbology, ResultTypes} from '@geoengine/common';
 
 interface RasterScalingForm {
     name: FormControl<string>;

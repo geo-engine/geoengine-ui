@@ -7,7 +7,7 @@ import {
     TypedResultDescriptor,
     VectorResultDescriptorWithType,
 } from '@geoengine/openapi-client';
-import {DatasetsService} from '../datasets.service';
+import {DatasetsService} from '../../../../../common/src/lib/datasets/datasets.service';
 import {BehaviorSubject} from 'rxjs';
 import {Raster} from 'ol/source';
 

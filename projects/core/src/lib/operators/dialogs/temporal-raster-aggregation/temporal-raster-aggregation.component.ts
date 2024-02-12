@@ -1,5 +1,3 @@
-import {RasterLayer} from '../../../layers/layer.model';
-import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
@@ -11,9 +9,7 @@ import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {TemporalRasterAggregationDict, TemporalRasterAggregationDictAgregationType} from '../../../backend/operator.model';
 import moment, {Moment} from 'moment';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
-import {RasterSymbology} from '../../../layers/symbology/symbology.model';
-import {RasterDataType, RasterDataTypes} from '../../datatype.model';
-import {timeStepGranularityOptions} from '../../../time/time.model';
+import {RasterDataType, RasterDataTypes, RasterLayer, RasterSymbology, ResultTypes, timeStepGranularityOptions} from '@geoengine/common';
 
 interface TemporalRasterAggregationForm {
     name: FormControl<string>;

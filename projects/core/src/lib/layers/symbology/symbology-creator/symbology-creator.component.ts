@@ -4,18 +4,22 @@ import {combineLatest, first, map, mergeMap, Observable, of, Subject, takeUntil}
 import {BBoxDict, RasterResultDescriptorDict, SrsString, TimeIntervalDict, UUID} from '../../../backend/backend.model';
 import {BackendService} from '../../../backend/backend.service';
 import {StatisticsDict, StatisticsParams} from '../../../backend/operator.model';
-import {TRANSPARENT} from '../../../colors/color';
-import {ColorMapSelectorComponent} from '../../../colors/color-map-selector/color-map-selector.component';
-import {MPL_COLORMAPS} from '../../../colors/color-map-selector/mpl-colormaps';
-import {Colorizer, LinearGradient} from '../../../colors/colorizer.model';
-import {RasterResultDescriptor} from '../../../datasets/dataset.model';
 import {ProjectService} from '../../../project/project.service';
 import {SpatialReferenceService} from '../../../spatial-references/spatial-reference.service';
-import {Time} from '../../../time/time.model';
 import {UserService} from '../../../users/user.service';
-import {extentToBboxDict} from '../../../util/conversions';
-import {RasterLayer} from '../../layer.model';
-import {RasterSymbology, SingleBandRasterColorizer} from '../symbology.model';
+import {
+    Colorizer,
+    ColorMapSelectorComponent,
+    extentToBboxDict,
+    LinearGradient,
+    MPL_COLORMAPS,
+    RasterLayer,
+    RasterResultDescriptor,
+    RasterSymbology,
+    SingleBandRasterColorizer,
+    Time,
+    TRANSPARENT,
+} from '@geoengine/common';
 
 export enum SymbologyCreationType {
     AS_INPUT = 'AS_INPUT',

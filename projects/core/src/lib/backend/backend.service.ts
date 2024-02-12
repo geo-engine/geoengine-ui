@@ -2,14 +2,10 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpEvent, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable, Subject} from 'rxjs';
 import {Config} from '../config.service';
-import {bboxDictToExtent, unixTimestampToIsoString} from '../util/conversions';
 import {
     BBoxDict,
     CreateProjectResponseDict,
-    DatasetDict,
     PlotDict,
-    ProjectLayerDict,
-    ProjectDict,
     ProjectFilterDict,
     ProjectListingDict,
     ProjectOrderByDict,
@@ -24,7 +20,6 @@ import {
     WorkflowDict,
     PlotDataDict,
     UploadResponseDict,
-    CreateDatasetDict,
     AutoCreateDatasetDict,
     DatasetNameResponseDict,
     MetaDataSuggestionDict,
@@ -34,7 +29,6 @@ import {
     DataSetProviderListingDict,
     ProvenanceEntryDict,
     DatasetOrderByDict,
-    LayerDict,
     LayerCollectionDict,
     BackendInfoDict,
     WcsParamsDict,
@@ -46,6 +40,14 @@ import {
     UploadFileLayersResponseDict,
     RoleDescription,
 } from './backend.model';
+import {
+    ProjectLayer as ProjectLayerDict,
+    Project as ProjectDict,
+    Dataset as DatasetDict,
+    CreateDataset as CreateDatasetDict,
+    Layer as LayerDict,
+} from '@geoengine/openapi-client';
+import {bboxDictToExtent, unixTimestampToIsoString} from '@geoengine/common';
 
 @Injectable({
     providedIn: 'root',

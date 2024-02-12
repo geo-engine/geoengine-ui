@@ -12,10 +12,8 @@ import {
     ChangeDetectorRef,
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
-import {Layer} from '../../../../layers/layer.model';
-import {LayerMetadata} from '../../../../layers/layer-metadata.model';
-import {ResultType, ResultTypes} from '../../../result-type.model';
 import {ProjectService} from '../../../../project/project.service';
+import {Layer, LayerMetadata, ResultType, ResultTypes} from '@geoengine/common';
 
 /**
  * Singleton for a letter to number converter for ids.

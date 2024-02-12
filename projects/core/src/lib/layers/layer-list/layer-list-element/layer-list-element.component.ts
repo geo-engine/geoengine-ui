@@ -1,19 +1,14 @@
 import {Component, ChangeDetectionStrategy, ChangeDetectorRef, Input} from '@angular/core';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {MatDialog} from '@angular/material/dialog';
-import {Layer, RasterLayer, VectorLayer} from '../../layer.model';
 import {TabsService} from '../../../tabs/tabs.service';
 import {Config} from '../../../config.service';
 import {MapService} from '../../../map/map.service';
 import {ProjectService} from '../../../project/project.service';
 import {LayoutService} from '../../../layout.service';
 import {last, map, mergeMap, Observable, startWith, tap} from 'rxjs';
-import {IconStyle, Symbology, SymbologyType} from '../../symbology/symbology.model';
 import {ProvenanceTableComponent} from '../../../provenance/table/provenance-table.component';
 import {DataTableComponent} from '../../../datatable/table/table.component';
-import {RasterSymbologyEditorComponent} from '../../symbology/raster-symbology-editor/raster-symbology-editor.component';
-import {VectorSymbologyEditorComponent} from '../../symbology/vector-symbology-editor/vector-symbology-editor.component';
-import {RasterLayerMetadata} from '../../layer-metadata.model';
 import {NotificationService} from '../../../notification.service';
 import {RenameLayerComponent} from '../../rename-layer/rename-layer.component';
 import {LineageGraphComponent} from '../../../provenance/lineage-graph/lineage-graph.component';
@@ -23,7 +18,18 @@ import {UserService} from '../../../users/user.service';
 import {HttpEventType} from '@angular/common/http';
 import {filenameFromHttpHeaders} from '../../../util/http';
 import {DownloadRasterLayerComponent} from '../../../download-raster-layer/download-raster-layer.component';
-import {RasterBandDescriptor} from '../../../datasets/dataset.model';
+import {
+    IconStyle,
+    Layer,
+    RasterLayer,
+    RasterLayerMetadata,
+    RasterSymbologyEditorComponent,
+    Symbology,
+    SymbologyType,
+    VectorLayer,
+    VectorSymbologyEditorComponent,
+} from '@geoengine/common';
+import {RasterBandDescriptor} from '@geoengine/openapi-client';
 /**
  * The layer list component displays active layers, legends and other controlls.
  */

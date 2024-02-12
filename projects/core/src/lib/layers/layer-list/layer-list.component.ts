@@ -5,13 +5,13 @@ import {Clipboard} from '@angular/cdk/clipboard';
 import {MatDialog} from '@angular/material/dialog';
 import {LayoutService, SidenavConfig} from '../../layout.service';
 import {MapService} from '../../map/map.service';
-import {Layer} from '../layer.model';
 import {ProjectService} from '../../project/project.service';
 import {Config} from '../../config.service';
 import {AddDataComponent} from '../../datasets/add-data/add-data.component';
 import {TabsService} from '../../tabs/tabs.service';
 import {SimpleChanges} from '@angular/core';
 import {NotificationService} from '../../notification.service';
+import {Layer} from '@geoengine/common';
 
 /**
  * The layer list component displays active layers, legends and other controlls.

@@ -10,9 +10,9 @@ import {
     ChangeDetectorRef,
 } from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
-import {Layer} from '../../layers/layer.model';
 import {ProjectService} from '../../project/project.service';
 import {ProvenanceDict} from '../../backend/backend.model';
+import {Layer} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-provenance-table',

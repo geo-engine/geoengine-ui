@@ -1,17 +1,14 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Subscription} from 'rxjs';
-import {ResultTypes} from '../../result-type.model';
-import {RasterLayer, VectorLayer} from '../../../layers/layer.model';
 import {ProjectService} from '../../../project/project.service';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {filter, map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
-import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
-import {PointSymbology, StaticColor} from '../../../layers/symbology/symbology.model';
 import {RasterVectorJoinDict, RasterVectorJoinParams} from '../../../backend/operator.model';
+import {PointSymbology, RasterLayer, ResultTypes, StaticColor, VectorLayer, VectorLayerMetadata} from '@geoengine/common';
 
 type TemporalAggregation = 'none' | 'first' | 'mean';
 type FeatureAggregation = 'first' | 'mean';

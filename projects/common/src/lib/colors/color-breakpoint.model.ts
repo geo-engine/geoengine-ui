@@ -1,5 +1,5 @@
 import {Breakpoint as BreakpointDict} from '@geoengine/openapi-client';
-import {Color, RgbaLike, rgbaColorFromDict} from './color';
+import {Color, RgbaLike, colorToDict, rgbaColorFromDict} from './color';
 
 export type BreakPointValue = number;
 
@@ -47,12 +47,12 @@ export class ColorBreakpoint {
     /**
      * Transforms the ColorBreakpoint int a BreakpointDict.
      */
-    // toDict(): BreakpointDict {
-    //     return {
-    //         value: this.value,
-    //         color: colorToDict(this.color),
-    //     };
-    // }
+    toDict(): BreakpointDict {
+        return {
+            value: this.value,
+            color: colorToDict(this.color),
+        };
+    }
 
     /**
      * Sets the color to the provided value.

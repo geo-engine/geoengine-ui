@@ -1,11 +1,9 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, Input, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {Layer} from '../../../../layers/layer.model';
-import {LayerMetadata} from '../../../../layers/layer-metadata.model';
 import {BehaviorSubject, forkJoin, Observable, of, ReplaySubject, Subject, Subscription, zip} from 'rxjs';
-import {ResultType, ResultTypes} from '../../../result-type.model';
 import {ProjectService} from '../../../../project/project.service';
 import {first, map, mergeMap} from 'rxjs/operators';
+import {Layer, LayerMetadata, ResultType, ResultTypes} from '@geoengine/common';
 
 /**
  * This component allows selecting one layer.

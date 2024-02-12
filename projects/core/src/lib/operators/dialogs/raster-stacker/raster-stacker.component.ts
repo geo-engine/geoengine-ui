@@ -1,5 +1,3 @@
-import {RasterLayer} from '../../../layers/layer.model';
-import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
@@ -9,9 +7,8 @@ import {NotificationService} from '../../../notification.service';
 import {OperatorDict, SourceOperatorDict} from '../../../backend/backend.model';
 import {BehaviorSubject, EMPTY, Observable, combineLatest, of} from 'rxjs';
 import {RasterStackerDict, RasterTypeConversionDict} from '../../../backend/operator.model';
-import {RasterDataType, RasterDataTypes} from '../../datatype.model';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
-import {RasterLayerMetadata} from '../../../layers/layer-metadata.model';
+import {RasterDataType, RasterDataTypes, RasterLayer, RasterLayerMetadata, ResultTypes} from '@geoengine/common';
 
 interface RasterStackerForm {
     rasterLayers: FormControl<Array<RasterLayer> | undefined>;

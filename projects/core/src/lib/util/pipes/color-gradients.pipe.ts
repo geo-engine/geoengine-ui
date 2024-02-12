@@ -1,9 +1,6 @@
 import {Pipe, PipeTransform} from '@angular/core';
 import {DomSanitizer, SafeStyle} from '@angular/platform-browser';
-import {Color, RgbaTuple} from '../../colors/color';
-import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
-import {RasterColorizer} from '../../layers/symbology/symbology.model';
-import {Colorizer} from '../../colors/colorizer.model';
+import {Color, ColorBreakpoint, Colorizer, RasterColorizer, RgbaTuple} from '@geoengine/common';
 
 /**
  * Pipe to transform a colorizer into a CSS gradient.

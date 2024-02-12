@@ -1,5 +1,3 @@
-import {RasterLayer} from '../../../layers/layer.model';
-import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
@@ -9,8 +7,8 @@ import {NotificationService} from '../../../notification.service';
 import {WorkflowDict} from '../../../backend/backend.model';
 import {Observable} from 'rxjs';
 import {RasterTypeConversionDict} from '../../../backend/operator.model';
-import {RasterDataType, RasterDataTypes} from '../../datatype.model';
 import {Layer} from 'ol/layer';
+import {RasterDataType, RasterDataTypes, RasterLayer, ResultTypes} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-raster-type-conversion',
