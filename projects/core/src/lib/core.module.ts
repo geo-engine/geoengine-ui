@@ -91,7 +91,6 @@ import {HistogramOperatorComponent} from './operators/dialogs/histogram-operator
 import {BoxPlotOperatorComponent} from './operators/dialogs/boxplot-operator/boxplot-operator.component';
 import {ScatterplotOperatorComponent} from './operators/dialogs/scatterplot-operator/scatterplot-operator.component';
 import {LayerSelectionComponent} from './operators/dialogs/helpers/layer-selection/layer-selection.component';
-import {VegaViewerComponent} from './plots/vega-viewer/vega-viewer.component';
 import {LineageGraphComponent} from './provenance/lineage-graph/lineage-graph.component';
 // eslint-disable-next-line max-len
 import {MeanRasterPixelValuesOverTimeDialogComponent} from './operators/dialogs/mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
@@ -313,7 +312,6 @@ const CORE_COMPONENTS = [
     VectorExpressionComponent,
     VectorLegendComponent,
 
-    VegaViewerComponent,
     WorkspaceSettingsComponent,
     ZoomHandlesComponent,
 ];

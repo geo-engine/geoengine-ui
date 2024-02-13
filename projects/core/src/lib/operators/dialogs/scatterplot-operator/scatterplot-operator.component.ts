@@ -6,8 +6,16 @@ import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {WorkflowDict} from '../../../backend/backend.model';
-import {ScatterPlotDict, ScatterPlotParams} from '../../../backend/operator.model';
-import {Layer, Plot, ResultTypes, VectorColumnDataTypes, VectorLayer, VectorLayerMetadata} from '@geoengine/common';
+import {
+    Layer,
+    Plot,
+    ResultTypes,
+    ScatterPlotDict,
+    ScatterPlotParams,
+    VectorColumnDataTypes,
+    VectorLayer,
+    VectorLayerMetadata,
+} from '@geoengine/common';
 
 /**
  * This dialog allows creating a box plot of a layer's values.

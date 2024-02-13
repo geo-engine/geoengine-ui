@@ -6,10 +6,18 @@ import {map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {TimeStepGranularityDict, UUID, WorkflowDict} from '../../../backend/backend.model';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {TemporalRasterAggregationDict, TemporalRasterAggregationDictAgregationType} from '../../../backend/operator.model';
 import moment, {Moment} from 'moment';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
-import {RasterDataType, RasterDataTypes, RasterLayer, RasterSymbology, ResultTypes, timeStepGranularityOptions} from '@geoengine/common';
+import {
+    RasterDataType,
+    RasterDataTypes,
+    RasterLayer,
+    RasterSymbology,
+    ResultTypes,
+    TemporalRasterAggregationDict,
+    TemporalRasterAggregationDictAgregationType,
+    timeStepGranularityOptions,
+} from '@geoengine/common';
 
 interface TemporalRasterAggregationForm {
     name: FormControl<string>;

@@ -1,19 +1,49 @@
 import {
-    MeasurementDict,
-    NamedDataDict,
-    OperatorDict,
-    OperatorParams,
-    SourceOperatorDict,
-    SrsString,
-    TimeInstanceDict,
-    TimeIntervalDict,
-    TimeStepDict,
-    TimeStepGranularityDict,
-} from './backend.model';
+    Measurement as MeasurementDict,
+    TimeStep as TimeStepDict,
+    TimeInterval as TimeIntervalDict,
+    TimeGranularity as TimeStepGranularityDict,
+} from '@geoengine/openapi-client';
+import {NamedDataDict} from '../datasets/dataset.model';
+import {SrsString} from '../spatial-references/spatial-reference.model';
+
+/**
+ * Marker dictionary for types that only use primitive types and sub-types.
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface SerializableDict {}
+
+type ParamTypes = string | number | boolean | Array<ParamTypes> | {[key: string]: ParamTypes} | SerializableDict | undefined;
+
+export interface OperatorParams {
+    [key: string]: ParamTypes;
+}
+
+export interface WorkflowDict {
+    type: 'Vector' | 'Raster' | 'Plot';
+    operator: OperatorDict | SourceOperatorDict;
+}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface EmptyParams extends OperatorParams {
     [index: string]: undefined;
+}
+
+export interface OperatorDict {
+    type: string;
+    params: OperatorParams | null;
+    sources: OperatorSourcesDict;
+}
+
+export interface OperatorSourcesDict {
+    [name: string]: OperatorDict | SourceOperatorDict | Array<OperatorDict | SourceOperatorDict> | undefined;
+}
+
+export interface SourceOperatorDict {
+    type: string;
+    params: {
+        data: NamedDataDict;
+    };
 }
 
 export interface ExpressionDict extends OperatorDict {
@@ -294,6 +324,13 @@ export interface TemporalRasterAggregationDict extends OperatorDict {
         outputType?: 'U8' | 'U16' | 'U32' | 'U64' | 'I8' | 'I16' | 'I32' | 'I64' | 'F32' | 'F64';
     };
 }
+
+/*
+ * UNIX timestamp in milliseconds.
+ *
+ * TODO: For input, allow ISO 8601 string
+ */
+export type TimeInstanceDict = string;
 
 export type TemporalRasterAggregationDictAgregationType = 'min' | 'max' | 'first' | 'last' | 'mean' | 'sum' | 'count';
 

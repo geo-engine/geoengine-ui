@@ -14,7 +14,6 @@ import {
     UUID,
     WorkflowDict,
 } from '../../../backend/backend.model';
-import {RgbDict, StatisticsDict} from '../../../backend/operator.model';
 import {LayoutService, SidenavConfig} from '../../../layout.service';
 import {NotificationService} from '../../../notification.service';
 import {BackendService} from '../../../backend/backend.service';
@@ -26,8 +25,10 @@ import {
     RasterResultDescriptor,
     RasterSymbology,
     ResultTypes,
+    RgbDict,
     RgbaColorizer,
     SingleBandRasterColorizer,
+    StatisticsDict,
     extentToBboxDict,
 } from '@geoengine/common';
 

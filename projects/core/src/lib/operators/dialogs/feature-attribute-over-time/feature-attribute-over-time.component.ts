@@ -7,8 +7,15 @@ import {WorkflowDict} from '../../../backend/backend.model';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {geoengineValidators} from '../../../util/form.validators';
-import {FeatureAttributeOverTimeDict} from '../../../backend/operator.model';
-import {Layer, Plot, ResultTypes, VectorColumnDataTypes, VectorLayer, VectorLayerMetadata} from '@geoengine/common';
+import {
+    FeatureAttributeOverTimeDict,
+    Layer,
+    Plot,
+    ResultTypes,
+    VectorColumnDataTypes,
+    VectorLayer,
+    VectorLayerMetadata,
+} from '@geoengine/common';
 
 interface AttributeCandidates {
     id: Array<string>;

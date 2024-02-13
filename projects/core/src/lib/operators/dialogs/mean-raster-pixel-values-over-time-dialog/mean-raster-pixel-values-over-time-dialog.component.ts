@@ -6,8 +6,7 @@ import {map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {WorkflowDict} from '../../../backend/backend.model';
 import {Observable} from 'rxjs';
-import {MeanRasterPixelValuesOverTimeDict, MeanRasterPixelValuesOverTimeParams} from '../../../backend/operator.model';
-import {Plot, RasterLayer, ResultTypes} from '@geoengine/common';
+import {MeanRasterPixelValuesOverTimeDict, MeanRasterPixelValuesOverTimeParams, Plot, RasterLayer, ResultTypes} from '@geoengine/common';
 
 type TimePosition = 'start' | 'center' | 'end';
 

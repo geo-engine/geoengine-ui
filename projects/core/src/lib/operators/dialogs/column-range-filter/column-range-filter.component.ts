@@ -5,14 +5,15 @@ import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap} from 'rxjs/operators';
 import {UUID, WorkflowDict} from '../../../backend/backend.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
-import {ColumnRangeFilterDict, HistogramDict, HistogramParams} from '../../../backend/operator.model';
-import {VegaChartData} from '../../../plots/vega-viewer/vega-viewer.component';
 import {MapService} from '../../../map/map.service';
 import {BackendService} from '../../../backend/backend.service';
 import {UserService} from '../../../users/user.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {createVectorSymbology} from '../../../util/symbologies';
 import {
+    ColumnRangeFilterDict,
+    HistogramDict,
+    HistogramParams,
     Layer,
     ResultTypes,
     VectorColumnDataType,
@@ -21,6 +22,7 @@ import {
     VectorDataTypes,
     VectorLayer,
     VectorLayerMetadata,
+    VegaChartData,
     extentToBboxDict,
 } from '@geoengine/common';
 

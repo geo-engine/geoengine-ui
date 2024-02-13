@@ -6,8 +6,17 @@ import {geoengineValidators} from '../../../util/form.validators';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {OperatorDict, SourceOperatorDict} from '../../../backend/backend.model';
 import {map, mergeMap, tap} from 'rxjs/operators';
-import {StatisticsDict, StatisticsParams} from '../../../backend/operator.model';
-import {Layer, Plot, RasterLayer, ResultTypes, VectorColumnDataTypes, VectorLayer, VectorLayerMetadata} from '@geoengine/common';
+import {
+    Layer,
+    Plot,
+    RasterLayer,
+    ResultTypes,
+    StatisticsDict,
+    StatisticsParams,
+    VectorColumnDataTypes,
+    VectorLayer,
+    VectorLayerMetadata,
+} from '@geoengine/common';
 
 interface StatisticsPlotForm {
     layer: FormControl<Layer | null>;

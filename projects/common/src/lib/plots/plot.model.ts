@@ -52,3 +52,10 @@ export class Plot implements HasPlotId, ToDict<PlotDict> {
 export interface HasPlotId {
     readonly id: number;
 }
+
+export interface VegaChartData {
+    readonly vegaString: string;
+    readonly metadata?: {
+        readonly selectionName?: string;
+    };
+}

@@ -5,16 +5,19 @@ import {geoengineValidators} from '../../../util/form.validators';
 import {BehaviorSubject, combineLatest, firstValueFrom, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {WorkflowDict} from '../../../backend/backend.model';
 import {map, mergeMap, startWith} from 'rxjs/operators';
-import {ColumnOutputColumn, GeometryOutputColumn, VectorExpressionDict, VectorExpressionParams} from '../../../backend/operator.model';
 import {createVectorSymbology} from '../../../util/symbologies';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {
+    ColumnOutputColumn,
+    GeometryOutputColumn,
     Measurement,
     ResultTypes,
     SymbologyType,
     UnitlessMeasurement,
     VectorColumnDataType,
     VectorColumnDataTypes,
+    VectorExpressionDict,
+    VectorExpressionParams,
     VectorLayer,
     VectorLayerMetadata,
     VectorSymbology,

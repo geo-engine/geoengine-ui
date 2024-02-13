@@ -7,6 +7,7 @@ import {
     VectorDataType,
     VectorDataTypes,
 } from '../operators/datatype.model';
+import {SourceOperatorDict} from '../operators/operator.model';
 import {SrsString} from '../spatial-references/spatial-reference.model';
 import {Symbology} from '../symbology/symbology.model';
 import {Time} from '../time/time.model';
@@ -23,13 +24,6 @@ import {
 export type UUID = string;
 
 export type NamedDataDict = string;
-
-export interface SourceOperatorDict {
-    type: string;
-    params: {
-        data: NamedDataDict;
-    };
-}
 
 export class Dataset {
     readonly id: UUID;

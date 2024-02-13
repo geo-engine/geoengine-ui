@@ -9,18 +9,11 @@ import {
     Output,
     EventEmitter,
 } from '@angular/core';
-import {Config} from '../../config.service';
 import vegaEmbed from 'vega-embed';
 import {View} from 'vega';
 import {TopLevelSpec as VlSpec} from 'vega-lite';
 import {Spec as VgSpec} from 'vega';
-
-export interface VegaChartData {
-    readonly vegaString: string;
-    readonly metadata?: {
-        readonly selectionName?: string;
-    };
-}
+import {VegaChartData} from '../plot.model';
 
 @Component({
     selector: 'geoengine-vega-viewer',
@@ -50,10 +43,7 @@ export class VegaViewerComponent implements OnChanges {
         finalize: () => void;
     } = undefined;
 
-    constructor(
-        protected element: ElementRef,
-        private config: Config,
-    ) {}
+    constructor(protected element: ElementRef) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.chartData || changes.width || changes.height) {
@@ -76,7 +66,7 @@ export class VegaViewerComponent implements OnChanges {
 
         vegaEmbed(div, spec, {
             actions: false,
-            theme: this.config.PLOTS.THEME,
+            theme: 'excel', // TODO: make configurable again?
             renderer: 'svg',
             config: {
                 autosize: {

@@ -27,7 +27,6 @@ import OlFeature from 'ol/Feature';
 import OlGeometry from 'ol/geom/Geometry';
 import {intersects as olIntersects} from 'ol/extent';
 import {getProjectionTarget} from '../util/spatial_reference';
-import {LineSimplificationDict, ReprojectionDict, VisualPointClusteringParams} from '../backend/operator.model';
 import {SpatialReferenceService} from '../spatial-references/spatial-reference.service';
 import {GeoEngineError} from '../util/errors';
 import {
@@ -39,6 +38,7 @@ import {
     Layer,
     LayerData,
     LayerMetadata,
+    LineSimplificationDict,
     LineSymbology,
     Plot,
     PointSymbology,
@@ -46,6 +46,7 @@ import {
     RasterData,
     RasterLayer,
     RasterLayerMetadata,
+    ReprojectionDict,
     SpatialReference,
     SpatialReferenceSpecification,
     subscribeAndProvide,
@@ -57,6 +58,7 @@ import {
     VectorData,
     VectorLayer,
     VectorLayerMetadata,
+    VisualPointClusteringParams,
 } from '@geoengine/common';
 import {ProjectLayer as ProjectLayerDict, ProjectVersion} from '@geoengine/openapi-client';
 

@@ -6,9 +6,16 @@ import {map, mergeMap, tap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {OperatorDict, SourceOperatorDict} from '../../../backend/backend.model';
 import {BehaviorSubject, EMPTY, Observable, combineLatest, of} from 'rxjs';
-import {RasterStackerDict, RasterTypeConversionDict} from '../../../backend/operator.model';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
-import {RasterDataType, RasterDataTypes, RasterLayer, RasterLayerMetadata, ResultTypes} from '@geoengine/common';
+import {
+    RasterDataType,
+    RasterDataTypes,
+    RasterLayer,
+    RasterLayerMetadata,
+    RasterStackerDict,
+    RasterTypeConversionDict,
+    ResultTypes,
+} from '@geoengine/common';
 
 interface RasterStackerForm {
     rasterLayers: FormControl<Array<RasterLayer> | undefined>;

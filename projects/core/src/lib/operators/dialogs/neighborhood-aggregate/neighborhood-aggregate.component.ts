@@ -4,11 +4,10 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy, Vie
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {UUID, WorkflowDict} from '../../../backend/backend.model';
-import {NeighborhoodAggregateDict} from '../../../backend/operator.model';
 import {LayoutService, SidenavConfig} from '../../../layout.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
-import {Layer, RasterLayer, RasterSymbology, ResultTypes} from '@geoengine/common';
+import {Layer, NeighborhoodAggregateDict, RasterLayer, RasterSymbology, ResultTypes} from '@geoengine/common';
 
 interface NeighborhoodAggregateForm {
     rasterLayer: FormControl<RasterLayer | undefined>;

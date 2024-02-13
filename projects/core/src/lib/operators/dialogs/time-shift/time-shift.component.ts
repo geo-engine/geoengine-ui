@@ -6,14 +6,16 @@ import {map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {TimeStepGranularityDict, WorkflowDict} from '../../../backend/backend.model';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {AbsoluteTimeShiftDictParams, RelativeTimeShiftDictParams, TimeShiftDict} from '../../../backend/operator.model';
 import moment from 'moment';
 import {
+    AbsoluteTimeShiftDictParams,
     Layer,
     RasterLayer,
     RasterSymbology,
+    RelativeTimeShiftDictParams,
     ResultTypes,
     Time,
+    TimeShiftDict,
     VectorLayer,
     VectorSymbology,
     timeStepGranularityOptions,

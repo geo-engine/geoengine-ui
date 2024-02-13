@@ -49,6 +49,7 @@ import {PolygonIconComponent} from './layer-icons/polygon-icon/polygon-icon.comp
 import {RasterIconComponent} from './layer-icons/raster-icon/raster-icon.component';
 import {BreakpointToCssStringPipe} from './util/pipes/breakpoint-to-css-string.pipe';
 import {FxFlexDirective, FxLayoutAlignDirective, FxLayoutDirective, FxLayoutGapDirective} from './util/directives/flexbox-legacy.directive';
+import {VegaViewerComponent} from './plots/vega-viewer/vega-viewer.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -97,6 +98,7 @@ const COMMON_COMPONENTS = [
     LineIconComponent,
     PolygonIconComponent,
     RasterIconComponent,
+    VegaViewerComponent,
 ];
 
 const COMMON_PIPES = [AsyncValueDefault, BreakpointToCssStringPipe, ColorizerCssGradientPipe];

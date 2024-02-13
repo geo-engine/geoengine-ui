@@ -6,9 +6,8 @@ import {map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {UUID, WorkflowDict} from '../../../backend/backend.model';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {RasterMetadataKey, RasterUnScalingDict} from '../../../backend/operator.model';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
-import {RasterDataTypes, RasterLayer, RasterSymbology, ResultTypes} from '@geoengine/common';
+import {RasterDataTypes, RasterLayer, RasterMetadataKey, RasterSymbology, RasterUnScalingDict, ResultTypes} from '@geoengine/common';
 
 interface RasterScalingForm {
     name: FormControl<string>;

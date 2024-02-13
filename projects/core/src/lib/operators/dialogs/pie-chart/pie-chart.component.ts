@@ -6,8 +6,7 @@ import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {WorkflowDict} from '../../../backend/backend.model';
-import {PieChartCountParams, PieChartDict} from '../../../backend/operator.model';
-import {Plot, ResultTypes, VectorLayer, VectorLayerMetadata} from '@geoengine/common';
+import {PieChartCountParams, PieChartDict, Plot, ResultTypes, VectorLayer, VectorLayerMetadata} from '@geoengine/common';
 
 interface PieChartForm {
     name: FormControl<string>;

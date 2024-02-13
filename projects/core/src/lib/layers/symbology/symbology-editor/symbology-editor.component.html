@@ -4,6 +4,7 @@
     <geoengine-raster-symbology-editor
         *ngIf="rasterSymbologyWorkflow$ | async as symbologyWorkflow"
         [symbologyWorkflow]="symbologyWorkflow"
+        [histogramParams]="histogramParams$ | async | valueDefault: undefined"
         (changedSymbology)="changeRasterSymbology($event)"
     ></geoengine-raster-symbology-editor>
 

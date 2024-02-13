@@ -6,8 +6,9 @@ import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {WorkflowDict} from '../../../backend/backend.model';
-import {HistogramDict, HistogramParams} from '../../../backend/operator.model';
 import {
+    HistogramDict,
+    HistogramParams,
     Layer,
     Plot,
     RasterLayer,

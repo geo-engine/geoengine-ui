@@ -7,8 +7,16 @@ import {geoengineValidators} from '../../../util/form.validators';
 import {filter, map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
-import {RasterVectorJoinDict, RasterVectorJoinParams} from '../../../backend/operator.model';
-import {PointSymbology, RasterLayer, ResultTypes, StaticColor, VectorLayer, VectorLayerMetadata} from '@geoengine/common';
+import {
+    PointSymbology,
+    RasterLayer,
+    RasterVectorJoinDict,
+    RasterVectorJoinParams,
+    ResultTypes,
+    StaticColor,
+    VectorLayer,
+    VectorLayerMetadata,
+} from '@geoengine/common';
 
 type TemporalAggregation = 'none' | 'first' | 'mean';
 type FeatureAggregation = 'first' | 'mean';

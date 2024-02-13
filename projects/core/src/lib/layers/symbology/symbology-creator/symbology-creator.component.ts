@@ -3,7 +3,6 @@ import {ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, Validat
 import {combineLatest, first, map, mergeMap, Observable, of, Subject, takeUntil} from 'rxjs';
 import {BBoxDict, RasterResultDescriptorDict, SrsString, TimeIntervalDict, UUID} from '../../../backend/backend.model';
 import {BackendService} from '../../../backend/backend.service';
-import {StatisticsDict, StatisticsParams} from '../../../backend/operator.model';
 import {ProjectService} from '../../../project/project.service';
 import {SpatialReferenceService} from '../../../spatial-references/spatial-reference.service';
 import {UserService} from '../../../users/user.service';
@@ -17,6 +16,8 @@ import {
     RasterResultDescriptor,
     RasterSymbology,
     SingleBandRasterColorizer,
+    StatisticsDict,
+    StatisticsParams,
     Time,
     TRANSPARENT,
 } from '@geoengine/common';

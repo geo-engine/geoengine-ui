@@ -6,10 +6,10 @@ import {geoengineValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
 import {UUID, WorkflowDict} from '../../../backend/backend.model';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
-import {ExpressionDict} from '../../../backend/operator.model';
 import {LayoutService, SidenavConfig} from '../../../layout.service';
 import {GeoEngineError} from '../../../util/errors';
 import {
+    ExpressionDict,
     Layer,
     RasterDataType,
     RasterDataTypes,

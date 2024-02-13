@@ -6,8 +6,7 @@ import {mergeMap} from 'rxjs/operators';
 import {WorkflowDict} from '../../../backend/backend.model';
 import {BehaviorSubject} from 'rxjs';
 import {NotificationService} from '../../../notification.service';
-import {LineSimplificationDict} from '../../../backend/operator.model';
-import {Layer, ResultTypes, VectorLayer} from '@geoengine/common';
+import {Layer, LineSimplificationDict, ResultTypes, VectorLayer} from '@geoengine/common';
 
 interface LineSimplificationForm {
     name: FormControl<string>;

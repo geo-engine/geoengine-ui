@@ -74,6 +74,7 @@
         <geoengine-raster-gradient-symbology-editor
             *ngIf="gradientColorizer"
             [colorizer]="gradientColorizer"
+            [histogramParams]="histogramParams"
             (colorizerChange)="updateColorizer($event)"
         ></geoengine-raster-gradient-symbology-editor>
 

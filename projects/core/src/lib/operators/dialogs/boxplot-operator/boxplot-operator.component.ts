@@ -6,8 +6,17 @@ import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {OperatorDict, SourceOperatorDict} from '../../../backend/backend.model';
-import {BoxPlotDict, BoxPlotParams} from '../../../backend/operator.model';
-import {Layer, Plot, RasterLayer, ResultTypes, VectorColumnDataTypes, VectorLayer, VectorLayerMetadata} from '@geoengine/common';
+import {
+    BoxPlotDict,
+    BoxPlotParams,
+    Layer,
+    Plot,
+    RasterLayer,
+    ResultTypes,
+    VectorColumnDataTypes,
+    VectorLayer,
+    VectorLayerMetadata,
+} from '@geoengine/common';
 
 /**
  * Checks whether the layer is a vector layer (points, lines, polygons).

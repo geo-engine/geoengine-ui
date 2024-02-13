@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {TypedResultDescriptor, Workflow, WorkflowsApi} from '@geoengine/openapi-client';
 import {ReplaySubject, firstValueFrom} from 'rxjs';
 import {SessionService, apiConfigurationWithAccessKey} from '../session/session.service';
+import {UUID} from '../datasets/dataset.model';
 
 @Injectable({
     providedIn: 'root',
@@ -31,7 +32,7 @@ export class WorkflowsService {
         });
     }
 
-    async registerWorkflow(workflow: Workflow): Promise<string> {
+    async registerWorkflow(workflow: Workflow): Promise<UUID> {
         const workflowApi = await firstValueFrom(this.workflowApi);
 
         return workflowApi

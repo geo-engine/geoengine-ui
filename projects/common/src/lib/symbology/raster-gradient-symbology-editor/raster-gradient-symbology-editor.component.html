@@ -45,9 +45,9 @@
     </mat-card-header>
     <mat-card-content>
         <div class="histogram" *ngIf="histogramCreated === true">
-            <!-- <ng-container *ngIf="histogramData | async as histogramData"> -->
-            <!-- <geoengine-vega-viewer [chartData]="histogramData" (interactionChange)="updateBounds($any($event))"></geoengine-vega-viewer> -->
-            <!-- </ng-container> -->
+            <ng-container *ngIf="histogramData | async as histogramData">
+                <geoengine-vega-viewer [chartData]="histogramData" (interactionChange)="updateBounds($any($event))"></geoengine-vega-viewer>
+            </ng-container>
             <mat-progress-bar mode="indeterminate" *ngIf="histogramLoading | async"></mat-progress-bar>
         </div>
         <div class="histogram-actions">

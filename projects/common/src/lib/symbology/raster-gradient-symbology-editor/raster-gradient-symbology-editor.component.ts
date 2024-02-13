@@ -22,6 +22,13 @@ import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
 import {ColorMapSelectorComponent} from '../../colors/color-map-selector/color-map-selector.component';
 import {Color} from '../../colors/color';
 import {ColorTableEditorComponent} from '../../colors/color-table-editor/color-table-editor.component';
+import {SymbologyHistogramParams} from '../raster-symbology-editor/raster-symbology-editor.component';
+import {UUID} from '../../datasets/dataset.model';
+import {VegaChartData} from '../../plots/plot.model';
+import {WorkflowsService} from '../../workflows/workflows.service';
+import {HistogramDict, HistogramParams, WorkflowDict} from '../../operators/operator.model';
+import {Workflow} from '@geoengine/openapi-client';
+import {PlotsService} from '../../plots/plots.service';
 // import {RasterBandDescriptor} from '../../../datasets/dataset.model';
 
 /**
@@ -44,7 +51,12 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     // @Input() bands!: RasterBandDescriptor[];
     @Input() band!: string;
 
+    @Input() workflowId!: UUID;
+
     @Input() colorizer!: LinearGradient | LogarithmicGradient;
+
+    @Input() histogramParams?: SymbologyHistogramParams;
+
     @Output() colorizerChange = new EventEmitter<LinearGradient | LogarithmicGradient>();
 
     // The min value used for color table generation
@@ -54,7 +66,7 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
 
     scale: 'linear' | 'logarithmic' = 'linear';
 
-    // histogramData = new ReplaySubject<VegaChartData>(1);
+    histogramData = new ReplaySubject<VegaChartData>(1);
     histogramLoading = new BehaviorSubject(false);
     histogramCreated = false;
 
@@ -71,6 +83,8 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
         // protected readonly userService: UserService,
         // protected readonly mapService: MapService,
         // protected readonly config: Config,
+        private readonly workflowsService: WorkflowsService,
+        private readonly plotsService: PlotsService,
         private changeDetectorRef: ChangeDetectorRef,
     ) {}
 
@@ -87,6 +101,7 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        console.log('raster-gradient-symbology-editor.component.ts ngOnChanges');
         if (changes.colorizer) {
             this.updateScale();
             this.updateBreakpoints(this.colorizer.getBreakpoints());
@@ -211,17 +226,19 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     }
 
     updateHistogram(): void {
-        // this.histogramCreated = true;
-        // this.histogramSubscription = this.createHistogramWorkflowId()
-        //     .pipe(mergeMap((histogramWorkflowId) => this.createHistogramStream(histogramWorkflowId)))
-        //     .subscribe({
-        //         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        //         next: (histogramData: any) => {
-        //             this.histogramData.next(histogramData);
-        //             // this.histogramSubscription?.unsubscribe();
-        //         },
-        //         error: (error) => console.error('Error:', error),
-        //     });
+        if (!this.histogramParams) {
+            return;
+        }
+
+        const histogramParams = this.histogramParams;
+
+        this.histogramCreated = true;
+        this.createHistogramWorkflowId()
+            .then((histogramWorkflowId) => this.createHistogram(histogramWorkflowId, histogramParams))
+            .then((histogramData) => {
+                this.histogramData.next(histogramData);
+            })
+            .catch((error) => console.error('Error:', error));
     }
 
     createColorTable(): void {
@@ -247,58 +264,41 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
         };
     }
 
-    // private createHistogramStream(histogramWorkflowId: UUID): Observable<VegaChartData> {
-    //     return combineLatest([
-    //         this.projectService.getTimeStream(),
-    //         this.mapService.getViewportSizeStream(),
-    //         this.userService.getSessionTokenForRequest(),
-    //         this.projectService.getSpatialReferenceStream(),
-    //     ]).pipe(
-    //         tap(() => this.histogramLoading.next(true)),
-    //         mergeMap(([time, viewport, sessionToken, sref]) =>
-    //             this.backend.getPlot(
-    //                 histogramWorkflowId,
-    //                 {
-    //                     bbox: extentToBboxDict(viewport.extent),
-    //                     crs: sref.srsString,
-    //                     spatialResolution: [viewport.resolution, viewport.resolution],
-    //                     time: time.toDict(),
-    //                 },
-    //                 sessionToken,
-    //             ),
-    //         ),
-    //         map((plotData) => plotData.data),
-    //         tap(() => this.histogramLoading.next(false)),
-    //     );
-    // }
+    private createHistogram(histogramWorkflowId: UUID, histogramParams: SymbologyHistogramParams): Promise<VegaChartData> {
+        return this.plotsService
+            .getPlot(
+                histogramWorkflowId,
+                histogramParams.bbox,
+                histogramParams.time,
+                histogramParams.resolution,
+                histogramParams.spatialReference,
+            )
+            .then((plotData) => {
+                this.histogramLoading.next(false);
+                return plotData.data as VegaChartData;
+            });
+    }
 
-    // private createHistogramWorkflowId(): Observable<UUID> {
-    //     return this.projectService.getWorkflow(this.layer.workflowId).pipe(
-    //         mergeMap((workflow) =>
-    //             combineLatest([
-    //                 of({
-    //                     type: 'Plot',
-    //                     operator: {
-    //                         type: 'Histogram',
-    //                         params: {
-    //                             attributeName: this.band,
-    //                             buckets: {
-    //                                 type: 'number',
-    //                                 value: 20,
-    //                             },
-    //                             bounds: 'data',
-    //                             interactive: true,
-    //                         } as HistogramParams,
-    //                         sources: {
-    //                             source: workflow.operator,
-    //                         },
-    //                     } as HistogramDict,
-    //                 } as WorkflowDict),
-    //                 this.userService.getSessionTokenForRequest(),
-    //             ]),
-    //         ),
-    //         mergeMap(([workflow, sessionToken]) => this.backend.registerWorkflow(workflow, sessionToken)),
-    //         map((workflowRegistration) => workflowRegistration.id),
-    //     );
-    // }
+    private createHistogramWorkflowId(): Promise<UUID> {
+        return this.workflowsService.getWorkflow(this.workflowId).then((workflow) =>
+            this.workflowsService.registerWorkflow({
+                type: 'Plot',
+                operator: {
+                    type: 'Histogram',
+                    params: {
+                        attributeName: this.band,
+                        buckets: {
+                            type: 'number',
+                            value: 20,
+                        },
+                        bounds: 'data',
+                        interactive: true,
+                    } as HistogramParams,
+                    sources: {
+                        source: workflow.operator,
+                    },
+                } as HistogramDict,
+            } as Workflow),
+        );
+    }
 }

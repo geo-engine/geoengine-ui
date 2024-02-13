@@ -7,6 +7,7 @@ export * from './lib/common.module';
 // Services
 export * from './lib/datasets/datasets.service';
 export * from './lib/uploads/uploads.service';
+export * from './lib/plots/plots.service';
 export * from './lib/session/session.service';
 export * from './lib/workflows/workflows.service';
 
@@ -25,6 +26,7 @@ export * from './lib/symbology/raster-gradient-symbology-editor/raster-gradient-
 export * from './lib/symbology/raster-palette-symbology-editor/raster-palette-symbology-editor.component';
 export * from './lib/symbology/raster-symbology-editor/raster-symbology-editor.component';
 export * from './lib/symbology/vector-symbology-editor/vector-symbology-editor.component';
+export * from './lib/plots/vega-viewer/vega-viewer.component';
 
 // Models
 export * from './lib/colors/color-breakpoint.model';
@@ -34,6 +36,7 @@ export * from './lib/datasets/dataset.model';
 export * from './lib/operators/datatype.model';
 export * from './lib/operators/operator-type.model';
 export * from './lib/operators/result-type.model';
+export * from './lib/operators/operator.model';
 export * from './lib/symbology/symbology.model';
 
 export * from './lib/layers/layer-data.model';

@@ -15,8 +15,22 @@ import {Colorizer, ColorizerType, LinearGradient, LogarithmicGradient, PaletteCo
 import {Color, TRANSPARENT, WHITE} from '../../colors/color';
 import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
 import {BehaviorSubject, Subscription, map} from 'rxjs';
-import {RasterBandDescriptor, RasterResultDescriptorWithType as RasterResultDescriptorDict} from '@geoengine/openapi-client';
+import {
+    BoundingBox2D,
+    RasterBandDescriptor,
+    RasterResultDescriptorWithType as RasterResultDescriptorDict,
+    SpatialResolution,
+} from '@geoengine/openapi-client';
 import {WorkflowsService} from '../../workflows/workflows.service';
+import {Time} from '../../time/time.model';
+import {SpatialReference} from '../../spatial-references/spatial-reference.model';
+
+export interface SymbologyHistogramParams {
+    time: Time;
+    bbox: BoundingBox2D;
+    resolution: SpatialResolution;
+    spatialReference: SpatialReference;
+}
 
 /**
  * An editor for generating raster symbologies.
@@ -29,6 +43,7 @@ import {WorkflowsService} from '../../workflows/workflows.service';
 })
 export class RasterSymbologyEditorComponent implements OnChanges {
     @Input({required: true}) symbologyWorkflow!: SymbologyWorkflow<RasterSymbology>;
+    @Input() histogramParams?: SymbologyHistogramParams;
 
     @Output() changedSymbology: EventEmitter<RasterSymbology> = new EventEmitter();
 
@@ -52,6 +67,7 @@ export class RasterSymbologyEditorComponent implements OnChanges {
     ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
+        console.log('raster-symbology-editor.component.ts ngOnChanges', changes);
         if (changes.symbologyWorkflow) {
             this.setUp();
         }

@@ -5,8 +5,15 @@ import {geoengineValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap} from 'rxjs/operators';
 import {WorkflowDict} from '../../../backend/backend.model';
-import {PointInPolygonFilterDict} from '../../../backend/operator.model';
-import {ClusteredPointSymbology, Layer, PointSymbology, ResultTypes, VectorLayer, colorToDict} from '@geoengine/common';
+import {
+    ClusteredPointSymbology,
+    Layer,
+    PointInPolygonFilterDict,
+    PointSymbology,
+    ResultTypes,
+    VectorLayer,
+    colorToDict,
+} from '@geoengine/common';
 
 /**
  * This component allows creating the point in polygon filter operator.

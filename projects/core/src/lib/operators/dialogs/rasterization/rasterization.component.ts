@@ -4,10 +4,17 @@ import {geoengineValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
 import {mergeMap} from 'rxjs/operators';
 import {UUID, WorkflowDict} from '../../../backend/backend.model';
-import {DensityRasterizationDict, GridRasterizationDict, RasterizationDict} from '../../../backend/operator.model';
 import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
 import {NotificationService} from '../../../notification.service';
-import {Layer, RasterLayer, RasterSymbology, ResultTypes} from '@geoengine/common';
+import {
+    DensityRasterizationDict,
+    GridRasterizationDict,
+    Layer,
+    RasterLayer,
+    RasterSymbology,
+    RasterizationDict,
+    ResultTypes,
+} from '@geoengine/common';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 
 interface RasterizationForm {
