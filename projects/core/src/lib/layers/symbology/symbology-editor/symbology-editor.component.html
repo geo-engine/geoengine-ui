@@ -1,0 +1,11 @@
+<geoengine-sidenav-header>Symbology Editor</geoengine-sidenav-header>
+
+<div fxFlex>
+    <geoengine-raster-symbology-editor
+        *ngIf="rasterSymbologyWorkflow$ | async as symbologyWorkflow"
+        [symbologyWorkflow]="symbologyWorkflow"
+        (changedSymbology)="changeRasterSymbology($event)"
+    ></geoengine-raster-symbology-editor>
+
+    <!-- <geoengine-vector-symbology-editor *ngIf="dataset.resultDescriptor.type === 'vector'"></geoengine-vector-symbology-editor> -->
+</div>

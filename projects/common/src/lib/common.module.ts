@@ -48,6 +48,7 @@ import {LineIconComponent} from './layer-icons/line-icon/line-icon.component';
 import {PolygonIconComponent} from './layer-icons/polygon-icon/polygon-icon.component';
 import {RasterIconComponent} from './layer-icons/raster-icon/raster-icon.component';
 import {BreakpointToCssStringPipe} from './util/pipes/breakpoint-to-css-string.pipe';
+import {FxFlexDirective, FxLayoutAlignDirective, FxLayoutDirective, FxLayoutGapDirective} from './util/directives/flexbox-legacy.directive';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -100,11 +101,21 @@ const COMMON_COMPONENTS = [
 
 const COMMON_PIPES = [AsyncValueDefault, BreakpointToCssStringPipe, ColorizerCssGradientPipe];
 
-// const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGapDirective, FxLayoutAlignDirective];
+const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGapDirective, FxLayoutAlignDirective];
 
 @NgModule({
-    declarations: [...COMMON_COMPONENTS, ...COMMON_PIPES],
+    declarations: [...COMMON_COMPONENTS, ...COMMON_PIPES, ...FXFLEX_LEGACY_DIRECTIVES],
     imports: [...MATERIAL_MODULES, ColorPickerModule, FormsModule, ReactiveFormsModule, AngularCommonModule, ScrollingModule],
-    exports: [...COMMON_COMPONENTS, ...COMMON_PIPES],
+    exports: [
+        ...COMMON_COMPONENTS,
+        ...COMMON_PIPES,
+        ...FXFLEX_LEGACY_DIRECTIVES,
+        ...MATERIAL_MODULES,
+        ColorPickerModule,
+        FormsModule,
+        ReactiveFormsModule,
+        AngularCommonModule,
+        ScrollingModule,
+    ],
 })
 export class CommonModule {}

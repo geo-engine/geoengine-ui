@@ -148,13 +148,13 @@ import {UserSessionComponent} from './users/user-session/user-session.component'
 import {DownloadRasterLayerComponent} from './download-raster-layer/download-raster-layer.component';
 import {TimeIntervalInputComponent} from './time/time-interval-input/time-interval-input.component';
 import {QuotaInfoComponent} from './users/quota/quota-info/quota-info.component';
-import {FxFlexDirective, FxLayoutAlignDirective, FxLayoutDirective, FxLayoutGapDirective} from './util/directives/flexbox-legacy.directive';
 import {LineSimplificationComponent} from './operators/dialogs/line-simplification/line-simplification.component';
 import {TaskListComponent} from './tasks/task-list/task-list.component';
 import {RgbaCompositeComponent} from './operators/dialogs/rgb-composite/rgb-composite.component';
 import {RolesComponent} from './users/roles/roles.component';
 import {VectorExpressionComponent} from './operators/dialogs/vector-expression/vector-expression.component';
 import {CommonModule} from '@geoengine/common';
+import {SymbologyEditorComponent} from './layers/symbology/symbology-editor/symbology-editor.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -296,6 +296,7 @@ const CORE_COMPONENTS = [
     SmallTimeInteractionComponent,
     StatisticsPlotComponent,
     SymbologyCreatorComponent,
+    SymbologyEditorComponent,
     TabsComponent,
     TaskListComponent,
     TemporalRasterAggregationComponent,
@@ -317,11 +318,12 @@ const CORE_COMPONENTS = [
     ZoomHandlesComponent,
 ];
 
-const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGapDirective, FxLayoutAlignDirective];
+// const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGapDirective, FxLayoutAlignDirective];
 
 @NgModule({
-    declarations: [...CORE_PIPES, ...CORE_COMPONENTS, ...FXFLEX_LEGACY_DIRECTIVES, RolesComponent],
+    declarations: [...CORE_PIPES, ...CORE_COMPONENTS, RolesComponent],
     imports: [
+        // ...FXFLEX_LEGACY_DIRECTIVES,
         ...MATERIAL_MODULES,
         ColorPickerModule,
         AngularCommonModule,

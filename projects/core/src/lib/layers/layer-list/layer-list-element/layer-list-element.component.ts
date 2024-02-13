@@ -30,6 +30,7 @@ import {
     VectorSymbologyEditorComponent,
 } from '@geoengine/common';
 import {RasterBandDescriptor} from '@geoengine/openapi-client';
+import {SymbologyEditorComponent} from '../../symbology/symbology-editor/symbology-editor.component';
 /**
  * The layer list component displays active layers, legends and other controlls.
  */
@@ -138,13 +139,7 @@ export class LayerListElementComponent {
     }
 
     showSymbologyEditor(layer: Layer): void {
-        if (layer instanceof RasterLayer) {
-            this.layoutService.setSidenavContentComponent({component: RasterSymbologyEditorComponent, config: {layer}});
-        } else if (layer instanceof VectorLayer) {
-            this.layoutService.setSidenavContentComponent({component: VectorSymbologyEditorComponent, config: {layer}});
-        } else {
-            throw Error(`unknown layer type: ${layer.layerType}`);
-        }
+        this.layoutService.setSidenavContentComponent({component: SymbologyEditorComponent, config: {layer}});
     }
 
     getBands(layer: Layer): Observable<Array<RasterBandDescriptor>> {

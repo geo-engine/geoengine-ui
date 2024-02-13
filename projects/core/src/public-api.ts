@@ -50,6 +50,7 @@ export * from './lib/layers/legend/legend-raster/raster-legend.component';
 export * from './lib/layers/legend/legend-vector/vector-legend.component';
 export * from './lib/layers/rename-layer/rename-layer.component';
 export * from './lib/layers/symbology/symbology-creator/symbology-creator.component';
+export * from './lib/layers/symbology/symbology-editor/symbology-editor.component';
 export * from './lib/logo.component';
 export * from './lib/map/map-container/map-container.component';
 export * from './lib/map/map-layer.component';
