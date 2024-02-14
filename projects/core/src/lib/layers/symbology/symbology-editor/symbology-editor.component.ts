@@ -58,8 +58,6 @@ export class SymbologyEditorComponent implements OnInit, OnDestroy {
             this.mapService.getViewportSizeStream(),
             this.projectService.getSpatialReferenceStream(),
         ]).subscribe(([time, viewport, spatialReference]) => {
-            console.log('histogramparams');
-
             this.histogramParams$.next({
                 time,
                 bbox: extentToBboxDict(viewport.extent),

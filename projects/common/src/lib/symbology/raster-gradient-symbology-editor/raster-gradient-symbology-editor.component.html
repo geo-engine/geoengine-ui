@@ -44,21 +44,26 @@
         </mat-card-title-group>
     </mat-card-header>
     <mat-card-content>
-        <div class="histogram" *ngIf="histogramCreated === true">
-            <ng-container *ngIf="histogramData | async as histogramData">
-                <geoengine-vega-viewer [chartData]="histogramData" (interactionChange)="updateBounds($any($event))"></geoengine-vega-viewer>
-            </ng-container>
-            <mat-progress-bar mode="indeterminate" *ngIf="histogramLoading | async"></mat-progress-bar>
-        </div>
-        <div class="histogram-actions">
-            <button mat-stroked-button (click)="updateHistogram()">
-                <ng-container *ngIf="histogramCreated; then createdBlock; else notCreatedBlock"></ng-container>
-                <!-- Only displayed before any histogram is created -->
-                <ng-template #createdBlock>Update Histogram</ng-template>
-                <!-- Only displayed after histogram is created -->
-                <ng-template #notCreatedBlock>Create Histogram</ng-template>
-            </button>
-        </div>
+        @if (histogramParams) {
+            <div class="histogram" *ngIf="histogramCreated === true">
+                <ng-container *ngIf="histogramData | async as histogramData">
+                    <geoengine-vega-viewer
+                        [chartData]="histogramData"
+                        (interactionChange)="updateBounds($any($event))"
+                    ></geoengine-vega-viewer>
+                </ng-container>
+                <mat-progress-bar mode="indeterminate" *ngIf="histogramLoading | async"></mat-progress-bar>
+            </div>
+            <div class="histogram-actions">
+                <button mat-stroked-button (click)="updateHistogram()">
+                    <ng-container *ngIf="histogramCreated; then createdBlock; else notCreatedBlock"></ng-container>
+                    <!-- Only displayed before any histogram is created -->
+                    <ng-template #createdBlock>Update Histogram</ng-template>
+                    <!-- Only displayed after histogram is created -->
+                    <ng-template #notCreatedBlock>Create Histogram</ng-template>
+                </button>
+            </div>
+        }
 
         <mat-divider></mat-divider>
 

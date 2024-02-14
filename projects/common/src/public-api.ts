@@ -59,3 +59,4 @@ export * from './lib/util/form.validators';
 export * from './lib/colors/color-map-selector/mpl-colormaps';
 export * from './lib/util/conversions';
 export * from './lib/util/directives/flexbox-legacy.directive';
+export * from './lib/util/symbologies';

@@ -16,7 +16,6 @@ import {
 import {ProjectService} from '../project/project.service';
 import {NotificationService} from '../notification.service';
 import {RandomColorService} from '../util/services/random-color.service';
-import {createVectorSymbology} from '../util/symbologies';
 import {
     AutocompleteHandlerRequest,
     LayerCollection,
@@ -26,6 +25,7 @@ import {
     Layer as LayerDict,
 } from '@geoengine/openapi-client';
 import {
+    createVectorSymbology,
     Layer,
     LayerMetadata,
     RasterLayer,

@@ -40,14 +40,17 @@
         </mat-card-header>
 
         <mat-card-content>
-            @if (symbologyWorkflow$ | async; as symbologyWorkflow) {
-                <geoengine-raster-symbology-editor
-                    *ngIf="dataset.resultDescriptor.type === 'raster'"
-                    [symbologyWorkflow]="symbologyWorkflow"
-                    (changedSymbology)="changeRasterSymbology($event)"
-                ></geoengine-raster-symbology-editor>
-
-                <geoengine-vector-symbology-editor *ngIf="dataset.resultDescriptor.type === 'vector'"></geoengine-vector-symbology-editor>
+            @if (rasterSymbology || vectorSymbology) {
+                @if (datasetWorkflowId$ | async; as workflowId) {
+                    <geoengine-manager-symbology-editor
+                        [workflowId]="workflowId"
+                        [rasterSymbology]="rasterSymbology"
+                        [vectorSymbology]="vectorSymbology"
+                    ></geoengine-manager-symbology-editor>
+                }
+            } @else {
+                <div>This dataset has no symbology yet and uses the default symbology.</div>
+                <button mat-stroked-button class="symbologyButton" (click)="createSymbology()">Create custom symbology</button>
             }
         </mat-card-content>
     </mat-card>

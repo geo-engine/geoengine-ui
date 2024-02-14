@@ -46,6 +46,7 @@ import {RasterResultDescriptorComponent} from './result-descriptors/raster-resul
 import {VectorResultDescriptorComponent} from './result-descriptors/vector-result-descriptor/vector-result-descriptor.component';
 import {LoadingInfoComponent} from './datasets/loading-info/loading-info.component';
 import {CommonModule} from '@geoengine/common';
+import {SymbologyEditorComponent} from './symbology/symbology-editor/symbology-editor.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -92,6 +93,7 @@ export const MATERIAL_MODULES = [
         RasterResultDescriptorComponent,
         VectorResultDescriptorComponent,
         LoadingInfoComponent,
+        SymbologyEditorComponent,
     ],
     imports: [
         ...MATERIAL_MODULES,

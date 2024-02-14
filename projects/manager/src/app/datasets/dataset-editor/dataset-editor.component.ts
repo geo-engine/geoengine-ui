@@ -1,6 +1,15 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {RasterSymbology, Symbology, SymbologyWorkflow, WorkflowsService} from '@geoengine/common';
+import {
+    RasterSymbology,
+    Symbology,
+    SymbologyWorkflow,
+    UUID,
+    VectorSymbology,
+    WHITE,
+    WorkflowsService,
+    createVectorSymbology as createDefaultVectorSymbology,
+} from '@geoengine/common';
 import {
     DatasetListing,
     RasterResultDescriptorWithType,
@@ -9,9 +18,8 @@ import {
 } from '@geoengine/openapi-client';
 import {DatasetsService} from '../../../../../common/src/lib/datasets/datasets.service';
 import {BehaviorSubject} from 'rxjs';
-import {Raster} from 'ol/source';
 
-interface Dataset {
+export interface Dataset {
     layerType: FormControl<'plot' | 'raster' | 'vector'>;
     dataType: FormControl<string>;
     name: FormControl<string>;
@@ -29,7 +37,10 @@ export class DatasetEditorComponent implements OnInit, OnChanges {
 
     form: FormGroup<Dataset> = this.placeholderForm();
 
-    symbologyWorkflow$ = new BehaviorSubject<SymbologyWorkflow<RasterSymbology> | undefined>(undefined);
+    datasetWorkflowId$ = new BehaviorSubject<UUID | undefined>(undefined);
+
+    rasterSymbology?: RasterSymbology = undefined;
+    vectorSymbology?: VectorSymbology = undefined;
 
     constructor(
         private datasetsService: DatasetsService,
@@ -38,17 +49,102 @@ export class DatasetEditorComponent implements OnInit, OnChanges {
 
     ngOnInit(): void {
         this.setUpForm();
+        this.getWorkflowId().then((workflowId) => this.datasetWorkflowId$.next(workflowId));
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.dataset) {
-            this.dataset = changes.dataset.currentValue;
             this.setUpForm();
+
+            this.setUpColorizer();
         }
     }
 
-    changeRasterSymbology(_symbology: RasterSymbology): void {
-        // TODO: update via API
+    private setUpColorizer(): void {
+        if (this.dataset.symbology) {
+            const symbology = Symbology.fromDict(this.dataset.symbology);
+
+            if (symbology instanceof RasterSymbology) {
+                this.rasterSymbology = symbology;
+            } else {
+                this.rasterSymbology = undefined;
+            }
+
+            if (symbology instanceof VectorSymbology) {
+                this.vectorSymbology = symbology;
+            } else {
+                this.vectorSymbology = undefined;
+            }
+        } else {
+            this.rasterSymbology = undefined;
+            this.vectorSymbology = undefined;
+        }
+    }
+
+    async getWorkflowId(): Promise<UUID> {
+        if (this.dataset.resultDescriptor.type === 'raster') {
+            return this.workflowsService.registerWorkflow({
+                type: 'Raster',
+                operator: {
+                    type: 'GdalSource',
+                    params: {
+                        data: this.dataset.name,
+                    },
+                },
+            });
+        }
+
+        if (this.dataset.resultDescriptor.type === 'vector') {
+            return this.workflowsService.registerWorkflow({
+                type: 'Vector',
+                operator: {
+                    type: 'OgrSource',
+                    params: {
+                        data: this.dataset.name,
+                    },
+                },
+            });
+        }
+
+        throw new Error('Unknown dataset type');
+    }
+
+    createSymbology(): void {
+        if (this.dataset.resultDescriptor.type === 'vector') {
+            this.createVectorSymbology();
+        }
+        if (this.dataset.resultDescriptor.type === 'raster') {
+            this.createRasterSymbology();
+        }
+    }
+
+    private createVectorSymbology(): void {
+        if (!(this.dataset.resultDescriptor.type === 'vector')) {
+            return;
+        }
+
+        this.vectorSymbology = createDefaultVectorSymbology(this.dataset.resultDescriptor.dataType, WHITE);
+    }
+
+    private createRasterSymbology(): void {
+        this.rasterSymbology = RasterSymbology.fromRasterSymbologyDict({
+            type: 'raster',
+            opacity: 1.0,
+            rasterColorizer: {
+                type: 'singleBand',
+                band: 0,
+                bandColorizer: {
+                    type: 'linearGradient',
+                    breakpoints: [
+                        {value: 1, color: [0, 0, 0, 255]},
+                        {value: 255, color: [255, 255, 255, 255]},
+                    ],
+                    overColor: [255, 255, 255, 127],
+                    underColor: [0, 0, 0, 127],
+                    noDataColor: [0, 0, 0, 0],
+                },
+            },
+        });
     }
 
     private dataTypeFromResultDescriptor(rd: TypedResultDescriptor): string {
@@ -85,35 +181,6 @@ export class DatasetEditorComponent implements OnInit, OnChanges {
             description: new FormControl(this.dataset.description, {
                 nonNullable: true,
             }),
-        });
-
-        this.datasetsService.getDataset(this.dataset.name).then((dataset) => {
-            if (!dataset.symbology) {
-                return;
-            }
-
-            const symbology = Symbology.fromDict(dataset.symbology);
-
-            if (!(symbology instanceof RasterSymbology)) {
-                return;
-            }
-
-            this.workflowsService
-                .registerWorkflow({
-                    type: 'Raster',
-                    operator: {
-                        type: 'GdalSource',
-                        params: {
-                            data: dataset.name,
-                        },
-                    },
-                })
-                .then((workflowId) => {
-                    this.symbologyWorkflow$.next({
-                        symbology,
-                        workflowId,
-                    });
-                });
         });
     }
 

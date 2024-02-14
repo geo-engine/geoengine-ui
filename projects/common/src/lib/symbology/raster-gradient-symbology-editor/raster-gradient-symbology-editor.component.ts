@@ -47,15 +47,13 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     @ViewChild(ColorTableEditorComponent)
     colorTableEditor!: ColorTableEditorComponent;
 
-    // @Input() layer!: RasterLayer;
-    // @Input() bands!: RasterBandDescriptor[];
-    @Input() band!: string;
+    @Input({required: true}) band!: string;
 
-    @Input() workflowId!: UUID;
+    @Input({required: true}) workflowId!: UUID;
 
-    @Input() colorizer!: LinearGradient | LogarithmicGradient;
+    @Input({required: true}) colorizer!: LinearGradient | LogarithmicGradient;
 
-    @Input() histogramParams?: SymbologyHistogramParams;
+    @Input({required: true}) histogramParams?: SymbologyHistogramParams;
 
     @Output() colorizerChange = new EventEmitter<LinearGradient | LogarithmicGradient>();
 
@@ -101,7 +99,6 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log('raster-gradient-symbology-editor.component.ts ngOnChanges');
         if (changes.colorizer) {
             this.updateScale();
             this.updateBreakpoints(this.colorizer.getBreakpoints());

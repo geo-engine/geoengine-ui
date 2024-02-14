@@ -9,7 +9,6 @@ import {MapService} from '../../../map/map.service';
 import {BackendService} from '../../../backend/backend.service';
 import {UserService} from '../../../users/user.service';
 import {geoengineValidators} from '../../../util/form.validators';
-import {createVectorSymbology} from '../../../util/symbologies';
 import {
     ColumnRangeFilterDict,
     HistogramDict,
@@ -23,6 +22,7 @@ import {
     VectorLayer,
     VectorLayerMetadata,
     VegaChartData,
+    createVectorSymbology,
     extentToBboxDict,
 } from '@geoengine/common';
 

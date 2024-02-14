@@ -67,7 +67,6 @@ export class RasterSymbologyEditorComponent implements OnChanges {
     ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log('raster-symbology-editor.component.ts ngOnChanges', changes);
         if (changes.symbologyWorkflow) {
             this.setUp();
         }
