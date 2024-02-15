@@ -9,17 +9,7 @@ import {LoadingState} from './loading-state.model';
 import {NotificationService} from '../notification.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {BackendService} from '../backend/backend.service';
-import {
-    BBoxDict,
-    OperatorDict,
-    PlotDict,
-    ProvenanceEntryDict,
-    ResultDescriptorDict,
-    SourceOperatorDict,
-    ToDict,
-    UUID,
-    WorkflowDict,
-} from '../backend/backend.model';
+import {BBoxDict, PlotDict, ProvenanceEntryDict, ResultDescriptorDict, ToDict, UUID} from '../backend/backend.model';
 import {UserService} from '../users/user.service';
 import {Extent, MapService, ViewportSize} from '../map/map.service';
 import {Session} from '../users/session.model';
@@ -60,7 +50,7 @@ import {
     VectorLayerMetadata,
     VisualPointClusteringParams,
 } from '@geoengine/common';
-import {ProjectLayer as ProjectLayerDict, ProjectVersion} from '@geoengine/openapi-client';
+import {ProjectLayer as ProjectLayerDict, TypedOperatorOperator, Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 export type FeatureId = string | number;
 
@@ -407,7 +397,7 @@ export class ProjectService {
     /**
      * Determines a common projection for all layers and return their operator with an added a propjection if necessary
      */
-    getAutomaticallyProjectedOperatorsFromLayers(layers: Array<Layer>): Observable<Array<OperatorDict | SourceOperatorDict>> {
+    getAutomaticallyProjectedOperatorsFromLayers(layers: Array<Layer>): Observable<Array<TypedOperatorOperator>> {
         const meta: Array<Observable<ResultDescriptorDict>> = layers.map((l) => this.getWorkflowMetaData(l.workflowId));
 
         return combineLatest(meta).pipe(
@@ -419,12 +409,12 @@ export class ProjectService {
 
                 return combineLatest(workflowsObservable).pipe(
                     map((workflows: Array<WorkflowDict>) => {
-                        const projectedOperators: Array<OperatorDict | SourceOperatorDict> = [];
+                        const projectedOperators: Array<TypedOperatorOperator> = [];
 
                         for (let i = 0; i < workflows.length; i++) {
                             const sref: SpatialReference = srefs[i];
                             const workflow = workflows[i];
-                            const operator: OperatorDict | SourceOperatorDict = workflow.operator;
+                            const operator: TypedOperatorOperator = workflow.operator;
                             if (sref.srsString === targetSref.srsString) {
                                 projectedOperators.push(operator);
                             } else {
@@ -982,10 +972,10 @@ export class ProjectService {
      * Creates a projected operator if the layer has not the target spatial reference.
      */
     createProjectedOperator(
-        inputOperator: OperatorDict | SourceOperatorDict,
+        inputOperator: TypedOperatorOperator,
         metadata: LayerMetadata,
         targetSpatialReference: SpatialReference,
-    ): OperatorDict | SourceOperatorDict {
+    ): TypedOperatorOperator {
         if (metadata.spatialReference.equals(targetSpatialReference)) {
             return inputOperator;
         }

@@ -3,7 +3,6 @@ import {UntypedFormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
 
 import {ProjectService} from '../../../project/project.service';
 import {of, ReplaySubject, Subscription} from 'rxjs';
-import {WorkflowDict} from '../../../backend/backend.model';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {geoengineValidators} from '../../../util/form.validators';
@@ -16,6 +15,7 @@ import {
     VectorLayer,
     VectorLayerMetadata,
 } from '@geoengine/common';
+import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 interface AttributeCandidates {
     id: Array<string>;

@@ -4,7 +4,7 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, Input, ViewChild} fro
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {geoengineValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
-import {UUID, WorkflowDict} from '../../../backend/backend.model';
+import {UUID} from '../../../backend/backend.model';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {LayoutService, SidenavConfig} from '../../../layout.service';
 import {GeoEngineError} from '../../../util/errors';
@@ -20,6 +20,7 @@ import {
     SingleBandRasterColorizer,
 } from '@geoengine/common';
 import {SymbologyCreationType, SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
+import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 interface ExpressionForm {
     rasterLayer: FormControl<RasterLayer | undefined>;

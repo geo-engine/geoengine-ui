@@ -5,7 +5,6 @@ import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
-import {WorkflowDict} from '../../../backend/backend.model';
 import {
     Layer,
     Plot,
@@ -16,6 +15,7 @@ import {
     VectorLayer,
     VectorLayerMetadata,
 } from '@geoengine/common';
+import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 /**
  * This dialog allows creating a box plot of a layer's values.

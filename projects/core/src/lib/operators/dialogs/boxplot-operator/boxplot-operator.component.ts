@@ -5,7 +5,6 @@ import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
-import {OperatorDict, SourceOperatorDict} from '../../../backend/backend.model';
 import {
     BoxPlotDict,
     BoxPlotParams,
@@ -17,6 +16,7 @@ import {
     VectorLayer,
     VectorLayerMetadata,
 } from '@geoengine/common';
+import {TypedOperatorOperator} from '@geoengine/openapi-client';
 
 /**
  * Checks whether the layer is a vector layer (points, lines, polygons).
@@ -171,7 +171,7 @@ export class BoxPlotOperatorComponent implements AfterViewInit, OnDestroy {
         this.projectService
             .getAutomaticallyProjectedOperatorsFromLayers(sources)
             .pipe(
-                mergeMap((inputOperators: Array<OperatorDict | SourceOperatorDict>) =>
+                mergeMap((inputOperators: Array<TypedOperatorOperator>) =>
                     this.projectService.registerWorkflow({
                         type: 'Plot',
                         operator: {

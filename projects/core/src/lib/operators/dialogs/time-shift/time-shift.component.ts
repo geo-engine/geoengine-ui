@@ -4,7 +4,7 @@ import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
-import {TimeStepGranularityDict, WorkflowDict} from '../../../backend/backend.model';
+import {TimeStepGranularityDict} from '../../../backend/backend.model';
 import {BehaviorSubject, Observable} from 'rxjs';
 import moment from 'moment';
 import {
@@ -20,6 +20,7 @@ import {
     VectorSymbology,
     timeStepGranularityOptions,
 } from '@geoengine/common';
+import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 type TimeShiftFormType = 'relative' | 'absolute';
 

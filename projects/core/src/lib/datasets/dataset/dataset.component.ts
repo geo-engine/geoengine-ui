@@ -23,6 +23,6 @@ export class DatasetComponent implements OnInit {
     }
 
     add(): void {
-        // this.datasetService.addDatasetToMap(this.dataset).subscribe();
+        this.datasetService.addDatasetToMap(this.dataset).subscribe();
     }
 }

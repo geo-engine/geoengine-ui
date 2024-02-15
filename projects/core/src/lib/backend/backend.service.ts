@@ -17,7 +17,6 @@ import {
     TimeIntervalDict,
     TimeStepDict,
     UUID,
-    WorkflowDict,
     PlotDataDict,
     UploadResponseDict,
     AutoCreateDatasetDict,
@@ -39,13 +38,14 @@ import {
     UploadFilesResponseDict,
     UploadFileLayersResponseDict,
     RoleDescription,
+    CreateDatasetDict,
 } from './backend.model';
 import {
     ProjectLayer as ProjectLayerDict,
     Project as ProjectDict,
     Dataset as DatasetDict,
-    CreateDataset as CreateDatasetDict,
     Layer as LayerDict,
+    Workflow as WorkflowDict,
 } from '@geoengine/openapi-client';
 import {bboxDictToExtent, unixTimestampToIsoString} from '@geoengine/common';
 

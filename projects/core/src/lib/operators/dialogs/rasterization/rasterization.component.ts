@@ -3,7 +3,7 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {geoengineValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
 import {mergeMap} from 'rxjs/operators';
-import {UUID, WorkflowDict} from '../../../backend/backend.model';
+import {UUID} from '../../../backend/backend.model';
 import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
 import {NotificationService} from '../../../notification.service';
 import {
@@ -16,6 +16,7 @@ import {
     ResultTypes,
 } from '@geoengine/common';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
+import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 interface RasterizationForm {
     name: FormControl<string>;

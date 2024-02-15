@@ -3,10 +3,10 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {geoengineValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
 import {mergeMap} from 'rxjs/operators';
-import {WorkflowDict} from '../../../backend/backend.model';
 import {BehaviorSubject} from 'rxjs';
 import {NotificationService} from '../../../notification.service';
 import {Layer, LineSimplificationDict, ResultTypes, VectorLayer} from '@geoengine/common';
+import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 interface LineSimplificationForm {
     name: FormControl<string>;

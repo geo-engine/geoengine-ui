@@ -4,9 +4,9 @@ import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
-import {WorkflowDict} from '../../../backend/backend.model';
 import {Observable} from 'rxjs';
 import {MeanRasterPixelValuesOverTimeDict, MeanRasterPixelValuesOverTimeParams, Plot, RasterLayer, ResultTypes} from '@geoengine/common';
+import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 type TimePosition = 'start' | 'center' | 'end';
 

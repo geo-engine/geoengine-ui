@@ -127,6 +127,9 @@ export interface PaletteDict {
 
 export type RgbaColorDict = [number, number, number, number];
 
+export type SymbologyDict = RasterSymbologyDict | VectorSymbologyDict;
+export type VectorSymbologyDict = PointSymbologyDict | LineSymbologyDict | PolygonSymbologyDict;
+
 export interface RasterSymbologyDict {
     type: 'raster';
     opacity: number;
@@ -356,6 +359,26 @@ export interface DatasetNameResponseDict {
 
 export interface WorkflowIdResponseDict {
     id: UUID;
+}
+
+export interface CreateDatasetDict {
+    dataPath: {
+        upload: UUID;
+    };
+    definition: DatasetDefinitionDict;
+}
+
+export interface DatasetDefinitionDict {
+    properties: AddDatasetDict;
+    metaData: MetaDataDefinitionDict;
+}
+
+export interface AddDatasetDict {
+    name?: string;
+    displayName: string;
+    description: string;
+    sourceOperator: string;
+    symbology?: SymbologyDict;
 }
 
 export interface AutoCreateDatasetDict {

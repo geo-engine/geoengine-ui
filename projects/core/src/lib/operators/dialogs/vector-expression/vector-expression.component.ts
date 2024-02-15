@@ -3,7 +3,6 @@ import {Validators, FormBuilder, FormControl, FormArray, FormGroup, AsyncValidat
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {BehaviorSubject, combineLatest, firstValueFrom, Observable, of, ReplaySubject, Subscription} from 'rxjs';
-import {WorkflowDict} from '../../../backend/backend.model';
 import {map, mergeMap, startWith} from 'rxjs/operators';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {
@@ -22,6 +21,8 @@ import {
     VectorSymbology,
     createVectorSymbology,
 } from '@geoengine/common';
+
+import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 const MAX_NUMBER_OF_COLUMNS = 8;
 const ALLOWED_EXPRESSION_COLUMN_TYPES = [VectorColumnDataTypes.Float, VectorColumnDataTypes.Int];

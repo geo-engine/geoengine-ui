@@ -32,10 +32,4 @@ export class UploadsService {
 
         return uploadsApi.listUploadFileLayersHandler({uploadId, fileName});
     }
-
-    async upload(form: FormData): Promise<AddCollection200Response> {
-        const uploadsApi = await firstValueFrom(this.uploadsApi);
-
-        return uploadsApi.uploadHandler({files: form.getAll('files') as any}); // TODO
-    }
 }

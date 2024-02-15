@@ -5,8 +5,8 @@ import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
-import {WorkflowDict} from '../../../backend/backend.model';
 import {PieChartCountParams, PieChartDict, Plot, ResultTypes, VectorLayer, VectorLayerMetadata} from '@geoengine/common';
+import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 interface PieChartForm {
     name: FormControl<string>;

@@ -4,7 +4,6 @@ import {Validators, FormBuilder, FormControl, FormArray, FormGroup} from '@angul
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
-import {OperatorDict, SourceOperatorDict} from '../../../backend/backend.model';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {
     Layer,
@@ -17,6 +16,7 @@ import {
     VectorLayer,
     VectorLayerMetadata,
 } from '@geoengine/common';
+import {TypedOperatorOperator} from '@geoengine/openapi-client';
 
 interface StatisticsPlotForm {
     layer: FormControl<Layer | null>;
@@ -153,7 +153,7 @@ export class StatisticsPlotComponent implements AfterViewInit, OnDestroy {
         this.projectService
             .getAutomaticallyProjectedOperatorsFromLayers(sources)
             .pipe(
-                mergeMap((inputOperators: Array<OperatorDict | SourceOperatorDict>) =>
+                mergeMap((inputOperators: Array<TypedOperatorOperator>) =>
                     this.projectService.registerWorkflow({
                         type: 'Plot',
                         operator: {

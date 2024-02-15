@@ -3,7 +3,7 @@ import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angul
 import {combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap} from 'rxjs/operators';
-import {UUID, WorkflowDict} from '../../../backend/backend.model';
+import {UUID} from '../../../backend/backend.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {MapService} from '../../../map/map.service';
 import {BackendService} from '../../../backend/backend.service';
@@ -25,7 +25,7 @@ import {
     createVectorSymbology,
     extentToBboxDict,
 } from '@geoengine/common';
-
+import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 interface ColumnRangeFilterForm {
     layer: FormControl<Layer | null>;
     name: FormControl<string>;

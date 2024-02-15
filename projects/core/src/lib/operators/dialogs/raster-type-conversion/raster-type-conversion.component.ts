@@ -4,10 +4,10 @@ import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
-import {WorkflowDict} from '../../../backend/backend.model';
 import {Observable} from 'rxjs';
 import {Layer} from 'ol/layer';
 import {RasterDataType, RasterDataTypes, RasterLayer, RasterTypeConversionDict, ResultTypes} from '@geoengine/common';
+import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 @Component({
     selector: 'geoengine-raster-type-conversion',

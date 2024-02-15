@@ -4,11 +4,12 @@ import {Component, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit
 import * as dagreD3 from 'dagre-d3';
 import * as d3 from 'd3';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {OperatorDict, OperatorParams, SourceOperatorDict} from '../../backend/backend.model';
+import {OperatorParams, OperatorSourcesDict} from '../../backend/backend.model';
 import {LayoutService} from '../../layout.service';
 import {ProjectService} from '../../project/project.service';
 import {createIconDataUrl} from '../../util/icons';
 import {Layer} from '@geoengine/common';
+import {TypedOperatorOperator} from '@geoengine/openapi-client';
 
 const GRAPH_STYLE = {
     general: {
@@ -47,7 +48,7 @@ export class LineageGraphComponent implements AfterViewInit {
     title = 'Layer Lineage';
     layer: Layer;
 
-    selectedOperator$ = new ReplaySubject<OperatorDict | SourceOperatorDict>(1);
+    selectedOperator$ = new ReplaySubject<TypedOperatorOperator>(1);
     selectedOperatorIcon$ = new ReplaySubject<string>(1);
     parameters$ = new ReplaySubject<Array<{key: string; value: string}>>(1);
 
@@ -132,10 +133,10 @@ export class LineageGraphComponent implements AfterViewInit {
         });
     }
 
-    private static addOperatorsToGraph(graph: dagreD3.graphlib.Graph, initialOperator: OperatorDict | SourceOperatorDict): void {
+    private static addOperatorsToGraph(graph: dagreD3.graphlib.Graph, initialOperator: TypedOperatorOperator): void {
         let nextOperatorId = 0;
 
-        const operatorQueue: Array<[number, OperatorDict | SourceOperatorDict]> = [[nextOperatorId++, initialOperator]];
+        const operatorQueue: Array<[number, TypedOperatorOperator]> = [[nextOperatorId++, initialOperator]];
         const edges: Array<[number, number, string]> = [];
 
         while (operatorQueue.length > 0) {
@@ -175,17 +176,17 @@ export class LineageGraphComponent implements AfterViewInit {
             });
 
             // add children
-            if ('sources' in operator) {
-                const nonSourceOperator = operator as OperatorDict;
-                for (const sourceKey of Object.keys(nonSourceOperator.sources)) {
-                    const operatorSource: OperatorDict | SourceOperatorDict | Array<OperatorDict | SourceOperatorDict> | undefined =
-                        nonSourceOperator.sources[sourceKey];
+            const nonSourceOperator = operator as TypedOperatorOperator;
+            if (nonSourceOperator.sources) {
+                const operatorSources = nonSourceOperator.sources as OperatorSourcesDict;
+                for (const sourceKey of Object.keys(operatorSources)) {
+                    const operatorSource = operatorSources[sourceKey] as TypedOperatorOperator | Array<TypedOperatorOperator> | undefined;
 
                     if (!operatorSource) {
                         continue;
                     }
 
-                    let sources: Array<OperatorDict | SourceOperatorDict>;
+                    let sources: Array<TypedOperatorOperator>;
                     if (operatorSource instanceof Array) {
                         sources = operatorSource;
                     } else {
@@ -283,7 +284,7 @@ export class LineageGraphComponent implements AfterViewInit {
 
             const node = graph.node(nodeId);
             if (node.type === 'operator') {
-                const operator: OperatorDict | SourceOperatorDict = node.operator;
+                const operator: TypedOperatorOperator = node.operator;
 
                 // update operator type
                 this.selectedOperator$.next(operator);
@@ -300,7 +301,7 @@ export class LineageGraphComponent implements AfterViewInit {
         });
     }
 
-    private static parametersDisplayList(operator: OperatorDict | SourceOperatorDict): Array<{key: string; value: string}> {
+    private static parametersDisplayList(operator: TypedOperatorOperator): Array<{key: string; value: string}> {
         const list: Array<{key: string; value: string}> = [];
 
         const params = operator.params as OperatorParams | null;
