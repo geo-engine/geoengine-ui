@@ -3,7 +3,6 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {
     RasterSymbology,
     Symbology,
-    SymbologyWorkflow,
     UUID,
     VectorSymbology,
     WHITE,
@@ -60,6 +59,15 @@ export class DatasetEditorComponent implements OnInit, OnChanges {
         }
     }
 
+    createSymbology(): void {
+        if (this.dataset.resultDescriptor.type === 'vector') {
+            this.createVectorSymbology();
+        }
+        if (this.dataset.resultDescriptor.type === 'raster') {
+            this.createRasterSymbology();
+        }
+    }
+
     private setUpColorizer(): void {
         if (this.dataset.symbology) {
             const symbology = Symbology.fromDict(this.dataset.symbology);
@@ -81,7 +89,7 @@ export class DatasetEditorComponent implements OnInit, OnChanges {
         }
     }
 
-    async getWorkflowId(): Promise<UUID> {
+    private getWorkflowId(): Promise<UUID> {
         if (this.dataset.resultDescriptor.type === 'raster') {
             return this.workflowsService.registerWorkflow({
                 type: 'Raster',
@@ -107,15 +115,6 @@ export class DatasetEditorComponent implements OnInit, OnChanges {
         }
 
         throw new Error('Unknown dataset type');
-    }
-
-    createSymbology(): void {
-        if (this.dataset.resultDescriptor.type === 'vector') {
-            this.createVectorSymbology();
-        }
-        if (this.dataset.resultDescriptor.type === 'raster') {
-            this.createRasterSymbology();
-        }
     }
 
     private createVectorSymbology(): void {
