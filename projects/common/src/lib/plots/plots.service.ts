@@ -30,7 +30,7 @@ export class PlotsService {
 
         return plotApi.getPlotHandler({
             bbox: bboxDictToExtent(bbox).join(','),
-            time: `${unixTimestampToIsoString(time.start.unix())}/${unixTimestampToIsoString(time.end.unix())}`,
+            time: time.asRequestString(),
             spatialResolution: `${spatialResolution.x},${spatialResolution.y}`,
             id,
             crs: crs?.srsString,

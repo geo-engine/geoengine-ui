@@ -18,17 +18,7 @@ import {UserService} from '../../../users/user.service';
 import {HttpEventType} from '@angular/common/http';
 import {filenameFromHttpHeaders} from '../../../util/http';
 import {DownloadRasterLayerComponent} from '../../../download-raster-layer/download-raster-layer.component';
-import {
-    IconStyle,
-    Layer,
-    RasterLayer,
-    RasterLayerMetadata,
-    RasterSymbologyEditorComponent,
-    Symbology,
-    SymbologyType,
-    VectorLayer,
-    VectorSymbologyEditorComponent,
-} from '@geoengine/common';
+import {IconStyle, Layer, RasterLayerMetadata, Symbology, SymbologyType} from '@geoengine/common';
 import {RasterBandDescriptor} from '@geoengine/openapi-client';
 import {SymbologyEditorComponent} from '../../symbology/symbology-editor/symbology-editor.component';
 /**

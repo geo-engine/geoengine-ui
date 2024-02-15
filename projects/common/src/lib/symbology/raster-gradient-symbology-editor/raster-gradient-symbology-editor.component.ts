@@ -75,12 +75,6 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     protected noDataColor?: ColorAttributeInput;
 
     constructor(
-        // protected readonly projectService: ProjectService,
-        // protected readonly backend: BackendService,
-        // protected readonly layoutService: LayoutService,
-        // protected readonly userService: UserService,
-        // protected readonly mapService: MapService,
-        // protected readonly config: Config,
         private readonly workflowsService: WorkflowsService,
         private readonly plotsService: PlotsService,
         private changeDetectorRef: ChangeDetectorRef,

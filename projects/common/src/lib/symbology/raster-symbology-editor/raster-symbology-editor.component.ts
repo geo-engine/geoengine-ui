@@ -58,9 +58,6 @@ export class RasterSymbologyEditorComponent implements OnChanges {
     readonly bands$ = new BehaviorSubject<Array<RasterBandDescriptor>>([]);
     selectedBand?: RasterBandDescriptor;
 
-    unappliedChanges = new BehaviorSubject(false);
-    unchangedSymbology = this.unappliedChanges.pipe(map((unapplied) => !unapplied));
-
     constructor(
         private readonly workflowsService: WorkflowsService,
         private readonly changeDetectorRef: ChangeDetectorRef,
@@ -87,24 +84,18 @@ export class RasterSymbologyEditorComponent implements OnChanges {
 
         this.symbology = this.symbology.cloneWith({opacity});
 
-        this.unappliedChanges.next(true);
+        this.changedSymbology.emit(this.symbology);
     }
 
     updateColorizer(colorizer: Colorizer): void {
         console.log('updateColorizer', colorizer);
         const rasterColorizer = new SingleBandRasterColorizer(this.getSelectedBandIndex(), colorizer);
         this.symbology = this.symbology.cloneWith({colorizer: rasterColorizer});
-        this.unappliedChanges.next(true);
         this.changedSymbology.emit(this.symbology);
-    }
-
-    applyChanges(): void {
-        this.unappliedChanges.next(false);
     }
 
     resetChanges(): void {
         this.setUp();
-        this.unappliedChanges.next(false);
     }
 
     getColorizerType(): ColorizerType {
@@ -137,6 +128,8 @@ export class RasterSymbologyEditorComponent implements OnChanges {
                 this.getOpacity(),
                 new SingleBandRasterColorizer(index, this.symbology.rasterColorizer.bandColorizer),
             );
+            this.symbologyWorkflow = {symbology: this.symbology, workflowId: this.symbologyWorkflow.workflowId};
+            this.changedSymbology.emit(this.symbology);
         }
     }
 
@@ -191,7 +184,7 @@ export class RasterSymbologyEditorComponent implements OnChanges {
         const rasterColorizer = new SingleBandRasterColorizer(this.getSelectedBandIndex(), colorizer);
 
         this.symbology = this.symbology.cloneWith({colorizer: rasterColorizer});
-        this.unappliedChanges.next(true);
+        this.changedSymbology.emit(this.symbology);
     }
 
     private setUp() {
