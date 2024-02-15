@@ -11,3 +11,9 @@
         (changedSymbology)="changeVectorSymbology($event)"
     ></geoengine-vector-symbology-editor>
 }
+
+<div class="actions">
+    <button *ngIf="rasterSymbologyWorkflow" mat-raised-button (click)="resetChanges()" [disabled]="!unappliedChanges">Reset</button>
+
+    <button mat-raised-button color="primary" (click)="applyChanges()" [disabled]="!unappliedChanges">Apply</button>
+</div>

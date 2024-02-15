@@ -47,7 +47,7 @@ export class RasterSymbologyEditorComponent implements OnChanges {
 
     @Output() changedSymbology: EventEmitter<RasterSymbology> = new EventEmitter();
 
-    symbology!: RasterSymbology; // TODO: remove `!` and use placeholder
+    symbology!: RasterSymbology;
 
     readonly linearGradientColorizerType = LinearGradient.TYPE_NAME;
     readonly logarithmicGradientColorizerType = LogarithmicGradient.TYPE_NAME;
@@ -91,16 +91,15 @@ export class RasterSymbologyEditorComponent implements OnChanges {
     }
 
     updateColorizer(colorizer: Colorizer): void {
+        console.log('updateColorizer', colorizer);
         const rasterColorizer = new SingleBandRasterColorizer(this.getSelectedBandIndex(), colorizer);
         this.symbology = this.symbology.cloneWith({colorizer: rasterColorizer});
         this.unappliedChanges.next(true);
+        this.changedSymbology.emit(this.symbology);
     }
 
     applyChanges(): void {
         this.unappliedChanges.next(false);
-        this.changedSymbology.emit(this.symbology);
-
-        // TODO: get layer with updated symbology
     }
 
     resetChanges(): void {

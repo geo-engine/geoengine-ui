@@ -1,7 +1,14 @@
-import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
-import {DatasetsService, RasterSymbology, Symbology, SymbologyWorkflow, UUID, VectorSymbology, WorkflowsService} from '@geoengine/common';
-import {Dataset} from '@geoengine/openapi-client';
-import {BehaviorSubject} from 'rxjs';
+import {Component, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
+import {
+    DatasetsService,
+    RasterSymbology,
+    RasterSymbologyEditorComponent,
+    SymbologyWorkflow,
+    UUID,
+    VectorSymbology,
+    VectorSymbologyEditorComponent,
+    WorkflowsService,
+} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-manager-symbology-editor',
@@ -13,8 +20,13 @@ export class SymbologyEditorComponent implements OnChanges {
     @Input() rasterSymbology: RasterSymbology | undefined;
     @Input() vectorSymbology: VectorSymbology | undefined;
 
+    @ViewChild(RasterSymbologyEditorComponent) rasterSymbologyEditorComponent?: RasterSymbologyEditorComponent;
+    @ViewChild(VectorSymbologyEditorComponent) vectorSymbologyEditorComponent?: VectorSymbologyEditorComponent;
+
     rasterSymbologyWorkflow?: SymbologyWorkflow<RasterSymbology> = undefined;
     vectorSymbologyWorkflow?: SymbologyWorkflow<VectorSymbology> = undefined;
+
+    unappliedChanges = false;
 
     constructor(
         private readonly datasetsService: DatasetsService,
@@ -26,6 +38,7 @@ export class SymbologyEditorComponent implements OnChanges {
             this.setUp();
         }
     }
+
     setUp(): void {
         if (this.rasterSymbology) {
             this.rasterSymbologyWorkflow = {symbology: this.rasterSymbology, workflowId: this.workflowId};
@@ -38,13 +51,43 @@ export class SymbologyEditorComponent implements OnChanges {
         } else {
             this.vectorSymbologyWorkflow = undefined;
         }
+        this.unappliedChanges = false;
     }
 
-    changeRasterSymbology(_symbology: RasterSymbology): void {
+    applyChanges(): void {
+        if (this.rasterSymbology) {
+            this.updateRasterSymbology();
+        }
+
+        if (this.vectorSymbology) {
+            this.updateVectorSymbology();
+        }
+
+        this.unappliedChanges = false;
+    }
+
+    resetChanges(): void {
+        if (this.rasterSymbologyEditorComponent) {
+            this.rasterSymbologyEditorComponent.resetChanges();
+            this.unappliedChanges = false;
+        }
+    }
+
+    changeRasterSymbology(symbology: RasterSymbology): void {
+        this.rasterSymbology = symbology;
+        this.unappliedChanges = true;
+    }
+
+    changeVectorSymbology(symbology: VectorSymbology): void {
+        this.vectorSymbology = symbology;
+        this.unappliedChanges = true;
+    }
+
+    updateRasterSymbology(): void {
         // TODO: update via API
     }
 
-    changeVectorSymbology(_symbology: VectorSymbology): void {
+    updateVectorSymbology(): void {
         // TODO: update via API
     }
 }

@@ -1,12 +1,22 @@
 <geoengine-sidenav-header>Symbology Editor</geoengine-sidenav-header>
 
 <div fxFlex>
-    <geoengine-raster-symbology-editor
-        *ngIf="rasterSymbologyWorkflow$ | async as symbologyWorkflow"
-        [symbologyWorkflow]="symbologyWorkflow"
-        [histogramParams]="histogramParams$ | async | valueDefault: undefined"
-        (changedSymbology)="changeRasterSymbology($event)"
-    ></geoengine-raster-symbology-editor>
+    @if (rasterSymbologyWorkflow$ | async; as symbologyWorkflow) {
+        <geoengine-raster-symbology-editor
+            [symbologyWorkflow]="symbologyWorkflow"
+            [histogramParams]="histogramParams$ | async | valueDefault: undefined"
+            (changedSymbology)="changeRasterSymbology($event)"
+        ></geoengine-raster-symbology-editor>
+        <div class="actions">
+            <button mat-raised-button (click)="resetRasterChanges()" [disabled]="!unappliedRasterChanges">Reset</button>
 
-    <!-- <geoengine-vector-symbology-editor *ngIf="dataset.resultDescriptor.type === 'vector'"></geoengine-vector-symbology-editor> -->
+            <button mat-raised-button color="primary" (click)="applyRasterChanges()" [disabled]="!unappliedRasterChanges">Apply</button>
+        </div>
+    }
+
+    <geoengine-vector-symbology-editor
+        *ngIf="vectorSymbologyWorkflow$ | async as symbologyWorkflow"
+        [symbologyWorkflow]="symbologyWorkflow"
+        (changedSymbology)="changeVectorSymbology($event)"
+    ></geoengine-vector-symbology-editor>
 </div>

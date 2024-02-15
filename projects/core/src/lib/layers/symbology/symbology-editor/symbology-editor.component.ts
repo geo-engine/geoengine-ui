@@ -1,8 +1,9 @@
-import {ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {
     Layer,
     RasterLayer,
     RasterSymbology,
+    RasterSymbologyEditorComponent,
     SymbologyHistogramParams,
     SymbologyWorkflow,
     VectorLayer,
@@ -24,12 +25,18 @@ import {SpatialResolution} from '@geoengine/openapi-client';
 export class SymbologyEditorComponent implements OnInit, OnDestroy {
     @Input({required: true}) layer!: Layer;
 
+    @ViewChild(RasterSymbologyEditorComponent) rasterSymbologyEditorComponent?: RasterSymbologyEditorComponent;
+
     rasterSymbologyWorkflow$ = new BehaviorSubject<SymbologyWorkflow<RasterSymbology> | undefined>(undefined);
     vectorSymbologyWorkflow$ = new BehaviorSubject<SymbologyWorkflow<VectorSymbology> | undefined>(undefined);
 
     histogramParams$ = new BehaviorSubject<SymbologyHistogramParams | undefined>(undefined);
 
     histogramParamsSubscription?: Subscription = undefined;
+
+    unappliedRasterChanges = false;
+
+    rasterSymbology?: RasterSymbology = undefined;
 
     constructor(
         private readonly projectService: ProjectService,
@@ -48,8 +55,28 @@ export class SymbologyEditorComponent implements OnInit, OnDestroy {
         }
     }
 
+    applyRasterChanges(): void {
+        if (!this.rasterSymbology) {
+            return;
+        }
+        this.projectService.changeLayer(this.layer, {symbology: this.rasterSymbology});
+        this.unappliedRasterChanges = false;
+    }
+
+    resetRasterChanges(): void {
+        if (this.rasterSymbologyEditorComponent) {
+            this.rasterSymbologyEditorComponent.resetChanges();
+            this.unappliedRasterChanges = false;
+        }
+    }
+
     changeRasterSymbology(rasterSymbology: RasterSymbology): void {
-        this.projectService.changeLayer(this.layer, {symbology: rasterSymbology});
+        this.rasterSymbology = rasterSymbology;
+        this.unappliedRasterChanges = true;
+    }
+
+    changeVectorSymbology(vectorSymbology: VectorSymbology): void {
+        this.projectService.changeLayer(this.layer, {symbology: vectorSymbology});
     }
 
     private createHistogramParamsSubscription(): void {
