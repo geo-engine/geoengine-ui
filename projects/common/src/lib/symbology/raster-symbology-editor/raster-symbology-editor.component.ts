@@ -10,7 +10,7 @@ import {
     Output,
     EventEmitter,
 } from '@angular/core';
-import {RasterSymbology, SingleBandRasterColorizer, SymbologyWorkflow} from '../symbology.model';
+import {RasterSymbology, SingleBandRasterColorizer, SymbologyHistogramParams, SymbologyWorkflow} from '../symbology.model';
 import {Colorizer, ColorizerType, LinearGradient, LogarithmicGradient, PaletteColorizer, RgbaColorizer} from '../../colors/colorizer.model';
 import {Color, TRANSPARENT, WHITE} from '../../colors/color';
 import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
@@ -24,13 +24,6 @@ import {
 import {WorkflowsService} from '../../workflows/workflows.service';
 import {Time} from '../../time/time.model';
 import {SpatialReference} from '../../spatial-references/spatial-reference.model';
-
-export interface SymbologyHistogramParams {
-    time: Time;
-    bbox: BoundingBox2D;
-    resolution: SpatialResolution;
-    spatialReference: SpatialReference;
-}
 
 /**
  * An editor for generating raster symbologies.

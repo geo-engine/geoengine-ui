@@ -19,10 +19,14 @@ import {
     DerivedNumberWithType as DerivedNumberDict,
     RasterSymbologyWithType as RasterSymbologyDict,
     RasterColorizer as RasterColorizerDict,
+    SpatialResolution,
 } from '@geoengine/openapi-client';
 import {PointIconStyle} from '../layer-icons/point-icon/point-icon.component';
 import {LineIconStyle} from '../layer-icons/line-icon/line-icon.component';
 import {PolygonIconStyle} from '../layer-icons/polygon-icon/polygon-icon.component';
+import {Time} from '../time/time.model';
+import {BoundingBox2D} from '../spatial-bounds/bounding-box';
+import {SpatialReference} from '../spatial-references/spatial-reference.model';
 
 /**
  * List of the symbology types used in geoengine
@@ -1038,4 +1042,11 @@ function textSymbologyEquality(a?: TextSymbology, b?: TextSymbology): boolean {
     }
 
     return a.equals(b);
+}
+
+export interface SymbologyHistogramParams {
+    time: Time;
+    bbox: BoundingBox2D;
+    resolution: SpatialResolution;
+    spatialReference: SpatialReference;
 }

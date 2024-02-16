@@ -11,25 +11,20 @@ import {
     OnChanges,
     SimpleChanges,
 } from '@angular/core';
-import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
-import {map, mergeMap, tap} from 'rxjs/operators';
-// import {HistogramDict, HistogramParams} from '../../../backend/operator.model';
+import {BehaviorSubject, ReplaySubject, Subscription} from 'rxjs';
 import {LinearGradient, LogarithmicGradient} from '../../colors/colorizer.model';
 import {ColorAttributeInput} from '../../colors/color-attribute-input/color-attribute-input.component';
 import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
-// import {extentToBboxDict} from '../../../util/conversions';
-// import {VegaChartData} from '../../../plots/vega-viewer/vega-viewer.component';
 import {ColorMapSelectorComponent} from '../../colors/color-map-selector/color-map-selector.component';
 import {Color} from '../../colors/color';
 import {ColorTableEditorComponent} from '../../colors/color-table-editor/color-table-editor.component';
-import {SymbologyHistogramParams} from '../raster-symbology-editor/raster-symbology-editor.component';
 import {UUID} from '../../datasets/dataset.model';
 import {VegaChartData} from '../../plots/plot.model';
 import {WorkflowsService} from '../../workflows/workflows.service';
 import {HistogramDict, HistogramParams, WorkflowDict} from '../../operators/operator.model';
 import {Workflow} from '@geoengine/openapi-client';
 import {PlotsService} from '../../plots/plots.service';
-// import {RasterBandDescriptor} from '../../../datasets/dataset.model';
+import {SymbologyHistogramParams} from '../symbology.model';
 
 /**
  * An editor for generating raster symbologies.
