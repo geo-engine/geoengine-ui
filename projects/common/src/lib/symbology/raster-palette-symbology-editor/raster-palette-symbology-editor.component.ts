@@ -6,7 +6,6 @@ import {ColorMapSelectorComponent} from '../../colors/color-map-selector/color-m
 import {ColorTableEditorComponent} from '../../colors/color-table-editor/color-table-editor.component';
 import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
 import {Measurement} from '@geoengine/openapi-client';
-// import {Measurement} from '../../measurement';
 
 /**
  * An editor for generating raster symbologies.
@@ -24,8 +23,6 @@ export class RasterPaletteSymbologyEditorComponent implements OnInit, OnChanges 
     @ViewChild(ColorTableEditorComponent)
     colorPaletteEditor!: ColorTableEditorComponent;
 
-    // @Input() layer!: RasterLayer;
-
     @Input() colorizer!: PaletteColorizer;
     @Input() measurement!: Measurement;
 
@@ -41,7 +38,7 @@ export class RasterPaletteSymbologyEditorComponent implements OnInit, OnChanges 
     protected defaultColor?: ColorAttributeInput;
     protected noDataColor?: ColorAttributeInput;
 
-    constructor() {} // protected readonly config: Config, // protected readonly mapService: MapService, // protected readonly userService: UserService, // protected readonly layoutService: LayoutService, // protected readonly backend: BackendService, // protected readonly projectService: ProjectService,
+    constructor() {}
 
     ngOnInit(): void {}
 

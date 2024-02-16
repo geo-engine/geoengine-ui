@@ -1,7 +1,7 @@
 import {Component, Inject} from '@angular/core';
 import {Router} from '@angular/router';
-import {SessionService} from '../../../../common/src/lib/session/session.service';
 import {AppConfig} from '../app-config.service';
+import {SessionService} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-manager-login',

@@ -1,6 +1,7 @@
 import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {
+    DatasetsService,
     RasterSymbology,
     Symbology,
     UUID,
@@ -10,7 +11,6 @@ import {
     createVectorSymbology as createDefaultVectorSymbology,
 } from '@geoengine/common';
 import {Dataset, RasterResultDescriptorWithType, TypedResultDescriptor, VectorResultDescriptorWithType} from '@geoengine/openapi-client';
-import {DatasetsService} from '../../../../../common/src/lib/datasets/datasets.service';
 import {BehaviorSubject} from 'rxjs';
 
 export interface DatasetForm {

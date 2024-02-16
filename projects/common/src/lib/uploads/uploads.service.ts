@@ -1,17 +1,5 @@
 import {Injectable} from '@angular/core';
-import {
-    AddCollection200Response,
-    Dataset,
-    DatasetListing,
-    DatasetsApi,
-    MetaDataDefinition,
-    MetaDataSuggestion,
-    OrderBy,
-    SuggestMetaDataHandlerRequest,
-    UploadFileLayersResponse,
-    UploadFilesResponse,
-    UploadsApi,
-} from '@geoengine/openapi-client';
+import {UploadFileLayersResponse, UploadsApi} from '@geoengine/openapi-client';
 import {ReplaySubject, firstValueFrom} from 'rxjs';
 import {SessionService, apiConfigurationWithAccessKey} from '../session/session.service';
 

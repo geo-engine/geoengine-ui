@@ -14,14 +14,7 @@ import {
     TextSymbology,
     VectorSymbology,
 } from '../symbology.model';
-// import {VectorLayer} from '../../layer.model';
-// import {MapService} from '../../../map/map.service';
-// import {ProjectService} from '../../../project/project.service';
-// import {Config} from '../../../config.service';
-// import {BackendService} from '../../../backend/backend.service';
-// import {UserService} from '../../../users/user.service';
 import {ReplaySubject} from 'rxjs';
-import {first} from 'rxjs/operators';
 import {BLACK, WHITE} from '../../colors/color';
 import {FeatureDataType} from '@geoengine/openapi-client';
 import {WorkflowsService} from '../../workflows/workflows.service';

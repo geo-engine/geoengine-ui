@@ -33,20 +33,17 @@ export * from './lib/colors/color-breakpoint.model';
 export * from './lib/colors/color';
 export * from './lib/colors/colorizer.model';
 export * from './lib/datasets/dataset.model';
-export * from './lib/operators/datatype.model';
-export * from './lib/operators/operator-type.model';
-export * from './lib/operators/result-type.model';
-export * from './lib/operators/operator.model';
-export * from './lib/symbology/symbology.model';
-
 export * from './lib/layers/layer-data.model';
 export * from './lib/layers/layer-metadata.model';
 export * from './lib/layers/layer.model';
 export * from './lib/layers/measurement';
-
+export * from './lib/operators/datatype.model';
+export * from './lib/operators/operator-type.model';
+export * from './lib/operators/result-type.model';
+export * from './lib/operators/operator.model';
 export * from './lib/plots/plot.model';
 export * from './lib/spatial-references/spatial-reference.model';
-
+export * from './lib/symbology/symbology.model';
 export * from './lib/time/time.model';
 
 // Pipes
@@ -55,8 +52,8 @@ export * from './lib/util/pipes/breakpoint-to-css-string.pipe';
 export * from './lib/util/pipes/color-gradients.pipe';
 
 // Misc
-export * from './lib/util/form.validators';
 export * from './lib/colors/color-map-selector/mpl-colormaps';
 export * from './lib/util/conversions';
 export * from './lib/util/directives/flexbox-legacy.directive';
+export * from './lib/util/form.validators';
 export * from './lib/util/symbologies';

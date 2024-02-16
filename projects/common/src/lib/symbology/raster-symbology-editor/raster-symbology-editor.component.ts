@@ -22,8 +22,6 @@ import {
     SpatialResolution,
 } from '@geoengine/openapi-client';
 import {WorkflowsService} from '../../workflows/workflows.service';
-import {Time} from '../../time/time.model';
-import {SpatialReference} from '../../spatial-references/spatial-reference.model';
 
 /**
  * An editor for generating raster symbologies.

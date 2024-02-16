@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {DatasetsService} from '@geoengine/common';
 import {Subject} from 'rxjs';
-import {DatasetsService} from '../../../../../common/src/lib/datasets/datasets.service';
 
 @Component({
     selector: 'geoengine-manager-loading-info',

@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
+import {DatasetsService} from '@geoengine/common';
 import {DatasetListing} from '@geoengine/openapi-client';
 import {BehaviorSubject} from 'rxjs';
-import {DatasetsService} from '../../../../common/src/lib/datasets/datasets.service';
 
 @Component({
     selector: 'geoengine-manager-datasets',
@@ -11,7 +11,7 @@ import {DatasetsService} from '../../../../common/src/lib/datasets/datasets.serv
 export class DatasetsComponent {
     selectedDataset$: BehaviorSubject<DatasetListing | undefined> = new BehaviorSubject<DatasetListing | undefined>(undefined);
 
-    constructor(private readonly datasetsService: DatasetsService) {}
+    constructor() {}
 
     selectDataset(dataset: DatasetListing): void {
         this.selectedDataset$.next(dataset);

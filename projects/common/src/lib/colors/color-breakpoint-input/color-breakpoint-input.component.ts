@@ -4,7 +4,6 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {ColorBreakpoint} from '../color-breakpoint.model';
 import {Color, stringToRgbaStruct, TRANSPARENT} from '../color';
 import {Subject, Subscription} from 'rxjs';
-// import {Config} from '../../config.service';
 import {debounceTime} from 'rxjs/operators';
 
 @Component({
@@ -22,15 +21,12 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, OnCh
 
     private input: ColorBreakpoint = new ColorBreakpoint(0, TRANSPARENT);
     private changedValue = new Subject<ColorBreakpoint>();
-    // private onChangePropagationSubscription: Subscription;
+    private onChangePropagationSubscription: Subscription;
 
-    constructor(
-        // private config: Config,
-        private changeDetectorRef: ChangeDetectorRef,
-    ) {
-        // this.onChangePropagationSubscription = this.changedValue
-        //     .pipe(debounceTime(this.config.DELAYS.DEBOUNCE)) // defer emitting values while the user is typing
-        //     .subscribe((colorBreakpoint) => this.onChange(colorBreakpoint.clone()));
+    constructor(private changeDetectorRef: ChangeDetectorRef) {
+        this.onChangePropagationSubscription = this.changedValue
+            .pipe(debounceTime(400)) // defer emitting values while the user is typing
+            .subscribe((colorBreakpoint) => this.onChange(colorBreakpoint.clone()));
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -39,7 +35,7 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, OnCh
     onChange = (_: ColorBreakpoint): void => {};
 
     ngOnDestroy(): void {
-        // this.onChangePropagationSubscription.unsubscribe();
+        this.onChangePropagationSubscription.unsubscribe();
     }
 
     get colorBreakpoint(): ColorBreakpoint {

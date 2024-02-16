@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree} from '@angular/router';
+import {SessionService} from '@geoengine/common';
 import {Observable, map} from 'rxjs';
-import {SessionService} from '../../../../../common/src/lib/session/session.service';
 
 @Injectable({
     providedIn: 'root',

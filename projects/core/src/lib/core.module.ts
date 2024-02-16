@@ -316,12 +316,9 @@ const CORE_COMPONENTS = [
     ZoomHandlesComponent,
 ];
 
-// const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGapDirective, FxLayoutAlignDirective];
-
 @NgModule({
     declarations: [...CORE_PIPES, ...CORE_COMPONENTS, RolesComponent],
     imports: [
-        // ...FXFLEX_LEGACY_DIRECTIVES,
         ...MATERIAL_MODULES,
         ColorPickerModule,
         AngularCommonModule,
