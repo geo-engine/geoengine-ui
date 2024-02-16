@@ -88,7 +88,6 @@ export class RasterSymbologyEditorComponent implements OnChanges {
     }
 
     updateColorizer(colorizer: Colorizer): void {
-        console.log('updateColorizer', colorizer);
         const rasterColorizer = new SingleBandRasterColorizer(this.getSelectedBandIndex(), colorizer);
         this.symbology = this.symbology.cloneWith({colorizer: rasterColorizer});
         this.changedSymbology.emit(this.symbology);

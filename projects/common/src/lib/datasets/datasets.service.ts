@@ -7,7 +7,7 @@ import {
     MetaDataSuggestion,
     OrderBy,
     SuggestMetaDataHandlerRequest,
-    UploadFileLayersResponse,
+    Symbology,
 } from '@geoengine/openapi-client';
 import {ReplaySubject, firstValueFrom} from 'rxjs';
 import {SessionService, apiConfigurationWithAccessKey} from '../session/session.service';
@@ -55,5 +55,14 @@ export class DatasetsService {
         const datasetApi = await firstValueFrom(this.datasetApi);
 
         return datasetApi.suggestMetaDataHandler(suggest);
+    }
+
+    async updateSymbology(datasetName: string, symbology: Symbology): Promise<void> {
+        const datasetApi = await firstValueFrom(this.datasetApi);
+
+        return datasetApi.updateDatasetSymbologyHandler({
+            dataset: datasetName,
+            symbology,
+        });
     }
 }

@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {
     RasterSymbology,
@@ -9,16 +9,11 @@ import {
     WorkflowsService,
     createVectorSymbology as createDefaultVectorSymbology,
 } from '@geoengine/common';
-import {
-    DatasetListing,
-    RasterResultDescriptorWithType,
-    TypedResultDescriptor,
-    VectorResultDescriptorWithType,
-} from '@geoengine/openapi-client';
+import {Dataset, RasterResultDescriptorWithType, TypedResultDescriptor, VectorResultDescriptorWithType} from '@geoengine/openapi-client';
 import {DatasetsService} from '../../../../../common/src/lib/datasets/datasets.service';
 import {BehaviorSubject} from 'rxjs';
 
-export interface Dataset {
+export interface DatasetForm {
     layerType: FormControl<'plot' | 'raster' | 'vector'>;
     dataType: FormControl<string>;
     name: FormControl<string>;
@@ -31,10 +26,11 @@ export interface Dataset {
     templateUrl: './dataset-editor.component.html',
     styleUrl: './dataset-editor.component.scss',
 })
-export class DatasetEditorComponent implements OnInit, OnChanges {
-    @Input({required: true}) dataset!: DatasetListing;
+export class DatasetEditorComponent implements OnChanges {
+    @Input({required: true}) datasetName!: UUID;
 
-    form: FormGroup<Dataset> = this.placeholderForm();
+    dataset?: Dataset;
+    form: FormGroup<DatasetForm> = this.placeholderForm();
 
     datasetWorkflowId$ = new BehaviorSubject<UUID | undefined>(undefined);
 
@@ -46,31 +42,29 @@ export class DatasetEditorComponent implements OnInit, OnChanges {
         private workflowsService: WorkflowsService,
     ) {}
 
-    ngOnInit(): void {
-        this.setUpForm();
-        this.getWorkflowId().then((workflowId) => this.datasetWorkflowId$.next(workflowId));
-    }
-
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.dataset) {
-            this.setUpForm();
-
-            this.setUpColorizer();
+        if (changes.datasetName) {
+            this.datasetsService.getDataset(this.datasetName).then((dataset) => {
+                this.dataset = dataset;
+                this.setUpForm(dataset);
+                this.getWorkflowId(dataset).then((workflowId) => this.datasetWorkflowId$.next(workflowId));
+                this.setUpColorizer(dataset);
+            });
         }
     }
 
-    createSymbology(): void {
-        if (this.dataset.resultDescriptor.type === 'vector') {
-            this.createVectorSymbology();
+    createSymbology(dataset: Dataset): void {
+        if (dataset.resultDescriptor.type === 'vector') {
+            this.createVectorSymbology(dataset);
         }
-        if (this.dataset.resultDescriptor.type === 'raster') {
+        if (dataset.resultDescriptor.type === 'raster') {
             this.createRasterSymbology();
         }
     }
 
-    private setUpColorizer(): void {
-        if (this.dataset.symbology) {
-            const symbology = Symbology.fromDict(this.dataset.symbology);
+    private setUpColorizer(dataset: Dataset): void {
+        if (dataset.symbology) {
+            const symbology = Symbology.fromDict(dataset.symbology);
 
             if (symbology instanceof RasterSymbology) {
                 this.rasterSymbology = symbology;
@@ -89,26 +83,26 @@ export class DatasetEditorComponent implements OnInit, OnChanges {
         }
     }
 
-    private getWorkflowId(): Promise<UUID> {
-        if (this.dataset.resultDescriptor.type === 'raster') {
+    private getWorkflowId(dataset: Dataset): Promise<UUID> {
+        if (dataset.resultDescriptor.type === 'raster') {
             return this.workflowsService.registerWorkflow({
                 type: 'Raster',
                 operator: {
                     type: 'GdalSource',
                     params: {
-                        data: this.dataset.name,
+                        data: dataset.name,
                     },
                 },
             });
         }
 
-        if (this.dataset.resultDescriptor.type === 'vector') {
+        if (dataset.resultDescriptor.type === 'vector') {
             return this.workflowsService.registerWorkflow({
                 type: 'Vector',
                 operator: {
                     type: 'OgrSource',
                     params: {
-                        data: this.dataset.name,
+                        data: dataset.name,
                     },
                 },
             });
@@ -117,12 +111,12 @@ export class DatasetEditorComponent implements OnInit, OnChanges {
         throw new Error('Unknown dataset type');
     }
 
-    private createVectorSymbology(): void {
-        if (!(this.dataset.resultDescriptor.type === 'vector')) {
+    private createVectorSymbology(dataset: Dataset): void {
+        if (!(dataset.resultDescriptor.type === 'vector')) {
             return;
         }
 
-        this.vectorSymbology = createDefaultVectorSymbology(this.dataset.resultDescriptor.dataType, WHITE);
+        this.vectorSymbology = createDefaultVectorSymbology(dataset.resultDescriptor.dataType, WHITE);
     }
 
     private createRasterSymbology(): void {
@@ -159,32 +153,32 @@ export class DatasetEditorComponent implements OnInit, OnChanges {
         return '';
     }
 
-    private setUpForm(): void {
-        this.form = new FormGroup<Dataset>({
-            layerType: new FormControl(this.dataset.resultDescriptor.type, {
+    private setUpForm(dataset: Dataset): void {
+        this.form = new FormGroup<DatasetForm>({
+            layerType: new FormControl(dataset.resultDescriptor.type, {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
-            dataType: new FormControl(this.dataTypeFromResultDescriptor(this.dataset.resultDescriptor), {
+            dataType: new FormControl(this.dataTypeFromResultDescriptor(dataset.resultDescriptor), {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
-            name: new FormControl(this.dataset.name, {
+            name: new FormControl(dataset.name, {
                 nonNullable: true,
                 validators: [Validators.required, Validators.pattern(/^[a-zA-Z0-9_]+$/), Validators.minLength(1)],
             }),
-            displayName: new FormControl(this.dataset.displayName, {
+            displayName: new FormControl(dataset.displayName, {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
-            description: new FormControl(this.dataset.description, {
+            description: new FormControl(dataset.description, {
                 nonNullable: true,
             }),
         });
     }
 
-    private placeholderForm(): FormGroup<Dataset> {
-        return new FormGroup<Dataset>({
+    private placeholderForm(): FormGroup<DatasetForm> {
+        return new FormGroup<DatasetForm>({
             layerType: new FormControl('raster', {
                 nonNullable: true,
                 validators: [Validators.required],

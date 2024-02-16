@@ -7,7 +7,6 @@ import {
     UUID,
     VectorSymbology,
     VectorSymbologyEditorComponent,
-    WorkflowsService,
 } from '@geoengine/common';
 
 @Component({
@@ -17,6 +16,7 @@ import {
 })
 export class SymbologyEditorComponent implements OnChanges {
     @Input({required: true}) workflowId!: UUID;
+    @Input() datasetName: string | undefined;
     @Input() rasterSymbology: RasterSymbology | undefined;
     @Input() vectorSymbology: VectorSymbology | undefined;
 
@@ -28,10 +28,7 @@ export class SymbologyEditorComponent implements OnChanges {
 
     unappliedChanges = false;
 
-    constructor(
-        private readonly datasetsService: DatasetsService,
-        private readonly workflowsService: WorkflowsService,
-    ) {}
+    constructor(private readonly datasetsService: DatasetsService) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.workflowId || changes.rasterSymbology || changes.vectorSymbology) {
@@ -84,10 +81,14 @@ export class SymbologyEditorComponent implements OnChanges {
     }
 
     updateRasterSymbology(): void {
-        // TODO: update via API
+        if (this.datasetName && this.rasterSymbology) {
+            this.datasetsService.updateSymbology(this.datasetName, this.rasterSymbology.toDict());
+        }
     }
 
     updateVectorSymbology(): void {
-        // TODO: update via API
+        if (this.datasetName && this.vectorSymbology) {
+            this.datasetsService.updateSymbology(this.datasetName, this.vectorSymbology.toDict());
+        }
     }
 }

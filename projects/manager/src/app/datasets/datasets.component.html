@@ -2,7 +2,7 @@
     <geoengine-manager-dataset-list class="left" (selectDataset)="selectDataset($event)"></geoengine-manager-dataset-list>
 
     @if (selectedDataset$ | async; as dataset) {
-        <geoengine-manager-dataset-editor [dataset]="dataset"></geoengine-manager-dataset-editor>
+        <geoengine-manager-dataset-editor [datasetName]="dataset.name"></geoengine-manager-dataset-editor>
     } @else {
         <div class="no-dataset">Please select a dataset</div>
     }
