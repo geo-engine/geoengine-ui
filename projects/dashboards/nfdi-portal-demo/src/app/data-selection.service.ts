@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
-import {Layer, ProjectService, RasterLayer, Time, VectorLayer, LoadingState} from '@geoengine/core';
+import {ProjectService, LoadingState} from '@geoengine/core';
 import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import moment from 'moment';
+import {Layer, RasterLayer, Time, VectorLayer} from '@geoengine/common';
 
 export interface DataRange {
     min: number;

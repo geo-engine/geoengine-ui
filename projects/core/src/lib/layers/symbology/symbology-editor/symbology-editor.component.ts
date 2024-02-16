@@ -13,7 +13,6 @@ import {
 import {BehaviorSubject, Subscription, combineLatest} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {MapService} from '../../../map/map.service';
-import {UserService} from '../../../users/user.service';
 import {SpatialResolution} from '@geoengine/openapi-client';
 
 @Component({
@@ -41,7 +40,6 @@ export class SymbologyEditorComponent implements OnInit, OnDestroy {
     constructor(
         private readonly projectService: ProjectService,
         private readonly mapService: MapService,
-        private readonly userService: UserService,
     ) {}
 
     ngOnInit(): void {

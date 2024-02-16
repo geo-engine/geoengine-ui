@@ -343,6 +343,7 @@ const CORE_COMPONENTS = [
         /* library exports */
         ...CORE_PIPES,
         ...CORE_COMPONENTS,
+        CommonModule,
     ],
     providers: [
         {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}},

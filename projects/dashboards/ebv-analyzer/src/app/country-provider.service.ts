@@ -1,9 +1,11 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, mergeMap, Observable} from 'rxjs';
 import {COUNTRY_LIST} from './country-selector/country-selector-data.model';
-import {PolygonSymbology, ProjectService, VectorLayer, WorkflowDict} from '@geoengine/core';
+import {ProjectService} from '@geoengine/core';
 import {DataSelectionService} from './data-selection.service';
 import {countryDatasetName} from './country-selector/country-data.model';
+import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {PolygonSymbology, VectorLayer} from '@geoengine/common';
 
 export interface Country {
     name: string;

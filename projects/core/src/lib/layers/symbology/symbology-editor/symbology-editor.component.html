@@ -1,6 +1,6 @@
 <geoengine-sidenav-header>Symbology Editor</geoengine-sidenav-header>
 
-<div fxFlex>
+<div class="container" fxFlex>
     @if (rasterSymbologyWorkflow$ | async; as symbologyWorkflow) {
         <geoengine-raster-symbology-editor
             [symbologyWorkflow]="symbologyWorkflow"

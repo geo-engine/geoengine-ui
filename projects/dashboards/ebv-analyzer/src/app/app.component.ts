@@ -2,7 +2,6 @@ import {Observable, BehaviorSubject, mergeMap} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {
-    Layer,
     LayoutService,
     UserService,
     RandomColorService,
@@ -11,7 +10,6 @@ import {
     ProjectService,
     MapService,
     MapContainerComponent,
-    Time,
     SpatialReferenceService,
     SidenavContainerComponent,
 } from '@geoengine/core';
@@ -22,6 +20,7 @@ import moment from 'moment';
 import {DataSelectionService} from './data-selection.service';
 import {EbvSelectorComponent} from './ebv-selector/ebv-selector.component';
 import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
+import {Layer, Time} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-root',

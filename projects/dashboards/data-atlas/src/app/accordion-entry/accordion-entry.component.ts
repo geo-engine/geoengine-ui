@@ -8,11 +8,9 @@ import {
     ProjectService,
     ProviderLayerCollectionIdDict,
     ProviderLayerIdDict,
-    RasterLayer,
-    RasterSymbology,
-    Time,
 } from '@geoengine/core';
 import {DataRange, DataSelectionService} from '../data-selection.service';
+import {RasterLayer, RasterSymbology, Time} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-accordion-entry',
@@ -98,6 +96,10 @@ export class AccordionEntryComponent implements OnInit {
                 mergeMap(([layer, workflowId]) => {
                     if (!layer.symbology) {
                         throw new Error('Layer has no symbology');
+                    }
+
+                    if (!layer.metadata) {
+                        throw new Error('Layer has no metadata');
                     }
 
                     if (!('timeSteps' in layer.metadata)) {

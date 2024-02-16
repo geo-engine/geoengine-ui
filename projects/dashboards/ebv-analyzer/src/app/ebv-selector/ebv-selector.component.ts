@@ -4,18 +4,8 @@ import {
     Config,
     ProjectService,
     UserService,
-    Time,
-    RasterLayer,
-    RasterSymbology,
-    MeanRasterPixelValuesOverTimeDict,
-    ExpressionDict,
-    RasterDataTypes,
-    MapService,
     BackendService,
-    extentToBboxDict,
-    WGS_84,
     LayoutService,
-    RasterSymbologyEditorComponent,
     ProviderLayerIdDict,
     ProviderLayerCollectionIdDict,
     LayerCollectionService,
@@ -23,6 +13,9 @@ import {
     PlotDataDict,
     RasterResultDescriptorDict,
     LayerCollectionDict,
+    MapService,
+    SymbologyEditorComponent,
+    WGS_84,
 } from '@geoengine/core';
 import {BehaviorSubject, combineLatest, firstValueFrom, from, Observable, of, Subscription} from 'rxjs';
 import {AppConfig} from '../app-config.service';
@@ -31,6 +24,15 @@ import {CountryProviderService} from '../country-provider.service';
 import {DataSelectionService, DataRange} from '../data-selection.service';
 import {ActivatedRoute} from '@angular/router';
 import {countryDatasetName} from '../country-selector/country-data.model';
+import {
+    ExpressionDict,
+    MeanRasterPixelValuesOverTimeDict,
+    RasterDataTypes,
+    RasterLayer,
+    RasterSymbology,
+    Time,
+    extentToBboxDict,
+} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-ebv-ebv-selector',
@@ -91,7 +93,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
     editSymbology(): void {
         this.layoutService.setSidenavContentComponent({
-            component: RasterSymbologyEditorComponent,
+            component: SymbologyEditorComponent,
             keepParent: false,
             config: {
                 layer: this.layer,
@@ -131,6 +133,10 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                 mergeMap(([layer, workflowId]) => {
                     if (!layer.symbology) {
                         throw new Error('Layer has no symbology');
+                    }
+
+                    if (!layer.metadata) {
+                        throw new Error('Layer has no metadata');
                     }
 
                     if (!('timeSteps' in layer.metadata)) {

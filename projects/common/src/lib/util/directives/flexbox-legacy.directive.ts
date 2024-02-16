@@ -7,7 +7,7 @@ import {Directive, ElementRef, Input, OnChanges} from '@angular/core';
     selector: '[fxFlex]',
 })
 export class FxFlexDirective implements OnChanges {
-    @Input() fxFlex: '0.5rem' | '1rem' | 'grow' | '' = '';
+    @Input() fxFlex: '0.5rem' | '1rem' | '4rem' | 'grow' | '' = '';
 
     constructor(private el: ElementRef) {}
 
@@ -61,7 +61,7 @@ export class FxLayoutDirective implements OnChanges {
     selector: '[fxLayoutGap]',
 })
 export class FxLayoutGapDirective implements OnChanges {
-    @Input() fxLayoutGap: '0.5rem' | '1rem' = '1rem';
+    @Input() fxLayoutGap: '0.5rem' | '1rem' | '8px' = '1rem';
 
     constructor(private el: ElementRef) {}
 
@@ -84,6 +84,7 @@ export class FxLayoutAlignDirective implements OnChanges {
     @Input() fxLayoutAlign:
         | 'start center'
         | 'center center'
+        | 'space-between start'
         | 'space-between stretch'
         | 'space-between center'
         | 'space-between none'

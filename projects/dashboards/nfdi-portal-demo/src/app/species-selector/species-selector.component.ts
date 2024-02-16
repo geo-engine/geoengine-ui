@@ -1,40 +1,41 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {
     BackendService,
-    ClusteredPointSymbology,
-    Dataset,
     DatasetService,
-    extentToBboxDict,
-    HistogramDict,
-    HistogramParams,
-    Layer,
     MapService,
-    PointSymbology,
     ProjectService,
-    RasterLayer,
-    RasterSymbology,
-    RasterVectorJoinDict,
-    Time,
     UserService,
-    VectorLayer,
-    WorkflowDict,
-    TimeProjectionDict,
-    OgrSourceDict,
-    ClassHistogramDict,
-    OperatorDict,
     VectorResultDescriptorDict,
-    ReprojectionDict,
     WGS_84,
     SpatialReferenceService,
-    ExpressionDict,
-    PieChartDict,
-    PieChartCountParams,
     NamedDataDict,
-    ClassHistogramParams,
 } from '@geoengine/core';
 import {BehaviorSubject, combineLatest, combineLatestWith, first, mergeMap, Observable, of, Subscription, tap} from 'rxjs';
 import {DataSelectionService} from '../data-selection.service';
 import moment from 'moment';
+import {
+    ClassHistogramDict,
+    ClassHistogramParams,
+    ClusteredPointSymbology,
+    Dataset,
+    ExpressionDict,
+    HistogramDict,
+    HistogramParams,
+    Layer,
+    OgrSourceDict,
+    PieChartCountParams,
+    PieChartDict,
+    PointSymbology,
+    RasterLayer,
+    RasterSymbology,
+    RasterVectorJoinDict,
+    ReprojectionDict,
+    Time,
+    TimeProjectionDict,
+    VectorLayer,
+    extentToBboxDict,
+} from '@geoengine/common';
+import {TypedOperatorOperator, Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 interface EnvironmentLayer {
     name: string;
@@ -867,7 +868,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                     ]),
                 ),
                 mergeMap(([workflow, metadata, dataRange]) => {
-                    let plotWorkflow: OperatorDict;
+                    let plotWorkflow: TypedOperatorOperator;
 
                     if (
                         environmentColumnName in metadata.columns &&
@@ -1050,7 +1051,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                     ]),
                 ),
                 mergeMap(([workflow, metadata, dataRange]) => {
-                    let plotWorkflow: OperatorDict;
+                    let plotWorkflow: TypedOperatorOperator;
 
                     if (
                         environmentColumnName in metadata.columns &&

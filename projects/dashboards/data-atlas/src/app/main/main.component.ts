@@ -2,19 +2,17 @@ import {Observable, BehaviorSubject, first, filter, map, forkJoin} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {
-    Layer,
     LayoutService,
     UserService,
     Config,
     ProjectService,
     MapService,
     MapContainerComponent,
-    Time,
     DatasetService,
-    RasterSymbologyEditorComponent,
     SidenavContainerComponent,
     LayerCollectionService,
     LayerCollectionListingDict,
+    SymbologyEditorComponent,
 } from '@geoengine/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AppConfig} from '../app-config.service';
@@ -22,6 +20,7 @@ import moment from 'moment';
 import {DataSelectionService} from '../data-selection.service';
 import {AppDatasetService} from '../app-dataset.service';
 import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
+import {Layer, Time} from '@geoengine/common';
 
 interface LayerCollectionBiListing {
     name: string;
@@ -187,7 +186,7 @@ export class MainComponent implements OnInit, AfterViewInit {
             )
             .subscribe((rasterLayer) => {
                 this.layoutService.setSidenavContentComponent({
-                    component: RasterSymbologyEditorComponent,
+                    component: SymbologyEditorComponent,
                     keepParent: false,
                     config: {
                         layer: rasterLayer,
