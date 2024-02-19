@@ -15,7 +15,7 @@ import {WHITE} from '../color';
 import {ColorAttributeInput, ColorAttributeInputHinter} from '../color-attribute-input/color-attribute-input.component';
 import {ColorBreakpoint} from '../color-breakpoint.model';
 import {Measurement} from '@geoengine/openapi-client';
-// import {ClassificationMeasurement, Measurement} from '../../layers/measurement';
+import {ClassificationMeasurement} from '../../layers/measurement';
 
 @Component({
     selector: 'geoengine-color-table-editor',
@@ -41,10 +41,10 @@ export class ColorTableEditorComponent implements OnInit, OnChanges {
     constructor(private ref: ChangeDetectorRef) {}
 
     ngOnInit(): void {
-        // this.updateColorAttributes();
-        // if (this.measurement instanceof ClassificationMeasurement) {
-        //     this.colorHints = this.measurement as ColorAttributeInputHinter;
-        // }
+        this.updateColorAttributes();
+        if (this.measurement instanceof ClassificationMeasurement) {
+            this.colorHints = this.measurement as ColorAttributeInputHinter;
+        }
     }
 
     ngOnChanges(changes: SimpleChanges): void {

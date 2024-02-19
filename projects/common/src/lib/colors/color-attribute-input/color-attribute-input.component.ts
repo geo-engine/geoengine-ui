@@ -58,7 +58,7 @@ export class ColorAttributeInputComponent implements ControlValueAccessor, OnCha
         return undefined;
     }
 
-    updateKey(key: string): void {
+    updateKey(key?: string): void {
         if (!key || !this.input || key === this.input.key) {
             return;
         }
@@ -67,8 +67,6 @@ export class ColorAttributeInputComponent implements ControlValueAccessor, OnCha
             key,
             value: this.input.value,
         };
-
-        this.propagateChange();
     }
 
     updateColor(value: string): void {
@@ -119,7 +117,7 @@ export class ColorAttributeInputComponent implements ControlValueAccessor, OnCha
         this.onTouched = fn;
     }
 
-    private propagateChange(): void {
+    propagateChange(): void {
         if (this.onChange && this.input) {
             this.onChange(this.input);
         }

@@ -51,13 +51,12 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, OnCh
         this.input = breakpoint;
     }
 
-    updateValue(value: number): void {
+    updateValue(value?: number): void {
         if (value === undefined || value === null || value === this.colorBreakpoint.value) {
             return;
         }
 
         this.colorBreakpoint.setValue(value);
-        this.propagateChange();
     }
 
     updateColor(value: string): void {
@@ -104,7 +103,7 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, OnCh
         this.onTouched = fn;
     }
 
-    private propagateChange(): void {
+    propagateChange(): void {
         if (this.colorBreakpoint) {
             this.changedValue.next(this.colorBreakpoint);
         }

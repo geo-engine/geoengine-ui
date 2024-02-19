@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import {DatasetsService} from '@geoengine/common';
 import {DatasetListing} from '@geoengine/openapi-client';
 import {BehaviorSubject} from 'rxjs';
 
