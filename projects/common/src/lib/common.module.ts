@@ -31,7 +31,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ScrollingModule} from '@angular/cdk/scrolling';
 import {ColorPickerModule} from 'ngx-color-picker';
-import {AsyncValueDefault} from './util/pipes/async-converters.pipe';
+import {AsyncNumberSanitizer, AsyncStringSanitizer, AsyncValueDefault} from './util/pipes/async-converters.pipe';
 import {ColorAttributeInputComponent} from './colors/color-attribute-input/color-attribute-input.component';
 import {ColorBreakpointInputComponent} from './colors/color-breakpoint-input/color-breakpoint-input.component';
 import {ColorMapSelectorComponent} from './colors/color-map-selector/color-map-selector.component';
@@ -42,7 +42,12 @@ import {RasterPaletteSymbologyEditorComponent} from './symbology/raster-palette-
 import {RasterSymbologyEditorComponent} from './symbology/raster-symbology-editor/raster-symbology-editor.component';
 import {VectorSymbologyEditorComponent} from './symbology/vector-symbology-editor/vector-symbology-editor.component';
 import {NumberParamEditorComponent} from './symbology/number-param-editor/number-param-editor.component';
-import {ColorizerCssGradientPipe} from './util/pipes/color-gradients.pipe';
+import {
+    ColorBreakpointsCssGradientPipe,
+    ColorizerCssGradientPipe,
+    RasterColorizerCssGradientPipe,
+    RgbaArrayCssGradientPipe,
+} from './util/pipes/color-gradients.pipe';
 import {PointIconComponent} from './layer-icons/point-icon/point-icon.component';
 import {LineIconComponent} from './layer-icons/line-icon/line-icon.component';
 import {PolygonIconComponent} from './layer-icons/polygon-icon/polygon-icon.component';
@@ -101,7 +106,18 @@ const COMMON_COMPONENTS = [
     VegaViewerComponent,
 ];
 
-const COMMON_PIPES = [AsyncValueDefault, BreakpointToCssStringPipe, ColorizerCssGradientPipe];
+const COMMON_PIPES = [
+    AsyncNumberSanitizer,
+    AsyncStringSanitizer,
+    AsyncValueDefault,
+    BreakpointToCssStringPipe,
+    ColorBreakpointsCssGradientPipe,
+    ColorizerCssGradientPipe,
+    RasterColorizerCssGradientPipe,
+    RgbaArrayCssGradientPipe,
+    BreakpointToCssStringPipe,
+    ColorizerCssGradientPipe,
+];
 
 const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGapDirective, FxLayoutAlignDirective];
 

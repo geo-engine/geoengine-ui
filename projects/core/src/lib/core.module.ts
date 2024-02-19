@@ -35,17 +35,11 @@ import {DialogHeaderComponent} from './dialogs/dialog-header/dialog-header.compo
 import {DialogSectionHeadingComponent} from './dialogs/dialog-section-heading/dialog-section-heading.component';
 import {VatLogoComponent} from './logo.component';
 import {LoginComponent} from './users/login/login.component';
-import {BreakpointToCssStringPipe} from './util/pipes/breakpoint-to-css-string.pipe';
 import {SafeHtmlPipe} from './util/pipes/safe-html.pipe';
 import {TrimPipe} from './util/pipes/trim.pipe';
 import {CssStringToRgbaPipe} from './util/pipes/css-string-to-rgba.pipe';
 import {HighlightPipe} from './util/pipes/highlight.pipe';
-import {
-    RgbaArrayCssGradientPipe,
-    ColorBreakpointsCssGradientPipe,
-    ColorizerCssGradientPipe,
-    RasterColorizerCssGradientPipe,
-} from './util/pipes/color-gradients.pipe';
+
 import {RgbaToCssStringPipe} from './util/pipes/rgba-to-css-string.pipe';
 import {CommonModule as AngularCommonModule} from '@angular/common';
 import {DialogHelpComponent} from './dialogs/dialog-help/dialog-help.component';
@@ -104,7 +98,6 @@ import {DataTableComponent} from './datatable/table/table.component';
 import {TabsComponent} from './tabs/tabs.component';
 import {PortalModule} from '@angular/cdk/portal';
 import {DrawFeaturesComponent} from './datasets/draw-features/draw-features.component';
-import {AsyncNumberSanitizer, AsyncStringSanitizer, AsyncValueDefault} from './util/pipes/async-converters.pipe';
 import {FeatureAttributeOvertimeComponent} from './operators/dialogs/feature-attribute-over-time/feature-attribute-over-time.component';
 import {NotificationsComponent} from './project/notifications/notifications.component';
 import {TemporalRasterAggregationComponent} from './operators/dialogs/temporal-raster-aggregation/temporal-raster-aggregation.component';
@@ -188,18 +181,10 @@ export const MATERIAL_MODULES = [
 ];
 
 const CORE_PIPES = [
-    AsyncNumberSanitizer,
-    AsyncStringSanitizer,
-    AsyncValueDefault,
-    BreakpointToCssStringPipe,
     CastMeasurementToClassificationPipe,
     CastMeasurementToContinuousPipe,
-    ColorBreakpointsCssGradientPipe,
-    ColorizerCssGradientPipe,
-    RasterColorizerCssGradientPipe,
     CssStringToRgbaPipe,
     HighlightPipe,
-    RgbaArrayCssGradientPipe,
     RgbaToCssStringPipe,
     SafeHtmlPipe,
     SafeStylePipe,

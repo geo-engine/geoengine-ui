@@ -118,11 +118,8 @@ export * from './lib/util/components/not-found/not-found-page.component';
 export * from './lib/util/directives/autocomplete-select.directive';
 
 // Pipes
-export * from './lib/util/pipes/async-converters.pipe';
-export * from './lib/util/pipes/breakpoint-to-css-string.pipe';
 export * from './lib/util/pipes/css-string-to-rgba.pipe';
 export * from './lib/util/pipes/highlight.pipe';
-export * from './lib/util/pipes/color-gradients.pipe';
 export * from './lib/util/pipes/rgba-to-css-string.pipe';
 export * from './lib/util/pipes/safe-html.pipe';
 export * from './lib/util/pipes/safe-style.pipe';
