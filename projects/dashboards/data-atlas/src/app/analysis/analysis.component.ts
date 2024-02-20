@@ -1,25 +1,20 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
-import {
-    BackendService,
-    BBoxDict,
-    ProjectService,
-    UserService,
-    VectorLayer,
-    WorkflowDict,
-    RasterDataTypes,
-    PolygonSymbology,
-    RasterLayer,
-    HistogramDict,
-    HistogramParams,
-    ExpressionDict,
-    SourceOperatorDict,
-    RasterResultDescriptorDict,
-    ReprojectionDict,
-} from '@geoengine/core';
+import {BackendService, BBoxDict, ProjectService, UserService, SourceOperatorDict, RasterResultDescriptorDict} from '@geoengine/core';
 import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {DataSelectionService} from '../data-selection.service';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {COUNTRY_METADATA, countryDatasetName} from './country-data.model';
+import {
+    ExpressionDict,
+    HistogramDict,
+    HistogramParams,
+    PolygonSymbology,
+    RasterDataTypes,
+    RasterLayer,
+    ReprojectionDict,
+    VectorLayer,
+} from '@geoengine/common';
+import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 @Component({
     selector: 'geoengine-analysis',

@@ -3,43 +3,59 @@ import {debounceTime, distinctUntilChanged, filter, first, map, mergeMap, skip, 
 
 import {Injectable} from '@angular/core';
 
-import {SpatialReference, SpatialReferenceSpecification} from '../spatial-references/spatial-reference.model';
 import {Project} from './project.model';
-import {Time, TimeStepDuration, timeStepDurationToTimeStepDict} from '../time/time.model';
 import {Config} from '../config.service';
 import {LoadingState} from './loading-state.model';
 import {NotificationService} from '../notification.service';
 import {HttpErrorResponse} from '@angular/common/http';
-import {HasLayerId, HasLayerType, Layer, RasterLayer, VectorLayer} from '../layers/layer.model';
 import {BackendService} from '../backend/backend.service';
-import {
-    BBoxDict,
-    ProjectLayerDict,
-    OperatorDict,
-    PlotDict,
-    ProvenanceEntryDict,
-    ResultDescriptorDict,
-    SourceOperatorDict,
-    ToDict,
-    UUID,
-    WorkflowDict,
-} from '../backend/backend.model';
+import {BBoxDict, PlotDict, ProvenanceEntryDict, ToDict, UUID} from '../backend/backend.model';
 import {UserService} from '../users/user.service';
-import {LayerData, RasterData, VectorData} from '../layers/layer-data.model';
-import {extentToBboxDict, subscribeAndProvide} from '../util/conversions';
 import {Extent, MapService, ViewportSize} from '../map/map.service';
 import {Session} from '../users/session.model';
-import {HasPlotId, Plot} from '../plots/plot.model';
-import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata.model';
-import {Symbology, ClusteredPointSymbology, PointSymbology, LineSymbology, PolygonSymbology} from '../layers/symbology/symbology.model';
 import OlFeature from 'ol/Feature';
 import OlGeometry from 'ol/geom/Geometry';
 import {intersects as olIntersects} from 'ol/extent';
 import {getProjectionTarget} from '../util/spatial_reference';
-import {LineSimplificationDict, ReprojectionDict, VisualPointClusteringParams} from '../backend/operator.model';
 import {SpatialReferenceService} from '../spatial-references/spatial-reference.service';
-import {VectorColumnDataTypes} from '../operators/datatype.model';
 import {GeoEngineError} from '../util/errors';
+import {
+    ClusteredPointSymbology,
+    extentToBboxDict,
+    HasLayerId,
+    HasLayerType,
+    HasPlotId,
+    Layer,
+    LayerData,
+    LayerMetadata,
+    LineSimplificationDict,
+    LineSymbology,
+    Plot,
+    PointSymbology,
+    PolygonSymbology,
+    RasterData,
+    RasterLayer,
+    RasterLayerMetadata,
+    ReprojectionDict,
+    SpatialReference,
+    SpatialReferenceSpecification,
+    subscribeAndProvide,
+    Symbology,
+    Time,
+    TimeStepDuration,
+    timeStepDurationToTimeStepDict,
+    VectorColumnDataTypes,
+    VectorData,
+    VectorLayer,
+    VectorLayerMetadata,
+    VisualPointClusteringParams,
+} from '@geoengine/common';
+import {
+    ProjectLayer as ProjectLayerDict,
+    TypedOperatorOperator,
+    TypedResultDescriptor,
+    Workflow as WorkflowDict,
+} from '@geoengine/openapi-client';
 
 export type FeatureId = string | number;
 
@@ -161,6 +177,11 @@ export class ProjectService {
                         plots: [],
                         time: config.time,
                         timeStepDuration: config.timeStepDuration,
+                        version: {
+                            // TODO
+                            changed: new Date(),
+                            id: '0',
+                        },
                     }),
             ),
         );
@@ -366,7 +387,7 @@ export class ProjectService {
             .pipe(mergeMap((sessionToken) => this.backend.getWorkflow(workflowId, sessionToken)));
     }
 
-    getWorkflowMetaData(workflowId: UUID): Observable<ResultDescriptorDict> {
+    getWorkflowMetaData(workflowId: UUID): Observable<TypedResultDescriptor> {
         return this.userService
             .getSessionTokenForRequest()
             .pipe(mergeMap((sessionToken) => this.backend.getWorkflowMetadata(workflowId, sessionToken)));
@@ -381,11 +402,11 @@ export class ProjectService {
     /**
      * Determines a common projection for all layers and return their operator with an added a propjection if necessary
      */
-    getAutomaticallyProjectedOperatorsFromLayers(layers: Array<Layer>): Observable<Array<OperatorDict | SourceOperatorDict>> {
-        const meta: Array<Observable<ResultDescriptorDict>> = layers.map((l) => this.getWorkflowMetaData(l.workflowId));
+    getAutomaticallyProjectedOperatorsFromLayers(layers: Array<Layer>): Observable<Array<TypedOperatorOperator>> {
+        const meta: Array<Observable<TypedResultDescriptor>> = layers.map((l) => this.getWorkflowMetaData(l.workflowId));
 
         return combineLatest(meta).pipe(
-            mergeMap((descriptors: Array<ResultDescriptorDict>) => {
+            mergeMap((descriptors: Array<TypedResultDescriptor>) => {
                 const srefs = descriptors.map((l) => SpatialReference.fromSrsString(l.spatialReference));
                 const targetSref = getProjectionTarget(srefs);
 
@@ -393,12 +414,12 @@ export class ProjectService {
 
                 return combineLatest(workflowsObservable).pipe(
                     map((workflows: Array<WorkflowDict>) => {
-                        const projectedOperators: Array<OperatorDict | SourceOperatorDict> = [];
+                        const projectedOperators: Array<TypedOperatorOperator> = [];
 
                         for (let i = 0; i < workflows.length; i++) {
                             const sref: SpatialReference = srefs[i];
                             const workflow = workflows[i];
-                            const operator: OperatorDict | SourceOperatorDict = workflow.operator;
+                            const operator: TypedOperatorOperator = workflow.operator;
                             if (sref.srsString === targetSref.srsString) {
                                 projectedOperators.push(operator);
                             } else {
@@ -956,10 +977,10 @@ export class ProjectService {
      * Creates a projected operator if the layer has not the target spatial reference.
      */
     createProjectedOperator(
-        inputOperator: OperatorDict | SourceOperatorDict,
+        inputOperator: TypedOperatorOperator,
         metadata: LayerMetadata,
         targetSpatialReference: SpatialReference,
-    ): OperatorDict | SourceOperatorDict {
+    ): TypedOperatorOperator {
         if (metadata.spatialReference.equals(targetSpatialReference)) {
             return inputOperator;
         }

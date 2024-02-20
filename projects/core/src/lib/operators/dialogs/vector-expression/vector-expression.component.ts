@@ -2,18 +2,27 @@ import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy} from '@ang
 import {Validators, FormBuilder, FormControl, FormArray, FormGroup, AsyncValidatorFn, AbstractControl} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
-import {ResultTypes} from '../../result-type.model';
-import {VectorLayer} from '../../../layers/layer.model';
 import {BehaviorSubject, combineLatest, firstValueFrom, Observable, of, ReplaySubject, Subscription} from 'rxjs';
-import {WorkflowDict} from '../../../backend/backend.model';
 import {map, mergeMap, startWith} from 'rxjs/operators';
-import {ColumnOutputColumn, GeometryOutputColumn, VectorExpressionDict, VectorExpressionParams} from '../../../backend/operator.model';
-import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
-import {VectorColumnDataType, VectorColumnDataTypes} from '../../datatype.model';
-import {Measurement, UnitlessMeasurement} from '../../../layers/measurement';
-import {SymbologyType, VectorSymbology} from '../../../layers/symbology/symbology.model';
-import {createVectorSymbology} from '../../../util/symbologies';
 import {RandomColorService} from '../../../util/services/random-color.service';
+import {
+    ColumnOutputColumn,
+    GeometryOutputColumn,
+    Measurement,
+    ResultTypes,
+    SymbologyType,
+    UnitlessMeasurement,
+    VectorColumnDataType,
+    VectorColumnDataTypes,
+    VectorExpressionDict,
+    VectorExpressionParams,
+    VectorLayer,
+    VectorLayerMetadata,
+    VectorSymbology,
+    createVectorSymbology,
+} from '@geoengine/common';
+
+import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 const MAX_NUMBER_OF_COLUMNS = 8;
 const ALLOWED_EXPRESSION_COLUMN_TYPES = [VectorColumnDataTypes.Float, VectorColumnDataTypes.Int];

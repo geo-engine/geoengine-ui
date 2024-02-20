@@ -1,16 +1,12 @@
-import {VectorLayer} from '../../../layers/layer.model';
-import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap, tap} from 'rxjs/operators';
-import {Plot} from '../../../plots/plot.model';
 import {NotificationService} from '../../../notification.service';
-import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
-import {WorkflowDict} from '../../../backend/backend.model';
-import {PieChartCountParams, PieChartDict} from '../../../backend/operator.model';
+import {PieChartCountParams, PieChartDict, Plot, ResultTypes, VectorLayer, VectorLayerMetadata} from '@geoengine/common';
+import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 interface PieChartForm {
     name: FormControl<string>;

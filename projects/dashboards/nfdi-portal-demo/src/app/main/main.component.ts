@@ -2,7 +2,6 @@ import {Observable, BehaviorSubject, first} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {
-    Layer,
     LayoutService,
     UserService,
     RandomColorService,
@@ -19,6 +18,7 @@ import {AppConfig} from '../app-config.service';
 import {ComponentPortal} from '@angular/cdk/portal';
 import {DataSelectionService} from '../data-selection.service';
 import {SpeciesSelectorComponent} from '../species-selector/species-selector.component';
+import {Layer} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-main',

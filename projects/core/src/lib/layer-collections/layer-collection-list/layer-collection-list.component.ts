@@ -10,7 +10,6 @@ import {
     LayerCollectionListingDict,
     ProviderLayerCollectionIdDict,
     ProviderLayerIdDict,
-    ResultDescriptorDict,
     UUID,
 } from '../../backend/backend.model';
 import {LayerCollectionService} from '../layer-collection.service';
@@ -18,6 +17,7 @@ import {createIconDataUrl} from '../../util/icons';
 import {ProjectService} from '../../project/project.service';
 import {NotificationService} from '../../notification.service';
 import {LayerCollectionSearch} from '../layer-collection.model';
+import {TypedResultDescriptor} from '@geoengine/openapi-client';
 
 @Component({
     selector: 'geoengine-layer-collection-list',
@@ -97,7 +97,7 @@ export class LayerCollectionListComponent implements OnChanges {
         }
     }
 
-    getWorkflowMetaData(workflowId: UUID): Observable<ResultDescriptorDict> {
+    getWorkflowMetaData(workflowId: UUID): Observable<TypedResultDescriptor> {
         return this.projectService.getWorkflowMetaData(workflowId);
     }
 

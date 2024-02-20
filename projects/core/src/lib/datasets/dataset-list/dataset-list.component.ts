@@ -1,5 +1,4 @@
 import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, ViewChild, Input} from '@angular/core';
-import {Dataset} from '../dataset.model';
 import {DatasetService} from '../dataset.service';
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, EMPTY, Observable, range, Subject} from 'rxjs';
@@ -7,6 +6,7 @@ import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {concatMap, filter, first, scan, tap} from 'rxjs/operators';
 import {LayoutService} from '../../layout.service';
 import {UUID} from '../../backend/backend.model';
+import {Dataset} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-dataset-list',

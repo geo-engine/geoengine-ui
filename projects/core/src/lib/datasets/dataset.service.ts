@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BackendService} from '../backend/backend.service';
 import {Observable} from 'rxjs';
-import {Dataset, VectorResultDescriptor} from './dataset.model';
 import {UserService} from '../users/user.service';
 import {map, mergeMap} from 'rxjs/operators';
 import {HttpEvent} from '@angular/common/http';
@@ -9,28 +8,32 @@ import {
     AutoCreateDatasetDict,
     CreateDatasetDict,
     DatasetNameResponseDict,
-    DataSetProviderListingDict,
     MetaDataSuggestionDict,
     SuggestMetaDataDict,
     UploadFileLayersResponseDict,
     UploadFilesResponseDict,
     UploadResponseDict,
     UUID,
-    WorkflowDict,
 } from '../backend/backend.model';
 import {RandomColorService} from '../util/services/random-color.service';
-import {Layer, RasterLayer, VectorLayer} from '../layers/layer.model';
+import {ProjectService} from '../project/project.service';
 import {
     ClusteredPointSymbology,
+    Dataset,
+    Layer,
     LineSymbology,
     PointSymbology,
     PolygonSymbology,
+    RasterLayer,
     RasterSymbology,
+    VectorDataTypes,
+    VectorLayer,
+    VectorResultDescriptor,
     VectorSymbology,
-} from '../layers/symbology/symbology.model';
-import {VectorDataTypes} from '../operators/datatype.model';
-import {colorToDict} from '../colors/color';
-import {ProjectService} from '../project/project.service';
+    colorToDict,
+} from '@geoengine/common';
+
+import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 @Injectable({
     providedIn: 'root',
@@ -48,10 +51,6 @@ export class DatasetService {
             mergeMap((session) => this.backend.getDatasets(session.sessionToken, offset, limit)),
             map((datasetDicts) => datasetDicts.map((dict) => Dataset.fromDict(dict))),
         );
-    }
-
-    getDatasetProviders(): Observable<Array<DataSetProviderListingDict>> {
-        return this.userService.getSessionStream().pipe(mergeMap((session) => this.backend.getDatasetProviders(session.sessionToken)));
     }
 
     getDataset(name: string): Observable<Dataset> {

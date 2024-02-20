@@ -4,15 +4,20 @@ import {map, mergeMap} from 'rxjs/operators';
 import {BBoxDict, SpatialReferenceSpecificationDict, SrsString, UUID} from '../backend/backend.model';
 import {BackendService} from '../backend/backend.service';
 import {UserService} from '../users/user.service';
-import {NamedSpatialReference, SpatialReference, SpatialReferenceSpecification} from './spatial-reference.model';
 import {get as olGetProjection, addProjection as olAddProjection} from 'ol/proj';
 import {register as olProj4Register} from 'ol/proj/proj4';
 import OlProjection from 'ol/proj/Projection';
 import proj4 from 'proj4';
 import {Config} from '../config.service';
 import {transformExtent} from 'ol/proj';
-import {bboxDictToExtent, extentToBboxDict} from '../util/conversions';
 import {getIntersection} from 'ol/extent';
+import {
+    bboxDictToExtent,
+    extentToBboxDict,
+    NamedSpatialReference,
+    SpatialReference,
+    SpatialReferenceSpecification,
+} from '@geoengine/common';
 
 export const WEB_MERCATOR = new NamedSpatialReference('WGS 84 / Pseudomercator', 'EPSG:3857');
 export const WGS_84 = new NamedSpatialReference('WGS 84', 'EPSG:4326');

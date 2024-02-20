@@ -1,23 +1,31 @@
 import {Component, ChangeDetectionStrategy, OnDestroy} from '@angular/core';
-import {ResultTypes} from '../../result-type.model';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap} from 'rxjs/operators';
-import {Layer, VectorLayer} from '../../../layers/layer.model';
-import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
-import {VectorColumnDataType, VectorColumnDataTypes, VectorDataType, VectorDataTypes} from '../../datatype.model';
-import {UUID, WorkflowDict} from '../../../backend/backend.model';
+import {UUID} from '../../../backend/backend.model';
 import {RandomColorService} from '../../../util/services/random-color.service';
-import {ColumnRangeFilterDict, HistogramDict, HistogramParams} from '../../../backend/operator.model';
-import {VegaChartData} from '../../../plots/vega-viewer/vega-viewer.component';
 import {MapService} from '../../../map/map.service';
 import {BackendService} from '../../../backend/backend.service';
 import {UserService} from '../../../users/user.service';
-import {extentToBboxDict} from '../../../util/conversions';
 import {geoengineValidators} from '../../../util/form.validators';
-import {createVectorSymbology} from '../../../util/symbologies';
-
+import {
+    ColumnRangeFilterDict,
+    HistogramDict,
+    HistogramParams,
+    Layer,
+    ResultTypes,
+    VectorColumnDataType,
+    VectorColumnDataTypes,
+    VectorDataType,
+    VectorDataTypes,
+    VectorLayer,
+    VectorLayerMetadata,
+    VegaChartData,
+    createVectorSymbology,
+    extentToBboxDict,
+} from '@geoengine/common';
+import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 interface ColumnRangeFilterForm {
     layer: FormControl<Layer | null>;
     name: FormControl<string>;

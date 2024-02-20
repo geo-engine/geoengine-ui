@@ -1,22 +1,25 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+
 import {
+    BLACK,
     ClusteredPointSymbology,
+    Color,
+    ColorBreakpoint,
     ColorParam,
     DerivedColor,
     DerivedNumber,
+    LineIconStyle,
     LineSymbology,
     NumberParam,
+    PointIconStyle,
     PointSymbology,
+    PolygonIconStyle,
     PolygonSymbology,
     SymbologyType,
+    VectorLayer,
     VectorSymbology,
-} from '../../symbology/symbology.model';
-import {PolygonIconStyle} from '../../layer-icons/polygon-icon/polygon-icon.component';
-import {PointIconStyle} from '../../layer-icons/point-icon/point-icon.component';
-import {VectorLayer} from '../../layer.model';
-import {BLACK, Color, WHITE} from '../../../colors/color';
-import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
-import {LineIconStyle} from '../../layer-icons/line-icon/line-icon.component';
+    WHITE,
+} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-vector-legend',

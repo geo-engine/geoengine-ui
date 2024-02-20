@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {TRANSPARENT} from '../../colors/color';
+import {TRANSPARENT} from '@geoengine/common';
 
 @Pipe({name: 'cssStringToRgbaPipe'})
 export class CssStringToRgbaPipe implements PipeTransform {

@@ -1,6 +1,6 @@
 import moment from 'moment';
 import {NON_BREAKING_HYPHEN, estimateTimeFormat} from './data-selection.service';
-import {Time} from '@geoengine/core';
+import {Time} from '@geoengine/common';
 
 describe('DataSelectionService', () => {
     it('estimates time formats correctly', () => {

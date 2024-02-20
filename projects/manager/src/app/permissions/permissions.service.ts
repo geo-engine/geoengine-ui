@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
+import {SessionService, apiConfigurationWithAccessKey} from '@geoengine/common';
 import {PermissionListing, PermissionsApi} from '@geoengine/openapi-client';
 import {ReplaySubject, firstValueFrom} from 'rxjs';
-import {SessionService, apiConfigurationWithAccessKey} from '../session/session.service';
 
 @Injectable({
     providedIn: 'root',

@@ -2,8 +2,8 @@ import {Subscription} from 'rxjs';
 import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy} from '@angular/core';
 import {ProjectService} from '../../project/project.service';
 import {LayoutService} from '../../layout.service';
-import {TimeStepDuration} from '../time.model';
 import {TimeConfigComponent} from '../time-config/time-config.component';
+import {TimeStepDuration} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-small-time-interaction',

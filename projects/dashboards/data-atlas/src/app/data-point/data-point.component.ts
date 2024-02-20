@@ -1,8 +1,9 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
-import {ProjectService, FeatureSelection, LayerMetadata, VectorLayerMetadata, VectorData} from '@geoengine/core';
+import {ProjectService, FeatureSelection} from '@geoengine/core';
 import {map, mergeMap} from 'rxjs/operators';
 import {DataSelectionService} from '../data-selection.service';
 import {combineLatest, Observable, of} from 'rxjs';
+import {LayerMetadata, VectorData, VectorLayerMetadata} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-data-point',

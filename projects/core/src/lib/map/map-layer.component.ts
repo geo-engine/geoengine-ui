@@ -20,18 +20,23 @@ import {get as olGetProj} from 'ol/proj';
 import {Config} from '../config.service';
 import {ProjectService} from '../project/project.service';
 import {LoadingState} from '../project/loading-state.model';
-import {Time} from '../time/time.model';
-import {SpatialReference} from '../spatial-references/spatial-reference.model';
-import {RasterData} from '../layers/layer-data.model';
 import {BackendService} from '../backend/backend.service';
 import {UUID} from '../backend/backend.model';
-import {RasterColorizer, RasterSymbology, Symbology, VectorSymbology} from '../layers/symbology/symbology.model';
 import OlFeature from 'ol/Feature';
-import {olExtentToTuple} from '../util/conversions';
 import TileState from 'ol/TileState';
 import {Extent} from './map.service';
 import {Projection} from 'ol/proj';
 import {NotificationService} from '../notification.service';
+import {
+    RasterColorizer,
+    RasterData,
+    RasterSymbology,
+    SpatialReference,
+    Symbology,
+    Time,
+    VectorSymbology,
+    olExtentToTuple,
+} from '@geoengine/common';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type VectorData = any; // TODO: use correct type

@@ -1,22 +1,19 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef} from '@angular/core';
 import {mergeMap, BehaviorSubject, of, forkJoin} from 'rxjs';
 import {
-    createVectorSymbology,
     LayerCollectionLayerDict,
     LayerCollectionService,
-    LayerDict,
     ProjectService,
     ProviderLayerCollectionIdDict,
     RandomColorService,
-    Time,
     UUID,
-    VectorLayer,
     VectorResultDescriptorDict,
-    VectorSymbology,
     VectorSymbologyDict,
 } from '@geoengine/core';
 import {DataSelectionService} from '../data-selection.service';
 import moment from 'moment';
+import {Layer as LayerDict} from '@geoengine/openapi-client';
+import {Time, VectorLayer, VectorSymbology, createVectorSymbology} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-accordion-vector-entry',
@@ -73,6 +70,10 @@ export class AccordionVectorEntryComponent implements OnInit {
                     const keys = Object.keys(resultDescriptorDict);
                     if (!keys.includes('columns')) {
                         return of(); // is not a vector layer
+                    }
+
+                    if (!layer.metadata) {
+                        throw new Error('Layer has no metadata');
                     }
 
                     if (!('timeSteps' in layer.metadata)) {

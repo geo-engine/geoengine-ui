@@ -1,7 +1,7 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
 import {createIconDataUrl} from '../../util/icons';
-import {Dataset} from '../dataset.model';
 import {DatasetService} from '../dataset.service';
+import {Dataset} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-dataset',

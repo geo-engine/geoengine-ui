@@ -20,9 +20,9 @@ import {
 } from '../../backend/backend.model';
 import {NotificationService} from '../../notification.service';
 import {ProjectService} from '../../project/project.service';
-import {timeStepGranularityOptions} from '../../time/time.model';
-import {DatasetService} from '../dataset.service';
 import {UserService} from '../../users/user.service';
+import {DatasetsService, UploadsService, timeStepGranularityOptions} from '@geoengine/common';
+import {DatasetService} from '../dataset.service';
 
 interface NameDescription {
     name: FormControl<string>;
@@ -68,11 +68,13 @@ export class UploadComponent implements OnDestroy {
     private displayNameChangeSubscription: Subscription;
 
     constructor(
-        protected datasetService: DatasetService,
+        protected datasetsService: DatasetsService,
+        protected uploadsService: UploadsService,
         protected notificationService: NotificationService,
         protected projectService: ProjectService,
         protected userService: UserService,
         protected changeDetectorRef: ChangeDetectorRef,
+        protected datasetService: DatasetService,
     ) {
         this.formMetaData = new UntypedFormGroup({
             mainFile: new UntypedFormControl('', Validators.required),

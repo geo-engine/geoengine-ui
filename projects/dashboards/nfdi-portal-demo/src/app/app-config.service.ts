@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
-import {Config, ConfigStructure, ConfigDefaults, ConfigMap, DEFAULT_CONFIG, mergeDeepOverrideLists} from '@geoengine/core';
+import {mergeDeepOverrideLists} from '@geoengine/common';
+import {Config, ConfigStructure, ConfigDefaults, ConfigMap, DEFAULT_CONFIG} from '@geoengine/core';
 
 interface Components {
     readonly PLAYBACK: {

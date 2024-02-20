@@ -1,17 +1,21 @@
-import {Layer, VectorLayer} from '../../../layers/layer.model';
-import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap} from 'rxjs/operators';
-import {Plot} from '../../../plots/plot.model';
 import {NotificationService} from '../../../notification.service';
-import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
-import {WorkflowDict} from '../../../backend/backend.model';
-import {ScatterPlotDict, ScatterPlotParams} from '../../../backend/operator.model';
-import {VectorColumnDataTypes} from '../../datatype.model';
+import {
+    Layer,
+    Plot,
+    ResultTypes,
+    ScatterPlotDict,
+    ScatterPlotParams,
+    VectorColumnDataTypes,
+    VectorLayer,
+    VectorLayerMetadata,
+} from '@geoengine/common';
+import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 /**
  * This dialog allows creating a box plot of a layer's values.

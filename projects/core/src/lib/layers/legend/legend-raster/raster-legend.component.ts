@@ -10,14 +10,17 @@ import {
     PipeTransform,
     SimpleChanges,
 } from '@angular/core';
-import {ColorBreakpoint} from '../../../colors/color-breakpoint.model';
-import {ClassificationMeasurement, ContinuousMeasurement} from '../../measurement';
 import {ProjectService} from '../../../project/project.service';
-import {RasterLayerMetadata} from '../../layer-metadata.model';
-import {RasterLayer} from '../../layer.model';
-import {SingleBandRasterColorizer} from '../../symbology/symbology.model';
-import {RasterBandDescriptor} from '../../../datasets/dataset.model';
 import {Subject, Subscription, first} from 'rxjs';
+import {
+    ClassificationMeasurement,
+    ColorBreakpoint,
+    ContinuousMeasurement,
+    RasterLayer,
+    RasterLayerMetadata,
+    SingleBandRasterColorizer,
+} from '@geoengine/common';
+import {RasterBandDescriptor} from '@geoengine/openapi-client';
 
 /**
  * calculate the decimal places for the legend of raster data

@@ -1,5 +1,5 @@
 import {Component, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges, ChangeDetectorRef} from '@angular/core';
-import {RasterLayer, VectorLayer} from '@geoengine/core';
+import {RasterLayer, VectorLayer} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-legend', // eslint-disable-line @angular-eslint/component-selector

@@ -2,17 +2,20 @@ import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy} from '@ang
 import {UntypedFormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
 
 import {ProjectService} from '../../../project/project.service';
-import {ResultTypes} from '../../result-type.model';
-import {Layer, VectorLayer} from '../../../layers/layer.model';
 import {of, ReplaySubject, Subscription} from 'rxjs';
-import {WorkflowDict} from '../../../backend/backend.model';
 import {map, mergeMap, tap} from 'rxjs/operators';
-import {Plot} from '../../../plots/plot.model';
 import {NotificationService} from '../../../notification.service';
-import {VectorLayerMetadata} from '../../../layers/layer-metadata.model';
-import {VectorColumnDataTypes} from '../../datatype.model';
 import {geoengineValidators} from '../../../util/form.validators';
-import {FeatureAttributeOverTimeDict} from '../../../backend/operator.model';
+import {
+    FeatureAttributeOverTimeDict,
+    Layer,
+    Plot,
+    ResultTypes,
+    VectorColumnDataTypes,
+    VectorLayer,
+    VectorLayerMetadata,
+} from '@geoengine/common';
+import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 interface AttributeCandidates {
     id: Array<string>;

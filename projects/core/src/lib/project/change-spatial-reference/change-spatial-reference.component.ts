@@ -1,8 +1,8 @@
 import {Component, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy} from '@angular/core';
 import {ProjectService} from '../project.service';
-import {NamedSpatialReference, SpatialReference} from '../../spatial-references/spatial-reference.model';
 import {SpatialReferenceService} from '../../spatial-references/spatial-reference.service';
 import {Subscription} from 'rxjs/internal/Subscription';
+import {NamedSpatialReference, SpatialReference} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-change-projection',

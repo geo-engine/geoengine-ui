@@ -1,0 +1,20 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.container {
+    height: 100%;
+    padding: 0rem 1rem 1rem 1rem;
+}
+
+.actions {
+    text-align: right;
+    height: 3rem;
+    padding: 1rem;
+
+    button {
+        margin: 0.5rem;
+    }
+}

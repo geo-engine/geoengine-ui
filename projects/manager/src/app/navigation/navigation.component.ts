@@ -2,9 +2,9 @@ import {Component, Inject} from '@angular/core';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {Observable} from 'rxjs';
 import {map, shareReplay} from 'rxjs/operators';
-import {SessionService} from '../session/session.service';
 import {Router} from '@angular/router';
 import {AppConfig} from '../app-config.service';
+import {SessionService} from '@geoengine/common';
 
 export enum NavigationType {
     Datasets = 'datasets',

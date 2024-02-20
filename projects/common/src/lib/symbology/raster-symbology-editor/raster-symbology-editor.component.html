@@ -1,0 +1,64 @@
+<div class="outer" fxLayout="column">
+    <div fxFlex class="container">
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title-group>
+                    <mat-card-title>Global Layer Properties</mat-card-title>
+                    <mat-card-subtitle>Symbology properties for all raster layers</mat-card-subtitle>
+                    <mat-icon class="icon">map</mat-icon>
+                </mat-card-title-group>
+            </mat-card-header>
+            <mat-card-content>
+                <div class="slider-row">
+                    <p>Opacity</p>
+                    <mat-slider fxFlex max="100" min="1" step="1" thumbLabel discrete>
+                        <input matSliderThumb #opacitySliderInput [ngModel]="getOpacity()" (ngModelChange)="updateOpacity($event)" />
+                    </mat-slider>
+                    <span>{{ opacitySliderInput.value }} %</span>
+                </div>
+
+                <div>
+                    <p>Raster band:</p>
+
+                    <mat-select [ngModel]="selectedBand" (ngModelChange)="setSelectedBand($event)" placeholder="Bands">
+                        <mat-option *ngFor="let band of bands$ | async" [value]="band">{{ band.name }}</mat-option>
+                    </mat-select>
+                </div>
+
+                <mat-divider></mat-divider>
+
+                <p>Colorizer:</p>
+
+                <div>
+                    <mat-button-toggle-group
+                        id="colorizer-type"
+                        [multiple]="false"
+                        [ngModel]="getColorizerType()"
+                        (ngModelChange)="updateColorizerType($event)"
+                    >
+                        <mat-button-toggle [value]="linearGradientColorizerType">Linear Gradient</mat-button-toggle>
+                        <mat-button-toggle [value]="logarithmicGradientColorizerType">Logarithmic Gradient</mat-button-toggle>
+                        <mat-button-toggle [value]="paletteColorizerType">Palette</mat-button-toggle>
+                        <mat-button-toggle [value]="rgbaColorizerType">RGBA</mat-button-toggle>
+                    </mat-button-toggle-group>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+        <geoengine-raster-gradient-symbology-editor
+            *ngIf="gradientColorizer"
+            [colorizer]="gradientColorizer"
+            [histogramParams]="histogramParams"
+            [workflowId]="symbologyWorkflow.workflowId"
+            [band]="selectedBand?.name | valueDefault: 'band'"
+            (colorizerChange)="updateColorizer($event)"
+        ></geoengine-raster-gradient-symbology-editor>
+
+        <geoengine-raster-palette-symbology-editor
+            *ngIf="paletteColorizer"
+            [colorizer]="paletteColorizer"
+            (colorizerChange)="updateColorizer($event)"
+        >
+        </geoengine-raster-palette-symbology-editor>
+    </div>
+</div>

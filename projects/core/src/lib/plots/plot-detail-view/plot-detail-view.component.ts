@@ -2,9 +2,9 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, Inject, OnDestroy, On
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {BehaviorSubject, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../project/project.service';
-import {Plot} from '../plot.model';
 import {PlotDataDict} from '../../backend/backend.model';
 import {LayoutService} from '../../layout.service';
+import {Plot} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-plot-detail-view',

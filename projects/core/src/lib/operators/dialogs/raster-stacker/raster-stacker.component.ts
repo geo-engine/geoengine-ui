@@ -1,17 +1,21 @@
-import {RasterLayer} from '../../../layers/layer.model';
-import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
-import {OperatorDict, SourceOperatorDict} from '../../../backend/backend.model';
 import {BehaviorSubject, EMPTY, Observable, combineLatest, of} from 'rxjs';
-import {RasterStackerDict, RasterTypeConversionDict} from '../../../backend/operator.model';
-import {RasterDataType, RasterDataTypes} from '../../datatype.model';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
-import {RasterLayerMetadata} from '../../../layers/layer-metadata.model';
+import {
+    RasterDataType,
+    RasterDataTypes,
+    RasterLayer,
+    RasterLayerMetadata,
+    RasterStackerDict,
+    RasterTypeConversionDict,
+    ResultTypes,
+} from '@geoengine/common';
+import {TypedOperatorOperator} from '@geoengine/openapi-client';
 
 interface RasterStackerForm {
     rasterLayers: FormControl<Array<RasterLayer> | undefined>;
@@ -138,7 +142,7 @@ export class RasterStackerComponent implements AfterViewInit {
         const projectedOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers(rasterLayers);
 
         // convert all input layers to the selected data type, if they are not already of that type
-        const convertedOperators: Observable<Array<OperatorDict | SourceOperatorDict>> = projectedOperators.pipe(
+        const convertedOperators: Observable<Array<TypedOperatorOperator>> = projectedOperators.pipe(
             mergeMap((operators) =>
                 of(
                     operators.map((operator, index) => {
@@ -155,7 +159,7 @@ export class RasterStackerComponent implements AfterViewInit {
                                 sources: {
                                     raster: operator,
                                 },
-                            } as RasterTypeConversionDict as OperatorDict;
+                            } as RasterTypeConversionDict as TypedOperatorOperator;
                         }
                     }),
                 ),
@@ -166,7 +170,7 @@ export class RasterStackerComponent implements AfterViewInit {
 
         convertedOperators
             .pipe(
-                mergeMap((operators: Array<OperatorDict | SourceOperatorDict>) =>
+                mergeMap((operators: Array<TypedOperatorOperator>) =>
                     this.projectService.registerWorkflow({
                         type: 'Raster',
                         operator: {

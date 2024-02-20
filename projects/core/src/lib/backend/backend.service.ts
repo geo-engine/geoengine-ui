@@ -2,14 +2,10 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpEvent, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable, Subject} from 'rxjs';
 import {Config} from '../config.service';
-import {bboxDictToExtent, unixTimestampToIsoString} from '../util/conversions';
 import {
     BBoxDict,
     CreateProjectResponseDict,
-    DatasetDict,
     PlotDict,
-    ProjectLayerDict,
-    ProjectDict,
     ProjectFilterDict,
     ProjectListingDict,
     ProjectOrderByDict,
@@ -21,20 +17,16 @@ import {
     TimeIntervalDict,
     TimeStepDict,
     UUID,
-    WorkflowDict,
     PlotDataDict,
     UploadResponseDict,
-    CreateDatasetDict,
     AutoCreateDatasetDict,
     DatasetNameResponseDict,
     MetaDataSuggestionDict,
     SuggestMetaDataDict,
-    ResultDescriptorDict,
     SpatialReferenceSpecificationDict,
     DataSetProviderListingDict,
     ProvenanceEntryDict,
     DatasetOrderByDict,
-    LayerDict,
     LayerCollectionDict,
     BackendInfoDict,
     WcsParamsDict,
@@ -45,7 +37,17 @@ import {
     UploadFilesResponseDict,
     UploadFileLayersResponseDict,
     RoleDescription,
+    CreateDatasetDict,
 } from './backend.model';
+import {
+    ProjectLayer as ProjectLayerDict,
+    Project as ProjectDict,
+    Dataset as DatasetDict,
+    Layer as LayerDict,
+    Workflow as WorkflowDict,
+    TypedResultDescriptor,
+} from '@geoengine/openapi-client';
+import {bboxDictToExtent, unixTimestampToIsoString} from '@geoengine/common';
 
 @Injectable({
     providedIn: 'root',
@@ -146,8 +148,8 @@ export class BackendService {
         });
     }
 
-    getWorkflowMetadata(workflowId: UUID, sessionId: UUID): Observable<ResultDescriptorDict> {
-        return this.http.get<ResultDescriptorDict>(this.config.API_URL + `/workflow/${workflowId}/metadata`, {
+    getWorkflowMetadata(workflowId: UUID, sessionId: UUID): Observable<TypedResultDescriptor> {
+        return this.http.get<TypedResultDescriptor>(this.config.API_URL + `/workflow/${workflowId}/metadata`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }

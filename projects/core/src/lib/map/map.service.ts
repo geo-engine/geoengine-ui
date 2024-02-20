@@ -10,8 +10,8 @@ import OlView from 'ol/View';
 import OlFeature from 'ol/Feature';
 
 import {MapContainerComponent} from './map-container/map-container.component';
-import {olExtentToTuple} from '../util/conversions';
 import {createBox} from 'ol/interaction/Draw';
+import {olExtentToTuple} from '@geoengine/common';
 
 /**
  * The viewport combines…

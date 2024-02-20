@@ -2,30 +2,28 @@ import {map, mergeMap, tap} from 'rxjs/operators';
 import {BehaviorSubject, Observable, combineLatest, firstValueFrom, from} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {ResultTypes} from '../../result-type.model';
-import {Layer, RasterLayer} from '../../../layers/layer.model';
 import {geoengineValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
-import {
-    BBoxDict,
-    OperatorDict,
-    RasterResultDescriptorDict,
-    SourceOperatorDict,
-    SrsString,
-    TimeIntervalDict,
-    UUID,
-    WorkflowDict,
-} from '../../../backend/backend.model';
-import {RgbDict, StatisticsDict} from '../../../backend/operator.model';
+import {BBoxDict, RasterResultDescriptorDict, SrsString, TimeIntervalDict, UUID} from '../../../backend/backend.model';
 import {LayoutService, SidenavConfig} from '../../../layout.service';
-import {RasterSymbology, SingleBandRasterColorizer} from '../../../layers/symbology/symbology.model';
 import {NotificationService} from '../../../notification.service';
-import {RgbaColorizer} from '../../../colors/colorizer.model';
 import {BackendService} from '../../../backend/backend.service';
 import {UserService} from '../../../users/user.service';
-import {RasterResultDescriptor} from '../../../datasets/dataset.model';
 import {SpatialReferenceService} from '../../../spatial-references/spatial-reference.service';
-import {extentToBboxDict} from '../../../util/conversions';
+import {
+    Layer,
+    RasterLayer,
+    RasterResultDescriptor,
+    RasterSymbology,
+    ResultTypes,
+    RgbDict,
+    RgbaColorizer,
+    SingleBandRasterColorizer,
+    StatisticsDict,
+    extentToBboxDict,
+} from '@geoengine/common';
+
+import {TypedOperatorOperator, Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 interface RgbCompositeForm {
     rasterLayers: FormControl<Array<RasterLayer> | undefined>;
@@ -219,7 +217,7 @@ export class RgbaCompositeComponent implements AfterViewInit {
         sourceOperators
             .pipe(
                 tap({next: () => this.loading$.next(true)}),
-                mergeMap((operators: Array<OperatorDict | SourceOperatorDict>) => {
+                mergeMap((operators: Array<TypedOperatorOperator>) => {
                     const workflow: WorkflowDict = {
                         type: 'Raster',
                         operator: {
@@ -371,7 +369,7 @@ export class RgbaCompositeComponent implements AfterViewInit {
      * TODO: put function to util or service?
      * A similar function is used in the symbology component
      */
-    protected async estimateQueryParams(rasterOperator: OperatorDict | SourceOperatorDict): Promise<{
+    protected async estimateQueryParams(rasterOperator: TypedOperatorOperator): Promise<{
         bbox: BBoxDict;
         crs: SrsString;
         time: TimeIntervalDict;
@@ -380,7 +378,7 @@ export class RgbaCompositeComponent implements AfterViewInit {
         const rasterWorkflowId = await firstValueFrom(
             this.projectService.registerWorkflow({
                 type: 'Raster',
-                operator: rasterOperator,
+                operator: rasterOperator as TypedOperatorOperator,
             }),
         );
 

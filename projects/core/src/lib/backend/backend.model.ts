@@ -83,27 +83,6 @@ export type ProjectFilterDict = 'None' | {name: {term: string}} | {description: 
 
 export type ProjectOrderByDict = 'DateAsc' | 'DateDesc' | 'NameAsc' | 'NameDesc';
 
-export interface ProjectDict {
-    id: UUID;
-    version?: ProjectVersion;
-    name: string;
-    description: string;
-    layers: Array<ProjectLayerDict>;
-    plots: Array<PlotDict>;
-    bounds: STRectangleDict;
-    timeStep: TimeStepDict;
-}
-
-export interface ProjectLayerDict {
-    workflow: UUID;
-    name: string;
-    visibility: {
-        data: boolean;
-        legend: boolean;
-    };
-    symbology: SymbologyDict;
-}
-
 export interface PlotDict {
     workflow: UUID;
     name: string;
@@ -288,16 +267,6 @@ export interface TimeStepDict {
 }
 
 export type TimeStepGranularityDict = 'millis' | 'seconds' | 'minutes' | 'hours' | 'days' | 'months' | 'years';
-
-export interface DatasetDict {
-    id: UUID;
-    name: string;
-    displayName: string;
-    description: string;
-    resultDescriptor: TypedResultDescriptorDict;
-    sourceOperator: string;
-    symbology?: SymbologyDict;
-}
 
 export type DataIdDict = InternalDataIdDict | ExternalDataIdDict;
 
@@ -597,17 +566,6 @@ export interface LayerCollectionListingDict extends LayerCollectionItemDict {
 export interface LayerCollectionLayerDict extends LayerCollectionItemDict {
     type: 'layer';
     id: ProviderLayerIdDict;
-}
-
-export interface LayerDict {
-    id: UUID;
-    name: string;
-    description: string;
-    workflow: WorkflowDict;
-    symbology: SymbologyDict;
-    metadata: {
-        [key: string]: string;
-    };
 }
 
 export interface LayerCollectionDict {

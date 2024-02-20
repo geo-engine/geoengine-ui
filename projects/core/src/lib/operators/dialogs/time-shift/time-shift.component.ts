@@ -1,17 +1,26 @@
-import {Layer, RasterLayer, VectorLayer} from '../../../layers/layer.model';
-import {ResultTypes} from '../../result-type.model';
 import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
-import {TimeStepGranularityDict, WorkflowDict} from '../../../backend/backend.model';
+import {TimeStepGranularityDict} from '../../../backend/backend.model';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {AbsoluteTimeShiftDictParams, RelativeTimeShiftDictParams, TimeShiftDict} from '../../../backend/operator.model';
 import moment from 'moment';
-import {RasterSymbology, VectorSymbology} from '../../../layers/symbology/symbology.model';
-import {Time, timeStepGranularityOptions} from '../../../time/time.model';
+import {
+    AbsoluteTimeShiftDictParams,
+    Layer,
+    RasterLayer,
+    RasterSymbology,
+    RelativeTimeShiftDictParams,
+    ResultTypes,
+    Time,
+    TimeShiftDict,
+    VectorLayer,
+    VectorSymbology,
+    timeStepGranularityOptions,
+} from '@geoengine/common';
+import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 type TimeShiftFormType = 'relative' | 'absolute';
 

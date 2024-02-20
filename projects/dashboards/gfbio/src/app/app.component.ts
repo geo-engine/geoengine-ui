@@ -21,7 +21,6 @@ import {
     AddDataButton,
     AddDataComponent,
     Config,
-    Layer,
     LayerCollectionService,
     LayoutService,
     MapContainerComponent,
@@ -48,6 +47,7 @@ import {AppConfig} from './app-config.service';
 import {HelpComponent} from './help/help.component';
 import {SplashDialogComponent} from './splash-dialog/splash-dialog.component';
 import {GfBioCollectionDialogComponent as GfBioCollectionDialogComponent} from './gfbio-collection/gfbio-collection-dialog.component';
+import {Layer} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-root',
