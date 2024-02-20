@@ -8,6 +8,7 @@ import {
     OrderBy,
     SuggestMetaDataHandlerRequest,
     Symbology,
+    UpdateDataset,
 } from '@geoengine/openapi-client';
 import {ReplaySubject, firstValueFrom} from 'rxjs';
 import {SessionService, apiConfigurationWithAccessKey} from '../session/session.service';
@@ -30,6 +31,12 @@ export class DatasetsService {
         return datasetApi.getDatasetHandler({
             dataset: name,
         });
+    }
+
+    async updateDataset(datasetName: string, update: UpdateDataset): Promise<void> {
+        const datasetApi = await firstValueFrom(this.datasetApi);
+
+        return datasetApi.updateDatasetHandler({dataset: datasetName, updateDataset: update});
     }
 
     async getDatasets(offset = 0, limit = 20, filter?: string): Promise<DatasetListing[]> {

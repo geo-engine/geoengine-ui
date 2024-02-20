@@ -1,6 +1,8 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {DatasetListing} from '@geoengine/openapi-client';
 import {BehaviorSubject} from 'rxjs';
+import {DatasetChange} from './dataset-editor/dataset-editor.component';
+import {DatasetListComponent} from './dataset-list/dataset-list.component';
 
 @Component({
     selector: 'geoengine-manager-datasets',
@@ -8,6 +10,8 @@ import {BehaviorSubject} from 'rxjs';
     styleUrl: './datasets.component.scss',
 })
 export class DatasetsComponent {
+    @ViewChild(DatasetListComponent) datasetList!: DatasetListComponent;
+
     selectedDataset$: BehaviorSubject<DatasetListing | undefined> = new BehaviorSubject<DatasetListing | undefined>(undefined);
 
     constructor() {}
@@ -15,4 +19,6 @@ export class DatasetsComponent {
     selectDataset(dataset: DatasetListing): void {
         this.selectedDataset$.next(dataset);
     }
+
+    datasetChanged(_change: DatasetChange): void {}
 }

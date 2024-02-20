@@ -4,6 +4,7 @@ import {AfterContentInit, Component, EventEmitter, Output, ViewChild} from '@ang
 import {DatasetsService} from '@geoengine/common';
 import {DatasetListing} from '@geoengine/openapi-client';
 import {BehaviorSubject, Observable, Subject, concatMap, debounceTime, distinctUntilChanged, range, scan, skip, startWith} from 'rxjs';
+import {DatasetChange} from '../dataset-editor/dataset-editor.component';
 
 @Component({
     selector: 'geoengine-manager-dataset-list',
@@ -68,6 +69,10 @@ export class DatasetListComponent implements AfterContentInit {
                 this.searchSubject$.next(searchValue);
             }
         }
+    }
+
+    datasetChanged(change: DatasetChange): void {
+        this.source.
     }
 
     protected setUpSource(): void {

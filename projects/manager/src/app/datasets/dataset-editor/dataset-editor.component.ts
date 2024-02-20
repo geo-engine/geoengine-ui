@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {
     DatasetsService,
@@ -21,13 +21,21 @@ export interface DatasetForm {
     description: FormControl<string>;
 }
 
+export interface DatasetChange {
+    name: string;
+    displayName: string;
+    description: string;
+}
+
 @Component({
     selector: 'geoengine-manager-dataset-editor',
     templateUrl: './dataset-editor.component.html',
     styleUrl: './dataset-editor.component.scss',
 })
 export class DatasetEditorComponent implements OnChanges {
-    @Input({required: true}) datasetName!: UUID;
+    @Input({required: true}) datasetName!: string;
+
+    @Output() datasetChanged = new EventEmitter<DatasetChange>();
 
     dataset?: Dataset;
     form: FormGroup<DatasetForm> = this.placeholderForm();
@@ -51,6 +59,21 @@ export class DatasetEditorComponent implements OnChanges {
                 this.setUpColorizer(dataset);
             });
         }
+    }
+
+    applyChanges(): void {
+        const name = this.form.controls.name.value;
+        const displayName = this.form.controls.displayName.value;
+        const description = this.form.controls.description.value;
+        this.datasetsService
+            .updateDataset(this.datasetName, {name, displayName, description})
+            .then(() => {
+                this.datasetName = name;
+                this.datasetChanged.emit({name, displayName, description});
+            })
+            .catch((_error) => {
+                // TODO: show error
+            });
     }
 
     createSymbology(dataset: Dataset): void {
