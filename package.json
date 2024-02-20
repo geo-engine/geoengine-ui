@@ -69,7 +69,6 @@
         "proj4": "~2.9.2",
         "propagating-hammerjs": "^2.0.1",
         "rxjs": "~7.8.1",
-        "tslib": "^2.3.0",
         "uuid": "9.0.1",
         "vega": "~5.26.1",
         "vega-embed": "~6.23.0",
