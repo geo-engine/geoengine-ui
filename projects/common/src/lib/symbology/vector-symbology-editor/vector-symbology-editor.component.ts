@@ -41,7 +41,7 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
     numericAttributes = new ReplaySubject<Array<string>>(1);
     allAttributes = new ReplaySubject<Array<string>>(1);
 
-    constructor(private readonly workflowsService: WorkflowsService) {} // protected readonly config: Config, // protected readonly mapService: MapService, // protected readonly userService: UserService, // protected readonly backend: BackendService, // protected readonly projectService: ProjectService,
+    constructor(private readonly workflowsService: WorkflowsService) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.symbologyWorkflow && this.symbologyWorkflow) {
