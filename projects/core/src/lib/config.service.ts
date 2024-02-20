@@ -3,6 +3,7 @@ import {mergeWith} from 'immutable';
 import {HttpClient} from '@angular/common/http';
 import Immutable from 'immutable';
 import {Configuration, DefaultConfig} from '@geoengine/openapi-client';
+import {CommonConfig} from '@geoengine/common';
 
 interface Plots {
     readonly THEME: 'excel' | 'ggplot2' | 'quartz' | 'vox' | 'dark';
@@ -244,7 +245,10 @@ export class Config {
         return this.config.SPATIAL_REFERENCES;
     }
 
-    constructor(protected http: HttpClient) {}
+    constructor(
+        protected http: HttpClient,
+        protected readonly commonConfig: CommonConfig,
+    ) {}
 
     // noinspection JSUnusedGlobalSymbols <- function used in parent app
     /**
@@ -256,9 +260,15 @@ export class Config {
         const appConfig = await configFileResponse.json().catch(() => ({}));
         this.config = mergeDeepOverrideLists(defaults, {...appConfig});
 
+        await this.commonConfig.load({
+            API_URL: this.config.API_URL,
+            DELAYS: this.config.DELAYS,
+            PLOTS: this.config.PLOTS,
+        });
+
         // we alter the config in the openapi-client so that it uses the correct API_URL
         DefaultConfig.config = new Configuration({
-            basePath: this.config.API_URL,
+            basePath: this.commonConfig.API_URL,
             fetchApi: DefaultConfig.fetchApi,
             middleware: DefaultConfig.middleware,
             queryParamsStringify: DefaultConfig.queryParamsStringify,

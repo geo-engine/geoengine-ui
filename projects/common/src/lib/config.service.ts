@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {CommonConfig} from '@geoengine/common';
 import {Configuration, DefaultConfig} from '@geoengine/openapi-client';
 import Immutable from 'immutable';
 import {mergeWith} from 'immutable';
@@ -8,65 +7,64 @@ import {mergeWith} from 'immutable';
  * The structure of the config file containing the URL of the backend API and the branding information.
  */
 export interface ConfigStructure {
-    readonly BRANDING: Branding;
+    readonly API_URL: string;
+    readonly DELAYS: Delays;
+    readonly PLOTS: Plots;
 }
 
 /**
- * Information about the branding of the Geo Engine instance.
+ * Delay values for different actions.
  */
-interface Branding {
-    readonly LOGO_URL: string;
-    readonly LOGO_ICON_URL: string;
-    readonly LOGO_ALT_URL: string;
-    readonly PAGE_TITLE: string;
-    readonly HOMEPAGE?: Homepage;
+interface Delays {
+    readonly DEBOUNCE: number;
 }
 
-/**
- * Specifies a link to a homepage (e.g. project website) and a button image.
- */
-interface Homepage {
-    readonly URL: string;
-    readonly BUTTON_IMAGE_URL: string;
-    readonly BUTTON_ALT_TEXT: string;
-    readonly BUTTON_TOOLTIP_TEXT: string;
+interface Plots {
+    readonly THEME: 'excel' | 'ggplot2' | 'quartz' | 'vox' | 'dark';
 }
 
 export const DEFAULT_CONFIG: ConfigStructure = {
-    BRANDING: {
-        LOGO_URL: 'assets/geoengine.svg',
-        LOGO_ICON_URL: 'assets/geoengine-favicon-white.svg',
-        LOGO_ALT_URL: 'assets/geoengine-white.svg',
-        PAGE_TITLE: 'Geo Engine',
+    API_URL: '/api',
+    DELAYS: {
+        DEBOUNCE: 400,
+    },
+    PLOTS: {
+        THEME: 'excel',
     },
 };
 
 @Injectable()
-export class AppConfig {
+export class CommonConfig {
     static readonly CONFIG_FILE = 'assets/config.json';
 
     protected config!: ConfigStructure;
 
-    constructor(protected readonly commonConfig: CommonConfig) {}
+    get API_URL(): string {
+        return this.config.API_URL;
+    }
 
-    get BRANDING(): Branding {
-        return this.config.BRANDING;
+    get DELAYS(): Delays {
+        return this.config.DELAYS;
+    }
+
+    get PLOTS(): Plots {
+        return this.config.PLOTS;
     }
 
     // noinspection JSUnusedGlobalSymbols <- function used in parent app
     /**
      * Initialize the config on app start.
      */
-    async load(defaults: ConfigStructure = DEFAULT_CONFIG): Promise<void> {
-        const configFileResponse = await fetch(AppConfig.CONFIG_FILE);
+    public async load(defaults: ConfigStructure = DEFAULT_CONFIG): Promise<void> {
+        console.log('loading config');
+        const configFileResponse = await fetch(CommonConfig.CONFIG_FILE);
 
         const appConfig = await configFileResponse.json().catch(() => ({}));
         this.config = mergeDeepOverrideLists(defaults, {...appConfig});
 
-        await this.commonConfig.load();
         // we alter the config in the openapi-client so that it uses the correct API_URL
         DefaultConfig.config = new Configuration({
-            basePath: this.commonConfig.API_URL,
+            basePath: this.config.API_URL,
             fetchApi: DefaultConfig.fetchApi,
             middleware: DefaultConfig.middleware,
             queryParamsStringify: DefaultConfig.queryParamsStringify,
