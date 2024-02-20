@@ -1,9 +1,7 @@
 import {Injectable} from '@angular/core';
-import {mergeWith} from 'immutable';
 import {HttpClient} from '@angular/common/http';
-import Immutable from 'immutable';
 import {Configuration, DefaultConfig} from '@geoengine/openapi-client';
-import {CommonConfig} from '@geoengine/common';
+import {CommonConfig, mergeDeepOverrideLists} from '@geoengine/common';
 
 interface Plots {
     readonly THEME: 'excel' | 'ggplot2' | 'quartz' | 'vox' | 'dark';
@@ -280,19 +278,4 @@ export class Config {
             credentials: DefaultConfig.credentials,
         });
     }
-}
-
-/**
- * A version of ImmutableJS `mergeDeep` that replaces Lists instead of concatenating them.
- */
-export function mergeDeepOverrideLists<C>(a: C, b: Iterable<unknown> | Iterable<[unknown, unknown]> | {[key: string]: unknown}): C {
-    // If b is null, it would overwrite a, even if a is mergeable
-    if (b === null) return b;
-
-    if (a && typeof a === 'object' && !Array.isArray(a) && !Immutable.List.isList(a)) {
-        return mergeWith(mergeDeepOverrideLists as (a: unknown, b: unknown) => unknown, a, b);
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return b as any;
 }

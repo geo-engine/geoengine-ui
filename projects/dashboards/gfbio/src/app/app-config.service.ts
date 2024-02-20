@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import {Injectable} from '@angular/core';
-import {Config, ConfigStructure, DEFAULT_CONFIG, mergeDeepOverrideLists} from '@geoengine/core';
+import {mergeDeepOverrideLists} from '@geoengine/common';
+import {Config, ConfigStructure, DEFAULT_CONFIG} from '@geoengine/core';
 
 interface Components {
     readonly PLAYBACK: {

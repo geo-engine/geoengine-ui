@@ -56,7 +56,6 @@ export class CommonConfig {
      * Initialize the config on app start.
      */
     public async load(defaults: ConfigStructure = DEFAULT_CONFIG): Promise<void> {
-        console.log('loading config');
         const configFileResponse = await fetch(CommonConfig.CONFIG_FILE);
 
         const appConfig = await configFileResponse.json().catch(() => ({}));
