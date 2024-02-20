@@ -2,18 +2,14 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MultiLayerSelectionComponent} from './multi-layer-selection.component';
 import {ProjectService} from '../../../../project/project.service';
 import {DebugElement, SimpleChange} from '@angular/core';
-import {Layer, RasterLayer} from '../../../../layers/layer.model';
-import {RasterSymbology} from '../../../../layers/symbology/symbology.model';
 import {of} from 'rxjs';
 import {DialogSectionHeadingComponent} from '../../../../dialogs/dialog-section-heading/dialog-section-heading.component';
-import {RasterLayerMetadata} from '../../../../layers/layer-metadata.model';
-import {RasterDataTypes} from '../../../datatype.model';
-import {UnitlessMeasurement} from '../../../../layers/measurement';
 import {MATERIAL_MODULES} from '../../../../core.module';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {By} from '@angular/platform-browser';
 import {WGS_84} from '../../../../spatial-references/spatial-reference.service';
-import {RasterBandDescriptor} from '../../../../datasets/dataset.model';
+import {Layer, RasterDataTypes, RasterLayer, RasterLayerMetadata, RasterSymbology, UnitlessMeasurement} from '@geoengine/common';
+import {RasterBandDescriptor} from '@geoengine/openapi-client';
 
 describe('MultiLayerSelectionComponent', () => {
     let component: MultiLayerSelectionComponent;
@@ -107,7 +103,7 @@ describe('MultiLayerSelectionComponent', () => {
         projectServiceSpy.getLayerMetadata.and.returnValue(
             of<RasterLayerMetadata>(
                 new RasterLayerMetadata(RasterDataTypes.Byte, WGS_84.spatialReference, [
-                    new RasterBandDescriptor('band', new UnitlessMeasurement()),
+                    {name: 'band', measurement: new UnitlessMeasurement().toDict()} as RasterBandDescriptor,
                 ]),
             ),
         );
