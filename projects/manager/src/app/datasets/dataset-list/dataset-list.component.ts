@@ -71,10 +71,6 @@ export class DatasetListComponent implements AfterContentInit {
         }
     }
 
-    datasetChanged(change: DatasetChange): void {
-        this.source.
-    }
-
     protected setUpSource(): void {
         this.source = new DatasetDataSource(this.datasetsService, this.searchSubject$.value);
 

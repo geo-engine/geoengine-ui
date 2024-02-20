@@ -10,7 +10,13 @@ import {
     WorkflowsService,
     createVectorSymbology as createDefaultVectorSymbology,
 } from '@geoengine/common';
-import {Dataset, RasterResultDescriptorWithType, TypedResultDescriptor, VectorResultDescriptorWithType} from '@geoengine/openapi-client';
+import {
+    Dataset,
+    DatasetListing,
+    RasterResultDescriptorWithType,
+    TypedResultDescriptor,
+    VectorResultDescriptorWithType,
+} from '@geoengine/openapi-client';
 import {BehaviorSubject} from 'rxjs';
 
 export interface DatasetForm {
@@ -33,9 +39,7 @@ export interface DatasetChange {
     styleUrl: './dataset-editor.component.scss',
 })
 export class DatasetEditorComponent implements OnChanges {
-    @Input({required: true}) datasetName!: string;
-
-    @Output() datasetChanged = new EventEmitter<DatasetChange>();
+    @Input({required: true}) datasetListing!: DatasetListing;
 
     dataset?: Dataset;
     form: FormGroup<DatasetForm> = this.placeholderForm();
@@ -51,8 +55,8 @@ export class DatasetEditorComponent implements OnChanges {
     ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.datasetName) {
-            this.datasetsService.getDataset(this.datasetName).then((dataset) => {
+        if (changes.datasetListing) {
+            this.datasetsService.getDataset(this.datasetListing.name).then((dataset) => {
                 this.dataset = dataset;
                 this.setUpForm(dataset);
                 this.getWorkflowId(dataset).then((workflowId) => this.datasetWorkflowId$.next(workflowId));
@@ -66,10 +70,11 @@ export class DatasetEditorComponent implements OnChanges {
         const displayName = this.form.controls.displayName.value;
         const description = this.form.controls.description.value;
         this.datasetsService
-            .updateDataset(this.datasetName, {name, displayName, description})
+            .updateDataset(this.datasetListing.name, {name, displayName, description})
             .then(() => {
-                this.datasetName = name;
-                this.datasetChanged.emit({name, displayName, description});
+                this.datasetListing.name = name;
+                this.datasetListing.displayName = displayName;
+                this.datasetListing.description = description;
             })
             .catch((_error) => {
                 // TODO: show error
