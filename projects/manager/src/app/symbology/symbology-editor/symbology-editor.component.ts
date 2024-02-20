@@ -83,6 +83,7 @@ export class SymbologyEditorComponent implements OnChanges {
     updateRasterSymbology(): void {
         if (this.datasetName && this.rasterSymbology) {
             this.datasetsService.updateSymbology(this.datasetName, this.rasterSymbology.toDict());
+            this.rasterSymbologyWorkflow = {symbology: this.rasterSymbology, workflowId: this.workflowId};
         }
     }
 
