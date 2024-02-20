@@ -12,7 +12,7 @@ export abstract class Measurement implements ToDict<MeasurementDict> {
         }
 
         if (dict.type === 'continuous') {
-            return new ContinuousMeasurement(dict.measurement, dict.unit ? dict.unit : undefined);
+            return new ContinuousMeasurement(dict.measurement, dict.unit ?? undefined);
         }
 
         if (dict.type === 'classification') {

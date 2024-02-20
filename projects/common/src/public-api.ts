@@ -5,6 +5,7 @@
 export * from './lib/common.module';
 
 // Services
+export * from './lib/config.service';
 export * from './lib/datasets/datasets.service';
 export * from './lib/uploads/uploads.service';
 export * from './lib/plots/plots.service';

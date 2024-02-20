@@ -145,7 +145,7 @@ import {TaskListComponent} from './tasks/task-list/task-list.component';
 import {RgbaCompositeComponent} from './operators/dialogs/rgb-composite/rgb-composite.component';
 import {RolesComponent} from './users/roles/roles.component';
 import {VectorExpressionComponent} from './operators/dialogs/vector-expression/vector-expression.component';
-import {CommonModule} from '@geoengine/common';
+import {CommonConfig, CommonModule} from '@geoengine/common';
 import {SymbologyEditorComponent} from './layers/symbology/symbology-editor/symbology-editor.component';
 
 export const MATERIAL_MODULES = [
@@ -330,6 +330,7 @@ const CORE_COMPONENTS = [
     providers: [
         {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}},
         {provide: MAT_CARD_CONFIG, useValue: {appearance: 'outlined'}},
+        CommonConfig,
     ],
 })
 export class CoreModule {}

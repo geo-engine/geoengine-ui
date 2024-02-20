@@ -1,4 +1,4 @@
-import {olExtentToTuple} from './conversions';
+import {olExtentToTuple} from '@geoengine/common';
 
 describe('Conversion Utils', () => {
     it('converts OlExtents', () => {

@@ -45,7 +45,7 @@ import {PermissionsComponent} from './permissions/permissions.component';
 import {RasterResultDescriptorComponent} from './result-descriptors/raster-result-descriptor/raster-result-descriptor.component';
 import {VectorResultDescriptorComponent} from './result-descriptors/vector-result-descriptor/vector-result-descriptor.component';
 import {LoadingInfoComponent} from './datasets/loading-info/loading-info.component';
-import {CommonModule} from '@geoengine/common';
+import {CommonConfig, CommonModule} from '@geoengine/common';
 import {SymbologyEditorComponent} from './symbology/symbology-editor/symbology-editor.component';
 
 export const MATERIAL_MODULES = [
@@ -112,6 +112,7 @@ export const MATERIAL_MODULES = [
     ],
     providers: [
         {provide: AppConfig, useClass: AppConfig},
+        CommonConfig,
         {
             provide: APP_INITIALIZER,
             useFactory: (config: AppConfig) => (): Promise<void> => config.load(),

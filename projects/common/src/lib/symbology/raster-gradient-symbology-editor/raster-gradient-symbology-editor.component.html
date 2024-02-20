@@ -56,11 +56,13 @@
             </div>
             <div class="histogram-actions">
                 <button mat-stroked-button (click)="updateHistogram()">
-                    <ng-container *ngIf="histogramCreated; then createdBlock; else notCreatedBlock"></ng-container>
-                    <!-- Only displayed before any histogram is created -->
-                    <ng-template #createdBlock>Update Histogram</ng-template>
-                    <!-- Only displayed after histogram is created -->
-                    <ng-template #notCreatedBlock>Create Histogram</ng-template>
+                    @if (histogramCreated) {
+                        <!-- Only displayed before any histogram is created -->
+                        Update Histogram
+                    } @else {
+                        <!-- Only displayed after histogram is created -->
+                        Create Histogram
+                    }
                 </button>
             </div>
         }

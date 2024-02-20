@@ -58,6 +58,7 @@ export class SymbologyEditorComponent implements OnInit, OnDestroy {
             return;
         }
         this.projectService.changeLayer(this.layer, {symbology: this.rasterSymbology});
+        this.rasterSymbologyWorkflow$.next({workflowId: this.layer.workflowId, symbology: this.rasterSymbology});
         this.unappliedRasterChanges = false;
     }
 

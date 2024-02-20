@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
-import {mergeWith} from 'immutable';
 import {HttpClient} from '@angular/common/http';
-import Immutable from 'immutable';
 import {Configuration, DefaultConfig} from '@geoengine/openapi-client';
+import {CommonConfig, mergeDeepOverrideLists} from '@geoengine/common';
 
 interface Plots {
     readonly THEME: 'excel' | 'ggplot2' | 'quartz' | 'vox' | 'dark';
@@ -244,7 +243,10 @@ export class Config {
         return this.config.SPATIAL_REFERENCES;
     }
 
-    constructor(protected http: HttpClient) {}
+    constructor(
+        protected http: HttpClient,
+        protected readonly commonConfig: CommonConfig,
+    ) {}
 
     // noinspection JSUnusedGlobalSymbols <- function used in parent app
     /**
@@ -256,9 +258,15 @@ export class Config {
         const appConfig = await configFileResponse.json().catch(() => ({}));
         this.config = mergeDeepOverrideLists(defaults, {...appConfig});
 
+        await this.commonConfig.load({
+            API_URL: this.config.API_URL,
+            DELAYS: this.config.DELAYS,
+            PLOTS: this.config.PLOTS,
+        });
+
         // we alter the config in the openapi-client so that it uses the correct API_URL
         DefaultConfig.config = new Configuration({
-            basePath: this.config.API_URL,
+            basePath: this.commonConfig.API_URL,
             fetchApi: DefaultConfig.fetchApi,
             middleware: DefaultConfig.middleware,
             queryParamsStringify: DefaultConfig.queryParamsStringify,
@@ -270,19 +278,4 @@ export class Config {
             credentials: DefaultConfig.credentials,
         });
     }
-}
-
-/**
- * A version of ImmutableJS `mergeDeep` that replaces Lists instead of concatenating them.
- */
-export function mergeDeepOverrideLists<C>(a: C, b: Iterable<unknown> | Iterable<[unknown, unknown]> | {[key: string]: unknown}): C {
-    // If b is null, it would overwrite a, even if a is mergeable
-    if (b === null) return b;
-
-    if (a && typeof a === 'object' && !Array.isArray(a) && !Immutable.List.isList(a)) {
-        return mergeWith(mergeDeepOverrideLists as (a: unknown, b: unknown) => unknown, a, b);
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return b as any;
 }

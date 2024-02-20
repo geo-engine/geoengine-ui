@@ -61,7 +61,7 @@ export class FxLayoutDirective implements OnChanges {
     selector: '[fxLayoutGap]',
 })
 export class FxLayoutGapDirective implements OnChanges {
-    @Input() fxLayoutGap: '0.5rem' | '1rem' | '8px' = '1rem';
+    @Input() fxLayoutGap: '0.5rem' | '1rem' = '1rem';
 
     constructor(private el: ElementRef) {}
 

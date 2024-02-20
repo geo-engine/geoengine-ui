@@ -23,7 +23,6 @@ import {
     DatasetNameResponseDict,
     MetaDataSuggestionDict,
     SuggestMetaDataDict,
-    ResultDescriptorDict,
     SpatialReferenceSpecificationDict,
     DataSetProviderListingDict,
     ProvenanceEntryDict,
@@ -46,6 +45,7 @@ import {
     Dataset as DatasetDict,
     Layer as LayerDict,
     Workflow as WorkflowDict,
+    TypedResultDescriptor,
 } from '@geoengine/openapi-client';
 import {bboxDictToExtent, unixTimestampToIsoString} from '@geoengine/common';
 
@@ -148,8 +148,8 @@ export class BackendService {
         });
     }
 
-    getWorkflowMetadata(workflowId: UUID, sessionId: UUID): Observable<ResultDescriptorDict> {
-        return this.http.get<ResultDescriptorDict>(this.config.API_URL + `/workflow/${workflowId}/metadata`, {
+    getWorkflowMetadata(workflowId: UUID, sessionId: UUID): Observable<TypedResultDescriptor> {
+        return this.http.get<TypedResultDescriptor>(this.config.API_URL + `/workflow/${workflowId}/metadata`, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }

@@ -1,6 +1,5 @@
+import {BLACK, ColorBreakpoint} from '@geoengine/common';
 import {calculateNumberPipeParameters, unifyDecimals} from './raster-legend.component';
-import {ColorBreakpoint} from '@geoengine/core';
-import {BLACK} from '../../../colors/color';
 
 describe('RasterLegend', () => {
     it('calculateNumberPipeParameters', () => {

@@ -1,6 +1,5 @@
 import {Project} from './project.model';
 import {ProjectService} from './project.service';
-import {Time} from '../time/time.model';
 import moment from 'moment';
 import {Session} from '../users/session.model';
 import {User} from '../users/user.model';
@@ -12,9 +11,9 @@ import {MapService} from '../map/map.service';
 import {BackendService} from '../backend/backend.service';
 import {UserService} from '../users/user.service';
 import {SpatialReferenceService, WGS_84} from '../spatial-references/spatial-reference.service';
-import {SpatialReferenceSpecification} from '../spatial-references/spatial-reference.model';
 import {first, mergeMap, tap} from 'rxjs/operators';
 import {Configuration, DefaultConfig} from '@geoengine/openapi-client';
+import {SpatialReferenceSpecification, Time} from '@geoengine/common';
 
 describe('test project methods in projectService', () => {
     let notificationServiceSpy: {get: jasmine.Spy};
@@ -122,6 +121,10 @@ describe('test project methods in projectService', () => {
                             durationAmount: 1,
                             durationUnit: 'month',
                         },
+                        version: {
+                            changed: project.version.changed,
+                            id: '0',
+                        },
                     }).toDict(),
                 ),
             (error) => fail(error),
@@ -186,6 +189,10 @@ describe('test project methods in projectService', () => {
                                 durationAmount: 1,
                                 durationUnit: 'month',
                             },
+                            version: {
+                                changed: project.version.changed,
+                                id: '0',
+                            },
                         }).toDict(),
                     ),
                 (error) => fail(error),
@@ -218,6 +225,10 @@ describe('test project methods in projectService', () => {
                             durationAmount: 1,
                             durationUnit: 'month',
                         },
+                        version: {
+                            changed: project.version.changed,
+                            id: '0',
+                        },
                     }).toDict(),
                 );
             },
@@ -248,6 +259,10 @@ describe('test project methods in projectService', () => {
                             timeStepDuration: {
                                 durationAmount: 1,
                                 durationUnit: 'month',
+                            },
+                            version: {
+                                changed: project.version.changed,
+                                id: '0',
                             },
                         }).toDict(),
                     );
@@ -283,6 +298,10 @@ describe('test project methods in projectService', () => {
                             timeStepDuration: {
                                 durationAmount: 1,
                                 durationUnit: 'month',
+                            },
+                            version: {
+                                changed: project.version.changed,
+                                id: '0',
                             },
                         }).toDict(),
                     );
@@ -315,6 +334,10 @@ describe('test project methods in projectService', () => {
                                 durationAmount: 1,
                                 durationUnit: 'month',
                             },
+                            version: {
+                                changed: project.version.changed,
+                                id: '0',
+                            },
                         }).toDict(),
                     );
                 }),
@@ -349,6 +372,10 @@ describe('test project methods in projectService', () => {
                             timeStepDuration: {
                                 durationAmount: 1,
                                 durationUnit: 'month',
+                            },
+                            version: {
+                                changed: project.version.changed,
+                                id: '0',
                             },
                         }).toDict(),
                     );

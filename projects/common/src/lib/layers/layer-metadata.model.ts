@@ -16,16 +16,10 @@ import {BoundingBox2D} from '../spatial-bounds/bounding-box';
 import {
     RasterResultDescriptorWithType as RasterResultDescriptorDict,
     VectorResultDescriptorWithType as VectorResultDescriptorDict,
-    TimeInterval as TimeIntervalDict,
     SpatialResolution,
     RasterBandDescriptor,
+    TypedResultDescriptor,
 } from '@geoengine/openapi-client';
-
-export interface ResultDescriptorDict {
-    type: 'raster' | 'vector' | 'plot';
-    spatialReference: SrsString;
-    time?: TimeIntervalDict;
-}
 
 export abstract class LayerMetadata implements HasLayerType {
     abstract readonly layerType: LayerType;
@@ -42,7 +36,7 @@ export abstract class LayerMetadata implements HasLayerType {
     }
 
     public static fromDict(
-        dict: RasterResultDescriptorDict | VectorResultDescriptorDict | ResultDescriptorDict,
+        dict: RasterResultDescriptorDict | VectorResultDescriptorDict | TypedResultDescriptor,
     ): RasterLayerMetadata | VectorLayerMetadata {
         switch (dict.type) {
             case 'raster':

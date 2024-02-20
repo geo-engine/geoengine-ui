@@ -5,6 +5,7 @@ import {ColorBreakpoint} from '../color-breakpoint.model';
 import {Color, stringToRgbaStruct, TRANSPARENT} from '../color';
 import {Subject, Subscription} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
+import {CommonConfig} from '../../config.service';
 
 @Component({
     selector: 'geoengine-color-breakpoint',
@@ -23,9 +24,12 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, OnCh
     private changedValue = new Subject<ColorBreakpoint>();
     private onChangePropagationSubscription: Subscription;
 
-    constructor(private changeDetectorRef: ChangeDetectorRef) {
+    constructor(
+        private changeDetectorRef: ChangeDetectorRef,
+        private readonly config: CommonConfig,
+    ) {
         this.onChangePropagationSubscription = this.changedValue
-            .pipe(debounceTime(400)) // defer emitting values while the user is typing
+            .pipe(debounceTime(this.config.DELAYS.DEBOUNCE)) // defer emitting values while the user is typing
             .subscribe((colorBreakpoint) => this.onChange(colorBreakpoint.clone()));
     }
 
