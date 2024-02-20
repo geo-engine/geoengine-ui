@@ -29,7 +29,7 @@
         </div>
     }
 
-    @else if (vectorSymbologyWorkflow$ | async; as symbologyWorkflow) {
+    @if (vectorSymbologyWorkflow$ | async; as symbologyWorkflow) {
         <geoengine-dialog-help>
             <p>The Symbology Editor enables customization of the style for raster layers.</p>
             <p>

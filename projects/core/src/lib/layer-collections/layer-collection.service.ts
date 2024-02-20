@@ -9,7 +9,6 @@ import {
     LayerCollectionLayerDict,
     ProviderLayerIdDict,
     RasterSymbologyDict,
-    ResultDescriptorDict,
     UUID,
     VectorResultDescriptorDict,
 } from '../backend/backend.model';
@@ -23,6 +22,7 @@ import {
     ProviderCapabilities,
     SearchHandlerRequest,
     Layer as LayerDict,
+    TypedResultDescriptor,
 } from '@geoengine/openapi-client';
 import {
     createVectorSymbology,
@@ -85,7 +85,7 @@ export class LayerCollectionService {
         return this.getWorkflowIdMetadataDict(workflowId).pipe(map((workflowMetadataDict) => LayerMetadata.fromDict(workflowMetadataDict)));
     }
 
-    getWorkflowIdMetadataDict(workflowId: UUID): Observable<ResultDescriptorDict> {
+    getWorkflowIdMetadataDict(workflowId: UUID): Observable<TypedResultDescriptor> {
         return this.userService
             .getSessionTokenForRequest()
             .pipe(mergeMap((session) => this.backend.getWorkflowMetadata(workflowId, session)));
@@ -165,7 +165,7 @@ export class LayerCollectionService {
             mergeMap(([layer, workflowId]: [LayerDict, UUID]) =>
                 combineLatest([of(layer), of(workflowId), this.projectService.getWorkflowMetaData(workflowId)]),
             ),
-            map(([layer, workflowId, resultDescriptorDict]: [LayerDict, UUID, ResultDescriptorDict], _i) => {
+            map(([layer, workflowId, resultDescriptorDict]: [LayerDict, UUID, TypedResultDescriptor], _i) => {
                 const keys = Object.keys(resultDescriptorDict);
                 if (keys.includes('columns')) {
                     return new VectorLayer({

@@ -19,6 +19,7 @@ import {
     TimeInterval as TimeIntervalDict,
     SpatialResolution,
     RasterBandDescriptor,
+    TypedResultDescriptor,
 } from '@geoengine/openapi-client';
 
 export interface ResultDescriptorDict {
@@ -42,7 +43,7 @@ export abstract class LayerMetadata implements HasLayerType {
     }
 
     public static fromDict(
-        dict: RasterResultDescriptorDict | VectorResultDescriptorDict | ResultDescriptorDict,
+        dict: RasterResultDescriptorDict | VectorResultDescriptorDict | TypedResultDescriptor,
     ): RasterLayerMetadata | VectorLayerMetadata {
         switch (dict.type) {
             case 'raster':

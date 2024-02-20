@@ -9,7 +9,7 @@ import {LoadingState} from './loading-state.model';
 import {NotificationService} from '../notification.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {BackendService} from '../backend/backend.service';
-import {BBoxDict, PlotDict, ProvenanceEntryDict, ResultDescriptorDict, ToDict, UUID} from '../backend/backend.model';
+import {BBoxDict, PlotDict, ProvenanceEntryDict, ToDict, UUID} from '../backend/backend.model';
 import {UserService} from '../users/user.service';
 import {Extent, MapService, ViewportSize} from '../map/map.service';
 import {Session} from '../users/session.model';
@@ -50,7 +50,12 @@ import {
     VectorLayerMetadata,
     VisualPointClusteringParams,
 } from '@geoengine/common';
-import {ProjectLayer as ProjectLayerDict, TypedOperatorOperator, Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {
+    ProjectLayer as ProjectLayerDict,
+    TypedOperatorOperator,
+    TypedResultDescriptor,
+    Workflow as WorkflowDict,
+} from '@geoengine/openapi-client';
 
 export type FeatureId = string | number;
 
@@ -382,7 +387,7 @@ export class ProjectService {
             .pipe(mergeMap((sessionToken) => this.backend.getWorkflow(workflowId, sessionToken)));
     }
 
-    getWorkflowMetaData(workflowId: UUID): Observable<ResultDescriptorDict> {
+    getWorkflowMetaData(workflowId: UUID): Observable<TypedResultDescriptor> {
         return this.userService
             .getSessionTokenForRequest()
             .pipe(mergeMap((sessionToken) => this.backend.getWorkflowMetadata(workflowId, sessionToken)));
@@ -398,10 +403,10 @@ export class ProjectService {
      * Determines a common projection for all layers and return their operator with an added a propjection if necessary
      */
     getAutomaticallyProjectedOperatorsFromLayers(layers: Array<Layer>): Observable<Array<TypedOperatorOperator>> {
-        const meta: Array<Observable<ResultDescriptorDict>> = layers.map((l) => this.getWorkflowMetaData(l.workflowId));
+        const meta: Array<Observable<TypedResultDescriptor>> = layers.map((l) => this.getWorkflowMetaData(l.workflowId));
 
         return combineLatest(meta).pipe(
-            mergeMap((descriptors: Array<ResultDescriptorDict>) => {
+            mergeMap((descriptors: Array<TypedResultDescriptor>) => {
                 const srefs = descriptors.map((l) => SpatialReference.fromSrsString(l.spatialReference));
                 const targetSref = getProjectionTarget(srefs);
 
