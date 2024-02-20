@@ -5,7 +5,7 @@
     ></geoengine-raster-symbology-editor>
 }
 
-@if (vectorSymbologyWorkflow) {
+@else if (vectorSymbologyWorkflow) {
     <geoengine-vector-symbology-editor
         [symbologyWorkflow]="vectorSymbologyWorkflow"
         (changedSymbology)="changeVectorSymbology($event)"
