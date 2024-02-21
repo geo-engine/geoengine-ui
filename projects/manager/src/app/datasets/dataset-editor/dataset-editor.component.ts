@@ -1,5 +1,6 @@
-import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {MatSnackBar} from '@angular/material/snack-bar';
 import {
     DatasetsService,
     RasterSymbology,
@@ -47,14 +48,13 @@ export class DatasetEditorComponent implements OnChanges {
 
     datasetWorkflowId$ = new BehaviorSubject<UUID | undefined>(undefined);
 
-    updateError$ = new BehaviorSubject<string | undefined>(undefined);
-
     rasterSymbology?: RasterSymbology = undefined;
     vectorSymbology?: VectorSymbology = undefined;
 
     constructor(
-        private datasetsService: DatasetsService,
-        private workflowsService: WorkflowsService,
+        private readonly datasetsService: DatasetsService,
+        private readonly workflowsService: WorkflowsService,
+        private readonly snackBar: MatSnackBar,
     ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -77,10 +77,13 @@ export class DatasetEditorComponent implements OnChanges {
             this.datasetListing.name = name;
             this.datasetListing.displayName = displayName;
             this.datasetListing.description = description;
+            this.snackBar.open('Dataset successfully updated.', 'Close', {duration: 2000});
+            this.form.markAsPristine();
         } catch (error) {
             const e = error as ResponseError;
-            const errorJson = await e.response.json();
-            this.updateError$.next(errorJson.message ?? 'Unknown error');
+            const errorJson = await e.response.json().catch(() => ({}));
+            const errorMessage = errorJson.message ?? 'Updating dataset failed.';
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
         }
     }
 
