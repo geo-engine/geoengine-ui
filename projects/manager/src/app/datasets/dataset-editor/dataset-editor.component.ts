@@ -14,6 +14,7 @@ import {
     Dataset,
     DatasetListing,
     RasterResultDescriptorWithType,
+    ResponseError,
     TypedResultDescriptor,
     VectorResultDescriptorWithType,
 } from '@geoengine/openapi-client';
@@ -46,6 +47,8 @@ export class DatasetEditorComponent implements OnChanges {
 
     datasetWorkflowId$ = new BehaviorSubject<UUID | undefined>(undefined);
 
+    updateError$ = new BehaviorSubject<string | undefined>(undefined);
+
     rasterSymbology?: RasterSymbology = undefined;
     vectorSymbology?: VectorSymbology = undefined;
 
@@ -65,20 +68,20 @@ export class DatasetEditorComponent implements OnChanges {
         }
     }
 
-    applyChanges(): void {
+    async applyChanges(): Promise<void> {
         const name = this.form.controls.name.value;
         const displayName = this.form.controls.displayName.value;
         const description = this.form.controls.description.value;
-        this.datasetsService
-            .updateDataset(this.datasetListing.name, {name, displayName, description})
-            .then(() => {
-                this.datasetListing.name = name;
-                this.datasetListing.displayName = displayName;
-                this.datasetListing.description = description;
-            })
-            .catch((_error) => {
-                // TODO: show error
-            });
+        try {
+            await this.datasetsService.updateDataset(this.datasetListing.name, {name, displayName, description});
+            this.datasetListing.name = name;
+            this.datasetListing.displayName = displayName;
+            this.datasetListing.description = description;
+        } catch (error) {
+            const e = error as ResponseError;
+            const errorJson = await e.response.json();
+            this.updateError$.next(errorJson.message ?? 'Unknown error');
+        }
     }
 
     createSymbology(dataset: Dataset): void {

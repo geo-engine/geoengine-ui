@@ -33,6 +33,8 @@
                     </mat-form-field>
                 </form>
 
+                <mat-hint align="end" class="error" *ngIf="updateError$ | async as error"> Update failed: {{ error }} </mat-hint>
+
                 <div class="actions">
                     <button mat-raised-button color="primary" (click)="applyChanges()">Apply</button>
                 </div>
