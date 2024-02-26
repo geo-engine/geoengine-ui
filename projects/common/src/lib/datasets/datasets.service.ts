@@ -72,4 +72,12 @@ export class DatasetsService {
             symbology,
         });
     }
+
+    async deleteDataset(datasetName: string): Promise<void> {
+        const datasetApi = await firstValueFrom(this.datasetApi);
+
+        return datasetApi.deleteDatasetHandler({
+            dataset: datasetName,
+        });
+    }
 }

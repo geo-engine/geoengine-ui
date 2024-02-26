@@ -98,5 +98,12 @@
                 <geoengine-manager-permissions resourceType="dataset" [resourceId]="dataset.id"></geoengine-manager-permissions>
             </mat-card-content>
         </mat-card>
+
+        <div class="actions">
+            <button mat-raised-button color="warn" *ngIf="!allowDeletion" (click)="allowDelete()">Delete Dataset</button>
+            <button mat-raised-button color="warn" *ngIf="allowDeletion" (click)="deleteDataset()">
+                Confirm Deletion (cannot be undone)
+            </button>
+        </div>
     </div>
 }

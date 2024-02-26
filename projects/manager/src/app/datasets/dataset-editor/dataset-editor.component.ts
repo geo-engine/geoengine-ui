@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {
@@ -37,8 +37,12 @@ export interface DatasetForm {
 export class DatasetEditorComponent implements OnChanges {
     @Input({required: true}) datasetListing!: DatasetListing;
 
+    @Output() datasetDeleted = new EventEmitter<void>();
+
     dataset?: Dataset;
     form: FormGroup<DatasetForm> = this.placeholderForm();
+
+    allowDeletion = false;
 
     datasetWorkflowId$ = new BehaviorSubject<UUID | undefined>(undefined);
 
@@ -55,6 +59,7 @@ export class DatasetEditorComponent implements OnChanges {
         if (changes.datasetListing) {
             this.dataset = await this.datasetsService.getDataset(this.datasetListing.name);
             this.setUpForm(this.dataset);
+            this.allowDeletion = false;
             const workflowId = await this.getWorkflowId(this.dataset);
             this.datasetWorkflowId$.next(workflowId);
             this.setUpColorizer(this.dataset);
@@ -86,6 +91,24 @@ export class DatasetEditorComponent implements OnChanges {
         }
         if (dataset.resultDescriptor.type === 'raster') {
             this.createRasterSymbology();
+        }
+    }
+
+    async allowDelete(): Promise<void> {
+        this.allowDeletion = true;
+    }
+
+    async deleteDataset(): Promise<void> {
+        try {
+            await this.datasetsService.deleteDataset(this.datasetListing.name);
+            this.snackBar.open('Dataset successfully deleted.', 'Close', {duration: 2000});
+            this.datasetDeleted.emit();
+            this.allowDeletion = false;
+        } catch (error) {
+            const e = error as ResponseError;
+            const errorJson = await e.response.json().catch(() => ({}));
+            const errorMessage = errorJson.message ?? 'Deleting dataset failed.';
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
         }
     }
 

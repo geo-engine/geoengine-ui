@@ -18,4 +18,9 @@ export class DatasetsComponent {
     selectDataset(dataset: DatasetListing): void {
         this.selectedDataset$.next(dataset);
     }
+
+    datasetDeleted(): void {
+        this.datasetList.setUpSource();
+        this.selectedDataset$.next(undefined);
+    }
 }
