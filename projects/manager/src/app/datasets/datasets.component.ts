@@ -1,7 +1,6 @@
 import {Component, ViewChild} from '@angular/core';
 import {DatasetListing} from '@geoengine/openapi-client';
 import {BehaviorSubject} from 'rxjs';
-import {DatasetChange} from './dataset-editor/dataset-editor.component';
 import {DatasetListComponent} from './dataset-list/dataset-list.component';
 
 @Component({
@@ -19,6 +18,4 @@ export class DatasetsComponent {
     selectDataset(dataset: DatasetListing): void {
         this.selectedDataset$.next(dataset);
     }
-
-    datasetChanged(_change: DatasetChange): void {}
 }

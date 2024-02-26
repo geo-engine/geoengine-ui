@@ -29,12 +29,6 @@ export interface DatasetForm {
     description: FormControl<string>;
 }
 
-export interface DatasetChange {
-    name: string;
-    displayName: string;
-    description: string;
-}
-
 @Component({
     selector: 'geoengine-manager-dataset-editor',
     templateUrl: './dataset-editor.component.html',
@@ -57,14 +51,13 @@ export class DatasetEditorComponent implements OnChanges {
         private readonly snackBar: MatSnackBar,
     ) {}
 
-    ngOnChanges(changes: SimpleChanges): void {
+    async ngOnChanges(changes: SimpleChanges): Promise<void> {
         if (changes.datasetListing) {
-            this.datasetsService.getDataset(this.datasetListing.name).then((dataset) => {
-                this.dataset = dataset;
-                this.setUpForm(dataset);
-                this.getWorkflowId(dataset).then((workflowId) => this.datasetWorkflowId$.next(workflowId));
-                this.setUpColorizer(dataset);
-            });
+            this.dataset = await this.datasetsService.getDataset(this.datasetListing.name);
+            this.setUpForm(this.dataset);
+            const workflowId = await this.getWorkflowId(this.dataset);
+            this.datasetWorkflowId$.next(workflowId);
+            this.setUpColorizer(this.dataset);
         }
     }
 
