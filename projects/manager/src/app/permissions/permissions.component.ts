@@ -1,9 +1,22 @@
 import {DataSource} from '@angular/cdk/collections';
 import {AfterViewInit, Component, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
-import {PermissionListing} from '@geoengine/openapi-client';
+import {Permission, PermissionListing, ResponseError} from '@geoengine/openapi-client';
 import {BehaviorSubject, Observable, Subject, tap} from 'rxjs';
-import {PermissionsService} from './permissions.service';
 import {MatPaginator} from '@angular/material/paginator';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {PermissionsService, ResourceType, UserService} from '@geoengine/common';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+
+export interface PermissionForm {
+    roleSpec: FormControl<RoleSpec>;
+    role: FormControl<string>;
+    permission: FormControl<Permission>;
+}
+
+enum RoleSpec {
+    Id = 'by Id',
+    Name = 'by name',
+}
 
 @Component({
     selector: 'geoengine-manager-permissions',
@@ -12,7 +25,7 @@ import {MatPaginator} from '@angular/material/paginator';
 })
 export class PermissionsComponent implements AfterViewInit, OnChanges {
     @Input()
-    resourceType!: string;
+    resourceType!: ResourceType;
     @Input()
     resourceId!: string;
 
@@ -20,11 +33,21 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
 
     readonly loadingSpinnerDiameterPx: number = 3 * parseFloat(getComputedStyle(document.documentElement).fontSize);
 
+    form: FormGroup<PermissionForm> = this.setUpForm();
+
+    PERMISSIONS = [Permission.Read, Permission.Owner];
+    ROLE_SPEC = RoleSpec;
+    ROLE_SPECS = [RoleSpec.Id, RoleSpec.Name];
+
     source!: PermissionDataSource;
 
-    displayedColumns: string[] = ['roleName', 'roleId', 'permission'];
+    displayedColumns: string[] = ['roleName', 'roleId', 'permission', 'remove'];
 
-    constructor(private readonly permissionsService: PermissionsService) {}
+    constructor(
+        private readonly permissionsService: PermissionsService,
+        private readonly userService: UserService,
+        private readonly snackBar: MatSnackBar,
+    ) {}
 
     ngAfterViewInit(): void {
         this.paginator.page.pipe(tap(() => this.loadPermissionsPage())).subscribe();
@@ -32,10 +55,53 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.resourceId && changes.resourceType) {
-            this.resourceId = changes.resourceId.currentValue;
-            this.resourceType = changes.resourceType.currentValue;
+        if (changes.resourceId || changes.resourceType) {
             this.setUpSource();
+        }
+    }
+
+    async removePermission(permission: PermissionListing): Promise<void> {
+        try {
+            await this.permissionsService.removePermission(this.resourceType, this.resourceId, permission.role.id, permission.permission);
+            this.snackBar.open('Permission successfully deleted', 'Close', {duration: 2000});
+            this.source.refresh();
+        } catch (error) {
+            const e = error as ResponseError;
+            const errorJson = await e.response.json().catch(() => ({}));
+            const errorMessage = errorJson.message ?? 'Deleting permission failed.';
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
+        }
+    }
+
+    async addPermission(): Promise<void> {
+        let roleId = '';
+        const roleSpec = this.form.controls.roleSpec.value;
+        const permission = this.form.controls.permission.value;
+
+        if (roleSpec === RoleSpec.Id) {
+            roleId = this.form.controls.role.value;
+        } else {
+            const roleName = this.form.controls.role.value;
+            try {
+                roleId = await this.userService.getRoleByName(roleName);
+            } catch (error) {
+                const e = error as ResponseError;
+                const errorJson = await e.response.json().catch(() => ({}));
+                const errorMessage = errorJson.message ?? 'Getting role by name failed.';
+                this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
+                return;
+            }
+        }
+
+        try {
+            await this.permissionsService.addPermission(this.resourceType, this.resourceId, roleId, permission);
+            this.snackBar.open('Permission successfully added', 'Close', {duration: 2000});
+            this.source.refresh();
+        } catch (error) {
+            const e = error as ResponseError;
+            const errorJson = await e.response.json().catch(() => ({}));
+            const errorMessage = errorJson.message ?? 'Adding    permission failed.';
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
         }
     }
 
@@ -46,6 +112,23 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
     protected setUpSource(): void {
         this.source = new PermissionDataSource(this.permissionsService, this.paginator, this.resourceType, this.resourceId);
         this.source.loadPermissions(0, 5);
+    }
+
+    private setUpForm(): FormGroup<PermissionForm> {
+        return new FormGroup<PermissionForm>({
+            roleSpec: new FormControl(RoleSpec.Name, {
+                nonNullable: true,
+                validators: [Validators.required],
+            }),
+            role: new FormControl('', {
+                nonNullable: true,
+                validators: [Validators.required],
+            }),
+            permission: new FormControl(Permission.Read, {
+                nonNullable: true,
+                validators: [Validators.required],
+            }),
+        });
     }
 }
 
@@ -60,7 +143,7 @@ class PermissionDataSource extends DataSource<PermissionListing> {
     constructor(
         private permissionsService: PermissionsService,
         private paginator: MatPaginator,
-        private resourceType: string,
+        private resourceType: ResourceType,
         private resourceId: string,
     ) {
         super();
@@ -75,6 +158,10 @@ class PermissionDataSource extends DataSource<PermissionListing> {
      */
     disconnect(): void {
         this.permissions$.complete();
+    }
+
+    refresh(): void {
+        this.loadPermissions(this.paginator.pageIndex, this.paginator.pageSize);
     }
 
     loadPermissions(pageIndex: number, pageSize: number): void {

@@ -4,7 +4,7 @@ import {Observable} from 'rxjs';
 import {map, shareReplay} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {AppConfig} from '../app-config.service';
-import {SessionService} from '@geoengine/common';
+import {UserService} from '@geoengine/common';
 
 export enum NavigationType {
     Datasets = 'datasets',
@@ -28,13 +28,13 @@ export class NavigationComponent {
 
     constructor(
         private breakpointObserver: BreakpointObserver,
-        private sessionService: SessionService,
+        private userService: UserService,
         private router: Router,
         @Inject(AppConfig) readonly config: AppConfig,
     ) {}
 
     logout(): void {
-        this.sessionService.logout();
+        this.userService.logout();
         this.router.navigate(['/signin']);
     }
 

@@ -11,7 +11,7 @@ import {
     UpdateDataset,
 } from '@geoengine/openapi-client';
 import {ReplaySubject, firstValueFrom} from 'rxjs';
-import {SessionService, apiConfigurationWithAccessKey} from '../session/session.service';
+import {UserService, apiConfigurationWithAccessKey} from '../user/user.service';
 
 @Injectable({
     providedIn: 'root',
@@ -19,7 +19,7 @@ import {SessionService, apiConfigurationWithAccessKey} from '../session/session.
 export class DatasetsService {
     datasetApi = new ReplaySubject<DatasetsApi>(1);
 
-    constructor(private sessionService: SessionService) {
+    constructor(private sessionService: UserService) {
         this.sessionService.getSessionStream().subscribe({
             next: (session) => this.datasetApi.next(new DatasetsApi(apiConfigurationWithAccessKey(session.id))),
         });

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree} from '@angular/router';
-import {SessionService} from '@geoengine/common';
+import {UserService} from '@geoengine/common';
 import {Observable, map} from 'rxjs';
 
 @Injectable({
@@ -9,14 +9,14 @@ import {Observable, map} from 'rxjs';
 export class LogInGuard implements CanActivate {
     constructor(
         private router: Router,
-        private sessionService: SessionService,
+        private userService: UserService,
     ) {}
 
     canActivate(
         _route: ActivatedRouteSnapshot,
         _state: RouterStateSnapshot,
     ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-        const loggedInOrRedirect = this.sessionService.isLoggedIn().pipe(
+        const loggedInOrRedirect = this.userService.isLoggedIn().pipe(
             map((loggedIn) => {
                 if (loggedIn) {
                     return true;
