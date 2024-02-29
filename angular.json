@@ -97,15 +97,15 @@
                             "projects/gis/src/assets",
                             {
                                 "glob": "**/*",
-                                "input": "dist/core/assets",
+                                "input": "dist/common/assets",
                                 "output": "assets"
                             }
                         ],
                         "styles": [
                             "projects/gis/src/styles.scss",
-                            "dist/core/assets/fonts/poppins/poppins.css",
-                            "dist/core/assets/fonts/pacifico/pacifico.css",
-                            "dist/core/assets/fonts/material-design-icons/material-icons.css",
+                            "dist/common/assets/fonts/poppins/poppins.css",
+                            "dist/common/assets/fonts/pacifico/pacifico.css",
+                            "dist/common/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css",
                             "./node_modules/vis-timeline/dist/vis-timeline-graph2d.min.css"
@@ -242,15 +242,15 @@
                             "projects/dashboards/data-atlas/src/assets",
                             {
                                 "glob": "**/*",
-                                "input": "dist/core/assets",
+                                "input": "dist/common/assets",
                                 "output": "assets"
                             }
                         ],
                         "styles": [
                             "projects/dashboards/data-atlas/src/styles.scss",
-                            "dist/core/assets/fonts/poppins/poppins.css",
-                            "dist/core/assets/fonts/pacifico/pacifico.css",
-                            "dist/core/assets/fonts/material-design-icons/material-icons.css",
+                            "dist/common/assets/fonts/poppins/poppins.css",
+                            "dist/common/assets/fonts/pacifico/pacifico.css",
+                            "dist/common/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
@@ -386,15 +386,15 @@
                             "projects/dashboards/ebv-analyzer/src/assets",
                             {
                                 "glob": "**/*",
-                                "input": "dist/core/assets",
+                                "input": "dist/common/assets",
                                 "output": "assets"
                             }
                         ],
                         "styles": [
                             "projects/dashboards/ebv-analyzer/src/styles.scss",
-                            "dist/core/assets/fonts/poppins/poppins.css",
-                            "dist/core/assets/fonts/pacifico/pacifico.css",
-                            "dist/core/assets/fonts/material-design-icons/material-icons.css",
+                            "dist/common/assets/fonts/poppins/poppins.css",
+                            "dist/common/assets/fonts/pacifico/pacifico.css",
+                            "dist/common/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
@@ -531,15 +531,15 @@
                             "projects/dashboards/nfdi-portal-demo/src/assets",
                             {
                                 "glob": "**/*",
-                                "input": "dist/core/assets",
+                                "input": "dist/common/assets",
                                 "output": "assets"
                             }
                         ],
                         "styles": [
                             "projects/dashboards/nfdi-portal-demo/src/styles.scss",
-                            "dist/core/assets/fonts/poppins/poppins.css",
-                            "dist/core/assets/fonts/pacifico/pacifico.css",
-                            "dist/core/assets/fonts/material-design-icons/material-icons.css",
+                            "dist/common/assets/fonts/poppins/poppins.css",
+                            "dist/common/assets/fonts/pacifico/pacifico.css",
+                            "dist/common/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
@@ -681,15 +681,15 @@
                             "projects/dashboards/gfbio/src/assets",
                             {
                                 "glob": "**/*",
-                                "input": "dist/core/assets",
+                                "input": "dist/common/assets",
                                 "output": "assets"
                             }
                         ],
                         "styles": [
                             "projects/dashboards/gfbio/src/styles.scss",
-                            "dist/core/assets/fonts/poppins/poppins.css",
-                            "dist/core/assets/fonts/pacifico/pacifico.css",
-                            "dist/core/assets/fonts/material-design-icons/material-icons.css",
+                            "dist/common/assets/fonts/poppins/poppins.css",
+                            "dist/common/assets/fonts/pacifico/pacifico.css",
+                            "dist/common/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
@@ -812,15 +812,15 @@
                             "projects/manager/src/assets",
                             {
                                 "glob": "**/*",
-                                "input": "dist/core/assets",
+                                "input": "dist/common/assets",
                                 "output": "assets"
                             }
                         ],
                         "styles": [
                             "projects/manager/src/styles.scss",
-                            "dist/core/assets/fonts/poppins/poppins.css",
-                            "dist/core/assets/fonts/pacifico/pacifico.css",
-                            "dist/core/assets/fonts/material-design-icons/material-icons.css"
+                            "dist/common/assets/fonts/poppins/poppins.css",
+                            "dist/common/assets/fonts/pacifico/pacifico.css",
+                            "dist/common/assets/fonts/material-design-icons/material-icons.css"
                         ],
                         "scripts": []
                     },
