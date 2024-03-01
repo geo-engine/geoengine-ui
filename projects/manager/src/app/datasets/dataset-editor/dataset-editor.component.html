@@ -34,7 +34,9 @@
                 </form>
 
                 <div class="actions">
-                    <button mat-raised-button color="primary" [disabled]="form.pristine" (click)="applyChanges()">Apply</button>
+                    <button mat-raised-button color="primary" [disabled]="form.pristine || !form.valid" (click)="applyChanges()">
+                        Apply
+                    </button>
                 </div>
             </mat-card-content>
         </mat-card>
