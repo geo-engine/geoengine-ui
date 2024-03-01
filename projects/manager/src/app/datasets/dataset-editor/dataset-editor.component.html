@@ -100,10 +100,11 @@
         </mat-card>
 
         <div class="actions">
-            <button mat-raised-button color="warn" *ngIf="!allowDeletion" (click)="allowDelete()">Delete Dataset</button>
-            <button mat-raised-button color="warn" *ngIf="allowDeletion" (click)="deleteDataset()">
-                Confirm Deletion (cannot be undone)
-            </button>
+            <button mat-raised-button color="warn" (click)="deleteDataset()">Delete dataset</button>
         </div>
     </div>
+
+    <ng-template #template>
+        <h1>This is a message</h1>
+    </ng-template>
 }
