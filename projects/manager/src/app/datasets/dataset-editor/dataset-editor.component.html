@@ -34,7 +34,9 @@
                 </form>
 
                 <div class="actions">
-                    <button mat-raised-button color="primary" [disabled]="form.pristine" (click)="applyChanges()">Apply</button>
+                    <button mat-raised-button color="primary" [disabled]="form.pristine || !form.valid" (click)="applyChanges()">
+                        Apply
+                    </button>
                 </div>
             </mat-card-content>
         </mat-card>
@@ -100,10 +102,7 @@
         </mat-card>
 
         <div class="actions">
-            <button mat-raised-button color="warn" *ngIf="!allowDeletion" (click)="allowDelete()">Delete Dataset</button>
-            <button mat-raised-button color="warn" *ngIf="allowDeletion" (click)="deleteDataset()">
-                Confirm Deletion (cannot be undone)
-            </button>
+            <button mat-raised-button color="warn" (click)="deleteDataset()">Delete dataset</button>
         </div>
     </div>
 }

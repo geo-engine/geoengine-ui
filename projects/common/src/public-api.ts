@@ -18,6 +18,7 @@ export * from './lib/colors/color-attribute-input/color-attribute-input.componen
 export * from './lib/colors/color-breakpoint-input/color-breakpoint-input.component';
 export * from './lib/colors/color-map-selector/color-map-selector.component';
 export * from './lib/colors/color-table-editor/color-table-editor.component';
+export * from './lib/dialogs/confirmation/confirmation.component';
 export * from './lib/layer-icons/line-icon/line-icon.component';
 export * from './lib/layer-icons/point-icon/point-icon.component';
 export * from './lib/layer-icons/polygon-icon/polygon-icon.component';

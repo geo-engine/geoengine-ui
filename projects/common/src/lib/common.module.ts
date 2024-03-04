@@ -55,6 +55,7 @@ import {RasterIconComponent} from './layer-icons/raster-icon/raster-icon.compone
 import {BreakpointToCssStringPipe} from './util/pipes/breakpoint-to-css-string.pipe';
 import {FxFlexDirective, FxLayoutAlignDirective, FxLayoutDirective, FxLayoutGapDirective} from './util/directives/flexbox-legacy.directive';
 import {VegaViewerComponent} from './plots/vega-viewer/vega-viewer.component';
+import {ConfirmationComponent} from './dialogs/confirmation/confirmation.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -94,6 +95,7 @@ const COMMON_COMPONENTS = [
     ColorMapSelectorComponent,
     ColorTableEditorComponent,
     ColorParamEditorComponent,
+    ConfirmationComponent,
     RasterGradientSymbologyEditorComponent,
     RasterPaletteSymbologyEditorComponent,
     RasterSymbologyEditorComponent,

@@ -1,7 +1,9 @@
 import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {
+    ConfirmationComponent,
     DatasetsService,
     RasterSymbology,
     Symbology,
@@ -19,7 +21,7 @@ import {
     TypedResultDescriptor,
     VectorResultDescriptorWithType,
 } from '@geoengine/openapi-client';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, firstValueFrom} from 'rxjs';
 
 export interface DatasetForm {
     layerType: FormControl<'plot' | 'raster' | 'vector'>;
@@ -42,8 +44,6 @@ export class DatasetEditorComponent implements OnChanges {
     dataset?: Dataset;
     form: FormGroup<DatasetForm> = this.placeholderForm();
 
-    allowDeletion = false;
-
     datasetWorkflowId$ = new BehaviorSubject<UUID | undefined>(undefined);
 
     rasterSymbology?: RasterSymbology = undefined;
@@ -53,13 +53,13 @@ export class DatasetEditorComponent implements OnChanges {
         private readonly datasetsService: DatasetsService,
         private readonly workflowsService: WorkflowsService,
         private readonly snackBar: MatSnackBar,
+        private readonly dialog: MatDialog,
     ) {}
 
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
         if (changes.datasetListing) {
             this.dataset = await this.datasetsService.getDataset(this.datasetListing.name);
             this.setUpForm(this.dataset);
-            this.allowDeletion = false;
             const workflowId = await this.getWorkflowId(this.dataset);
             this.datasetWorkflowId$.next(workflowId);
             this.setUpColorizer(this.dataset);
@@ -94,16 +94,21 @@ export class DatasetEditorComponent implements OnChanges {
         }
     }
 
-    async allowDelete(): Promise<void> {
-        this.allowDeletion = true;
-    }
-
     async deleteDataset(): Promise<void> {
+        const dialogRef = this.dialog.open(ConfirmationComponent, {
+            data: {message: 'Confirm the deletion of the dataset. This cannot be undone.'},
+        });
+
+        const confirm = await firstValueFrom(dialogRef.afterClosed());
+
+        if (!confirm) {
+            return;
+        }
+
         try {
             await this.datasetsService.deleteDataset(this.datasetListing.name);
             this.snackBar.open('Dataset successfully deleted.', 'Close', {duration: 2000});
             this.datasetDeleted.emit();
-            this.allowDeletion = false;
         } catch (error) {
             const e = error as ResponseError;
             const errorJson = await e.response.json().catch(() => ({}));
