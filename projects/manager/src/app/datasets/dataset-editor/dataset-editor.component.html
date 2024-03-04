@@ -32,6 +32,12 @@
                         <textarea matInput formControlName="description"></textarea>
                     </mat-form-field>
                 </form>
+
+                <div class="actions">
+                    <button mat-raised-button color="primary" [disabled]="form.pristine || !form.valid" (click)="applyChanges()">
+                        Apply
+                    </button>
+                </div>
             </mat-card-content>
         </mat-card>
 
@@ -94,5 +100,9 @@
                 <geoengine-manager-permissions resourceType="dataset" [resourceId]="dataset.id"></geoengine-manager-permissions>
             </mat-card-content>
         </mat-card>
+
+        <div class="actions">
+            <button mat-raised-button color="warn" (click)="deleteDataset()">Delete dataset</button>
+        </div>
     </div>
 }

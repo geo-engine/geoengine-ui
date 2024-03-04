@@ -70,7 +70,7 @@ export class DatasetListComponent implements AfterContentInit {
         }
     }
 
-    protected setUpSource(): void {
+    setUpSource(): void {
         this.source = new DatasetDataSource(this.datasetsService, this.searchSubject$.value);
 
         // calculate initial number of elements to display in `setTimeout` because the viewport is not yet initialized

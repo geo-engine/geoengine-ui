@@ -27,3 +27,12 @@ body {
 a {
     color: mat.get-color-from-palette(map-get($geoengine-theme, foreground), secondary-text);
 }
+
+.mat-mdc-snack-bar-container {
+    &.error-snackbar {
+        --mdc-snackbar-container-color: red;
+        --mat-mdc-snack-bar-button-color: #fff;
+        --mdc-snackbar-supporting-text-color: #fff;
+        --mat-snack-bar-button-color: #fff;
+    }
+}

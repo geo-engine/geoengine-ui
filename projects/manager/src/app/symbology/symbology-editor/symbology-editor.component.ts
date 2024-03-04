@@ -1,4 +1,5 @@
 import {Component, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
+import {MatSnackBar} from '@angular/material/snack-bar';
 import {
     DatasetsService,
     RasterSymbology,
@@ -8,6 +9,7 @@ import {
     VectorSymbology,
     VectorSymbologyEditorComponent,
 } from '@geoengine/common';
+import {ResponseError} from '@geoengine/openapi-client';
 
 @Component({
     selector: 'geoengine-manager-symbology-editor',
@@ -28,7 +30,10 @@ export class SymbologyEditorComponent implements OnChanges {
 
     unappliedChanges = false;
 
-    constructor(private readonly datasetsService: DatasetsService) {}
+    constructor(
+        private readonly datasetsService: DatasetsService,
+        private readonly snackBar: MatSnackBar,
+    ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.workflowId || changes.rasterSymbology || changes.vectorSymbology) {
@@ -59,8 +64,6 @@ export class SymbologyEditorComponent implements OnChanges {
         if (this.vectorSymbology) {
             this.updateVectorSymbology();
         }
-
-        this.unappliedChanges = false;
     }
 
     resetChanges(): void {
@@ -80,16 +83,39 @@ export class SymbologyEditorComponent implements OnChanges {
         this.unappliedChanges = true;
     }
 
-    updateRasterSymbology(): void {
+    async updateRasterSymbology(): Promise<void> {
         if (this.datasetName && this.rasterSymbology) {
-            this.datasetsService.updateSymbology(this.datasetName, this.rasterSymbology.toDict());
-            this.rasterSymbologyWorkflow = {symbology: this.rasterSymbology, workflowId: this.workflowId};
+            try {
+                await this.datasetsService.updateSymbology(this.datasetName, this.rasterSymbology.toDict());
+
+                this.rasterSymbologyWorkflow = {symbology: this.rasterSymbology, workflowId: this.workflowId};
+
+                this.unappliedChanges = false;
+                this.snackBar.open('Symbology successfully updated.', 'Close', {duration: 2000});
+            } catch (error) {
+                const e = error as ResponseError;
+                const errorJson = await e.response.json().catch(() => ({}));
+                const errorMessage = errorJson.message ?? 'Updating symbology failed.';
+                this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
+            }
         }
     }
 
-    updateVectorSymbology(): void {
+    async updateVectorSymbology(): Promise<void> {
         if (this.datasetName && this.vectorSymbology) {
-            this.datasetsService.updateSymbology(this.datasetName, this.vectorSymbology.toDict());
+            try {
+                await this.datasetsService.updateSymbology(this.datasetName, this.vectorSymbology.toDict());
+
+                this.vectorSymbologyWorkflow = {symbology: this.vectorSymbology, workflowId: this.workflowId};
+
+                this.unappliedChanges = false;
+                this.snackBar.open('Symbology successfully updated.', 'Close', {duration: 2000});
+            } catch (error) {
+                const e = error as ResponseError;
+                const errorJson = await e.response.json().catch(() => ({}));
+                const errorMessage = errorJson.message ?? 'Updating symbology failed.';
+                this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
+            }
         }
     }
 }

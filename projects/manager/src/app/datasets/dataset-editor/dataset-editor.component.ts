@@ -1,6 +1,9 @@
-import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {MatDialog} from '@angular/material/dialog';
+import {MatSnackBar} from '@angular/material/snack-bar';
 import {
+    ConfirmationComponent,
     DatasetsService,
     RasterSymbology,
     Symbology,
@@ -10,8 +13,15 @@ import {
     WorkflowsService,
     createVectorSymbology as createDefaultVectorSymbology,
 } from '@geoengine/common';
-import {Dataset, RasterResultDescriptorWithType, TypedResultDescriptor, VectorResultDescriptorWithType} from '@geoengine/openapi-client';
-import {BehaviorSubject} from 'rxjs';
+import {
+    Dataset,
+    DatasetListing,
+    RasterResultDescriptorWithType,
+    ResponseError,
+    TypedResultDescriptor,
+    VectorResultDescriptorWithType,
+} from '@geoengine/openapi-client';
+import {BehaviorSubject, firstValueFrom} from 'rxjs';
 
 export interface DatasetForm {
     layerType: FormControl<'plot' | 'raster' | 'vector'>;
@@ -27,7 +37,9 @@ export interface DatasetForm {
     styleUrl: './dataset-editor.component.scss',
 })
 export class DatasetEditorComponent implements OnChanges {
-    @Input({required: true}) datasetName!: UUID;
+    @Input({required: true}) datasetListing!: DatasetListing;
+
+    @Output() datasetDeleted = new EventEmitter<void>();
 
     dataset?: Dataset;
     form: FormGroup<DatasetForm> = this.placeholderForm();
@@ -38,18 +50,38 @@ export class DatasetEditorComponent implements OnChanges {
     vectorSymbology?: VectorSymbology = undefined;
 
     constructor(
-        private datasetsService: DatasetsService,
-        private workflowsService: WorkflowsService,
+        private readonly datasetsService: DatasetsService,
+        private readonly workflowsService: WorkflowsService,
+        private readonly snackBar: MatSnackBar,
+        private readonly dialog: MatDialog,
     ) {}
 
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes.datasetName) {
-            this.datasetsService.getDataset(this.datasetName).then((dataset) => {
-                this.dataset = dataset;
-                this.setUpForm(dataset);
-                this.getWorkflowId(dataset).then((workflowId) => this.datasetWorkflowId$.next(workflowId));
-                this.setUpColorizer(dataset);
-            });
+    async ngOnChanges(changes: SimpleChanges): Promise<void> {
+        if (changes.datasetListing) {
+            this.dataset = await this.datasetsService.getDataset(this.datasetListing.name);
+            this.setUpForm(this.dataset);
+            const workflowId = await this.getWorkflowId(this.dataset);
+            this.datasetWorkflowId$.next(workflowId);
+            this.setUpColorizer(this.dataset);
+        }
+    }
+
+    async applyChanges(): Promise<void> {
+        const name = this.form.controls.name.value;
+        const displayName = this.form.controls.displayName.value;
+        const description = this.form.controls.description.value;
+        try {
+            await this.datasetsService.updateDataset(this.datasetListing.name, {name, displayName, description});
+            this.datasetListing.name = name;
+            this.datasetListing.displayName = displayName;
+            this.datasetListing.description = description;
+            this.snackBar.open('Dataset successfully updated.', 'Close', {duration: 2000});
+            this.form.markAsPristine();
+        } catch (error) {
+            const e = error as ResponseError;
+            const errorJson = await e.response.json().catch(() => ({}));
+            const errorMessage = errorJson.message ?? 'Updating dataset failed.';
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
         }
     }
 
@@ -59,6 +91,29 @@ export class DatasetEditorComponent implements OnChanges {
         }
         if (dataset.resultDescriptor.type === 'raster') {
             this.createRasterSymbology();
+        }
+    }
+
+    async deleteDataset(): Promise<void> {
+        const dialogRef = this.dialog.open(ConfirmationComponent, {
+            data: {message: 'Confirm the deletion of the dataset. This cannot be undone.'},
+        });
+
+        const confirm = await firstValueFrom(dialogRef.afterClosed());
+
+        if (!confirm) {
+            return;
+        }
+
+        try {
+            await this.datasetsService.deleteDataset(this.datasetListing.name);
+            this.snackBar.open('Dataset successfully deleted.', 'Close', {duration: 2000});
+            this.datasetDeleted.emit();
+        } catch (error) {
+            const e = error as ResponseError;
+            const errorJson = await e.response.json().catch(() => ({}));
+            const errorMessage = errorJson.message ?? 'Deleting dataset failed.';
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
         }
     }
 
