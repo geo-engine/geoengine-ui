@@ -31,20 +31,8 @@
 
 <form [formGroup]="form">
     <div class="flex-container">
-        <mat-form-field>
-            <mat-label>Role Specification</mat-label>
-            <mat-select formControlName="roleSpec">
-                <mat-option class="options" *ngFor="let roleSpec of ROLE_SPECS" [value]="roleSpec">
-                    {{ roleSpec }}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
         <mat-form-field appearance="fill">
-            @if (form.get('roleSpec')?.value === ROLE_SPEC.Id) {
-                <mat-label>Role Id</mat-label>
-            } @else {
-                <mat-label>Role Name</mat-label>
-            }
+            <mat-label>Role Name</mat-label>
             <input matInput type="text" formControlName="role" />
         </mat-form-field>
         <mat-form-field>
@@ -55,7 +43,13 @@
                 </mat-option>
             </mat-select>
         </mat-form-field>
-        <button mat-raised-button class="add-permission" color="primary" [disabled]="form.pristine" (click)="addPermission()">
+        <button
+            mat-raised-button
+            class="add-permission"
+            color="primary"
+            [disabled]="form.pristine || !form.valid"
+            (click)="addPermission()"
+        >
             Add permission
         </button>
     </div>

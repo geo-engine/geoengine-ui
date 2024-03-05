@@ -1,21 +1,16 @@
 import {DataSource} from '@angular/cdk/collections';
 import {AfterViewInit, Component, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
 import {Permission, PermissionListing, ResponseError} from '@geoengine/openapi-client';
-import {BehaviorSubject, Observable, Subject, tap} from 'rxjs';
+import {BehaviorSubject, Observable, Subject, firstValueFrom, tap} from 'rxjs';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {PermissionsService, ResourceType, UserService} from '@geoengine/common';
+import {ConfirmationComponent, PermissionsService, ResourceType, UserService} from '@geoengine/common';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {MatDialog} from '@angular/material/dialog';
 
 export interface PermissionForm {
-    roleSpec: FormControl<RoleSpec>;
     role: FormControl<string>;
     permission: FormControl<Permission>;
-}
-
-enum RoleSpec {
-    Id = 'by Id',
-    Name = 'by name',
 }
 
 @Component({
@@ -24,9 +19,9 @@ enum RoleSpec {
     styleUrl: './permissions.component.scss',
 })
 export class PermissionsComponent implements AfterViewInit, OnChanges {
-    @Input()
+    @Input({required: true})
     resourceType!: ResourceType;
-    @Input()
+    @Input({required: true})
     resourceId!: string;
 
     @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -35,9 +30,7 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
 
     form: FormGroup<PermissionForm> = this.setUpForm();
 
-    PERMISSIONS = [Permission.Read, Permission.Owner];
-    ROLE_SPEC = RoleSpec;
-    ROLE_SPECS = [RoleSpec.Id, RoleSpec.Name];
+    PERMISSIONS = [Permission.Read];
 
     source!: PermissionDataSource;
 
@@ -47,6 +40,7 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
         private readonly permissionsService: PermissionsService,
         private readonly userService: UserService,
         private readonly snackBar: MatSnackBar,
+        private readonly dialog: MatDialog,
     ) {}
 
     ngAfterViewInit(): void {
@@ -61,6 +55,16 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
     }
 
     async removePermission(permission: PermissionListing): Promise<void> {
+        const dialogRef = this.dialog.open(ConfirmationComponent, {
+            data: {message: 'Confirm the deletion of the permission. This cannot be undone.'},
+        });
+
+        const confirm = await firstValueFrom(dialogRef.afterClosed());
+
+        if (!confirm) {
+            return;
+        }
+
         try {
             await this.permissionsService.removePermission(this.resourceType, this.resourceId, permission.role.id, permission.permission);
             this.snackBar.open('Permission successfully deleted', 'Close', {duration: 2000});
@@ -74,23 +78,18 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
     }
 
     async addPermission(): Promise<void> {
-        let roleId = '';
-        const roleSpec = this.form.controls.roleSpec.value;
         const permission = this.form.controls.permission.value;
 
-        if (roleSpec === RoleSpec.Id) {
-            roleId = this.form.controls.role.value;
-        } else {
-            const roleName = this.form.controls.role.value;
-            try {
-                roleId = await this.userService.getRoleByName(roleName);
-            } catch (error) {
-                const e = error as ResponseError;
-                const errorJson = await e.response.json().catch(() => ({}));
-                const errorMessage = errorJson.message ?? 'Getting role by name failed.';
-                this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
-                return;
-            }
+        const roleName = this.form.controls.role.value;
+        let roleId = '';
+        try {
+            roleId = await this.userService.getRoleByName(roleName);
+        } catch (error) {
+            const e = error as ResponseError;
+            const errorJson = await e.response.json().catch(() => ({}));
+            const errorMessage = errorJson.message ?? 'Getting role by name failed.';
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
+            return;
         }
 
         try {
@@ -116,13 +115,9 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
 
     private setUpForm(): FormGroup<PermissionForm> {
         return new FormGroup<PermissionForm>({
-            roleSpec: new FormControl(RoleSpec.Name, {
-                nonNullable: true,
-                validators: [Validators.required],
-            }),
             role: new FormControl('', {
                 nonNullable: true,
-                validators: [Validators.required],
+                validators: [Validators.required, Validators.minLength(1)],
             }),
             permission: new FormControl(Permission.Read, {
                 nonNullable: true,
