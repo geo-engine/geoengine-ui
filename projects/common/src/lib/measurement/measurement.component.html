@@ -1,0 +1,24 @@
+<div>
+    <mat-button-toggle-group
+        id="colorizer-type"
+        [multiple]="false"
+        [ngModel]="getMeasurementType()"
+        (ngModelChange)="updateMeasurementType($event)"
+    >
+        <mat-button-toggle [value]="MeasurementType.Classification">Classification</mat-button-toggle>
+        <mat-button-toggle [value]="MeasurementType.Continuous">Continuous</mat-button-toggle>
+        <mat-button-toggle [value]="MeasurementType.Unitless">Unitless</mat-button-toggle>
+    </mat-button-toggle-group>
+
+    @if (measurement.type === MeasurementType.Classification) {
+        Classification
+    }
+
+    @if (measurement.type === MeasurementType.Continuous) {
+        Continuous
+    }
+
+    @if (measurement.type === MeasurementType.Unitless) {
+        Unitless
+    }
+</div>

@@ -56,6 +56,7 @@ import {BreakpointToCssStringPipe} from './util/pipes/breakpoint-to-css-string.p
 import {FxFlexDirective, FxLayoutAlignDirective, FxLayoutDirective, FxLayoutGapDirective} from './util/directives/flexbox-legacy.directive';
 import {VegaViewerComponent} from './plots/vega-viewer/vega-viewer.component';
 import {ConfirmationComponent} from './dialogs/confirmation/confirmation.component';
+import {MeasurementComponent} from './measurement/measurement.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -96,6 +97,7 @@ const COMMON_COMPONENTS = [
     ColorTableEditorComponent,
     ColorParamEditorComponent,
     ConfirmationComponent,
+    MeasurementComponent,
     RasterGradientSymbologyEditorComponent,
     RasterPaletteSymbologyEditorComponent,
     RasterSymbologyEditorComponent,
