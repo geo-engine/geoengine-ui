@@ -1,14 +1,17 @@
 import {Injectable} from '@angular/core';
-import {Configuration, DefaultConfig, SessionApi, UserSession} from '@geoengine/openapi-client';
-import {Observable, ReplaySubject, filter, first, map} from 'rxjs';
+import {Configuration, DefaultConfig, SessionApi, UserApi, UserSession} from '@geoengine/openapi-client';
+import {Observable, ReplaySubject, filter, first, firstValueFrom, map} from 'rxjs';
+import {UUID} from '../datasets/dataset.model';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
 @Injectable({
     providedIn: 'root',
 })
-export class SessionService {
+export class UserService {
     protected readonly session$ = new ReplaySubject<UserSession | undefined>(1);
+
+    userApi = new ReplaySubject<UserApi>(1);
 
     protected sessionInitialized = false;
 
@@ -25,6 +28,10 @@ export class SessionService {
             .catch(() => {
                 this.session$.next(undefined);
             });
+
+        this.getSessionStream().subscribe({
+            next: (session) => this.userApi.next(new UserApi(apiConfigurationWithAccessKey(session.id))),
+        });
     }
 
     getSessionTokenStream(): Observable<string> {
@@ -44,6 +51,16 @@ export class SessionService {
 
     isLoggedIn(): Observable<boolean> {
         return this.session$.pipe(first(), map(isDefined));
+    }
+
+    async getRoleByName(roleName: string): Promise<UUID> {
+        const userApi = await firstValueFrom(this.userApi);
+
+        return userApi
+            .getRoleByNameHandler({
+                name: roleName,
+            })
+            .then((role) => role.id);
     }
 
     /**

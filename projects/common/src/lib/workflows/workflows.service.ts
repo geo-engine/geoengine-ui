@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {TypedResultDescriptor, Workflow, WorkflowsApi} from '@geoengine/openapi-client';
 import {ReplaySubject, firstValueFrom} from 'rxjs';
-import {SessionService, apiConfigurationWithAccessKey} from '../session/session.service';
+import {UserService, apiConfigurationWithAccessKey} from '../user/user.service';
 import {UUID} from '../datasets/dataset.model';
 
 @Injectable({
@@ -10,7 +10,7 @@ import {UUID} from '../datasets/dataset.model';
 export class WorkflowsService {
     workflowApi = new ReplaySubject<WorkflowsApi>(1);
 
-    constructor(private sessionService: SessionService) {
+    constructor(private sessionService: UserService) {
         this.sessionService.getSessionStream().subscribe({
             next: (session) => this.workflowApi.next(new WorkflowsApi(apiConfigurationWithAccessKey(session.id))),
         });

@@ -8,8 +8,9 @@ export * from './lib/common.module';
 export * from './lib/config.service';
 export * from './lib/datasets/datasets.service';
 export * from './lib/uploads/uploads.service';
+export * from './lib/permissions/permissions.service';
 export * from './lib/plots/plots.service';
-export * from './lib/session/session.service';
+export * from './lib/user/user.service';
 export * from './lib/workflows/workflows.service';
 
 // Components
