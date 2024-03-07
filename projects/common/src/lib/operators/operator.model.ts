@@ -339,7 +339,25 @@ export type TemporalRasterAggregationDictAgregationType = 'min' | 'max' | 'first
 
 export interface RasterStackerDict extends OperatorDict {
     type: 'RasterStacker';
-    params: Record<string, never>; // just an empty object (for now)
+    params: {
+        renameBands: RenameBandsDict;
+    };
+}
+
+export type RenameBandsDict = RenameBandsDefaultDict | RenameBandsSuffixDict | RenameBandsRenameDict;
+
+export interface RenameBandsDefaultDict {
+    type: 'default';
+}
+
+export interface RenameBandsSuffixDict {
+    type: 'suffix';
+    values: Array<string>;
+}
+
+export interface RenameBandsRenameDict {
+    type: 'rename';
+    values: Array<string>;
 }
 
 export interface RasterTypeConversionDict extends OperatorDict {
