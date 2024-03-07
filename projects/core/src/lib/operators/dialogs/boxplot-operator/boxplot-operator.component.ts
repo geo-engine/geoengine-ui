@@ -1,6 +1,6 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, ViewChild} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators, UntypedFormControl} from '@angular/forms';
-import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
+import {concat, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap, tap} from 'rxjs/operators';
@@ -17,6 +17,8 @@ import {
     VectorLayerMetadata,
 } from '@geoengine/common';
 import {TypedOperatorOperator} from '@geoengine/openapi-client';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {MultiLayerSelectionComponent} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 
 /**
  * Checks whether the layer is a vector layer (points, lines, polygons).
@@ -59,6 +61,9 @@ export class BoxPlotOperatorComponent implements AfterViewInit, OnDestroy {
     isVectorLayer$: Observable<boolean>;
 
     isRasterLayer$: Observable<boolean>;
+
+    @ViewChild('layerSelection') layerSelection!: LayerSelectionComponent;
+    @ViewChild('multiRasterSelection') multiRasterSelection: MultiLayerSelectionComponent | undefined;
 
     private subscriptions: Array<Subscription> = [];
 
@@ -168,9 +173,8 @@ export class BoxPlotOperatorComponent implements AfterViewInit, OnDestroy {
             });
         }
 
-        this.projectService
-            .getAutomaticallyProjectedOperatorsFromLayers(sources)
-            .pipe(
+        concat(
+            this.projectService.getAutomaticallyProjectedOperatorsFromLayers(sources).pipe(
                 mergeMap((inputOperators: Array<TypedOperatorOperator>) =>
                     this.projectService.registerWorkflow({
                         type: 'Plot',
@@ -193,12 +197,14 @@ export class BoxPlotOperatorComponent implements AfterViewInit, OnDestroy {
                         }),
                     ),
                 ),
-            )
-            .subscribe(
-                () => {
-                    // success
-                },
-                (error) => this.notificationService.error(error),
-            );
+            ),
+            this.layerSelection.deleteIfSelected(),
+            this.multiRasterSelection ? this.multiRasterSelection.deleteIfSelected() : of(),
+        ).subscribe(
+            () => {
+                // success
+            },
+            (error) => this.notificationService.error(error),
+        );
     }
 }

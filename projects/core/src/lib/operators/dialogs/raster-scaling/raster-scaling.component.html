@@ -7,7 +7,7 @@
         </a>
 
         <ng-container operatorInput>
-            <geoengine-layer-selection [types]="inputTypes" formControlName="layer"></geoengine-layer-selection>
+            <geoengine-layer-selection #layerSelection [types]="inputTypes" formControlName="layer"></geoengine-layer-selection>
         </ng-container>
 
         <a mat-icon-button operatorParametersIcon href="https://docs.geoengine.io/operators/rasterscaling.html" target="_blank">

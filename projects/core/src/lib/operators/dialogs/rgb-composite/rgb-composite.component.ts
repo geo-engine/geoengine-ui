@@ -1,6 +1,6 @@
 import {map, mergeMap, tap} from 'rxjs/operators';
-import {BehaviorSubject, Observable, combineLatest, firstValueFrom, from} from 'rxjs';
-import {AfterViewInit, ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {BehaviorSubject, Observable, combineLatest, firstValueFrom, from, concat} from 'rxjs';
+import {AfterViewInit, ChangeDetectionStrategy, Component, Input, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {geoengineValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
@@ -24,6 +24,7 @@ import {
 } from '@geoengine/common';
 
 import {TypedOperatorOperator, Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {MultiLayerSelectionComponent} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 
 interface RgbCompositeForm {
     rasterLayers: FormControl<Array<RasterLayer> | undefined>;
@@ -93,6 +94,8 @@ export class RgbaCompositeComponent implements AfterViewInit {
     readonly isRasterStatsNotLoading$ = new BehaviorSubject<boolean>(true);
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
+
+    @ViewChild('layerSelection') layerSelection!: MultiLayerSelectionComponent;
 
     /**
      * DI of services and setup of observables for the template
@@ -214,8 +217,8 @@ export class RgbaCompositeComponent implements AfterViewInit {
 
         const symbology = new RasterSymbology(1, new SingleBandRasterColorizer(0, new RgbaColorizer()));
 
-        sourceOperators
-            .pipe(
+        concat(
+            sourceOperators.pipe(
                 tap({next: () => this.loading$.next(true)}),
                 mergeMap((operators: Array<TypedOperatorOperator>) => {
                     const workflow: WorkflowDict = {
@@ -254,20 +257,21 @@ export class RgbaCompositeComponent implements AfterViewInit {
                         }),
                     ),
                 ),
-            )
-            .subscribe({
-                next: () => {
-                    // everything worked well
+            ),
+            this.layerSelection.deleteIfSelected(),
+        ).subscribe({
+            next: () => {
+                // everything worked well
 
-                    this.loading$.next(false);
-                },
-                error: (error) => {
-                    const errorMsg = error.error.message;
-                    this.notificationService.error(errorMsg);
+                this.loading$.next(false);
+            },
+            error: (error) => {
+                const errorMsg = error.error.message;
+                this.notificationService.error(errorMsg);
 
-                    this.loading$.next(false);
-                },
-            });
+                this.loading$.next(false);
+            },
+        });
     }
 
     goToAddDataTab(): void {

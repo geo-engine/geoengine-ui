@@ -1,5 +1,5 @@
 import {map, mergeMap} from 'rxjs/operators';
-import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, concat, Observable, of, Subscription} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy, ViewChild} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
@@ -9,6 +9,7 @@ import {geoengineValidators} from '../../../util/form.validators';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 import {Layer, NeighborhoodAggregateDict, RasterLayer, RasterSymbology, ResultTypes} from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
 
 interface NeighborhoodAggregateForm {
     rasterLayer: FormControl<RasterLayer | undefined>;
@@ -59,6 +60,8 @@ export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy 
 
     @ViewChild(SymbologyCreatorComponent)
     readonly symbologyCreator!: SymbologyCreatorComponent;
+
+    @ViewChild('layerSelection') layerSelection!: LayerSelectionComponent;
 
     readonly subscriptions: Array<Subscription> = [];
 
@@ -177,9 +180,8 @@ export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy 
 
         this.loading$.next(true);
 
-        this.projectService
-            .getAutomaticallyProjectedOperatorsFromLayers([rasterLayer])
-            .pipe(
+        concat(
+            this.projectService.getAutomaticallyProjectedOperatorsFromLayers([rasterLayer]).pipe(
                 mergeMap(([raster]) => {
                     const workflow: WorkflowDict = {
                         type: 'Raster',
@@ -212,23 +214,24 @@ export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy 
                         }),
                     ),
                 ),
-            )
-            .subscribe({
-                next: () => {
-                    // everything worked well
+            ),
+            this.layerSelection.deleteIfSelected(),
+        ).subscribe({
+            next: () => {
+                // everything worked well
 
-                    this.lastError$.next(undefined);
+                this.lastError$.next(undefined);
 
-                    this.loading$.next(false);
-                },
-                error: (error) => {
-                    const errorMsg = error.error.message;
+                this.loading$.next(false);
+            },
+            error: (error) => {
+                const errorMsg = error.error.message;
 
-                    this.lastError$.next(errorMsg);
+                this.lastError$.next(errorMsg);
 
-                    this.loading$.next(false);
-                },
-            });
+                this.loading$.next(false);
+            },
+        });
     }
 
     goToAddDataTab(): void {

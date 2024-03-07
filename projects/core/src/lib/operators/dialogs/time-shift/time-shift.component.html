@@ -7,7 +7,7 @@
         </a>
 
         <ng-container operatorInput>
-            <geoengine-layer-selection [types]="inputTypes" formControlName="source"></geoengine-layer-selection>
+            <geoengine-layer-selection #layerSelection [types]="inputTypes" formControlName="source"></geoengine-layer-selection>
         </ng-container>
 
         <a mat-icon-button operatorParametersIcon href="https://docs.geoengine.io/operators/timeshift.html" target="_blank">

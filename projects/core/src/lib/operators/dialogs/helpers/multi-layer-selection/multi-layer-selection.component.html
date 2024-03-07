@@ -34,6 +34,7 @@
             [layerMetadata]="layerDetails[i].metadata"
             *ngIf="layerDetails[i].expanded"
         ></geoengine-layer-collection-layer-details>
+        <mat-checkbox (click)="toggleRemoveAfterCreation(i)">Remove after operator creation</mat-checkbox>
     </ng-container>
 </div>
 <ng-template #noInputAvailable>

@@ -40,6 +40,7 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
 
     expanded = false;
     metadata?: LayerMetadata;
+    removeAfterCreation = false;
 
     private subscriptions: Array<Subscription> = [];
 
@@ -145,6 +146,10 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
         this.expanded = false;
     }
 
+    toggleRemoveAfterCreation(): void {
+        this.removeAfterCreation = !this.removeAfterCreation;
+    }
+
     toggleExpand(): void {
         if (this.selectedLayer.value) {
             this.expanded = !this.expanded;
@@ -155,5 +160,12 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
                 });
             }
         }
+    }
+
+    deleteIfSelected(): Observable<void> {
+        if (this.removeAfterCreation) {
+            return this.projectService.removeLayer(this.selectedLayer.value!);
+        }
+        return of();
     }
 }

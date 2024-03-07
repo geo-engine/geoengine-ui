@@ -1,6 +1,6 @@
-import {Component, ChangeDetectionStrategy, OnDestroy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnDestroy, ViewChild} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
+import {combineLatest, concat, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap} from 'rxjs/operators';
 import {UUID} from '../../../backend/backend.model';
@@ -26,6 +26,7 @@ import {
     extentToBboxDict,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
 interface ColumnRangeFilterForm {
     layer: FormControl<Layer | null>;
     name: FormControl<string>;
@@ -55,6 +56,8 @@ export class ColumnRangeFilterComponent implements OnDestroy {
     attributes$ = new ReplaySubject<Array<string>>(1);
 
     form: FormGroup<ColumnRangeFilterForm>;
+
+    @ViewChild('layerSelection') layerSelection!: LayerSelectionComponent;
 
     private subscriptions: Array<Subscription> = [];
     private columnTypes = new Map<string, VectorColumnDataType | undefined>();
@@ -220,15 +223,15 @@ export class ColumnRangeFilterComponent implements OnDestroy {
         const inputLayer = this.form.controls['layer'].value as Layer;
         const filterValues = this.filters.value;
 
-        this.projectService
-            .getWorkflow(inputLayer.workflowId)
-            .pipe(
+        concat(
+            this.projectService.getWorkflow(inputLayer.workflowId).pipe(
                 mergeMap((inputWorkflow: WorkflowDict) =>
                     this.projectService.registerWorkflow(this.createWorkflow(filterValues, 0, inputWorkflow)),
                 ),
                 mergeMap((workflowId) => this.createLayer(workflowId, name)),
-            )
-            .subscribe();
+            ),
+            this.layerSelection.deleteIfSelected(),
+        ).subscribe();
     }
 
     changeAttributeValue($event: string, filterIndex: number): void {

@@ -1,12 +1,13 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
-import {Observable} from 'rxjs';
+import {concat, Observable} from 'rxjs';
 import {MeanRasterPixelValuesOverTimeDict, MeanRasterPixelValuesOverTimeParams, Plot, RasterLayer, ResultTypes} from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
 
 type TimePosition = 'start' | 'center' | 'end';
 
@@ -44,6 +45,8 @@ export class MeanRasterPixelValuesOverTimeDialogComponent implements AfterViewIn
 
     form: UntypedFormGroup;
     disallowSubmit: Observable<boolean>;
+
+    @ViewChild('layerSelection') layerSelection!: LayerSelectionComponent;
 
     /**
      * DI for services
@@ -85,9 +88,8 @@ export class MeanRasterPixelValuesOverTimeDialogComponent implements AfterViewIn
             area,
         };
 
-        this.projectService
-            .getWorkflow(inputLayer.workflowId)
-            .pipe(
+        concat(
+            this.projectService.getWorkflow(inputLayer.workflowId).pipe(
                 mergeMap((inputWorkflow: WorkflowDict) =>
                     this.projectService.registerWorkflow({
                         type: 'Plot',
@@ -108,12 +110,13 @@ export class MeanRasterPixelValuesOverTimeDialogComponent implements AfterViewIn
                         }),
                     ),
                 ),
-            )
-            .subscribe(
-                () => {
-                    // success
-                },
-                (error) => this.notificationService.error(error),
-            );
+            ),
+            this.layerSelection.deleteIfSelected(),
+        ).subscribe(
+            () => {
+                // success
+            },
+            (error) => this.notificationService.error(error),
+        );
     }
 }

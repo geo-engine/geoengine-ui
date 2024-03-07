@@ -7,7 +7,7 @@
         </a>
 
         <ng-container operatorInput>
-            <geoengine-layer-selection [types]="allowedLayerTypes" formControlName="source"></geoengine-layer-selection>
+            <geoengine-layer-selection #layerSelection [types]="allowedLayerTypes" formControlName="source"></geoengine-layer-selection>
         </ng-container>
 
         <a mat-icon-button operatorParametersIcon href="https://docs.geoengine.io/operators/vectorexpression.html" target="_blank">
@@ -46,7 +46,7 @@
                         <div class="attributeRow" fxLayout="row" fxFlex>
                             <mat-form-field>
                                 <mat-select placeholder="Attribute" [formControl]="column">
-                                    <!-- we need to provide the current value because it 
+                                    <!-- we need to provide the current value because it
                                         won't be in `availableAttributes$` anymore -->
                                     @if (column.value !== null) {
                                         <mat-option [value]="column.value">{{ column.value }}</mat-option>

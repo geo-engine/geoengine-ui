@@ -13,6 +13,7 @@
     </button>
 </div>
 <geoengine-layer-collection-layer-details [layerMetadata]="metadata" *ngIf="expanded"></geoengine-layer-collection-layer-details>
+<mat-checkbox (click)="toggleRemoveAfterCreation()">Remove after operator creation</mat-checkbox>
 <ng-template #noInputAvailable>
     <p>No Input Available</p>
 </ng-template>

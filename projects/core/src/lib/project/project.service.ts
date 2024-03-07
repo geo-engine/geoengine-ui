@@ -745,7 +745,7 @@ export class ProjectService {
     removeLayer(layer: Layer): Observable<void> {
         // TODO: un-select selected layer
 
-        const result = this.getProjectOnce().pipe(
+        return this.getProjectOnce().pipe(
             mergeMap((project) => {
                 const layers = project.layers.filter((l) => l.id !== layer.id);
 
@@ -762,8 +762,6 @@ export class ProjectService {
                 this.layerState$.delete(layer.id);
             }),
         );
-
-        return subscribeAndProvide(result);
     }
 
     /**

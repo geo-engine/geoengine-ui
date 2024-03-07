@@ -1,12 +1,13 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {geoengineValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
 import {mergeMap} from 'rxjs/operators';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, concat} from 'rxjs';
 import {NotificationService} from '../../../notification.service';
 import {Layer, LineSimplificationDict, ResultTypes, VectorLayer} from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
 
 interface LineSimplificationForm {
     name: FormControl<string>;
@@ -32,6 +33,8 @@ export class LineSimplificationComponent implements OnInit {
     readonly form: FormGroup<LineSimplificationForm>;
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
+
+    @ViewChild('layerSelection') layerSelection!: LayerSelectionComponent;
 
     constructor(
         private readonly projectService: ProjectService,
@@ -73,9 +76,8 @@ export class LineSimplificationComponent implements OnInit {
 
         this.loading$.next(true);
 
-        this.projectService
-            .getWorkflow(vectorLayer.workflowId)
-            .pipe(
+        concat(
+            this.projectService.getWorkflow(vectorLayer.workflowId).pipe(
                 mergeMap((sourceWorkflow) => {
                     const workflow: WorkflowDict = {
                         type: 'Vector',
@@ -103,16 +105,17 @@ export class LineSimplificationComponent implements OnInit {
                         }),
                     ),
                 ),
-            )
-            .subscribe({
-                next: () => {
-                    // success
-                    this.loading$.next(false);
-                },
-                error: (error) => {
-                    this.notificationService.error(error);
-                    this.loading$.next(false);
-                },
-            });
+            ),
+            this.layerSelection.deleteIfSelected(),
+        ).subscribe({
+            next: () => {
+                // success
+                this.loading$.next(false);
+            },
+            error: (error) => {
+                this.notificationService.error(error);
+                this.loading$.next(false);
+            },
+        });
     }
 }

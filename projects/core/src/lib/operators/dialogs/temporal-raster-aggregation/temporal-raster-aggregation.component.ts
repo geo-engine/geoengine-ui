@@ -5,7 +5,7 @@ import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {TimeStepGranularityDict, UUID} from '../../../backend/backend.model';
-import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
+import {BehaviorSubject, combineLatest, concat, Observable, of} from 'rxjs';
 import moment, {Moment} from 'moment';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 import {
@@ -19,6 +19,7 @@ import {
     timeStepGranularityOptions,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
 
 interface TemporalRasterAggregationForm {
     name: FormControl<string>;
@@ -53,6 +54,8 @@ export class TemporalRasterAggregationComponent implements AfterViewInit {
 
     @ViewChild(SymbologyCreatorComponent)
     readonly symbologyCreator!: SymbologyCreatorComponent;
+
+    @ViewChild('layerSelection') layerSelection!: LayerSelectionComponent;
 
     form: FormGroup<TemporalRasterAggregationForm>;
     disallowSubmit: Observable<boolean>;
@@ -127,9 +130,8 @@ export class TemporalRasterAggregationComponent implements AfterViewInit {
 
         this.loading$.next(true);
 
-        this.projectService
-            .getWorkflow(inputLayer.workflowId)
-            .pipe(
+        concat(
+            this.projectService.getWorkflow(inputLayer.workflowId).pipe(
                 mergeMap((inputWorkflow: WorkflowDict) =>
                     this.projectService.registerWorkflow({
                         type: 'Raster',
@@ -168,16 +170,17 @@ export class TemporalRasterAggregationComponent implements AfterViewInit {
                         }),
                     ),
                 ),
-            )
-            .subscribe({
-                next: () => {
-                    // success
-                    this.loading$.next(false);
-                },
-                error: (error) => {
-                    this.notificationService.error(error);
-                    this.loading$.next(false);
-                },
-            });
+            ),
+            this.layerSelection.deleteIfSelected(),
+        ).subscribe({
+            next: () => {
+                // success
+                this.loading$.next(false);
+            },
+            error: (error) => {
+                this.notificationService.error(error);
+                this.loading$.next(false);
+            },
+        });
     }
 }

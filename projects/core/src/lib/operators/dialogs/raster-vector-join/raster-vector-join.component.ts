@@ -1,12 +1,12 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, ViewChild} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {Subscription} from 'rxjs';
+import {concat, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {filter, map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
-import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
+import {LetterNumberConverter, MultiLayerSelectionComponent} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {
     PointSymbology,
     RasterLayer,
@@ -17,6 +17,7 @@ import {
     VectorLayer,
     VectorLayerMetadata,
 } from '@geoengine/common';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
 
 type TemporalAggregation = 'none' | 'first' | 'mean';
 type FeatureAggregation = 'first' | 'mean';
@@ -45,6 +46,9 @@ export class RasterVectorJoinComponent implements OnDestroy {
     allowedRasterTypes = [ResultTypes.RASTER];
 
     form: FormGroup<RasterVectorJoinForm>;
+
+    @ViewChild('vectorSelection') vectorSelection!: LayerSelectionComponent;
+    @ViewChild('rasterSelection') rasterSelection!: MultiLayerSelectionComponent;
 
     private vectorColumns: Array<string> = [];
     private valueNameUserChanges: Array<boolean> = [];
@@ -118,8 +122,8 @@ export class RasterVectorJoinComponent implements OnDestroy {
 
         const sourceOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers([vectorLayer, ...rasterLayers]);
 
-        sourceOperators
-            .pipe(
+        concat(
+            sourceOperators.pipe(
                 mergeMap(([vectorOperator, ...rasterOperators]) =>
                     this.projectService.registerWorkflow({
                         type: 'Vector',
@@ -144,13 +148,15 @@ export class RasterVectorJoinComponent implements OnDestroy {
                         }),
                     ),
                 ),
-            )
-            .subscribe(
-                () => {
-                    // success
-                },
-                (error) => this.notificationService.error(error),
-            );
+            ),
+            this.vectorSelection.deleteIfSelected(),
+            this.rasterSelection.deleteIfSelected(),
+        ).subscribe(
+            () => {
+                // success
+            },
+            (error) => this.notificationService.error(error),
+        );
     }
 
     toLetters(number: number): string {

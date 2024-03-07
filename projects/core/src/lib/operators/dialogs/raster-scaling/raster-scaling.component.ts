@@ -5,10 +5,11 @@ import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {UUID} from '../../../backend/backend.model';
-import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
+import {BehaviorSubject, combineLatest, concat, Observable, of} from 'rxjs';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 import {RasterDataTypes, RasterLayer, RasterMetadataKey, RasterSymbology, RasterUnScalingDict, ResultTypes} from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
 
 interface RasterScalingForm {
     name: FormControl<string>;
@@ -49,6 +50,8 @@ export class RasterScalingComponent implements AfterViewInit {
 
     @ViewChild(SymbologyCreatorComponent)
     readonly symbologyCreator!: SymbologyCreatorComponent;
+
+    @ViewChild('layerSelection') layerSelection!: LayerSelectionComponent;
 
     form: FormGroup<RasterScalingForm>;
     disallowSubmit: Observable<boolean>;
@@ -166,9 +169,8 @@ export class RasterScalingComponent implements AfterViewInit {
 
         this.loading$.next(true);
 
-        this.projectService
-            .getWorkflow(inputLayer.workflowId)
-            .pipe(
+        concat(
+            this.projectService.getWorkflow(inputLayer.workflowId).pipe(
                 mergeMap((inputWorkflow: WorkflowDict) =>
                     this.projectService.registerWorkflow({
                         type: 'Raster',
@@ -201,18 +203,19 @@ export class RasterScalingComponent implements AfterViewInit {
                         }),
                     ),
                 ),
-            )
-            .subscribe({
-                next: () => {
-                    // success
+            ),
+            this.layerSelection.deleteIfSelected(),
+        ).subscribe({
+            next: () => {
+                // success
 
-                    this.loading$.next(false);
-                },
-                error: (error) => {
-                    this.notificationService.error(error);
+                this.loading$.next(false);
+            },
+            error: (error) => {
+                this.notificationService.error(error);
 
-                    this.loading$.next(false);
-                },
-            });
+                this.loading$.next(false);
+            },
+        });
     }
 }

@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ViewChild} from '@angular/core';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {UntypedFormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
 import {geoengineValidators} from '../../../util/form.validators';
@@ -14,6 +14,8 @@ import {
     colorToDict,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {concat} from 'rxjs';
 
 /**
  * This component allows creating the point in polygon filter operator.
@@ -28,6 +30,9 @@ export class PointInPolygonFilterOperatorComponent {
     ResultTypes = ResultTypes;
 
     form: UntypedFormGroup;
+
+    @ViewChild('pointSelection') pointSelection!: LayerSelectionComponent;
+    @ViewChild('polygonSelection') polygonSelection!: LayerSelectionComponent;
 
     constructor(
         private randomColorService: RandomColorService,
@@ -49,8 +54,8 @@ export class PointInPolygonFilterOperatorComponent {
 
         const sourceOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers([pointsLayer, polygonsLayer]);
 
-        sourceOperators
-            .pipe(
+        concat(
+            sourceOperators.pipe(
                 map(([points, polygons]) => {
                     const workflow = {
                         type: 'Vector',
@@ -101,7 +106,9 @@ export class PointInPolygonFilterOperatorComponent {
                         )
                         .subscribe();
                 }),
-            )
-            .subscribe();
+            ),
+            this.pointSelection.deleteIfSelected(),
+            this.polygonSelection.deleteIfSelected(),
+        ).subscribe();
     }
 }

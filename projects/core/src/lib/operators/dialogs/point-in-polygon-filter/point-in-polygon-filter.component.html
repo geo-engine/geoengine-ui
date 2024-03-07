@@ -7,8 +7,16 @@
         </a>
 
         <ng-container operatorInput>
-            <geoengine-layer-selection [types]="[ResultTypes.POINTS]" formControlName="pointLayer"></geoengine-layer-selection>
-            <geoengine-layer-selection [types]="[ResultTypes.POLYGONS]" formControlName="polygonLayer"></geoengine-layer-selection>
+            <geoengine-layer-selection
+                #pointSelection
+                [types]="[ResultTypes.POINTS]"
+                formControlName="pointLayer"
+            ></geoengine-layer-selection>
+            <geoengine-layer-selection
+                #polygonSelection
+                [types]="[ResultTypes.POLYGONS]"
+                formControlName="polygonLayer"
+            ></geoengine-layer-selection>
         </ng-container>
 
         <a mat-icon-button operatorParametersIcon href="https://docs.geoengine.io/operators/pointinpolygon.html" target="_blank">

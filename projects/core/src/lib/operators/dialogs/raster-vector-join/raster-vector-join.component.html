@@ -7,8 +7,13 @@
         </a>
 
         <ng-container operatorInput>
-            <geoengine-layer-selection [types]="allowedVectorTypes" formControlName="vectorLayer"></geoengine-layer-selection>
+            <geoengine-layer-selection
+                #vectorSelection
+                [types]="allowedVectorTypes"
+                formControlName="vectorLayer"
+            ></geoengine-layer-selection>
             <geoengine-multi-layer-selection
+                #rasterSelection
                 [types]="allowedRasterTypes"
                 formControlName="rasterLayers"
                 [min]="minNumberOfRasterInputs"

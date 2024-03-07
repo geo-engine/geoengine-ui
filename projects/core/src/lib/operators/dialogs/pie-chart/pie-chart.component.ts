@@ -1,12 +1,13 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, ViewChild} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {of, ReplaySubject, Subscription} from 'rxjs';
+import {concat, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {PieChartCountParams, PieChartDict, Plot, ResultTypes, VectorLayer, VectorLayerMetadata} from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
 
 interface PieChartForm {
     name: FormControl<string>;
@@ -34,6 +35,8 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
     form: FormGroup<PieChartForm>;
 
     attributes$ = new ReplaySubject<Array<string>>(1);
+
+    @ViewChild('layerSelection') layerSelection!: LayerSelectionComponent;
 
     private subscriptions: Array<Subscription> = [];
 
@@ -116,9 +119,8 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
         const donut = this.form.controls['donut'].value;
         const outputName: string = this.form.controls['name'].value;
 
-        this.projectService
-            .getWorkflow(inputLayer.workflowId)
-            .pipe(
+        concat(
+            this.projectService.getWorkflow(inputLayer.workflowId).pipe(
                 mergeMap((inputWorkflow: WorkflowDict) =>
                     this.projectService.registerWorkflow({
                         type: 'Plot',
@@ -143,12 +145,13 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
                         }),
                     ),
                 ),
-            )
-            .subscribe(
-                () => {
-                    // success
-                },
-                (error) => this.notificationService.error(error),
-            );
+            ),
+            this.layerSelection.deleteIfSelected(),
+        ).subscribe(
+            () => {
+                // success
+            },
+            (error) => this.notificationService.error(error),
+        );
     }
 }

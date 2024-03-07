@@ -7,9 +7,10 @@
         </a>
 
         <ng-container operatorInput>
-            <geoengine-layer-selection [types]="inputTypes" formControlName="layer"></geoengine-layer-selection>
+            <geoengine-layer-selection #layerSelection [types]="inputTypes" formControlName="layer"></geoengine-layer-selection>
             <div *ngIf="isRasterLayer$ | async">
                 <geoengine-multi-layer-selection
+                    #multiRasterSelection
                     [types]="RASTER_TYPE"
                     [inputNaming]="rasterInputNaming"
                     title="Additional Rasters"

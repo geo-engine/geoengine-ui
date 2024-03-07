@@ -1,4 +1,4 @@
-import {combineLatest, Observable, ReplaySubject, Subject, BehaviorSubject, Subscription, of, zip, forkJoin} from 'rxjs';
+import {combineLatest, Observable, ReplaySubject, Subject, BehaviorSubject, Subscription, of, zip, forkJoin, concat} from 'rxjs';
 import {first, map, mergeMap} from 'rxjs/operators';
 import {
     Component,
@@ -97,6 +97,8 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
     layersAtMax: Observable<boolean>;
 
     layerDetails: Array<LayerDetails> = [];
+
+    removeAfterCreation: boolean[] = [];
 
     private selectionSubscription: Subscription;
     private layerChangesSubscription?: Subscription;
@@ -199,6 +201,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
                     const difference = amountOfLayers - this.max;
                     this.selectedLayers.next(selectedLayers.slice(0, amountOfLayers - difference));
                     this.layerDetails = this.layerDetails.slice(0, amountOfLayers - difference);
+                    this.removeAfterCreation = this.removeAfterCreation.slice(0, amountOfLayers - difference);
                 } else if (this.min > amountOfLayers) {
                     // add selected layers
                     const difference = this.min - amountOfLayers;
@@ -208,6 +211,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
                             .fill(null)
                             .map(() => ({expanded: false})),
                     );
+                    this.removeAfterCreation = this.removeAfterCreation.concat(Array(difference).fill(false));
                 }
             });
     }
@@ -279,6 +283,18 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
                 });
             }
         }
+    }
+
+    toggleRemoveAfterCreation(i: number): void {
+        this.removeAfterCreation[i] = !this.removeAfterCreation[i];
+    }
+
+    deleteIfSelected(): Observable<void> {
+        return concat(
+            ...this.removeAfterCreation
+                .filter((del) => del)
+                .map((_, index) => this.projectService.removeLayer(this.selectedLayers.value[index])),
+        );
     }
 
     private layersForInitialSelection(layers: Array<Layer>, blacklist: Array<Layer>, amount: number): Array<Layer> {

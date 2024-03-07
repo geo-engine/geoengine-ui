@@ -1,11 +1,11 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
 import {FormControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
-import {BehaviorSubject, EMPTY, Observable, combineLatest, of} from 'rxjs';
-import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
+import {BehaviorSubject, EMPTY, Observable, combineLatest, of, concat} from 'rxjs';
+import {LetterNumberConverter, MultiLayerSelectionComponent} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {
     RasterDataType,
     RasterDataTypes,
@@ -38,6 +38,8 @@ export class RasterStackerComponent implements AfterViewInit {
     readonly outputDataTypes$: Observable<Array<[RasterDataType, string]>>;
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
+
+    @ViewChild('layerSelection') layerSelection!: MultiLayerSelectionComponent;
 
     private inputDataTypes: Array<RasterDataType> = [];
 
@@ -168,8 +170,8 @@ export class RasterStackerComponent implements AfterViewInit {
 
         this.loading$.next(true);
 
-        convertedOperators
-            .pipe(
+        concat(
+            convertedOperators.pipe(
                 mergeMap((operators: Array<TypedOperatorOperator>) =>
                     this.projectService.registerWorkflow({
                         type: 'Raster',
@@ -193,17 +195,18 @@ export class RasterStackerComponent implements AfterViewInit {
                         }),
                     ),
                 ),
-            )
-            .subscribe({
-                next: () => {
-                    this.loading$.next(false);
-                },
-                error: (error) => {
-                    const errorMsg = error.error.message;
+            ),
+            this.layerSelection.deleteIfSelected(),
+        ).subscribe({
+            next: () => {
+                this.loading$.next(false);
+            },
+            error: (error) => {
+                const errorMsg = error.error.message;
 
-                    this.notificationService.error(errorMsg);
-                    this.loading$.next(false);
-                },
-            });
+                this.notificationService.error(errorMsg);
+                this.loading$.next(false);
+            },
+        });
     }
 }

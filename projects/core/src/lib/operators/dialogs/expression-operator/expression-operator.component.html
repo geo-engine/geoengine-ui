@@ -7,7 +7,7 @@
         </a>
 
         <ng-container operatorInput>
-            <geoengine-layer-selection [types]="RASTER_TYPE" formControlName="rasterLayer"></geoengine-layer-selection>
+            <geoengine-layer-selection #layerSelection [types]="RASTER_TYPE" formControlName="rasterLayer"></geoengine-layer-selection>
         </ng-container>
 
         <a mat-icon-button operatorParametersIcon href="https://docs.geoengine.io/operators/expression.html" target="_blank">

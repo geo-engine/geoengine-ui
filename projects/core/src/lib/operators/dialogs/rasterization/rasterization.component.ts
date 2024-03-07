@@ -4,7 +4,7 @@ import {geoengineValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
 import {mergeMap} from 'rxjs/operators';
 import {UUID} from '../../../backend/backend.model';
-import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, concat, Observable, of, Subscription} from 'rxjs';
 import {NotificationService} from '../../../notification.service';
 import {
     DensityRasterizationDict,
@@ -17,6 +17,7 @@ import {
 } from '@geoengine/common';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
 
 interface RasterizationForm {
     name: FormControl<string>;
@@ -62,6 +63,8 @@ export class RasterizationComponent implements OnDestroy {
 
     @ViewChild(SymbologyCreatorComponent)
     readonly symbologyCreator!: SymbologyCreatorComponent;
+
+    @ViewChild('layerSelection') layerSelection!: LayerSelectionComponent;
 
     constructor(
         private projectService: ProjectService,
@@ -129,9 +132,8 @@ export class RasterizationComponent implements OnDestroy {
 
         this.loading$.next(true);
 
-        this.projectService
-            .getAutomaticallyProjectedOperatorsFromLayers([pointsLayer])
-            .pipe(
+        concat(
+            this.projectService.getAutomaticallyProjectedOperatorsFromLayers([pointsLayer]).pipe(
                 mergeMap(([points]) => {
                     const workflow: WorkflowDict = {
                         type: 'Raster',
@@ -160,17 +162,18 @@ export class RasterizationComponent implements OnDestroy {
                         }),
                     ),
                 ),
-            )
-            .subscribe({
-                next: () => {
-                    // success
-                    this.loading$.next(false);
-                },
-                error: (error) => {
-                    this.notificationService.error(error);
-                    this.loading$.next(false);
-                },
-            });
+            ),
+            this.layerSelection.deleteIfSelected(),
+        ).subscribe({
+            next: () => {
+                // success
+                this.loading$.next(false);
+            },
+            error: (error) => {
+                this.notificationService.error(error);
+                this.loading$.next(false);
+            },
+        });
     }
 
     protected createRasterizationType(selectedIndex: number): FormControl<number> {

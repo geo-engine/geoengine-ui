@@ -8,6 +8,7 @@
 
         <ng-container operatorInput>
             <geoengine-multi-layer-selection
+                #layerSelection
                 [types]="RASTER_TYPE"
                 formControlName="rasterLayers"
                 [min]="3"

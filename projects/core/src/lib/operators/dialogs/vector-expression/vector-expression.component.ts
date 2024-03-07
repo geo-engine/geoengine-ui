@@ -1,8 +1,8 @@
-import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy, ViewChild} from '@angular/core';
 import {Validators, FormBuilder, FormControl, FormArray, FormGroup, AsyncValidatorFn, AbstractControl} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
-import {BehaviorSubject, combineLatest, firstValueFrom, Observable, of, ReplaySubject, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, concat, firstValueFrom, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {map, mergeMap, startWith} from 'rxjs/operators';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {
@@ -23,6 +23,7 @@ import {
 } from '@geoengine/common';
 
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
 
 const MAX_NUMBER_OF_COLUMNS = 8;
 const ALLOWED_EXPRESSION_COLUMN_TYPES = [VectorColumnDataTypes.Float, VectorColumnDataTypes.Int];
@@ -72,6 +73,8 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
     readonly lastError$ = new BehaviorSubject<string | undefined>(undefined);
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
+
+    @ViewChild('layerSelection') layerSelection!: LayerSelectionComponent;
 
     protected readonly allAttributes$ = new ReplaySubject<Immutable.Map<string, VectorColumnDataType>>(1);
 
@@ -272,9 +275,8 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
 
         const layerName = this.form.controls.layerName.value;
 
-        this.projectService
-            .getWorkflow(sourceLayer.workflowId)
-            .pipe(
+        concat(
+            this.projectService.getWorkflow(sourceLayer.workflowId).pipe(
                 mergeMap(({operator: vector}: WorkflowDict) =>
                     this.projectService.registerWorkflow({
                         type: 'Vector',
@@ -309,19 +311,20 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
                         }),
                     ),
                 ),
-            )
-            .subscribe({
-                next: () => {
-                    // everything worked well
-                    this.lastError$.next(undefined);
-                    this.loading$.next(false);
-                },
-                error: (error) => {
-                    const errorMsg = error.error.message;
-                    this.lastError$.next(errorMsg);
-                    this.loading$.next(false);
-                },
-            });
+            ),
+            this.layerSelection.deleteIfSelected(),
+        ).subscribe({
+            next: () => {
+                // everything worked well
+                this.lastError$.next(undefined);
+                this.loading$.next(false);
+            },
+            error: (error) => {
+                const errorMsg = error.error.message;
+                this.lastError$.next(errorMsg);
+                this.loading$.next(false);
+            },
+        });
     }
 
     ngOnDestroy(): void {

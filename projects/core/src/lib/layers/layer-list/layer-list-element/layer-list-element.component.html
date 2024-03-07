@@ -24,7 +24,7 @@
                 <mat-icon>merge_type</mat-icon>
                 <span class="mat-body-2">Lineage</span>
             </button>
-            <button mat-menu-item (click)="projectService.removeLayer(layer)">
+            <button mat-menu-item (click)="projectService.removeLayer(layer).subscribe()">
                 <mat-icon>delete</mat-icon>
                 <span class="mat-body-2">Remove</span>
             </button>

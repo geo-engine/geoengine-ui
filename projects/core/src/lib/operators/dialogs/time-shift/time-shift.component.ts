@@ -1,11 +1,11 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {TimeStepGranularityDict} from '../../../backend/backend.model';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, concat, Observable} from 'rxjs';
 import moment from 'moment';
 import {
     AbsoluteTimeShiftDictParams,
@@ -21,6 +21,7 @@ import {
     timeStepGranularityOptions,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
 
 type TimeShiftFormType = 'relative' | 'absolute';
 
@@ -53,6 +54,8 @@ export class TimeShiftComponent implements AfterViewInit {
 
     form: FormGroup<TimeShiftForm>;
     disallowSubmit: Observable<boolean>;
+
+    @ViewChild('layerSelection') layerSelection!: LayerSelectionComponent;
 
     constructor(
         private readonly projectService: ProjectService,
@@ -167,9 +170,8 @@ export class TimeShiftComponent implements AfterViewInit {
 
         this.loading$.next(true);
 
-        this.projectService
-            .getWorkflow(sourceLayer.workflowId)
-            .pipe(
+        concat(
+            this.projectService.getWorkflow(sourceLayer.workflowId).pipe(
                 mergeMap((inputWorkflow: WorkflowDict) =>
                     this.projectService.registerWorkflow({
                         type: layerType,
@@ -207,16 +209,17 @@ export class TimeShiftComponent implements AfterViewInit {
                         throw Error(`Invalid layer type ${layerType}`);
                     }
                 }),
-            )
-            .subscribe({
-                next: () => {
-                    // success
-                    this.loading$.next(false);
-                },
-                error: (error) => {
-                    this.notificationService.error(error);
-                    this.loading$.next(false);
-                },
-            });
+            ),
+            this.layerSelection.deleteIfSelected(),
+        ).subscribe({
+            next: () => {
+                // success
+                this.loading$.next(false);
+            },
+            error: (error) => {
+                this.notificationService.error(error);
+                this.loading$.next(false);
+            },
+        });
     }
 }

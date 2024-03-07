@@ -5,11 +5,12 @@ import {geoengineValidators} from '../../../util/form.validators';
 import {mergeMap, tap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {UUID} from '../../../backend/backend.model';
-import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, concat, Observable, of, Subscription} from 'rxjs';
 import {Layer} from 'ol/layer';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 import {InputResolutionDict, InterpolationDict, RasterDataTypes, RasterLayer, RasterSymbology, ResultTypes} from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
 
 @Component({
     selector: 'geoengine-interpolation',
@@ -29,6 +30,8 @@ export class InterpolationComponent implements AfterViewInit, OnDestroy {
 
     @ViewChild(SymbologyCreatorComponent)
     readonly symbologyCreator!: SymbologyCreatorComponent;
+
+    @ViewChild('layerSelection') layerSelection!: LayerSelectionComponent;
 
     form: FormGroup;
 
@@ -95,9 +98,8 @@ export class InterpolationComponent implements AfterViewInit, OnDestroy {
 
         this.loading$.next(true);
 
-        this.projectService
-            .getWorkflow(inputLayer.workflowId)
-            .pipe(
+        concat(
+            this.projectService.getWorkflow(inputLayer.workflowId).pipe(
                 mergeMap((inputWorkflow: WorkflowDict) =>
                     this.projectService.registerWorkflow({
                         type: 'Raster',
@@ -128,19 +130,20 @@ export class InterpolationComponent implements AfterViewInit, OnDestroy {
                         }),
                     ),
                 ),
-            )
-            .subscribe({
-                next: () => {
-                    // success
+            ),
+            this.layerSelection.deleteIfSelected(),
+        ).subscribe({
+            next: () => {
+                // success
 
-                    this.loading$.next(false);
-                },
-                error: (error) => {
-                    this.notificationService.error(error.error ? error.error.message : error);
+                this.loading$.next(false);
+            },
+            error: (error) => {
+                this.notificationService.error(error.error ? error.error.message : error);
 
-                    this.loading$.next(false);
-                },
-            });
+                this.loading$.next(false);
+            },
+        });
     }
 
     private getInputResolution(): InputResolutionDict {

@@ -1,8 +1,8 @@
-import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy, ViewChild} from '@angular/core';
 import {UntypedFormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
 
 import {ProjectService} from '../../../project/project.service';
-import {of, ReplaySubject, Subscription} from 'rxjs';
+import {concat, of, ReplaySubject, Subscription} from 'rxjs';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {geoengineValidators} from '../../../util/form.validators';
@@ -16,6 +16,7 @@ import {
     VectorLayerMetadata,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
 
 interface AttributeCandidates {
     id: Array<string>;
@@ -36,6 +37,8 @@ export class FeatureAttributeOvertimeComponent implements AfterViewInit, OnDestr
     readonly subscriptions: Array<Subscription> = [];
 
     form: UntypedFormGroup;
+
+    @ViewChild('layerSelection') layerSelection!: LayerSelectionComponent;
 
     constructor(
         private formBuilder: UntypedFormBuilder,
@@ -99,9 +102,8 @@ export class FeatureAttributeOvertimeComponent implements AfterViewInit, OnDestr
 
         const outputName: string = this.form.controls['name'].value;
 
-        this.projectService
-            .getWorkflow(inputLayer.workflowId)
-            .pipe(
+        concat(
+            this.projectService.getWorkflow(inputLayer.workflowId).pipe(
                 mergeMap((inputWorkflow: WorkflowDict) =>
                     this.projectService.registerWorkflow({
                         type: 'Plot',
@@ -125,13 +127,14 @@ export class FeatureAttributeOvertimeComponent implements AfterViewInit, OnDestr
                         }),
                     ),
                 ),
-            )
-            .subscribe(
-                () => {
-                    // success
-                },
-                (error) => this.notificationService.error(error),
-            );
+            ),
+            this.layerSelection.deleteIfSelected(),
+        ).subscribe(
+            () => {
+                // success
+            },
+            (error) => this.notificationService.error(error),
+        );
     }
 
     ngOnDestroy(): void {

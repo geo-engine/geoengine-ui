@@ -1,5 +1,5 @@
 import {map, mergeMap} from 'rxjs/operators';
-import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
+import {BehaviorSubject, combineLatest, concat, Observable, of} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, Input, ViewChild} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 import {geoengineValidators} from '../../../util/form.validators';
@@ -21,6 +21,7 @@ import {
 } from '@geoengine/common';
 import {SymbologyCreationType, SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
 
 interface ExpressionForm {
     rasterLayer: FormControl<RasterLayer | undefined>;
@@ -62,6 +63,8 @@ export class ExpressionOperatorComponent implements AfterViewInit {
 
     @ViewChild(SymbologyCreatorComponent)
     readonly symbologyCreator!: SymbologyCreatorComponent;
+
+    @ViewChild('layerSelection') layerSelection!: LayerSelectionComponent;
 
     /**
      * DI of services and setup of observables for the template
@@ -196,9 +199,8 @@ export class ExpressionOperatorComponent implements AfterViewInit {
             return; // checked by form validator
         }
 
-        this.projectService
-            .getWorkflow(rasterLayer.workflowId)
-            .pipe(
+        concat(
+            this.projectService.getWorkflow(rasterLayer.workflowId).pipe(
                 mergeMap((inputWorkflow) => {
                     const workflow: WorkflowDict = {
                         type: 'Raster',
@@ -239,19 +241,20 @@ export class ExpressionOperatorComponent implements AfterViewInit {
                         throw new GeoEngineError('SymbologyError', 'The input Symbology must be a single band colorizer.');
                     }
                 }),
-            )
-            .subscribe({
-                next: () => {
-                    // everything worked well
-                    this.lastError$.next(undefined);
-                    this.loading$.next(false);
-                },
-                error: (error) => {
-                    const errorMsg = error.error.message;
-                    this.lastError$.next(errorMsg);
-                    this.loading$.next(false);
-                },
-            });
+            ),
+            this.layerSelection.deleteIfSelected(),
+        ).subscribe({
+            next: () => {
+                // everything worked well
+                this.lastError$.next(undefined);
+                this.loading$.next(false);
+            },
+            error: (error) => {
+                const errorMsg = error.error.message;
+                this.lastError$.next(errorMsg);
+                this.loading$.next(false);
+            },
+        });
     }
 
     goToAddDataTab(): void {
