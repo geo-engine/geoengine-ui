@@ -1,4 +1,5 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {
     ClassificationMeasurementWithType,
     ContinuousMeasurementWithType,
@@ -10,6 +11,11 @@ enum MeasurementType {
     Classification = 'classification',
     Continuous = 'continuous',
     Unitless = 'unitless',
+}
+
+interface AddClassForm {
+    key: FormControl<string>;
+    value: FormControl<string>;
 }
 
 @Component({
@@ -27,6 +33,17 @@ export class MeasurementComponent {
     classificationMeasurement?: ClassificationMeasurementWithType;
     continousMeasurement?: ContinuousMeasurementWithType;
     unitlessMeasurement?: UnitlessMeasurement;
+
+    addClassForm: FormGroup<AddClassForm> = new FormGroup<AddClassForm>({
+        key: new FormControl('', {
+            nonNullable: true,
+            validators: [Validators.required, Validators.minLength(1)],
+        }),
+        value: new FormControl('', {
+            nonNullable: true,
+            validators: [Validators.required, Validators.minLength(1)],
+        }),
+    });
 
     constructor() {
         if (!this.measurement) {
@@ -82,5 +99,27 @@ export class MeasurementComponent {
                 };
                 break;
         }
+    }
+
+    removeClass(key: string) {
+        if (!this.classificationMeasurement) {
+            return;
+        }
+
+        delete this.classificationMeasurement.classes[key];
+    }
+
+    addClass() {
+        if (!this.classificationMeasurement) {
+            return;
+        }
+
+        const key = this.addClassForm.controls.key.value;
+        const value = this.addClassForm.controls.value.value;
+
+        this.classificationMeasurement.classes[key] = value;
+
+        this.addClassForm.reset();
+        this.addClassForm.markAsPristine();
     }
 }

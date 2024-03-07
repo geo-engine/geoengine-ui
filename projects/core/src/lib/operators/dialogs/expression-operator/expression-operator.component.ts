@@ -11,6 +11,7 @@ import {GeoEngineError} from '../../../util/errors';
 import {
     ExpressionDict,
     Layer,
+    MeasurementComponent,
     RasterDataType,
     RasterDataTypes,
     RasterLayer,
@@ -20,7 +21,7 @@ import {
     SingleBandRasterColorizer,
 } from '@geoengine/common';
 import {SymbologyCreationType, SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
-import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {Measurement, Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 interface ExpressionForm {
     rasterLayer: FormControl<RasterLayer | undefined>;
@@ -28,6 +29,8 @@ interface ExpressionForm {
     dataType: FormControl<RasterDataType | undefined>;
     name: FormControl<string>;
     mapNoData: FormControl<boolean>;
+    outputBandName: FormControl<string>;
+    outputMeasurement: FormControl<Measurement | undefined>;
     symbologyCreation: FormControl<SymbologyCreationType>;
 }
 
@@ -45,6 +48,8 @@ export class ExpressionOperatorComponent implements AfterViewInit {
      * If the list is empty, show the following button.
      */
     @Input() dataListConfig?: SidenavConfig;
+
+    @ViewChild(MeasurementComponent) measurementComponent?: MeasurementComponent;
 
     readonly RASTER_TYPE = [ResultTypes.RASTER];
     readonly form: FormGroup<ExpressionForm>;
@@ -90,6 +95,13 @@ export class ExpressionOperatorComponent implements AfterViewInit {
             name: new FormControl('Expression', {
                 nonNullable: true,
                 validators: [Validators.required, geoengineValidators.notOnlyWhitespace],
+            }),
+            outputBandName: new FormControl('band', {
+                nonNullable: true,
+                validators: [Validators.required, geoengineValidators.notOnlyWhitespace],
+            }),
+            outputMeasurement: new FormControl<Measurement | undefined>(undefined, {
+                nonNullable: true,
             }),
             symbologyCreation: new FormControl(SymbologyCreationType.AS_INPUT, {
                 nonNullable: true,
@@ -192,6 +204,19 @@ export class ExpressionOperatorComponent implements AfterViewInit {
         const expression: string = this.form.controls['expression'].value;
         const rasterLayer: RasterLayer | undefined = this.form.controls['rasterLayer'].value;
         const mapNoData: boolean = this.form.controls['mapNoData'].value;
+        const outputBandName: string = this.form.controls['outputBandName'].value;
+
+        let outputMeasurement: Measurement | undefined = undefined;
+
+        if (this.measurementComponent?.measurement) {
+            outputMeasurement = this.measurementComponent.measurement;
+        }
+
+        const outputBand = {
+            name: outputBandName,
+            measurement: outputMeasurement,
+        };
+
         if (!dataType || !rasterLayer) {
             return; // checked by form validator
         }
@@ -207,8 +232,7 @@ export class ExpressionOperatorComponent implements AfterViewInit {
                             params: {
                                 expression,
                                 outputType: dataType.getCode(),
-                                // TODO: make this configurable once units exist again
-                                // outputMeasurement: undefined,
+                                outputBand,
                                 mapNoData,
                             },
                             sources: {

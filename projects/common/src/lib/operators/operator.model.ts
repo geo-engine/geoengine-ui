@@ -51,7 +51,10 @@ export interface ExpressionDict extends OperatorDict {
     params: {
         expression: string;
         outputType: string;
-        outputMeasurement?: MeasurementDict;
+        outputBand: {
+            name: string;
+            measurement: MeasurementDict;
+        };
         mapNoData: boolean;
     };
     sources: {
