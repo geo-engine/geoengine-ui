@@ -1,5 +1,5 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
-import {FormControl, FormBuilder, FormGroup, Validators, FormArray} from '@angular/forms';
+import {FormControl, FormBuilder, FormGroup, Validators, FormArray, ValidatorFn, AbstractControl, ValidationErrors} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap, tap} from 'rxjs/operators';
@@ -76,7 +76,7 @@ export class RasterStackerComponent implements AfterViewInit {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
-            renameValues: new FormArray<FormControl<string>>([]),
+            renameValues: new FormArray<FormControl<string>>([], {validators: duplicateValidator()}),
         });
 
         // TODO: also update when layer selection changes and not only when new layer is added
@@ -296,3 +296,20 @@ export class RasterStackerComponent implements AfterViewInit {
         }
     }
 }
+
+export const duplicateValidator =
+    (): ValidatorFn =>
+    (control: AbstractControl): ValidationErrors | null => {
+        if (!(control instanceof FormArray)) {
+            return null;
+        }
+
+        const formArray = control as FormArray;
+
+        const controls = formArray.controls;
+        const values = controls.map((c) => c.value);
+
+        const duplicates = values.some((value, index) => values.indexOf(value) !== index);
+
+        return duplicates ? {duplicate: true} : null;
+    };

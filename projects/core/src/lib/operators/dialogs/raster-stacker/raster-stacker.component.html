@@ -29,10 +29,11 @@
 
             @if (form.controls.renameBands.value !== RenameBands.Default) {
                 <div formArrayName="renameValues">
-                    <mat-form-field *ngFor="let v of renameValues.controls; let i = index">
+                    <mat-form-field *ngFor="let control of renameValues.controls; let i = index">
                         <mat-label>{{ renameHint(i) }} </mat-label>
                         <input matInput type="text" [formControlName]="i" />
                     </mat-form-field>
+                    <mat-error *ngIf="renameValues.hasError('duplicate')">Error: duplicate value</mat-error>
                 </div>
             }
 
