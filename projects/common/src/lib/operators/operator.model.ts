@@ -347,7 +347,7 @@ export interface RasterStackerDict extends OperatorDict {
 export type RenameBandsDict = RenameBandsDefaultDict | RenameBandsSuffixDict | RenameBandsRenameDict;
 
 export interface RenameBandsDefaultDict {
-    type: 'default';
+    type: 'defaultSuffix';
 }
 
 export interface RenameBandsSuffixDict {

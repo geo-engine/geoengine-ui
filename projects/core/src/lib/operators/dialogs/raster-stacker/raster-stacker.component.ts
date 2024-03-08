@@ -281,7 +281,7 @@ export class RasterStackerComponent implements AfterViewInit {
         switch (this.form.controls.renameBands.value) {
             case RenameBands.Default:
                 return {
-                    type: 'default',
+                    type: 'defaultSuffix',
                 };
             case RenameBands.Suffix:
                 return {

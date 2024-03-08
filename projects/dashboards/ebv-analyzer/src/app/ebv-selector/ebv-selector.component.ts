@@ -29,6 +29,7 @@ import {
     MeanRasterPixelValuesOverTimeDict,
     RasterDataTypes,
     RasterLayer,
+    RasterStackerDict,
     RasterSymbology,
     Time,
     extentToBboxDict,
@@ -240,12 +241,22 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                         params: {
                             expression: 'if B IS NODATA { NODATA } else { A }',
                             outputType: RasterDataTypes.Float64.getCode(),
+                            outputBand: {
+                                name: 'expression',
+                                measurement: {
+                                    type: 'unitless',
+                                },
+                            },
                             mapNoData: false,
                         },
                         sources: {
                             raster: {
                                 type: 'RasterStacker',
-                                params: {},
+                                params: {
+                                    renameBands: {
+                                        type: 'defaultSuffix',
+                                    },
+                                },
                                 sources: {
                                     rasters: [
                                         projectedRasterWorkflow,
@@ -257,7 +268,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                                         },
                                     ],
                                 },
-                            },
+                            } as RasterStackerDict,
                         },
                     } as ExpressionDict,
                 },
