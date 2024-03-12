@@ -189,7 +189,7 @@ export class AnalysisComponent {
                                             type: 'RasterStacker',
                                             params: {
                                                 renameBands: {
-                                                    type: 'defaultSuffix',
+                                                    type: 'default',
                                                 },
                                             },
                                             sources: {

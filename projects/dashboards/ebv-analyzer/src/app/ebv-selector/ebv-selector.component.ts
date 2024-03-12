@@ -254,7 +254,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                                 type: 'RasterStacker',
                                 params: {
                                     renameBands: {
-                                        type: 'defaultSuffix',
+                                        type: 'default',
                                     },
                                 },
                                 sources: {

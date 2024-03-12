@@ -156,11 +156,10 @@ export class RasterStackerComponent implements AfterViewInit {
         const renameType = this.form.controls.renameBands.value;
 
         this.layerMetadata.forEach((layer, layerIndex) => {
-            if (renameType === RenameBands.Suffix && layerIndex > 0) {
+            if (renameType === RenameBands.Suffix) {
                 renameControl.push(
-                    new FormControl(`_${layerIndex + 1}`, {
+                    new FormControl(`_${layerIndex}`, {
                         nonNullable: true,
-                        validators: [Validators.required, geoengineValidators.notOnlyWhitespace],
                     }),
                 );
             } else if (renameType === RenameBands.Rename) {
@@ -189,7 +188,7 @@ export class RasterStackerComponent implements AfterViewInit {
             return; // checked by form validator
         }
 
-        const renameBands = this.getRename(); // TODO: check for duplicates
+        const renameBands = this.getRename();
 
         // harmonize projection of all input layers
         const projectedOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers(rasterLayers);
@@ -271,7 +270,7 @@ export class RasterStackerComponent implements AfterViewInit {
             case RenameBands.Default:
                 return '';
             case RenameBands.Suffix:
-                return `Suffix for input ${i + 1}`;
+                return `Suffix for input ${i}`;
             case RenameBands.Rename:
                 return `New name for band ${i}`;
         }
@@ -281,7 +280,7 @@ export class RasterStackerComponent implements AfterViewInit {
         switch (this.form.controls.renameBands.value) {
             case RenameBands.Default:
                 return {
-                    type: 'defaultSuffix',
+                    type: 'default',
                 };
             case RenameBands.Suffix:
                 return {
