@@ -1,5 +1,6 @@
-import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
+import {MatChipGrid, MatChipInputEvent} from '@angular/material/chips';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {
@@ -29,6 +30,8 @@ export interface DatasetForm {
     name: FormControl<string>;
     displayName: FormControl<string>;
     description: FormControl<string>;
+    tags: FormControl<string[]>;
+    newTag: FormControl<string>;
 }
 
 @Component({
@@ -83,6 +86,37 @@ export class DatasetEditorComponent implements OnChanges {
             const errorMessage = errorJson.message ?? 'Updating dataset failed.';
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
         }
+    }
+
+    removeTag(tag: string): void {
+        const tags: Array<string> = this.form.controls.tags.value;
+
+        const index = tags.indexOf(tag);
+        if (index > -1) {
+            tags.splice(index, 1);
+        }
+    }
+
+    addTag(event: MatChipInputEvent): void {
+        const tags: Array<string> = this.form.controls.tags.value;
+        const tag = event.value;
+        const input = event.input;
+
+        if (!isValidTag(tag)) {
+            return;
+        }
+
+        input.value = '';
+
+        tags.push(tag);
+    }
+
+    get tagInputControl(): FormControl {
+        return this.form.get('newTag') as FormControl;
+    }
+
+    get tagsControl(): FormControl {
+        return this.form.get('tags') as FormControl;
     }
 
     createSymbology(dataset: Dataset): void {
@@ -229,6 +263,8 @@ export class DatasetEditorComponent implements OnChanges {
             description: new FormControl(dataset.description, {
                 nonNullable: true,
             }),
+            tags: new FormControl<string[]>([], {nonNullable: true, validators: [Validators.required, duplicateTagValidator()]}),
+            newTag: new FormControl('', {nonNullable: true, validators: [tagValidator()]}),
         });
     }
 
@@ -253,6 +289,41 @@ export class DatasetEditorComponent implements OnChanges {
             description: new FormControl('description', {
                 nonNullable: true,
             }),
+            tags: new FormControl<string[]>([], {nonNullable: true, validators: [Validators.required, duplicateTagValidator()]}),
+            newTag: new FormControl('', {nonNullable: true, validators: [tagValidator()]}),
         });
     }
 }
+
+export const duplicateTagValidator =
+    (): ValidatorFn =>
+    (control: AbstractControl): ValidationErrors | null => {
+        const tags = control.value as string[];
+
+        if (!tags) {
+            return null;
+        }
+
+        const duplicates = tags.some((value, index) => tags.indexOf(value) !== index);
+
+        return duplicates ? {duplicate: true} : null;
+    };
+
+export const isValidTag = (tag: string): boolean => {
+    const illegalChars = [' ', '/', '..'];
+    return !illegalChars.some((char) => tag.includes(char));
+};
+
+export const tagValidator =
+    (): ValidatorFn =>
+    (control: AbstractControl): ValidationErrors | null => {
+        const text = control.value as string;
+        if (!text) {
+            return null;
+        }
+
+        if (isValidTag(text)) {
+            return null;
+        }
+        return {invalidTag: true};
+    };
