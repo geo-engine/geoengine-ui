@@ -23,6 +23,7 @@ import {
     VectorResultDescriptorWithType,
 } from '@geoengine/openapi-client';
 import {BehaviorSubject, firstValueFrom} from 'rxjs';
+import {ProvenanceComponent} from '../../provenance/provenance.component';
 
 export interface DatasetForm {
     layerType: FormControl<'plot' | 'raster' | 'vector'>;
@@ -44,7 +45,7 @@ export class DatasetEditorComponent implements OnChanges {
 
     @Output() datasetDeleted = new EventEmitter<void>();
 
-    @ViewChild('tagsInput') tagsInput!: MatChipGrid;
+    @ViewChild(ProvenanceComponent) provenanceComponent!: ProvenanceComponent;
 
     dataset?: Dataset;
     form: FormGroup<DatasetForm> = this.placeholderForm();
@@ -121,6 +122,18 @@ export class DatasetEditorComponent implements OnChanges {
         tags.push(tag);
 
         this.form.markAsDirty();
+    }
+
+    saveProvenance(): void {
+        if (!this.provenanceComponent.form.valid) {
+            return;
+        }
+
+        const provenance = this.provenanceComponent.getProvenance();
+
+        // TODO mark pristine
+
+        console.log(provenance);
     }
 
     get tagInputControl(): FormControl {
