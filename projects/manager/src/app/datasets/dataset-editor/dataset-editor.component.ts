@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
-import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
+import {AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {MatChipGrid, MatChipInputEvent} from '@angular/material/chips';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -44,6 +44,8 @@ export class DatasetEditorComponent implements OnChanges {
 
     @Output() datasetDeleted = new EventEmitter<void>();
 
+    @ViewChild('tagsInput') tagsInput!: MatChipGrid;
+
     dataset?: Dataset;
     form: FormGroup<DatasetForm> = this.placeholderForm();
 
@@ -70,11 +72,17 @@ export class DatasetEditorComponent implements OnChanges {
     }
 
     async applyChanges(): Promise<void> {
+        if (!this.form.valid) {
+            return;
+        }
+
         const name = this.form.controls.name.value;
         const displayName = this.form.controls.displayName.value;
         const description = this.form.controls.description.value;
+        const tags = this.form.controls.tags.value;
+
         try {
-            await this.datasetsService.updateDataset(this.datasetListing.name, {name, displayName, description});
+            await this.datasetsService.updateDataset(this.datasetListing.name, {name, displayName, description, tags});
             this.datasetListing.name = name;
             this.datasetListing.displayName = displayName;
             this.datasetListing.description = description;
@@ -95,6 +103,8 @@ export class DatasetEditorComponent implements OnChanges {
         if (index > -1) {
             tags.splice(index, 1);
         }
+
+        this.form.markAsDirty();
     }
 
     addTag(event: MatChipInputEvent): void {
@@ -109,6 +119,8 @@ export class DatasetEditorComponent implements OnChanges {
         input.value = '';
 
         tags.push(tag);
+
+        this.form.markAsDirty();
     }
 
     get tagInputControl(): FormControl {
@@ -263,7 +275,7 @@ export class DatasetEditorComponent implements OnChanges {
             description: new FormControl(dataset.description, {
                 nonNullable: true,
             }),
-            tags: new FormControl<string[]>([], {nonNullable: true, validators: [Validators.required, duplicateTagValidator()]}),
+            tags: new FormControl<string[]>(dataset.tags ?? [], {nonNullable: true, validators: [duplicateTagValidator()]}),
             newTag: new FormControl('', {nonNullable: true, validators: [tagValidator()]}),
         });
     }
@@ -289,7 +301,7 @@ export class DatasetEditorComponent implements OnChanges {
             description: new FormControl('description', {
                 nonNullable: true,
             }),
-            tags: new FormControl<string[]>([], {nonNullable: true, validators: [Validators.required, duplicateTagValidator()]}),
+            tags: new FormControl<string[]>([], {nonNullable: true, validators: [duplicateTagValidator()]}),
             newTag: new FormControl('', {nonNullable: true, validators: [tagValidator()]}),
         });
     }
