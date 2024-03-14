@@ -42,6 +42,8 @@ export class ProvenanceComponent implements OnChanges {
 
     removeEntry(i: number): void {
         this.form.controls.provenance.removeAt(i);
+
+        this.form.markAsDirty();
     }
 
     getProvenance(): Array<Provenance> {

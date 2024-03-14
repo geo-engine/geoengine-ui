@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
-import {MatChipGrid, MatChipInputEvent} from '@angular/material/chips';
+import {MatChipInputEvent} from '@angular/material/chips';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {
@@ -124,16 +124,23 @@ export class DatasetEditorComponent implements OnChanges {
         this.form.markAsDirty();
     }
 
-    saveProvenance(): void {
+    async saveProvenance(): Promise<void> {
         if (!this.provenanceComponent.form.valid) {
             return;
         }
 
         const provenance = this.provenanceComponent.getProvenance();
 
-        // TODO mark pristine
-
-        console.log(provenance);
+        try {
+            await this.datasetsService.updateProvenance(this.datasetListing.name, provenance);
+            this.snackBar.open('Dataset provenance successfully updated.', 'Close', {duration: 2000});
+            this.provenanceComponent.form.markAsPristine();
+        } catch (error) {
+            const e = error as ResponseError;
+            const errorJson = await e.response.json().catch(() => ({}));
+            const errorMessage = errorJson.message ?? 'Updating dataset provenance failed.';
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
+        }
     }
 
     get tagInputControl(): FormControl {
