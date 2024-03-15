@@ -98,7 +98,6 @@
         "@types/jasmine": "~5.1.4",
         "@types/jasminewd2": "~2.0.13",
         "@types/node": "^20.11.28",
-        "@types/ol": "^7.0.0",
         "@types/proj4": "^2.5.5",
         "@types/topojson-specification": "^1.0.5",
         "@typescript-eslint/eslint-plugin": "^7.2.0",
