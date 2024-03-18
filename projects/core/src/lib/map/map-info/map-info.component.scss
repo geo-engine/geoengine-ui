@@ -1,0 +1,12 @@
+.map-info {
+    z-index: 1;
+    position: absolute;
+    margin-bottom: 10px;
+    height: 62px;
+    left: 0.5%;
+    background-color: var(--geoengine-background-color, white);
+    border: solid 1px #ccc;
+    font-size: 14px;
+    padding: 10px;
+    white-space: pre-line;
+}

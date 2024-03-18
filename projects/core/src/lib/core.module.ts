@@ -147,6 +147,7 @@ import {RolesComponent} from './users/roles/roles.component';
 import {VectorExpressionComponent} from './operators/dialogs/vector-expression/vector-expression.component';
 import {CommonConfig, CommonModule} from '@geoengine/common';
 import {SymbologyEditorComponent} from './layers/symbology/symbology-editor/symbology-editor.component';
+import {MapInfoComponent} from './map/map-info/map-info.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -234,6 +235,7 @@ const CORE_COMPONENTS = [
     LoadProjectComponent,
     LoginComponent,
     MapContainerComponent,
+    MapInfoComponent,
     MeanRasterPixelValuesOverTimeDialogComponent,
     MediaviewComponent,
     MediaviewDialogComponent,

@@ -11,6 +11,9 @@ interface Components {
     readonly REGISTRATION: {
         readonly AVAILABLE: boolean;
     };
+    readonly MAP_INFO: {
+        readonly AVAILABLE: boolean;
+    };
 }
 
 interface Branding {
@@ -39,6 +42,9 @@ const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CONFIG, {
             AVAILABLE: false,
         },
         REGISTRATION: {
+            AVAILABLE: true,
+        },
+        MAP_INFO: {
             AVAILABLE: true,
         },
     },
