@@ -7,6 +7,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {ConfirmationComponent, PermissionsService, ResourceType, UserService} from '@geoengine/common';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
+import {AppConfig} from '../app-config.service';
 
 export interface PermissionForm {
     role: FormControl<string>;
@@ -41,6 +42,7 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
         private readonly userService: UserService,
         private readonly snackBar: MatSnackBar,
         private readonly dialog: MatDialog,
+        private readonly config: AppConfig,
     ) {}
 
     ngAfterViewInit(): void {
@@ -67,7 +69,7 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
 
         try {
             await this.permissionsService.removePermission(this.resourceType, this.resourceId, permission.role.id, permission.permission);
-            this.snackBar.open('Permission successfully deleted', 'Close', {duration: 2000});
+            this.snackBar.open('Permission successfully deleted', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             this.source.refresh();
         } catch (error) {
             const e = error as ResponseError;
@@ -94,7 +96,7 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
 
         try {
             await this.permissionsService.addPermission(this.resourceType, this.resourceId, roleId, permission);
-            this.snackBar.open('Permission successfully added', 'Close', {duration: 2000});
+            this.snackBar.open('Permission successfully added', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             this.source.refresh();
         } catch (error) {
             const e = error as ResponseError;

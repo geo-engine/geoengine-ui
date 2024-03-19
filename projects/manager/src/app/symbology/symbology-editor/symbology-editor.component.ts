@@ -10,6 +10,7 @@ import {
     VectorSymbologyEditorComponent,
 } from '@geoengine/common';
 import {ResponseError} from '@geoengine/openapi-client';
+import {AppConfig} from '../../app-config.service';
 
 @Component({
     selector: 'geoengine-manager-symbology-editor',
@@ -33,6 +34,7 @@ export class SymbologyEditorComponent implements OnChanges {
     constructor(
         private readonly datasetsService: DatasetsService,
         private readonly snackBar: MatSnackBar,
+        private readonly config: AppConfig,
     ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -91,7 +93,7 @@ export class SymbologyEditorComponent implements OnChanges {
                 this.rasterSymbologyWorkflow = {symbology: this.rasterSymbology, workflowId: this.workflowId};
 
                 this.unappliedChanges = false;
-                this.snackBar.open('Symbology successfully updated.', 'Close', {duration: 2000});
+                this.snackBar.open('Symbology successfully updated.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             } catch (error) {
                 const e = error as ResponseError;
                 const errorJson = await e.response.json().catch(() => ({}));
@@ -109,7 +111,7 @@ export class SymbologyEditorComponent implements OnChanges {
                 this.vectorSymbologyWorkflow = {symbology: this.vectorSymbology, workflowId: this.workflowId};
 
                 this.unappliedChanges = false;
-                this.snackBar.open('Symbology successfully updated.', 'Close', {duration: 2000});
+                this.snackBar.open('Symbology successfully updated.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             } catch (error) {
                 const e = error as ResponseError;
                 const errorJson = await e.response.json().catch(() => ({}));

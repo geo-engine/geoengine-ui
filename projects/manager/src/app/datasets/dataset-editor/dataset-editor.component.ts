@@ -24,6 +24,7 @@ import {
 } from '@geoengine/openapi-client';
 import {BehaviorSubject, firstValueFrom} from 'rxjs';
 import {ProvenanceComponent} from '../../provenance/provenance.component';
+import {AppConfig} from '../../app-config.service';
 
 export interface DatasetForm {
     layerType: FormControl<'plot' | 'raster' | 'vector'>;
@@ -60,6 +61,7 @@ export class DatasetEditorComponent implements OnChanges {
         private readonly workflowsService: WorkflowsService,
         private readonly snackBar: MatSnackBar,
         private readonly dialog: MatDialog,
+        private readonly config: AppConfig,
     ) {}
 
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
@@ -87,7 +89,7 @@ export class DatasetEditorComponent implements OnChanges {
             this.datasetListing.name = name;
             this.datasetListing.displayName = displayName;
             this.datasetListing.description = description;
-            this.snackBar.open('Dataset successfully updated.', 'Close', {duration: 2000});
+            this.snackBar.open('Dataset successfully updated.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             this.form.markAsPristine();
         } catch (error) {
             const e = error as ResponseError;
@@ -133,7 +135,7 @@ export class DatasetEditorComponent implements OnChanges {
 
         try {
             await this.datasetsService.updateProvenance(this.datasetListing.name, provenance);
-            this.snackBar.open('Dataset provenance successfully updated.', 'Close', {duration: 2000});
+            this.snackBar.open('Dataset provenance successfully updated.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             this.provenanceComponent.form.markAsPristine();
         } catch (error) {
             const e = error as ResponseError;
@@ -173,7 +175,7 @@ export class DatasetEditorComponent implements OnChanges {
 
         try {
             await this.datasetsService.deleteDataset(this.datasetListing.name);
-            this.snackBar.open('Dataset successfully deleted.', 'Close', {duration: 2000});
+            this.snackBar.open('Dataset successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             this.datasetDeleted.emit();
         } catch (error) {
             const e = error as ResponseError;
