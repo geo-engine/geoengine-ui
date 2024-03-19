@@ -11,6 +11,7 @@ import {
     PolygonSymbology,
     RasterDataTypes,
     RasterLayer,
+    RasterStackerDict,
     ReprojectionDict,
     VectorLayer,
 } from '@geoengine/common';
@@ -177,13 +178,20 @@ export class AnalysisComponent {
                                         expression: 'if B != 0 { A } else { NODATA }',
                                         // TODO: get data type from data
                                         outputType: RasterDataTypes.Float64.getCode(),
-                                        outputMeasurement: rasterResultDescriptor.bands[0].measurement,
+                                        outputBand: {
+                                            name: 'expression',
+                                            measurement: rasterResultDescriptor.bands[0].measurement,
+                                        },
                                         mapNoData: false,
                                     },
                                     sources: {
                                         raster: {
                                             type: 'RasterStacker',
-                                            params: {},
+                                            params: {
+                                                renameBands: {
+                                                    type: 'default',
+                                                },
+                                            },
                                             sources: {
                                                 rasters: [
                                                     {
@@ -199,7 +207,7 @@ export class AnalysisComponent {
                                                     countryRasterWorkflow,
                                                 ],
                                             },
-                                        },
+                                        } as RasterStackerDict,
                                     },
                                 } as ExpressionDict,
                             },

@@ -6,7 +6,6 @@ form {
 
 mat-form-field {
     width: 100%;
-    margin: 1rem 0;
 }
 
 .error {
@@ -16,4 +15,17 @@ mat-form-field {
 div {
     padding-bottom: 0.5rem;
     padding-top: 1rem;
+}
+
+#rename-type {
+    display: flex;
+    flex-wrap: wrap;
+
+    mat-button-toggle {
+        flex: 1;
+    }
+}
+
+mat-button-toggle-group {
+    margin-bottom: 1rem;
 }

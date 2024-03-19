@@ -23,6 +23,7 @@ export * from './lib/layer-icons/line-icon/line-icon.component';
 export * from './lib/layer-icons/point-icon/point-icon.component';
 export * from './lib/layer-icons/polygon-icon/polygon-icon.component';
 export * from './lib/layer-icons/raster-icon/raster-icon.component';
+export * from './lib/measurement/measurement.component';
 export * from './lib/symbology/color-param-editor/color-param-editor.component';
 export * from './lib/symbology/number-param-editor/number-param-editor.component';
 export * from './lib/symbology/raster-gradient-symbology-editor/raster-gradient-symbology-editor.component';

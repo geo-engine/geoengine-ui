@@ -20,6 +20,23 @@
         </a>
 
         <ng-container operatorParameters>
+            <p>Specify handling of band names:</p>
+            <mat-button-toggle-group id="rename-type" [multiple]="false" formControlName="renameBands" (ngModelChange)="updateRenameType()">
+                <mat-button-toggle [value]="RenameBands.Default">Default</mat-button-toggle>
+                <mat-button-toggle [value]="RenameBands.Suffix">Suffix</mat-button-toggle>
+                <mat-button-toggle [value]="RenameBands.Rename">Rename</mat-button-toggle>
+            </mat-button-toggle-group>
+
+            @if (form.controls.renameBands.value !== RenameBands.Default) {
+                <div formArrayName="renameValues">
+                    <mat-form-field *ngFor="let control of renameValues.controls; let i = index">
+                        <mat-label>{{ renameHint(i) }} </mat-label>
+                        <input matInput type="text" [formControlName]="i" />
+                    </mat-form-field>
+                    <mat-error *ngIf="renameValues.hasError('duplicate')">Error: duplicate value</mat-error>
+                </div>
+            }
+
             <p>
                 If the input rasters have different datatypes, you must select one common datatype the rasters are converted to before
                 stacking.

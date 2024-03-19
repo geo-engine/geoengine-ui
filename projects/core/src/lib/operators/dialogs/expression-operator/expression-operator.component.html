@@ -25,6 +25,8 @@
 
             <p *ngIf="lastError$ | async as lastError" class="error">{{ lastError }}</p>
 
+            <mat-checkbox formControlName="mapNoData">Map No-Data with expression</mat-checkbox>
+
             <mat-form-field>
                 <mat-label>Output Data Type</mat-label>
                 <mat-select formControlName="dataType">
@@ -34,7 +36,12 @@
                 </mat-select>
             </mat-form-field>
 
-            <mat-checkbox formControlName="mapNoData">Map No-Data with expression</mat-checkbox>
+            <mat-form-field appearance="fill">
+                <mat-label>Output band name</mat-label>
+                <input matInput type="text" formControlName="outputBandName" />
+            </mat-form-field>
+
+            <geoengine-measurement></geoengine-measurement>
         </ng-container>
 
         <ng-container layerSpecification>
