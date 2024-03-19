@@ -42,7 +42,8 @@
                                 formControlName="newTag"
                                 placeholder="New tag..."
                                 [matChipInputFor]="tagsGrid"
-                                (matChipInputTokenEnd)="addTag($event)"
+                                (matChipInputTokenEnd)="addTag()"
+                                (blur)="addTag()"
                             />
                             <mat-error *ngIf="tagInputControl.errors?.invalidTag">
                                 Invalid tag. Space, / and ".." are not allowed.

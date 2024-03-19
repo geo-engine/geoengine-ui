@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
-import {MatChipInputEvent} from '@angular/material/chips';
+import {MatChipInput} from '@angular/material/chips';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {
@@ -46,6 +46,7 @@ export class DatasetEditorComponent implements OnChanges {
 
     @Output() datasetDeleted = new EventEmitter<void>();
 
+    @ViewChild(MatChipInput) tagInput!: MatChipInput;
     @ViewChild(ProvenanceComponent) provenanceComponent!: ProvenanceComponent;
 
     dataset?: Dataset;
@@ -110,16 +111,16 @@ export class DatasetEditorComponent implements OnChanges {
         this.form.markAsDirty();
     }
 
-    addTag(event: MatChipInputEvent): void {
+    addTag(): void {
         const tags: Array<string> = this.form.controls.tags.value;
-        const tag = event.value;
-        const input = event.input;
+
+        const tag = this.tagInput.inputElement.value;
 
         if (!isValidTag(tag)) {
             return;
         }
 
-        input.value = '';
+        this.tagInput.inputElement.value = '';
 
         tags.push(tag);
 
@@ -345,7 +346,7 @@ export const duplicateTagValidator =
 
 export const isValidTag = (tag: string): boolean => {
     const illegalChars = [' ', '/', '..'];
-    return !illegalChars.some((char) => tag.includes(char));
+    return tag.length > 0 && !illegalChars.some((char) => tag.includes(char));
 };
 
 export const tagValidator =
