@@ -1,10 +1,10 @@
 import {DataSource} from '@angular/cdk/collections';
 import {AfterViewInit, Component, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
-import {Permission, PermissionListing, ResponseError} from '@geoengine/openapi-client';
+import {Permission, PermissionListing} from '@geoengine/openapi-client';
 import {BehaviorSubject, Observable, Subject, firstValueFrom, tap} from 'rxjs';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {ConfirmationComponent, PermissionsService, ResourceType, UserService} from '@geoengine/common';
+import {ConfirmationComponent, PermissionsService, ResourceType, UserService, errorToText} from '@geoengine/common';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {AppConfig} from '../app-config.service';
@@ -72,9 +72,7 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
             this.snackBar.open('Permission successfully deleted', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             this.source.refresh();
         } catch (error) {
-            const e = error as ResponseError;
-            const errorJson = await e.response.json().catch(() => ({}));
-            const errorMessage = errorJson.message ?? 'Deleting permission failed.';
+            const errorMessage = await errorToText(error, 'Deleting permission failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
         }
     }
@@ -87,9 +85,7 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
         try {
             roleId = await this.userService.getRoleByName(roleName);
         } catch (error) {
-            const e = error as ResponseError;
-            const errorJson = await e.response.json().catch(() => ({}));
-            const errorMessage = errorJson.message ?? 'Getting role by name failed.';
+            const errorMessage = await errorToText(error, 'Getting role by name failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
             return;
         }
@@ -99,9 +95,7 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
             this.snackBar.open('Permission successfully added', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             this.source.refresh();
         } catch (error) {
-            const e = error as ResponseError;
-            const errorJson = await e.response.json().catch(() => ({}));
-            const errorMessage = errorJson.message ?? 'Adding    permission failed.';
+            const errorMessage = await errorToText(error, 'Adding permission failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
         }
     }

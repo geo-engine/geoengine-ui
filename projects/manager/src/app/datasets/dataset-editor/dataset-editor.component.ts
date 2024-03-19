@@ -13,12 +13,12 @@ import {
     WHITE,
     WorkflowsService,
     createVectorSymbology as createDefaultVectorSymbology,
+    errorToText,
 } from '@geoengine/common';
 import {
     Dataset,
     DatasetListing,
     RasterResultDescriptorWithType,
-    ResponseError,
     TypedResultDescriptor,
     VectorResultDescriptorWithType,
 } from '@geoengine/openapi-client';
@@ -93,9 +93,7 @@ export class DatasetEditorComponent implements OnChanges {
             this.snackBar.open('Dataset successfully updated.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             this.form.markAsPristine();
         } catch (error) {
-            const e = error as ResponseError;
-            const errorJson = await e.response.json().catch(() => ({}));
-            const errorMessage = errorJson.message ?? 'Updating dataset failed.';
+            const errorMessage = await errorToText(error, 'Updating dataset failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
         }
     }
@@ -139,9 +137,7 @@ export class DatasetEditorComponent implements OnChanges {
             this.snackBar.open('Dataset provenance successfully updated.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             this.provenanceComponent.form.markAsPristine();
         } catch (error) {
-            const e = error as ResponseError;
-            const errorJson = await e.response.json().catch(() => ({}));
-            const errorMessage = errorJson.message ?? 'Updating dataset provenance failed.';
+            const errorMessage = await errorToText(error, 'Updating dataset provenance failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
         }
     }
@@ -179,9 +175,7 @@ export class DatasetEditorComponent implements OnChanges {
             this.snackBar.open('Dataset successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             this.datasetDeleted.emit();
         } catch (error) {
-            const e = error as ResponseError;
-            const errorJson = await e.response.json().catch(() => ({}));
-            const errorMessage = errorJson.message ?? 'Deleting dataset failed.';
+            const errorMessage = await errorToText(error, 'Deleting dataset failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
         }
     }

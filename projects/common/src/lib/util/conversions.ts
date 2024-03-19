@@ -4,7 +4,7 @@ import OlFormatGeoJson from 'ol/format/GeoJSON';
 import OlGeometry from 'ol/geom/Geometry';
 import {Extent as OlExtent} from 'ol/extent';
 import {Observable, ReplaySubject} from 'rxjs';
-import {BoundingBox2D as BBoxDict} from '@geoengine/openapi-client';
+import {BoundingBox2D as BBoxDict, ResponseError} from '@geoengine/openapi-client';
 
 /**
  * Converts an `OlExtent` to an extent as a tuple of four numbers.
@@ -90,4 +90,15 @@ export function subscribeAndProvide<T>(observable: Observable<T>): Observable<T>
     });
 
     return subject.asObservable();
+}
+
+export async function errorToText(error: any, defaultMessage: string): Promise<string> {
+    if (!(error instanceof ResponseError)) {
+        return defaultMessage;
+    }
+    const e = error as ResponseError;
+    const errorJson = await e.response.json().catch(() => ({}));
+    const errorMessage = errorJson.message ?? defaultMessage;
+
+    return errorMessage;
 }
