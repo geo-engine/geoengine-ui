@@ -375,6 +375,20 @@ const startBeforeEndValidator = (control: AbstractControl): ValidationErrors | n
     }
 };
 
+const duplicateValidator =
+    (): ValidatorFn =>
+    (control: AbstractControl): ValidationErrors | null => {
+        const values = control.value as string[];
+
+        if (!values) {
+            return null;
+        }
+
+        const duplicates = values.some((value, index) => values.indexOf(value) !== index);
+
+        return duplicates ? {duplicate: true} : null;
+    };
+
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const geoengineValidators = {
     conditionalValidator,
@@ -391,4 +405,5 @@ export const geoengineValidators = {
     minAndMaxNumOrStr,
     notZero,
     startBeforeEndValidator,
+    duplicateValidator,
 };

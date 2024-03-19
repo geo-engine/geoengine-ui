@@ -14,6 +14,7 @@ import {
     WorkflowsService,
     createVectorSymbology as createDefaultVectorSymbology,
     errorToText,
+    geoengineValidators,
 } from '@geoengine/common';
 import {
     Dataset,
@@ -292,7 +293,10 @@ export class DatasetEditorComponent implements OnChanges {
             description: new FormControl(dataset.description, {
                 nonNullable: true,
             }),
-            tags: new FormControl<string[]>(dataset.tags ?? [], {nonNullable: true, validators: [duplicateTagValidator()]}),
+            tags: new FormControl<string[]>(dataset.tags ?? [], {
+                nonNullable: true,
+                validators: [geoengineValidators.duplicateValidator()],
+            }),
             newTag: new FormControl('', {nonNullable: true, validators: [tagValidator()]}),
         });
     }
@@ -318,25 +322,11 @@ export class DatasetEditorComponent implements OnChanges {
             description: new FormControl('description', {
                 nonNullable: true,
             }),
-            tags: new FormControl<string[]>([], {nonNullable: true, validators: [duplicateTagValidator()]}),
+            tags: new FormControl<string[]>([], {nonNullable: true, validators: [geoengineValidators.duplicateValidator()]}),
             newTag: new FormControl('', {nonNullable: true, validators: [tagValidator()]}),
         });
     }
 }
-
-export const duplicateTagValidator =
-    (): ValidatorFn =>
-    (control: AbstractControl): ValidationErrors | null => {
-        const tags = control.value as string[];
-
-        if (!tags) {
-            return null;
-        }
-
-        const duplicates = tags.some((value, index) => tags.indexOf(value) !== index);
-
-        return duplicates ? {duplicate: true} : null;
-    };
 
 export const isValidTag = (tag: string): boolean => {
     const illegalChars = [' ', '/', '..'];
