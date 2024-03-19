@@ -74,7 +74,6 @@
                     "options": {
                         "allowedCommonJsDependencies": [
                             "clone",
-                            "codemirror",
                             "color-name",
                             "dagre-d3",
                             "earcut",
@@ -106,7 +105,6 @@
                             "dist/common/assets/fonts/poppins/poppins.css",
                             "dist/common/assets/fonts/pacifico/pacifico.css",
                             "dist/common/assets/fonts/material-design-icons/material-icons.css",
-                            "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css",
                             "./node_modules/vis-timeline/dist/vis-timeline-graph2d.min.css"
                         ],
@@ -219,7 +217,6 @@
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
                         "allowedCommonJsDependencies": [
-                            "codemirror",
                             "color-name",
                             "dagre-d3",
                             "earcut",
@@ -251,7 +248,6 @@
                             "dist/common/assets/fonts/poppins/poppins.css",
                             "dist/common/assets/fonts/pacifico/pacifico.css",
                             "dist/common/assets/fonts/material-design-icons/material-icons.css",
-                            "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
@@ -363,7 +359,6 @@
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
                         "allowedCommonJsDependencies": [
-                            "codemirror",
                             "color-name",
                             "dagre-d3",
                             "earcut",
@@ -395,7 +390,6 @@
                             "dist/common/assets/fonts/poppins/poppins.css",
                             "dist/common/assets/fonts/pacifico/pacifico.css",
                             "dist/common/assets/fonts/material-design-icons/material-icons.css",
-                            "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
@@ -508,7 +502,6 @@
                     "options": {
                         "allowedCommonJsDependencies": [
                             "clone",
-                            "codemirror",
                             "color-name",
                             "dagre-d3",
                             "earcut",
@@ -540,7 +533,6 @@
                             "dist/common/assets/fonts/poppins/poppins.css",
                             "dist/common/assets/fonts/pacifico/pacifico.css",
                             "dist/common/assets/fonts/material-design-icons/material-icons.css",
-                            "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
@@ -658,7 +650,6 @@
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
                         "allowedCommonJsDependencies": [
-                            "codemirror",
                             "color-name",
                             "dagre-d3",
                             "earcut",
@@ -690,7 +681,6 @@
                             "dist/common/assets/fonts/poppins/poppins.css",
                             "dist/common/assets/fonts/pacifico/pacifico.css",
                             "dist/common/assets/fonts/material-design-icons/material-icons.css",
-                            "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
