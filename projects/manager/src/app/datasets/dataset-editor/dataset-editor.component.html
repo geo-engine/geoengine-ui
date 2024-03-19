@@ -45,9 +45,9 @@
                                 (matChipInputTokenEnd)="addTag($event)"
                             />
                             <mat-error *ngIf="tagInputControl.errors?.invalidTag">
-                                Error: Invalid tag. Space, / and ".." are not allowed.
+                                Invalid tag. Space, / and ".." are not allowed.
                             </mat-error>
-                            <mat-error *ngIf="tagsControl.errors?.duplicate"> Error: Duplicate tag. </mat-error>
+                            <mat-error *ngIf="tagsControl.errors?.duplicate">Duplicate tag.</mat-error>
                         </mat-chip-grid>
                     </mat-form-field>
                 </form>
