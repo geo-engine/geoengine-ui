@@ -39,6 +39,7 @@ import {
     SpatialReferenceService,
     LayerCollectionService,
     TaskListComponent,
+    VectorExpressionComponent,
 } from '@geoengine/core';
 import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from '../app-config.service';
@@ -143,6 +144,8 @@ export class MainComponent implements OnInit, AfterViewInit {
         //         setTimeout(() => this.changeDetectorRef.markForCheck());
         //     }
         // });
+
+        setTimeout(() => this.layoutService.setSidenavContentComponent({component: VectorExpressionComponent}));
     }
 
     setTabIndex(index: number): void {
