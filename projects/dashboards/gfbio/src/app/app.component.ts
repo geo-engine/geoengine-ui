@@ -112,7 +112,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         this.middleContainerHeight$ = this.layoutService.getMapHeightStream(totalHeight$).pipe(tap(() => this.mapComponent.resize()));
         this.layerListHeight$ = config.COMPONENTS.MAP_INFO.AVAILABLE
-            ? this.middleContainerHeight$.pipe(map((height) => height + 62))
+            ? this.middleContainerHeight$.pipe(map((height) => height - 62))
             : this.middleContainerHeight$;
         this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(totalHeight$);
 
