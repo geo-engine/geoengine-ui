@@ -593,6 +593,21 @@ export interface WcsParamsDict {
     nodatavalue?: string;
 }
 
+export interface WfsParamsDict {
+    workflowId: UUID;
+    bbox: BBoxDict;
+    time?: TimeIntervalDict;
+    srsName?: SrsString;
+    namespaces?: string;
+    count?: number;
+    sortBy?: string;
+    resultType?: string;
+    filter?: string;
+    propertyName?: string;
+    // vendor parameter for specifying the spatial resolution
+    queryResolution?: number; // TODO: allow x and y seperately
+}
+
 export interface QuotaDict {
     available: number;
     used: number;

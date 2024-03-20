@@ -147,6 +147,7 @@ import {RolesComponent} from './users/roles/roles.component';
 import {VectorExpressionComponent} from './operators/dialogs/vector-expression/vector-expression.component';
 import {CommonConfig, CommonModule} from '@geoengine/common';
 import {SymbologyEditorComponent} from './layers/symbology/symbology-editor/symbology-editor.component';
+import {DownloadVectorLayerComponent} from './download-vector-layer/download-vector-layer.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -210,6 +211,7 @@ const CORE_COMPONENTS = [
     DialogSectionHeadingComponent,
     DialogSplashCheckboxComponent,
     DownloadRasterLayerComponent,
+    DownloadVectorLayerComponent,
     DragAndDropComponent,
     DrawFeaturesComponent,
     ExpressionOperatorComponent,
