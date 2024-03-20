@@ -140,12 +140,13 @@ export class DownloadVectorLayerComponent implements OnInit, OnDestroy {
             )
             .subscribe({
                 next: (json) => {
-                    const href = 'data:text/json;charset=UTF-8,' + encodeURIComponent(JSON.stringify(json));
+                    const jsonFile = new File([JSON.stringify(json)], `${this.layer.name}.json`);
+                    const url = window.URL.createObjectURL(jsonFile);
 
                     // trigger download
                     const anchor = document.createElement('a');
-                    anchor.href = href;
-                    anchor.download = this.layer.name + '.json';
+                    anchor.href = url;
+                    anchor.download = jsonFile.name;
                     anchor.click();
                 },
                 error: (error) => {
