@@ -246,11 +246,27 @@ export interface ColumnRangeFilterDict extends OperatorDict {
 }
 
 export interface RasterVectorJoinParams extends OperatorParams {
-    names: Array<string>;
+    names: ColumnNamesDict;
     temporalAggregation: 'none' | 'first' | 'mean';
     temporalAggregationIgnoreNoData?: boolean;
     featureAggregation: 'first' | 'mean';
     featureAggregationIgnoreNoData?: boolean;
+}
+
+export type ColumnNamesDict = ColumnNamesDefaultDict | ColumnNamesSuffixDict | ColumnNamesNamesDict;
+
+export interface ColumnNamesDefaultDict {
+    type: 'default';
+}
+
+export interface ColumnNamesSuffixDict {
+    type: 'suffix';
+    values: Array<string>;
+}
+
+export interface ColumnNamesNamesDict {
+    type: 'names';
+    values: Array<string>;
 }
 
 export interface RasterVectorJoinDict extends OperatorDict {

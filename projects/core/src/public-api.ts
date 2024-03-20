@@ -140,5 +140,4 @@ export * from './lib/util/guards/backend-available.guard';
 export * from './lib/util/directives/if-guest.directive';
 export * from './lib/util/directives/if-logged-in.directive';
 export * from './lib/util/errors';
-export * from './lib/util/form.validators';
 export * from './lib/util/icons';

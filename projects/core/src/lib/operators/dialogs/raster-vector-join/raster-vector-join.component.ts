@@ -1,21 +1,23 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {Subscription} from 'rxjs';
+import {EMPTY, Subscription, combineLatest} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {RandomColorService} from '../../../util/services/random-color.service';
-import {geoengineValidators} from '../../../util/form.validators';
-import {filter, map, mergeMap} from 'rxjs/operators';
+
+import {mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {
+    ColumnNamesDict,
     PointSymbology,
     RasterLayer,
+    RasterLayerMetadata,
     RasterVectorJoinDict,
     RasterVectorJoinParams,
     ResultTypes,
     StaticColor,
     VectorLayer,
-    VectorLayerMetadata,
+    geoengineValidators,
 } from '@geoengine/common';
 
 type TemporalAggregation = 'none' | 'first' | 'mean';
@@ -24,12 +26,19 @@ type FeatureAggregation = 'first' | 'mean';
 interface RasterVectorJoinForm {
     vectorLayer: FormControl<VectorLayer | undefined>;
     rasterLayers: FormControl<Array<RasterLayer> | undefined>;
-    valueNames: FormArray<FormControl<string>>;
+    columnNamesType: FormControl<ColumnNames>;
+    columnNamesValues: FormArray<FormControl<string>>;
     temporalAggregation: FormControl<TemporalAggregation>;
     temporalAggregationIgnoreNodata: FormControl<boolean>;
     featureAggregation: FormControl<FeatureAggregation>;
     featureAggregationIgnoreNodata: FormControl<boolean>;
     name: FormControl<string>;
+}
+
+enum ColumnNames {
+    Default,
+    Suffix,
+    Names,
 }
 
 @Component({
@@ -44,10 +53,11 @@ export class RasterVectorJoinComponent implements OnDestroy {
     allowedVectorTypes = [ResultTypes.POINTS, ResultTypes.POLYGONS];
     allowedRasterTypes = [ResultTypes.RASTER];
 
+    ColumnNames = ColumnNames;
+
     form: FormGroup<RasterVectorJoinForm>;
 
-    private vectorColumns: Array<string> = [];
-    private valueNameUserChanges: Array<boolean> = [];
+    private rasterLayerMetadata: Array<RasterLayerMetadata> = [];
 
     private subscriptions: Array<Subscription> = [];
 
@@ -67,7 +77,11 @@ export class RasterVectorJoinComponent implements OnDestroy {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
-            valueNames: this.formBuilder.nonNullable.array<FormControl<string>>([]),
+            columnNamesType: new FormControl(ColumnNames.Default, {
+                nonNullable: true,
+                validators: [Validators.required],
+            }),
+            columnNamesValues: new FormArray<FormControl<string>>([], {validators: geoengineValidators.duplicateInFormArrayValidator()}),
             temporalAggregation: ['none' as TemporalAggregation, Validators.required],
             temporalAggregationIgnoreNodata: [false, Validators.required],
             featureAggregation: ['first' as FeatureAggregation, Validators.required],
@@ -75,11 +89,72 @@ export class RasterVectorJoinComponent implements OnDestroy {
             name: ['Vectors With Raster Values', [Validators.required, geoengineValidators.notOnlyWhitespace]],
         });
 
-        this.setupNameValidation();
+        const rasterLayerSub = this.form.controls.rasterLayers.valueChanges
+            .pipe(
+                mergeMap((rasterLayers: Array<RasterLayer> | undefined) => {
+                    if (!rasterLayers) {
+                        return EMPTY;
+                    }
+
+                    const metaData = rasterLayers.map((l) => this.projectService.getRasterLayerMetadata(l));
+                    return combineLatest(metaData);
+                }),
+            )
+            .subscribe((rasterLayers: Array<RasterLayerMetadata>) => {
+                this.rasterLayerMetadata = rasterLayers;
+                this.updateColumnNamesType();
+            });
+
+        this.subscriptions.push(rasterLayerSub);
     }
 
     ngOnDestroy(): void {
         this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    }
+
+    get columnNameValues(): FormArray {
+        return this.form.get('columnNamesValues') as FormArray;
+    }
+
+    columnNameHint(i: number): string {
+        switch (this.form.controls.columnNamesType.value) {
+            case ColumnNames.Default:
+                return '';
+            case ColumnNames.Suffix:
+                return `Suffix for input ${i}`;
+            case ColumnNames.Names:
+                return `New name for column ${i}`;
+        }
+    }
+
+    updateColumnNamesType(): void {
+        if (!this.form.controls.rasterLayers.value) {
+            return;
+        }
+
+        const columnNamesValuesControl = this.form.controls.columnNamesValues;
+        columnNamesValuesControl.clear();
+
+        const columnNamesType = this.form.controls.columnNamesType.value;
+
+        this.rasterLayerMetadata.forEach((layer, layerIndex) => {
+            if (columnNamesType === ColumnNames.Suffix) {
+                columnNamesValuesControl.push(
+                    new FormControl(`_${layerIndex}`, {
+                        nonNullable: true,
+                    }),
+                );
+            } else if (columnNamesType === ColumnNames.Names) {
+                layer.bands.forEach((band) => {
+                    columnNamesValuesControl.push(
+                        new FormControl(band.name, {
+                            nonNullable: true,
+                            validators: [Validators.required, geoengineValidators.notOnlyWhitespace],
+                        }),
+                    );
+                });
+            }
+        });
     }
 
     getValueNameControls(): Array<FormControl> {
@@ -95,29 +170,23 @@ export class RasterVectorJoinComponent implements OnDestroy {
     add(): void {
         const vectorLayer: VectorLayer | undefined = this.form.controls.vectorLayer.value;
         const rasterLayers: Array<RasterLayer> | undefined = this.form.controls.rasterLayers.value;
-
         if (!vectorLayer || !rasterLayers) {
             return;
         }
-
-        const valueNames: Array<string> = this.form.controls.valueNames.value;
+        const names = this.getColumnNames();
         const temporalAggregation: TemporalAggregation = this.form.controls.temporalAggregation.value;
         const temporalAggregationIgnoreNoData = this.form.controls.temporalAggregationIgnoreNodata.value;
         const featureAggregation: FeatureAggregation = this.form.controls.featureAggregation.value;
         const featureAggregationIgnoreNoData = this.form.controls.featureAggregationIgnoreNodata.value;
-
         const outputLayerName: string = this.form.controls['name'].value;
-
         const params: RasterVectorJoinParams = {
-            names: valueNames,
+            names,
             temporalAggregation,
             temporalAggregationIgnoreNoData,
             featureAggregation,
             featureAggregationIgnoreNoData,
         };
-
         const sourceOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers([vectorLayer, ...rasterLayers]);
-
         sourceOperators
             .pipe(
                 mergeMap(([vectorOperator, ...rasterOperators]) =>
@@ -157,123 +226,23 @@ export class RasterVectorJoinComponent implements OnDestroy {
         return LetterNumberConverter.toLetters(number);
     }
 
-    private reCheckValueNames(): void {
-        setTimeout(() => {
-            const valueNames = this.form.controls['valueNames'];
-            valueNames.controls.forEach((control) => {
-                control.updateValueAndValidity({
-                    onlySelf: false,
-                    emitEvent: false,
-                });
-            });
-            this.changeDetectorRef.markForCheck();
-        });
-    }
-
-    private setupNameValidation(): void {
-        const vectorLayerSubscription = this.form.controls['vectorLayer'].valueChanges
-            .pipe(
-                filter((vectorLayer): vectorLayer is VectorLayer => !!vectorLayer),
-                mergeMap((vectorLayer: VectorLayer) => this.projectService.getLayerMetadata(vectorLayer)),
-                map((metadata) => {
-                    if (!(metadata instanceof VectorLayerMetadata)) {
-                        throw Error('expected to get vector metadata');
-                    }
-
-                    return metadata.dataTypes.keySeq().toArray();
-                }),
-            )
-            .subscribe((columns) => {
-                this.vectorColumns = columns;
-                this.reCheckValueNames();
-            });
-        this.subscriptions.push(vectorLayerSubscription);
-
-        // update valueNames
-        const rasterLayersSubscription = this.form.controls['rasterLayers'].valueChanges.subscribe((rasters) => {
-            if (!rasters) {
-                return;
-            }
-
-            const valueNames = this.form.controls['valueNames'];
-
-            if (valueNames.length > rasters.length) {
-                // remove name fields
-                for (let i = rasters.length; i < valueNames.length; i++) {
-                    valueNames.removeAt(i);
-                    this.valueNameUserChanges.splice(i, 1);
-                }
-            } else if (valueNames.length < rasters.length) {
-                // add name fields
-                for (let i = valueNames.length; i < rasters.length; i++) {
-                    const control = this.formBuilder.nonNullable.control(
-                        rasters[i].name,
-                        Validators.compose([Validators.required, this.valueNameCollision(this.form.controls['valueNames'] as FormArray)]),
-                    );
-                    valueNames.push(control);
-                    this.valueNameUserChanges.push(false);
-
-                    this.subscriptions.push(
-                        control.valueChanges.subscribe((valueName) => {
-                            const rasterName = rasters[i].name;
-                            if (valueName !== rasterName) {
-                                this.valueNameUserChanges[i] = true;
-                            }
-
-                            this.reCheckValueNames();
-                        }),
-                    );
-                }
-            } else {
-                // update names if not changed by user
-                for (let i = 0; i < rasters.length; i++) {
-                    if (!this.valueNameUserChanges[i]) {
-                        (valueNames.at(i) as FormControl).setValue(rasters[i].name, {emitEvent: false});
-                    }
-                }
-            }
-
-            this.reCheckValueNames();
-        });
-        this.subscriptions.push(rasterLayersSubscription);
-    }
-
-    /**
-     * Checks for collisions of value name.
-     * Uses `startsWith` semantics.
-     */
-    private valueNameCollision(valueNames: FormArray) {
-        return (control: FormControl): {[key: string]: boolean | undefined} | null => {
-            const errors: {
-                duplicateName?: boolean;
-            } = {};
-
-            const valueName: string = control.value;
-
-            let duplicates = -1; // subtracting self
-
-            for (const otherValueName of valueNames.value as Array<string>) {
-                if (otherValueName === valueName) {
-                    duplicates++;
-                }
-            }
-
-            if (duplicates < 1) {
-                // check for conflicts with extisting column in input
-                for (const otherValueName of this.vectorColumns) {
-                    if (otherValueName === valueName) {
-                        duplicates++;
-                        break;
-                    }
-                }
-            }
-
-            if (duplicates > 0) {
-                errors.duplicateName = true;
-            }
-
-            return Object.keys(errors).length > 0 ? errors : null;
-        };
+    private getColumnNames(): ColumnNamesDict {
+        switch (this.form.controls.columnNamesType.value) {
+            case ColumnNames.Default:
+                return {
+                    type: 'default',
+                };
+            case ColumnNames.Suffix:
+                return {
+                    type: 'suffix',
+                    values: this.form.controls.columnNamesValues.value,
+                };
+            case ColumnNames.Names:
+                return {
+                    type: 'names',
+                    values: this.form.controls.columnNamesValues.value,
+                };
+        }
     }
 
     private symbologyWithNewColor(inputSymbology: PointSymbology): PointSymbology {

@@ -2,10 +2,17 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@ang
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
-import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
-import {PieChartCountParams, PieChartDict, Plot, ResultTypes, VectorLayer, VectorLayerMetadata} from '@geoengine/common';
+import {
+    PieChartCountParams,
+    PieChartDict,
+    Plot,
+    ResultTypes,
+    VectorLayer,
+    VectorLayerMetadata,
+    geoengineValidators,
+} from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 interface PieChartForm {

@@ -4,10 +4,10 @@ import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
 import {Config} from '../../config.service';
-import {geoengineValidators} from '../../util/form.validators';
 import {User} from '../user.model';
 import {Session} from '../session.model';
 import {MatDialogRef} from '@angular/material/dialog';
+import {geoengineValidators} from '@geoengine/common';
 
 enum FormStatus {
     LoggedOut,

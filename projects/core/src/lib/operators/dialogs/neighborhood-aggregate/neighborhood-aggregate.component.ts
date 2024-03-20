@@ -5,9 +5,8 @@ import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validat
 import {ProjectService} from '../../../project/project.service';
 import {UUID} from '../../../backend/backend.model';
 import {LayoutService, SidenavConfig} from '../../../layout.service';
-import {geoengineValidators} from '../../../util/form.validators';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
-import {Layer, NeighborhoodAggregateDict, RasterLayer, RasterSymbology, ResultTypes} from '@geoengine/common';
+import {Layer, NeighborhoodAggregateDict, RasterLayer, RasterSymbology, ResultTypes, geoengineValidators} from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 interface NeighborhoodAggregateForm {

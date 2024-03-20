@@ -11,9 +11,8 @@ import {ProjectService} from '../project/project.service';
 import {SpatialReferenceService} from '../spatial-references/spatial-reference.service';
 import {TimeInterval} from '../time/time-interval-input/time-interval-input.component';
 import {UserService} from '../users/user.service';
-import {geoengineValidators} from '../util/form.validators';
 import {bboxAsOgcString, gridOffsetsAsOgcString, gridOriginAsOgcString} from '../util/spatial_reference';
-import {RasterLayer, SpatialReference, Time, olExtentToTuple} from '@geoengine/common';
+import {RasterLayer, SpatialReference, Time, geoengineValidators, olExtentToTuple} from '@geoengine/common';
 import {TypedResultDescriptor} from '@geoengine/openapi-client';
 
 export interface DownloadRasterLayerForm {

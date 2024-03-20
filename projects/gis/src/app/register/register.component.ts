@@ -3,9 +3,10 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
-import {Config, NotificationService, UserService, geoengineValidators, BackendService} from '@geoengine/core';
+import {Config, NotificationService, UserService, BackendService} from '@geoengine/core';
 import {map, mergeMap} from 'rxjs/operators';
 import {Router} from '@angular/router';
+import {geoengineValidators} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-register',
