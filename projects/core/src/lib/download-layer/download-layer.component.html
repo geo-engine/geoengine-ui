@@ -1,6 +1,6 @@
-<geoengine-sidenav-header>Download {{ layer.layerType.toUpperCase() }} Layer</geoengine-sidenav-header>
+<geoengine-sidenav-header>Download {{ layer.layerType === 'raster' ? 'Raster' : 'Vector' }} Layer</geoengine-sidenav-header>
 
-<form [formGroup]="form">
+<form [formGroup]="form" fxLayout="column">
     <mat-dialog-content>
         <mat-card>
             <mat-card-header>
@@ -9,7 +9,7 @@
             </mat-card-header>
 
             <mat-card-content>
-                <div fxLayout="row">
+                <div fxLayout="row wrap" fxLayoutGap="1rem">
                     <mat-form-field appearance="fill">
                         <mat-label>min X</mat-label>
                         <input matInput type="number" formControlName="bboxMinX" />
@@ -104,6 +104,8 @@
             </mat-card-content>
         </mat-card>
 
-        <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid" (click)="download()">Download</button>
+        <div>
+            <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid" (click)="download()">Download</button>
+        </div>
     </mat-dialog-content>
 </form>
