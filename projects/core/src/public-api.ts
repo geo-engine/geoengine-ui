@@ -53,7 +53,7 @@ export * from './lib/layers/symbology/symbology-creator/symbology-creator.compon
 export * from './lib/layers/symbology/symbology-editor/symbology-editor.component';
 export * from './lib/logo.component';
 export * from './lib/map/map-container/map-container.component';
-export * from './lib/map/map-info/map-info.component';
+export * from './lib/map/map-info/map-resolution-extent-overlay.component';
 export * from './lib/map/map-layer.component';
 export * from './lib/map/zoom-handles/zoom-handles.component';
 export * from './lib/operators/dialogs/boxplot-operator/boxplot-operator.component';

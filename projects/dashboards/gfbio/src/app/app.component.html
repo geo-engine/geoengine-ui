@@ -65,10 +65,10 @@
             </ng-container>
         </geoengine-map-container>
     </div>
-    <geoengine-map-info
+    <geoengine-map-resolution-extent-overlay
         *ngIf="config.COMPONENTS.MAP_RESOLUTION_EXTENT_OVERLAY.AVAILABLE"
         [bottom]="bottomContainerHeight$ | async | numberSanitizer"
-    ></geoengine-map-info>
+    ></geoengine-map-resolution-extent-overlay>
     <geoengine-tab-panel
         [visible]="layerDetailViewVisible$ | async | valueDefault: false"
         [maxHeight]="bottomContainerHeight$ | async | numberSanitizer"

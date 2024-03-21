@@ -6,15 +6,15 @@ import {map} from 'rxjs/operators';
 import {SpatialReferenceService} from '../../spatial-references/spatial-reference.service';
 
 /**
- * The `geoengine-map-info` displays information about the visible map(s).
+ * The `geoengine-map-resolution-extent-overlay` displays information about the resolution and extent of the visible map(s).
  */
 @Component({
-    selector: 'geoengine-map-info',
-    templateUrl: 'map-info.component.html',
-    styleUrls: ['map-info.component.scss'],
+    selector: 'geoengine-map-resolution-extent-overlay',
+    templateUrl: 'map-resolution-extent-overlay.component.html',
+    styleUrls: ['map-resolution-extent-overlay.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MapInfoComponent {
+export class MapResolutionExtentOverlayComponent {
     @Input()
     public bottom!: number;
 
@@ -37,7 +37,9 @@ export class MapInfoComponent {
             map((srs) => this.spatialReferenceService.getOlProjection(srs).getUnits()),
             combineLatestWith(this.mapService.getViewportSizeStream()),
             map(([unit, viewport]) => {
-                const numFractions = this.highPrecision.getValue() ? MapInfoComponent.highNumFractions : MapInfoComponent.lowNumFractions;
+                const numFractions = this.highPrecision.getValue()
+                    ? MapResolutionExtentOverlayComponent.highNumFractions
+                    : MapResolutionExtentOverlayComponent.lowNumFractions;
 
                 const resolution = viewport.resolution.toFixed(numFractions);
                 const xMin = this.prependPlusSign(viewport.extent[0].toFixed(numFractions));
