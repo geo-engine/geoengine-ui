@@ -120,6 +120,7 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
             const extent = olExtentToTuple(viewport.extent);
 
             this.updateRegionByExtent(extent);
+            this.updateResolution(viewport.resolution);
         });
 
         if (this.layer.layerType === 'vector') {
@@ -228,6 +229,11 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
         this.form.controls['bboxMinY'].setValue(extent[1]);
         this.form.controls['bboxMaxX'].setValue(extent[2]);
         this.form.controls['bboxMaxY'].setValue(extent[3]);
+    }
+
+    private updateResolution(resolution: number): void {
+        this.form.controls['inputResolutionX'].setValue(resolution);
+        this.form.controls['inputResolutionY'].setValue(resolution);
     }
 
     private makeWcsParams(sref: SpatialReference, resultDescriptor: TypedResultDescriptor): WcsParamsDict {
