@@ -2,7 +2,7 @@ import {HttpEventType} from '@angular/common/http';
 import {ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, UntypedFormBuilder, ValidatorFn, Validators} from '@angular/forms';
 import moment from 'moment';
-import {combineLatest, mergeMap, Observable, Subscription} from 'rxjs';
+import {combineLatest, mergeMap, Subscription} from 'rxjs';
 import {RasterResultDescriptorDict, WcsParamsDict, WfsParamsDict} from '../backend/backend.model';
 import {BackendService} from '../backend/backend.service';
 import {MapService} from '../map/map.service';
@@ -160,7 +160,7 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
         }
     }
 
-    private rasterDownload() {
+    private rasterDownload(): void {
         combineLatest([
             this.projectService.getSpatialReferenceOnce(),
             this.userService.getSessionTokenForRequest(),
@@ -194,7 +194,7 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
             });
     }
 
-    private vectorDownload() {
+    private vectorDownload(): void {
         combineLatest([
             this.projectService.getSpatialReferenceOnce(),
             this.userService.getSessionTokenForRequest(),
