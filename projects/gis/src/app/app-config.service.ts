@@ -11,7 +11,7 @@ interface Components {
     readonly REGISTRATION: {
         readonly AVAILABLE: boolean;
     };
-    readonly MAP_INFO: {
+    readonly MAP_RESOLUTION_EXTENT_OVERLAY: {
         readonly AVAILABLE: boolean;
     };
 }
@@ -44,7 +44,7 @@ const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CONFIG, {
         REGISTRATION: {
             AVAILABLE: true,
         },
-        MAP_INFO: {
+        MAP_RESOLUTION_EXTENT_OVERLAY: {
             AVAILABLE: true,
         },
     },

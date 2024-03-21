@@ -8,7 +8,7 @@ interface Components {
     readonly PLAYBACK: {
         readonly AVAILABLE: boolean;
     };
-    readonly MAP_INFO: {
+    readonly MAP_RESOLUTION_EXTENT_OVERLAY: {
         readonly AVAILABLE: boolean;
     };
 }
@@ -22,7 +22,7 @@ const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CONFIG, {
         PLAYBACK: {
             AVAILABLE: false,
         },
-        MAP_INFO: {
+        MAP_RESOLUTION_EXTENT_OVERLAY: {
             AVAILABLE: true,
         },
     },
