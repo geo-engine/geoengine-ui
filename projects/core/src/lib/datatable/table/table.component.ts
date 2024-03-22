@@ -33,6 +33,8 @@ import {
     VectorLayer,
     VectorLayerMetadata,
 } from '@geoengine/common';
+import {Measurement, ClassificationMeasurement} from '@geoengine/common';
+import {Map} from 'immutable';
 
 @Component({
     selector: 'geoengine-datatable',
@@ -55,6 +57,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     featureColumns: Array<string> = [];
     featureColumnDataTypes: Array<VectorColumnDataType> = [];
     checkboxLabels: Array<string> = [];
+    measurements!: Map<string, Measurement>;
 
     protected layerDataSubscription?: Subscription = undefined;
     protected selectedFeatureSubscription?: Subscription = undefined;
@@ -138,6 +141,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         }
         this.dataSource.data = data.data;
         this.featureColumns = metadata.dataTypes.keySeq().toArray();
+        this.measurements = metadata.measurements;
         this.featureColumnDataTypes = metadata.dataTypes.valueSeq().toArray();
         if (this.displayedColumns.length === 0) {
             // Only true when the table is first created. Prevents "forgetting" selected columns when zooming/scrolling the map
@@ -284,6 +288,17 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     sliceColumnContent(columnText: string, colmaxlen: number): string {
         const colText = columnText?.length > colmaxlen ? columnText.slice(0, colmaxlen) + '...' : columnText;
         return colText;
+    }
+
+    protected resolveClassification(columnName: string, value: number): string {
+        const measurement = this.measurements.get(columnName)!;
+        if (measurement instanceof ClassificationMeasurement) {
+            const mapping = (measurement as ClassificationMeasurement).classes.get(value);
+            if (mapping) {
+                return mapping;
+            }
+        }
+        return value.toString();
     }
 
     protected navigatePage(selection: FeatureSelection): void {
