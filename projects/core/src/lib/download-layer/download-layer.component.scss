@@ -1,6 +1,21 @@
 :host {
+    height: 100%;
+}
+
+#container {
     display: block;
-    padding: 1rem;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+
+    .specification {
+        overflow-y: auto;
+    }
+
+    .actions {
+        text-align: right;
+        padding: 1rem;
+    }
 }
 
 mat-card {

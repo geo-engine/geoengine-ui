@@ -1,7 +1,7 @@
 <geoengine-sidenav-header>Download {{ layer.layerType === 'raster' ? 'Raster' : 'Vector' }} Layer</geoengine-sidenav-header>
 
-<form [formGroup]="form" fxLayout="column">
-    <mat-dialog-content>
+<form [formGroup]="form" fxLayout="column" id="container">
+    <div class="specification" fxFlex>
         <mat-card>
             <mat-card-header>
                 <mat-card-title>Area</mat-card-title>
@@ -103,9 +103,8 @@
                 </div>
             </mat-card-content>
         </mat-card>
-
-        <div>
-            <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid" (click)="download()">Download</button>
-        </div>
-    </mat-dialog-content>
+    </div>
+    <div class="actions">
+        <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid" (click)="download()">Download</button>
+    </div>
 </form>
