@@ -34,11 +34,11 @@
             </mat-button-toggle-group>
 
             @if (form.controls.columnNamesType.value !== ColumnNames.Default) {
-                hi
                 <div formArrayName="columnNamesValues">
                     <mat-form-field *ngFor="let control of columnNameValues.controls; let i = index">
                         <mat-label>{{ columnNameHint(i) }} </mat-label>
                         <input matInput type="text" [formControlName]="i" />
+                        <mat-error *ngIf="control.hasError('forbiddenValue')">Error: conflict with existing column names</mat-error>
                     </mat-form-field>
                     <mat-error *ngIf="columnNameValues.hasError('duplicate')">Error: duplicate value</mat-error>
                 </div>

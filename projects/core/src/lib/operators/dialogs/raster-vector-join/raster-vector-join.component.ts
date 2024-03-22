@@ -1,10 +1,10 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
-import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {EMPTY, Subscription, combineLatest} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {RandomColorService} from '../../../util/services/random-color.service';
 
-import {mergeMap} from 'rxjs/operators';
+import {filter, map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {
@@ -17,6 +17,7 @@ import {
     ResultTypes,
     StaticColor,
     VectorLayer,
+    VectorLayerMetadata,
     geoengineValidators,
 } from '@geoengine/common';
 
@@ -58,6 +59,7 @@ export class RasterVectorJoinComponent implements OnDestroy {
     form: FormGroup<RasterVectorJoinForm>;
 
     private rasterLayerMetadata: Array<RasterLayerMetadata> = [];
+    private vectorColumns: string[] = [];
 
     private subscriptions: Array<Subscription> = [];
 
@@ -106,6 +108,24 @@ export class RasterVectorJoinComponent implements OnDestroy {
             });
 
         this.subscriptions.push(rasterLayerSub);
+
+        const vectorLayerSubscription = this.form.controls['vectorLayer'].valueChanges
+            .pipe(
+                filter((vectorLayer): vectorLayer is VectorLayer => !!vectorLayer),
+                mergeMap((vectorLayer: VectorLayer) => this.projectService.getLayerMetadata(vectorLayer)),
+                map((metadata) => {
+                    if (!(metadata instanceof VectorLayerMetadata)) {
+                        throw Error('expected to get vector metadata');
+                    }
+
+                    return metadata.dataTypes.keySeq().toArray();
+                }),
+            )
+            .subscribe((columns) => {
+                this.vectorColumns = columns;
+                this.updateColumnNamesType();
+            });
+        this.subscriptions.push(vectorLayerSubscription);
     }
 
     ngOnDestroy(): void {
@@ -142,6 +162,12 @@ export class RasterVectorJoinComponent implements OnDestroy {
                 columnNamesValuesControl.push(
                     new FormControl(`_${layerIndex}`, {
                         nonNullable: true,
+                        validators: [
+                            forbiddenValueValidator(
+                                this.vectorColumns,
+                                layer.bands.map((b) => b.name),
+                            ),
+                        ],
                     }),
                 );
             } else if (columnNamesType === ColumnNames.Names) {
@@ -149,7 +175,11 @@ export class RasterVectorJoinComponent implements OnDestroy {
                     columnNamesValuesControl.push(
                         new FormControl(band.name, {
                             nonNullable: true,
-                            validators: [Validators.required, geoengineValidators.notOnlyWhitespace],
+                            validators: [
+                                Validators.required,
+                                geoengineValidators.notOnlyWhitespace,
+                                forbiddenValueValidator(this.vectorColumns),
+                            ],
                         }),
                     );
                 });
@@ -254,3 +284,22 @@ export class RasterVectorJoinComponent implements OnDestroy {
         return symbology;
     }
 }
+
+/**
+ * check if the current value is contained in the list of forbidden values.
+ * you can additionaly give a list of prefixes that will be prepended to the value before checking.
+ */
+export const forbiddenValueValidator =
+    (forbiddenValues: string[], prefixes: string[] = ['']): ValidatorFn =>
+    (control: AbstractControl): ValidationErrors | null => {
+        const text = control.value as string;
+
+        for (const prefix of prefixes) {
+            const value = `${prefix}${text}`;
+            if (forbiddenValues.includes(value)) {
+                return forbiddenValues.includes(text) ? {forbiddenValue: {value}} : null;
+            }
+        }
+
+        return null;
+    };
