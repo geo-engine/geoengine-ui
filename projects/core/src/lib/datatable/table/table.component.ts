@@ -294,10 +294,9 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
         const measurement = this.measurements.get(columnName)!;
         if (measurement instanceof ClassificationMeasurement) {
             const mapping = (measurement as ClassificationMeasurement).classes.get(value);
-            if (!mapping) {
-                return 'Unknown class';
+            if (mapping) {
+                return mapping;
             }
-            return mapping;
         }
         return value.toString();
     }
