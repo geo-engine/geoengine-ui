@@ -137,7 +137,6 @@ import {TimeShiftComponent} from './operators/dialogs/time-shift/time-shift.comp
 import {PieChartComponent} from './operators/dialogs/pie-chart/pie-chart.component';
 import {RasterizationComponent} from './operators/dialogs/rasterization/rasterization.component';
 import {UserSessionComponent} from './users/user-session/user-session.component';
-import {DownloadRasterLayerComponent} from './download-raster-layer/download-raster-layer.component';
 import {TimeIntervalInputComponent} from './time/time-interval-input/time-interval-input.component';
 import {QuotaInfoComponent} from './users/quota/quota-info/quota-info.component';
 import {LineSimplificationComponent} from './operators/dialogs/line-simplification/line-simplification.component';
@@ -147,6 +146,7 @@ import {RolesComponent} from './users/roles/roles.component';
 import {VectorExpressionComponent} from './operators/dialogs/vector-expression/vector-expression.component';
 import {CommonConfig, CommonModule} from '@geoengine/common';
 import {SymbologyEditorComponent} from './layers/symbology/symbology-editor/symbology-editor.component';
+import {DownloadLayerComponent} from './download-layer/download-layer.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -209,7 +209,7 @@ const CORE_COMPONENTS = [
     DialogHelpComponent,
     DialogSectionHeadingComponent,
     DialogSplashCheckboxComponent,
-    DownloadRasterLayerComponent,
+    DownloadLayerComponent,
     DragAndDropComponent,
     DrawFeaturesComponent,
     ExpressionOperatorComponent,

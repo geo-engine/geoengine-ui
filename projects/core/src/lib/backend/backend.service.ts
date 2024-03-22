@@ -38,6 +38,7 @@ import {
     UploadFileLayersResponseDict,
     RoleDescription,
     CreateDatasetDict,
+    WfsParamsDict,
 } from './backend.model';
 import {
     ProjectLayer as ProjectLayerDict,
@@ -213,23 +214,7 @@ export class BackendService {
         return response;
     }
 
-    wfsGetFeature(
-        request: {
-            workflowId: UUID;
-            bbox: BBoxDict;
-            time?: TimeIntervalDict;
-            srsName?: SrsString;
-            namespaces?: string;
-            count?: number;
-            sortBy?: string;
-            resultType?: string;
-            filter?: string;
-            propertyName?: string;
-            // vendor parameter for specifying the spatial resolution
-            queryResolution?: number; // TODO: allow x and y seperately
-        },
-        sessionId: UUID,
-    ): Observable<JSON> {
+    wfsGetFeature(request: WfsParamsDict, sessionId: UUID): Observable<JSON> {
         const params = new NullDiscardingHttpParams();
 
         params.set('service', 'WFS');

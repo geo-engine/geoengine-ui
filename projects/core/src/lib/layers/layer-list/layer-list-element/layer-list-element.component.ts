@@ -17,10 +17,10 @@ import {BackendService} from '../../../backend/backend.service';
 import {UserService} from '../../../users/user.service';
 import {HttpEventType} from '@angular/common/http';
 import {filenameFromHttpHeaders} from '../../../util/http';
-import {DownloadRasterLayerComponent} from '../../../download-raster-layer/download-raster-layer.component';
 import {IconStyle, Layer, RasterLayerMetadata, Symbology, SymbologyType} from '@geoengine/common';
 import {RasterBandDescriptor} from '@geoengine/openapi-client';
 import {SymbologyEditorComponent} from '../../symbology/symbology-editor/symbology-editor.component';
+import {DownloadLayerComponent} from '../../../download-layer/download-layer.component';
 /**
  * The layer list component displays active layers, legends and other controlls.
  */
@@ -42,7 +42,6 @@ export class LayerListElementComponent {
     readonly LoadingState = LoadingState;
     readonly RenameLayerComponent = RenameLayerComponent;
     readonly LineageGraphComponent = LineageGraphComponent;
-    readonly DownloadRasterLayerComponent = DownloadRasterLayerComponent;
 
     /**
      * The component constructor. It injects angular and geoengine services.
@@ -182,7 +181,7 @@ export class LayerListElementComponent {
             });
     }
 
-    showRasterDownload(layer: Layer): void {
-        this.layoutService.setSidenavContentComponent({component: DownloadRasterLayerComponent, config: {layer}});
+    showDownload(layer: Layer): void {
+        this.layoutService.setSidenavContentComponent({component: DownloadLayerComponent, config: {layer}});
     }
 }
