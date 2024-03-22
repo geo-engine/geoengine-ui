@@ -3,7 +3,7 @@ import {ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit} from '@ang
 import {FormControl, FormGroup, UntypedFormBuilder, ValidatorFn, Validators} from '@angular/forms';
 import moment from 'moment';
 import {combineLatest, mergeMap, Subscription} from 'rxjs';
-import {RasterResultDescriptorDict, WcsParamsDict} from '../backend/backend.model';
+import {RasterResultDescriptorDict, WcsParamsDict, WfsParamsDict} from '../backend/backend.model';
 import {BackendService} from '../backend/backend.service';
 import {MapService} from '../map/map.service';
 import {NotificationService} from '../notification.service';
@@ -12,10 +12,10 @@ import {SpatialReferenceService} from '../spatial-references/spatial-reference.s
 import {TimeInterval} from '../time/time-interval-input/time-interval-input.component';
 import {UserService} from '../users/user.service';
 import {bboxAsOgcString, gridOffsetsAsOgcString, gridOriginAsOgcString} from '../util/spatial_reference';
-import {RasterLayer, SpatialReference, Time, geoengineValidators, olExtentToTuple} from '@geoengine/common';
+import {Layer, SpatialReference, Time, olExtentToTuple, extentToBboxDict, geoengineValidators} from '@geoengine/common';
 import {TypedResultDescriptor} from '@geoengine/openapi-client';
 
-export interface DownloadRasterLayerForm {
+export interface DownloadLayerForm {
     bboxMinX: FormControl<number>;
     bboxMaxX: FormControl<number>;
     bboxMinY: FormControl<number>;
@@ -30,20 +30,20 @@ export interface DownloadRasterLayerForm {
 }
 
 @Component({
-    selector: 'geoengine-download-raster-layer',
-    templateUrl: './download-raster-layer.component.html',
-    styleUrls: ['./download-raster-layer.component.scss'],
+    selector: 'geoengine-download-layer',
+    templateUrl: './download-layer.component.html',
+    styleUrls: ['./download-layer.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DownloadRasterLayerComponent implements OnInit, OnDestroy {
-    @Input() layer!: RasterLayer;
+export class DownloadLayerComponent implements OnInit, OnDestroy {
+    @Input() layer!: Layer;
 
-    readonly interpolationMethods = [
+    readonly rasterInterpolationMethods = [
         ['Nearest Neighbor', 'nearestNeighbor'],
         ['Bilinear', 'biLinear'],
     ];
 
-    form: FormGroup<DownloadRasterLayerForm>;
+    form: FormGroup<DownloadLayerForm>;
 
     isSelectingBox = false;
 
@@ -83,11 +83,11 @@ export class DownloadRasterLayerComponent implements OnInit, OnDestroy {
                 {start: time.start, timeAsPoint: true, end: time.end},
                 {nonNullable: true, validators: [Validators.required]},
             ),
-            interpolationMethod: new FormControl(this.interpolationMethods[0][1], {
+            interpolationMethod: new FormControl(this.rasterInterpolationMethods[0][1], {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
-            inputResolution: new FormControl('source', {
+            inputResolution: new FormControl('input', {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
@@ -119,7 +119,12 @@ export class DownloadRasterLayerComponent implements OnInit, OnDestroy {
             const extent = olExtentToTuple(viewport.extent);
 
             this.updateRegionByExtent(extent);
+            this.updateResolution(viewport.resolution);
         });
+
+        if (this.layer.layerType === 'vector') {
+            this.form.controls['inputResolution'].setValue('value');
+        }
     }
 
     ngOnDestroy(): void {
@@ -147,6 +152,14 @@ export class DownloadRasterLayerComponent implements OnInit, OnDestroy {
             return;
         }
 
+        if (this.layer.layerType === 'raster') {
+            this.rasterDownload();
+        } else if (this.layer.layerType === 'vector') {
+            this.vectorDownload();
+        }
+    }
+
+    private rasterDownload(): void {
         combineLatest([
             this.projectService.getSpatialReferenceOnce(),
             this.userService.getSessionTokenForRequest(),
@@ -180,11 +193,46 @@ export class DownloadRasterLayerComponent implements OnInit, OnDestroy {
             });
     }
 
+    private vectorDownload(): void {
+        combineLatest([
+            this.projectService.getSpatialReferenceOnce(),
+            this.userService.getSessionTokenForRequest(),
+            this.projectService.getWorkflowMetaData(this.layer.workflowId),
+        ])
+            .pipe(
+                mergeMap(([sref, sessionToken, resultDescriptor]) => {
+                    const params: WfsParamsDict = this.makeWfsParams(sref, resultDescriptor);
+
+                    return this.backend.wfsGetFeature(params, sessionToken);
+                }),
+            )
+            .subscribe({
+                next: (json) => {
+                    const jsonFile = new File([JSON.stringify(json)], `${this.layer.name}.json`);
+                    const url = window.URL.createObjectURL(jsonFile);
+
+                    // trigger download
+                    const anchor = document.createElement('a');
+                    anchor.href = url;
+                    anchor.download = jsonFile.name;
+                    anchor.click();
+                },
+                error: (error) => {
+                    this.notificationService.error(`File download failed: ${error.message}`);
+                },
+            });
+    }
+
     private updateRegionByExtent(extent: [number, number, number, number]): void {
         this.form.controls['bboxMinX'].setValue(extent[0]);
         this.form.controls['bboxMinY'].setValue(extent[1]);
         this.form.controls['bboxMaxX'].setValue(extent[2]);
         this.form.controls['bboxMaxY'].setValue(extent[3]);
+    }
+
+    private updateResolution(resolution: number): void {
+        this.form.controls['inputResolutionX'].setValue(resolution);
+        this.form.controls['inputResolutionY'].setValue(resolution);
     }
 
     private makeWcsParams(sref: SpatialReference, resultDescriptor: TypedResultDescriptor): WcsParamsDict {
@@ -230,12 +278,39 @@ export class DownloadRasterLayerComponent implements OnInit, OnDestroy {
         return params;
     }
 
-    private formToResolution(rasterRd: RasterResultDescriptorDict): {x: number; y: number} {
+    private makeWfsParams(sref: SpatialReference, resultDescriptor: TypedResultDescriptor): WfsParamsDict {
+        if (resultDescriptor.type !== 'vector') {
+            throw new Error('Result descriptor is not of type vector');
+        }
+
+        const extent: [number, number, number, number] = [
+            this.form.controls['bboxMinX'].value,
+            this.form.controls['bboxMinY'].value,
+            this.form.controls['bboxMaxX'].value,
+            this.form.controls['bboxMaxY'].value,
+        ];
+
+        const bbox = extentToBboxDict(extent);
+
+        const time = this.formToTime().toDict();
+
+        const resolution = this.formToResolution().x;
+
+        return {
+            bbox: bbox,
+            queryResolution: resolution,
+            time: time,
+            srsName: sref.srsString,
+            workflowId: this.layer.workflowId,
+        };
+    }
+
+    private formToResolution(rasterRd?: RasterResultDescriptorDict): {x: number; y: number} {
         const inputResolution = this.form.controls['inputResolution'].value;
 
         let resolution = {x: 1.0, y: 1.0};
 
-        if (inputResolution === 'source') {
+        if (inputResolution === 'source' && rasterRd) {
             if (!rasterRd.resolution) {
                 // TODO: do not allow selecting this in the first place, if no resolution is defined
                 throw new Error('Source resolution is not defined');

@@ -35,7 +35,7 @@
 
     <geoengine-layer-list
         class="mat-elevation-z3"
-        [height]="middleContainerHeight$ | async | numberSanitizer"
+        [height]="layerListHeight$ | async | numberSanitizer"
         [addAFirstLayerSidenavConfig]="addDataConfig | async | valueDefault: undefined"
     >
     </geoengine-layer-list>
@@ -67,6 +67,10 @@
             </ng-container>
         </geoengine-map-container>
     </div>
+    <geoengine-map-resolution-extent-overlay
+        *ngIf="config.COMPONENTS.MAP_RESOLUTION_EXTENT_OVERLAY.AVAILABLE"
+        [bottom]="bottomContainerHeight$ | async | numberSanitizer"
+    ></geoengine-map-resolution-extent-overlay>
     <geoengine-tab-panel
         [visible]="layerDetailViewVisible$ | async | valueDefault: false"
         [maxHeight]="bottomContainerHeight$ | async | numberSanitizer"

@@ -51,8 +51,8 @@
                 }}</span>
                 <span
                     *ngIf="featureColumnDataTypes[j] !== columnDataTypes.Text && featureColumnDataTypes[j] !== columnDataTypes.Media"
-                    [matTooltip]="element.get(columnName)"
-                    >{{ element.get(columnName) }}</span
+                    [matTooltip]="resolveClassification(columnName, element.get(columnName))"
+                    >{{ resolveClassification(columnName, element.get(columnName)) }}</span
                 >
             </td>
         </ng-container>
