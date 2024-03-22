@@ -21,15 +21,28 @@
         </a>
 
         <ng-container operatorParameters>
-            <div formArrayName="valueNames" fxLayout="column" fxLayoutAlign="start stretch">
-                <mat-form-field *ngFor="let control of getValueNameControls(); let i = index">
-                    <mat-label>Value Name for Raster {{ toLetters(i + 1) }}</mat-label>
-                    <input [formControl]="control" matInput type="text" />
-                    <mat-hint *ngIf="$any($any(form.controls.valueNames).controls[i].errors)?.duplicateName" class="error">
-                        Duplicate Value
-                    </mat-hint>
-                </mat-form-field>
-            </div>
+            <p>Specify new column names:</p>
+            <mat-button-toggle-group
+                id="name-type"
+                [multiple]="false"
+                formControlName="columnNamesType"
+                (ngModelChange)="updateColumnNamesType()"
+            >
+                <mat-button-toggle [value]="ColumnNames.Default">Default</mat-button-toggle>
+                <mat-button-toggle [value]="ColumnNames.Suffix">Suffix</mat-button-toggle>
+                <mat-button-toggle [value]="ColumnNames.Names">Names</mat-button-toggle>
+            </mat-button-toggle-group>
+
+            @if (form.controls.columnNamesType.value !== ColumnNames.Default) {
+                <div formArrayName="columnNamesValues">
+                    <mat-form-field *ngFor="let control of columnNameValues.controls; let i = index">
+                        <mat-label>{{ columnNameHint(i) }} </mat-label>
+                        <input matInput type="text" [formControlName]="i" />
+                        <mat-error *ngIf="control.hasError('forbiddenValue')">Error: conflict with existing column names</mat-error>
+                    </mat-form-field>
+                    <mat-error *ngIf="columnNameValues.hasError('duplicate')">Error: duplicate value</mat-error>
+                </div>
+            }
             <section>
                 <label>Temporal Aggregation Method:</label>
                 <mat-radio-group formControlName="temporalAggregation" fxLayout="column">

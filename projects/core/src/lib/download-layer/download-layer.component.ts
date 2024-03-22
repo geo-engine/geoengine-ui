@@ -11,9 +11,8 @@ import {ProjectService} from '../project/project.service';
 import {SpatialReferenceService} from '../spatial-references/spatial-reference.service';
 import {TimeInterval} from '../time/time-interval-input/time-interval-input.component';
 import {UserService} from '../users/user.service';
-import {geoengineValidators} from '../util/form.validators';
 import {bboxAsOgcString, gridOffsetsAsOgcString, gridOriginAsOgcString} from '../util/spatial_reference';
-import {Layer, SpatialReference, Time, olExtentToTuple, extentToBboxDict} from '@geoengine/common';
+import {Layer, SpatialReference, Time, olExtentToTuple, extentToBboxDict, geoengineValidators} from '@geoengine/common';
 import {TypedResultDescriptor} from '@geoengine/openapi-client';
 
 export interface DownloadLayerForm {

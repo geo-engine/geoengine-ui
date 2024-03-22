@@ -1,7 +1,7 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {RandomColorService} from '../../../util/services/random-color.service';
 import {UntypedFormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
-import {geoengineValidators} from '../../../util/form.validators';
+
 import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap} from 'rxjs/operators';
 import {
@@ -12,6 +12,7 @@ import {
     ResultTypes,
     VectorLayer,
     colorToDict,
+    geoengineValidators,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 

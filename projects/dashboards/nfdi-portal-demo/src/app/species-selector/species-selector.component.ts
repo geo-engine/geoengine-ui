@@ -829,7 +829,10 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                         operator: {
                             type: 'RasterVectorJoin',
                             params: {
-                                names: [environmentColumnName],
+                                names: {
+                                    type: 'names',
+                                    values: [environmentColumnName],
+                                },
                                 temporalAggregation: 'none',
                                 featureAggregation: 'first',
                             },
@@ -1035,7 +1038,10 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                         operator: {
                             type: 'RasterVectorJoin',
                             params: {
-                                names: [environmentColumnName],
+                                names: {
+                                    type: 'names',
+                                    values: [environmentColumnName],
+                                },
                                 temporalAggregation: 'none',
                                 featureAggregation: 'first',
                             },

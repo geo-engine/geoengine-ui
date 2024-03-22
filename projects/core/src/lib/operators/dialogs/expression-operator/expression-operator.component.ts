@@ -2,7 +2,7 @@ import {map, mergeMap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, Input, ViewChild} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
-import {geoengineValidators} from '../../../util/form.validators';
+
 import {ProjectService} from '../../../project/project.service';
 import {UUID} from '../../../backend/backend.model';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
@@ -19,6 +19,7 @@ import {
     RasterSymbology,
     ResultTypes,
     SingleBandRasterColorizer,
+    geoengineValidators,
 } from '@geoengine/common';
 import {SymbologyCreationType, SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 import {Measurement, Workflow as WorkflowDict} from '@geoengine/openapi-client';

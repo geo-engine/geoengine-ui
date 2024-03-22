@@ -2,7 +2,6 @@ import {map, mergeMap, tap} from 'rxjs/operators';
 import {BehaviorSubject, Observable, combineLatest, firstValueFrom, from} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {geoengineValidators} from '../../../util/form.validators';
 import {ProjectService} from '../../../project/project.service';
 import {BBoxDict, RasterResultDescriptorDict, SrsString, TimeIntervalDict, UUID} from '../../../backend/backend.model';
 import {LayoutService, SidenavConfig} from '../../../layout.service';
@@ -21,6 +20,7 @@ import {
     SingleBandRasterColorizer,
     StatisticsDict,
     extentToBboxDict,
+    geoengineValidators,
 } from '@geoengine/common';
 
 import {TypedOperatorOperator, Workflow as WorkflowDict} from '@geoengine/openapi-client';

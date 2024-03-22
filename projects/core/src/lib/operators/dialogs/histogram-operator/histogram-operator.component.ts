@@ -2,7 +2,7 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@ang
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
-import {geoengineValidators} from '../../../util/form.validators';
+
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {
@@ -16,6 +16,7 @@ import {
     VectorColumnDataTypes,
     VectorLayer,
     VectorLayerMetadata,
+    geoengineValidators,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 

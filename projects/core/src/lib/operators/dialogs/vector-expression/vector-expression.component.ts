@@ -1,7 +1,6 @@
 import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy} from '@angular/core';
 import {Validators, FormBuilder, FormControl, FormArray, FormGroup, AsyncValidatorFn, AbstractControl} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
-import {geoengineValidators} from '../../../util/form.validators';
 import {BehaviorSubject, combineLatest, firstValueFrom, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {map, mergeMap, startWith} from 'rxjs/operators';
 import {RandomColorService} from '../../../util/services/random-color.service';
@@ -20,6 +19,7 @@ import {
     VectorLayerMetadata,
     VectorSymbology,
     createVectorSymbology,
+    geoengineValidators,
 } from '@geoengine/common';
 
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
