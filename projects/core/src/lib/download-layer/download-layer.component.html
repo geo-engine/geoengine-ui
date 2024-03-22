@@ -1,7 +1,7 @@
-<geoengine-sidenav-header>Download Raster Layer</geoengine-sidenav-header>
+<geoengine-sidenav-header>Download {{ layer.layerType === 'raster' ? 'Raster' : 'Vector' }} Layer</geoengine-sidenav-header>
 
-<form [formGroup]="form">
-    <mat-dialog-content>
+<form [formGroup]="form" fxLayout="column" id="container">
+    <div class="specification" fxFlex>
         <mat-card>
             <mat-card-header>
                 <mat-card-title>Area</mat-card-title>
@@ -9,7 +9,7 @@
             </mat-card-header>
 
             <mat-card-content>
-                <div fxLayout="row">
+                <div fxLayout="row wrap" fxLayoutGap="1rem">
                     <mat-form-field appearance="fill">
                         <mat-label>min X</mat-label>
                         <input matInput type="number" formControlName="bboxMinX" />
@@ -53,7 +53,7 @@
             </mat-card-header>
 
             <mat-card-content>
-                <mat-form-field appearance="fill">
+                <mat-form-field *ngIf="layer.layerType === 'raster'" appearance="fill">
                     <mat-label>Input resolution</mat-label>
                     <mat-select formControlName="inputResolution">
                         <mat-option value="source"> Source resolution </mat-option>
@@ -62,31 +62,49 @@
                 </mat-form-field>
 
                 <div fxLayout="row" *ngIf="form.get('inputResolution')?.value === 'value'">
-                    <mat-form-field appearance="fill">
-                        <mat-label>Input resolution (x)</mat-label>
+                    <mat-form-field *ngIf="layer.layerType === 'vector'" appearance="fill">
+                        <mat-label>Input resolution</mat-label>
                         <input matInput type="number" formControlName="inputResolutionX" />
                         <mat-hint
                             class="error"
                             *ngIf="form.controls.inputResolutionX.errors?.required || form.controls.inputResolutionX.errors?.valueNotLarger"
                         >
-                            The x resolution must be a positive number.
+                            The resolution must be a positive number.
                         </mat-hint>
                     </mat-form-field>
 
-                    <mat-form-field appearance="fill">
-                        <mat-label>Input resolution (y)</mat-label>
-                        <input matInput type="number" formControlName="inputResolutionY" />
-                        <mat-hint
-                            class="error"
-                            *ngIf="form.controls.inputResolutionY.errors?.required || form.controls.inputResolutionY.errors?.valueNotLarger"
-                        >
-                            The y resolution must be a positive number.
-                        </mat-hint>
-                    </mat-form-field>
+                    <div *ngIf="layer.layerType === 'raster'">
+                        <mat-form-field appearance="fill">
+                            <mat-label>Input resolution (x)</mat-label>
+                            <input matInput type="number" formControlName="inputResolutionX" />
+                            <mat-hint
+                                class="error"
+                                *ngIf="
+                                    form.controls.inputResolutionX.errors?.required || form.controls.inputResolutionX.errors?.valueNotLarger
+                                "
+                            >
+                                The x resolution must be a positive number.
+                            </mat-hint>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="fill">
+                            <mat-label>Input resolution (y)</mat-label>
+                            <input matInput type="number" formControlName="inputResolutionY" />
+                            <mat-hint
+                                class="error"
+                                *ngIf="
+                                    form.controls.inputResolutionY.errors?.required || form.controls.inputResolutionY.errors?.valueNotLarger
+                                "
+                            >
+                                The y resolution must be a positive number.
+                            </mat-hint>
+                        </mat-form-field>
+                    </div>
                 </div>
             </mat-card-content>
         </mat-card>
-
+    </div>
+    <div class="actions">
         <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid" (click)="download()">Download</button>
-    </mat-dialog-content>
+    </div>
 </form>

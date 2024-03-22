@@ -37,7 +37,7 @@ export * from './lib/dialogs/dialog-header/dialog-header.component';
 export * from './lib/dialogs/dialog-help/dialog-help.component';
 export * from './lib/dialogs/dialog-section-heading/dialog-section-heading.component';
 export * from './lib/dialogs/dialog-splash-checkbox/dialog-splash-checkbox.component';
-export * from './lib/download-raster-layer/download-raster-layer.component';
+export * from './lib/download-layer/download-layer.component';
 export * from './lib/layer-collections/layer-collection-dropdown/layer-collection-dropdown.component';
 export * from './lib/layer-collections/layer-collection-layer/layer-collection-layer.component';
 export * from './lib/layer-collections/layer-collection-layer-details/layer-collection-layer-details.component';
