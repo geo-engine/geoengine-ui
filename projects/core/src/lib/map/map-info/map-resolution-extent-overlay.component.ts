@@ -41,21 +41,54 @@ export class MapResolutionExtentOverlayComponent {
                     ? MapResolutionExtentOverlayComponent.highNumFractions
                     : MapResolutionExtentOverlayComponent.lowNumFractions;
 
-                const resolution = viewport.resolution.toFixed(numFractions);
-                const xMin = this.prependPlusSign(viewport.extent[0].toFixed(numFractions));
-                const xMax = this.prependPlusSign(viewport.extent[2].toFixed(numFractions));
-                const yMin = this.prependPlusSign(viewport.extent[1].toFixed(numFractions));
-                const yMax = this.prependPlusSign(viewport.extent[3].toFixed(numFractions));
+                const resolution = this.trimFraction(viewport.resolution.toFixed(numFractions));
+                const xMin = viewport.extent[0].toFixed(numFractions);
+                const xMax = viewport.extent[2].toFixed(numFractions);
+                const yMin = viewport.extent[1].toFixed(numFractions);
+                const yMax = viewport.extent[3].toFixed(numFractions);
 
-                return [resolution, unit, xMin, yMin, xMax, yMax];
+                const toTrim = Math.min(
+                    this.countTrailingFractionZeros(xMin),
+                    this.countTrailingFractionZeros(xMax),
+                    this.countTrailingFractionZeros(yMin),
+                    this.countTrailingFractionZeros(yMax),
+                );
+
+                return [
+                    resolution,
+                    unit,
+                    this.trimFraction(xMin, toTrim),
+                    this.trimFraction(yMin, toTrim),
+                    this.trimFraction(xMax, toTrim),
+                    this.trimFraction(yMax, toTrim),
+                ];
             }),
         );
     }
 
-    private prependPlusSign(number: string): string {
-        if (number.charAt(0) === '-') {
-            return number;
+    private trimFraction(number: string, trim?: number): string {
+        if (trim === undefined) {
+            trim = this.countTrailingFractionZeros(number);
         }
-        return '+' + number;
+        if (trim == this.getFraction(number).length) {
+            trim += 1;
+        }
+        return number.substring(0, number.length - trim);
+    }
+
+    private getFraction(number: string): string {
+        return number.split('.')[1];
+    }
+
+    private countTrailingFractionZeros(number: string): number {
+        const frac = this.getFraction(number);
+        const trailingZeros = frac
+            .split('')
+            .reverse()
+            .findIndex((c) => c != '0');
+        if (trailingZeros == -1) {
+            return frac.length;
+        }
+        return trailingZeros;
     }
 }
