@@ -8,6 +8,9 @@ interface Components {
     readonly PLAYBACK: {
         readonly AVAILABLE: boolean;
     };
+    readonly MAP_RESOLUTION_EXTENT_OVERLAY: {
+        readonly AVAILABLE: boolean;
+    };
 }
 
 interface AppConfigStructure extends ConfigStructure {
@@ -18,6 +21,9 @@ const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CONFIG, {
     COMPONENTS: {
         PLAYBACK: {
             AVAILABLE: false,
+        },
+        MAP_RESOLUTION_EXTENT_OVERLAY: {
+            AVAILABLE: true,
         },
     },
 }) as AppConfigStructure;

@@ -69,6 +69,7 @@ export class MainComponent implements OnInit, AfterViewInit {
 
     middleContainerHeight$: Observable<number>;
     bottomContainerHeight$: Observable<number>;
+    layerListHeight$: Observable<number>;
     mapIsGrid$: Observable<boolean>;
 
     private windowHeight$ = new BehaviorSubject<number>(window.innerHeight);
@@ -100,6 +101,9 @@ export class MainComponent implements OnInit, AfterViewInit {
         const totalHeight$ = this.windowHeight$.pipe(map((_height) => this.sidenavContainerElement.nativeElement.offsetHeight));
 
         this.middleContainerHeight$ = this.layoutService.getMapHeightStream(totalHeight$).pipe(tap(() => this.mapComponent.resize()));
+        this.layerListHeight$ = config.COMPONENTS.MAP_RESOLUTION_EXTENT_OVERLAY.AVAILABLE
+            ? this.middleContainerHeight$.pipe(map((height) => height - 62))
+            : this.middleContainerHeight$;
         this.bottomContainerHeight$ = this.layoutService.getLayerDetailViewStream(totalHeight$);
 
         this.createAddDataConfigStream().subscribe((addDataConfig) => this.addDataConfig.next(addDataConfig));

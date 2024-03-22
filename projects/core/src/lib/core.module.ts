@@ -146,6 +146,7 @@ import {RolesComponent} from './users/roles/roles.component';
 import {VectorExpressionComponent} from './operators/dialogs/vector-expression/vector-expression.component';
 import {CommonConfig, CommonModule} from '@geoengine/common';
 import {SymbologyEditorComponent} from './layers/symbology/symbology-editor/symbology-editor.component';
+import {MapResolutionExtentOverlayComponent} from './map/map-info/map-resolution-extent-overlay.component';
 import {DownloadLayerComponent} from './download-layer/download-layer.component';
 
 export const MATERIAL_MODULES = [
@@ -234,6 +235,7 @@ const CORE_COMPONENTS = [
     LoadProjectComponent,
     LoginComponent,
     MapContainerComponent,
+    MapResolutionExtentOverlayComponent,
     MeanRasterPixelValuesOverTimeDialogComponent,
     MediaviewComponent,
     MediaviewDialogComponent,
