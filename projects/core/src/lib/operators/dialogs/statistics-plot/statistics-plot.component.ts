@@ -2,10 +2,11 @@ import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy} from '@ang
 import {Validators, FormBuilder, FormControl, FormArray, FormGroup} from '@angular/forms';
 
 import {ProjectService} from '../../../project/project.service';
-import {geoengineValidators} from '../../../util/form.validators';
+
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {
+    geoengineValidators,
     Layer,
     Plot,
     RasterLayer,

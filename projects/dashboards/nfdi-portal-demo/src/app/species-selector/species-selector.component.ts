@@ -829,7 +829,10 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                         operator: {
                             type: 'RasterVectorJoin',
                             params: {
-                                names: [environmentColumnName],
+                                names: {
+                                    type: 'names',
+                                    values: [environmentColumnName],
+                                },
                                 temporalAggregation: 'none',
                                 featureAggregation: 'first',
                             },
@@ -840,12 +843,15 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                                         params: {
                                             expression: 'if A > 50 { 1 } else { 0 }',
                                             outputType: 'U8',
-                                            outputMeasurement: {
-                                                type: 'classification',
-                                                measurement: 'Naturschutzgebiete',
-                                                classes: {
-                                                    '0': 'Nicht-Naturschutzgebiet',
-                                                    '1': 'Naturschutzgebiet',
+                                            outputBand: {
+                                                name: 'expression',
+                                                measurement: {
+                                                    type: 'classification',
+                                                    measurement: 'Naturschutzgebiete',
+                                                    classes: {
+                                                        '0': 'Nicht-Naturschutzgebiet',
+                                                        '1': 'Naturschutzgebiet',
+                                                    },
                                                 },
                                             },
                                             mapNoData: false,
@@ -1032,7 +1038,10 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                         operator: {
                             type: 'RasterVectorJoin',
                             params: {
-                                names: [environmentColumnName],
+                                names: {
+                                    type: 'names',
+                                    values: [environmentColumnName],
+                                },
                                 temporalAggregation: 'none',
                                 featureAggregation: 'first',
                             },

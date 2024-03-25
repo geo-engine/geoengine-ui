@@ -1,6 +1,6 @@
 import {Observable, Observer} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {AbstractControl, AsyncValidatorFn, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidatorFn, FormArray, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {Moment} from 'moment';
 
 const isFiniteNumber = (value: null | undefined | number): boolean =>
@@ -375,6 +375,23 @@ const startBeforeEndValidator = (control: AbstractControl): ValidationErrors | n
     }
 };
 
+export const duplicateInFormArrayValidator =
+    (): ValidatorFn =>
+    (control: AbstractControl): ValidationErrors | null => {
+        if (!(control instanceof FormArray)) {
+            return null;
+        }
+
+        const formArray = control as FormArray;
+
+        const controls = formArray.controls;
+        const values = controls.map((c) => c.value);
+
+        const duplicates = values.some((value, index) => values.indexOf(value) !== index);
+
+        return duplicates ? {duplicate: true} : null;
+    };
+
 const duplicateValidator =
     (): ValidatorFn =>
     (control: AbstractControl): ValidationErrors | null => {
@@ -405,5 +422,6 @@ export const geoengineValidators = {
     minAndMaxNumOrStr,
     notZero,
     startBeforeEndValidator,
+    duplicateInFormArrayValidator,
     duplicateValidator,
 };

@@ -8,7 +8,7 @@ import {RandomColorService} from '../../../util/services/random-color.service';
 import {MapService} from '../../../map/map.service';
 import {BackendService} from '../../../backend/backend.service';
 import {UserService} from '../../../users/user.service';
-import {geoengineValidators} from '../../../util/form.validators';
+
 import {
     ColumnRangeFilterDict,
     HistogramDict,
@@ -24,6 +24,7 @@ import {
     VegaChartData,
     createVectorSymbology,
     extentToBboxDict,
+    geoengineValidators,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 interface ColumnRangeFilterForm {

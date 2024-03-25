@@ -1,13 +1,21 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
 import {FormControl, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
-import {geoengineValidators} from '../../../util/form.validators';
+
 import {map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {UUID} from '../../../backend/backend.model';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
-import {RasterDataTypes, RasterLayer, RasterMetadataKey, RasterSymbology, RasterUnScalingDict, ResultTypes} from '@geoengine/common';
+import {
+    RasterDataTypes,
+    RasterLayer,
+    RasterMetadataKey,
+    RasterSymbology,
+    RasterUnScalingDict,
+    ResultTypes,
+    geoengineValidators,
+} from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 interface RasterScalingForm {

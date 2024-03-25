@@ -1,7 +1,6 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
-import {FormControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormControl, FormBuilder, FormGroup, Validators, FormArray} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
-import {geoengineValidators} from '../../../util/form.validators';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {BehaviorSubject, EMPTY, Observable, combineLatest, of} from 'rxjs';
@@ -14,6 +13,8 @@ import {
     RasterStackerDict,
     RasterTypeConversionDict,
     ResultTypes,
+    RenameBandsDict,
+    geoengineValidators,
 } from '@geoengine/common';
 import {TypedOperatorOperator} from '@geoengine/openapi-client';
 
@@ -21,6 +22,14 @@ interface RasterStackerForm {
     rasterLayers: FormControl<Array<RasterLayer> | undefined>;
     name: FormControl<string>;
     dataType: FormControl<RasterDataType | undefined>;
+    renameBands: FormControl<RenameBands>;
+    renameValues: FormArray<FormControl<string>>;
+}
+
+enum RenameBands {
+    Default,
+    Suffix,
+    Rename,
 }
 
 @Component({
@@ -33,6 +42,8 @@ export class RasterStackerComponent implements AfterViewInit {
     readonly inputTypes = [ResultTypes.RASTER];
     readonly rasterDataTypes = RasterDataTypes.ALL_DATATYPES;
 
+    RenameBands = RenameBands;
+
     readonly form: FormGroup<RasterStackerForm>;
 
     readonly outputDataTypes$: Observable<Array<[RasterDataType, string]>>;
@@ -40,6 +51,7 @@ export class RasterStackerComponent implements AfterViewInit {
     readonly loading$ = new BehaviorSubject<boolean>(false);
 
     private inputDataTypes: Array<RasterDataType> = [];
+    private layerMetadata: Array<RasterLayerMetadata> = [];
 
     constructor(
         private readonly projectService: ProjectService,
@@ -60,6 +72,11 @@ export class RasterStackerComponent implements AfterViewInit {
                 nonNullable: true,
                 validators: [Validators.required, geoengineValidators.notOnlyWhitespace],
             }),
+            renameBands: new FormControl(RenameBands.Default, {
+                nonNullable: true,
+                validators: [Validators.required],
+            }),
+            renameValues: new FormArray<FormControl<string>>([], {validators: geoengineValidators.duplicateInFormArrayValidator}),
         });
 
         // TODO: also update when layer selection changes and not only when new layer is added
@@ -95,6 +112,9 @@ export class RasterStackerComponent implements AfterViewInit {
                 return [rasterLayers, outputDataTypes] as [Array<RasterLayerMetadata>, Array<[RasterDataType, string]>];
             }),
             tap(([rasterLayers, outputDataTypes]: [Array<RasterLayerMetadata>, Array<[RasterDataType, string]>]) => {
+                this.layerMetadata = rasterLayers;
+                this.updateRenameType();
+
                 const dataTypeControl = this.form.controls.dataType;
                 const currentDataType: RasterDataType | undefined = dataTypeControl.value;
                 const rasterDataTypes = rasterLayers.map((layer) => layer.dataType);
@@ -125,6 +145,36 @@ export class RasterStackerComponent implements AfterViewInit {
         });
     }
 
+    updateRenameType(): void {
+        if (!this.form.controls.rasterLayers.value) {
+            return;
+        }
+
+        const renameControl = this.form.controls.renameValues;
+        renameControl.clear();
+
+        const renameType = this.form.controls.renameBands.value;
+
+        this.layerMetadata.forEach((layer, layerIndex) => {
+            if (renameType === RenameBands.Suffix) {
+                renameControl.push(
+                    new FormControl(`_${layerIndex}`, {
+                        nonNullable: true,
+                    }),
+                );
+            } else if (renameType === RenameBands.Rename) {
+                layer.bands.forEach((band) => {
+                    renameControl.push(
+                        new FormControl(band.name, {
+                            nonNullable: true,
+                            validators: [Validators.required, geoengineValidators.notOnlyWhitespace],
+                        }),
+                    );
+                });
+            }
+        });
+    }
+
     add(): void {
         if (this.loading$.value) {
             return; // don't add while loading
@@ -137,6 +187,8 @@ export class RasterStackerComponent implements AfterViewInit {
         if (!dataType || !rasterLayers) {
             return; // checked by form validator
         }
+
+        const renameBands = this.getRename();
 
         // harmonize projection of all input layers
         const projectedOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers(rasterLayers);
@@ -175,7 +227,9 @@ export class RasterStackerComponent implements AfterViewInit {
                         type: 'Raster',
                         operator: {
                             type: 'RasterStacker',
-                            params: {},
+                            params: {
+                                renameBands,
+                            },
                             sources: {
                                 rasters: operators,
                             },
@@ -205,5 +259,39 @@ export class RasterStackerComponent implements AfterViewInit {
                     this.loading$.next(false);
                 },
             });
+    }
+
+    get renameValues(): FormArray {
+        return this.form.get('renameValues') as FormArray;
+    }
+
+    renameHint(i: number): string {
+        switch (this.form.controls.renameBands.value) {
+            case RenameBands.Default:
+                return '';
+            case RenameBands.Suffix:
+                return `Suffix for input ${i}`;
+            case RenameBands.Rename:
+                return `New name for band ${i}`;
+        }
+    }
+
+    private getRename(): RenameBandsDict {
+        switch (this.form.controls.renameBands.value) {
+            case RenameBands.Default:
+                return {
+                    type: 'default',
+                };
+            case RenameBands.Suffix:
+                return {
+                    type: 'suffix',
+                    values: this.form.controls.renameValues.value,
+                };
+            case RenameBands.Rename:
+                return {
+                    type: 'rename',
+                    values: this.form.controls.renameValues.value,
+                };
+        }
     }
 }

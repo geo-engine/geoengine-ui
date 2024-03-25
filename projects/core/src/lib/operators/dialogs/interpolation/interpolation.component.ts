@@ -1,14 +1,22 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, ViewChild} from '@angular/core';
 import {FormControl, FormBuilder, FormGroup, Validators, ValidatorFn} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
-import {geoengineValidators} from '../../../util/form.validators';
+
 import {mergeMap, tap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {UUID} from '../../../backend/backend.model';
 import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
 import {Layer} from 'ol/layer';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
-import {InputResolutionDict, InterpolationDict, RasterDataTypes, RasterLayer, RasterSymbology, ResultTypes} from '@geoengine/common';
+import {
+    InputResolutionDict,
+    InterpolationDict,
+    RasterDataTypes,
+    RasterLayer,
+    RasterSymbology,
+    ResultTypes,
+    geoengineValidators,
+} from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 @Component({

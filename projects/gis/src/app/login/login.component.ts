@@ -3,10 +3,11 @@ import {BehaviorSubject, Subscription} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
-import {Config, NotificationService, UserService, User, geoengineValidators} from '@geoengine/core';
+import {Config, NotificationService, UserService, User} from '@geoengine/core';
 import {first} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {AppConfig} from '../app-config.service';
+import {geoengineValidators} from '@geoengine/common';
 
 enum FormStatus {
     LoggedOut,

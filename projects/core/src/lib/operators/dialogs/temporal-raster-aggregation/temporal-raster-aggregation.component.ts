@@ -1,7 +1,7 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
-import {geoengineValidators} from '../../../util/form.validators';
+
 import {map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
 import {TimeStepGranularityDict, UUID} from '../../../backend/backend.model';
@@ -16,6 +16,7 @@ import {
     ResultTypes,
     TemporalRasterAggregationDict,
     TemporalRasterAggregationDictAgregationType,
+    geoengineValidators,
     timeStepGranularityOptions,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';

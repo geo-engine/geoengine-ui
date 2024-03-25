@@ -5,9 +5,10 @@ import {ProjectService} from '../../../project/project.service';
 import {of, ReplaySubject, Subscription} from 'rxjs';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
-import {geoengineValidators} from '../../../util/form.validators';
+
 import {
     FeatureAttributeOverTimeDict,
+    geoengineValidators,
     Layer,
     Plot,
     ResultTypes,
