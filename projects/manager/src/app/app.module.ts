@@ -47,6 +47,7 @@ import {VectorResultDescriptorComponent} from './result-descriptors/vector-resul
 import {LoadingInfoComponent} from './datasets/loading-info/loading-info.component';
 import {CommonConfig, CommonModule} from '@geoengine/common';
 import {SymbologyEditorComponent} from './symbology/symbology-editor/symbology-editor.component';
+import {ProvenanceComponent} from './provenance/provenance.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -94,6 +95,7 @@ export const MATERIAL_MODULES = [
         VectorResultDescriptorComponent,
         LoadingInfoComponent,
         SymbologyEditorComponent,
+        ProvenanceComponent,
     ],
     imports: [
         ...MATERIAL_MODULES,

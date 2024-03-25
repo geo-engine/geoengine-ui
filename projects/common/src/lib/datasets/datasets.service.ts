@@ -6,6 +6,7 @@ import {
     MetaDataDefinition,
     MetaDataSuggestion,
     OrderBy,
+    Provenance,
     SuggestMetaDataHandlerRequest,
     Symbology,
     UpdateDataset,
@@ -70,6 +71,17 @@ export class DatasetsService {
         return datasetApi.updateDatasetSymbologyHandler({
             dataset: datasetName,
             symbology,
+        });
+    }
+
+    async updateProvenance(datasetName: string, provenances: Array<Provenance>): Promise<void> {
+        const datasetApi = await firstValueFrom(this.datasetApi);
+
+        return datasetApi.updateDatasetProvenanceHandler({
+            dataset: datasetName,
+            provenances: {
+                provenances,
+            },
         });
     }
 

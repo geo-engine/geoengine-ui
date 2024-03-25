@@ -6,6 +6,14 @@ import {Configuration, DefaultConfig} from '@geoengine/openapi-client';
  */
 export interface ConfigStructure {
     readonly BRANDING: Branding;
+    readonly DEFAULTS: ConfigDefaults;
+}
+
+/**
+ * Default values
+ */
+export interface ConfigDefaults {
+    readonly SNACKBAR_DURATION: number;
 }
 
 /**
@@ -36,6 +44,9 @@ export const DEFAULT_CONFIG: ConfigStructure = {
         LOGO_ALT_URL: 'assets/geoengine-white.svg',
         PAGE_TITLE: 'Geo Engine',
     },
+    DEFAULTS: {
+        SNACKBAR_DURATION: 2000,
+    },
 };
 
 @Injectable()
@@ -48,6 +59,10 @@ export class AppConfig {
 
     get BRANDING(): Branding {
         return this.config.BRANDING;
+    }
+
+    get DEFAULTS(): ConfigDefaults {
+        return this.config.DEFAULTS;
     }
 
     // noinspection JSUnusedGlobalSymbols <- function used in parent app

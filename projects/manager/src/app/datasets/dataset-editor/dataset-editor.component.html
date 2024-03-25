@@ -31,6 +31,26 @@
                         <mat-label>Dataset Description</mat-label>
                         <textarea matInput formControlName="description"></textarea>
                     </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Tags</mat-label>
+                        <mat-chip-grid #tagsGrid formControlName="tags">
+                            <mat-chip-row *ngFor="let column of form.controls.tags.value" (removed)="removeTag(column)">
+                                {{ column }}
+                                <mat-icon matChipRemove>cancel</mat-icon>
+                            </mat-chip-row>
+                            <input
+                                formControlName="newTag"
+                                placeholder="New tag..."
+                                [matChipInputFor]="tagsGrid"
+                                (matChipInputTokenEnd)="addTag()"
+                                (blur)="addTag()"
+                            />
+                            <mat-error *ngIf="tagInputControl.errors?.invalidTag">
+                                Invalid tag. Space, / and ".." are not allowed.
+                            </mat-error>
+                            <mat-error *ngIf="tagsControl.errors?.duplicate">Duplicate tag.</mat-error>
+                        </mat-chip-grid>
+                    </mat-form-field>
                 </form>
 
                 <div class="actions">
@@ -40,6 +60,25 @@
                 </div>
             </mat-card-content>
         </mat-card>
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Provenance</mat-card-title>
+            </mat-card-header>
+
+            <mat-card-content>
+                <geoengine-manager-provenance [provenance]="dataset.provenance | valueDefault: []"></geoengine-manager-provenance>
+                <div class="actions">
+                    <button
+                        mat-raised-button
+                        color="primary"
+                        [disabled]="!provenanceComponent || provenanceComponent.form.pristine || provenanceComponent.form.invalid"
+                        (click)="saveProvenance()"
+                    >
+                        Apply
+                    </button>
+                </div></mat-card-content
+            ></mat-card
+        >
 
         <mat-card>
             <mat-card-header>

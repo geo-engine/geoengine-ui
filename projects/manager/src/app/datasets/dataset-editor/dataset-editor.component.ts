@@ -1,5 +1,6 @@
-import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
+import {MatChipInput} from '@angular/material/chips';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {
@@ -12,16 +13,19 @@ import {
     WHITE,
     WorkflowsService,
     createVectorSymbology as createDefaultVectorSymbology,
+    errorToText,
+    geoengineValidators,
 } from '@geoengine/common';
 import {
     Dataset,
     DatasetListing,
     RasterResultDescriptorWithType,
-    ResponseError,
     TypedResultDescriptor,
     VectorResultDescriptorWithType,
 } from '@geoengine/openapi-client';
 import {BehaviorSubject, firstValueFrom} from 'rxjs';
+import {ProvenanceComponent} from '../../provenance/provenance.component';
+import {AppConfig} from '../../app-config.service';
 
 export interface DatasetForm {
     layerType: FormControl<'plot' | 'raster' | 'vector'>;
@@ -29,6 +33,8 @@ export interface DatasetForm {
     name: FormControl<string>;
     displayName: FormControl<string>;
     description: FormControl<string>;
+    tags: FormControl<string[]>;
+    newTag: FormControl<string>;
 }
 
 @Component({
@@ -40,6 +46,9 @@ export class DatasetEditorComponent implements OnChanges {
     @Input({required: true}) datasetListing!: DatasetListing;
 
     @Output() datasetDeleted = new EventEmitter<void>();
+
+    @ViewChild(MatChipInput) tagInput!: MatChipInput;
+    @ViewChild(ProvenanceComponent) provenanceComponent!: ProvenanceComponent;
 
     dataset?: Dataset;
     form: FormGroup<DatasetForm> = this.placeholderForm();
@@ -54,6 +63,7 @@ export class DatasetEditorComponent implements OnChanges {
         private readonly workflowsService: WorkflowsService,
         private readonly snackBar: MatSnackBar,
         private readonly dialog: MatDialog,
+        private readonly config: AppConfig,
     ) {}
 
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
@@ -67,22 +77,78 @@ export class DatasetEditorComponent implements OnChanges {
     }
 
     async applyChanges(): Promise<void> {
+        if (!this.form.valid) {
+            return;
+        }
+
         const name = this.form.controls.name.value;
         const displayName = this.form.controls.displayName.value;
         const description = this.form.controls.description.value;
+        const tags = this.form.controls.tags.value;
+
         try {
-            await this.datasetsService.updateDataset(this.datasetListing.name, {name, displayName, description});
+            await this.datasetsService.updateDataset(this.datasetListing.name, {name, displayName, description, tags});
             this.datasetListing.name = name;
             this.datasetListing.displayName = displayName;
             this.datasetListing.description = description;
-            this.snackBar.open('Dataset successfully updated.', 'Close', {duration: 2000});
+            this.snackBar.open('Dataset successfully updated.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             this.form.markAsPristine();
         } catch (error) {
-            const e = error as ResponseError;
-            const errorJson = await e.response.json().catch(() => ({}));
-            const errorMessage = errorJson.message ?? 'Updating dataset failed.';
+            const errorMessage = await errorToText(error, 'Updating dataset failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
         }
+    }
+
+    removeTag(tag: string): void {
+        const tags: Array<string> = this.form.controls.tags.value;
+
+        const index = tags.indexOf(tag);
+        if (index > -1) {
+            tags.splice(index, 1);
+        }
+
+        this.form.markAsDirty();
+    }
+
+    addTag(): void {
+        const tags: Array<string> = this.form.controls.tags.value;
+
+        const tag = this.tagInput.inputElement.value;
+
+        if (!isValidTag(tag)) {
+            return;
+        }
+
+        this.tagInput.inputElement.value = '';
+
+        tags.push(tag);
+
+        this.form.markAsDirty();
+    }
+
+    async saveProvenance(): Promise<void> {
+        if (!this.provenanceComponent.form.valid) {
+            return;
+        }
+
+        const provenance = this.provenanceComponent.getProvenance();
+
+        try {
+            await this.datasetsService.updateProvenance(this.datasetListing.name, provenance);
+            this.snackBar.open('Dataset provenance successfully updated.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
+            this.provenanceComponent.form.markAsPristine();
+        } catch (error) {
+            const errorMessage = await errorToText(error, 'Updating dataset provenance failed.');
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
+        }
+    }
+
+    get tagInputControl(): FormControl {
+        return this.form.get('newTag') as FormControl;
+    }
+
+    get tagsControl(): FormControl {
+        return this.form.get('tags') as FormControl;
     }
 
     createSymbology(dataset: Dataset): void {
@@ -107,12 +173,10 @@ export class DatasetEditorComponent implements OnChanges {
 
         try {
             await this.datasetsService.deleteDataset(this.datasetListing.name);
-            this.snackBar.open('Dataset successfully deleted.', 'Close', {duration: 2000});
+            this.snackBar.open('Dataset successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             this.datasetDeleted.emit();
         } catch (error) {
-            const e = error as ResponseError;
-            const errorJson = await e.response.json().catch(() => ({}));
-            const errorMessage = errorJson.message ?? 'Deleting dataset failed.';
+            const errorMessage = await errorToText(error, 'Deleting dataset failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
         }
     }
@@ -229,6 +293,11 @@ export class DatasetEditorComponent implements OnChanges {
             description: new FormControl(dataset.description, {
                 nonNullable: true,
             }),
+            tags: new FormControl<string[]>(dataset.tags ?? [], {
+                nonNullable: true,
+                validators: [geoengineValidators.duplicateValidator()],
+            }),
+            newTag: new FormControl('', {nonNullable: true, validators: [tagValidator()]}),
         });
     }
 
@@ -253,6 +322,27 @@ export class DatasetEditorComponent implements OnChanges {
             description: new FormControl('description', {
                 nonNullable: true,
             }),
+            tags: new FormControl<string[]>([], {nonNullable: true, validators: [geoengineValidators.duplicateValidator()]}),
+            newTag: new FormControl('', {nonNullable: true, validators: [tagValidator()]}),
         });
     }
 }
+
+export const isValidTag = (tag: string): boolean => {
+    const illegalChars = [' ', '/', '..'];
+    return tag.length > 0 && !illegalChars.some((char) => tag.includes(char));
+};
+
+export const tagValidator =
+    (): ValidatorFn =>
+    (control: AbstractControl): ValidationErrors | null => {
+        const text = control.value as string;
+        if (!text) {
+            return null;
+        }
+
+        if (isValidTag(text)) {
+            return null;
+        }
+        return {invalidTag: true};
+    };
