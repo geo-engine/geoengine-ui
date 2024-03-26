@@ -39,3 +39,13 @@ mat-form-field {
 .bottom {
     flex-grow: 1;
 }
+
+.flex-container {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: space-between;
+}
+
+.add-dataset {
+    height: 3.5rem;
+}
