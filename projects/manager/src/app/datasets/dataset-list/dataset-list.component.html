@@ -1,9 +1,10 @@
 <div class="container">
-    <div>
+    <div class="flex-container">
         <mat-form-field appearance="fill">
             <mat-label>Filter by name</mat-label>
             <input matInput type="text" (input)="onSearchChange($event)" />
         </mat-form-field>
+        <button mat-raised-button color="primary" class="add-dataset" (click)="addDataset()">Add new dataset</button>
     </div>
     <cdk-virtual-scroll-viewport class="bottom" [itemSize]="itemSizePx" (scrolledIndexChange)="onScrolledIndexChange($event)">
         <mat-nav-list>

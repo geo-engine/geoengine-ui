@@ -1,9 +1,11 @@
 import {DataSource} from '@angular/cdk/collections';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {AfterContentInit, Component, EventEmitter, Output, ViewChild} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
 import {DatasetsService} from '@geoengine/common';
 import {DatasetListing} from '@geoengine/openapi-client';
 import {BehaviorSubject, Observable, Subject, concatMap, debounceTime, distinctUntilChanged, range, scan, skip, startWith} from 'rxjs';
+import {AddDatasetComponent} from '../add-dataset/add-dataset.component';
 
 @Component({
     selector: 'geoengine-manager-dataset-list',
@@ -27,7 +29,10 @@ export class DatasetListComponent implements AfterContentInit {
 
     private searchSubject$ = new BehaviorSubject<string | undefined>(undefined);
 
-    constructor(private readonly datasetsService: DatasetsService) {
+    constructor(
+        private readonly datasetsService: DatasetsService,
+        private readonly dialog: MatDialog,
+    ) {
         this.searchSubject$.pipe(skip(1), debounceTime(500), distinctUntilChanged()).subscribe((_searchText) => {
             this.setUpSource();
         });
@@ -76,6 +81,14 @@ export class DatasetListComponent implements AfterContentInit {
         // calculate initial number of elements to display in `setTimeout` because the viewport is not yet initialized
         setTimeout(() => {
             this.source?.init(this.calculateInitialNumberOfElements());
+        });
+    }
+
+    addDataset(): void {
+        this.dialog.open(AddDatasetComponent, {
+            width: '60%',
+            minWidth: '600px',
+            autoFocus: false,
         });
     }
 

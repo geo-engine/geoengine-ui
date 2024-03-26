@@ -1,0 +1,73 @@
+<h2 mat-dialog-title>Create new dataset</h2>
+
+<form [formGroup]="form">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>Basic Information</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+            <div>
+                <mat-form-field appearance="fill">
+                    <mat-label>Name</mat-label>
+                    <input matInput type="text" formControlName="name" />
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-label>Display Name</mat-label>
+                    <input matInput type="text" formControlName="displayName" />
+                </mat-form-field>
+            </div>
+            <div>
+                Source Operator:
+                <mat-button-toggle-group
+                    id="source-type"
+                    [multiple]="false"
+                    formControlName="sourceOperator"
+                    (ngModelChange)="updateSourceOperator()"
+                >
+                    <mat-button-toggle [value]="SourceOperators.GdalSource">Gdal (Rasters)</mat-button-toggle>
+                    <mat-button-toggle [value]="SourceOperators.OgrSource">Ogr (Vectors)</mat-button-toggle>
+                </mat-button-toggle-group>
+            </div>
+        </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>Data Path</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+            <div>
+                Type of Data Path:
+                <mat-button-toggle-group
+                    id="path-type"
+                    [multiple]="false"
+                    formControlName="dataPathType"
+                    (ngModelChange)="updateDataPath()"
+                >
+                    <mat-button-toggle [value]="DataPaths.Upload">Upload</mat-button-toggle>
+                    <mat-button-toggle [value]="DataPaths.Volume">Volume</mat-button-toggle>
+                </mat-button-toggle-group>
+
+                <mat-form-field appearance="fill">
+                    @if (form.controls.dataPathType.value === DataPaths.Upload) {
+                        <mat-label>Upload Id</mat-label>
+                    } @else {
+                        <mat-label>Volume Name</mat-label>
+                    }
+                    <input matInput type="text" formControlName="dataPath" />
+                </mat-form-field>
+            </div>
+        </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>Loading Info</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content> </mat-card-content>
+    </mat-card>
+    <!-- <geoengine-manager-loading-info [datasetName]="dataset.name"></geoengine-manager-loading-info> -->
+</form>
