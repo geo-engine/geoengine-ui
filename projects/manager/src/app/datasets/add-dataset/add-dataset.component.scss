@@ -19,3 +19,18 @@ mat-card-content {
 mat-button-toggle-group {
     margin-bottom: 1rem;
 }
+
+.actions {
+    text-align: right;
+    height: 3rem;
+    padding: 1rem;
+
+    button {
+        margin: 0.5rem;
+    }
+}
+
+.container {
+    overflow: auto;
+    height: 100%;
+}

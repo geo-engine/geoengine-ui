@@ -1,1 +1,1 @@
-<textarea readonly [ngModel]="loadingInfo$ | async"></textarea>
+<textarea [readonly]="!editable" [(ngModel)]="loadingInfo"></textarea>

@@ -4,7 +4,19 @@ import {AfterContentInit, Component, EventEmitter, Output, ViewChild} from '@ang
 import {MatDialog} from '@angular/material/dialog';
 import {DatasetsService} from '@geoengine/common';
 import {DatasetListing} from '@geoengine/openapi-client';
-import {BehaviorSubject, Observable, Subject, concatMap, debounceTime, distinctUntilChanged, range, scan, skip, startWith} from 'rxjs';
+import {
+    BehaviorSubject,
+    Observable,
+    Subject,
+    concatMap,
+    debounceTime,
+    distinctUntilChanged,
+    firstValueFrom,
+    range,
+    scan,
+    skip,
+    startWith,
+} from 'rxjs';
 import {AddDatasetComponent} from '../add-dataset/add-dataset.component';
 
 @Component({
@@ -18,6 +30,10 @@ export class DatasetListComponent implements AfterContentInit {
 
     @Output()
     selectDataset = new EventEmitter<DatasetListing>();
+
+    searchName = '';
+
+    addedDataset?: DatasetListing;
 
     readonly itemSizePx = 72;
 
@@ -77,19 +93,51 @@ export class DatasetListComponent implements AfterContentInit {
 
     setUpSource(): void {
         this.source = new DatasetDataSource(this.datasetsService, this.searchSubject$.value);
-
+        // this.source.firstElement$.pipe(first()).subscribe((firstElement) => {
+        //     this.selectedDataset$.next(firstElement);
+        //     console.log('first element:', firstElement);
+        // });
         // calculate initial number of elements to display in `setTimeout` because the viewport is not yet initialized
         setTimeout(() => {
             this.source?.init(this.calculateInitialNumberOfElements());
         });
     }
 
-    addDataset(): void {
-        this.dialog.open(AddDatasetComponent, {
+    browse(): void {
+        this.addedDataset = undefined;
+    }
+
+    async addDataset(): Promise<void> {
+        const dialogRef = this.dialog.open(AddDatasetComponent, {
             width: '60%',
-            minWidth: '600px',
+            height: 'calc(90%)',
             autoFocus: false,
         });
+
+        const datasetName = await firstValueFrom(dialogRef.afterClosed());
+
+        if (!datasetName) {
+            return;
+        }
+
+        const dataset = await this.datasetsService.getDataset(datasetName);
+        const listing = {
+            description: dataset.description,
+            displayName: dataset.displayName,
+            id: dataset.id,
+            name: dataset.name,
+            provenance: dataset.provenance,
+            resultDescriptor: dataset.resultDescriptor,
+            sourceOperator: dataset.sourceOperator,
+            symbology: dataset.symbology,
+            tags: dataset.tags,
+        } as DatasetListing;
+
+        this.addedDataset = listing;
+        this.select(listing);
+
+        // this.searchName = datasetName;
+        // this.searchSubject$.next(datasetName);
     }
 
     protected calculateInitialNumberOfElements(): number {
@@ -108,6 +156,7 @@ class DatasetDataSource extends DataSource<DatasetListing> {
     readonly scrollFetchSize = 20;
 
     readonly loading$ = new BehaviorSubject(false);
+    readonly firstElement$ = new Subject<DatasetListing>();
 
     protected nextBatch$ = new Subject<number>();
     protected noMoreData = false;
@@ -157,6 +206,10 @@ class DatasetDataSource extends DataSource<DatasetListing> {
         const limit = this.scrollFetchSize;
 
         return this.datasetsService.getDatasets(offset, limit, this.filterValue).then((items) => {
+            if (this.offset === 0 && items.length > 0) {
+                this.firstElement$.next(items[0]);
+            }
+
             this.offset += items.length;
 
             if (items.length < limit) {

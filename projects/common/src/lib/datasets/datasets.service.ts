@@ -1,6 +1,8 @@
 import {Injectable} from '@angular/core';
 import {
+    DataPath,
     Dataset,
+    DatasetDefinition,
     DatasetListing,
     DatasetsApi,
     MetaDataDefinition,
@@ -91,5 +93,18 @@ export class DatasetsService {
         return datasetApi.deleteDatasetHandler({
             dataset: datasetName,
         });
+    }
+
+    async createDataset(dataPath: DataPath, definition: DatasetDefinition): Promise<string> {
+        const datasetApi = await firstValueFrom(this.datasetApi);
+
+        return datasetApi
+            .createDatasetHandler({
+                createDataset: {
+                    dataPath,
+                    definition,
+                },
+            })
+            .then((response) => response.datasetName);
     }
 }
