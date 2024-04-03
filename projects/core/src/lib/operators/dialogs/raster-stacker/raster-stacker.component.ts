@@ -63,7 +63,6 @@ export class RasterStackerComponent implements AfterViewInit {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
-
             dataType: new FormControl(undefined, {
                 nonNullable: true,
                 validators: [Validators.required],
@@ -76,7 +75,7 @@ export class RasterStackerComponent implements AfterViewInit {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
-            renameValues: new FormArray<FormControl<string>>([], {validators: geoengineValidators.duplicateInFormArrayValidator}),
+            renameValues: new FormArray<FormControl<string>>([], {validators: geoengineValidators.duplicateInFormArrayValidator()}),
         });
 
         // TODO: also update when layer selection changes and not only when new layer is added
