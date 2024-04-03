@@ -75,7 +75,7 @@ export class DatasetListComponent implements AfterContentInit {
         return item.id;
     }
 
-    select(item: DatasetListing): void {
+    select(item?: DatasetListing): void {
         this.selectedDataset$.next(item);
         this.selectDataset.emit(item);
     }
@@ -93,18 +93,16 @@ export class DatasetListComponent implements AfterContentInit {
 
     setUpSource(): void {
         this.source = new DatasetDataSource(this.datasetsService, this.searchSubject$.value);
-        // this.source.firstElement$.pipe(first()).subscribe((firstElement) => {
-        //     this.selectedDataset$.next(firstElement);
-        //     console.log('first element:', firstElement);
-        // });
         // calculate initial number of elements to display in `setTimeout` because the viewport is not yet initialized
         setTimeout(() => {
             this.source?.init(this.calculateInitialNumberOfElements());
         });
     }
 
-    browse(): void {
+    backToAllDatasets(): void {
         this.addedDataset = undefined;
+        this.select(undefined);
+        this.setUpSource();
     }
 
     async addDataset(): Promise<void> {
@@ -135,9 +133,6 @@ export class DatasetListComponent implements AfterContentInit {
 
         this.addedDataset = listing;
         this.select(listing);
-
-        // this.searchName = datasetName;
-        // this.searchSubject$.next(datasetName);
     }
 
     protected calculateInitialNumberOfElements(): number {
@@ -156,7 +151,6 @@ class DatasetDataSource extends DataSource<DatasetListing> {
     readonly scrollFetchSize = 20;
 
     readonly loading$ = new BehaviorSubject(false);
-    readonly firstElement$ = new Subject<DatasetListing>();
 
     protected nextBatch$ = new Subject<number>();
     protected noMoreData = false;
@@ -206,10 +200,6 @@ class DatasetDataSource extends DataSource<DatasetListing> {
         const limit = this.scrollFetchSize;
 
         return this.datasetsService.getDatasets(offset, limit, this.filterValue).then((items) => {
-            if (this.offset === 0 && items.length > 0) {
-                this.firstElement$.next(items[0]);
-            }
-
             this.offset += items.length;
 
             if (items.length < limit) {
