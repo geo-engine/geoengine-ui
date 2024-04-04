@@ -20,7 +20,7 @@ export class DatasetsComponent {
     }
 
     datasetDeleted(): void {
-        this.datasetList.setUpSource();
+        this.datasetList.backToAllDatasets();
         this.selectedDataset$.next(undefined);
     }
 }
