@@ -64,10 +64,6 @@ export class AddDatasetComponent {
         private dialogRef: MatDialogRef<AddDatasetComponent>,
     ) {}
 
-    updateSourceOperator(): void {}
-
-    updateDataPath(): void {}
-
     async createDataset(): Promise<void> {
         if (!this.form.valid) {
             return;

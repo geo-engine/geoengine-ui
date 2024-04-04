@@ -20,12 +20,7 @@
                 </div>
                 <div>
                     Source Operator:
-                    <mat-button-toggle-group
-                        id="source-type"
-                        [multiple]="false"
-                        formControlName="sourceOperator"
-                        (ngModelChange)="updateSourceOperator()"
-                    >
+                    <mat-button-toggle-group id="source-type" [multiple]="false" formControlName="sourceOperator">
                         <mat-button-toggle [value]="SourceOperators.GdalSource">Gdal (Rasters)</mat-button-toggle>
                         <mat-button-toggle [value]="SourceOperators.OgrSource">Ogr (Vectors)</mat-button-toggle>
                     </mat-button-toggle-group>
@@ -41,12 +36,7 @@
             <mat-card-content>
                 <div>
                     Type of Data Path:
-                    <mat-button-toggle-group
-                        id="path-type"
-                        [multiple]="false"
-                        formControlName="dataPathType"
-                        (ngModelChange)="updateDataPath()"
-                    >
+                    <mat-button-toggle-group id="path-type" [multiple]="false" formControlName="dataPathType">
                         <mat-button-toggle [value]="DataPaths.Upload">Upload</mat-button-toggle>
                         <mat-button-toggle [value]="DataPaths.Volume">Volume</mat-button-toggle>
                     </mat-button-toggle-group>
