@@ -29,6 +29,7 @@ interface TemporalRasterAggregationForm {
     windowReferenceChecked: FormControl<boolean>;
     windowReference: FormControl<Moment>;
     aggregation: FormControl<TemporalRasterAggregationDictAgregationType>;
+    percentile: FormControl<number>; // only for `percentileEstimate`
     ignoreNoData: FormControl<boolean>;
     dataType: FormControl<RasterDataType | undefined>;
 }
@@ -45,7 +46,16 @@ export class TemporalRasterAggregationComponent implements AfterViewInit {
 
     readonly timeGranularityOptions: Array<TimeStepGranularityDict> = timeStepGranularityOptions;
     readonly defaultTimeGranularity: TimeStepGranularityDict = 'months';
-    readonly aggregations: Array<TemporalRasterAggregationDictAgregationType> = ['count', 'first', 'last', 'max', 'mean', 'min', 'sum'];
+    readonly aggregations: Record<TemporalRasterAggregationDictAgregationType, string> = {
+        count: 'Count',
+        first: 'First',
+        last: 'Last',
+        max: 'Maximum',
+        percentileEstimate: 'Percentile (estimate)',
+        mean: 'Mean',
+        min: 'Minimum',
+        sum: 'Sum',
+    };
     readonly defaultAggregation: TemporalRasterAggregationDictAgregationType = 'mean';
 
     readonly inputDataTypeDisplay$: Observable<string>;
@@ -71,6 +81,7 @@ export class TemporalRasterAggregationComponent implements AfterViewInit {
             windowReferenceChecked: [false, [Validators.required]],
             windowReference: [moment.utc(0), [Validators.required]],
             aggregation: [this.defaultAggregation, [Validators.required]],
+            percentile: [0.5, [Validators.required, geoengineValidators.inRange(0, 1, false, false)]],
             ignoreNoData: [false, [Validators.required]],
             dataType: new FormControl<RasterDataType | undefined>(undefined, {nonNullable: true}),
         });
@@ -125,6 +136,7 @@ export class TemporalRasterAggregationComponent implements AfterViewInit {
         }
 
         const ignoreNoData: boolean = this.form.controls['ignoreNoData'].value;
+        const percentile: number | undefined = aggregation == 'percentileEstimate' ? this.form.controls['percentile'].value : undefined;
 
         this.loading$.next(true);
 
@@ -140,6 +152,7 @@ export class TemporalRasterAggregationComponent implements AfterViewInit {
                                 aggregation: {
                                     type: aggregation,
                                     ignoreNoData,
+                                    percentile,
                                 },
                                 window: {
                                     granularity,
