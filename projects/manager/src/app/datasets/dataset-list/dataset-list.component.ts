@@ -110,6 +110,7 @@ export class DatasetListComponent implements AfterContentInit {
             width: '60%',
             height: 'calc(90%)',
             autoFocus: false,
+            disableClose: true,
         });
 
         const datasetName = await firstValueFrom(dialogRef.afterClosed());

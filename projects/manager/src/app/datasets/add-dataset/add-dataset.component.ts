@@ -1,10 +1,11 @@
 import {Component, ViewChild} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {DatasetsService, errorToText} from '@geoengine/common';
+import {ConfirmationComponent, DatasetsService, errorToText} from '@geoengine/common';
 import {DataPath} from '@geoengine/openapi-client';
 import {LoadingInfoComponent} from '../loading-info/loading-info.component';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {MatDialogRef} from '@angular/material/dialog';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {filter, firstValueFrom, merge} from 'rxjs';
 
 enum SourceOperators {
     GdalSource,
@@ -61,8 +62,30 @@ export class AddDatasetComponent {
     constructor(
         private readonly datasetsService: DatasetsService,
         private readonly snackBar: MatSnackBar,
-        private dialogRef: MatDialogRef<AddDatasetComponent>,
-    ) {}
+        private readonly dialogRef: MatDialogRef<AddDatasetComponent>,
+        private readonly dialog: MatDialog,
+    ) {
+        merge(this.dialogRef.backdropClick(), this.dialogRef.keydownEvents().pipe(filter((event) => event.key === 'Escape'))).subscribe(
+            async (event) => {
+                event.stopPropagation();
+
+                if (this.form.pristine) {
+                    this.dialogRef.close();
+                    return;
+                }
+
+                const confirmDialogRef = this.dialog.open(ConfirmationComponent, {
+                    data: {message: 'Do you really want to stop creating the dataset? All changes will be lost.'},
+                });
+
+                const confirm = await firstValueFrom(confirmDialogRef.afterClosed());
+
+                if (confirm) {
+                    this.dialogRef.close();
+                }
+            },
+        );
+    }
 
     async createDataset(): Promise<void> {
         if (!this.form.valid) {

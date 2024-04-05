@@ -15,7 +15,7 @@
                 <mat-label>Filter by name</mat-label>
                 <input matInput type="text" [(ngModel)]="searchName" (input)="onSearchChange($event)" />
             </mat-form-field>
-            <button mat-raised-button color="primary" class="add-dataset" (click)="addDataset()">Add new dataset</button>
+            <button mat-fab color="primary" class="add-dataset" (click)="addDataset()"><mat-icon>add</mat-icon></button>
         </div>
         <cdk-virtual-scroll-viewport class="bottom" [itemSize]="itemSizePx" (scrolledIndexChange)="onScrolledIndexChange($event)">
             <mat-nav-list>
