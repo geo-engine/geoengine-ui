@@ -51,6 +51,10 @@ mat-form-field {
     width: 3rem;
     margin-top: 0.25rem;
     margin-right: 0.25rem;
+
+    mat-icon {
+        margin: 0;
+    }
 }
 
 .browseButton {

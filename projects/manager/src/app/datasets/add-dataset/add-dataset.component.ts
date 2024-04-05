@@ -69,7 +69,7 @@ export class AddDatasetComponent {
             async (event) => {
                 event.stopPropagation();
 
-                if (this.form.pristine) {
+                if (this.form.pristine && this.loadingInfoComponent.loadingInfo === '') {
                     this.dialogRef.close();
                     return;
                 }
