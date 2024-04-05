@@ -1,9 +1,23 @@
 import {DataSource} from '@angular/cdk/collections';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {AfterContentInit, Component, EventEmitter, Output, ViewChild} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
 import {DatasetsService} from '@geoengine/common';
 import {DatasetListing} from '@geoengine/openapi-client';
-import {BehaviorSubject, Observable, Subject, concatMap, debounceTime, distinctUntilChanged, range, scan, skip, startWith} from 'rxjs';
+import {
+    BehaviorSubject,
+    Observable,
+    Subject,
+    concatMap,
+    debounceTime,
+    distinctUntilChanged,
+    firstValueFrom,
+    range,
+    scan,
+    skip,
+    startWith,
+} from 'rxjs';
+import {AddDatasetComponent} from '../add-dataset/add-dataset.component';
 
 @Component({
     selector: 'geoengine-manager-dataset-list',
@@ -17,6 +31,10 @@ export class DatasetListComponent implements AfterContentInit {
     @Output()
     selectDataset = new EventEmitter<DatasetListing>();
 
+    searchName = '';
+
+    addedDataset?: DatasetListing;
+
     readonly itemSizePx = 72;
 
     readonly loadingSpinnerDiameterPx: number = 3 * parseFloat(getComputedStyle(document.documentElement).fontSize);
@@ -27,7 +45,10 @@ export class DatasetListComponent implements AfterContentInit {
 
     private searchSubject$ = new BehaviorSubject<string | undefined>(undefined);
 
-    constructor(private readonly datasetsService: DatasetsService) {
+    constructor(
+        private readonly datasetsService: DatasetsService,
+        private readonly dialog: MatDialog,
+    ) {
         this.searchSubject$.pipe(skip(1), debounceTime(500), distinctUntilChanged()).subscribe((_searchText) => {
             this.setUpSource();
         });
@@ -54,7 +75,7 @@ export class DatasetListComponent implements AfterContentInit {
         return item.id;
     }
 
-    select(item: DatasetListing): void {
+    select(item?: DatasetListing): void {
         this.selectedDataset$.next(item);
         this.selectDataset.emit(item);
     }
@@ -72,11 +93,47 @@ export class DatasetListComponent implements AfterContentInit {
 
     setUpSource(): void {
         this.source = new DatasetDataSource(this.datasetsService, this.searchSubject$.value);
-
         // calculate initial number of elements to display in `setTimeout` because the viewport is not yet initialized
         setTimeout(() => {
             this.source?.init(this.calculateInitialNumberOfElements());
         });
+    }
+
+    backToAllDatasets(): void {
+        this.addedDataset = undefined;
+        this.select(undefined);
+        this.setUpSource();
+    }
+
+    async addDataset(): Promise<void> {
+        const dialogRef = this.dialog.open(AddDatasetComponent, {
+            width: '60%',
+            height: 'calc(90%)',
+            autoFocus: false,
+            disableClose: true,
+        });
+
+        const datasetName = await firstValueFrom(dialogRef.afterClosed());
+
+        if (!datasetName) {
+            return;
+        }
+
+        const dataset = await this.datasetsService.getDataset(datasetName);
+        const listing = {
+            description: dataset.description,
+            displayName: dataset.displayName,
+            id: dataset.id,
+            name: dataset.name,
+            provenance: dataset.provenance,
+            resultDescriptor: dataset.resultDescriptor,
+            sourceOperator: dataset.sourceOperator,
+            symbology: dataset.symbology,
+            tags: dataset.tags,
+        } as DatasetListing;
+
+        this.addedDataset = listing;
+        this.select(listing);
     }
 
     protected calculateInitialNumberOfElements(): number {

@@ -39,3 +39,24 @@ mat-form-field {
 .bottom {
     flex-grow: 1;
 }
+
+.flex-container {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: space-between;
+}
+
+.add-dataset {
+    height: 3rem;
+    width: 3rem;
+    margin-top: 0.25rem;
+    margin-right: 0.25rem;
+
+    mat-icon {
+        margin: 0;
+    }
+}
+
+.browseButton {
+    margin: 1rem;
+}
