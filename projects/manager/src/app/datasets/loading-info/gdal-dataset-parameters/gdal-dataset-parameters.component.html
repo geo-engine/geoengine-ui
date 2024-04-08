@@ -1,0 +1,135 @@
+<form [formGroup]="form">
+    <div class="flex-container">
+        <mat-form-field appearance="fill">
+            <mat-label>File Path (relative to upload or volume)</mat-label>
+            <input matInput type="text" formControlName="filePath" />
+        </mat-form-field>
+        <button mat-raised-button class="analyze" (click)="suggest()">Analyze file and suggest properties</button>
+    </div>
+    <mat-form-field appearance="fill">
+        <mat-label>Raster band channel</mat-label>
+        <input matInput type="number" formControlName="rasterbandChannel" />
+    </mat-form-field>
+
+    <div class="flex-container" formGroupName="geoTransform">
+        <mat-form-field appearance="fill">
+            <mat-label>Origin X</mat-label>
+            <input matInput type="number" formControlName="originCoordinateX" />
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Origin Y</mat-label>
+            <input matInput type="number" formControlName="originCoordinateY" />
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Pixel Size X</mat-label>
+            <input matInput type="number" formControlName="xPixelSize" />
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Pixel Size Y</mat-label>
+            <input matInput type="number" formControlName="yPixelSize" />
+        </mat-form-field>
+    </div>
+
+    <div class="flex-container">
+        <mat-form-field appearance="fill">
+            <mat-label>Width (pixels)</mat-label>
+            <input matInput type="number" formControlName="width" />
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Height (pixels)</mat-label>
+            <input matInput type="number" formControlName="height" />
+        </mat-form-field>
+    </div>
+
+    <div class="flex-container">
+        <mat-form-field appearance="fill">
+            <mat-label>File not found handling</mat-label>
+            <mat-select formControlName="fileNotFoundHandling">
+                <mat-option *ngFor="let handling of FileNotFoundHandling" [value]="handling">
+                    {{ handling }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>No data value (leave empty if there is none)</mat-label>
+            <input matInput type="number" formControlName="height" />
+        </mat-form-field>
+    </div>
+
+    <div formArrayName="propertiesMapping" *ngFor="let control of form.controls.propertiesMapping.controls; let i = index">
+        <div [formGroupName]="i">
+            <div class="flex-container">
+                <mat-form-field appearance="fill">
+                    <mat-label>Source domain</mat-label>
+                    <input matInput type="text" formControlName="sourceDomain" />
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-label>Source key</mat-label>
+                    <input matInput type="text" formControlName="sourceKey" />
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-label>Target domain</mat-label>
+                    <input matInput type="text" formControlName="targetDomain" />
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-label>Target key</mat-label>
+                    <input matInput type="text" matInput formControlName="targetKey" />
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-label>Target data type</mat-label>
+                    <mat-select formControlName="targetType">
+                        <mat-option *ngFor="let targetType of RasterPropertiesEntryType" [value]="targetType">
+                            {{ targetType }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <button mat-icon-button (click)="removePropertyMapping(i)"><mat-icon>delete</mat-icon></button>
+            </div>
+        </div>
+    </div>
+    <div class="empty-placeholder" *ngIf="form.controls.propertiesMapping.controls.length === 0">
+        <i>No entries yet. Click "Add Property Mapping" to add a first entry.</i>
+    </div>
+    <button class="add-entry" mat-raised-button (click)="addPropertyMapping()">Add Property Mapping</button>
+
+    <div formArrayName="gdalOpenOptions" *ngFor="let control of form.controls.gdalOpenOptions.controls; let i = index">
+        <div class="flex-container">
+            <mat-form-field appearance="fill">
+                <mat-label>Open Option</mat-label>
+                <input matInput type="text" [formControlName]="i" />
+            </mat-form-field>
+
+            <button mat-icon-button (click)="removeOpenOption(i)"><mat-icon>delete</mat-icon></button>
+        </div>
+    </div>
+    <div class="empty-placeholder" *ngIf="form.controls.gdalOpenOptions.controls.length === 0">
+        <i>No entries yet. Click "Add Open Option" to add a first entry.</i>
+    </div>
+    <button class="add-entry" mat-raised-button (click)="addOpenOption()">Add Open Option</button>
+    <div formArrayName="gdalConfigOptions" *ngFor="let control of form.controls.gdalConfigOptions.controls; let i = index">
+        <div [formGroupName]="i">
+            <div class="flex-container">
+                <mat-form-field appearance="fill">
+                    <mat-label>Config Key</mat-label>
+                    <input matInput type="text" formControlName="key" />
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-label>Config Value</mat-label>
+                    <input matInput type="text" formControlName="value" />
+                </mat-form-field>
+
+                <button mat-icon-button (click)="removeConfigOption(i)"><mat-icon>delete</mat-icon></button>
+            </div>
+        </div>
+    </div>
+    <div class="empty-placeholder" *ngIf="form.controls.gdalOpenOptions.controls.length === 0">
+        <i>No entries yet. Click "Add Config Option" to add a first entry.</i>
+    </div>
+    <button class="add-entry" mat-raised-button (click)="addConfigOption()">Add Config Option</button>
+
+    <div>
+        <mat-label>Allow Alpha Band As Mask </mat-label>
+        <!-- <input matInput type="text" formControlName="allowAlphabandAsMask" /> -->
+        <mat-slide-toggle formControlName="allowAlphabandAsMask"></mat-slide-toggle>
+    </div>
+</form>

@@ -1,0 +1,21 @@
+<form [formGroup]="form">
+    <div class="container">
+        <mat-nav-list class="left">
+            <mat-list-item *ngFor="let control of form.controls.timeSlices.controls; let i = index" (click)="selectTimeSlice(i)">
+                <h4 matListItemTitle>{{ control.controls.timeInterval.controls.start.value }}</h4>
+                <p matListItemLine>{{ control.controls.gdalParameters.controls.filePath.value }}</p>
+            </mat-list-item>
+            <div class="empty-placeholder" *ngIf="form.controls.timeSlices.controls.length === 0">
+                <i>No entries yet. Click "Add Time Slice" to add a first entry.</i>
+            </div>
+        </mat-nav-list>
+
+        @if (selectedGdalParameters) {
+            <geoengine-manager-gdal-dataset-parameters [form]="selectedGdalParameters"></geoengine-manager-gdal-dataset-parameters>
+        } @else {
+            <div class="no-dataset">Please select a time slice</div>
+        }
+    </div>
+
+    <button class="add-entry" mat-raised-button (click)="addTimeSlice()">Add Time Slice</button>
+</form>

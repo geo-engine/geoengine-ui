@@ -49,6 +49,8 @@ import {CommonConfig, CommonModule} from '@geoengine/common';
 import {SymbologyEditorComponent} from './symbology/symbology-editor/symbology-editor.component';
 import {ProvenanceComponent} from './provenance/provenance.component';
 import {AddDatasetComponent} from './datasets/add-dataset/add-dataset.component';
+import {GdalMetadataListComponent} from './datasets/loading-info/gdal-metadata-list/gdal-metadata-list.component';
+import {GdalDatasetParametersComponent} from './datasets/loading-info/gdal-dataset-parameters/gdal-dataset-parameters.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -98,6 +100,8 @@ export const MATERIAL_MODULES = [
         SymbologyEditorComponent,
         ProvenanceComponent,
         AddDatasetComponent,
+        GdalMetadataListComponent,
+        GdalDatasetParametersComponent,
     ],
     imports: [
         ...MATERIAL_MODULES,
