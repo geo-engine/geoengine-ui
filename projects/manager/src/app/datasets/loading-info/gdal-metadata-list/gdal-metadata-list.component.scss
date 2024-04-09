@@ -1,5 +1,21 @@
+:host {
+    width: 100%;
+}
+
 .container {
     display: flex;
     height: 100%;
     width: 100%;
+}
+
+.left {
+    flex: 0 0 25%;
+}
+
+.time-slice {
+    width: 75%;
+}
+
+.selected {
+    background-color: var(--geoengine-primary-color);
 }
