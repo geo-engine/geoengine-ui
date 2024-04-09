@@ -9,11 +9,11 @@ import {MapService} from '../map/map.service';
 import {NotificationService} from '../notification.service';
 import {ProjectService} from '../project/project.service';
 import {SpatialReferenceService} from '../spatial-references/spatial-reference.service';
-import {TimeInterval} from '../time/time-interval-input/time-interval-input.component';
 import {UserService} from '../users/user.service';
 import {bboxAsOgcString, gridOffsetsAsOgcString, gridOriginAsOgcString} from '../util/spatial_reference';
-import {Layer, SpatialReference, Time, olExtentToTuple, extentToBboxDict, geoengineValidators} from '@geoengine/common';
+import {Layer, SpatialReference, Time, olExtentToTuple, extentToBboxDict, geoengineValidators, TimeInterval} from '@geoengine/common';
 import {TypedResultDescriptor} from '@geoengine/openapi-client';
+import {Config} from '../config.service';
 
 export interface DownloadLayerForm {
     bboxMinX: FormControl<number>;
@@ -58,6 +58,7 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
         protected notificationService: NotificationService,
         protected spatialReferenceService: SpatialReferenceService,
         private formBuilder: UntypedFormBuilder,
+        public readonly config: Config,
     ) {
         // initialize with the current time to have a defined value
         const time = new Time(moment.utc(), moment.utc());

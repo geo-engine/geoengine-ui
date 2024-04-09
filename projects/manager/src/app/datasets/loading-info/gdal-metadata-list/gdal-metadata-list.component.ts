@@ -27,6 +27,10 @@ export class GdalMetadataListComponent {
 
     selectedGdalParameters?: FormGroup<GdalDatasetParametersForm>;
 
+    constructor() {
+        this.selectTimeSlice(0);
+    }
+
     addTimeSlice(): void {
         // TODO: re-use previous time slice gdal parameters?
         this.form.controls.timeSlices.push(

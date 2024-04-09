@@ -1,5 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef} from '@angular/core';
-import {ProjectService} from '../../project/project.service';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, forwardRef} from '@angular/core';
 import {Subscription} from 'rxjs';
 import moment, {Moment} from 'moment';
 import {
@@ -15,8 +14,7 @@ import {
     Validator,
     Validators,
 } from '@angular/forms';
-import {Config} from '../../config.service';
-import {Time, TimeStepDuration} from '@geoengine/common';
+import {Time, TimeStepDuration} from '../time.model';
 
 const startBeforeEndValidator = (control: AbstractControl): ValidationErrors | null => {
     if (!(control instanceof UntypedFormGroup)) {
@@ -61,6 +59,8 @@ export interface TimeInterval {
     ],
 })
 export class TimeIntervalInputComponent implements ControlValueAccessor, Validator, AfterViewInit {
+    @Input() allowRanges = true;
+
     onTouched?: () => void;
     onChange?: (_: Moment) => void = undefined;
 
@@ -69,17 +69,15 @@ export class TimeIntervalInputComponent implements ControlValueAccessor, Validat
     onChangeSubs: Subscription[] = [];
 
     constructor(
-        private projectService: ProjectService,
         private changeDetectorRef: ChangeDetectorRef,
         private formBuilder: UntypedFormBuilder,
-        public config: Config,
     ) {
         // initialize with the current time to have a defined value
         const time = new Time(moment.utc(), moment.utc());
 
         this.form = this.formBuilder.group({
             start: [time.start, [Validators.required]],
-            timeAsPoint: [this.config.TIME.ALLOW_RANGES, Validators.required],
+            timeAsPoint: [this.allowRanges, Validators.required],
             end: [time.end, [Validators.required]],
         });
         this.form.setValidators(startBeforeEndValidator);

@@ -62,7 +62,6 @@ import {
 import {SafeStylePipe} from './util/pipes/safe-style.pipe';
 import {SmallTimeInteractionComponent} from './time/small-time-interaction/small-time-interaction.component';
 import {TimeConfigComponent} from './time/time-config/time-config.component';
-import {TimeInputComponent} from './time/time-input/time-input.component';
 import {WorkspaceSettingsComponent} from './project/workspace-settings/workspace-settings.component';
 import {ChangeSpatialReferenceComponent} from './project/change-spatial-reference/change-spatial-reference.component';
 import {IfGuestDirective} from './util/directives/if-guest.directive';
@@ -137,7 +136,6 @@ import {TimeShiftComponent} from './operators/dialogs/time-shift/time-shift.comp
 import {PieChartComponent} from './operators/dialogs/pie-chart/pie-chart.component';
 import {RasterizationComponent} from './operators/dialogs/rasterization/rasterization.component';
 import {UserSessionComponent} from './users/user-session/user-session.component';
-import {TimeIntervalInputComponent} from './time/time-interval-input/time-interval-input.component';
 import {QuotaInfoComponent} from './users/quota/quota-info/quota-info.component';
 import {LineSimplificationComponent} from './operators/dialogs/line-simplification/line-simplification.component';
 import {TaskListComponent} from './tasks/task-list/task-list.component';
@@ -287,8 +285,6 @@ const CORE_COMPONENTS = [
     TaskListComponent,
     TemporalRasterAggregationComponent,
     TimeConfigComponent,
-    TimeInputComponent,
-    TimeIntervalInputComponent,
     TimeShiftComponent,
     TimeSliderComponent,
     TimeStepSelectorComponent,

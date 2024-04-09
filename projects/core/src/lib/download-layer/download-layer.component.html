@@ -42,7 +42,10 @@
             </mat-card-header>
 
             <mat-card-content>
-                <geoengine-time-interval-input formControlName="timeInterval"></geoengine-time-interval-input>
+                <geoengine-time-interval-input
+                    [allowRanges]="config.TIME.ALLOW_RANGES"
+                    formControlName="timeInterval"
+                ></geoengine-time-interval-input>
             </mat-card-content>
         </mat-card>
 

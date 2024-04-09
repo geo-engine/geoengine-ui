@@ -103,8 +103,6 @@ export * from './lib/tabs/tabs.component';
 export * from './lib/tasks/task-list/task-list.component';
 export * from './lib/time/small-time-interaction/small-time-interaction.component';
 export * from './lib/time/time-config/time-config.component';
-export * from './lib/time/time-input/time-input.component';
-export * from './lib/time/time-interval-input/time-interval-input.component';
 export * from './lib/time/time-slider/time-slider.component';
 export * from './lib/time/time-step-selector/time-step-selector.component';
 export * from './lib/users/login/login.component';
