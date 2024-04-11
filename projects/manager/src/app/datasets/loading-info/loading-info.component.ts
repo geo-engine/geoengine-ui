@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {DatasetsService} from '@geoengine/common';
-import {MetaDataDefinition} from '@geoengine/openapi-client';
+import {DataPath, MetaDataDefinition} from '@geoengine/openapi-client';
 
 // TODO: replace this component with editors for the different metadata types
 @Component({
@@ -11,6 +11,7 @@ import {MetaDataDefinition} from '@geoengine/openapi-client';
 export class LoadingInfoComponent implements AfterViewInit, OnChanges {
     @Input() datasetName?: string;
     @Input() editable = false;
+    @Input() dataPath?: DataPath;
 
     loadingInfo = '';
 

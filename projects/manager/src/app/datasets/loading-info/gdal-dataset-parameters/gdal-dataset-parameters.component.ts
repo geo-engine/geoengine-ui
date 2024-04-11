@@ -1,6 +1,25 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
-import {FileNotFoundHandling, GdalDatasetParameters, RasterPropertiesEntryType} from '@geoengine/openapi-client';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {FormArray, FormControl, FormGroup, NG_VALUE_ACCESSOR, Validators} from '@angular/forms';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {DatasetsService, errorToText} from '@geoengine/common';
+import {
+    DataPath,
+    FileNotFoundHandling,
+    GdalDatasetParameters,
+    GdalMetaDataList,
+    RasterPropertiesEntryType,
+} from '@geoengine/openapi-client';
+
+export interface GdalMetadataMapping {
+    sourceKey: RasterPropertiesKey;
+    targetKey: RasterPropertiesKey;
+    targetType: RasterPropertiesEntryType;
+}
+
+export interface RasterPropertiesKey {
+    domain: string;
+    key: string;
+}
 
 export interface GdalDatasetParametersForm {
     filePath: FormControl<string>;
@@ -9,50 +28,105 @@ export interface GdalDatasetParametersForm {
     width: FormControl<number>;
     height: FormControl<number>;
     fileNotFoundHandling: FormControl<FileNotFoundHandling>;
-    noDatavalue: FormControl<number>;
+    noDataValue: FormControl<number>;
     propertiesMapping: FormArray<FormGroup<GdalMetadataMappingForm>>;
     gdalOpenOptions: FormArray<FormControl<string>>;
-    gdalConfigOptions: FormArray<FormGroup<GdalConfigOptionForm>>;
+    gdalConfigOptions: FormArray<FormArray<FormControl<string>>>;
     allowAlphabandAsMask: FormControl<boolean>;
 }
 
 export interface GdalDatasetGeoTransformForm {
-    originCoordinateX: FormControl<number>;
-    originCoordinateY: FormControl<number>;
+    originCoordinate: FormGroup<OriginCoordinateForm>;
     xPixelSize: FormControl<number>;
     yPixelSize: FormControl<number>;
 }
 
+export interface OriginCoordinateForm {
+    x: FormControl<number>;
+    y: FormControl<number>;
+}
+
 export interface GdalMetadataMappingForm {
-    sourceDomain: FormControl<string>;
-    sourceKey: FormControl<string>;
-    targetDomain: FormControl<string>;
-    targetKey: FormControl<string>;
+    sourceKey: FormGroup<RasterPropertiesKeyForm>;
+    targetKey: FormGroup<RasterPropertiesKeyForm>;
     targetType: FormControl<RasterPropertiesEntryType>;
 }
 
-export interface GdalConfigOptionForm {
+export interface RasterPropertiesKeyForm {
+    domain: FormControl<string>;
     key: FormControl<string>;
-    value: FormControl<string>;
 }
 
 @Component({
     selector: 'geoengine-manager-gdal-dataset-parameters',
     templateUrl: './gdal-dataset-parameters.component.html',
     styleUrl: './gdal-dataset-parameters.component.scss',
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            multi: true,
+            useExisting: GdalDatasetParametersComponent,
+        },
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GdalDatasetParametersComponent implements OnInit {
+export class GdalDatasetParametersComponent {
     @Input()
     form: FormGroup<GdalDatasetParametersForm> = GdalDatasetParametersComponent.setUpPlaceholderForm();
+
+    @Input()
+    dataPath?: DataPath;
 
     FileNotFoundHandling = Object.values(FileNotFoundHandling);
     RasterPropertiesEntryType = Object.values(RasterPropertiesEntryType);
 
-    ngOnInit(): void {
-        this.form = GdalDatasetParametersComponent.setUpPlaceholderForm();
-    }
+    constructor(
+        private readonly datasetsService: DatasetsService,
+        private readonly snackBar: MatSnackBar,
+    ) {}
 
-    suggest(): void {}
+    async suggest(): Promise<void> {
+        if (!this.dataPath) {
+            return;
+        }
+
+        try {
+            const suggestion = await this.datasetsService.suggestMetaData({
+                suggestMetaData: {
+                    dataPath: this.dataPath,
+                    mainFile: this.form.controls.filePath.value,
+                },
+            });
+
+            if (suggestion.metaData.type !== 'GdalMetaDataList') {
+                this.snackBar.open(`Metadata suggestion is not of type "GdalMetaDataList" but ${suggestion.metaData.type}`, 'Close', {
+                    panelClass: ['error-snackbar'],
+                });
+                return;
+            }
+
+            const gdalMetaDataList = suggestion.metaData as GdalMetaDataList;
+            const slices = gdalMetaDataList.params;
+
+            if (slices.length === 0) {
+                this.snackBar.open('No time slices found in metadata suggestion.', 'Close', {panelClass: ['error-snackbar']});
+                return;
+            }
+
+            const firstSlice = slices[0];
+            const gdalParams = firstSlice.params;
+
+            if (!gdalParams) {
+                this.snackBar.open('No gdal parameters found in metadata suggestion.', 'Close', {panelClass: ['error-snackbar']});
+                return;
+            }
+
+            this.form = GdalDatasetParametersComponent.setUpForm(gdalParams);
+        } catch (error) {
+            const errorMessage = await errorToText(error, 'Metadata suggestion failed.');
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
+        }
+    }
 
     removePropertyMapping(i: number): void {
         this.form.controls.propertiesMapping.removeAt(i);
@@ -62,21 +136,25 @@ export class GdalDatasetParametersComponent implements OnInit {
     addPropertyMapping(): void {
         this.form.controls.propertiesMapping.push(
             new FormGroup<GdalMetadataMappingForm>({
-                sourceDomain: new FormControl('newSourceDomain', {
-                    nonNullable: true,
-                    validators: [Validators.required],
+                sourceKey: new FormGroup<RasterPropertiesKeyForm>({
+                    domain: new FormControl('newSourceDomain', {
+                        nonNullable: true,
+                        validators: [Validators.required],
+                    }),
+                    key: new FormControl('newSourceKey', {
+                        nonNullable: true,
+                        validators: [Validators.required],
+                    }),
                 }),
-                sourceKey: new FormControl('newSourceKey', {
-                    nonNullable: true,
-                    validators: [Validators.required],
-                }),
-                targetDomain: new FormControl('newTargetDomain', {
-                    nonNullable: true,
-                    validators: [Validators.required],
-                }),
-                targetKey: new FormControl('newTargetKey', {
-                    nonNullable: true,
-                    validators: [Validators.required],
+                targetKey: new FormGroup<RasterPropertiesKeyForm>({
+                    domain: new FormControl('newTargetDomain', {
+                        nonNullable: true,
+                        validators: [Validators.required],
+                    }),
+                    key: new FormControl('newTargetKey', {
+                        nonNullable: true,
+                        validators: [Validators.required],
+                    }),
                 }),
                 targetType: new FormControl(RasterPropertiesEntryType.String, {
                     nonNullable: true,
@@ -107,16 +185,16 @@ export class GdalDatasetParametersComponent implements OnInit {
 
     addConfigOption(): void {
         this.form.controls.gdalConfigOptions.push(
-            new FormGroup<GdalConfigOptionForm>({
-                key: new FormControl('newKey', {
+            new FormArray<FormControl<string>>([
+                new FormControl('newKey', {
                     nonNullable: true,
                     validators: [Validators.required],
                 }),
-                value: new FormControl('newValue', {
+                new FormControl('newValue', {
                     nonNullable: true,
                     validators: [Validators.required],
                 }),
-            }),
+            ]),
         );
     }
 
@@ -169,13 +247,15 @@ export class GdalDatasetParametersComponent implements OnInit {
                 validators: [Validators.required], // TODO: check > 0
             }),
             geoTransform: new FormGroup<GdalDatasetGeoTransformForm>({
-                originCoordinateX: new FormControl(gdalParams.geoTransform.originCoordinate.x, {
-                    nonNullable: true,
-                    validators: [Validators.required],
-                }),
-                originCoordinateY: new FormControl(gdalParams.geoTransform.originCoordinate.y, {
-                    nonNullable: true,
-                    validators: [Validators.required],
+                originCoordinate: new FormGroup<OriginCoordinateForm>({
+                    x: new FormControl(gdalParams.geoTransform.originCoordinate.x, {
+                        nonNullable: true,
+                        validators: [Validators.required],
+                    }),
+                    y: new FormControl(gdalParams.geoTransform.originCoordinate.y, {
+                        nonNullable: true,
+                        validators: [Validators.required],
+                    }),
                 }),
                 xPixelSize: new FormControl(gdalParams.geoTransform.xPixelSize, {
                     nonNullable: true,
@@ -198,30 +278,34 @@ export class GdalDatasetParametersComponent implements OnInit {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
-            noDatavalue: new FormControl(gdalParams.noDataValue ?? 0, {
+            noDataValue: new FormControl(gdalParams.noDataValue ?? 0, {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
             propertiesMapping: new FormArray<FormGroup<GdalMetadataMappingForm>>(
                 gdalParams.propertiesMapping?.map((m) => {
                     return new FormGroup<GdalMetadataMappingForm>({
-                        sourceDomain: new FormControl(m.sourceKey.domain ?? '', {
-                            nonNullable: true,
-                            validators: [Validators.required],
+                        sourceKey: new FormGroup<RasterPropertiesKeyForm>({
+                            domain: new FormControl(m.sourceKey.domain ?? '', {
+                                nonNullable: true,
+                                validators: [Validators.required],
+                            }),
+                            key: new FormControl(m.sourceKey.key, {
+                                nonNullable: true,
+                                validators: [Validators.required],
+                            }),
                         }),
-                        sourceKey: new FormControl(m.sourceKey.key, {
-                            nonNullable: true,
-                            validators: [Validators.required],
+                        targetKey: new FormGroup<RasterPropertiesKeyForm>({
+                            domain: new FormControl(m.targetKey.domain ?? '', {
+                                nonNullable: true,
+                                validators: [Validators.required],
+                            }),
+                            key: new FormControl(m.targetKey.key, {
+                                nonNullable: true,
+                                validators: [Validators.required],
+                            }),
                         }),
-                        targetDomain: new FormControl(m.targetKey.domain ?? '', {
-                            nonNullable: true,
-                            validators: [Validators.required],
-                        }),
-                        targetKey: new FormControl(m.targetKey.key, {
-                            nonNullable: true,
-                            validators: [Validators.required],
-                        }),
-                        targetType: new FormControl(m.targetType, {
+                        targetType: new FormControl(RasterPropertiesEntryType.String, {
                             nonNullable: true,
                             validators: [Validators.required],
                         }),
@@ -237,18 +321,18 @@ export class GdalDatasetParametersComponent implements OnInit {
                         }),
                 ) ?? [],
             ),
-            gdalConfigOptions: new FormArray<FormGroup<GdalConfigOptionForm>>(
+            gdalConfigOptions: new FormArray<FormArray<FormControl<string>>>(
                 gdalParams.gdalConfigOptions?.map((o) => {
-                    return new FormGroup<GdalConfigOptionForm>({
-                        key: new FormControl(o[0] ?? '', {
+                    return new FormArray<FormControl<string>>([
+                        new FormControl(o[0], {
                             nonNullable: true,
                             validators: [Validators.required],
                         }),
-                        value: new FormControl(o[1] ?? '', {
+                        new FormControl(o[1], {
                             nonNullable: true,
                             validators: [Validators.required],
                         }),
-                    });
+                    ]);
                 }) ?? [],
             ),
             allowAlphabandAsMask: new FormControl(gdalParams.allowAlphabandAsMask ?? false, {

@@ -13,9 +13,27 @@
 }
 
 .time-slice {
-    width: 75%;
+    width: calc(75% - 1rem);
+    margin: 1rem;
 }
 
 .selected {
     background-color: var(--geoengine-primary-color);
+}
+
+mat-form-field {
+    width: 100%;
+}
+
+.cachettl {
+    margin-top: 1rem;
+}
+
+mat-divider {
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+}
+
+geoengine-time-interval-input {
+    padding: 0;
 }

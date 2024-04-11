@@ -4,27 +4,39 @@
             <mat-list-item
                 *ngFor="let control of form.controls.timeSlices.controls; let i = index"
                 (click)="selectTimeSlice(i)"
-                [class.selected]="selectedTimeSlice === control"
+                [class.selected]="selectedTimeSlice === i"
             >
-                <h4 matListItemTitle>{{ control.controls.timeInterval.controls.start.value }}</h4>
-                <p matListItemLine>{{ control.controls.gdalParameters.controls.filePath.value }}</p>
+                <h4 matListItemTitle>
+                    {{ getTime(i) }}
+                </h4>
+                <p matListItemLine>{{ control.controls.gdalParameters.value.filePath }}</p>
             </mat-list-item>
             <button class="add-entry" mat-raised-button (click)="addTimeSlice()">Add Time Slice</button>
+            <button class="add-entry" mat-raised-button (click)="debug()">debug</button>
             <div class="empty-placeholder" *ngIf="form.controls.timeSlices.controls.length === 0">
                 <i>No entries yet. Click "Add Time Slice" to add a first entry.</i>
             </div>
         </mat-nav-list>
 
-        @if (selectedTimeSlice) {
-            <div class="time-slice">
-                <geoengine-time-interval-input
-                    [formGroup]="selectedTimeSlice.controls.timeInterval"
-                    (ngModelChange)="updateTime($event)"
-                ></geoengine-time-interval-input>
+        @if (form.controls.timeSlices.controls.at(selectedTimeSlice); as selectedTimeSliceGroup) {
+            <div class="time-slice" [formGroup]="selectedTimeSliceGroup">
+                <geoengine-time-interval-input [formControl]="selectedTimeSliceGroup.controls.timeInterval"></geoengine-time-interval-input>
+
+                <mat-divider></mat-divider>
 
                 <geoengine-manager-gdal-dataset-parameters
-                    [form]="selectedTimeSlice.controls.gdalParameters"
+                    [form]="selectedTimeSliceGroup.controls.gdalParameters"
+                    [dataPath]="dataPath"
                 ></geoengine-manager-gdal-dataset-parameters>
+
+                <mat-divider></mat-divider>
+
+                <div class="cachettl">
+                    <mat-form-field appearance="fill">
+                        <mat-label>CacheTTl</mat-label>
+                        <input matInput type="number" [formControl]="selectedTimeSliceGroup.controls.cacheTtl" />
+                    </mat-form-field>
+                </div>
             </div>
         } @else {
             <div class="no-dataset">Please select a time slice</div>

@@ -6,6 +6,7 @@ import {LoadingInfoComponent} from '../loading-info/loading-info.component';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {filter, firstValueFrom, merge} from 'rxjs';
+import {Data} from 'vega';
 
 enum SourceOperators {
     GdalSource,
@@ -85,6 +86,14 @@ export class AddDatasetComponent {
                 }
             },
         );
+    }
+
+    dataPath(): DataPath {
+        if (this.form.controls.dataPathType.value === DataPaths.Upload) {
+            return {upload: this.form.controls.dataPath.value};
+        } else {
+            return {volume: this.form.controls.dataPath.value};
+        }
     }
 
     async createDataset(): Promise<void> {

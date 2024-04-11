@@ -1,5 +1,5 @@
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, forwardRef} from '@angular/core';
-import {Subscription} from 'rxjs';
+import {Subscription, distinctUntilChanged} from 'rxjs';
 import moment, {Moment} from 'moment';
 import {
     AbstractControl,
@@ -66,7 +66,7 @@ export class TimeIntervalInputComponent implements ControlValueAccessor, Validat
 
     form: FormGroup<TimeIntervalForm>;
 
-    onChangeSubs: Subscription[] = [];
+    onChangeSub?: Subscription = undefined;
 
     constructor(
         private changeDetectorRef: ChangeDetectorRef,
@@ -115,8 +115,10 @@ export class TimeIntervalInputComponent implements ControlValueAccessor, Validat
             }>,
         ) => void,
     ): void {
-        const sub = this.form.valueChanges.subscribe((a) => onChange(a));
-        this.onChangeSubs.push(sub);
+        if (this.onChangeSub) {
+            this.onChangeSub.unsubscribe();
+        }
+        this.onChangeSub = this.form.valueChanges.subscribe((a) => onChange(a));
     }
 
     registerOnTouched(fn: () => void): void {
