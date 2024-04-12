@@ -1,11 +1,8 @@
 <form [formGroup]="form">
-    <div class="flex-container">
-        <mat-form-field appearance="fill">
-            <mat-label>File Path (relative to upload or volume)</mat-label>
-            <input matInput type="text" formControlName="filePath" />
-        </mat-form-field>
-        <button mat-raised-button class="analyze" (click)="suggest()">Analyze file and suggest properties</button>
-    </div>
+    <mat-form-field appearance="fill">
+        <mat-label>File Path (relative to upload or volume)</mat-label>
+        <input matInput type="text" formControlName="filePath" />
+    </mat-form-field>
     <mat-form-field appearance="fill">
         <mat-label>Raster band channel</mat-label>
         <input matInput type="number" formControlName="rasterbandChannel" />
@@ -94,7 +91,7 @@
         </div>
     </div>
     <div class="empty-placeholder" *ngIf="form.controls.propertiesMapping.controls.length === 0">
-        <i>No entries yet. Click "Add Property Mapping" to add a first entry.</i>
+        <i>No property mappings defined.</i>
     </div>
     <button class="add-entry" mat-raised-button (click)="addPropertyMapping()">Add Property Mapping</button>
 
@@ -109,7 +106,7 @@
         </div>
     </div>
     <div class="empty-placeholder" *ngIf="form.controls.gdalOpenOptions.controls.length === 0">
-        <i>No entries yet. Click "Add Open Option" to add a first entry.</i>
+        <i>No open options defined.</i>
     </div>
     <button class="add-entry" mat-raised-button (click)="addOpenOption()">Add Open Option</button>
 
@@ -130,12 +127,12 @@
         </div>
     </div>
     <div class="empty-placeholder" *ngIf="form.controls.gdalOpenOptions.controls.length === 0">
-        <i>No entries yet. Click "Add Config Option" to add a first entry.</i>
+        <i>No config option defined.</i>
     </div>
     <button class="add-entry" mat-raised-button (click)="addConfigOption()">Add Config Option</button>
 
     <div>
-        <mat-label>Allow Alpha Band As Mask</mat-label>
+        <mat-label>Allow Alpha Band As Mask </mat-label>
         <mat-slide-toggle formControlName="allowAlphabandAsMask"></mat-slide-toggle>
     </div>
 </form>

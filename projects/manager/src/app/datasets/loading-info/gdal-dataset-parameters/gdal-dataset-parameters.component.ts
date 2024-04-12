@@ -1,14 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {FormArray, FormControl, FormGroup, NG_VALUE_ACCESSOR, Validators} from '@angular/forms';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import {DatasetsService, errorToText} from '@geoengine/common';
-import {
-    DataPath,
-    FileNotFoundHandling,
-    GdalDatasetParameters,
-    GdalMetaDataList,
-    RasterPropertiesEntryType,
-} from '@geoengine/openapi-client';
+import {DataPath, FileNotFoundHandling, GdalDatasetParameters, RasterPropertiesEntryType} from '@geoengine/openapi-client';
 
 export interface GdalMetadataMapping {
     sourceKey: RasterPropertiesKey;
@@ -80,53 +72,7 @@ export class GdalDatasetParametersComponent {
     FileNotFoundHandling = Object.values(FileNotFoundHandling);
     RasterPropertiesEntryType = Object.values(RasterPropertiesEntryType);
 
-    constructor(
-        private readonly datasetsService: DatasetsService,
-        private readonly snackBar: MatSnackBar,
-    ) {}
-
-    async suggest(): Promise<void> {
-        if (!this.dataPath) {
-            return;
-        }
-
-        try {
-            const suggestion = await this.datasetsService.suggestMetaData({
-                suggestMetaData: {
-                    dataPath: this.dataPath,
-                    mainFile: this.form.controls.filePath.value,
-                },
-            });
-
-            if (suggestion.metaData.type !== 'GdalMetaDataList') {
-                this.snackBar.open(`Metadata suggestion is not of type "GdalMetaDataList" but ${suggestion.metaData.type}`, 'Close', {
-                    panelClass: ['error-snackbar'],
-                });
-                return;
-            }
-
-            const gdalMetaDataList = suggestion.metaData as GdalMetaDataList;
-            const slices = gdalMetaDataList.params;
-
-            if (slices.length === 0) {
-                this.snackBar.open('No time slices found in metadata suggestion.', 'Close', {panelClass: ['error-snackbar']});
-                return;
-            }
-
-            const firstSlice = slices[0];
-            const gdalParams = firstSlice.params;
-
-            if (!gdalParams) {
-                this.snackBar.open('No gdal parameters found in metadata suggestion.', 'Close', {panelClass: ['error-snackbar']});
-                return;
-            }
-
-            this.form = GdalDatasetParametersComponent.setUpForm(gdalParams);
-        } catch (error) {
-            const errorMessage = await errorToText(error, 'Metadata suggestion failed.');
-            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
-        }
-    }
+    constructor() {}
 
     removePropertyMapping(i: number): void {
         this.form.controls.propertiesMapping.removeAt(i);

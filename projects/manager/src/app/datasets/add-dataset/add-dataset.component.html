@@ -18,13 +18,6 @@
                         <input matInput type="text" formControlName="displayName" />
                     </mat-form-field>
                 </div>
-                <div>
-                    Source Operator:
-                    <mat-button-toggle-group id="source-type" [multiple]="false" formControlName="sourceOperator">
-                        <mat-button-toggle [value]="SourceOperators.GdalSource">Gdal (Rasters)</mat-button-toggle>
-                        <mat-button-toggle [value]="SourceOperators.OgrSource">Ogr (Vectors)</mat-button-toggle>
-                    </mat-button-toggle-group>
-                </div>
             </mat-card-content>
         </mat-card>
 
@@ -35,7 +28,6 @@
 
             <mat-card-content>
                 <div>
-                    Type of Data Path:
                     <mat-button-toggle-group id="path-type" [multiple]="false" formControlName="dataPathType">
                         <mat-button-toggle [value]="DataPaths.Upload">Upload</mat-button-toggle>
                         <mat-button-toggle [value]="DataPaths.Volume">Volume</mat-button-toggle>
@@ -59,7 +51,19 @@
             </mat-card-header>
 
             <mat-card-content>
-                <geoengine-manager-loading-info [editable]="true" [dataPath]="dataPath()"></geoengine-manager-loading-info>
+                <mat-button-toggle-group id="data-type" [multiple]="false" formControlName="dataType">
+                    <mat-button-toggle [value]="DataTypes.Raster">Raster</mat-button-toggle>
+                    <mat-button-toggle [value]="DataTypes.Vector">Vector</mat-button-toggle>
+                </mat-button-toggle-group>
+
+                @switch (form.controls.dataType.value) {
+                    @case (DataTypes.Raster) {
+                        <geoengine-manager-gdal-metadata-list [dataPath]="dataPath()"></geoengine-manager-gdal-metadata-list>
+                    }
+                    @case (DataTypes.Vector) {
+                        <textarea formControlName="rawLoadingInfo"></textarea>
+                    }
+                }
             </mat-card-content>
         </mat-card>
 

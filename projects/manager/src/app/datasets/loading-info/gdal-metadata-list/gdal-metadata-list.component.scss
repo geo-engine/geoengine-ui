@@ -10,6 +10,7 @@
 
 .left {
     flex: 0 0 25%;
+    overflow: hidden;
 }
 
 .time-slice {
@@ -36,4 +37,19 @@ mat-divider {
 
 geoengine-time-interval-input {
     padding: 0;
+}
+
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.analyze {
+    height: 3rem;
+}
+
+.add-entry {
+    margin-top: 1rem;
+    width: 100%;
 }

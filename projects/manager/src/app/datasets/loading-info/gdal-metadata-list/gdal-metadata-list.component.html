@@ -1,4 +1,34 @@
 <form [formGroup]="form">
+    <div class="flex-container">
+        <mat-form-field appearance="fill">
+            <mat-label>Path to probe file, relative to upload or volume (optional)</mat-label>
+            <input matInput type="text" formControlName="mainFile" />
+        </mat-form-field>
+
+        <button mat-raised-button class="analyze" (click)="suggest()">Analyze file and suggest properties</button>
+    </div>
+
+    <div formGroupName="rasterResultDescriptor">
+        <mat-form-field appearance="fill">
+            <mat-label>Output Data Type</mat-label>
+            <mat-select formControlName="dataType">
+                <mat-option *ngFor="let dataType of RasterDataTypes" [value]="dataType">
+                    {{ dataType }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Spatial Reference</mat-label>
+            <input matInput type="text" formControlName="spatialReference" />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Band Name</mat-label>
+            <input matInput type="text" formControlName="bandName" />
+        </mat-form-field>
+    </div>
+
     <div class="container">
         <mat-nav-list class="left">
             <mat-list-item
@@ -11,16 +41,18 @@
                 </h4>
                 <p matListItemLine>{{ control.controls.gdalParameters.value.filePath }}</p>
             </mat-list-item>
-            <button class="add-entry" mat-raised-button (click)="addTimeSlice()">Add Time Slice</button>
-            <button class="add-entry" mat-raised-button (click)="debug()">debug</button>
             <div class="empty-placeholder" *ngIf="form.controls.timeSlices.controls.length === 0">
-                <i>No entries yet. Click "Add Time Slice" to add a first entry.</i>
+                <i>No time slices defined.</i>
             </div>
+            <button class="add-entry" mat-raised-button (click)="addTimeSlicePlaceholder()">Add Time Slice</button>
+            <button *ngIf="form.controls.timeSlices.controls.length > 0" class="add-entry" mat-raised-button (click)="removeTimeSlice()">
+                Remove selected time slice
+            </button>
         </mat-nav-list>
 
         @if (form.controls.timeSlices.controls.at(selectedTimeSlice); as selectedTimeSliceGroup) {
             <div class="time-slice" [formGroup]="selectedTimeSliceGroup">
-                <geoengine-time-interval-input [formControl]="selectedTimeSliceGroup.controls.timeInterval"></geoengine-time-interval-input>
+                <geoengine-time-interval-input [formControl]="selectedTimeSliceGroup.controls.time"></geoengine-time-interval-input>
 
                 <mat-divider></mat-divider>
 
