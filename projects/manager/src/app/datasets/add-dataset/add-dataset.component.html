@@ -51,7 +51,7 @@
             </mat-card-header>
 
             <mat-card-content>
-                <mat-button-toggle-group id="data-type" [multiple]="false" formControlName="dataType">
+                <mat-button-toggle-group id="data-type" [multiple]="false" formControlName="dataType" (change)="updateDataType()">
                     <mat-button-toggle [value]="DataTypes.Raster">Raster</mat-button-toggle>
                     <mat-button-toggle [value]="DataTypes.Vector">Vector</mat-button-toggle>
                 </mat-button-toggle-group>
@@ -68,9 +68,7 @@
         </mat-card>
 
         <div class="actions">
-            <button mat-raised-button color="primary" [disabled]="form.pristine || form.invalid" (click)="createDataset()">
-                Create dataset
-            </button>
+            <button mat-raised-button color="primary" [disabled]="isCreateDisabled()" (click)="createDataset()">Create dataset</button>
         </div>
     </form>
 </div>

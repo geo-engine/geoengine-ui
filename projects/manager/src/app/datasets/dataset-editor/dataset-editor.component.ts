@@ -58,6 +58,8 @@ export class DatasetEditorComponent implements OnChanges {
     rasterSymbology?: RasterSymbology = undefined;
     vectorSymbology?: VectorSymbology = undefined;
 
+    rawLoadingInfo = '';
+
     constructor(
         private readonly datasetsService: DatasetsService,
         private readonly workflowsService: WorkflowsService,
@@ -73,6 +75,11 @@ export class DatasetEditorComponent implements OnChanges {
             const workflowId = await this.getWorkflowId(this.dataset);
             this.datasetWorkflowId$.next(workflowId);
             this.setUpColorizer(this.dataset);
+
+            if (this.dataset.resultDescriptor.type === 'vector') {
+                const loadingInfo = await this.datasetsService.getLoadingInfo(this.dataset.name);
+                this.rawLoadingInfo = JSON.stringify(loadingInfo, null, 2);
+            }
         }
     }
 

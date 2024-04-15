@@ -108,7 +108,14 @@
             </mat-card-header>
 
             <mat-card-content>
-                <geoengine-manager-loading-info [datasetName]="dataset.name"></geoengine-manager-loading-info>
+                @switch (form.controls.layerType.value) {
+                    @case ('raster') {
+                        <geoengine-manager-gdal-metadata-list [dataset]="dataset.name"></geoengine-manager-gdal-metadata-list>
+                    }
+                    @case ('vector') {
+                        <textarea [(ngModel)]="rawLoadingInfo" [ngModelOptions]="{standalone: true}"></textarea>
+                    }
+                }
             </mat-card-content>
         </mat-card>
 

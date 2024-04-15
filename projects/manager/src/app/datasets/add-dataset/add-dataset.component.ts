@@ -1,7 +1,7 @@
 import {Component, ViewChild} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {ConfirmationComponent, DatasetsService, errorToText} from '@geoengine/common';
-import {DataPath, MetaDataDefinition, RasterDataType} from '@geoengine/openapi-client';
+import {DataPath, MetaDataDefinition} from '@geoengine/openapi-client';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {filter, firstValueFrom, merge} from 'rxjs';
@@ -60,7 +60,6 @@ export class AddDatasetComponent {
         }),
         rawLoadingInfo: new FormControl('', {
             nonNullable: true,
-            validators: [Validators.required],
         }),
     });
 
@@ -100,6 +99,18 @@ export class AddDatasetComponent {
         }
     }
 
+    updateDataType(): void {
+        if (this.form.controls.dataType.value === DataTypes.Raster) {
+            this.form.controls.rawLoadingInfo.clearValidators();
+        } else {
+            this.form.controls.rawLoadingInfo.setValidators([Validators.required]);
+        }
+    }
+
+    isCreateDisabled(): boolean {
+        return this.form.pristine || this.form.invalid || (this.gdalMetaDataList?.form?.invalid ?? false);
+    }
+
     async createDataset(): Promise<void> {
         if (!this.form.valid) {
             return;
@@ -113,33 +124,17 @@ export class AddDatasetComponent {
                 return;
             }
 
-            const params = this.gdalMetaDataList.getParams();
+            metaData = this.gdalMetaDataList.getMetaData();
 
-            if (!params) {
+            sourceOperator = 'GdalSource';
+        } else {
+            try {
+                metaData = JSON.parse(this.form.controls.rawLoadingInfo.value) as MetaDataDefinition;
+            } catch (e) {
+                this.snackBar.open('Invalid loading information.', 'Close', {panelClass: ['error-snackbar']});
                 return;
             }
 
-            sourceOperator = 'GdalSource';
-            metaData = {
-                type: 'GdalMetaDataList',
-                resultDescriptor: {
-                    bands: [
-                        {
-                            name: 'band',
-                            measurement: {
-                                type: 'unitless',
-                            },
-                        },
-                    ],
-                    bbox: undefined,
-                    dataType: 'U8', // TODO
-                    resolution: undefined,
-                    spatialReference: 'EPSG:4326', // TODO
-                    time: undefined, // TODO
-                },
-                params,
-            };
-        } else {
             sourceOperator = 'OgrSource';
         }
 

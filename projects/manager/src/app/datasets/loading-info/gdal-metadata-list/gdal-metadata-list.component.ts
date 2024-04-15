@@ -1,20 +1,19 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {GdalDatasetParametersComponent, GdalDatasetParametersForm} from '../gdal-dataset-parameters/gdal-dataset-parameters.component';
 import {DatasetsService, TimeInterval, errorToText} from '@geoengine/common';
 import moment from 'moment';
 import {
     DataPath,
     GdalDatasetParameters,
-    GdalLoadingInfoTemporalSlice,
     GdalMetaDataList,
+    MetaDataDefinition,
     RasterDataType,
     RasterResultDescriptor,
 } from '@geoengine/openapi-client';
 import {MatSnackBar} from '@angular/material/snack-bar';
 
 export interface GdalMetadataListForm {
-    mainFile: FormControl<string>;
     timeSlices: FormArray<FormGroup<TimeSliceForm>>;
     rasterResultDescriptor: FormGroup<RasterResultDescriptorForm>;
 }
@@ -37,39 +36,52 @@ export interface RasterResultDescriptorForm {
     styleUrl: './gdal-metadata-list.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GdalMetadataListComponent {
+export class GdalMetadataListComponent implements OnChanges {
     RasterDataTypes = Object.values(RasterDataType);
 
     form: FormGroup<GdalMetadataListForm> = this.setUpForm();
 
+    mainFile = '';
+
     @Input() dataPath?: DataPath;
+
+    @Input() dataset?: string;
 
     selectedTimeSlice = 0;
 
     constructor(
         private readonly datasetsService: DatasetsService,
         private readonly snackBar: MatSnackBar,
+        private readonly changeDetectorRef: ChangeDetectorRef,
     ) {}
 
-    addTimeSlicePlaceholder(): void {
-        this.addTimeSlice(GdalDatasetParametersComponent.placeHolderGdalParams());
+    async ngOnChanges(changes: SimpleChanges): Promise<void> {
+        if (changes.dataset && changes.dataset.currentValue) {
+            const loadingInfo = await this.datasetsService.getLoadingInfo(changes.dataset.currentValue);
+            if (loadingInfo.type === 'GdalMetaDataList') {
+                this.setUpFormFromMetaData(loadingInfo);
+            }
+        }
     }
 
-    addTimeSlice(gdalParams: GdalDatasetParameters): void {
-        // TODO: re-use previous time slice gdal parameters?
+    addTimeSlicePlaceholder(): void {
+        this.addTimeSlice(
+            {
+                start: moment.utc(),
+                timeAsPoint: true,
+                end: moment.utc(),
+            },
+            GdalDatasetParametersComponent.placeHolderGdalParams(),
+        );
+    }
+
+    addTimeSlice(time: TimeInterval, gdalParams: GdalDatasetParameters): void {
         this.form.controls.timeSlices.push(
             new FormGroup<TimeSliceForm>({
-                time: new FormControl(
-                    {
-                        start: moment.utc(),
-                        timeAsPoint: true,
-                        end: moment.utc(),
-                    },
-                    {
-                        nonNullable: true,
-                        validators: [Validators.required],
-                    },
-                ),
+                time: new FormControl(time, {
+                    nonNullable: true,
+                    validators: [Validators.required],
+                }),
                 gdalParameters: GdalDatasetParametersComponent.setUpForm(gdalParams),
                 cacheTtl: new FormControl<number>(0, {
                     nonNullable: true,
@@ -90,23 +102,83 @@ export class GdalMetadataListComponent {
 
     selectTimeSlice(index: number): void {
         this.selectedTimeSlice = index;
+        this.changeDetectorRef.detectChanges();
     }
 
     getTime(i: number): string {
-        return this.form.controls.timeSlices.at(i).controls.time.value.start.format('YYYY-MM-DD HH:mm:ss');
+        const start = this.form.controls.timeSlices.at(i).controls.time.value.start.format('YYYY-MM-DD HH:mm');
+        const end = this.form.controls.timeSlices.at(i).controls.time.value.end.format('YYYY-MM-DD HH:mm');
+        return `${start} - ${end}`;
     }
 
-    getParams(): GdalLoadingInfoTemporalSlice[] {
-        return this.form.controls.timeSlices.value.map((slice) => {
+    getGdalParameters(form: FormGroup<GdalDatasetParametersForm>): GdalDatasetParameters {
+        return {
+            allowAlphabandAsMask: form.controls.allowAlphabandAsMask.value,
+            fileNotFoundHandling: form.controls.fileNotFoundHandling.value,
+            filePath: form.controls.filePath.value,
+            gdalConfigOptions: form.controls.gdalConfigOptions.value,
+            gdalOpenOptions: form.controls.gdalOpenOptions.value,
+            geoTransform: {
+                originCoordinate: {
+                    x: form.controls.geoTransform.controls.originCoordinate.controls.x.value,
+                    y: form.controls.geoTransform.controls.originCoordinate.controls.y.value,
+                },
+                xPixelSize: form.controls.geoTransform.controls.xPixelSize.value,
+                yPixelSize: form.controls.geoTransform.controls.yPixelSize.value,
+            },
+            height: form.controls.height.value,
+            width: form.controls.width.value,
+            noDataValue: form.controls.noDataValue.value,
+            propertiesMapping: form.controls.propertiesMapping.controls.map((control) => {
+                return {
+                    sourceKey: {
+                        domain: control.controls.sourceKey.controls.domain.value,
+                        key: control.controls.sourceKey.controls.key.value,
+                    },
+                    targetKey: {
+                        domain: control.controls.targetKey.controls.domain.value,
+                        key: control.controls.targetKey.controls.key.value,
+                    },
+                    targetType: control.controls.targetType.value,
+                };
+            }),
+            rasterbandChannel: form.controls.rasterbandChannel.value,
+        };
+    }
+
+    getMetaData(): MetaDataDefinition {
+        const params = this.form.controls.timeSlices.controls.map((control) => {
             return {
                 time: {
-                    start: slice.time!.start.valueOf(),
-                    end: slice.time!.end.valueOf(),
+                    start: control.controls.time.value.start.valueOf(),
+                    end: control.controls.time.value.end.valueOf(),
                 },
-                gdalParameters: slice.gdalParameters,
-                cacheTtl: slice.cacheTtl,
+                params: this.getGdalParameters(control.controls.gdalParameters),
+
+                cacheTtl: control.controls.cacheTtl.value,
             };
         });
+
+        const resultDescriptorControl = this.form.controls.rasterResultDescriptor.controls;
+
+        const resultDescriptor: RasterResultDescriptor = {
+            bands: [
+                {
+                    name: resultDescriptorControl.bandName.value,
+                    measurement: {
+                        type: 'unitless',
+                    },
+                },
+            ],
+            spatialReference: resultDescriptorControl.spatialReference.value,
+            dataType: resultDescriptorControl.dataType.value,
+        };
+
+        return {
+            type: 'GdalMetaDataList',
+            params,
+            resultDescriptor,
+        };
     }
 
     async suggest(): Promise<void> {
@@ -119,7 +191,7 @@ export class GdalMetadataListComponent {
             const suggestion = await this.datasetsService.suggestMetaData({
                 suggestMetaData: {
                     dataPath: this.dataPath,
-                    mainFile: this.form.controls.mainFile.value,
+                    mainFile: this.mainFile,
                 },
             });
 
@@ -147,51 +219,90 @@ export class GdalMetadataListComponent {
             }
 
             if (this.form.controls.timeSlices.length === 0) {
-                this.addTimeSlice(gdalParams);
+                this.addTimeSlice(
+                    {
+                        start: moment.utc(),
+                        timeAsPoint: true,
+                        end: moment.utc(),
+                    },
+                    gdalParams,
+                );
             } else {
-                this.form.controls.timeSlices.at(this.selectedTimeSlice).controls.gdalParameters =
-                    GdalDatasetParametersComponent.setUpForm(gdalParams);
+                this.form.controls.timeSlices
+                    .at(this.selectedTimeSlice)
+                    .setControl('gdalParameters', GdalDatasetParametersComponent.setUpForm(gdalParams));
             }
-            this.setResultsDescriptor(gdalMetaDataList.resultDescriptor);
+            this.setResultDescriptor(gdalMetaDataList.resultDescriptor);
         } catch (error) {
             const errorMessage = await errorToText(error, 'Metadata suggestion failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
         }
     }
 
-    setResultsDescriptor(resultDescriptor: RasterResultDescriptor): void {
+    setResultDescriptor(resultDescriptor: RasterResultDescriptor): void {
         this.form.controls.rasterResultDescriptor.controls.bandName.setValue(resultDescriptor.bands[0].name);
         this.form.controls.rasterResultDescriptor.controls.dataType.setValue(resultDescriptor.dataType);
         this.form.controls.rasterResultDescriptor.controls.spatialReference.setValue(resultDescriptor.spatialReference);
     }
 
-    private setUpForm(): FormGroup<GdalMetadataListForm> {
-        // TODO: validate that time slices do not overlap
-        const form = new FormGroup<GdalMetadataListForm>({
-            mainFile: new FormControl<string>('', {
-                nonNullable: true,
-                validators: [Validators.required],
+    private setUpFormFromMetaData(metaData: GdalMetaDataList): void {
+        this.form = new FormGroup<GdalMetadataListForm>({
+            timeSlices: new FormArray<FormGroup<TimeSliceForm>>([], {validators: overlappingTimeIntervalsValidator()}),
+            rasterResultDescriptor: new FormGroup<RasterResultDescriptorForm>({
+                bandName: new FormControl(metaData.resultDescriptor.bands[0].name, {
+                    nonNullable: true,
+                    validators: [Validators.required],
+                }),
+                dataType: new FormControl(metaData.resultDescriptor.dataType, {
+                    nonNullable: true,
+                    validators: [Validators.required],
+                }),
+                spatialReference: new FormControl(metaData.resultDescriptor.spatialReference, {
+                    nonNullable: true,
+                    validators: [Validators.required],
+                }),
             }),
-            timeSlices: new FormArray<FormGroup<TimeSliceForm>>([
-                new FormGroup<TimeSliceForm>({
-                    time: new FormControl(
-                        {
-                            start: moment.utc(),
-                            timeAsPoint: true,
-                            end: moment.utc(),
-                        },
-                        {
+        });
+
+        for (const slice of metaData.params) {
+            if (slice.params) {
+                this.addTimeSlice(
+                    {
+                        start: moment.unix(slice.time.start / 1000),
+                        timeAsPoint: slice.time.start === slice.time.end,
+                        end: moment.unix(slice.time.end / 1000),
+                    },
+                    slice.params,
+                );
+            }
+        }
+    }
+
+    private setUpForm(): FormGroup<GdalMetadataListForm> {
+        const form = new FormGroup<GdalMetadataListForm>({
+            timeSlices: new FormArray<FormGroup<TimeSliceForm>>(
+                [
+                    new FormGroup<TimeSliceForm>({
+                        time: new FormControl(
+                            {
+                                start: moment.utc(),
+                                timeAsPoint: true,
+                                end: moment.utc(),
+                            },
+                            {
+                                nonNullable: true,
+                                validators: [Validators.required],
+                            },
+                        ),
+                        gdalParameters: GdalDatasetParametersComponent.setUpPlaceholderForm(),
+                        cacheTtl: new FormControl<number>(0, {
                             nonNullable: true,
                             validators: [Validators.required],
-                        },
-                    ),
-                    gdalParameters: GdalDatasetParametersComponent.setUpPlaceholderForm(),
-                    cacheTtl: new FormControl<number>(0, {
-                        nonNullable: true,
-                        validators: [Validators.required],
+                        }),
                     }),
-                }),
-            ]),
+                ],
+                {validators: overlappingTimeIntervalsValidator()},
+            ),
             rasterResultDescriptor: new FormGroup<RasterResultDescriptorForm>({
                 bandName: new FormControl('', {
                     nonNullable: true,
@@ -211,3 +322,39 @@ export class GdalMetadataListComponent {
         return form;
     }
 }
+
+export const overlappingTimeIntervalsValidator =
+    (): ValidatorFn =>
+    (control: AbstractControl): ValidationErrors | null => {
+        const timeIntervalIntersects = (a: TimeInterval, b: TimeInterval): boolean => {
+            // instants must be distinct
+            if (a.start == a.end || b.start == b.end) {
+                return a.start == b.start;
+            }
+            // touching intervals are not overlapping
+            if (a.start == b.end || b.start == a.end) {
+                return false;
+            }
+            // check if start of one interval is within the other
+            return (a.start >= b.start && a.start < b.end) || (b.start >= a.start && b.start < a.end);
+        };
+
+        if (!(control instanceof FormArray)) {
+            return null;
+        }
+
+        const formArray = control as FormArray;
+
+        const controls = formArray.controls;
+        const values: TimeInterval[] = controls.map((c) => c.value.time);
+
+        for (let i = 0; i < values.length; i++) {
+            for (let j = i + 1; j < values.length; j++) {
+                if (timeIntervalIntersects(values[i], values[j])) {
+                    return {overlappingTimeInterval: true};
+                }
+            }
+        }
+
+        return null;
+    };

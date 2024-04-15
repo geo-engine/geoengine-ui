@@ -32,7 +32,6 @@ mat-form-field {
 
 mat-divider {
     margin-bottom: 1rem;
-    margin-top: 1rem;
 }
 
 geoengine-time-interval-input {
@@ -52,4 +51,8 @@ geoengine-time-interval-input {
 .add-entry {
     margin-top: 1rem;
     width: 100%;
+}
+
+#gdal-params-divider {
+    margin-top: 1rem;
 }

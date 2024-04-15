@@ -1,11 +1,15 @@
 <form [formGroup]="form">
-    <div class="flex-container">
-        <mat-form-field appearance="fill">
-            <mat-label>Path to probe file, relative to upload or volume (optional)</mat-label>
-            <input matInput type="text" formControlName="mainFile" />
-        </mat-form-field>
+    <div *ngIf="dataPath">
+        <div *ngIf="dataPath" class="flex-container">
+            <mat-form-field appearance="fill">
+                <mat-label>Path to probe file, relative to upload or volume (optional)</mat-label>
+                <input matInput type="text" [(ngModel)]="mainFile" [ngModelOptions]="{standalone: true}" />
+            </mat-form-field>
 
-        <button mat-raised-button class="analyze" (click)="suggest()">Analyze file and suggest properties</button>
+            <button mat-raised-button class="analyze" (click)="suggest()">Analyze file and suggest properties</button>
+        </div>
+
+        <mat-divider></mat-divider>
     </div>
 
     <div formGroupName="rasterResultDescriptor">
@@ -41,6 +45,7 @@
                 </h4>
                 <p matListItemLine>{{ control.controls.gdalParameters.value.filePath }}</p>
             </mat-list-item>
+            <mat-error *ngIf="form.controls.timeSlices.errors?.overlappingTimeInterval">Time slices must not overlap.</mat-error>
             <div class="empty-placeholder" *ngIf="form.controls.timeSlices.controls.length === 0">
                 <i>No time slices defined.</i>
             </div>
@@ -61,7 +66,7 @@
                     [dataPath]="dataPath"
                 ></geoengine-manager-gdal-dataset-parameters>
 
-                <mat-divider></mat-divider>
+                <mat-divider id="gdal-params-divider"></mat-divider>
 
                 <div class="cachettl">
                     <mat-form-field appearance="fill">
