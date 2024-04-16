@@ -26,7 +26,7 @@ sudo apt-get install -y nodejs
 ```
 rm -rf node_modules
 npm ci
-npm run build-prod:core && npm run build-prod:gis
+npm run build-prod:common && build-prod:core && npm run build-prod:gis
 ```
 
 You can find the output in the `dist` directory.
@@ -48,6 +48,7 @@ Then:
 
 ```
 npm install
+npm run build-watch:common
 npm run build-watch:core
 npm run serve:gis:local
 ```
@@ -56,8 +57,8 @@ When the server is started, you can visit `http://localhost:4200/`.
 
 ### Apps
 
--   The default app is the GIS app. It is located in `projects/gis`.
--   Dashboards are located under `projects/dashboards`.
+- The default app is the GIS app. It is located in `projects/gis`.
+- Dashboards are located under `projects/dashboards`.
 
 ## Configuration
 
@@ -111,7 +112,7 @@ You can override any of these default settings by specifying them.
 
 Note:
 
--   For dates before the year 0, 6-digit years must be specified., e.g. '-001000-01-01T12:00:00.000Z'
+- For dates before the year 0, 6-digit years must be specified., e.g. '-001000-01-01T12:00:00.000Z'
 
 _TODO: specify the options of each parameter in a tabular form._
 
