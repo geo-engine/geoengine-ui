@@ -20,17 +20,20 @@ import {
 import {BehaviorSubject, combineLatest, firstValueFrom, from, Observable, of, Subscription} from 'rxjs';
 import {AppConfig} from '../app-config.service';
 import {filter, map, mergeMap} from 'rxjs/operators';
-import {CountryProviderService} from '../country-provider.service';
+import {Country, CountryProviderService} from '../country-provider.service';
 import {DataSelectionService, DataRange} from '../data-selection.service';
 import {ActivatedRoute} from '@angular/router';
 import {countryDatasetName} from '../country-selector/country-data.model';
 import {
     ExpressionDict,
     MeanRasterPixelValuesOverTimeDict,
+    OperatorDict,
+    RasterDataType,
     RasterDataTypes,
     RasterLayer,
     RasterStackerDict,
     RasterSymbology,
+    SourceOperatorDict,
     Time,
     extentToBboxDict,
 } from '@geoengine/common';
@@ -189,6 +192,29 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         });
     }
 
+    createCountryOperator(country: Country, dataType: RasterDataType): OperatorDict | SourceOperatorDict {
+        const operator = {
+            type: 'GdalSource',
+            params: {
+                data: 'raster_country_' + countryDatasetName(country.name),
+            },
+        };
+
+        if (dataType == RasterDataTypes.Byte) {
+            return operator;
+        }
+
+        return {
+            type: 'RasterTypeConversion',
+            params: {
+                outputDataType: dataType.getCode(),
+            },
+            sources: {
+                raster: operator,
+            },
+        };
+    }
+
     protected async computePlot(): Promise<PlotDataDict> {
         const rasterLayer = await firstValueFrom(this.dataSelectionService.rasterLayer);
         const selectedCountry = await firstValueFrom(this.countryProviderService.getSelectedCountryStream());
@@ -260,12 +286,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                                 sources: {
                                     rasters: [
                                         projectedRasterWorkflow,
-                                        {
-                                            type: 'GdalSource',
-                                            params: {
-                                                data: 'raster_country_' + countryDatasetName(selectedCountry.name),
-                                            },
-                                        },
+                                        this.createCountryOperator(selectedCountry, rasterLayerMetadata.dataType),
                                     ],
                                 },
                             } as RasterStackerDict,
