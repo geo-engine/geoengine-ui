@@ -108,14 +108,25 @@
             </mat-card-header>
 
             <mat-card-content>
-                @switch (form.controls.layerType.value) {
-                    @case ('raster') {
-                        <geoengine-manager-gdal-metadata-list [dataset]="dataset.name"></geoengine-manager-gdal-metadata-list>
-                    }
-                    @case ('vector') {
-                        <textarea [(ngModel)]="rawLoadingInfo" [ngModelOptions]="{standalone: true}"></textarea>
-                    }
+                @if (gdalMetaDataList) {
+                    <geoengine-manager-gdal-metadata-list [metaData]="gdalMetaDataList"></geoengine-manager-gdal-metadata-list>
+                } @else {
+                    <textarea [(ngModel)]="rawLoadingInfo" [ngModelOptions]="{standalone: true}" (change)="touchLoadingInfo()"></textarea>
                 }
+                <div class="actions">
+                    <button
+                        mat-raised-button
+                        color="primary"
+                        [disabled]="
+                            (gdalMetadataListComponent &&
+                                (gdalMetadataListComponent.form.pristine || gdalMetadataListComponent.form.invalid)) ||
+                            (!gdalMetadataListComponent && (rawLoadingInfo === '' || rawLoadingInfoPristine))
+                        "
+                        (click)="saveLoadingInfo()"
+                    >
+                        Apply
+                    </button>
+                </div>
             </mat-card-content>
         </mat-card>
 

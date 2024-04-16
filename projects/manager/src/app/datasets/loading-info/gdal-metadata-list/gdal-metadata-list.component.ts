@@ -45,7 +45,7 @@ export class GdalMetadataListComponent implements OnChanges {
 
     @Input() dataPath?: DataPath;
 
-    @Input() dataset?: string;
+    @Input() metaData?: GdalMetaDataList;
 
     selectedTimeSlice = 0;
 
@@ -56,11 +56,8 @@ export class GdalMetadataListComponent implements OnChanges {
     ) {}
 
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
-        if (changes.dataset && changes.dataset.currentValue) {
-            const loadingInfo = await this.datasetsService.getLoadingInfo(changes.dataset.currentValue);
-            if (loadingInfo.type === 'GdalMetaDataList') {
-                this.setUpFormFromMetaData(loadingInfo);
-            }
+        if (changes.metaData && this.metaData) {
+            this.setUpFormFromMetaData(this.metaData);
         }
     }
 

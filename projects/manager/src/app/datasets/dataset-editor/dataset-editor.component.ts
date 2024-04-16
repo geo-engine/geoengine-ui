@@ -19,6 +19,8 @@ import {
 import {
     Dataset,
     DatasetListing,
+    GdalMetaDataList,
+    MetaDataDefinition,
     RasterResultDescriptorWithType,
     TypedResultDescriptor,
     VectorResultDescriptorWithType,
@@ -26,6 +28,7 @@ import {
 import {BehaviorSubject, firstValueFrom} from 'rxjs';
 import {ProvenanceComponent} from '../../provenance/provenance.component';
 import {AppConfig} from '../../app-config.service';
+import {GdalMetadataListComponent} from '../loading-info/gdal-metadata-list/gdal-metadata-list.component';
 
 export interface DatasetForm {
     layerType: FormControl<'plot' | 'raster' | 'vector'>;
@@ -49,6 +52,7 @@ export class DatasetEditorComponent implements OnChanges {
 
     @ViewChild(MatChipInput) tagInput!: MatChipInput;
     @ViewChild(ProvenanceComponent) provenanceComponent!: ProvenanceComponent;
+    @ViewChild(GdalMetadataListComponent) gdalMetadataListComponent?: GdalMetadataListComponent;
 
     dataset?: Dataset;
     form: FormGroup<DatasetForm> = this.placeholderForm();
@@ -59,6 +63,8 @@ export class DatasetEditorComponent implements OnChanges {
     vectorSymbology?: VectorSymbology = undefined;
 
     rawLoadingInfo = '';
+    rawLoadingInfoPristine = true;
+    gdalMetaDataList?: GdalMetaDataList;
 
     constructor(
         private readonly datasetsService: DatasetsService,
@@ -76,9 +82,12 @@ export class DatasetEditorComponent implements OnChanges {
             this.datasetWorkflowId$.next(workflowId);
             this.setUpColorizer(this.dataset);
 
-            if (this.dataset.resultDescriptor.type === 'vector') {
-                const loadingInfo = await this.datasetsService.getLoadingInfo(this.dataset.name);
+            const loadingInfo = await this.datasetsService.getLoadingInfo(this.dataset.name);
+            if (loadingInfo.type === 'GdalMetaDataList') {
+                this.gdalMetaDataList = loadingInfo;
+            } else {
                 this.rawLoadingInfo = JSON.stringify(loadingInfo, null, 2);
+                this.rawLoadingInfoPristine = true;
             }
         }
     }
@@ -186,6 +195,42 @@ export class DatasetEditorComponent implements OnChanges {
             const errorMessage = await errorToText(error, 'Deleting dataset failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
         }
+    }
+
+    getMetaDataDefinition(): MetaDataDefinition | undefined {
+        if (this.gdalMetadataListComponent) {
+            return this.gdalMetadataListComponent.getMetaData();
+        } else {
+            try {
+                return JSON.parse(this.rawLoadingInfo) as MetaDataDefinition;
+            } catch (e) {
+                this.snackBar.open('Invalid loading information.', 'Close', {panelClass: ['error-snackbar']});
+                return undefined;
+            }
+        }
+    }
+
+    async saveLoadingInfo(): Promise<void> {
+        const metaData = this.getMetaDataDefinition();
+
+        if (!metaData) {
+            return;
+        }
+
+        try {
+            await this.datasetsService.updateLoadingInfo(this.datasetListing.name, metaData);
+            this.snackBar.open('Dataset loading information successfully updated.', 'Close', {
+                duration: this.config.DEFAULTS.SNACKBAR_DURATION,
+            });
+            this.rawLoadingInfoPristine = true;
+        } catch (error) {
+            const errorMessage = await errorToText(error, 'Updating dataset loading information failed.');
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
+        }
+    }
+
+    touchLoadingInfo(): void {
+        this.rawLoadingInfoPristine = false;
     }
 
     private setUpColorizer(dataset: Dataset): void {
