@@ -114,16 +114,7 @@
                     <textarea [(ngModel)]="rawLoadingInfo" [ngModelOptions]="{standalone: true}" (change)="touchLoadingInfo()"></textarea>
                 }
                 <div class="actions">
-                    <button
-                        mat-raised-button
-                        color="primary"
-                        [disabled]="
-                            (gdalMetadataListComponent &&
-                                (gdalMetadataListComponent.form.pristine || gdalMetadataListComponent.form.invalid)) ||
-                            (!gdalMetadataListComponent && (rawLoadingInfo === '' || rawLoadingInfoPristine))
-                        "
-                        (click)="saveLoadingInfo()"
-                    >
+                    <button mat-raised-button color="primary" [disabled]="isSaveLoadingInfoDisabled()" (click)="saveLoadingInfo()">
                         Apply
                     </button>
                 </div>

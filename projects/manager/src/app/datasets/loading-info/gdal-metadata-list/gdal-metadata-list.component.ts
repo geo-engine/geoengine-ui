@@ -69,10 +69,11 @@ export class GdalMetadataListComponent implements OnChanges {
                 end: moment.utc(),
             },
             GdalDatasetParametersComponent.placeHolderGdalParams(),
+            0,
         );
     }
 
-    addTimeSlice(time: TimeInterval, gdalParams: GdalDatasetParameters): void {
+    addTimeSlice(time: TimeInterval, gdalParams: GdalDatasetParameters, cacheTtl: number): void {
         this.form.controls.timeSlices.push(
             new FormGroup<TimeSliceForm>({
                 time: new FormControl(time, {
@@ -80,7 +81,7 @@ export class GdalMetadataListComponent implements OnChanges {
                     validators: [Validators.required],
                 }),
                 gdalParameters: GdalDatasetParametersComponent.setUpForm(gdalParams),
-                cacheTtl: new FormControl<number>(0, {
+                cacheTtl: new FormControl<number>(cacheTtl, {
                     nonNullable: true,
                     validators: [Validators.required],
                 }),
@@ -223,6 +224,7 @@ export class GdalMetadataListComponent implements OnChanges {
                         end: moment.utc(),
                     },
                     gdalParams,
+                    0,
                 );
             } else {
                 this.form.controls.timeSlices
@@ -270,9 +272,11 @@ export class GdalMetadataListComponent implements OnChanges {
                         end: moment.unix(slice.time.end / 1000),
                     },
                     slice.params,
+                    slice.cacheTtl ?? 0,
                 );
             }
         }
+        this.form.markAsPristine();
     }
 
     private setUpForm(): FormGroup<GdalMetadataListForm> {

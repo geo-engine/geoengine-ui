@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {MatChipInput} from '@angular/material/chips';
 import {MatDialog} from '@angular/material/dialog';
@@ -72,6 +72,7 @@ export class DatasetEditorComponent implements OnChanges {
         private readonly snackBar: MatSnackBar,
         private readonly dialog: MatDialog,
         private readonly config: AppConfig,
+        private readonly changeDetectorRef: ChangeDetectorRef,
     ) {}
 
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
@@ -86,9 +87,11 @@ export class DatasetEditorComponent implements OnChanges {
             if (loadingInfo.type === 'GdalMetaDataList') {
                 this.gdalMetaDataList = loadingInfo;
             } else {
+                this.gdalMetaDataList = undefined;
                 this.rawLoadingInfo = JSON.stringify(loadingInfo, null, 2);
                 this.rawLoadingInfoPristine = true;
             }
+            this.changeDetectorRef.detectChanges();
         }
     }
 
@@ -210,6 +213,14 @@ export class DatasetEditorComponent implements OnChanges {
         }
     }
 
+    isSaveLoadingInfoDisabled(): boolean {
+        if (this.gdalMetadataListComponent) {
+            return this.gdalMetadataListComponent.form.pristine || this.gdalMetadataListComponent.form.invalid;
+        } else {
+            return this.rawLoadingInfo === '' || this.rawLoadingInfoPristine;
+        }
+    }
+
     async saveLoadingInfo(): Promise<void> {
         const metaData = this.getMetaDataDefinition();
 
@@ -222,7 +233,11 @@ export class DatasetEditorComponent implements OnChanges {
             this.snackBar.open('Dataset loading information successfully updated.', 'Close', {
                 duration: this.config.DEFAULTS.SNACKBAR_DURATION,
             });
+
             this.rawLoadingInfoPristine = true;
+            if (this.gdalMetadataListComponent) {
+                this.gdalMetadataListComponent.form.markAsPristine();
+            }
         } catch (error) {
             const errorMessage = await errorToText(error, 'Updating dataset loading information failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
