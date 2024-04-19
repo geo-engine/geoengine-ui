@@ -87,7 +87,7 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
-            inputResolution: new FormControl('input', {
+            inputResolution: new FormControl('source', {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
