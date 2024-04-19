@@ -13,23 +13,23 @@
                     <div fxLayout="row wrap" fxLayoutGap="1rem">
                         <mat-form-field appearance="fill">
                             <mat-label>min X</mat-label>
-                            <input matInput type="number" formControlName="bboxMinX" />
+                            <input matInput type="number" formControlName="bboxMinX" (change)="setEditedExtent()" />
                         </mat-form-field>
 
                         <mat-form-field appearance="fill">
                             <mat-label>max X</mat-label>
-                            <input matInput type="number" formControlName="bboxMaxX" />
+                            <input matInput type="number" formControlName="bboxMaxX" (change)="setEditedExtent()" />
                         </mat-form-field>
                     </div>
                     <div fxLayout="row wrap" fxLayoutGap="1rem">
                         <mat-form-field appearance="fill">
                             <mat-label>min Y</mat-label>
-                            <input matInput type="number" formControlName="bboxMinY" />
+                            <input matInput type="number" formControlName="bboxMinY" (change)="setEditedExtent()" />
                         </mat-form-field>
 
                         <mat-form-field appearance="fill">
                             <mat-label>max Y</mat-label>
-                            <input matInput type="number" formControlName="bboxMaxY" />
+                            <input matInput type="number" formControlName="bboxMaxY" (change)="setEditedExtent()" />
                         </mat-form-field>
                     </div>
                 </div>
@@ -45,7 +45,7 @@
             </mat-card-header>
 
             <mat-card-content>
-                <geoengine-time-interval-input formControlName="timeInterval"></geoengine-time-interval-input>
+                <geoengine-time-interval-input formControlName="timeInterval" (change)="unsubscribeTime()"></geoengine-time-interval-input>
             </mat-card-content>
         </mat-card>
 
@@ -79,7 +79,7 @@
                     <div *ngIf="layer.layerType === 'raster'">
                         <mat-form-field appearance="fill">
                             <mat-label>Input resolution (x)</mat-label>
-                            <input matInput type="number" formControlName="inputResolutionX" />
+                            <input matInput type="number" formControlName="inputResolutionX" (change)="setEditedResolution()" />
                             <mat-hint
                                 class="error"
                                 *ngIf="
@@ -92,7 +92,7 @@
 
                         <mat-form-field appearance="fill">
                             <mat-label>Input resolution (y)</mat-label>
-                            <input matInput type="number" formControlName="inputResolutionY" />
+                            <input matInput type="number" formControlName="inputResolutionY" (change)="setEditedResolution()" />
                             <mat-hint
                                 class="error"
                                 *ngIf="

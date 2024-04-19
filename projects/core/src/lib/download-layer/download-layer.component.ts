@@ -2,7 +2,7 @@ import {HttpEventType} from '@angular/common/http';
 import {ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, UntypedFormBuilder, ValidatorFn, Validators} from '@angular/forms';
 import moment from 'moment';
-import {combineLatest, mergeMap, Subscription} from 'rxjs';
+import {combineLatest, mergeMap, Subject, Subscription} from 'rxjs';
 import {RasterResultDescriptorDict, WcsParamsDict, WfsParamsDict} from '../backend/backend.model';
 import {BackendService} from '../backend/backend.service';
 import {MapService} from '../map/map.service';
@@ -49,6 +49,9 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
 
     private projectTimeSubscription?: Subscription;
     private viewportSizeSubscription?: Subscription;
+
+    private editedExtent = false;
+    private editedResolution = false;
 
     constructor(
         protected backend: BackendService,
@@ -118,8 +121,8 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
         this.viewportSizeSubscription = this.mapService.getViewportSizeStream().subscribe((viewport) => {
             const extent = olExtentToTuple(viewport.extent);
 
-            this.updateRegionByExtent(extent);
-            this.updateResolution(viewport.resolution);
+            if (!this.editedExtent) this.updateRegionByExtent(extent);
+            if (!this.editedResolution) this.updateResolution(viewport.resolution);
         });
 
         if (this.layer.layerType === 'vector') {
@@ -130,6 +133,24 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.projectTimeSubscription?.unsubscribe();
         this.viewportSizeSubscription?.unsubscribe();
+    }
+
+    unsubscribeTime() {
+        this.projectTimeSubscription?.unsubscribe();
+    }
+
+    setEditedExtent() {
+        this.editedExtent = true;
+        this.maybeUnsubscribeViewportSize();
+    }
+
+    setEditedResolution() {
+        this.editedResolution = true;
+        this.maybeUnsubscribeViewportSize();
+    }
+
+    maybeUnsubscribeViewportSize() {
+        if (this.editedExtent && this.editedResolution) this.viewportSizeSubscription?.unsubscribe();
     }
 
     selectBox(): void {
