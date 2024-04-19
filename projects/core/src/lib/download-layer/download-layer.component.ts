@@ -2,7 +2,7 @@ import {HttpEventType} from '@angular/common/http';
 import {ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, UntypedFormBuilder, ValidatorFn, Validators} from '@angular/forms';
 import moment from 'moment';
-import {combineLatest, mergeMap, Subject, Subscription} from 'rxjs';
+import {combineLatest, mergeMap, Subscription} from 'rxjs';
 import {RasterResultDescriptorDict, WcsParamsDict, WfsParamsDict} from '../backend/backend.model';
 import {BackendService} from '../backend/backend.service';
 import {MapService} from '../map/map.service';
@@ -135,21 +135,21 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
         this.viewportSizeSubscription?.unsubscribe();
     }
 
-    unsubscribeTime() {
+    unsubscribeTime(): void {
         this.projectTimeSubscription?.unsubscribe();
     }
 
-    setEditedExtent() {
+    setEditedExtent(): void {
         this.editedExtent = true;
         this.maybeUnsubscribeViewportSize();
     }
 
-    setEditedResolution() {
+    setEditedResolution(): void {
         this.editedResolution = true;
         this.maybeUnsubscribeViewportSize();
     }
 
-    maybeUnsubscribeViewportSize() {
+    maybeUnsubscribeViewportSize(): void {
         if (this.editedExtent && this.editedResolution) this.viewportSizeSubscription?.unsubscribe();
     }
 
