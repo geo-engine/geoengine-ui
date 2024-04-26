@@ -146,10 +146,12 @@ export class RasterLegendComponent implements OnInit, OnChanges, OnDestroy, Afte
     }
 
     ngAfterViewInit(): void {
+        console.log('raster-legend-init, layer:', this.layer);
         this.layerMetaDataSubscription = this.projectService
             .getLayerMetadata(this.layer)
             .pipe(first())
             .subscribe((m) => {
+                console.log('raster-legend getLayerMetadata: ', m);
                 const bands = (m as RasterLayerMetadata).bands;
                 const bandIndex = (this.layer.symbology.rasterColorizer as SingleBandRasterColorizer).band;
                 this.selectedBand$.next(bands[bandIndex]);
@@ -157,6 +159,7 @@ export class RasterLegendComponent implements OnInit, OnChanges, OnDestroy, Afte
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        console.log('raster-legend-changes', changes);
         if (changes.layer || changes.orderValuesDescending) {
             this.calculateDisplayedBreakpoints();
         }
