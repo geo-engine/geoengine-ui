@@ -153,8 +153,12 @@ export class RasterLegendComponent implements OnInit, OnChanges, OnDestroy, Afte
             .subscribe((m) => {
                 console.log('raster-legend getLayerMetadata: ', m);
                 const bands = (m as RasterLayerMetadata).bands;
+                console.log('raster-legend bands: ', bands);
                 const bandIndex = (this.layer.symbology.rasterColorizer as SingleBandRasterColorizer).band;
+                console.log('raster-legend bandIndex: ', bandIndex);
+                console.log('raster-legend band: ', bands[bandIndex]);
                 this.selectedBand$.next(bands[bandIndex]);
+                console.log('selectedBand next');
             });
     }
 
