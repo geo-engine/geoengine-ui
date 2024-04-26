@@ -29,7 +29,10 @@ export class LegendComponent implements OnChanges, AfterViewInit, OnDestroy {
     constructor(readonly changeDetectorRef: ChangeDetectorRef) {}
 
     ngAfterViewInit(): void {
-        this.subscription = this.rasterLegendComponent.selectedBand$.subscribe((_) => this.changeDetectorRef.markForCheck());
+        this.subscription = this.rasterLegendComponent.selectedBand$.subscribe((_) => {
+            console.log('ebv legend changes');
+            this.changeDetectorRef.detectChanges();
+        });
     }
 
     ngOnChanges(_changes: SimpleChanges): void {
