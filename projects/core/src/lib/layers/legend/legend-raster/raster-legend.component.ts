@@ -162,6 +162,7 @@ export class RasterLegendComponent implements OnInit, OnChanges, OnDestroy, Afte
                 console.log('raster-legend bandIndex: ', bandIndex);
                 console.log('raster-legend band: ', bands[bandIndex]);
                 this.selectedBand$.next(bands[bandIndex]);
+                this.changeDetectorRef.detectChanges();
                 console.log('selectedBand next');
                 this.changeDetectorRef.detectChanges();
                 console.log('detectChanges');
