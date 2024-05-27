@@ -1,6 +1,7 @@
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     Input,
     OnChanges,
@@ -137,9 +138,15 @@ export class RasterLegendComponent implements OnInit, OnChanges, OnDestroy, Afte
     @Input()
     orderValuesDescending = false;
 
+    @Input()
+    detectChanges = false; // workaround to force change detection
+
     private layerMetaDataSubscription?: Subscription;
 
-    constructor(public projectService: ProjectService) {}
+    constructor(
+        public projectService: ProjectService,
+        private changeDetectorRef: ChangeDetectorRef,
+    ) {}
 
     ngOnInit(): void {
         this.calculateDisplayedBreakpoints();
@@ -153,6 +160,10 @@ export class RasterLegendComponent implements OnInit, OnChanges, OnDestroy, Afte
                 const bands = (m as RasterLayerMetadata).bands;
                 const bandIndex = (this.layer.symbology.rasterColorizer as SingleBandRasterColorizer).band;
                 this.selectedBand$.next(bands[bandIndex]);
+
+                if (this.detectChanges) {
+                    this.changeDetectorRef.detectChanges();
+                }
             });
     }
 
