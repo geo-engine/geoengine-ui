@@ -141,11 +141,14 @@ export class RasterLegendComponent implements OnInit, OnChanges, OnDestroy, Afte
     @Input()
     showSingleBandNames = true;
 
+    @Input()
+    detectChanges = false; // workaround to force change detection
+
     private layerMetaDataSubscription?: Subscription;
 
     constructor(
         public projectService: ProjectService,
-        public changeDetectorRef: ChangeDetectorRef,
+        private changeDetectorRef: ChangeDetectorRef,
     ) {}
 
     ngOnInit(): void {
@@ -160,6 +163,10 @@ export class RasterLegendComponent implements OnInit, OnChanges, OnDestroy, Afte
                 const bands = (m as RasterLayerMetadata).bands;
                 const bandIndex = (this.layer.symbology.rasterColorizer as SingleBandRasterColorizer).band;
                 this.selectedBand$.next(bands[bandIndex]);
+
+                if (this.detectChanges) {
+                    this.changeDetectorRef.detectChanges();
+                }
             });
     }
 
