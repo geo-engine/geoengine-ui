@@ -56,7 +56,8 @@ export * from './lib/util/pipes/breakpoint-to-css-string.pipe';
 export * from './lib/util/pipes/color-gradients.pipe';
 
 // Misc
-export * from './lib/colors/color-map-selector/mpl-colormaps';
+export * from './lib/colors/colormaps/mpl-colormaps';
+export * from './lib/colors/colormaps/colormaps';
 export * from './lib/util/conversions';
 export * from './lib/util/directives/flexbox-legacy.directive';
 export * from './lib/util/form.validators';
