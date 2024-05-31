@@ -62,12 +62,18 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
     layerId?: ProviderLayerIdDict;
     layer?: RasterLayer;
     time?: Time;
+    pinnedSymbology = true;
+
+    lastRasterSymbology?: RasterSymbology;
+    lastSelectedLayerId?: ProviderLayerIdDict;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     readonly plotData = new BehaviorSubject<any>(undefined);
     readonly plotLoading = new BehaviorSubject(false);
 
     protected queryParamsSubscription?: Subscription;
+    protected dataSubscription?: Subscription;
+    protected rasterLayerSubscription?: Subscription;
 
     constructor(
         private readonly userService: UserService,
@@ -85,6 +91,11 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         private readonly notificationService: NotificationService,
     ) {
         this.isPlotButtonDisabled$ = this.countryProviderService.getSelectedCountryStream().pipe(map((country) => !country));
+        this.dataSelectionService.rasterLayer.subscribe((layer) => {
+            if (layer) {
+                this.lastRasterSymbology = layer.symbology;
+            }
+        });
     }
 
     ngOnInit(): void {
@@ -93,6 +104,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.queryParamsSubscription?.unsubscribe();
+        this.rasterLayerSubscription?.unsubscribe();
     }
 
     editSymbology(): void {
@@ -106,9 +118,32 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
     }
 
     layerSelected(id?: ProviderLayerIdDict): void {
-        this.layerId = id;
+        if (this.layerId) {
+            this.lastSelectedLayerId = this.layerId;
+        }
 
-        this.showEbv();
+        this.layerId = id;
+        this.showEbv(id);
+    }
+
+    // This method keeps a custom symbology as long as only entities are changed
+    isOnlyEntityChangedFromLastId(): boolean {
+        if (!this.lastSelectedLayerId || !this.layerId) {
+            return false;
+        }
+
+        if (this.lastSelectedLayerId.providerId != this.layerId.providerId) {
+            return false;
+        }
+
+        const layerIdPrefixEndIdx = this.lastSelectedLayerId.layerId.lastIndexOf('/');
+        const layerIdPrefix = this.lastSelectedLayerId.layerId.substring(0, layerIdPrefixEndIdx + 1);
+
+        if (this.layerId.layerId.startsWith(layerIdPrefix)) {
+            return true;
+        }
+
+        return false;
     }
 
     pathChange(collections: LayerCollectionDict[]): void {
@@ -125,13 +160,17 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         this.changeDetectorRef.markForCheck();
     }
 
-    showEbv(): void {
-        if (!this.layerId) {
+    showEbv(layerId?: ProviderLayerIdDict): void {
+        if (!layerId) {
             return;
         }
 
-        this.layerCollectionService
-            .getLayer(this.layerId.providerId, this.layerId.layerId)
+        if (this.dataSubscription) {
+            this.dataSubscription.unsubscribe();
+        }
+
+        this.dataSubscription = this.layerCollectionService
+            .getLayer(layerId.providerId, layerId.layerId)
             .pipe(
                 mergeMap((layer) => combineLatest([of(layer), this.projectService.registerWorkflow(layer.workflow)])),
                 mergeMap(([layer, workflowId]) => {
@@ -160,14 +199,20 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                         max: range[1],
                     };
 
+                    const compatibleEntity = this.isOnlyEntityChangedFromLastId();
+                    const keepSymbology = compatibleEntity && this.pinnedSymbology;
+                    const symbology =
+                        keepSymbology && this.lastRasterSymbology
+                            ? this.lastRasterSymbology
+                            : (RasterSymbology.fromDict(layer.symbology) as RasterSymbology);
+
                     const rasterLayer = new RasterLayer({
                         name: 'EBV',
                         workflowId,
                         isVisible: true,
                         isLegendVisible: false,
-                        symbology: RasterSymbology.fromDict(layer.symbology) as RasterSymbology,
+                        symbology,
                     });
-
                     this.layer = rasterLayer;
 
                     return combineLatest([

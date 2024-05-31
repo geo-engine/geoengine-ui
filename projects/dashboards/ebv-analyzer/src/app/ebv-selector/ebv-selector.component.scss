@@ -74,3 +74,15 @@ mat-divider {
         margin: 0;
     }
 }
+
+.pin-symbology {
+    margin: 1rem 0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.pin-symbology-text {
+    color: var(--geoengine-foreground-secondary-text-color);
+    font-style: italic;
+    margin-right: 1rem;
+}
