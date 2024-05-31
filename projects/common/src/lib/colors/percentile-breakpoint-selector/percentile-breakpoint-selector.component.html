@@ -1,0 +1,34 @@
+<div class="component_container">
+    <form [formGroup]="form" (ngSubmit)="applyChanges()" fxLayout="column">
+        <div formArrayName="percentiles">
+            <div *ngFor="let control of percentiles.controls; let i = index" fxLayout="row">
+                <mat-form-field>
+                    <mat-label>Percentile #{{ i }}</mat-label>
+                    <input matInput type="number" [formControlName]="i" />
+                </mat-form-field>
+                <span fxFlex></span>
+                <button mat-icon-button (click)="removePercentileAt(i)" class="grid-removebutton"><mat-icon>delete</mat-icon></button>
+            </div>
+        </div>
+
+        <button type="button" mat-stroked-button [disabled]="percentiles.length >= MAX_PERCENTILES" (click)="addPercentile()">
+            Add Percentile
+        </button>
+
+        <mat-form-field class="colormap">
+            <mat-label>Colormap name</mat-label>
+            <mat-select formControlName="colorMap">
+                <mat-option class="options" *ngFor="let colorMap of colorMaps | keyvalue" [value]="colorMap.value">
+                    <div class="colorizer_option_preview" [style.background]="colorMap.value | geoengineRgbaTuplesCssGradient: 90"></div>
+                    {{ colorMap.key }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-checkbox formControlName="colorMapReverseColors">Reverse colormap</mat-checkbox>
+
+        <mat-progress-bar mode="indeterminate" *ngIf="statisticsLoading$ | async"></mat-progress-bar>
+
+        <button mat-stroked-button (click)="createColorTable()">Create color table</button>
+    </form>
+</div>
