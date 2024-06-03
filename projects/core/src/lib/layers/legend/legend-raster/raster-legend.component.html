@@ -3,11 +3,11 @@
         <!-- measurement -->
         <tr>
             <td colspan="3" class="measurement">
-                <ng-template [ngIf]="showSingleBandNames">
+                @if (showSingleBandNames) {
                     <span>
                         Bandname: <i>{{ band.name }}</i></span
                     >
-                </ng-template>
+                }
 
                 <ng-container *ngIf="band.measurement | continuousMeasurement as measurement">
                     Measurement
