@@ -76,9 +76,10 @@ export class PercentileBreakpointSelectorComponent implements OnInit, OnDestroy,
         const initialColorMapName = Object.keys(this.colorMaps)[0];
 
         this.form = formBuilder.group({
+            numPercentiles: [3, [Validators.required, Validators.min(2), Validators.max(this.MAX_PERCENTILES + 2)]],
             percentiles: this.formBuilder.array(
-                [0.25, 0.5, 0.75].map((p) => [p, [Validators.required]]),
-                [Validators.minLength(1), Validators.maxLength(this.MAX_PERCENTILES)],
+                [0.5].map((p) => [p, [Validators.required]]),
+                [Validators.maxLength(this.MAX_PERCENTILES)],
             ),
             colorMap: [this.colorMaps[initialColorMapName], [Validators.required]],
             colorMapReverseColors: [false],
@@ -141,20 +142,19 @@ export class PercentileBreakpointSelectorComponent implements OnInit, OnDestroy,
         return this.form.get('percentiles') as FormArray;
     }
 
-    removePercentileAt(index: number): void {
-        if (this.percentiles.length <= 1) {
+    setNumPercentiles(num: number): void {
+        console.log('foo');
+        if (num < 2 || num > this.MAX_PERCENTILES + 2) {
             return;
         }
 
-        this.percentiles.removeAt(index);
-    }
+        const percentiles = num - 1;
 
-    addPercentile(): void {
-        if (this.percentiles.length >= this.MAX_PERCENTILES) {
-            return;
+        this.percentiles.clear();
+
+        for (let i = 1; i < percentiles; i++) {
+            this.percentiles.push(this.formBuilder.control(i / percentiles, [Validators.required]));
         }
-
-        this.percentiles.push(this.formBuilder.control(0.5, [Validators.required]));
     }
 
     public static createBreakpoints(

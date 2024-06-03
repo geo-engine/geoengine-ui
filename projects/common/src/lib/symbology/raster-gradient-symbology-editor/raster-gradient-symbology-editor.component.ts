@@ -245,6 +245,10 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
         this.colorTableEditor?.updateColorAttributes();
     }
 
+    createPercentilesColorTable(): void {
+        this.percentileBreakpointSelector?.createColorTable();
+    }
+
     private updateNodataAndDefaultColor(): void {
         this.noDataColor = {
             key: 'No Data Color',

@@ -1,21 +1,36 @@
-<div class="component_container">
-    <form [formGroup]="form" (ngSubmit)="applyChanges()" fxLayout="column">
+<div>
+    <form [formGroup]="form" (ngSubmit)="applyChanges()">
+        <mat-form-field>
+            <mat-label>Number of Percentiles</mat-label>
+            <input
+                matInput
+                type="number"
+                formControlName="numPercentiles"
+                min="2"
+                [max]="MAX_PERCENTILES + 2"
+                value="3"
+                (ngModelChange)="setNumPercentiles($event)"
+            />
+        </mat-form-field>
+
         <div formArrayName="percentiles">
-            <div *ngFor="let control of percentiles.controls; let i = index" fxLayout="row">
+            <mat-form-field>
+                <mat-label>MIN</mat-label>
+                <input matInput type="text" disabled="true" value="0.0" />
+            </mat-form-field>
+            <div *ngFor="let control of percentiles.controls; let i = index">
                 <mat-form-field>
-                    <mat-label>Percentile #{{ i }}</mat-label>
+                    <mat-label>Percentile #{{ i + 1 }}</mat-label>
                     <input matInput type="number" [formControlName]="i" />
                 </mat-form-field>
-                <span fxFlex></span>
-                <button mat-icon-button (click)="removePercentileAt(i)" class="grid-removebutton"><mat-icon>delete</mat-icon></button>
             </div>
+            <mat-form-field>
+                <mat-label>MAX</mat-label>
+                <input matInput type="text" disabled="true" value="1.0" />
+            </mat-form-field>
         </div>
 
-        <button type="button" mat-stroked-button [disabled]="percentiles.length >= MAX_PERCENTILES" (click)="addPercentile()">
-            Add Percentile
-        </button>
-
-        <mat-form-field class="colormap">
+        <mat-form-field>
             <mat-label>Colormap name</mat-label>
             <mat-select formControlName="colorMap">
                 <mat-option class="options" *ngFor="let colorMap of colorMaps | keyvalue" [value]="colorMap.value">
@@ -28,7 +43,5 @@
         <mat-checkbox formControlName="colorMapReverseColors">Reverse colormap</mat-checkbox>
 
         <mat-progress-bar mode="indeterminate" *ngIf="statisticsLoading$ | async"></mat-progress-bar>
-
-        <button mat-stroked-button (click)="createColorTable()">Create color table</button>
     </form>
 </div>
