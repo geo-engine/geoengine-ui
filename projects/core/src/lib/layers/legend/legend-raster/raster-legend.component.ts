@@ -139,6 +139,9 @@ export class RasterLegendComponent implements OnInit, OnChanges, OnDestroy, Afte
     orderValuesDescending = false;
 
     @Input()
+    showSingleBandNames = true;
+
+    @Input()
     detectChanges = false; // workaround to force change detection
 
     private layerMetaDataSubscription?: Subscription;
@@ -170,6 +173,9 @@ export class RasterLegendComponent implements OnInit, OnChanges, OnDestroy, Afte
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.layer || changes.orderValuesDescending) {
             this.calculateDisplayedBreakpoints();
+        }
+        if (!changes.showSingleBandNames == undefined) {
+            this.changeDetectorRef.markForCheck();
         }
     }
 
