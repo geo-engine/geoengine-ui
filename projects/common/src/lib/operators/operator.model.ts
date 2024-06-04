@@ -290,6 +290,7 @@ export interface ReprojectionDict extends OperatorDict {
 
 export interface StatisticsParams extends OperatorParams {
     columnNames: Array<string>;
+    percentiles: Array<number>;
 }
 
 export interface StatisticsDict extends OperatorDict {

@@ -48,7 +48,7 @@
         <geoengine-raster-gradient-symbology-editor
             *ngIf="gradientColorizer"
             [colorizer]="gradientColorizer"
-            [histogramParams]="histogramParams"
+            [queryParams]="queryParams"
             [workflowId]="symbologyWorkflow.workflowId"
             [band]="selectedBand?.name | valueDefault: 'band'"
             (colorizerChange)="updateColorizer($event)"

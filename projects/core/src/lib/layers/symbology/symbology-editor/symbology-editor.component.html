@@ -19,7 +19,7 @@
 
         <geoengine-raster-symbology-editor
             [symbologyWorkflow]="symbologyWorkflow"
-            [histogramParams]="histogramParams$ | async | valueDefault: undefined"
+            [queryParams]="queryParams$ | async | valueDefault: undefined"
             (changedSymbology)="changeRasterSymbology($event)"
         ></geoengine-raster-symbology-editor>
         <div class="actions">
