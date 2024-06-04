@@ -44,42 +44,60 @@
         </mat-card-title-group>
     </mat-card-header>
     <mat-card-content>
-        @if (histogramParams) {
-            <div class="histogram" *ngIf="histogramCreated === true">
-                <ng-container *ngIf="histogramData | async as histogramData">
-                    <geoengine-vega-viewer
-                        [chartData]="histogramData"
-                        (interactionChange)="updateBounds($any($event))"
-                    ></geoengine-vega-viewer>
-                </ng-container>
-                <mat-progress-bar mode="indeterminate" *ngIf="histogramLoading | async"></mat-progress-bar>
-            </div>
-            <div class="histogram-actions">
-                <button mat-stroked-button (click)="updateHistogram()">
-                    @if (histogramCreated) {
-                        <!-- Only displayed before any histogram is created -->
-                        Update Histogram
-                    } @else {
-                        <!-- Only displayed after histogram is created -->
-                        Create Histogram
-                    }
-                </button>
-            </div>
-        }
+        <mat-tab-group>
+            <mat-tab label="Min/Max">
+                @if (queryParams) {
+                    <div class="histogram" *ngIf="histogramCreated === true">
+                        <ng-container *ngIf="histogramData | async as histogramData">
+                            <geoengine-vega-viewer
+                                [chartData]="histogramData"
+                                (interactionChange)="updateBounds($any($event))"
+                            ></geoengine-vega-viewer>
+                        </ng-container>
+                        <mat-progress-bar mode="indeterminate" *ngIf="histogramLoading | async"></mat-progress-bar>
+                    </div>
+                    <div class="histogram-actions">
+                        <button mat-stroked-button (click)="updateHistogram()">
+                            @if (histogramCreated) {
+                                <!-- Only displayed before any histogram is created -->
+                                Update Histogram
+                            } @else {
+                                <!-- Only displayed after histogram is created -->
+                                Create Histogram
+                            }
+                        </button>
+                    </div>
+                }
 
-        <mat-divider></mat-divider>
+                <mat-divider></mat-divider>
 
-        <geoengine-color-map-selector
-            (breakpointsChange)="updateBreakpoints($event)"
-            [minValue]="layerMinValue"
-            [maxValue]="layerMaxValue"
-            [scale]="scale"
-        >
-        </geoengine-color-map-selector>
+                <geoengine-color-map-selector
+                    (breakpointsChange)="updateBreakpoints($event)"
+                    [minValue]="layerMinValue"
+                    [maxValue]="layerMaxValue"
+                    [scale]="scale"
+                >
+                </geoengine-color-map-selector>
 
-        <mat-divider></mat-divider>
+                <mat-divider></mat-divider>
 
-        <button mat-stroked-button (click)="createColorTable()">Create color table</button>
+                <button mat-stroked-button (click)="createColorTable()">Create color table</button>
+            </mat-tab>
+            @if (queryParams) {
+                <mat-tab label="Percentiles">
+                    <geoengine-percentile-breakpoint-selector
+                        (breakpointsChange)="updateBreakpoints($event)"
+                        [band]="band"
+                        [workflowId]="workflowId"
+                        [queryParams]="queryParams"
+                    ></geoengine-percentile-breakpoint-selector>
+
+                    <div>
+                        <button mat-stroked-button (click)="createPercentilesColorTable()">Create color table</button>
+                    </div>
+                </mat-tab>
+            }
+        </mat-tab-group>
     </mat-card-content>
 </mat-card>
 <mat-card>
