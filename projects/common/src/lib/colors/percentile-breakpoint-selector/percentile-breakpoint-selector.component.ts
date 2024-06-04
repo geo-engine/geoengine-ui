@@ -227,7 +227,7 @@ export class PercentileBreakpointSelectorComponent implements OnInit, OnDestroy,
         percentileValues.unshift(statistics.min);
         percentileValues.push(statistics.max);
 
-        percentileValues.sort();
+        percentileValues.sort((a, b) => a - b);
 
         return PercentileBreakpointSelectorComponent.createBreakpoints(colorMap, colorMapReverseColors, percentileValues);
     }
