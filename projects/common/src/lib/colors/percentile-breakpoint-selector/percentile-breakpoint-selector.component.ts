@@ -15,13 +15,13 @@ import {BehaviorSubject} from 'rxjs';
 import {Color, RgbaTuple} from '../color';
 import {ColorBreakpoint} from '../color-breakpoint.model';
 import {geoengineValidators} from '../../util/form.validators';
-import {MPL_COLORMAPS} from '../color-map-selector/mpl-colormaps';
 import {UUID} from '../../datasets/dataset.model';
 import {WorkflowsService} from '../../workflows/workflows.service';
 import {StatisticsDict, StatisticsParams} from '../../operators/operator.model';
 import {Workflow} from '@geoengine/openapi-client';
 import {SymbologyQueryParams} from '../../symbology/symbology.model';
 import {PlotsService} from '../../plots/plots.service';
+import {ALL_COLORMAPS} from '../colormaps/colormaps';
 
 /**
  * The ColormapColorizerComponent is a dialog to generate ColorizerData from colormaps.
@@ -49,7 +49,7 @@ export class PercentileBreakpointSelectorComponent implements OnInit, OnDestroy,
      */
     @Output() changesToForm = new EventEmitter<void>();
 
-    readonly colorMaps = MPL_COLORMAPS;
+    readonly colorMaps = ALL_COLORMAPS;
 
     readonly MAX_PERCENTILES = 8;
 
