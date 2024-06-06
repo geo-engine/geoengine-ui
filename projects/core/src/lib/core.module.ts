@@ -148,6 +148,7 @@ import {CommonConfig, CommonModule} from '@geoengine/common';
 import {SymbologyEditorComponent} from './layers/symbology/symbology-editor/symbology-editor.component';
 import {MapResolutionExtentOverlayComponent} from './map/map-info/map-resolution-extent-overlay.component';
 import {DownloadLayerComponent} from './download-layer/download-layer.component';
+import {BandwiseExpressionOperatorComponent} from './operators/dialogs/bandwise-expression-operator/bandwise-expression-operator.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -202,6 +203,7 @@ const CORE_COMPONENTS = [
     ClassHistogramOperatorComponent,
     CodeEditorComponent,
 
+    BandwiseExpressionOperatorComponent,
     ColumnRangeFilterComponent,
     DatasetComponent,
     DatasetListComponent,
