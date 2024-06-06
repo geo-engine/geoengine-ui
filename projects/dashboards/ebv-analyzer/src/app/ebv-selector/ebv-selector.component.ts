@@ -16,6 +16,7 @@ import {
     MapService,
     SymbologyEditorComponent,
     WGS_84,
+    LayerCollectionLayerDict,
 } from '@geoengine/core';
 import {BehaviorSubject, combineLatest, firstValueFrom, from, Observable, of, Subscription} from 'rxjs';
 import {AppConfig} from '../app-config.service';
@@ -75,6 +76,10 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
     protected dataSubscription?: Subscription;
     protected rasterLayerSubscription?: Subscription;
 
+    // keep track of selection to preselect same values when changing path inside same dataset
+    protected previousCollections: LayerCollectionDict[] = [];
+    protected previousLayer?: LayerCollectionLayerDict;
+
     constructor(
         private readonly userService: UserService,
         @Inject(Config) private readonly config: AppConfig,
@@ -117,13 +122,15 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         });
     }
 
-    layerSelected(id?: ProviderLayerIdDict): void {
+    layerSelected(layer?: LayerCollectionLayerDict): void {
         if (this.layerId) {
             this.lastSelectedLayerId = this.layerId;
         }
 
-        this.layerId = id;
-        this.showEbv(id);
+        this.previousLayer = layer;
+
+        this.layerId = layer?.id;
+        this.showEbv(layer?.id);
     }
 
     // This method keeps a custom symbology as long as only entities are changed
@@ -147,17 +154,51 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
     }
 
     pathChange(collections: LayerCollectionDict[]): void {
-        if (collections.length !== 4) {
+        console.log('pathChange', collections);
+        if (collections.length < 1) {
+            // no selection => error
             return;
         }
+
+        if (
+            this.previousCollections.length > 3 &&
+            collections.length > 3 &&
+            this.previousCollections[3].id.collectionId === collections[3].id.collectionId // [0] EBV Portal / [1] EBV Class / [2] EBV Name / [3] EBV Dataset
+        ) {
+            console.log('new path inside same dataset, preselect same values as before');
+            // new path inside same dataset, preselect same values as before
+
+            // path until change
+            const oldCollections = this.previousCollections.slice(this.previousCollections.length - collections.length);
+            const newCollections = collections.concat(oldCollections);
+
+            const outPath = newCollections.map((collection) => collection.name).slice(1);
+
+            if (this.previousLayer) {
+                outPath.push(this.previousLayer.name);
+            }
+
+            this.preselectedPath = outPath;
+
+            console.log('preselect', this.preselectedPath);
+
+            this.previousCollections = newCollections;
+
+            this.changeDetectorRef.markForCheck();
+
+            return;
+        }
+
+        // new dataset or collection selected, preselect defaults
 
         const names = collections
             .slice(1) // remove root
             .map((collection) => collection.name);
 
         this.preselectedPath = [...names, 0 /*default scenario/metric*/, 0 /*default metric/entity*/, 0 /*default entity*/];
-
         this.changeDetectorRef.markForCheck();
+
+        this.previousCollections = collections;
     }
 
     showEbv(layerId?: ProviderLayerIdDict): void {
