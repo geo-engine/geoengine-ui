@@ -163,9 +163,6 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
     }
 
     pathChange(change: PathChange): void {
-        console.log('pathChange', change);
-        console.log('previousPath', this.previousPath);
-
         const collections = change.path;
 
         if (collections.length < 1) {
@@ -186,30 +183,21 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
             return;
         }
 
-        console.log('inputPath', inputPath);
-
         if (
             this.previousPath.length > 3 &&
             collections.length > 3 &&
             this.previousPath[3].collectionId === collections[3].id.collectionId // [0] EBV Portal / [1] EBV Class / [2] EBV Name / [3] EBV Dataset
         ) {
-            console.log('new path inside same dataset, preselect same values as before');
             // new path inside same dataset, preselect same values as before
             const oldPathRemainder = this.previousPath.slice(inputPath.length);
-
-            console.log('oldPathRemainder', oldPathRemainder);
 
             const path = inputPath.concat(oldPathRemainder);
 
             const outPath = path.map((collection) => collection.selectionIndexOrName).slice(1);
 
-            console.log('this.previousLayer', this.previousLayer);
-
             if (this.previousLayer) {
                 outPath.push(this.previousLayer.name);
             }
-
-            console.log('outPath', outPath);
 
             this.preselectedPath = outPath;
 
@@ -220,8 +208,6 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         }
 
         // new dataset or collection selected, preselect defaults
-        console.log('new dataset');
-
         const path = [...inputPath];
 
         // pre-fill EBV Portal, EBV Class, EBV Name, EBV Dataset, Scenario, Metric, Entity => 7 items
@@ -233,8 +219,6 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         }
 
         const outPath = path.map((collection) => collection.selectionIndexOrName).slice(1);
-
-        console.log('outPath', outPath);
 
         this.preselectedPath = outPath;
 

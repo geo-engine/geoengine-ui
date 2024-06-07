@@ -18,7 +18,7 @@ import {
     LayerCollectionLayerDict,
 } from '../../backend/backend.model';
 import {LayerCollectionService} from '../layer-collection.service';
-import {BehaviorSubject, Observable, Subject, firstValueFrom, map, takeUntil} from 'rxjs';
+import {BehaviorSubject, Observable, Subject, firstValueFrom, map} from 'rxjs';
 
 interface CollectionAndSelected {
     collection: LayerCollectionDict;
