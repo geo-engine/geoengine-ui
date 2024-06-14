@@ -2,7 +2,7 @@
 
 <form [formGroup]="form" (ngSubmit)="add()" *ngIf="projectHasRasterLayers$ | async; else noDataInfo">
     <geoengine-operator-dialog-container [loading]="loading$ | async | valueDefault: false">
-        <a mat-icon-button operatorInputIcon href="https://docs.geoengine.io/operators/expression.html" target="_blank">
+        <a mat-icon-button operatorInputIcon href="https://docs.geoengine.io/operators/bandwise-expression.html" target="_blank">
             <mat-icon>help_center</mat-icon>
         </a>
 
