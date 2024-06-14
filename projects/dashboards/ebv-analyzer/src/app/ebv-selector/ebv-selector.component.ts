@@ -12,10 +12,12 @@ import {
     NotificationService,
     PlotDataDict,
     RasterResultDescriptorDict,
-    LayerCollectionDict,
     MapService,
     SymbologyEditorComponent,
     WGS_84,
+    LayerCollectionLayerDict,
+    PathChange,
+    PathChangeSource,
 } from '@geoengine/core';
 import {BehaviorSubject, combineLatest, firstValueFrom, from, Observable, of, Subscription} from 'rxjs';
 import {AppConfig} from '../app-config.service';
@@ -37,6 +39,11 @@ import {
     Time,
     extentToBboxDict,
 } from '@geoengine/common';
+
+interface Path {
+    collectionId?: string;
+    selectionIndexOrName: string | number;
+}
 
 @Component({
     selector: 'geoengine-ebv-ebv-selector',
@@ -74,6 +81,11 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
     protected queryParamsSubscription?: Subscription;
     protected dataSubscription?: Subscription;
     protected rasterLayerSubscription?: Subscription;
+
+    // keep track of selection to preselect same values when changing path inside same dataset
+    protected previousPath: Path[] = [];
+    protected previousLayer?: LayerCollectionLayerDict;
+    // TODO: previous selection as {id, name} because we need both
 
     constructor(
         private readonly userService: UserService,
@@ -117,13 +129,17 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         });
     }
 
-    layerSelected(id?: ProviderLayerIdDict): void {
+    layerSelected(layer?: LayerCollectionLayerDict): void {
         if (this.layerId) {
             this.lastSelectedLayerId = this.layerId;
         }
 
-        this.layerId = id;
-        this.showEbv(id);
+        if (layer) {
+            this.previousLayer = layer;
+        }
+
+        this.layerId = layer?.id;
+        this.showEbv(layer?.id);
     }
 
     // This method keeps a custom symbology as long as only entities are changed
@@ -169,18 +185,69 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         return false;
     }
 
-    pathChange(collections: LayerCollectionDict[]): void {
-        if (collections.length !== 4) {
+    pathChange(change: PathChange): void {
+        const collections = change.path;
+
+        if (collections.length < 1) {
+            // no selection => ignore
             return;
         }
 
-        const names = collections
-            .slice(1) // remove root
-            .map((collection) => collection.name);
+        const inputPath: Path[] = collections.map((c) => {
+            return {
+                collectionId: c.id.collectionId,
+                selectionIndexOrName: c.name,
+            };
+        });
 
-        this.preselectedPath = [...names, 0 /*default scenario/metric*/, 0 /*default metric/entity*/, 0 /*default entity*/];
+        if (change.source === PathChangeSource.Preselection) {
+            // preselection does not require further action, so we only remember the current path
+            this.previousPath = inputPath;
+            return;
+        }
+
+        if (
+            this.previousPath.length > 3 &&
+            collections.length > 3 &&
+            this.previousPath[3].collectionId === collections[3].id.collectionId // [0] EBV Portal / [1] EBV Class / [2] EBV Name / [3] EBV Dataset
+        ) {
+            // new path inside same dataset, preselect same values as before
+            const oldPathRemainder = this.previousPath.slice(inputPath.length);
+
+            const path = inputPath.concat(oldPathRemainder);
+
+            const outPath = path.map((collection) => collection.selectionIndexOrName).slice(1);
+
+            if (this.previousLayer) {
+                outPath.push(this.previousLayer.name);
+            }
+
+            this.preselectedPath = outPath;
+
+            this.previousPath = path;
+
+            this.changeDetectorRef.markForCheck();
+            return;
+        }
+
+        // new dataset or collection selected, preselect defaults
+        const path = [...inputPath];
+
+        // pre-fill EBV Portal, EBV Class, EBV Name, EBV Dataset, Scenario, Metric, Entity => 7 items
+        while (path.length < 7) {
+            path.push({
+                collectionId: undefined,
+                selectionIndexOrName: 0,
+            });
+        }
+
+        const outPath = path.map((collection) => collection.selectionIndexOrName).slice(1);
+
+        this.preselectedPath = outPath;
 
         this.changeDetectorRef.markForCheck();
+
+        this.previousPath = path;
     }
 
     showEbv(layerId?: ProviderLayerIdDict): void {
@@ -412,10 +479,9 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
                     dataset.ebv.ebv_class,
                     dataset.ebv.ebv_name,
                     dataset.title,
-                    // we omit setting the rest of the path, as this is done in `pathChange` anyway
-                    // 0 /*default scenario/metric*/,
-                    // 0 /*default metric/entity*/,
-                    // 0 /*default entity*/,
+                    0 /*default scenario/metric*/,
+                    0 /*default metric/entity*/,
+                    0 /*default entity*/,
                 ];
                 this.changeDetectorRef.markForCheck();
             });
