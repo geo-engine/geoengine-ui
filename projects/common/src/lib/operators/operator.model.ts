@@ -62,6 +62,18 @@ export interface ExpressionDict extends OperatorDict {
     };
 }
 
+export interface BandwiseExpressionDict extends OperatorDict {
+    type: 'BandwiseExpression';
+    params: {
+        expression: string;
+        outputType: string;
+        mapNoData: boolean;
+    };
+    sources: {
+        raster: SourceOperatorDict | OperatorDict;
+    };
+}
+
 export interface RgbDict extends OperatorDict {
     type: 'Rgb';
     params: {
