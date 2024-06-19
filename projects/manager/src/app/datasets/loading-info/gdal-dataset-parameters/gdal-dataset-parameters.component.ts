@@ -161,23 +161,9 @@ export class GdalDatasetParametersComponent {
             height: 1000,
             fileNotFoundHandling: FileNotFoundHandling.NoData,
             noDataValue: 0,
-            propertiesMapping: [
-                {
-                    sourceKey: {domain: 'sourceDomain', key: 'sourceKey'},
-                    targetKey: {domain: 'targetDomain', key: 'targetKey'},
-                    targetType: RasterPropertiesEntryType.String,
-                },
-                {
-                    sourceKey: {domain: 'sourceDomain2', key: 'sourceKey2'},
-                    targetKey: {domain: 'targetDomain2', key: 'targetKey2'},
-                    targetType: RasterPropertiesEntryType.Number,
-                },
-            ],
-            gdalOpenOptions: ['option1', 'option2'],
-            gdalConfigOptions: [
-                ['option1', 'value1'],
-                ['option2', 'value2'],
-            ],
+            propertiesMapping: [],
+            gdalOpenOptions: [],
+            gdalConfigOptions: [],
             allowAlphabandAsMask: false,
         };
     }
