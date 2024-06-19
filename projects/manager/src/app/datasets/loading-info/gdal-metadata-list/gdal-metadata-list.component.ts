@@ -65,8 +65,8 @@ export class GdalMetadataListComponent implements OnChanges {
         this.addTimeSlice(
             {
                 start: moment.utc(),
-                timeAsPoint: true,
-                end: moment.utc(),
+                timeAsPoint: false,
+                end: moment.utc().add(1, 'days'),
             },
             GdalDatasetParametersComponent.placeHolderGdalParams(),
             0,
@@ -220,8 +220,8 @@ export class GdalMetadataListComponent implements OnChanges {
                 this.addTimeSlice(
                     {
                         start: moment.utc(),
-                        timeAsPoint: true,
-                        end: moment.utc(),
+                        timeAsPoint: false,
+                        end: moment.utc().add(1, 'days'),
                     },
                     gdalParams,
                     0,
@@ -287,8 +287,8 @@ export class GdalMetadataListComponent implements OnChanges {
                         time: new FormControl(
                             {
                                 start: moment.utc(),
-                                timeAsPoint: true,
-                                end: moment.utc(),
+                                timeAsPoint: false,
+                                end: moment.utc().add(1, 'days'),
                             },
                             {
                                 nonNullable: true,
