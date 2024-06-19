@@ -25,6 +25,17 @@ export function colorToDict(color: Color): RgbaColorDict {
 }
 
 /**
+ * Converts RGB colors in fractions to RGB values represented as ints in 0..256, alpha is set to 1
+ */
+export const convertFractionsToRgbas = (colors: Array<[number, number, number]>): Array<RgbaTuple> =>
+    colors.map(([r, g, b]) => {
+        r = Math.round(r * 255);
+        g = Math.round(g * 255);
+        b = Math.round(b * 255);
+        return [r, g, b, 1];
+    });
+
+/**
  *  An interface for types representing a Rgba color
  */
 export interface IRgba {

@@ -15,10 +15,10 @@ import {
     LayerCollectionListingDict,
     LayerCollectionItemDict,
     ProviderLayerCollectionIdDict,
-    ProviderLayerIdDict,
+    LayerCollectionLayerDict,
 } from '../../backend/backend.model';
 import {LayerCollectionService} from '../layer-collection.service';
-import {BehaviorSubject, Observable, Subject, firstValueFrom, map, takeUntil} from 'rxjs';
+import {BehaviorSubject, Observable, Subject, firstValueFrom, map} from 'rxjs';
 
 interface CollectionAndSelected {
     collection: LayerCollectionDict;
@@ -27,6 +27,16 @@ interface CollectionAndSelected {
 
 // TODO: use pagination
 const FETCH_SIZE = 9999;
+
+export interface PathChange {
+    path: Array<LayerCollectionDict>;
+    source: PathChangeSource;
+}
+
+export enum PathChangeSource {
+    Manual,
+    Preselection,
+}
 
 @Component({
     selector: 'geoengine-layer-collection-dropdown',
@@ -38,8 +48,10 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
     @Input() root?: ProviderLayerCollectionIdDict = undefined;
     @Input() preselectedPath: Array<string | number> = []; // preselect entries in hierarchy either by name or index
 
-    @Output() layerSelected = new EventEmitter<ProviderLayerIdDict>();
-    @Output() pathChange = new EventEmitter<Array<LayerCollectionDict>>();
+    @Output() layerSelected = new EventEmitter<LayerCollectionLayerDict>();
+    @Output() pathChange = new EventEmitter<PathChange>();
+
+    preselecting$ = new BehaviorSubject<boolean>(false);
 
     readonly collections = new BehaviorSubject<Array<LayerCollectionDict>>([]);
     selections: Array<LayerCollectionItemDict> = [];
@@ -52,10 +64,6 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
         protected readonly layerCollectionService: LayerCollectionService,
         private readonly changeDetectorRef: ChangeDetectorRef,
     ) {
-        this.collections.pipe(takeUntil(this.onDestroy$)).subscribe((collections) => {
-            this.pathChange.emit(collections);
-        });
-
         this.collectionsAndSelected = this.collections.pipe(
             map((collections) => {
                 const result: Array<CollectionAndSelected> = [];
@@ -102,6 +110,7 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
 
     /** Select a path, starting from the root */
     async preselect(path: Array<string | number>): Promise<void> {
+        this.preselecting$.next(true);
         const newCollections = [this.collections.value[0]]; // root collection
         const newSelections = [];
         for (let i = 0; i < path.length; ++i) {
@@ -129,7 +138,7 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
             newSelections.push(found as LayerCollectionItemDict);
 
             if (found.type === 'layer') {
-                this.layerSelected.emit(found.id as ProviderLayerIdDict);
+                this.layerSelected.emit(found as LayerCollectionLayerDict);
 
                 break;
             }
@@ -146,12 +155,16 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
         this.selections = newSelections;
         this.collections.next(newCollections);
 
+        this.pathChange.emit({path: newCollections, source: PathChangeSource.Preselection});
+
+        this.preselecting$.next(false);
+
         this.changeDetectorRef.markForCheck();
     }
 
     selectItem(item: LayerCollectionItemDict, index: number): void {
         if (item.type === 'layer') {
-            this.layerSelected.emit(item.id as ProviderLayerIdDict);
+            this.layerSelected.emit(item as LayerCollectionLayerDict);
             return;
         }
 
@@ -171,6 +184,8 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
                 collections.splice(index + 1);
                 collections.push(c);
                 this.collections.next(collections);
+
+                this.pathChange.emit({path: collections, source: PathChangeSource.Manual});
 
                 this.changeDetectorRef.markForCheck();
             });

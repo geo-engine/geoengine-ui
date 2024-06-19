@@ -12,10 +12,10 @@ import {
 } from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {Subscription} from 'rxjs';
-import {MPL_COLORMAPS} from './mpl-colormaps';
 import {Color, RgbaTuple} from '../color';
 import {ColorBreakpoint} from '../color-breakpoint.model';
 import {geoengineValidators} from '../../util/form.validators';
+import {ALL_COLORMAPS} from '../colormaps/colormaps';
 
 /**
  * The ColormapColorizerComponent is a dialog to generate ColorizerData from colormaps.
@@ -69,7 +69,7 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
      */
     @Output() maxValueChange = new EventEmitter<number>();
 
-    readonly colorMaps = MPL_COLORMAPS;
+    readonly colorMaps = ALL_COLORMAPS;
 
     /**
      * The form control used in the template.

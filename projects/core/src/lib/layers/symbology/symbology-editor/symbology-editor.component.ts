@@ -4,7 +4,7 @@ import {
     RasterLayer,
     RasterSymbology,
     RasterSymbologyEditorComponent,
-    SymbologyHistogramParams,
+    SymbologyQueryParams,
     SymbologyWorkflow,
     VectorLayer,
     VectorSymbology,
@@ -29,9 +29,9 @@ export class SymbologyEditorComponent implements OnInit, OnDestroy {
     rasterSymbologyWorkflow$ = new BehaviorSubject<SymbologyWorkflow<RasterSymbology> | undefined>(undefined);
     vectorSymbologyWorkflow$ = new BehaviorSubject<SymbologyWorkflow<VectorSymbology> | undefined>(undefined);
 
-    histogramParams$ = new BehaviorSubject<SymbologyHistogramParams | undefined>(undefined);
+    queryParams$ = new BehaviorSubject<SymbologyQueryParams | undefined>(undefined);
 
-    histogramParamsSubscription?: Subscription = undefined;
+    queryParamsSubscription?: Subscription = undefined;
 
     unappliedRasterChanges = false;
 
@@ -48,8 +48,8 @@ export class SymbologyEditorComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        if (this.histogramParamsSubscription) {
-            this.histogramParamsSubscription.unsubscribe();
+        if (this.queryParamsSubscription) {
+            this.queryParamsSubscription.unsubscribe();
         }
     }
 
@@ -79,17 +79,17 @@ export class SymbologyEditorComponent implements OnInit, OnDestroy {
     }
 
     private createHistogramParamsSubscription(): void {
-        this.histogramParamsSubscription = combineLatest([
+        this.queryParamsSubscription = combineLatest([
             this.projectService.getTimeStream(),
             this.mapService.getViewportSizeStream(),
             this.projectService.getSpatialReferenceStream(),
         ]).subscribe(([time, viewport, spatialReference]) => {
-            this.histogramParams$.next({
+            this.queryParams$.next({
                 time,
                 bbox: extentToBboxDict(viewport.extent),
                 resolution: {x: viewport.resolution, y: viewport.resolution} as SpatialResolution,
                 spatialReference,
-            } as SymbologyHistogramParams);
+            } as SymbologyQueryParams);
         });
     }
 

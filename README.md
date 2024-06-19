@@ -26,7 +26,7 @@ sudo apt-get install -y nodejs
 ```
 rm -rf node_modules
 npm ci
-npm run build-prod:core && npm run build-prod:gis
+npm run build-prod:common && build-prod:core && npm run build-prod:gis
 ```
 
 You can find the output in the `dist` directory.
@@ -48,6 +48,7 @@ Then:
 
 ```
 npm install
+npm run build-watch:common
 npm run build-watch:core
 npm run serve:gis:local
 ```

@@ -33,7 +33,7 @@
                         <mat-label>{{ renameHint(i) }} </mat-label>
                         <input matInput type="text" [formControlName]="i" />
                     </mat-form-field>
-                    <mat-error *ngIf="renameValues.hasError('duplicate')">Error: duplicate value</mat-error>
+                    <mat-error *ngIf="renameValues.hasError('duplicate')">Duplicate Name</mat-error>
                 </div>
             }
 

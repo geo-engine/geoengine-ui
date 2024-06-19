@@ -6,19 +6,9 @@
  * They are licensed under the CC0 license.
  */
 
-import {RgbaTuple} from '../color';
+import {RgbaTuple, convertFractionsToRgbas} from '../color';
 
-/**
- * The color map names.
- */
-export type MplColormapName = 'MAGMA' | 'INFERNO' | 'PLASMA' | 'VIRIDIS' | 'GRAYS';
-
-/**
- * The list of available color map names.
- */
-export const MPL_COLORMAP_NAMES: Array<MplColormapName> = ['MAGMA', 'INFERNO', 'PLASMA', 'VIRIDIS', 'GRAYS'];
-
-export const COLORMAP_MAGMA_DATA: Array<[number, number, number]> = [
+const COLORMAP_MAGMA_DATA: Array<[number, number, number]> = [
     [0.001462, 0.000466, 0.013866],
     [0.002258, 0.001295, 0.018331],
     [0.003279, 0.002305, 0.023708],
@@ -277,7 +267,7 @@ export const COLORMAP_MAGMA_DATA: Array<[number, number, number]> = [
     [0.987053, 0.991438, 0.749504],
 ];
 
-export const COLORMAP_INFERNO_DATA: Array<[number, number, number]> = [
+const COLORMAP_INFERNO_DATA: Array<[number, number, number]> = [
     [0.001462, 0.000466, 0.013866],
     [0.002267, 0.00127, 0.01857],
     [0.003299, 0.002249, 0.024239],
@@ -536,7 +526,7 @@ export const COLORMAP_INFERNO_DATA: Array<[number, number, number]> = [
     [0.988362, 0.998364, 0.644924],
 ];
 
-export const COLORMAP_PLASMA_DATA: Array<[number, number, number]> = [
+const COLORMAP_PLASMA_DATA: Array<[number, number, number]> = [
     [0.050383, 0.029803, 0.527975],
     [0.063536, 0.028426, 0.533124],
     [0.075353, 0.027206, 0.538007],
@@ -795,7 +785,7 @@ export const COLORMAP_PLASMA_DATA: Array<[number, number, number]> = [
     [0.940015, 0.975158, 0.131326],
 ];
 
-export const COLORMAP_VIRIDIS_DATA: Array<[number, number, number]> = [
+const COLORMAP_VIRIDIS_DATA: Array<[number, number, number]> = [
     [0.267004, 0.004874, 0.329415],
     [0.26851, 0.009605, 0.335427],
     [0.269944, 0.014625, 0.341379],
@@ -1054,23 +1044,9 @@ export const COLORMAP_VIRIDIS_DATA: Array<[number, number, number]> = [
     [0.993248, 0.906157, 0.143936],
 ];
 
-export const COLORMAP_GRAYS_DATA: Array<[number, number, number]> = [
-    [0, 0, 0],
-    [1, 1, 1],
-];
-
-const convertToRgbas = (colors: Array<[number, number, number]>): Array<RgbaTuple> =>
-    colors.map(([r, g, b]) => {
-        r = Math.round(r * 255);
-        g = Math.round(g * 255);
-        b = Math.round(b * 255);
-        return [r, g, b, 1];
-    });
-
 export const MPL_COLORMAPS: {[name: string]: Array<RgbaTuple>} = {
-    MAGMA: convertToRgbas(COLORMAP_MAGMA_DATA),
-    INFERNO: convertToRgbas(COLORMAP_INFERNO_DATA),
-    PLASMA: convertToRgbas(COLORMAP_PLASMA_DATA),
-    VIRIDIS: convertToRgbas(COLORMAP_VIRIDIS_DATA),
-    GRAYS: convertToRgbas(COLORMAP_GRAYS_DATA),
+    MAGMA: convertFractionsToRgbas(COLORMAP_MAGMA_DATA),
+    INFERNO: convertFractionsToRgbas(COLORMAP_INFERNO_DATA),
+    PLASMA: convertFractionsToRgbas(COLORMAP_PLASMA_DATA),
+    VIRIDIS: convertFractionsToRgbas(COLORMAP_VIRIDIS_DATA),
 };

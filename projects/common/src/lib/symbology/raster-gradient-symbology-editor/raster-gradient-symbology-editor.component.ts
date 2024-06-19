@@ -24,7 +24,8 @@ import {WorkflowsService} from '../../workflows/workflows.service';
 import {HistogramDict, HistogramParams, WorkflowDict} from '../../operators/operator.model';
 import {Workflow} from '@geoengine/openapi-client';
 import {PlotsService} from '../../plots/plots.service';
-import {SymbologyHistogramParams} from '../symbology.model';
+import {SymbologyQueryParams} from '../symbology.model';
+import {PercentileBreakpointSelectorComponent} from '../../colors/percentile-breakpoint-selector/percentile-breakpoint-selector.component';
 
 /**
  * An editor for generating raster symbologies.
@@ -39,6 +40,9 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     @ViewChild(ColorMapSelectorComponent)
     colorMapSelector!: ColorMapSelectorComponent;
 
+    @ViewChild(PercentileBreakpointSelectorComponent)
+    percentileBreakpointSelector!: PercentileBreakpointSelectorComponent;
+
     @ViewChild(ColorTableEditorComponent)
     colorTableEditor!: ColorTableEditorComponent;
 
@@ -48,7 +52,7 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
 
     @Input({required: true}) colorizer!: LinearGradient | LogarithmicGradient;
 
-    @Input({required: true}) histogramParams?: SymbologyHistogramParams;
+    @Input() queryParams?: SymbologyQueryParams;
 
     @Output() colorizerChange = new EventEmitter<LinearGradient | LogarithmicGradient>();
 
@@ -220,11 +224,11 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     }
 
     updateHistogram(): void {
-        if (!this.histogramParams) {
+        if (!this.queryParams) {
             return;
         }
 
-        const histogramParams = this.histogramParams;
+        const histogramParams = this.queryParams;
 
         this.histogramCreated = true;
         this.createHistogramWorkflowId()
@@ -239,6 +243,10 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
         this.colorMapSelector?.applyChanges();
         this.changeDetectorRef.detectChanges();
         this.colorTableEditor?.updateColorAttributes();
+    }
+
+    createPercentilesColorTable(): void {
+        this.percentileBreakpointSelector?.createColorTable();
     }
 
     private updateNodataAndDefaultColor(): void {
@@ -258,7 +266,7 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
         };
     }
 
-    private createHistogram(histogramWorkflowId: UUID, histogramParams: SymbologyHistogramParams): Promise<VegaChartData> {
+    private createHistogram(histogramWorkflowId: UUID, histogramParams: SymbologyQueryParams): Promise<VegaChartData> {
         return this.plotsService
             .getPlot(
                 histogramWorkflowId,
