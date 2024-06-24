@@ -4,10 +4,10 @@
     "compilerOptions": {
         "outDir": "../../out-tsc/app",
         "types": [],
-        "paths": {
-            "@geoengine/common": ["dist/common"]
-        }
     },
     "files": ["src/main.ts"],
-    "include": []
+    "include": [],
+    "paths": {
+        "@geoengine/common": ["dist/common"]
+    }
 }
