@@ -350,6 +350,7 @@ export interface TemporalRasterAggregationDict extends OperatorDict {
         aggregation: {
             type: TemporalRasterAggregationDictAgregationType;
             ignoreNoData?: boolean;
+            percentile?: number;
         };
         window: TimeStepDict;
         windowReference?: TimeInstanceDict;
@@ -364,7 +365,15 @@ export interface TemporalRasterAggregationDict extends OperatorDict {
  */
 export type TimeInstanceDict = string;
 
-export type TemporalRasterAggregationDictAgregationType = 'min' | 'max' | 'first' | 'last' | 'mean' | 'sum' | 'count';
+export type TemporalRasterAggregationDictAgregationType =
+    | 'min'
+    | 'max'
+    | 'first'
+    | 'last'
+    | 'mean'
+    | 'sum'
+    | 'count'
+    | 'percentileEstimate';
 
 export interface RasterStackerDict extends OperatorDict {
     type: 'RasterStacker';
