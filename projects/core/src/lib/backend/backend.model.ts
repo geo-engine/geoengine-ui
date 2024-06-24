@@ -390,7 +390,7 @@ export interface AutoCreateDatasetDict {
 }
 
 export interface SuggestMetaDataDict {
-    upload: UUID;
+    dataPath: {upload: UUID} | {volume: string};
     mainFile?: string;
     layerName?: string;
 }

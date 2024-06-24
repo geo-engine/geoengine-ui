@@ -316,13 +316,7 @@ export class BackendService {
     }
 
     suggestMetaData(sessionId: UUID, suggestMetaData: SuggestMetaDataDict): Observable<MetaDataSuggestionDict> {
-        const params = new NullDiscardingHttpParams();
-        params.set('upload', suggestMetaData.upload);
-        params.set('mainFile', suggestMetaData.mainFile);
-        params.set('layerName', suggestMetaData.layerName);
-
-        return this.http.get<MetaDataSuggestionDict>(this.config.API_URL + '/dataset/suggest', {
-            params: params.httpParams,
+        return this.http.post<MetaDataSuggestionDict>(this.config.API_URL + '/dataset/suggest', suggestMetaData, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }

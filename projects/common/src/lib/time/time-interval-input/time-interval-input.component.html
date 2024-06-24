@@ -1,9 +1,9 @@
-<h3 class="mat-subtitle-1" *ngIf="config.TIME.ALLOW_RANGES">Start</h3>
+<h3 class="mat-subtitle-1" *ngIf="allowRanges">Start</h3>
 
 <form [formGroup]="form">
     <geoengine-time-input formControlName="start"></geoengine-time-input>
 
-    <ng-template [ngIf]="config.TIME.ALLOW_RANGES">
+    <ng-template [ngIf]="allowRanges">
         <h3 class="mat-subtitle-1" fxLayout="row" fxLayoutAlign="space-between center">
             End
             <mat-slide-toggle #timeAsPoint formControlName="timeAsPoint" class="mat-body-1">same as start</mat-slide-toggle>

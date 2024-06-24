@@ -4,8 +4,7 @@ import {Observable, Subscription} from 'rxjs';
 import {FormControl, FormGroup, NonNullableFormBuilder, Validators} from '@angular/forms';
 import {Config} from '../../config.service';
 import moment from 'moment';
-import {TimeInterval} from '../time-interval-input/time-interval-input.component';
-import {Time, TimeStepDuration} from '@geoengine/common';
+import {Time, TimeInterval, TimeStepDuration} from '@geoengine/common';
 
 export interface TimeConfigForm {
     timeInterval: FormControl<TimeInterval>;

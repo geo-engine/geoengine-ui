@@ -53,7 +53,7 @@
         "@angular/platform-browser-dynamic": "^17.3.0",
         "@angular/router": "^17.3.0",
         "@egjs/hammerjs": "^2.0.17",
-        "@geoengine/openapi-client": "0.0.9",
+        "@geoengine/openapi-client": "https://gitpkg.now.sh/geo-engine/openapi-client/typescript?create-dataset",
         "codemirror": "~5.65.16",
         "d3": "~7.9.0",
         "dagre": "~0.8.5",

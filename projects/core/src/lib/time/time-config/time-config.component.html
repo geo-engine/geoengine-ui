@@ -8,7 +8,10 @@
 
     <mat-card-content>
         <form [formGroup]="form">
-            <geoengine-time-interval-input formControlName="timeInterval"></geoengine-time-interval-input>
+            <geoengine-time-interval-input
+                [allowRanges]="config.TIME.ALLOW_RANGES"
+                formControlName="timeInterval"
+            ></geoengine-time-interval-input>
 
             <mat-card-actions align="end">
                 <button mat-raised-button (click)="reset()" [disabled]="isNotResettable()">Reset</button>
