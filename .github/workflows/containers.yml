@@ -23,7 +23,7 @@ jobs:
 
     strategy:
       matrix:
-        app: ["gis", "gfbio", "data-atlas", "nfdi-portal-demo", "ebv-analyzer", "manager"]
+        app: [{project: gis}, {project: gfbio}, {project: data-atlas}, {project: nfdi-portal-demo"}, {project: ebv-analyzer}, {project: manager, angular_base_href: /manager/}]
 
     runs-on: ubuntu-22.04
 
@@ -31,6 +31,7 @@ jobs:
       TAG_NAME: nightly
       FULL_TAG_NAME: nightly
       BUILD_TAG: gis
+      ANGULAR_BASE_HREF:
 
     steps:
       - name: Modify TAG_NAME if on `tag_name` is set on `workflow_dispatch`
@@ -39,12 +40,16 @@ jobs:
 
       - name: Set `FULL_TAG_NAME` wrt. apps
         run: |
-          echo "FULL_TAG_NAME=${{matrix.app}}-${{env.TAG_NAME}}" >> $GITHUB_ENV
-          echo "BUILD_TAG=${{matrix.app}}" >> $GITHUB_ENV
+          echo "FULL_TAG_NAME=${{matrix.app.project}}-${{env.TAG_NAME}}" >> $GITHUB_ENV
+          echo "BUILD_TAG=${{matrix.app.project}}" >> $GITHUB_ENV
 
       - name: Modify `BUILD_TAG` if dashboard
         if: env.BUILD_TAG != 'gis' && env.BUILD_TAG != 'manager'
         run: echo "BUILD_TAG=dashboards/${{env.BUILD_TAG}}" >> $GITHUB_ENV
+
+      - name: Set additional params
+        if: matrix.app.angular_base_href
+        run: echo "ANGULAR_BASE_HREF=${{matrix.app.angular_base_href}}" >> $GITHUB_ENV        
 
       - name: Checkout code
         uses: actions/checkout@v3
@@ -67,6 +72,7 @@ jobs:
           podman build \
             --tag "geoengine-ui:${{env.FULL_TAG_NAME}}" \
             --build-arg GEOENGINE_UI_PROJECT="${{env.BUILD_TAG}}" \
+            --build-arg GEOENGINE_UI_ANGULAR_BASE_HREF="${{env.ANGULAR_BASE_HREF}}" \
             -f container/geoengine-ui/Dockerfile \
             .
 
