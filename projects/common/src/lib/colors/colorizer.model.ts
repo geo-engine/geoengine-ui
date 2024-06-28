@@ -2,8 +2,8 @@ import {Color, RgbaColorDict, TRANSPARENT, colorToDict, rgbaColorFromDict} from 
 import {ColorBreakpoint} from './color-breakpoint.model';
 import {
     Colorizer as ColorizerDict,
-    ColorizerLinearGradient as LinearGradientDict,
-    ColorizerLogarithmicGradient as LogarithmicGradientDict,
+    LinearGradient as LinearGradientDict,
+    LogarithmicGradient as LogarithmicGradientDict,
     ColorizerPalette as PaletteColorizerDict,
     ColorizerRgba as RgbaColorizerDict,
 } from '@geoengine/openapi-client';

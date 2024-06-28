@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {Measurement, VectorColumnInfo, TypedResultDescriptorVector} from '@geoengine/openapi-client';
+import {Measurement, VectorColumnInfo, TypedVectorResultDescriptor} from '@geoengine/openapi-client';
 
 interface Column {
     name: string;
@@ -13,7 +13,7 @@ interface Column {
     styleUrl: './vector-result-descriptor.component.scss',
 })
 export class VectorResultDescriptorComponent {
-    @Input() resultDescriptor!: TypedResultDescriptorVector;
+    @Input() resultDescriptor!: TypedVectorResultDescriptor;
 
     displayedColumns: string[] = ['name', 'dataType', 'measurement'];
 

@@ -8,16 +8,16 @@ import OlGeometry from 'ol/geom/Geometry';
 import {ColorBreakpoint} from '../colors/color-breakpoint.model';
 import {
     Symbology as SymbologyDict,
-    SymbologyPoint as PointSymbologyDict,
-    SymbologyLine as LineSymbologyDict,
-    SymbologyPolygon as PolygonSymbologyDict,
+    PointSymbology as PointSymbologyDict,
+    LineSymbology as LineSymbologyDict,
+    PolygonSymbology as PolygonSymbologyDict,
     NumberParam as NumberParamDict,
     ColorParam as ColorParamDict,
     DerivedColor as DerivedColorDict,
     StrokeParam as StrokeParamDict,
     TextSymbology as TextSymbologyDict,
-    NumberParamDerived as DerivedNumberDict,
-    SymbologyRaster as RasterSymbologyDict,
+    DerivedNumber as DerivedNumberDict,
+    RasterSymbology as RasterSymbologyDict,
     RasterColorizer as RasterColorizerDict,
     SpatialResolution,
 } from '@geoengine/openapi-client';

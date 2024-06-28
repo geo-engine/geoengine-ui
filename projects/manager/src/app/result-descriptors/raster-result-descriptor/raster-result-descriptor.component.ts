@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {RasterBandDescriptor, TypedResultDescriptorRaster} from '@geoengine/openapi-client';
+import {RasterBandDescriptor, TypedRasterResultDescriptor} from '@geoengine/openapi-client';
 
 @Component({
     selector: 'geoengine-manager-raster-result-descriptor',
@@ -7,7 +7,7 @@ import {RasterBandDescriptor, TypedResultDescriptorRaster} from '@geoengine/open
     styleUrl: './raster-result-descriptor.component.scss',
 })
 export class RasterResultDescriptorComponent {
-    @Input() resultDescriptor!: TypedResultDescriptorRaster;
+    @Input() resultDescriptor!: TypedRasterResultDescriptor;
 
     displayedColumns: string[] = ['index', 'name', 'measurement'];
 

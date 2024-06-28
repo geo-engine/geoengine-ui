@@ -18,7 +18,7 @@ import {BehaviorSubject, Subscription, map} from 'rxjs';
 import {
     BoundingBox2D,
     RasterBandDescriptor,
-    TypedResultDescriptorRaster as RasterResultDescriptorDict,
+    TypedRasterResultDescriptor as RasterResultDescriptorDict,
     SpatialResolution,
 } from '@geoengine/openapi-client';
 import {WorkflowsService} from '../../workflows/workflows.service';

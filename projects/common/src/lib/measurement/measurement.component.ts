@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {MeasurementClassification, MeasurementContinuous, Measurement, MeasurementUnitless} from '@geoengine/openapi-client';
+import {ClassificationMeasurement, ContinuousMeasurement, Measurement, UnitlessMeasurement} from '@geoengine/openapi-client';
 
 enum MeasurementType {
     Classification = 'classification',
@@ -25,9 +25,9 @@ export class MeasurementComponent {
 
     MeasurementType = MeasurementType;
 
-    classificationMeasurement?: MeasurementClassification;
-    continousMeasurement?: MeasurementContinuous;
-    unitlessMeasurement?: MeasurementUnitless;
+    classificationMeasurement?: ClassificationMeasurement;
+    continousMeasurement?: ContinuousMeasurement;
+    unitlessMeasurement?: UnitlessMeasurement;
 
     addClassForm: FormGroup<AddClassForm> = new FormGroup<AddClassForm>({
         key: new FormControl('', {
