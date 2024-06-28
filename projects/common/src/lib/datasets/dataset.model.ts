@@ -14,8 +14,8 @@ import {Time} from '../time/time.model';
 import {
     Dataset as DatasetDict,
     TypedResultDescriptor as TypedResultDescriptorDict,
-    VectorResultDescriptorWithType as VectorResultDescriptorDict,
-    RasterResultDescriptorWithType as RasterResultDescriptorDict,
+    TypedVectorResultDescriptor as VectorResultDescriptorDict,
+    TypedRasterResultDescriptor as RasterResultDescriptorDict,
     Workflow as WorkflowDict,
     BoundingBox2D as BBoxDict,
     RasterBandDescriptor,
