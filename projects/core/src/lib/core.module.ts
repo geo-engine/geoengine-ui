@@ -62,7 +62,6 @@ import {
 import {SafeStylePipe} from './util/pipes/safe-style.pipe';
 import {SmallTimeInteractionComponent} from './time/small-time-interaction/small-time-interaction.component';
 import {TimeConfigComponent} from './time/time-config/time-config.component';
-import {TimeInputComponent} from './time/time-input/time-input.component';
 import {WorkspaceSettingsComponent} from './project/workspace-settings/workspace-settings.component';
 import {ChangeSpatialReferenceComponent} from './project/change-spatial-reference/change-spatial-reference.component';
 import {IfGuestDirective} from './util/directives/if-guest.directive';
@@ -289,7 +288,6 @@ const CORE_COMPONENTS = [
     TaskListComponent,
     TemporalRasterAggregationComponent,
     TimeConfigComponent,
-    TimeInputComponent,
     TimeIntervalInputComponent,
     TimeShiftComponent,
     TimeSliderComponent,

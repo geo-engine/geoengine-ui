@@ -58,6 +58,7 @@ import {VegaViewerComponent} from './plots/vega-viewer/vega-viewer.component';
 import {ConfirmationComponent} from './dialogs/confirmation/confirmation.component';
 import {MeasurementComponent} from './measurement/measurement.component';
 import {PercentileBreakpointSelectorComponent} from './colors/percentile-breakpoint-selector/percentile-breakpoint-selector.component';
+import {TimeInputComponent} from './time/time-input/time-input.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -110,6 +111,7 @@ const COMMON_COMPONENTS = [
     RasterIconComponent,
     VegaViewerComponent,
     PercentileBreakpointSelectorComponent,
+    TimeInputComponent,
 ];
 
 const COMMON_PIPES = [

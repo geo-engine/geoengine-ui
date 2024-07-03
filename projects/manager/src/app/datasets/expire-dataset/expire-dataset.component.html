@@ -1,0 +1,28 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>Deletion</mat-card-title>
+        <div class="toggle">
+            <mat-slide-toggle [(ngModel)]="advancedDeletion">Advanced</mat-slide-toggle>
+        </div>
+    </mat-card-header>
+
+    <mat-card-content>
+        <form [formGroup]="deletionForm" [hidden]="!advancedDeletion">
+            <div>
+                <mat-checkbox class="example-margin" formControlName="delete_record">Delete Meta Data</mat-checkbox>
+            </div>
+            <div>
+                <mat-checkbox class="example-margin" formControlName="delete_data">Delete Data</mat-checkbox>
+            </div>
+            <div>
+                <mat-checkbox #setExpire class="example-margin" formControlName="setExpire">Set Expiration Time</mat-checkbox>
+            </div>
+            <div>
+                <geoengine-time-input formControlName="expirationTime" [isDisabled]="!setExpire.checked"></geoengine-time-input>
+            </div>
+        </form>
+        <div class="actions">
+            <button mat-raised-button color="warn" (click)="deleteDatasetFair()">Delete dataset (FAIR)</button>
+        </div>
+    </mat-card-content>
+</mat-card>

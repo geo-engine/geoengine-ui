@@ -49,6 +49,7 @@ import {CommonConfig, CommonModule} from '@geoengine/common';
 import {SymbologyEditorComponent} from './symbology/symbology-editor/symbology-editor.component';
 import {ProvenanceComponent} from './provenance/provenance.component';
 import {AddDatasetComponent} from './datasets/add-dataset/add-dataset.component';
+import {ExpireDatasetComponent} from './datasets/expire-dataset/expire-dataset.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -98,6 +99,7 @@ export const MATERIAL_MODULES = [
         SymbologyEditorComponent,
         ProvenanceComponent,
         AddDatasetComponent,
+        ExpireDatasetComponent,
     ],
     imports: [
         ...MATERIAL_MODULES,

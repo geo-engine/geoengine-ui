@@ -32,6 +32,7 @@ export * from './lib/symbology/raster-palette-symbology-editor/raster-palette-sy
 export * from './lib/symbology/raster-symbology-editor/raster-symbology-editor.component';
 export * from './lib/symbology/vector-symbology-editor/vector-symbology-editor.component';
 export * from './lib/plots/vega-viewer/vega-viewer.component';
+export * from './lib/time/time-input/time-input.component';
 
 // Models
 export * from './lib/colors/color-breakpoint.model';
