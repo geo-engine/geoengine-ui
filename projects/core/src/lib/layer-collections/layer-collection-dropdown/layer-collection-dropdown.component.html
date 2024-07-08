@@ -2,7 +2,7 @@
     @for (collection of collectionsAndSelected | async; track collection) {
         <mat-form-field>
             <mat-label>{{ collection.collection.entryLabel ?? 'Entries' }}</mat-label>
-            <mat-select (valueChange)="selectItem($event, $index)" [value]="collection.selected">
+            <mat-select (valueChange)="selectItem($event, $index)" [value]="collection.selected" [disabled]="preselecting$ | async">
                 <mat-option>
                     <ngx-mat-select-search
                         [formControl]="geoengineAutocompleteSelect.filterFormControl"

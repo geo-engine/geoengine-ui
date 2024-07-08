@@ -57,6 +57,7 @@ import {FxFlexDirective, FxLayoutAlignDirective, FxLayoutDirective, FxLayoutGapD
 import {VegaViewerComponent} from './plots/vega-viewer/vega-viewer.component';
 import {ConfirmationComponent} from './dialogs/confirmation/confirmation.component';
 import {MeasurementComponent} from './measurement/measurement.component';
+import {PercentileBreakpointSelectorComponent} from './colors/percentile-breakpoint-selector/percentile-breakpoint-selector.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -108,6 +109,7 @@ const COMMON_COMPONENTS = [
     PolygonIconComponent,
     RasterIconComponent,
     VegaViewerComponent,
+    PercentileBreakpointSelectorComponent,
 ];
 
 const COMMON_PIPES = [
