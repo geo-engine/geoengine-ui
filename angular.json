@@ -799,11 +799,11 @@
             "prefix": "app",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:application",
+                    "builder": "@angular-devkit/build-angular:browser",
                     "options": {
                         "outputPath": "dist/manager",
                         "index": "projects/manager/src/index.html",
-                        "browser": "projects/manager/src/main.ts",
+                        "main": "projects/manager/src/main.ts",
                         "polyfills": ["zone.js"],
                         "tsConfig": "projects/manager/tsconfig.app.json",
                         "inlineStyleLanguage": "scss",

@@ -56,6 +56,7 @@ export * from './lib/map/map-container/map-container.component';
 export * from './lib/map/map-info/map-resolution-extent-overlay.component';
 export * from './lib/map/map-layer.component';
 export * from './lib/map/zoom-handles/zoom-handles.component';
+export * from './lib/operators/dialogs/bandwise-expression-operator/bandwise-expression-operator.component';
 export * from './lib/operators/dialogs/boxplot-operator/boxplot-operator.component';
 export * from './lib/operators/dialogs/class-histogram-operator/class-histogram-operator.component';
 export * from './lib/operators/dialogs/column-range-filter/column-range-filter.component';
