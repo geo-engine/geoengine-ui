@@ -165,6 +165,8 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
                 this.form.controls['bboxMaxY'].setValue(b[3]);
             }
             this.isSelectingBox = false;
+
+            this.setEditedExtent();
         });
     }
 
