@@ -62,6 +62,31 @@ export interface ExpressionDict extends OperatorDict {
     };
 }
 
+export interface BandNeighborhoodAggregateDict extends OperatorDict {
+    type: 'BandNeighborhoodAggregate';
+    params: {
+        aggregate: BandNeighborhoodAggregate;
+    };
+    sources: {
+        raster: SourceOperatorDict | OperatorDict;
+    };
+}
+
+export type BandNeighborhoodAggregate = BandNeighborhoodAverage | BandNeighborhoodFirstDerivative;
+
+export interface BandNeighborhoodAverage {
+    type: 'average';
+    windowSize: number;
+}
+
+export interface BandNeighborhoodFirstDerivative {
+    type: 'firstDerivative';
+    bandDistance: {
+        type: 'equallySpaced';
+        distance: number;
+    };
+}
+
 export interface BandwiseExpressionDict extends OperatorDict {
     type: 'BandwiseExpression';
     params: {
