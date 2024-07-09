@@ -1,5 +1,6 @@
 <div id="table-container">
-    <table mat-table [dataSource]="dataSource">
+    <mat-spinner [diameter]="loadingSpinnerDiameterPx" *ngIf="loading"></mat-spinner>
+    <table mat-table [dataSource]="dataSource" *ngIf="!loading">
         <ng-container matColumnDef="citation">
             <th mat-header-cell *matHeaderCellDef>Citation</th>
             <td mat-cell *matCellDef="let element">{{ element.citation }}</td>
