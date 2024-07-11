@@ -77,7 +77,7 @@ export class ExpireDatasetComponent {
             return {
                 deletionType: deletionType,
                 deletionTimestamp: values.expirationTime.value.toDate(),
-                type: 'setExpire'
+                type: 'setExpire',
             };
         } else {
             return {
