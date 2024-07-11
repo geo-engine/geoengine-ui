@@ -3,14 +3,13 @@ import {MatDialog} from '@angular/material/dialog';
 import moment, {Moment} from 'moment/moment';
 import {FormControl, FormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
 import {DatasetsService, ConfirmationComponent, errorToText} from '@geoengine/common';
-import {ExpirationWithType} from '@geoengine/openapi-client';
+import {DatasetDeletionType, ExpirationWithType} from '@geoengine/openapi-client';
 import {firstValueFrom} from 'rxjs';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {AppConfig} from '../../app-config.service';
 
 export interface ExpirationForm {
     deleteRecord: FormControl<boolean>;
-    deleteData: FormControl<boolean>;
     setExpire: FormControl<boolean>;
     expirationTime: FormControl<Moment>;
 }
@@ -37,7 +36,6 @@ export class ExpireDatasetComponent {
         this.advancedDeletion = false;
         this.deletionForm = this.formBuilder.group({
             deleteRecord: [false, Validators.required],
-            deleteData: [false, Validators.required],
             setExpire: [false, Validators.required],
             expirationTime: [moment.utc(), [Validators.required]],
         });
@@ -73,17 +71,17 @@ export class ExpireDatasetComponent {
 
     private getFormResult(): ExpirationWithType {
         const values = this.deletionForm.controls;
+        const deletionType = values.deleteRecord.value ? DatasetDeletionType.DeleteRecordAndData : DatasetDeletionType.DeleteData;
+
         if (values.setExpire.value) {
             return {
-                deleteData: values.deleteData.value,
-                deleteRecord: values.deleteRecord.value,
+                deletionType: deletionType,
                 deletionTimestamp: values.expirationTime.value.toDate(),
-                type: 'setExpire',
+                type: 'setExpire'
             };
         } else {
             return {
-                deleteData: values.deleteData.value,
-                deleteRecord: values.deleteRecord.value,
+                deletionType: deletionType,
                 type: 'setExpire',
             };
         }
