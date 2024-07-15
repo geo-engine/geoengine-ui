@@ -1,10 +1,10 @@
 import {Component, ViewChild} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {ConfirmationComponent, DatasetsService, errorToText} from '@geoengine/common';
-import {DataPath, MetaDataDefinition} from '@geoengine/openapi-client';
+import {DataPath, MetaDataDefinition, Volume as VolumeDict} from '@geoengine/openapi-client';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {filter, firstValueFrom, merge} from 'rxjs';
+import {BehaviorSubject, filter, firstValueFrom, merge} from 'rxjs';
 import {GdalMetadataListComponent} from '../loading-info/gdal-metadata-list/gdal-metadata-list.component';
 
 enum DataPaths {
@@ -21,7 +21,8 @@ export interface AddDatasetForm {
     name: FormControl<string>;
     displayName: FormControl<string>;
     dataPathType: FormControl<DataPaths>;
-    dataPath: FormControl<string>;
+    uploadId: FormControl<string>;
+    volumeName: FormControl<string>;
     dataType: FormControl<DataTypes>;
     rawLoadingInfo: FormControl<string>;
 }
@@ -37,6 +38,8 @@ export class AddDatasetComponent {
 
     @ViewChild(GdalMetadataListComponent) gdalMetaDataList?: GdalMetadataListComponent;
 
+    volumes$ = new BehaviorSubject<VolumeDict[]>([]);
+
     form: FormGroup<AddDatasetForm> = new FormGroup<AddDatasetForm>({
         name: new FormControl('', {
             nonNullable: true,
@@ -50,7 +53,11 @@ export class AddDatasetComponent {
             nonNullable: true,
             validators: [Validators.required],
         }),
-        dataPath: new FormControl('', {
+        uploadId: new FormControl('', {
+            nonNullable: true,
+            validators: [],
+        }),
+        volumeName: new FormControl('', {
             nonNullable: true,
             validators: [Validators.required],
         }),
@@ -89,13 +96,35 @@ export class AddDatasetComponent {
                 }
             },
         );
+
+        this.datasetsService.getVolumes().then((volumes) => {
+            this.volumes$.next(volumes);
+        });
     }
 
     dataPath(): DataPath {
-        if (this.form.controls.dataPathType.value === DataPaths.Upload) {
-            return {upload: this.form.controls.dataPath.value};
-        } else {
-            return {volume: this.form.controls.dataPath.value};
+        switch (this.form.controls.dataPathType.value) {
+            case DataPaths.Upload:
+                return {upload: this.form.controls.uploadId.value};
+            case DataPaths.Volume:
+                return {volume: this.form.controls.volumeName.value};
+        }
+    }
+
+    updateDataPathType(): void {
+        switch (this.form.controls.dataPathType.value) {
+            case DataPaths.Upload:
+                this.form.controls.uploadId.setValidators([Validators.required]);
+                this.form.controls.uploadId.updateValueAndValidity();
+                this.form.controls.volumeName.clearValidators();
+                this.form.controls.volumeName.updateValueAndValidity();
+                break;
+            case DataPaths.Volume:
+                this.form.controls.volumeName.setValidators([Validators.required]);
+                this.form.controls.volumeName.updateValueAndValidity();
+                this.form.controls.uploadId.clearValidators();
+                this.form.controls.uploadId.updateValueAndValidity();
+                break;
         }
     }
 
@@ -154,23 +183,11 @@ export class AddDatasetComponent {
         };
 
         try {
-            const datasetName = await this.datasetsService.createDataset(this.getDataPath(), definition);
+            const datasetName = await this.datasetsService.createDataset(this.dataPath(), definition);
             this.dialogRef.close(datasetName);
         } catch (error) {
             const errorMessage = await errorToText(error, 'Creating dataset failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
-        }
-    }
-
-    private getDataPath(): DataPath {
-        if (this.form.value.dataPathType === DataPaths.Upload) {
-            return {
-                upload: this.form.value.dataPath ?? '',
-            };
-        } else {
-            return {
-                volume: this.form.value.dataPath ?? '',
-            };
         }
     }
 }
