@@ -296,7 +296,7 @@ export class GdalMetadataListComponent implements OnChanges {
                             },
                         ),
                         gdalParameters: GdalDatasetParametersComponent.setUpPlaceholderForm(),
-                        cacheTtl: new FormControl<number>(0, {
+                        cacheTtl: new FormControl<number>(86400 /* 1 day */, {
                             nonNullable: true,
                             validators: [Validators.required],
                         }),
