@@ -50,6 +50,9 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
     private projectTimeSubscription?: Subscription;
     private viewportSizeSubscription?: Subscription;
 
+    private editedExtent = false;
+    private editedResolution = false;
+
     constructor(
         protected backend: BackendService,
         protected projectService: ProjectService,
@@ -88,7 +91,7 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
-            inputResolution: new FormControl('input', {
+            inputResolution: new FormControl('source', {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
@@ -119,8 +122,8 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
         this.viewportSizeSubscription = this.mapService.getViewportSizeStream().subscribe((viewport) => {
             const extent = olExtentToTuple(viewport.extent);
 
-            this.updateRegionByExtent(extent);
-            this.updateResolution(viewport.resolution);
+            if (!this.editedExtent) this.updateRegionByExtent(extent);
+            if (!this.editedResolution) this.updateResolution(viewport.resolution);
         });
 
         if (this.layer.layerType === 'vector') {
@@ -131,6 +134,24 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.projectTimeSubscription?.unsubscribe();
         this.viewportSizeSubscription?.unsubscribe();
+    }
+
+    unsubscribeTime(): void {
+        this.projectTimeSubscription?.unsubscribe();
+    }
+
+    setEditedExtent(): void {
+        this.editedExtent = true;
+        this.maybeUnsubscribeViewportSize();
+    }
+
+    setEditedResolution(): void {
+        this.editedResolution = true;
+        this.maybeUnsubscribeViewportSize();
+    }
+
+    maybeUnsubscribeViewportSize(): void {
+        if (this.editedExtent && this.editedResolution) this.viewportSizeSubscription?.unsubscribe();
     }
 
     selectBox(): void {
@@ -145,6 +166,8 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
                 this.form.controls['bboxMaxY'].setValue(b[3]);
             }
             this.isSelectingBox = false;
+
+            this.setEditedExtent();
         });
     }
 
