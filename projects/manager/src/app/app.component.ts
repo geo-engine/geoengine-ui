@@ -1,6 +1,6 @@
-import { OnInit } from '@angular/core';
+import {OnInit} from '@angular/core';
 import {Component, ViewContainerRef} from '@angular/core';
-import { Router } from '@angular/router';
+import {Router} from '@angular/router';
 
 @Component({
     selector: 'geoengine-root',
