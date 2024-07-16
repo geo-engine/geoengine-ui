@@ -13,6 +13,7 @@ import {MatPaginator} from '@angular/material/paginator';
 import {ProjectService} from '../../project/project.service';
 import {ProvenanceDict} from '../../backend/backend.model';
 import {Layer} from '@geoengine/common';
+import {LayoutService} from '../../layout.service';
 
 @Component({
     selector: 'geoengine-provenance-table',
@@ -28,6 +29,10 @@ export class ProvenanceTableComponent implements OnInit, OnChanges {
     displayedColumns: Array<string> = ['citation', 'license', 'uri'];
 
     dataSource: Array<ProvenanceDict> = [];
+
+    loading: boolean = true;
+
+    readonly loadingSpinnerDiameterPx: number = 3 * LayoutService.remInPx;
 
     constructor(
         protected readonly projectService: ProjectService,
@@ -55,6 +60,8 @@ export class ProvenanceTableComponent implements OnInit, OnChanges {
 
     selectLayer(layer: Layer): void {
         this.projectService.getWorkflowProvenance(layer.workflowId).subscribe((provenance) => {
+            this.loading = false;
+
             const table = [];
 
             for (const item of provenance) {
