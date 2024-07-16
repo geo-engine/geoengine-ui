@@ -462,7 +462,7 @@ export class UploadComponent implements OnDestroy {
             uploadFiles = this.datasetService.getUploadFiles(uploadId).pipe(map((files) => files.files));
         }
 
-        zip(this.datasetService.suggestMetaData({upload: uploadId}), uploadFiles)
+        zip(this.datasetService.suggestMetaData({dataPath: {upload: uploadId}}), uploadFiles)
             .pipe(
                 mergeMap(([suggest, files]) =>
                     zip(of(suggest), of(files), this.datasetService.getUploadFileLayers(uploadId, suggest.mainFile)),
@@ -511,7 +511,7 @@ export class UploadComponent implements OnDestroy {
             return;
         }
 
-        this.datasetService.suggestMetaData({upload: this.uploadId, mainFile, layerName}).subscribe(
+        this.datasetService.suggestMetaData({dataPath: {upload: this.uploadId}, mainFile, layerName}).subscribe(
             (suggest) => {
                 this.fillMetaDataForm(suggest);
                 this.changeDetectorRef.markForCheck();
