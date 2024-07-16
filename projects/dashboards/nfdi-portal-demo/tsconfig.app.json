@@ -2,11 +2,11 @@
     "extends": "../../../tsconfig.json",
     "compilerOptions": {
         "outDir": "../../../out-tsc/app",
-        "types": [],
-        "paths": {
-            "@geoengine/core": ["dist/core"]
-        }
+        "types": []
     },
     "files": ["src/main.ts"],
-    "include": []
+    "include": [],
+    "paths": {
+        "@geoengine/core": ["dist/core"]
+    }
 }
