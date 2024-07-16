@@ -76,6 +76,7 @@
         "vis-data": "7.1.9",
         "vis-timeline": "7.7.3",
         "vis-util": "5.0.7",
+        "workflow-editor": "file:../../../Documents/Universität/Bachelorarbeit/Code/workflow-editor",
         "xss": "1.0.15",
         "zone.js": "~0.14.4"
     },

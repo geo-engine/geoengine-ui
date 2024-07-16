@@ -1,0 +1,9 @@
+<geoengine-dialog-header>{{ title }}</geoengine-dialog-header>
+<div fxLayout="row" fxLayoutAlign="center center">
+    <mat-spinner
+        *ngIf="loading"
+        class="loading"
+        [diameter]="15"
+    ></mat-spinner>
+    <div #widget></div>
+</div>
