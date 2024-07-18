@@ -92,7 +92,10 @@ You can override any of these default settings by specifying them.
     DEFAULTS: {
         PROJECT: {
             NAME: 'Default',
-            TIME: '2014-04-01T12:00:00.000Z',
+            TIME: {
+                start: '2014-04-01T12:00:00.000Z',
+                end: '2014-05-01T12:00:00.000Z'
+            },
             TIMESTEP: '1 month',
             PROJECTION: 'EPSG:4326',
         },

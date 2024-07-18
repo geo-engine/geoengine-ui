@@ -112,11 +112,14 @@ export class ProjectService {
      */
     createDefaultProject(): Observable<Project> {
         const name = this.config.DEFAULTS.PROJECT.NAME;
-        const time = new Time(this.config.DEFAULTS.PROJECT.TIME, this.config.DEFAULTS.PROJECT.TIME);
+        const isRange = this.config.TIME.ALLOW_RANGES && this.config.DEFAULTS.PROJECT.TIME.end;
+        const time = isRange
+            ? new Time(this.config.DEFAULTS.PROJECT.TIME.start, this.config.DEFAULTS.PROJECT.TIME.end)
+            : new Time(this.config.DEFAULTS.PROJECT.TIME.start, this.config.DEFAULTS.PROJECT.TIME.start);
 
-        if (!time.start.isValid()) {
+        if (!time.start.isValid() || (isRange && (!time.end.isValid() || time.end.isBefore(time.start)))) {
             throw new Error(
-                "Couldn't create default project because the configured start time is invalid:" + this.config.DEFAULTS.PROJECT.TIME,
+                "Couldn't create default project because the configured time range is invalid:" + this.config.DEFAULTS.PROJECT.TIME,
             );
         }
 

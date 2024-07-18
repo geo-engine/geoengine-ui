@@ -42,7 +42,10 @@ interface Delays {
 export interface ConfigDefaults {
     readonly PROJECT: {
         readonly NAME: string;
-        readonly TIME: string;
+        readonly TIME: {
+            start: string;
+            end?: string;
+        };
         readonly TIMESTEP: '15 minutes' | '1 hour' | '1 day' | '1 month' | '6 months' | '1 year';
         readonly PROJECTION: 'EPSG:3857' | 'EPSG:4326';
     };
@@ -97,7 +100,9 @@ export const DEFAULT_CONFIG: ConfigStructure = {
     DEFAULTS: {
         PROJECT: {
             NAME: 'Default',
-            TIME: '2014-04-01T12:00:00.000Z',
+            TIME: {
+                start: '2014-04-01T12:00:00.000Z',
+            },
             TIMESTEP: '1 month',
             PROJECTION: 'EPSG:4326', // TODO: change back to 'EPSG:3857'
         },
