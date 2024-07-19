@@ -53,6 +53,7 @@
         "@angular/platform-browser-dynamic": "^17.3.0",
         "@angular/router": "^17.3.0",
         "@egjs/hammerjs": "^2.0.17",
+        "@fortawesome/fontawesome-free": "^5.15.4",
         "@geoengine/openapi-client": "0.0.9",
         "codemirror": "~5.65.16",
         "d3": "~7.9.0",

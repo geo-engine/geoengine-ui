@@ -11,7 +11,7 @@ import {ProvenanceTableComponent} from '../../../provenance/table/provenance-tab
 import {DataTableComponent} from '../../../datatable/table/table.component';
 import {NotificationService} from '../../../notification.service';
 import {RenameLayerComponent} from '../../rename-layer/rename-layer.component';
-import {LineageGraphComponent} from '../../../provenance/lineage-graph/lineage-graph.component';
+import {WorkflowEditorComponent} from '../../../workflow-editor/workflow-editor.component';
 import {LoadingState} from '../../../project/loading-state.model';
 import {BackendService} from '../../../backend/backend.service';
 import {UserService} from '../../../users/user.service';
@@ -41,7 +41,7 @@ export class LayerListElementComponent {
     readonly ST = SymbologyType;
     readonly LoadingState = LoadingState;
     readonly RenameLayerComponent = RenameLayerComponent;
-    readonly LineageGraphComponent = LineageGraphComponent;
+    readonly WorkflowEditorComponent = WorkflowEditorComponent;
 
     /**
      * The component constructor. It injects angular and geoengine services.

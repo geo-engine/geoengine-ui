@@ -1,9 +1,6 @@
-import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs';
-import {map} from 'rxjs/operators';
 import {Component, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Layer} from '@geoengine/common';
-import {TypedOperatorOperator} from '@geoengine/openapi-client';
 import {ProjectService} from "../project/project.service";
 import {LayoutService} from "../layout.service";
 import {render, WidgetModel} from "workflow-editor";
@@ -21,7 +18,6 @@ export class WorkflowEditorComponent implements AfterViewInit {
 
     @ViewChild("widget")
     widgetRef!: ElementRef;
-
     loading: boolean = true;
     readonly widgetModel = {
         data: {} as WidgetModel,
@@ -44,7 +40,7 @@ export class WorkflowEditorComponent implements AfterViewInit {
             this.listeners[eventName] = callback;
         },
         save_changes: function (): void {
-            throw new Error('Function not implemented.');
+            //noop
         },
         send: function (content: any, callbacks?: any, buffers?: ArrayBuffer[] | ArrayBufferView[] | undefined): void {
             throw new Error('Function not implemented.');
@@ -56,7 +52,7 @@ export class WorkflowEditorComponent implements AfterViewInit {
         private elementRef: ElementRef,
         private projectService: ProjectService,
         private layoutService: LayoutService,
-        private readonly userService: UserService,
+        private userService: UserService,
         private dialogRef: MatDialogRef<WorkflowEditorComponent>,
         @Inject(MAT_DIALOG_DATA) private config: { layer: Layer },
     ) {
@@ -71,10 +67,13 @@ export class WorkflowEditorComponent implements AfterViewInit {
     ngAfterViewInit(): void {
         this.projectService.getWorkflow(this.layer.workflowId).subscribe(workflow => {
             this.loading = false;
-            this.widgetModel
+            this.widgetModel.set("workflow", workflow as any);
             render({
                 model: this.widgetModel,
                 el: this.widgetRef.nativeElement
+            });
+            this.widgetModel.on("change:workflow", () => {
+                console.log("New workflow was exported to UI:", this.widgetModel.get("workflow"));
             });
         });
     }
