@@ -36,7 +36,6 @@ import {
     TimeConfigComponent,
     PlotListComponent,
     SidenavConfig,
-    SpatialReferenceService,
     LayerCollectionService,
     TaskListComponent,
 } from '@geoengine/core';
@@ -87,7 +86,6 @@ export class MainComponent implements OnInit, AfterViewInit {
         private readonly activatedRoute: ActivatedRoute,
         private readonly notificationService: NotificationService,
         private readonly mapService: MapService,
-        private readonly spatialReferenceService: SpatialReferenceService,
     ) {
         vcRef.length; // eslint-disable-line @typescript-eslint/no-unused-expressions
 
@@ -233,6 +231,7 @@ export class MainComponent implements OnInit, AfterViewInit {
                 AddDataComponent.createUploadButton(),
                 AddDataComponent.createDrawFeaturesButton(),
                 AddDataComponent.createAddWorkflowByIdButton(),
+                AddDataComponent.createWorkflowEditorButton()
             ]),
         );
     }

@@ -6,6 +6,7 @@ import {LayoutService, SidenavConfig} from '../../layout.service';
 import {AddWorkflowComponent} from '../add-workflow/add-workflow.component';
 import {DrawFeaturesComponent} from '../draw-features/draw-features.component';
 import {UploadComponent} from '../upload/upload.component';
+import {CreateWorkflowComponent} from "../create-workflow/create-workflow.component";
 
 export interface AddDataButton {
     name: string;
@@ -96,6 +97,18 @@ export class AddDataComponent {
             description: 'Add a workflow by its id',
             icon: 'build',
             sidenavConfig: {component: AddWorkflowComponent, keepParent: true},
+        };
+    }
+
+    /**
+     * Create workflow dialog
+     */
+    static createWorkflowEditorButton(): AddDataButton {
+        return {
+            name: 'Create Workflow using Editor',
+            description: 'Add a new workflow by graph editor',
+            icon: 'build',
+            sidenavConfig: {component: CreateWorkflowComponent, keepParent: true},
         };
     }
 }

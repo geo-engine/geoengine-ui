@@ -8,12 +8,12 @@ import {
     AutoCreateDatasetDict,
     CreateDatasetDict,
     DatasetNameResponseDict,
-    MetaDataSuggestionDict,
+    MetaDataSuggestionDict, RasterResultDescriptorDict,
     SuggestMetaDataDict,
     UploadFileLayersResponseDict,
     UploadFilesResponseDict,
     UploadResponseDict,
-    UUID,
+    UUID, VectorResultDescriptorDict,
 } from '../backend/backend.model';
 import {RandomColorService} from '../util/services/random-color.service';
 import {ProjectService} from '../project/project.service';
@@ -31,6 +31,7 @@ import {
     VectorResultDescriptor,
     VectorSymbology,
     colorToDict,
+    createVectorSymbology,
 } from '@geoengine/common';
 
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
@@ -44,7 +45,8 @@ export class DatasetService {
         protected userService: UserService,
         protected projectService: ProjectService,
         protected randomColorService: RandomColorService,
-    ) {}
+    ) {
+    }
 
     getDatasets(offset = 0, limit = 20): Observable<Array<Dataset>> {
         return this.userService.getSessionStream().pipe(
@@ -59,6 +61,7 @@ export class DatasetService {
             map((dict) => Dataset.fromDict(dict)),
         );
     }
+
     upload(form: FormData): Observable<HttpEvent<UploadResponseDict>> {
         return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.upload(token, form)));
     }
@@ -103,6 +106,60 @@ export class DatasetService {
         return this.projectService.registerWorkflow(workflow).pipe(map((workflowId) => this.createLayer(workflowId, dataset)));
     }
 
+    createLayerFromWorkflow(layerName: string, workflowId: UUID): Observable<Layer> {
+        return this.projectService.getWorkflowMetaData(workflowId).pipe(
+            map(resultDescriptorDict => {
+                const keys = Object.keys(resultDescriptorDict);
+
+                if (keys.includes('columns')) {
+                    return this.createVectorLayer(layerName, workflowId, resultDescriptorDict as VectorResultDescriptorDict);
+                } else if (keys.includes('bands')) {
+                    return this.createRasterLayer(layerName, workflowId, resultDescriptorDict as RasterResultDescriptorDict);
+                } else {
+                    // TODO: implement plots, etc.
+                    throw new Error('Adding this workflow type is unimplemented, yet');
+                }
+            })
+        );
+    }
+
+    private createVectorLayer(layerName: string, workflowId: UUID, resultDescriptor: VectorResultDescriptorDict): VectorLayer {
+        return new VectorLayer({
+            name: layerName,
+            workflowId,
+            isVisible: true,
+            isLegendVisible: false,
+            symbology: createVectorSymbology(resultDescriptor.dataType, this.randomColorService.getRandomColorRgba()),
+        });
+    }
+
+    private createRasterLayer(layerName: string, workflowId: UUID, _resultDescriptor: RasterResultDescriptorDict): RasterLayer {
+        return new RasterLayer({
+            name: layerName,
+            workflowId,
+            isVisible: true,
+            isLegendVisible: false,
+            symbology: RasterSymbology.fromRasterSymbologyDict({
+                type: 'raster',
+                opacity: 1.0,
+                rasterColorizer: {
+                    type: 'singleBand',
+                    band: 0,
+                    bandColorizer: {
+                        type: 'linearGradient',
+                        breakpoints: [
+                            {value: 1, color: [0, 0, 0, 255]},
+                            {value: 255, color: [255, 255, 255, 255]},
+                        ],
+                        overColor: [255, 255, 255, 127],
+                        underColor: [0, 0, 0, 127],
+                        noDataColor: [0, 0, 0, 0],
+                    },
+                },
+            }),
+        });
+    }
+
     createLayer(workflowId: string, dataset: Dataset): Layer {
         if (dataset.resultDescriptor.getTypeString() === 'Raster') {
             const symbology = dataset.symbology as RasterSymbology;
@@ -112,23 +169,23 @@ export class DatasetService {
                 symbology: symbology
                     ? symbology
                     : RasterSymbology.fromRasterSymbologyDict({
-                          type: 'raster',
-                          opacity: 1.0,
-                          rasterColorizer: {
-                              type: 'singleBand',
-                              band: 0,
-                              bandColorizer: {
-                                  type: 'linearGradient',
-                                  breakpoints: [
-                                      {value: 1, color: [0, 0, 0, 255]},
-                                      {value: 255, color: [255, 255, 255, 255]},
-                                  ],
-                                  overColor: [255, 255, 255, 127],
-                                  underColor: [0, 0, 0, 127],
-                                  noDataColor: [0, 0, 0, 0],
-                              },
-                          },
-                      }),
+                        type: 'raster',
+                        opacity: 1.0,
+                        rasterColorizer: {
+                            type: 'singleBand',
+                            band: 0,
+                            bandColorizer: {
+                                type: 'linearGradient',
+                                breakpoints: [
+                                    {value: 1, color: [0, 0, 0, 255]},
+                                    {value: 255, color: [255, 255, 255, 255]},
+                                ],
+                                overColor: [255, 255, 255, 127],
+                                underColor: [0, 0, 0, 127],
+                                noDataColor: [0, 0, 0, 0],
+                            },
+                        },
+                    }),
                 isLegendVisible: false,
                 isVisible: true,
             });
@@ -142,63 +199,63 @@ export class DatasetService {
                     symbology = (dataset.symbology as PointSymbology)
                         ? (dataset.symbology as PointSymbology)
                         : ClusteredPointSymbology.fromPointSymbologyDict({
-                              type: 'point',
-                              radius: {
-                                  type: 'static',
-                                  value: PointSymbology.DEFAULT_POINT_RADIUS,
-                              },
-                              stroke: {
-                                  width: {
-                                      type: 'static',
-                                      value: 1,
-                                  },
-                                  color: {
-                                      type: 'static',
-                                      color: [0, 0, 0, 255],
-                                  },
-                              },
-                              fillColor: {
-                                  type: 'static',
-                                  color: colorToDict(this.randomColorService.getRandomColorRgba()),
-                              },
-                          });
+                            type: 'point',
+                            radius: {
+                                type: 'static',
+                                value: PointSymbology.DEFAULT_POINT_RADIUS,
+                            },
+                            stroke: {
+                                width: {
+                                    type: 'static',
+                                    value: 1,
+                                },
+                                color: {
+                                    type: 'static',
+                                    color: [0, 0, 0, 255],
+                                },
+                            },
+                            fillColor: {
+                                type: 'static',
+                                color: colorToDict(this.randomColorService.getRandomColorRgba()),
+                            },
+                        });
                     break;
                 case VectorDataTypes.MultiLineString:
                     symbology = (dataset.symbology as LineSymbology)
                         ? (dataset.symbology as LineSymbology)
                         : LineSymbology.fromLineSymbologyDict({
-                              type: 'line',
-                              stroke: {
-                                  width: {type: 'static', value: 1},
-                                  color: {
-                                      type: 'static',
-                                      color: colorToDict(this.randomColorService.getRandomColorRgba()),
-                                  },
-                              },
-                              autoSimplified: true,
-                          });
+                            type: 'line',
+                            stroke: {
+                                width: {type: 'static', value: 1},
+                                color: {
+                                    type: 'static',
+                                    color: colorToDict(this.randomColorService.getRandomColorRgba()),
+                                },
+                            },
+                            autoSimplified: true,
+                        });
                     break;
                 case VectorDataTypes.MultiPolygon:
                     symbology = (dataset.symbology as PolygonSymbology)
                         ? (dataset.symbology as PolygonSymbology)
                         : PolygonSymbology.fromPolygonSymbologyDict({
-                              type: 'polygon',
-                              stroke: {
-                                  width: {
-                                      type: 'static',
-                                      value: 1,
-                                  },
-                                  color: {
-                                      type: 'static',
-                                      color: [0, 0, 0, 255],
-                                  },
-                              },
-                              fillColor: {
-                                  type: 'static',
-                                  color: colorToDict(this.randomColorService.getRandomColorRgba()),
-                              },
-                              autoSimplified: true,
-                          });
+                            type: 'polygon',
+                            stroke: {
+                                width: {
+                                    type: 'static',
+                                    value: 1,
+                                },
+                                color: {
+                                    type: 'static',
+                                    color: [0, 0, 0, 255],
+                                },
+                            },
+                            fillColor: {
+                                type: 'static',
+                                color: colorToDict(this.randomColorService.getRandomColorRgba()),
+                            },
+                            autoSimplified: true,
+                        });
                     break;
                 default:
                     throw Error('unknown symbology type');

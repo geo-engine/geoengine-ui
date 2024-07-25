@@ -150,6 +150,7 @@ import {MapResolutionExtentOverlayComponent} from './map/map-info/map-resolution
 import {DownloadLayerComponent} from './download-layer/download-layer.component';
 import {BandwiseExpressionOperatorComponent} from './operators/dialogs/bandwise-expression-operator/bandwise-expression-operator.component';
 import {WorkflowEditorComponent} from "./workflow-editor/workflow-editor.component";
+import {CreateWorkflowComponent} from "./datasets/create-workflow/create-workflow.component";
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -197,6 +198,7 @@ const CORE_PIPES = [
 const CORE_COMPONENTS = [
     AddDataComponent,
     AddWorkflowComponent,
+    CreateWorkflowComponent,
     AutocompleteSelectDirective,
     BackendStatusPageComponent,
     BoxPlotOperatorComponent,

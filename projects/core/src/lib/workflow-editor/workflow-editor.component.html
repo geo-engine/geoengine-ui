@@ -1,9 +1,21 @@
 <geoengine-dialog-header>{{ title }}</geoengine-dialog-header>
-<div fxLayout="row" fxLayoutAlign="center center">
-    <mat-spinner
-        *ngIf="loading"
-        class="loading"
-        [diameter]="15"
-    ></mat-spinner>
-    <div #widget></div>
+<div fxLayout="column" fxLayoutAlign="center center">
+    <div #widget [style.visibility]="(loading$ | async) ? 'collapse' : 'visible'"></div>
+    <div *ngIf="loading$ | async; then thenBlock else elseBlock"></div>
+    <ng-template #thenBlock>
+        <mat-spinner
+            class="loading"
+            [diameter]="15"
+        ></mat-spinner>
+    </ng-template>
+    <ng-template #elseBlock>
+        <button
+            mat-raised-button
+            color="primary"
+            [disabled]="!(isValid$ | async)"
+            (click)="onSave()"
+        >
+            Save
+        </button>
+    </ng-template>
 </div>
