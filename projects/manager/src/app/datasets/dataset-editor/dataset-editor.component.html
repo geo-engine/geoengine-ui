@@ -108,7 +108,16 @@
             </mat-card-header>
 
             <mat-card-content>
-                <geoengine-manager-loading-info [datasetName]="dataset.name"></geoengine-manager-loading-info>
+                @if (gdalMetaDataList) {
+                    <geoengine-manager-gdal-metadata-list [metaData]="gdalMetaDataList"></geoengine-manager-gdal-metadata-list>
+                } @else {
+                    <textarea [(ngModel)]="rawLoadingInfo" [ngModelOptions]="{standalone: true}" (change)="touchLoadingInfo()"></textarea>
+                }
+                <div class="actions">
+                    <button mat-raised-button color="primary" [disabled]="isSaveLoadingInfoDisabled()" (click)="saveLoadingInfo()">
+                        Apply
+                    </button>
+                </div>
             </mat-card-content>
         </mat-card>
 

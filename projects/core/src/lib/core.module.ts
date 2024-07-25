@@ -136,7 +136,6 @@ import {TimeShiftComponent} from './operators/dialogs/time-shift/time-shift.comp
 import {PieChartComponent} from './operators/dialogs/pie-chart/pie-chart.component';
 import {RasterizationComponent} from './operators/dialogs/rasterization/rasterization.component';
 import {UserSessionComponent} from './users/user-session/user-session.component';
-import {TimeIntervalInputComponent} from './time/time-interval-input/time-interval-input.component';
 import {QuotaInfoComponent} from './users/quota/quota-info/quota-info.component';
 import {LineSimplificationComponent} from './operators/dialogs/line-simplification/line-simplification.component';
 import {TaskListComponent} from './tasks/task-list/task-list.component';
@@ -288,7 +287,6 @@ const CORE_COMPONENTS = [
     TaskListComponent,
     TemporalRasterAggregationComponent,
     TimeConfigComponent,
-    TimeIntervalInputComponent,
     TimeShiftComponent,
     TimeSliderComponent,
     TimeStepSelectorComponent,

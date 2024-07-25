@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {MatChipInput} from '@angular/material/chips';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -17,6 +17,8 @@ import {
 import {
     Dataset,
     DatasetListing,
+    GdalMetaDataList,
+    MetaDataDefinition,
     RasterResultDescriptorWithType,
     TypedResultDescriptor,
     VectorResultDescriptorWithType,
@@ -24,6 +26,7 @@ import {
 import {BehaviorSubject} from 'rxjs';
 import {ProvenanceComponent} from '../../provenance/provenance.component';
 import {AppConfig} from '../../app-config.service';
+import {GdalMetadataListComponent} from '../loading-info/gdal-metadata-list/gdal-metadata-list.component';
 
 export interface DatasetForm {
     layerType: FormControl<'plot' | 'raster' | 'vector'>;
@@ -47,6 +50,7 @@ export class DatasetEditorComponent implements OnChanges {
 
     @ViewChild(MatChipInput) tagInput!: MatChipInput;
     @ViewChild(ProvenanceComponent) provenanceComponent!: ProvenanceComponent;
+    @ViewChild(GdalMetadataListComponent) gdalMetadataListComponent?: GdalMetadataListComponent;
 
     dataset?: Dataset;
     form: FormGroup<DatasetForm> = this.placeholderForm();
@@ -56,11 +60,16 @@ export class DatasetEditorComponent implements OnChanges {
     rasterSymbology?: RasterSymbology = undefined;
     vectorSymbology?: VectorSymbology = undefined;
 
+    rawLoadingInfo = '';
+    rawLoadingInfoPristine = true;
+    gdalMetaDataList?: GdalMetaDataList;
+
     constructor(
         private readonly datasetsService: DatasetsService,
         private readonly workflowsService: WorkflowsService,
         private readonly snackBar: MatSnackBar,
         private readonly config: AppConfig,
+        private readonly changeDetectorRef: ChangeDetectorRef,
     ) {}
 
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
@@ -70,6 +79,16 @@ export class DatasetEditorComponent implements OnChanges {
             const workflowId = await this.getWorkflowId(this.dataset);
             this.datasetWorkflowId$.next(workflowId);
             this.setUpColorizer(this.dataset);
+
+            const loadingInfo = await this.datasetsService.getLoadingInfo(this.dataset.name);
+            if (loadingInfo.type === 'GdalMetaDataList') {
+                this.gdalMetaDataList = loadingInfo;
+            } else {
+                this.gdalMetaDataList = undefined;
+                this.rawLoadingInfo = JSON.stringify(loadingInfo, null, 2);
+                this.rawLoadingInfoPristine = true;
+            }
+            this.changeDetectorRef.detectChanges();
         }
     }
 
@@ -159,6 +178,54 @@ export class DatasetEditorComponent implements OnChanges {
 
     async emitDeleted(): Promise<void> {
         this.datasetDeleted.emit();
+    }
+
+    getMetaDataDefinition(): MetaDataDefinition | undefined {
+        if (this.gdalMetadataListComponent) {
+            return this.gdalMetadataListComponent.getMetaData();
+        } else {
+            try {
+                return JSON.parse(this.rawLoadingInfo) as MetaDataDefinition;
+            } catch (e) {
+                this.snackBar.open('Invalid loading information.', 'Close', {panelClass: ['error-snackbar']});
+                return undefined;
+            }
+        }
+    }
+
+    isSaveLoadingInfoDisabled(): boolean {
+        if (this.gdalMetadataListComponent) {
+            return this.gdalMetadataListComponent.form.pristine || this.gdalMetadataListComponent.form.invalid;
+        } else {
+            return this.rawLoadingInfo === '' || this.rawLoadingInfoPristine;
+        }
+    }
+
+    async saveLoadingInfo(): Promise<void> {
+        const metaData = this.getMetaDataDefinition();
+
+        if (!metaData) {
+            return;
+        }
+
+        try {
+            await this.datasetsService.updateLoadingInfo(this.datasetListing.name, metaData);
+            this.snackBar.open('Dataset loading information successfully updated.', 'Close', {
+                duration: this.config.DEFAULTS.SNACKBAR_DURATION,
+            });
+
+            this.rawLoadingInfoPristine = true;
+            if (this.gdalMetadataListComponent) {
+                this.gdalMetadataListComponent.form.markAsPristine();
+            }
+        } catch (error) {
+            const errorMessage = await errorToText(error, 'Updating dataset loading information failed.');
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
+        }
+    }
+
+    touchLoadingInfo(): void {
+        this.rawLoadingInfoPristine = false;
     }
 
     private setUpColorizer(dataset: Dataset): void {

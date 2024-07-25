@@ -14,6 +14,7 @@ import {
     SuggestMetaDataHandlerRequest,
     Symbology,
     UpdateDataset,
+    Volume,
 } from '@geoengine/openapi-client';
 import {ReplaySubject, firstValueFrom} from 'rxjs';
 import {UserService, apiConfigurationWithAccessKey} from '../user/user.service';
@@ -69,6 +70,15 @@ export class DatasetsService {
         return datasetApi.suggestMetaDataHandler(suggest);
     }
 
+    async updateLoadingInfo(datasetName: string, metaDataDefinition: MetaDataDefinition): Promise<void> {
+        const datasetApi = await firstValueFrom(this.datasetApi);
+
+        return datasetApi.updateLoadingInfoHandler({
+            dataset: datasetName,
+            metaDataDefinition,
+        });
+    }
+
     async updateSymbology(datasetName: string, symbology: Symbology): Promise<void> {
         const datasetApi = await firstValueFrom(this.datasetApi);
 
@@ -108,6 +118,12 @@ export class DatasetsService {
                 },
             })
             .then((response) => response.datasetName);
+    }
+
+    async getVolumes(): Promise<Volume[]> {
+        const datasetApi = await firstValueFrom(this.datasetApi);
+
+        return datasetApi.listVolumesHandler();
     }
 
     async getDatasetStatus(datasetName: string): Promise<DatasetAccessStatusResponse> {
