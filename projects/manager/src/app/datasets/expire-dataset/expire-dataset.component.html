@@ -1,25 +1,42 @@
-<mat-card>
-    <mat-card-header>
-        <mat-card-title>Deletion</mat-card-title>
-        <div class="toggle">
-            <mat-slide-toggle [(ngModel)]="advancedDeletion">Advanced</mat-slide-toggle>
-        </div>
-    </mat-card-header>
-
-    <mat-card-content>
-        <form [formGroup]="deletionForm" [hidden]="!advancedDeletion">
-            <div>
-                <mat-checkbox class="example-margin" formControlName="delete_record">Delete Meta Data</mat-checkbox>
-            </div>
-            <div>
-                <mat-checkbox #setExpire class="example-margin" formControlName="setExpire">Set Expiration Time</mat-checkbox>
-            </div>
-            <div>
-                <geoengine-time-input formControlName="expirationTime" [isDisabled]="!setExpire.checked"></geoengine-time-input>
-            </div>
-        </form>
+@if (canDelete()) {
+    @if (isUserUpload()) {
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Deletion</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <div class="mat-typography">
+                    <h3>
+                        Status: <i>{{ getStatusString() }}</i>
+                    </h3>
+                </div>
+                <mat-divider></mat-divider>
+                <div class="mat-typography">
+                    <h3>Current Settings:</h3>
+                    <form [formGroup]="deletionForm">
+                        <div>
+                            <mat-checkbox class="example-margin" formControlName="deleteRecord">Delete Meta Data</mat-checkbox>
+                        </div>
+                        <div>
+                            <mat-checkbox #setExpire class="example-margin" formControlName="setExpire">Expiration Time</mat-checkbox>
+                        </div>
+                        <div>
+                            <geoengine-time-input
+                                [formControl]="deletionForm.controls['expirationTime']"
+                                [isDisabled]="!setExpire.checked"
+                            ></geoengine-time-input>
+                        </div>
+                    </form>
+                </div>
+                <div class="actions">
+                    <button mat-raised-button color="warn" [disabled]="!expires()" (click)="resetDeletion()">Reset</button>
+                    <button mat-raised-button color="warn" (click)="deleteDatasetAdvanced()">Apply</button>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    } @else {
         <div class="actions">
-            <button mat-raised-button color="warn" (click)="deleteDatasetFair()">Delete dataset (FAIR)</button>
+            <button mat-raised-button color="warn" (click)="deleteDatasetBasic()">Delete dataset</button>
         </div>
-    </mat-card-content>
-</mat-card>
+    }
+}

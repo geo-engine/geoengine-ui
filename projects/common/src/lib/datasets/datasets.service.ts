@@ -2,10 +2,11 @@ import {Injectable} from '@angular/core';
 import {
     DataPath,
     Dataset,
+    DatasetAccessStatusResponse,
     DatasetDefinition,
     DatasetListing,
     DatasetsApi,
-    ExpirationWithType,
+    ExpirationChange,
     MetaDataDefinition,
     MetaDataSuggestion,
     OrderBy,
@@ -109,7 +110,13 @@ export class DatasetsService {
             .then((response) => response.datasetName);
     }
 
-    async expireDataset(datasetName: string, expirationChange: ExpirationWithType): Promise<void> {
+    async getDatasetStatus(datasetName: string): Promise<DatasetAccessStatusResponse> {
+        const datasetApi = await firstValueFrom(this.datasetApi);
+
+        return datasetApi.getDatasetStatus({dataset: datasetName});
+    }
+
+    async expireDataset(datasetName: string, expirationChange: ExpirationChange): Promise<void> {
         const datasetApi = await firstValueFrom(this.datasetApi);
 
         return datasetApi.setDatasetExpiration({
