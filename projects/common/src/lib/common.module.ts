@@ -60,7 +60,6 @@ import {MeasurementComponent} from './measurement/measurement.component';
 import {TimeInputComponent} from './time/time-input/time-input.component';
 import {TimeIntervalInputComponent} from './time/time-interval-input/time-interval-input.component';
 import {PercentileBreakpointSelectorComponent} from './colors/percentile-breakpoint-selector/percentile-breakpoint-selector.component';
-import {TimeInputComponent} from './time/time-input/time-input.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -115,7 +114,6 @@ const COMMON_COMPONENTS = [
     TimeInputComponent,
     TimeIntervalInputComponent,
     PercentileBreakpointSelectorComponent,
-    TimeInputComponent,
 ];
 
 const COMMON_PIPES = [
