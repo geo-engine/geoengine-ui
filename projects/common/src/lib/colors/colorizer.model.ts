@@ -4,8 +4,8 @@ import {
     Colorizer as ColorizerDict,
     LinearGradient as LinearGradientDict,
     LogarithmicGradient as LogarithmicGradientDict,
-    ColorizerPalette as PaletteColorizerDict,
-    ColorizerRgba as RgbaColorizerDict,
+    PaletteColorizer as PaletteColorizerDict,
+    RgbaColorizer as RgbaColorizerDict,
 } from '@geoengine/openapi-client';
 
 export type ColorizerType = 'linearGradient' | 'logarithmicGradient' | 'palette' | 'rgba';
