@@ -1,6 +1,7 @@
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     Input,
     OnChanges,
@@ -12,15 +13,8 @@ import {
 } from '@angular/core';
 import {ProjectService} from '../../../project/project.service';
 import {Subject, Subscription, first} from 'rxjs';
-import {
-    ClassificationMeasurement,
-    ColorBreakpoint,
-    ContinuousMeasurement,
-    RasterLayer,
-    RasterLayerMetadata,
-    SingleBandRasterColorizer,
-} from '@geoengine/common';
-import {RasterBandDescriptor} from '@geoengine/openapi-client';
+import {ColorBreakpoint, RasterLayer, RasterLayerMetadata, SingleBandRasterColorizer} from '@geoengine/common';
+import {RasterBandDescriptor, Measurement, ContinuousMeasurement, ClassificationMeasurement} from '@geoengine/openapi-client';
 
 /**
  * calculate the decimal places for the legend of raster data
@@ -48,8 +42,8 @@ export function calculateNumberPipeParameters(breakpoints: Array<ColorBreakpoint
     pure: true,
 })
 export class CastMeasurementToClassificationPipe implements PipeTransform {
-    transform(value: unknown, _args?: unknown): ClassificationMeasurement | null {
-        if (value instanceof ClassificationMeasurement) {
+    transform(value: Measurement, _args?: unknown): ClassificationMeasurement | null {
+        if (value.type == 'classification') {
             return value;
         } else {
             return null;
@@ -62,8 +56,8 @@ export class CastMeasurementToClassificationPipe implements PipeTransform {
     pure: true,
 })
 export class CastMeasurementToContinuousPipe implements PipeTransform {
-    transform(value: unknown, _args?: unknown): ContinuousMeasurement | null {
-        if (value instanceof ContinuousMeasurement) {
+    transform(value: Measurement, _args?: unknown): ContinuousMeasurement | null {
+        if (value.type == 'continuous') {
             return value;
         } else {
             return null;
@@ -137,9 +131,18 @@ export class RasterLegendComponent implements OnInit, OnChanges, OnDestroy, Afte
     @Input()
     orderValuesDescending = false;
 
+    @Input()
+    showSingleBandNames = true;
+
+    @Input()
+    detectChanges = false; // workaround to force change detection
+
     private layerMetaDataSubscription?: Subscription;
 
-    constructor(public projectService: ProjectService) {}
+    constructor(
+        public projectService: ProjectService,
+        private changeDetectorRef: ChangeDetectorRef,
+    ) {}
 
     ngOnInit(): void {
         this.calculateDisplayedBreakpoints();
@@ -153,12 +156,19 @@ export class RasterLegendComponent implements OnInit, OnChanges, OnDestroy, Afte
                 const bands = (m as RasterLayerMetadata).bands;
                 const bandIndex = (this.layer.symbology.rasterColorizer as SingleBandRasterColorizer).band;
                 this.selectedBand$.next(bands[bandIndex]);
+
+                if (this.detectChanges) {
+                    this.changeDetectorRef.detectChanges();
+                }
             });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.layer || changes.orderValuesDescending) {
             this.calculateDisplayedBreakpoints();
+        }
+        if (!changes.showSingleBandNames == undefined) {
+            this.changeDetectorRef.markForCheck();
         }
     }
 

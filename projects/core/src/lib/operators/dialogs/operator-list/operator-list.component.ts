@@ -28,6 +28,7 @@ import {LineSimplificationComponent} from '../line-simplification/line-simplific
 import {RgbaCompositeComponent as RgbaCompositeComponent} from '../rgb-composite/rgb-composite.component';
 import {RasterStackerComponent} from '../raster-stacker/raster-stacker.component';
 import {VectorExpressionComponent} from '../vector-expression/vector-expression.component';
+import {BandwiseExpressionOperatorComponent} from '../bandwise-expression-operator/bandwise-expression-operator.component';
 
 /**
  * This type encapsulates…
@@ -167,6 +168,14 @@ export class OperatorListComponent implements OnInit, OnChanges {
     ];
 
     static readonly DEFAULT_RASTER_OPERATOR_DIALOGS: Array<OperatorListType> = [
+        {
+            component: BandwiseExpressionOperatorComponent,
+            type: {
+                NAME: 'Bandwise Expression',
+                ICON_URL: createIconDataUrl('Bandwise Expression'),
+            },
+            description: 'Calculate an expression on each band a raster',
+        },
         {
             component: ExpressionOperatorComponent,
             type: {

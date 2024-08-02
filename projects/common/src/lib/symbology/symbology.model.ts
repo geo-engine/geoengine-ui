@@ -1044,7 +1044,7 @@ function textSymbologyEquality(a?: TextSymbology, b?: TextSymbology): boolean {
     return a.equals(b);
 }
 
-export interface SymbologyHistogramParams {
+export interface SymbologyQueryParams {
     time: Time;
     bbox: BoundingBox2D;
     resolution: SpatialResolution;

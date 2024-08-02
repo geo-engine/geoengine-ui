@@ -113,6 +113,11 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
                 }
             }, timeOffset);
         }
+
+        // set prefix and suffix lines
+        if (this.prefixLine) {
+            this.writeValue(this.getCode(this.prefixLine, this.suffixLine));
+        }
     }
 
     ngOnDestroy(): void {

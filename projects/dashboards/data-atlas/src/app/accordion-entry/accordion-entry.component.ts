@@ -3,6 +3,7 @@ import {mergeMap, BehaviorSubject, combineLatest, of, forkJoin, Observable, map}
 import {
     LayerCollectionDict,
     LayerCollectionItemDict,
+    LayerCollectionLayerDict,
     LayerCollectionListingDict,
     LayerCollectionService,
     ProjectService,
@@ -77,9 +78,9 @@ export class AccordionEntryComponent implements OnInit {
         });
     }
 
-    layerSelected(i: number, id: ProviderLayerIdDict | undefined): void {
+    layerSelected(i: number, layer: LayerCollectionLayerDict | undefined): void {
         const selected = this.selectedLayers$.getValue();
-        selected[i] = id;
+        selected[i] = layer?.id;
         this.selectedLayers$.next(selected);
     }
 

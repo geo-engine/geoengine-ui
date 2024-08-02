@@ -11,7 +11,7 @@ import {
     ColorMapSelectorComponent,
     extentToBboxDict,
     LinearGradient,
-    MPL_COLORMAPS,
+    ALL_COLORMAPS,
     RasterLayer,
     RasterResultDescriptor,
     RasterSymbology,
@@ -21,6 +21,8 @@ import {
     Time,
     TRANSPARENT,
 } from '@geoengine/common';
+
+const COLORMAPS = ALL_COLORMAPS;
 
 export enum SymbologyCreationType {
     AS_INPUT = 'AS_INPUT',
@@ -67,7 +69,7 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
         } else return {valid: false};
     });
 
-    private colorMap = MPL_COLORMAPS.VIRIDIS;
+    private colorMap = COLORMAPS.VIRIDIS;
 
     private _onChange?: (value: SymbologyCreationType | null) => void;
     private _onTouched?: () => void;
@@ -95,8 +97,8 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
             this.value.setValue(this.COMPUTE_LINEAR_GRADIENT);
         }
 
-        if (this.colorMapName.toUpperCase() in MPL_COLORMAPS) {
-            this.colorMap = MPL_COLORMAPS[this.colorMapName.toUpperCase()];
+        if (this.colorMapName.toUpperCase() in COLORMAPS) {
+            this.colorMap = COLORMAPS[this.colorMapName.toUpperCase()];
         } else {
             throw new Error('Unsupported color map name ' + this.colorMapName);
         }

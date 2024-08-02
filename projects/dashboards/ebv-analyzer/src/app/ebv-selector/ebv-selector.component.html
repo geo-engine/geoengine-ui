@@ -10,6 +10,12 @@
         <button mat-raised-button class="show" fxFlex color="primary" *ngIf="layerId" (click)="showEbv()">Show</button>
         <button mat-raised-button color="primary" *ngIf="layer" (click)="editSymbology()"><mat-icon>palette</mat-icon></button>
     </div>
+    @if (layer) {
+        <div class="pin-symbology">
+            <span class="pin-symbology-text">Remember current legend / colorscale for all entities of the current metric </span
+            ><mat-slide-toggle [(ngModel)]="pinnedSymbology"></mat-slide-toggle>
+        </div>
+    }
 
     <mat-divider></mat-divider>
 

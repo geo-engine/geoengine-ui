@@ -10,7 +10,7 @@ import {
     Output,
     EventEmitter,
 } from '@angular/core';
-import {RasterSymbology, SingleBandRasterColorizer, SymbologyHistogramParams, SymbologyWorkflow} from '../symbology.model';
+import {RasterSymbology, SingleBandRasterColorizer, SymbologyQueryParams, SymbologyWorkflow} from '../symbology.model';
 import {Colorizer, ColorizerType, LinearGradient, LogarithmicGradient, PaletteColorizer, RgbaColorizer} from '../../colors/colorizer.model';
 import {Color, TRANSPARENT, WHITE} from '../../colors/color';
 import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
@@ -34,7 +34,7 @@ import {WorkflowsService} from '../../workflows/workflows.service';
 })
 export class RasterSymbologyEditorComponent implements OnChanges {
     @Input({required: true}) symbologyWorkflow!: SymbologyWorkflow<RasterSymbology>;
-    @Input() histogramParams?: SymbologyHistogramParams;
+    @Input() queryParams?: SymbologyQueryParams;
 
     @Output() changedSymbology: EventEmitter<RasterSymbology> = new EventEmitter();
 

@@ -3,10 +3,14 @@
         <!-- measurement -->
         <tr>
             <td colspan="3" class="measurement">
-                Bandname <i>{{ band.name }}</i
-                ><br />
+                @if (showSingleBandNames) {
+                    <span>
+                        Bandname: <i>{{ band.name }}</i></span
+                    >
+                }
+
                 <ng-container *ngIf="band.measurement | continuousMeasurement as measurement">
-                    Measurement
+                    Measurement:
                     <i
                         >{{ measurement.measurement }} <span *ngIf="measurement.unit">(in {{ measurement.unit }})</span></i
                     >
@@ -47,7 +51,7 @@
                         <div class="icon" [style.background-color]="breakpoint | breakpointToCssStringPipe"></div>
                     </td>
                     <td class="classes">{{ breakpoint.value }}</td>
-                    <td>{{ measurement.classes.get(breakpoint.value) }}</td>
+                    <td>{{ measurement.classes[breakpoint.value] }}</td>
                 </tr>
             </ng-container>
         </ng-container>
