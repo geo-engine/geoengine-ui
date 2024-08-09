@@ -14,8 +14,8 @@ import {SpatialReference, SrsString} from '../spatial-references/spatial-referen
 import {Time} from '../time/time.model';
 import {BoundingBox2D} from '../spatial-bounds/bounding-box';
 import {
-    RasterResultDescriptorWithType as RasterResultDescriptorDict,
-    VectorResultDescriptorWithType as VectorResultDescriptorDict,
+    TypedRasterResultDescriptor as RasterResultDescriptorDict,
+    TypedVectorResultDescriptor as VectorResultDescriptorDict,
     SpatialResolution,
     RasterBandDescriptor,
     TypedResultDescriptor,
