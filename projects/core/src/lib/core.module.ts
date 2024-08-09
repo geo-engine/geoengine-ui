@@ -147,6 +147,7 @@ import {SymbologyEditorComponent} from './layers/symbology/symbology-editor/symb
 import {MapResolutionExtentOverlayComponent} from './map/map-info/map-resolution-extent-overlay.component';
 import {DownloadLayerComponent} from './download-layer/download-layer.component';
 import {BandwiseExpressionOperatorComponent} from './operators/dialogs/bandwise-expression-operator/bandwise-expression-operator.component';
+import {BandNeighborhoodAggregateComponent} from './operators/dialogs/band-neighborhood-aggregate/band-neighborhood-aggregate.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -201,6 +202,7 @@ const CORE_COMPONENTS = [
     ClassHistogramOperatorComponent,
     CodeEditorComponent,
 
+    BandNeighborhoodAggregateComponent,
     BandwiseExpressionOperatorComponent,
     ColumnRangeFilterComponent,
     DatasetComponent,
