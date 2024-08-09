@@ -34,6 +34,7 @@ export * from './lib/symbology/vector-symbology-editor/vector-symbology-editor.c
 export * from './lib/time/time-interval-input/time-interval-input.component';
 export * from './lib/time/time-input/time-input.component';
 export * from './lib/plots/vega-viewer/vega-viewer.component';
+export * from './lib/time/time-input/time-input.component';
 
 // Models
 export * from './lib/colors/color-breakpoint.model';

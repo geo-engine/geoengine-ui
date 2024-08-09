@@ -1,10 +1,8 @@
 import {ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {MatChipInput} from '@angular/material/chips';
-import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {
-    ConfirmationComponent,
     DatasetsService,
     RasterSymbology,
     Symbology,
@@ -25,7 +23,7 @@ import {
     TypedResultDescriptor,
     VectorResultDescriptorWithType,
 } from '@geoengine/openapi-client';
-import {BehaviorSubject, firstValueFrom} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 import {ProvenanceComponent} from '../../provenance/provenance.component';
 import {AppConfig} from '../../app-config.service';
 import {GdalMetadataListComponent} from '../loading-info/gdal-metadata-list/gdal-metadata-list.component';
@@ -70,7 +68,6 @@ export class DatasetEditorComponent implements OnChanges {
         private readonly datasetsService: DatasetsService,
         private readonly workflowsService: WorkflowsService,
         private readonly snackBar: MatSnackBar,
-        private readonly dialog: MatDialog,
         private readonly config: AppConfig,
         private readonly changeDetectorRef: ChangeDetectorRef,
     ) {}
@@ -179,25 +176,8 @@ export class DatasetEditorComponent implements OnChanges {
         }
     }
 
-    async deleteDataset(): Promise<void> {
-        const dialogRef = this.dialog.open(ConfirmationComponent, {
-            data: {message: 'Confirm the deletion of the dataset. This cannot be undone.'},
-        });
-
-        const confirm = await firstValueFrom(dialogRef.afterClosed());
-
-        if (!confirm) {
-            return;
-        }
-
-        try {
-            await this.datasetsService.deleteDataset(this.datasetListing.name);
-            this.snackBar.open('Dataset successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
-            this.datasetDeleted.emit();
-        } catch (error) {
-            const errorMessage = await errorToText(error, 'Deleting dataset failed.');
-            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
-        }
+    async emitDeleted(): Promise<void> {
+        this.datasetDeleted.emit();
     }
 
     getMetaDataDefinition(): MetaDataDefinition | undefined {

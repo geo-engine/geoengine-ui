@@ -76,9 +76,9 @@
                     >
                         Apply
                     </button>
-                </div></mat-card-content
-            ></mat-card
-        >
+                </div>
+            </mat-card-content>
+        </mat-card>
 
         <mat-card>
             <mat-card-header>
@@ -149,8 +149,6 @@
             </mat-card-content>
         </mat-card>
 
-        <div class="actions">
-            <button mat-raised-button color="warn" (click)="deleteDataset()">Delete dataset</button>
-        </div>
+        <geoengine-expire-dataset [datasetName]="dataset.name" (datasetDeleted)="emitDeleted()"></geoengine-expire-dataset>
     </div>
 }

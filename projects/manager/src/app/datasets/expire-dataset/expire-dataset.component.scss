@@ -1,0 +1,26 @@
+mat-card-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+mat-card {
+    margin: 1rem 1rem 0rem 1rem;
+}
+
+mat-card-content {
+    margin-top: 1rem;
+}
+
+h3 {
+    margin: 0.5rem 0 0.5rem 0;
+}
+
+.actions {
+    text-align: right;
+    height: 3rem;
+    padding: 1rem;
+
+    button {
+        margin: 0.5rem;
+    }
+}
