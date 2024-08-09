@@ -77,7 +77,11 @@ export class MapResolutionExtentOverlayComponent {
     }
 
     private getFraction(number: string): string {
-        return number.split('.')[1];
+        const split = number.split('.');
+        if (split.length < 2) {
+            return '';
+        }
+        return split[1];
     }
 
     private countTrailingFractionZeros(number: string): number {
