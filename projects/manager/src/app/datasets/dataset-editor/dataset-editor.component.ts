@@ -21,9 +21,9 @@ import {
     DatasetListing,
     GdalMetaDataList,
     MetaDataDefinition,
-    RasterResultDescriptorWithType,
+    TypedRasterResultDescriptor,
     TypedResultDescriptor,
-    VectorResultDescriptorWithType,
+    TypedVectorResultDescriptor,
 } from '@geoengine/openapi-client';
 import {BehaviorSubject, firstValueFrom} from 'rxjs';
 import {ProvenanceComponent} from '../../provenance/provenance.component';
@@ -328,11 +328,11 @@ export class DatasetEditorComponent implements OnChanges {
 
     private dataTypeFromResultDescriptor(rd: TypedResultDescriptor): string {
         if (rd.type === 'raster') {
-            return (rd as RasterResultDescriptorWithType).dataType;
+            return (rd as TypedRasterResultDescriptor).dataType;
         }
 
         if (rd.type === 'vector') {
-            return (rd as VectorResultDescriptorWithType).dataType;
+            return (rd as TypedVectorResultDescriptor).dataType;
         }
 
         // There are no plot datasets so this should never happen
