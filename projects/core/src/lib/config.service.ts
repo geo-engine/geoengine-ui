@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
 import {Configuration, DefaultConfig} from '@geoengine/openapi-client';
 import {CommonConfig, mergeDeepOverrideLists} from '@geoengine/common';
 
@@ -248,10 +247,7 @@ export class Config {
         return this.config.SPATIAL_REFERENCES;
     }
 
-    constructor(
-        protected http: HttpClient,
-        protected readonly commonConfig: CommonConfig,
-    ) {}
+    constructor(protected readonly commonConfig: CommonConfig) {}
 
     // noinspection JSUnusedGlobalSymbols <- function used in parent app
     /**

@@ -54,13 +54,18 @@ import {bboxDictToExtent, unixTimestampToIsoString} from '@geoengine/common';
     providedIn: 'root',
 })
 export class BackendService {
-    readonly wmsBaseUrl = `${this.config.API_URL}/wms`;
-    readonly wcsBaseUrl = `${this.config.API_URL}/wcs`;
-
     constructor(
         protected readonly http: HttpClient,
         protected readonly config: Config,
     ) {}
+
+    get wmsBaseUrl(): string {
+        return `${this.config.API_URL}/wms`;
+    }
+
+    get wcsBaseUrl(): string {
+        return `${this.config.API_URL}/wcs`;
+    }
 
     registerUser(request: {email: string; password: string; realName: string}): Observable<RegistrationDict> {
         return this.http.post<RegistrationDict>(this.config.API_URL + '/user', request);
