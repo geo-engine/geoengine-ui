@@ -10,7 +10,7 @@ import {MatCardModule} from '@angular/material/card';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {PortalModule} from '@angular/cdk/portal';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {CoreModule, MapContainerComponent, UserService} from '@geoengine/core';
+import {BackendService, CoreModule, MapContainerComponent, UserService} from '@geoengine/core';
 import {CommonConfig, Layer, Time, VegaChartData} from '@geoengine/common';
 import {utc} from 'moment';
 
@@ -85,12 +85,7 @@ export class DashboardComponent implements AfterViewInit {
                 }`,
     };
 
-    constructor(
-        readonly userService: UserService,
-        private commonConfig: CommonConfig,
-    ) {
-        this.commonConfig.load(); // TODO: fix redundant config
-    }
+    constructor(readonly userService: UserService) {}
 
     ngAfterViewInit(): void {
         this.breakpointObserver

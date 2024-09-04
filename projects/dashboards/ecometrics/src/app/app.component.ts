@@ -3,7 +3,7 @@ import {RouterOutlet} from '@angular/router';
 import {DashboardComponent} from './dashboard/dashboard.component';
 import {
     BackendService,
-    Config,
+    CoreConfig,
     CoreModule,
     LayoutService,
     MapService,
@@ -15,12 +15,15 @@ import {
     UserService,
 } from '@geoengine/core';
 import {DataSelectionService} from 'projects/dashboards/data-atlas/src/app/data-selection.service';
+import {CommonConfig} from '@geoengine/common';
 
 @Component({
     selector: 'app-root',
     standalone: true,
     imports: [RouterOutlet, CoreModule, DashboardComponent],
     providers: [
+        {provide: CommonConfig, useExisting: CoreConfig},
+        CoreConfig,
         BackendService,
         LayoutService,
         MapService,

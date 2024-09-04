@@ -13,7 +13,7 @@ import {UserService} from '../users/user.service';
 import {bboxAsOgcString, gridOffsetsAsOgcString, gridOriginAsOgcString} from '../util/spatial_reference';
 import {Layer, SpatialReference, Time, olExtentToTuple, extentToBboxDict, geoengineValidators, TimeInterval} from '@geoengine/common';
 import {TypedResultDescriptor} from '@geoengine/openapi-client';
-import {Config} from '../config.service';
+import {CoreConfig} from '../config.service';
 
 export interface DownloadLayerForm {
     bboxMinX: FormControl<number>;
@@ -61,7 +61,7 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
         protected notificationService: NotificationService,
         protected spatialReferenceService: SpatialReferenceService,
         private formBuilder: UntypedFormBuilder,
-        public readonly config: Config,
+        public readonly config: CoreConfig,
     ) {
         // initialize with the current time to have a defined value
         const time = new Time(moment.utc(), moment.utc());

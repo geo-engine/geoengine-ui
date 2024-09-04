@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpEvent, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable, Subject} from 'rxjs';
-import {Config} from '../config.service';
+import {CoreConfig} from '../config.service';
 import {
     BBoxDict,
     CreateProjectResponseDict,
@@ -56,8 +56,10 @@ import {bboxDictToExtent, unixTimestampToIsoString} from '@geoengine/common';
 export class BackendService {
     constructor(
         protected readonly http: HttpClient,
-        protected readonly config: Config,
-    ) {}
+        protected readonly config: CoreConfig,
+    ) {
+        console.log('BackendService.constructor', config);
+    }
 
     get wmsBaseUrl(): string {
         return `${this.config.API_URL}/wms`;

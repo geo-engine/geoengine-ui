@@ -6,7 +6,7 @@ import {mergeWith} from 'immutable';
 /**
  * The structure of the config file containing the URL of the backend API and the branding information.
  */
-export interface ConfigStructure {
+export interface CommonConfigStructure {
     readonly API_URL: string;
     readonly DELAYS: Delays;
     readonly PLOTS: Plots;
@@ -15,7 +15,7 @@ export interface ConfigStructure {
 /**
  * Delay values for different actions.
  */
-interface Delays {
+export interface Delays {
     readonly DEBOUNCE: number;
 }
 
@@ -23,7 +23,7 @@ interface Plots {
     readonly THEME: 'excel' | 'ggplot2' | 'quartz' | 'vox' | 'dark';
 }
 
-export const DEFAULT_CONFIG: ConfigStructure = {
+export const DEFAULT_CONFIG: CommonConfigStructure = {
     API_URL: '/api',
     DELAYS: {
         DEBOUNCE: 400,
@@ -33,33 +33,36 @@ export const DEFAULT_CONFIG: ConfigStructure = {
     },
 };
 
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class CommonConfig {
     static readonly CONFIG_FILE = 'assets/config.json';
 
-    protected config!: ConfigStructure;
+    protected static config: CommonConfigStructure;
 
     get API_URL(): string {
-        return this.config.API_URL;
+        return CommonConfig.config.API_URL;
     }
 
     get DELAYS(): Delays {
-        return this.config.DELAYS;
+        return CommonConfig.config.DELAYS;
     }
 
     get PLOTS(): Plots {
-        return this.config.PLOTS;
+        return CommonConfig.config.PLOTS;
     }
 
     // noinspection JSUnusedGlobalSymbols <- function used in parent app
     /**
      * Initialize the config on app start.
      */
-    public async load(defaults: ConfigStructure = DEFAULT_CONFIG): Promise<void> {
+    public static async load(defaults: CommonConfigStructure = DEFAULT_CONFIG): Promise<void> {
         const configFileResponse = await fetch(CommonConfig.CONFIG_FILE);
 
         const appConfig = await configFileResponse.json().catch(() => ({}));
-        this.config = mergeDeepOverrideLists(defaults, {...appConfig});
+        CommonConfig.config = mergeDeepOverrideLists(defaults, {...appConfig});
+        console.log('this.config:', this.config);
 
         // we alter the config in the openapi-client so that it uses the correct API_URL
         DefaultConfig.config = new Configuration({

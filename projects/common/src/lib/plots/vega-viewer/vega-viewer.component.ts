@@ -70,7 +70,7 @@ export class VegaViewerComponent implements OnChanges {
 
         vegaEmbed(div, spec, {
             actions: false,
-            theme: 'excel', // TODO: load from config
+            theme: this.config.PLOTS.THEME,
             renderer: 'svg',
             config: {
                 autosize: {

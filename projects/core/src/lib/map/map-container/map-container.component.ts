@@ -53,7 +53,7 @@ import {MapLayerComponent} from '../map-layer.component';
 
 import {FeatureSelection, ProjectService} from '../../project/project.service';
 import {Extent, MapService} from '../map.service';
-import {Config} from '../../config.service';
+import {CoreConfig} from '../../config.service';
 import {MatGridList, MatGridTile} from '@angular/material/grid-list';
 import {SpatialReferenceService, WGS_84} from '../../spatial-references/spatial-reference.service';
 import {containsCoordinate, getCenter} from 'ol/extent';
@@ -126,7 +126,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
      * Create the component and inject several dependencies via DI.
      */
     constructor(
-        private config: Config,
+        private config: CoreConfig,
         private changeDetectorRef: ChangeDetectorRef,
         private mapService: MapService,
         private projectService: ProjectService,

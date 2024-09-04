@@ -4,7 +4,7 @@ import {Configuration, DefaultConfig} from '@geoengine/openapi-client';
 /**
  * The structure of the config file containing the URL of the backend API and the branding information.
  */
-export interface ConfigStructure {
+export interface AppConfigStructure {
     readonly BRANDING: Branding;
     readonly DEFAULTS: ConfigDefaults;
 }
@@ -37,7 +37,7 @@ interface Homepage {
     readonly BUTTON_TOOLTIP_TEXT: string;
 }
 
-export const DEFAULT_CONFIG: ConfigStructure = {
+export const DEFAULT_CONFIG: AppConfigStructure = {
     BRANDING: {
         LOGO_URL: 'assets/geoengine.svg',
         LOGO_ICON_URL: 'assets/geoengine-favicon-white.svg',
@@ -50,12 +50,8 @@ export const DEFAULT_CONFIG: ConfigStructure = {
 };
 
 @Injectable()
-export class AppConfig {
-    static readonly CONFIG_FILE = 'assets/config.json';
-
-    protected config!: ConfigStructure;
-
-    constructor(protected readonly commonConfig: CommonConfig) {}
+export class AppConfig extends CommonConfig {
+    protected override config!: AppConfigStructure;
 
     get BRANDING(): Branding {
         return this.config.BRANDING;
@@ -69,7 +65,7 @@ export class AppConfig {
     /**
      * Initialize the config on app start.
      */
-    async load(defaults: ConfigStructure = DEFAULT_CONFIG): Promise<void> {
+    async load(defaults: AppConfigStructure = DEFAULT_CONFIG): Promise<void> {
         const configFileResponse = await fetch(AppConfig.CONFIG_FILE);
 
         const appConfig = await configFileResponse.json().catch(() => ({}));
