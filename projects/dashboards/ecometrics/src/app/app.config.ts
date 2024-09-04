@@ -1,4 +1,4 @@
-import {APP_INITIALIZER, ApplicationConfig, importProvidersFrom} from '@angular/core';
+import {APP_INITIALIZER, ApplicationConfig, importProvidersFrom, InjectionToken} from '@angular/core';
 import {provideRouter} from '@angular/router';
 import {provideAnimations} from '@angular/platform-browser/animations';
 
@@ -23,24 +23,23 @@ export const appConfig: ApplicationConfig = {
     providers: [
         provideRouter(routes),
         provideAnimations(),
-        // provideHttpClient(),
-        // {
-        //     provide: APP_INITIALIZER,
-        //     useFactory: (config: CoreConfig) => (): Promise<void> => config.load(),
-        //     deps: [CoreConfig],
-        //     multi: true,
-        // },
-        // {provide: CommonConfig, useExisting: CoreConfig},
-        // CoreConfig,
-        // BackendService,
-        // LayoutService,
-        // MapService,
-        // NotificationService,
-        // ProjectService,
-        // RandomColorService,
-        // SidenavRef,
-        // SpatialReferenceService,
-        // DataSelectionService,
-        // UserService,
+        provideHttpClient(),
+        {
+            provide: APP_INITIALIZER,
+            useFactory: (config: CoreConfig) => (): Promise<void> => config.load(),
+            deps: [CoreConfig],
+            multi: true,
+        },
+        CoreConfig,
+        BackendService,
+        LayoutService,
+        MapService,
+        NotificationService,
+        ProjectService,
+        RandomColorService,
+        SidenavRef,
+        SpatialReferenceService,
+        DataSelectionService,
+        UserService,
     ],
 };

@@ -1,6 +1,5 @@
 <div class="grid-container">
-    <h1 class="mat-h1">ECOMETRICS</h1>
-    <mat-grid-list cols="2" rowHeight="350px">
+    <mat-grid-list cols="2" rowHeight="400px">
         @for (card of cards | async; track card) {
             <mat-grid-tile [colspan]="card.cols" [rowspan]="card.rows">
                 <mat-card class="dashboard-card">
@@ -33,11 +32,9 @@
     </p>
     <ul>
         <li>Land Classification: Analyze the types of land within your selected area.</li>
-        <li>
-            Vegetation Index: Assess the vegetation health and density in your chosen region. Simply draw your area of interest on the map
-            and select the desired indicator to begin your analysis.
-        </li>
+        <li>Vegetation Index: Assess the vegetation health and density in your chosen region.</li>
     </ul>
+    <p>Simply draw your area of interest on the map and select the desired indicator to begin your analysis.</p>
     <mat-form-field>
         <mat-label>Indicator</mat-label>
         <mat-select>

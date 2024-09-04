@@ -334,7 +334,6 @@ const CORE_COMPONENTS = [
         {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}},
         {provide: MAT_CARD_CONFIG, useValue: {appearance: 'outlined'}},
         {provide: CommonConfig, useExisting: CoreConfig},
-        CoreConfig,
     ],
 })
 export class CoreModule {}

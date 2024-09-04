@@ -190,56 +190,51 @@ export const DEFAULT_CONFIG: CoreConfigStructure = {
  * A service that provides config entries.
  * Loads a custom file at startup.
  */
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable()
 export class CoreConfig extends CommonConfig {
-    protected static override config: CoreConfigStructure;
+    protected override config!: CoreConfigStructure;
 
     override get DELAYS(): Delays {
-        return CoreConfig.config.DELAYS;
+        return this.config.DELAYS;
     }
 
     get WMS(): Wms {
-        return CoreConfig.config.WMS;
+        return this.config.WMS;
     }
 
     get WFS(): Wfs {
-        return CoreConfig.config.WFS;
+        return this.config.WFS;
     }
 
     get WCS(): Wcs {
-        return CoreConfig.config.WCS;
+        return this.config.WCS;
     }
 
     get USER(): User {
-        return CoreConfig.config.USER;
+        return this.config.USER;
     }
 
     get DEFAULTS(): ConfigDefaults {
-        return CoreConfig.config.DEFAULTS;
+        return this.config.DEFAULTS;
     }
 
     get MAP(): ConfigMap {
-        return CoreConfig.config.MAP;
+        return this.config.MAP;
     }
 
     get TIME(): Time {
-        return CoreConfig.config.TIME;
+        return this.config.TIME;
     }
 
     get SPATIAL_REFERENCES(): Array<SpatialReferenceConfig> {
-        return CoreConfig.config.SPATIAL_REFERENCES;
+        return this.config.SPATIAL_REFERENCES;
     }
 
     /**
      * Initialize the config on app start.
      */
-    static override async load(defaults: CoreConfigStructure = DEFAULT_CONFIG): Promise<void> {
-        await CommonConfig.load();
-
-        CoreConfig.config = mergeDeepOverrideLists(defaults, {...CommonConfig.config});
-
-        console.log(CoreConfig.config);
+    override async load(defaults: CoreConfigStructure = DEFAULT_CONFIG): Promise<void> {
+        await super.load();
+        this.config = mergeDeepOverrideLists(defaults, {...this.config});
     }
 }

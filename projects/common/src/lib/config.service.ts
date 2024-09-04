@@ -33,36 +33,36 @@ export const DEFAULT_CONFIG: CommonConfigStructure = {
     },
 };
 
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable()
 export class CommonConfig {
     static readonly CONFIG_FILE = 'assets/config.json';
 
-    protected static config: CommonConfigStructure;
+    protected config!: CommonConfigStructure;
 
     get API_URL(): string {
-        return CommonConfig.config.API_URL;
+        return this.config.API_URL;
     }
 
     get DELAYS(): Delays {
-        return CommonConfig.config.DELAYS;
+        return this.config.DELAYS;
     }
 
     get PLOTS(): Plots {
-        return CommonConfig.config.PLOTS;
+        return this.config.PLOTS;
     }
 
     // noinspection JSUnusedGlobalSymbols <- function used in parent app
     /**
      * Initialize the config on app start.
      */
-    public static async load(defaults: CommonConfigStructure = DEFAULT_CONFIG): Promise<void> {
+    public async load(defaults: CommonConfigStructure = DEFAULT_CONFIG): Promise<void> {
+        console.log('loading common config');
         const configFileResponse = await fetch(CommonConfig.CONFIG_FILE);
 
         const appConfig = await configFileResponse.json().catch(() => ({}));
-        CommonConfig.config = mergeDeepOverrideLists(defaults, {...appConfig});
-        console.log('this.config:', this.config);
+        this.config = mergeDeepOverrideLists(defaults, {...appConfig});
+
+        console.log('loaded common config', this.config);
 
         // we alter the config in the openapi-client so that it uses the correct API_URL
         DefaultConfig.config = new Configuration({

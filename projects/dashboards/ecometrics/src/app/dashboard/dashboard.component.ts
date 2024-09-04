@@ -9,9 +9,9 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {PortalModule} from '@angular/cdk/portal';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {BackendService, CoreModule, MapContainerComponent, UserService} from '@geoengine/core';
-import {CommonConfig, Layer, Time, VegaChartData} from '@geoengine/common';
+import {BehaviorSubject} from 'rxjs';
+import {CoreModule, MapContainerComponent, UserService} from '@geoengine/core';
+import {Layer, Time, VegaChartData} from '@geoengine/common';
 import {utc} from 'moment';
 
 @Component({

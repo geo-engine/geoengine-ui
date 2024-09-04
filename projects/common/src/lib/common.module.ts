@@ -146,6 +146,5 @@ const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGa
         AngularCommonModule,
         ScrollingModule,
     ],
-    providers: [CommonConfig],
 })
 export class CommonModule {}
