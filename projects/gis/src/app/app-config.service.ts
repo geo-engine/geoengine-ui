@@ -2,7 +2,7 @@
 
 import {Injectable} from '@angular/core';
 import {mergeDeepOverrideLists} from '@geoengine/common';
-import {CoreConfig, CoreConfigStructure, DEFAULT_CONFIG} from '@geoengine/core';
+import {CoreConfig, CoreConfigStructure, DEFAULT_CORE_CONFIG} from '@geoengine/core';
 import {Homepage} from './Homepage';
 
 interface Components {
@@ -30,7 +30,7 @@ interface AppConfigStructure extends CoreConfigStructure {
     readonly BRANDING: Branding;
 }
 
-const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CONFIG, {
+const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CORE_CONFIG, {
     COMPONENTS: {
         PLAYBACK: {
             AVAILABLE: false,

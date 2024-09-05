@@ -57,9 +57,7 @@ export class BackendService {
     constructor(
         protected readonly http: HttpClient,
         protected readonly config: CoreConfig,
-    ) {
-        console.log('BackendService.constructor', config);
-    }
+    ) {}
 
     get wmsBaseUrl(): string {
         return `${this.config.API_URL}/wms`;

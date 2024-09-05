@@ -4,7 +4,6 @@ import {BrowserModule} from '@angular/platform-browser';
 import {HttpClientModule} from '@angular/common/http';
 import {AppComponent} from './app.component';
 import {
-    Config,
     LayoutService,
     MapService,
     NotificationService,
@@ -14,6 +13,7 @@ import {
     SpatialReferenceService,
     UserService,
     CoreModule,
+    CoreConfig,
 } from '@geoengine/core';
 import {AppConfig} from './app-config.service';
 import {PortalModule} from '@angular/cdk/portal';
@@ -26,6 +26,7 @@ import {LoginComponent} from './login/login.component';
 import {AppRoutingModule} from './app-routing.module';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {FormsModule} from '@angular/forms';
+import {CommonConfig} from '@geoengine/common';
 
 @NgModule({
     declarations: [AppComponent, AttributionsComponent, LegendComponent, SpeciesSelectorComponent, MainComponent, LoginComponent],
@@ -40,11 +41,19 @@ import {FormsModule} from '@angular/forms';
         PortalModule,
     ],
     providers: [
-        {provide: Config, useClass: AppConfig},
+        AppConfig,
+        {
+            provide: CoreConfig,
+            useExisting: AppConfig,
+        },
+        {
+            provide: CommonConfig,
+            useExisting: AppConfig,
+        },
         {
             provide: APP_INITIALIZER,
             useFactory: (config: AppConfig) => (): Promise<void> => config.load(),
-            deps: [Config],
+            deps: [AppConfig],
             multi: true,
         },
         LayoutService,

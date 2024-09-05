@@ -5,7 +5,6 @@ import {HttpClientModule} from '@angular/common/http';
 import {RouterModule} from '@angular/router';
 import {AppComponent} from './app.component';
 import {
-    Config,
     DatasetService,
     LayoutService,
     MapService,
@@ -16,6 +15,7 @@ import {
     SpatialReferenceService,
     UserService,
     CoreModule,
+    CoreConfig,
 } from '@geoengine/core';
 import {AppConfig} from './app-config.service';
 import {PortalModule} from '@angular/cdk/portal';
@@ -30,6 +30,7 @@ import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {AccordionEntryComponent} from './accordion-entry/accordion-entry.component';
 import {AccordionVectorEntryComponent} from './accordion-vector-entry/accordion-vector-entry.component';
 import {DataPointComponent} from './data-point/data-point.component';
+import {CommonConfig} from '@geoengine/common';
 
 @NgModule({
     declarations: [
@@ -54,11 +55,19 @@ import {DataPointComponent} from './data-point/data-point.component';
         NgxMatSelectSearchModule,
     ],
     providers: [
-        {provide: Config, useClass: AppConfig},
+        AppConfig,
+        {
+            provide: CoreConfig,
+            useExisting: AppConfig,
+        },
+        {
+            provide: CommonConfig,
+            useExisting: AppConfig,
+        },
         {
             provide: APP_INITIALIZER,
             useFactory: (config: AppConfig) => (): Promise<void> => config.load(),
-            deps: [Config],
+            deps: [AppConfig],
             multi: true,
         },
         {provide: DatasetService, useClass: AppDatasetService},

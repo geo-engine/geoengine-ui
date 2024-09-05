@@ -90,7 +90,7 @@ export interface CoreConfigStructure extends CommonConfigStructure {
     readonly SPATIAL_REFERENCES: Array<SpatialReferenceConfig>;
 }
 
-export const DEFAULT_CONFIG: CoreConfigStructure = {
+export const DEFAULT_CORE_CONFIG: CoreConfigStructure = {
     DEFAULTS: {
         PROJECT: {
             NAME: 'Default',
@@ -233,7 +233,7 @@ export class CoreConfig extends CommonConfig {
     /**
      * Initialize the config on app start.
      */
-    override async load(defaults: CoreConfigStructure = DEFAULT_CONFIG): Promise<void> {
+    override async load(defaults: CoreConfigStructure = DEFAULT_CORE_CONFIG): Promise<void> {
         await super.load();
         this.config = mergeDeepOverrideLists(defaults, {...this.config});
     }

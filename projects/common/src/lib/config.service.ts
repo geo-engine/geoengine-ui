@@ -23,7 +23,7 @@ interface Plots {
     readonly THEME: 'excel' | 'ggplot2' | 'quartz' | 'vox' | 'dark';
 }
 
-export const DEFAULT_CONFIG: CommonConfigStructure = {
+export const DEFAULT_COMMON_CONFIG: CommonConfigStructure = {
     API_URL: '/api',
     DELAYS: {
         DEBOUNCE: 400,
@@ -55,14 +55,11 @@ export class CommonConfig {
     /**
      * Initialize the config on app start.
      */
-    public async load(defaults: CommonConfigStructure = DEFAULT_CONFIG): Promise<void> {
-        console.log('loading common config');
+    public async load(defaults: CommonConfigStructure = DEFAULT_COMMON_CONFIG): Promise<void> {
         const configFileResponse = await fetch(CommonConfig.CONFIG_FILE);
 
         const appConfig = await configFileResponse.json().catch(() => ({}));
         this.config = mergeDeepOverrideLists(defaults, {...appConfig});
-
-        console.log('loaded common config', this.config);
 
         // we alter the config in the openapi-client so that it uses the correct API_URL
         DefaultConfig.config = new Configuration({
