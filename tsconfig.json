@@ -5,7 +5,7 @@
         "outDir": "./dist/out-tsc",
         "sourceMap": true,
         "declaration": false,
-        "downlevelIteration": true,
+        "esModuleInterop": true,
         "experimentalDecorators": true,
         "module": "ES2022",
         "moduleResolution": "node",
@@ -16,8 +16,6 @@
             "@geoengine/core": ["dist/core"],
             "@geoengine/common": ["dist/common"]
         },
-        // TODO: set to false if no longer needed for moment and proj4
-        "allowSyntheticDefaultImports": true,
         "forceConsistentCasingInFileNames": true,
         "strict": true,
         "noImplicitOverride": true,

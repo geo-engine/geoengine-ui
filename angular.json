@@ -70,7 +70,7 @@
             "prefix": "geoengine",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
+                    "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
                             "clone",
@@ -87,9 +87,10 @@
                             "web-worker",
                             "xml-utils"
                         ],
-                        "outputPath": "dist/gis",
+                        "outputPath": {
+                            "base": "dist/gis"
+                        },
                         "index": "projects/gis/src/index.html",
-                        "main": "projects/gis/src/main.ts",
                         "polyfills": ["zone.js"],
                         "tsConfig": "projects/gis/tsconfig.app.json",
                         "assets": [
@@ -111,12 +112,11 @@
                             "./node_modules/vis-timeline/dist/vis-timeline-graph2d.min.css"
                         ],
                         "scripts": ["node_modules/vis-timeline/peer/esm/vis-timeline-graph2d.min.js"],
-                        "vendorChunk": true,
                         "extractLicenses": false,
-                        "buildOptimizer": false,
                         "sourceMap": true,
                         "optimization": false,
-                        "namedChunks": true
+                        "namedChunks": true,
+                        "browser": "projects/gis/src/main.ts"
                     },
                     "configurations": {
                         "production": {
@@ -125,8 +125,6 @@
                             "sourceMap": false,
                             "namedChunks": false,
                             "extractLicenses": true,
-                            "vendorChunk": false,
-                            "buildOptimizer": true,
                             "budgets": [
                                 {
                                     "type": "initial",
@@ -216,7 +214,7 @@
             "prefix": "geoengine",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
+                    "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
                             "codemirror",
@@ -232,9 +230,10 @@
                             "fast-deep-equal",
                             "fast-json-stable-stringify"
                         ],
-                        "outputPath": "dist/dashboards/data-atlas",
+                        "outputPath": {
+                            "base": "dist/dashboards/data-atlas"
+                        },
                         "index": "projects/dashboards/data-atlas/src/index.html",
-                        "main": "projects/dashboards/data-atlas/src/main.ts",
                         "polyfills": ["zone.js"],
                         "tsConfig": "projects/dashboards/data-atlas/tsconfig.app.json",
                         "assets": [
@@ -255,12 +254,11 @@
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
-                        "vendorChunk": true,
                         "extractLicenses": false,
-                        "buildOptimizer": false,
                         "sourceMap": true,
                         "optimization": false,
-                        "namedChunks": true
+                        "namedChunks": true,
+                        "browser": "projects/dashboards/data-atlas/src/main.ts"
                     },
                     "configurations": {
                         "production": {
@@ -269,8 +267,6 @@
                             "sourceMap": false,
                             "namedChunks": false,
                             "extractLicenses": true,
-                            "vendorChunk": false,
-                            "buildOptimizer": true,
                             "budgets": [
                                 {
                                     "type": "initial",
@@ -360,7 +356,7 @@
             "prefix": "geoengine",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
+                    "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
                             "codemirror",
@@ -376,9 +372,10 @@
                             "fast-deep-equal",
                             "fast-json-stable-stringify"
                         ],
-                        "outputPath": "dist/dashboards/ebv-analyzer",
+                        "outputPath": {
+                            "base": "dist/dashboards/ebv-analyzer"
+                        },
                         "index": "projects/dashboards/ebv-analyzer/src/index.html",
-                        "main": "projects/dashboards/ebv-analyzer/src/main.ts",
                         "polyfills": ["zone.js"],
                         "tsConfig": "projects/dashboards/ebv-analyzer/tsconfig.app.json",
                         "assets": [
@@ -399,12 +396,11 @@
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
-                        "vendorChunk": true,
                         "extractLicenses": false,
-                        "buildOptimizer": false,
                         "sourceMap": true,
                         "optimization": false,
-                        "namedChunks": true
+                        "namedChunks": true,
+                        "browser": "projects/dashboards/ebv-analyzer/src/main.ts"
                     },
                     "configurations": {
                         "production": {
@@ -413,8 +409,6 @@
                             "sourceMap": false,
                             "namedChunks": false,
                             "extractLicenses": true,
-                            "vendorChunk": false,
-                            "buildOptimizer": true,
                             "budgets": [
                                 {
                                     "type": "initial",
@@ -504,7 +498,7 @@
             "prefix": "geoengine",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
+                    "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
                             "clone",
@@ -521,9 +515,10 @@
                             "web-worker",
                             "xml-utils"
                         ],
-                        "outputPath": "dist/dashboards/nfdi-portal-demo",
+                        "outputPath": {
+                            "base": "dist/dashboards/nfdi-portal-demo"
+                        },
                         "index": "projects/dashboards/nfdi-portal-demo/src/index.html",
-                        "main": "projects/dashboards/nfdi-portal-demo/src/main.ts",
                         "polyfills": ["zone.js"],
                         "tsConfig": "projects/dashboards/nfdi-portal-demo/tsconfig.app.json",
                         "assets": [
@@ -544,12 +539,11 @@
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
-                        "vendorChunk": true,
                         "extractLicenses": false,
-                        "buildOptimizer": false,
                         "sourceMap": true,
                         "optimization": false,
-                        "namedChunks": true
+                        "namedChunks": true,
+                        "browser": "projects/dashboards/nfdi-portal-demo/src/main.ts"
                     },
                     "configurations": {
                         "production": {
@@ -558,8 +552,6 @@
                             "sourceMap": false,
                             "namedChunks": false,
                             "extractLicenses": true,
-                            "vendorChunk": false,
-                            "buildOptimizer": true,
                             "budgets": [
                                 {
                                     "type": "initial",
@@ -655,7 +647,7 @@
             "prefix": "geoengine",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
+                    "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
                             "codemirror",
@@ -671,9 +663,10 @@
                             "fast-deep-equal",
                             "fast-json-stable-stringify"
                         ],
-                        "outputPath": "dist/dashboards/gfbio",
+                        "outputPath": {
+                            "base": "dist/dashboards/gfbio"
+                        },
                         "index": "projects/dashboards/gfbio/src/index.html",
-                        "main": "projects/dashboards/gfbio/src/main.ts",
                         "polyfills": ["zone.js"],
                         "tsConfig": "projects/dashboards/gfbio/tsconfig.app.json",
                         "assets": [
@@ -694,12 +687,11 @@
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
-                        "vendorChunk": true,
                         "extractLicenses": false,
-                        "buildOptimizer": false,
                         "sourceMap": true,
                         "optimization": false,
-                        "namedChunks": true
+                        "namedChunks": true,
+                        "browser": "projects/dashboards/gfbio/src/main.ts"
                     },
                     "configurations": {
                         "production": {
@@ -708,8 +700,6 @@
                             "sourceMap": false,
                             "namedChunks": false,
                             "extractLicenses": true,
-                            "vendorChunk": false,
-                            "buildOptimizer": true,
                             "budgets": [
                                 {
                                     "type": "initial",
@@ -799,11 +789,12 @@
             "prefix": "app",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
+                    "builder": "@angular-devkit/build-angular:application",
                     "options": {
-                        "outputPath": "dist/manager",
+                        "outputPath": {
+                            "base": "dist/manager"
+                        },
                         "index": "projects/manager/src/index.html",
-                        "main": "projects/manager/src/main.ts",
                         "polyfills": ["zone.js"],
                         "tsConfig": "projects/manager/tsconfig.app.json",
                         "inlineStyleLanguage": "scss",
@@ -822,7 +813,8 @@
                             "dist/common/assets/fonts/pacifico/pacifico.css",
                             "dist/common/assets/fonts/material-design-icons/material-icons.css"
                         ],
-                        "scripts": []
+                        "scripts": [],
+                        "browser": "projects/manager/src/main.ts"
                     },
                     "configurations": {
                         "production": {
