@@ -5,7 +5,7 @@ export type SrsString = string;
 /**
  * Marker dictionary for types that only use primitive types and sub-types.
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface SerializableDict {}
 
 export interface RegistrationDict {

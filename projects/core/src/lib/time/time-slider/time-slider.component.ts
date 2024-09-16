@@ -282,7 +282,7 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
     //options for the timeline
     getOptions(): void {
         this.options = {
-            moment: (date: Date) => moment(date).utc(), //use utc
+            moment: (date: Date): moment.Moment => moment(date).utc(), //use utc
             snap: (date: Date, scale: string, step: number): Moment => this.snapFunction(date, scale, step),
             start: '2012-01',
             end: '2020-01',
