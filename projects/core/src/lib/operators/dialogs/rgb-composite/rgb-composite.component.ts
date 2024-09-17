@@ -19,7 +19,6 @@ import {
     RgbaColorizer,
     SingleBandRasterColorizer,
     StatisticsDict,
-    extentToBboxDict,
     geoengineValidators,
 } from '@geoengine/common';
 
@@ -386,17 +385,7 @@ export class RgbaCompositeComponent implements AfterViewInit {
 
         const resultDescriptor = RasterResultDescriptor.fromDict(resultDescriptorDict as RasterResultDescriptorDict);
 
-        let bbox = resultDescriptor.bbox;
-
-        if (!bbox) {
-            // if we don't know the bbox of the dataset, we use the projection's whole bbox for guessing the symbology
-            // TODO: better use the screen extent?
-            bbox = await firstValueFrom(
-                this.spatialReferenceService
-                    .getSpatialReferenceSpecification(resultDescriptor.spatialReference)
-                    .pipe(map((spatialReferenceSpecification) => extentToBboxDict(spatialReferenceSpecification.extent))),
-            );
-        }
+        const bbox = resultDescriptor.spatialGrid.bbox(); // FIXME: use other kind of sampling since this will now process the whole dataset!
 
         const time = await firstValueFrom(this.projectService.getTimeOnce());
 

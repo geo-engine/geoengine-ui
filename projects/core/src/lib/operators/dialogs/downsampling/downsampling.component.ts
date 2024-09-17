@@ -10,7 +10,7 @@ import {Layer} from 'ol/layer';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 import {
     OutputResolutionDict,
-    InterpolationDict,
+    DownsamplingDict,
     RasterDataTypes,
     RasterLayer,
     RasterSymbology,
@@ -20,16 +20,13 @@ import {
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 @Component({
-    selector: 'geoengine-interpolation',
-    templateUrl: './interpolation.component.html',
-    styleUrls: ['./interpolation.component.scss'],
+    selector: 'geoengine-downsampling',
+    templateUrl: './downsampling.component.html',
+    styleUrls: ['./downsampling.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class InterpolationComponent implements AfterViewInit, OnDestroy {
-    readonly interpolationMethods = [
-        ['Nearest Neighbor', 'nearestNeighbor'],
-        ['Bilinear', 'biLinear'],
-    ];
+export class DownsamplingComponent implements AfterViewInit, OnDestroy {
+    readonly downsamplingMethods = [['Nearest Neighbor', 'nearestNeighbor']];
     readonly inputTypes = [ResultTypes.RASTER];
     readonly rasterDataTypes = RasterDataTypes.ALL_DATATYPES;
 
@@ -50,7 +47,7 @@ export class InterpolationComponent implements AfterViewInit, OnDestroy {
         this.form = this.formBuilder.group({
             name: ['', [Validators.required, geoengineValidators.notOnlyWhitespace]],
             layer: new FormControl<Layer | null>(null, {validators: Validators.required}),
-            interpolationMethod: new FormControl(this.interpolationMethods[0][1], {
+            downsamplingMethod: new FormControl(this.downsamplingMethods[0][1], {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
@@ -97,7 +94,7 @@ export class InterpolationComponent implements AfterViewInit, OnDestroy {
         const inputLayer: RasterLayer = this.form.controls['layer'].value;
         const outputName: string = this.form.controls['name'].value;
 
-        const interpolationMethod: string = this.form.controls['interpolationMethod'].value;
+        const downsamplingMethod: string = this.form.controls['downsamplingMethod'].value;
 
         const outputResolution: OutputResolutionDict = this.getoutputResolution();
 
@@ -110,16 +107,16 @@ export class InterpolationComponent implements AfterViewInit, OnDestroy {
                     this.projectService.registerWorkflow({
                         type: 'Raster',
                         operator: {
-                            type: 'Interpolation',
+                            type: 'Downsampling',
                             params: {
-                                interpolation: interpolationMethod,
+                                samplingMethod: downsamplingMethod,
                                 outputResolution,
                                 outputOriginReference: undefined,
                             },
                             sources: {
                                 raster: inputWorkflow.operator,
                             },
-                        } as InterpolationDict,
+                        } as DownsamplingDict,
                     }),
                 ),
                 mergeMap((workflowId: UUID) => {

@@ -1,3 +1,5 @@
+import {SpatialGridDescriptor} from '@geoengine/openapi-client';
+
 export type UUID = string;
 export type TimestampString = string;
 export type SrsString = string;
@@ -307,7 +309,7 @@ export interface RasterResultDescriptorDict extends ResultDescriptorDict {
     dataType: 'U8' | 'U16' | 'U32' | 'U64' | 'I8' | 'I16' | 'I32' | 'I64' | 'F32' | 'F64';
     bands: RasterBandDescriptorDict[];
     time?: TimeIntervalDict;
-    bbox?: SpatialPartitionDict;
+    spatialGrid: SpatialGridDescriptor;
     resolution?: SpatialResolution;
 }
 

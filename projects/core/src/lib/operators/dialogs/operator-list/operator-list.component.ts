@@ -19,6 +19,7 @@ import {ClassHistogramOperatorComponent} from '../class-histogram-operator/class
 import {ColumnRangeFilterComponent} from '../column-range-filter/column-range-filter.component';
 import {RasterTypeConversionComponent} from '../raster-type-conversion/raster-type-conversion.component';
 import {InterpolationComponent} from '../interpolation/interpolation.component';
+import {DownsamplingComponent} from '../downsampling/downsampling.component';
 import {RasterScalingComponent} from '../raster-scaling/raster-scaling.component';
 import {NeighborhoodAggregateComponent} from '../neighborhood-aggregate/neighborhood-aggregate.component';
 import {TimeShiftComponent} from '../time-shift/time-shift.component';
@@ -224,6 +225,14 @@ export class OperatorListComponent implements OnInit, OnChanges {
                 ICON_URL: createIconDataUrl('Interpolation'),
             },
             description: 'Interpolates raster data',
+        },
+        {
+            component: DownsamplingComponent,
+            type: {
+                NAME: 'Spatial Downsampling',
+                ICON_URL: createIconDataUrl('Downsampling'),
+            },
+            description: 'Downsamples raster data',
         },
         {
             component: RasterScalingComponent,

@@ -1,8 +1,8 @@
-<geoengine-sidenav-header>Interpolation</geoengine-sidenav-header>
+<geoengine-sidenav-header>Downsampling</geoengine-sidenav-header>
 
 <form [formGroup]="form" (ngSubmit)="add()">
     <geoengine-operator-dialog-container [loading]="loading$ | async | valueDefault: false">
-        <a mat-icon-button operatorInputIcon href="https://docs.geoengine.io/operators/interpolation.html" target="_blank">
+        <a mat-icon-button operatorInputIcon href="https://docs.geoengine.io/operators/downsampling.html" target="_blank">
             <mat-icon>help_center</mat-icon>
         </a>
 
@@ -10,15 +10,15 @@
             <geoengine-layer-selection [types]="inputTypes" formControlName="layer"></geoengine-layer-selection>
         </ng-container>
 
-        <a mat-icon-button operatorParametersIcon href="https://docs.geoengine.io/operators/interpolation.html" target="_blank">
+        <a mat-icon-button operatorParametersIcon href="https://docs.geoengine.io/operators/downsampling.html" target="_blank">
             <mat-icon>help_center</mat-icon>
         </a>
 
         <ng-container operatorParameters>
             <mat-form-field appearance="fill">
-                <mat-label>Interpolation method</mat-label>
-                <mat-select formControlName="interpolationMethod">
-                    <mat-option *ngFor="let method of interpolationMethods" [value]="method[1]">
+                <mat-label>Downsampling method</mat-label>
+                <mat-select formControlName="downsamplingMethod">
+                    <mat-option *ngFor="let method of downsamplingMethods" [value]="method[1]">
                         {{ method[0] }}
                     </mat-option>
                 </mat-select>
@@ -60,7 +60,7 @@
         <ng-container layerSpecification>
             <geoengine-operator-output-name
                 formControlName="name"
-                [suggestion]="(form.controls.layer.valueChanges | async)?.name + ' interpolated'"
+                [suggestion]="(form.controls.layer.valueChanges | async)?.name + ' downsampled'"
             >
                 <mat-hint
                     align="end"

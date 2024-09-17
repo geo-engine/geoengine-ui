@@ -124,6 +124,7 @@ import {MediaviewDialogComponent} from './datatable/mediaview/dialog/mediaview.d
 import {MediaviewPlaylistComponent} from './datatable/mediaview/playlist/mediaview.playlist.component';
 import {OidcComponent} from './users/oidc/oidc.component';
 import {InterpolationComponent} from './operators/dialogs/interpolation/interpolation.component';
+import {DownsamplingComponent} from './operators/dialogs/downsampling/downsampling.component';
 import {NeighborhoodAggregateComponent} from './operators/dialogs/neighborhood-aggregate/neighborhood-aggregate.component';
 import {NotFoundPageComponent} from './util/components/not-found/not-found-page.component';
 import {BackendStatusPageComponent} from './util/components/backend-status-page/backend-status-page.component';
@@ -222,6 +223,7 @@ const CORE_COMPONENTS = [
     IfGuestDirective,
     IfLoggedInDirective,
     InterpolationComponent,
+    DownsamplingComponent,
     LayerCollectionDropdownComponent,
     LayerCollectionLayerComponent,
     LayerCollectionLayerDetailsComponent,

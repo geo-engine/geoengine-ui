@@ -69,6 +69,7 @@ export * from './lib/operators/dialogs/helpers/operator-dialog-container/operato
 export * from './lib/operators/dialogs/helpers/operator-output-name/operator-output-name.component';
 export * from './lib/operators/dialogs/histogram-operator/histogram-operator.component';
 export * from './lib/operators/dialogs/interpolation/interpolation.component';
+export * from './lib/operators/dialogs/downsampling/downsampling.component';
 export * from './lib/operators/dialogs/line-simplification/line-simplification.component';
 export * from './lib/operators/dialogs/mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
 export * from './lib/operators/dialogs/neighborhood-aggregate/neighborhood-aggregate.component';

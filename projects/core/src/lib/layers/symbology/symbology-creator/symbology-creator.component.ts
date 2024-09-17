@@ -9,7 +9,6 @@ import {UserService} from '../../../users/user.service';
 import {
     Colorizer,
     ColorMapSelectorComponent,
-    extentToBboxDict,
     LinearGradient,
     ALL_COLORMAPS,
     RasterLayer,
@@ -217,17 +216,14 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
                 combineLatest([
                     // if we don't know the bbox of the dataset, we use the projection's whole bbox for guessing the symbology
                     // TODO: better use the screen extent?
-                    resultDescriptor.bbox
-                        ? of(resultDescriptor.bbox)
-                        : this.spatialReferenceService
-                              .getSpatialReferenceSpecification(resultDescriptor.spatialReference)
-                              .pipe(map((spatialReferenceSpecification) => extentToBboxDict(spatialReferenceSpecification.extent))),
+                    of(resultDescriptor.spatialGrid.bbox()),
                     of(resultDescriptor.spatialReference),
                     of(time),
                 ]),
             ),
             map(([bbox, crs, time]: [BBoxDict, SrsString, Time]) => {
                 // for sampling, we choose a reasonable resolution
+                // FIXME: changing the reslution does not imply that we do less work!
                 const NUM_PIXELS = 1024;
                 const xResolution = (bbox.upperRightCoordinate.x - bbox.lowerLeftCoordinate.x) / NUM_PIXELS;
                 const yResolution = (bbox.upperRightCoordinate.y - bbox.lowerLeftCoordinate.y) / NUM_PIXELS;

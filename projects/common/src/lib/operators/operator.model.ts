@@ -3,9 +3,12 @@ import {
     TimeStep as TimeStepDict,
     TimeInterval as TimeIntervalDict,
     TimeGranularity as TimeStepGranularityDict,
+    Coordinate2D as Coordinate2DDict,
 } from '@geoengine/openapi-client';
 import {NamedDataDict} from '../datasets/dataset.model';
 import {SrsString} from '../spatial-references/spatial-reference.model';
+
+
 
 /**
  * Marker dictionary for types that only use primitive types and sub-types.
@@ -486,11 +489,21 @@ export interface InterpolationDict extends OperatorDict {
     type: 'Interpolation';
     params: {
         interpolation: 'nearestNeighbor' | 'bilinear';
-        inputResolution: InputResolutionDict;
+        outputResolution: OutputResolutionDict;
+        outputOriginReference?: Coordinate2DDict;
     };
 }
 
-export type InputResolutionDict = {type: 'source'} | {type: 'value'; x: number; y: number};
+export interface DownsamplingDict extends OperatorDict {
+    type: 'Downsampling';
+    params: {
+        samplingMethod: 'nearestNeighbor';
+        outputResolution: OutputResolutionDict;
+        outputOriginReference?: Coordinate2DDict;
+    };
+}
+
+export type OutputResolutionDict = {type: 'resolution'; x: number; y: number} | {type: 'fraction', x: number; y: number};
 
 export interface RasterUnScalingDict extends OperatorDict {
     type: 'RasterScaling';
