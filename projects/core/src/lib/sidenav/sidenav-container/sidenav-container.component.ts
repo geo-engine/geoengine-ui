@@ -137,7 +137,7 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
             if (sidenavConfig.config) {
                 for (const key in sidenavConfig.config) {
                     if (Object.hasOwn(sidenavConfig.config, key)) {
-                        this.componentRef.instance[key] = sidenavConfig.config[key];
+                        this.componentRef.setInput(key, sidenavConfig.config[key]);
                     }
                 }
             }

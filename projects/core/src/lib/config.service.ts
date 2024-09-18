@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Configuration, DefaultConfig} from '@geoengine/openapi-client';
 import {CommonConfig, mergeDeepOverrideLists} from '@geoengine/common';
@@ -202,6 +202,9 @@ export const DEFAULT_CONFIG: ConfigStructure = {
 export class Config {
     static readonly CONFIG_FILE = 'assets/config.json';
 
+    protected readonly http = inject(HttpClient);
+    protected readonly commonConfig = inject(CommonConfig);
+
     protected config!: ConfigStructure;
 
     get API_URL(): string {
@@ -247,11 +250,6 @@ export class Config {
     get SPATIAL_REFERENCES(): Array<SpatialReferenceConfig> {
         return this.config.SPATIAL_REFERENCES;
     }
-
-    constructor(
-        protected http: HttpClient,
-        protected readonly commonConfig: CommonConfig,
-    ) {}
 
     // noinspection JSUnusedGlobalSymbols <- function used in parent app
     /**

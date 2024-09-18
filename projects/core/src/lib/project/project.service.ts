@@ -1,4 +1,4 @@
-import {BehaviorSubject, combineLatest, Observable, Observer, of, ReplaySubject, Subject, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, firstValueFrom, Observable, Observer, of, ReplaySubject, Subject, Subscription} from 'rxjs';
 import {debounceTime, distinctUntilChanged, filter, first, map, mergeMap, skip, switchMap, take, tap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
@@ -298,7 +298,7 @@ export class ProjectService {
     /**
      * Set the time of the current project.
      */
-    setTime(time: Time): Observable<void> {
+    setTime(time: Time): Promise<void> {
         const result = this.getProjectOnce().pipe(
             map((project) => project.time),
             mergeMap((oldTime) => {
@@ -310,7 +310,7 @@ export class ProjectService {
             }),
         );
 
-        return subscribeAndProvide(result);
+        return firstValueFrom(result);
     }
 
     /**
@@ -371,10 +371,12 @@ export class ProjectService {
         );
     }
 
-    getTimeOnce(): Observable<Time> {
-        return this.project$.pipe(
-            first(),
-            map((project) => project.time),
+    getTimeOnce(): Promise<Time> {
+        return firstValueFrom(
+            this.project$.pipe(
+                first(),
+                map((project) => project.time),
+            ),
         );
     }
 

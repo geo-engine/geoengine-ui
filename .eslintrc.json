@@ -46,13 +46,12 @@
                     {
                         "default": {
                             "memberTypes": [
-                                "public-field",
-                                "protected-field",
-                                "private-field",
+                                "signature",
+                                "field",
+                                "static-initialization",
                                 "constructor",
-                                "public-method",
-                                "protected-method",
-                                "private-method"
+                                "accessor",
+                                ["get", "set", "method"]
                             ]
                         }
                     }

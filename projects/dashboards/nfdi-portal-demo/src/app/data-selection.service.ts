@@ -72,36 +72,34 @@ export class DataSelectionService {
         );
     }
 
-    setTimeSteps(timeSteps: Array<Time>, preselectComparator?: (currentTime: Time, timeStep: Time) => boolean, defaultTime?: Time): void {
+    async setTimeSteps(
+        timeSteps: Array<Time>,
+        preselectComparator?: (currentTime: Time, timeStep: Time) => boolean,
+        defaultTime?: Time,
+    ): Promise<void> {
         if (!timeSteps.length) {
             throw Error('`timeSteps` must not be empty');
         }
 
-        this.projectService
-            .getTimeOnce()
-            .pipe(
-                map((currentTime) => {
-                    if (defaultTime) {
-                        return defaultTime;
-                    }
+        const currentTime = await this.projectService.getTimeOnce();
 
-                    if (!preselectComparator) {
-                        return timeSteps[0];
-                    }
+        let newTime = timeSteps[0];
 
-                    for (const timeStep of timeSteps) {
-                        if (preselectComparator(currentTime, timeStep)) {
-                            return timeStep;
-                        }
-                    }
+        if (defaultTime) {
+            newTime = defaultTime;
+        } else if (!preselectComparator) {
+            newTime = timeSteps[0];
+        } else {
+            for (const timeStep of timeSteps) {
+                if (preselectComparator(currentTime, timeStep)) {
+                    newTime = timeStep;
+                }
+            }
+        }
 
-                    return timeSteps[0];
-                }),
-                mergeMap((newTime) => this.projectService.setTime(newTime)),
-            )
-            .subscribe(() => {
-                this.timeSteps.next(timeSteps);
-            });
+        await this.projectService.setTime(newTime);
+
+        this.timeSteps.next(timeSteps);
     }
 
     setRasterLayer(layer: RasterLayer, dataRange: DataRange): Observable<void> {

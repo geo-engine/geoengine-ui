@@ -140,13 +140,12 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
     }
 
     //changes the Timestream of the project according to the Timebars
-    changeTime(): void {
+    async changeTime(): Promise<void> {
         // TODO: Angular recognizes inifinite loop here --> FIX
+        await this.projectService.getTimeOnce();
 
-        this.projectService.getTimeOnce().subscribe(() => {
-            const updatedTime = new Time(moment(this.startTime), moment(this.endTime));
-            this.projectService.setTime(updatedTime);
-        });
+        const updatedTime = new Time(moment(this.startTime), moment(this.endTime));
+        this.projectService.setTime(updatedTime);
     }
 
     ngOnDestroy(): void {
@@ -158,13 +157,12 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
         this.timeline?.moveTo(this.startTime);
     }
 
-    changeScale(selectedScale: DurationInputArg2): void {
-        this.projectService.getTimeOnce().subscribe((t) => {
-            const steps = 8;
-            const startWindow = t.start.clone().subtract(steps / 2, selectedScale);
-            const endWindow = t.start.clone().add(steps / 2, selectedScale);
-            this.timeline?.setWindow(startWindow, endWindow);
-        });
+    async changeScale(selectedScale: DurationInputArg2): Promise<void> {
+        const time = await this.projectService.getTimeOnce();
+        const steps = 8;
+        const startWindow = time.start.clone().subtract(steps / 2, selectedScale);
+        const endWindow = time.start.clone().add(steps / 2, selectedScale);
+        this.timeline?.setWindow(startWindow, endWindow);
     }
 
     //original snap-function from vis-timeline https://github.com/visjs/vis-timeline/blob/master/lib/timeline/TimeStep.js
