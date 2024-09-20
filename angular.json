@@ -80,6 +80,8 @@
                             "earcut",
                             "fast-deep-equal",
                             "fast-json-stable-stringify",
+                            "json-stringify-pretty-compact",
+                            "lerc",
                             "lru-cache",
                             "moment",
                             "pbf",
@@ -128,7 +130,7 @@
                             "budgets": [
                                 {
                                     "type": "initial",
-                                    "maximumWarning": "5mb",
+                                    "maximumWarning": "8mb",
                                     "maximumError": "10mb"
                                 },
                                 {

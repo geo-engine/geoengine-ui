@@ -99,7 +99,6 @@
         "@types/jasminewd2": "~2.0.13",
         "@types/node": "^22.5.4",
         "@types/proj4": "^2.5.5",
-        "@types/rbush": "// remove this when `ol` is updated",
         "@types/rbush": "3.0.3",
         "@types/topojson-specification": "^1.0.5",
         "@typescript-eslint/eslint-plugin": "^8.5.0",
@@ -121,5 +120,8 @@
         "puppeteer": "~23.3.0",
         "ts-node": "~10.9.2",
         "typescript": "<5.6.0"
+    },
+    "//devDependencies": {
+        "@types/rbush": "// remove this when `ol` is updated"
     }
 }
