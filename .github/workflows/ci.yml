@@ -24,10 +24,16 @@ jobs:
             -   run: npm ci
             -   name: Build common
                 run: npm run build-prod:common
+                env:
+                    CI: true
             -   name: Build core
                 run: npm run build-prod:core
+                env:
+                    CI: true
             -   name: Build app ${{ matrix.app }}
                 run: npm run build-prod:${{ matrix.app }}
+                env:
+                    CI: true
             -   run: npm test
                 env:
                     CI: true
