@@ -73,20 +73,12 @@
                     "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
-                            "clone",
                             "codemirror",
-                            "color-name",
                             "dagre-d3",
-                            "earcut",
-                            "fast-deep-equal",
-                            "fast-json-stable-stringify",
                             "json-stringify-pretty-compact",
+                            "fast-json-stable-stringify",
                             "lerc",
-                            "lru-cache",
                             "moment",
-                            "pbf",
-                            "rbush",
-                            "web-worker",
                             "xml-utils"
                         ],
                         "outputPath": {
@@ -220,17 +212,12 @@
                     "options": {
                         "allowedCommonJsDependencies": [
                             "codemirror",
-                            "color-name",
                             "dagre-d3",
-                            "earcut",
+                            "json-stringify-pretty-compact",
+                            "fast-json-stable-stringify",
+                            "lerc",
                             "moment",
-                            "xml-utils",
-                            "lru-cache",
-                            "web-worker",
-                            "rbush",
-                            "clone",
-                            "fast-deep-equal",
-                            "fast-json-stable-stringify"
+                            "xml-utils"
                         ],
                         "outputPath": {
                             "base": "dist/dashboards/data-atlas"
@@ -362,17 +349,12 @@
                     "options": {
                         "allowedCommonJsDependencies": [
                             "codemirror",
-                            "color-name",
                             "dagre-d3",
-                            "earcut",
+                            "json-stringify-pretty-compact",
+                            "fast-json-stable-stringify",
+                            "lerc",
                             "moment",
-                            "xml-utils",
-                            "lru-cache",
-                            "web-worker",
-                            "rbush",
-                            "clone",
-                            "fast-deep-equal",
-                            "fast-json-stable-stringify"
+                            "xml-utils"
                         ],
                         "outputPath": {
                             "base": "dist/dashboards/ebv-analyzer"
@@ -503,18 +485,12 @@
                     "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
-                            "clone",
                             "codemirror",
-                            "color-name",
                             "dagre-d3",
-                            "earcut",
-                            "fast-deep-equal",
+                            "json-stringify-pretty-compact",
                             "fast-json-stable-stringify",
-                            "lru-cache",
+                            "lerc",
                             "moment",
-                            "pbf",
-                            "rbush",
-                            "web-worker",
                             "xml-utils"
                         ],
                         "outputPath": {
@@ -653,17 +629,12 @@
                     "options": {
                         "allowedCommonJsDependencies": [
                             "codemirror",
-                            "color-name",
                             "dagre-d3",
-                            "earcut",
+                            "json-stringify-pretty-compact",
+                            "fast-json-stable-stringify",
+                            "lerc",
                             "moment",
-                            "xml-utils",
-                            "lru-cache",
-                            "web-worker",
-                            "rbush",
-                            "clone",
-                            "fast-deep-equal",
-                            "fast-json-stable-stringify"
+                            "xml-utils"
                         ],
                         "outputPath": {
                             "base": "dist/dashboards/gfbio"
@@ -705,7 +676,7 @@
                             "budgets": [
                                 {
                                     "type": "initial",
-                                    "maximumWarning": "5mb",
+                                    "maximumWarning": "6mb",
                                     "maximumError": "10mb"
                                 },
                                 {
