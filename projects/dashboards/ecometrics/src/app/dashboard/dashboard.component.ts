@@ -9,10 +9,52 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {PortalModule} from '@angular/cdk/portal';
-import {BehaviorSubject} from 'rxjs';
-import {CoreModule, MapContainerComponent, UserService} from '@geoengine/core';
-import {Layer, Time, VegaChartData} from '@geoengine/common';
+import {BehaviorSubject, firstValueFrom, lastValueFrom, Observable} from 'rxjs';
+import {
+    AutoCreateDatasetDict,
+    CoreModule,
+    DatasetService,
+    Extent,
+    MapContainerComponent,
+    MapService,
+    NotificationService,
+    ProjectService,
+    UploadResponseDict,
+    UserService,
+    WGS_84,
+} from '@geoengine/core';
+import {
+    BLACK,
+    Color,
+    ColorBreakpoint,
+    Layer,
+    LinearGradient,
+    PaletteColorizer,
+    PolygonSymbology,
+    RasterColorizer,
+    RasterLayer,
+    RasterSymbology,
+    SingleBandRasterColorizer,
+    Time,
+    TRANSPARENT,
+    VectorLayer,
+    VegaChartData,
+    WHITE,
+} from '@geoengine/common';
 import {utc} from 'moment';
+import {DataRange, DataSelectionService} from '../data-selection.service';
+import {MatSelectChange} from '@angular/material/select';
+import {Workflow} from '@geoengine/openapi-client';
+import {createBox} from 'ol/interaction/Draw';
+import OlFormatGeoJson from 'ol/format/GeoJSON';
+import {HttpResponse} from '@angular/common/http';
+
+interface Indicator {
+    name: string;
+    workflow: Workflow;
+    symbology: RasterSymbology;
+    dataRange: DataRange;
+}
 
 @Component({
     selector: 'app-dashboard',
@@ -25,9 +67,140 @@ import {utc} from 'moment';
 export class DashboardComponent implements AfterViewInit {
     private breakpointObserver = inject(BreakpointObserver);
 
-    indicators = ['Land type', 'Vegetation'];
+    isSelectingBox$ = new BehaviorSubject<boolean>(false);
 
-    @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
+    indicators: Array<Indicator> = [
+        {
+            name: 'Land type',
+            workflow: {
+                type: 'Raster',
+                operator: {
+                    type: 'GdalSource',
+                    params: {
+                        data: 'rf_lucas_s2_3m_med_16in_sort_opset09_tile11',
+                    },
+                },
+            },
+            symbology: new RasterSymbology(
+                1.0,
+                new SingleBandRasterColorizer(
+                    0,
+                    new PaletteColorizer(
+                        new Map([
+                            [0, Color.fromRgbaLike([0, 0, 0, 1])],
+                            [1, Color.fromRgbaLike([0, 17, 255, 1])],
+                            [2, Color.fromRgbaLike([0, 163, 255, 1])],
+                            [3, Color.fromRgbaLike([64, 255, 182, 1])],
+                            [4, Color.fromRgbaLike([182, 255, 64, 1])],
+                            [5, Color.fromRgbaLike([255, 184, 0, 1])],
+                            [6, Color.fromRgbaLike([255, 50, 0, 1])],
+                            [7, Color.fromRgbaLike([128, 0, 0, 1])],
+                        ]),
+                        TRANSPARENT,
+                        TRANSPARENT,
+                    ),
+                ),
+            ),
+            dataRange: {min: 0, max: 7},
+        },
+        {
+            name: 'Vegetation',
+            workflow: {
+                type: 'Raster',
+                operator: {
+                    type: 'TemporalRasterAggregation',
+                    params: {
+                        aggregation: {
+                            type: 'mean',
+                            ignoreNoData: true,
+                            percentile: null,
+                        },
+                        window: {
+                            granularity: 'years',
+                            step: 1,
+                        },
+                        windowReference: null,
+                        outputType: 'F32',
+                    },
+                    sources: {
+                        raster: {
+                            type: 'Expression',
+                            params: {
+                                expression: 'if (C == 3 || (C >= 7 && C <= 11)) { NODATA } else { (A - B) / (A + B) }',
+                                outputType: 'F32',
+                                outputBand: {
+                                    name: 'NDVI',
+                                    measurement: {
+                                        type: 'continuous',
+                                        measurement: 'NDVI',
+                                        unit: 'NDVI',
+                                    },
+                                },
+                                mapNoData: false,
+                            },
+                            sources: {
+                                raster: {
+                                    type: 'RasterStacker',
+                                    params: {
+                                        renameBands: {
+                                            type: 'default',
+                                        },
+                                    },
+                                    sources: {
+                                        rasters: [
+                                            {
+                                                type: 'GdalSource',
+                                                params: {
+                                                    data: 'sentinel2_10m_tile_11_band_B08_2022_2023',
+                                                },
+                                            },
+                                            {
+                                                type: 'GdalSource',
+                                                params: {
+                                                    data: 'sentinel2_10m_tile_11_band_B04_2022_2023',
+                                                },
+                                            },
+                                            {
+                                                type: 'RasterTypeConversion',
+                                                params: {
+                                                    outputDataType: 'U16',
+                                                },
+                                                sources: {
+                                                    raster: {
+                                                        type: 'GdalSource',
+                                                        params: {
+                                                            data: 'sentinel2_20m_tile_11_band_SCL_2022_2023',
+                                                        },
+                                                    },
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            symbology: new RasterSymbology(
+                1.0,
+                new SingleBandRasterColorizer(
+                    0,
+                    new LinearGradient(
+                        [new ColorBreakpoint(0, WHITE), new ColorBreakpoint(1, BLACK)],
+                        TRANSPARENT,
+                        TRANSPARENT,
+                        TRANSPARENT,
+                    ),
+                ),
+            ),
+            dataRange: {min: 0, max: 1},
+        },
+    ];
+
+    mapExtent: Extent = [6.740740267260039, 50.43569510381453, 7.751905182567441, 51.0505744676345];
+
+    @ViewChild(MapContainerComponent, {static: false}) mapComponent!: MapContainerComponent;
 
     @ViewChild('welcome') welcome!: TemplateRef<unknown>;
     @ViewChild('inspect') inspect!: TemplateRef<unknown>;
@@ -37,15 +210,16 @@ export class DashboardComponent implements AfterViewInit {
     private _viewContainerRef = inject(ViewContainerRef);
 
     cards = new BehaviorSubject<Array<{title: string; cols: number; rows: number; content: TemplatePortal}>>([]);
-    layersReverse: Array<Layer> = [];
+    readonly layersReverse$: Observable<Array<Layer>>;
 
     timeSteps: Time[] = [
-        new Time(utc('2024-01-01')),
-        new Time(utc('2024-02-01')),
-        new Time(utc('2024-03-01')),
-        new Time(utc('2024-04-01')),
-        new Time(utc('2024-05-01')),
-        new Time(utc('2024-06-01')),
+        new Time(utc('2022-01-01')),
+        new Time(utc('2023-01-01')),
+        // new Time(utc('2024-02-01')),
+        // new Time(utc('2024-03-01')),
+        // new Time(utc('2024-04-01')),
+        // new Time(utc('2024-05-01')),
+        // new Time(utc('2024-06-01')),
     ];
 
     chartData: VegaChartData = {
@@ -85,7 +259,16 @@ export class DashboardComponent implements AfterViewInit {
                 }`,
     };
 
-    constructor(readonly userService: UserService) {}
+    constructor(
+        readonly userService: UserService,
+        readonly projectService: ProjectService,
+        readonly dataSelectionService: DataSelectionService,
+        readonly notificationService: NotificationService,
+        readonly mapService: MapService,
+        readonly datasetService: DatasetService,
+    ) {
+        this.layersReverse$ = this.dataSelectionService.layers;
+    }
 
     ngAfterViewInit(): void {
         this.breakpointObserver
@@ -134,6 +317,115 @@ export class DashboardComponent implements AfterViewInit {
 
     idFromLayer(index: number, layer: Layer): number {
         return layer.id;
+    }
+
+    async changeIndicator(event: MatSelectChange): Promise<void> {
+        const indicator = event.value as Indicator;
+
+        const workflowId = await firstValueFrom(this.projectService.registerWorkflow(indicator.workflow));
+
+        const rasterLayer = new RasterLayer({
+            name: 'EBV',
+            workflowId,
+            isVisible: true,
+            isLegendVisible: false,
+            symbology: indicator.symbology,
+        });
+
+        return await firstValueFrom(this.dataSelectionService.setRasterLayer(rasterLayer, this.timeSteps, indicator.dataRange));
+    }
+
+    selectBox(): void {
+        this.isSelectingBox$.next(true);
+        this.notificationService.info('Select region on the map');
+
+        this.mapComponent.startDrawInteraction('Circle', true, createBox(), async (feature) => {
+            const b = feature.getGeometry()?.getExtent();
+            if (b) {
+                console.log(b);
+
+                const olFeatureWriter = new OlFormatGeoJson();
+
+                const geoJson = olFeatureWriter.writeFeatureObject(feature, {
+                    featureProjection: WGS_84.spatialReference.srsString, // TODO
+                    dataProjection: WGS_84.spatialReference.srsString,
+                });
+
+                const blob = new Blob([JSON.stringify(geoJson)], {type: 'application/json'});
+                console.log(JSON.stringify(geoJson));
+                console.log(blob);
+
+                const form = new FormData();
+                form.append('file', blob, 'draw.json');
+                const uploadEvent = await lastValueFrom(this.datasetService.upload(form));
+                const uploadDict = uploadEvent as unknown as HttpResponse<UploadResponseDict>;
+                const uploadBody = uploadDict.body;
+                if (!uploadBody) {
+                    throw new Error('Upload failed');
+                }
+
+                const uploadId = uploadBody.id;
+
+                const create: AutoCreateDatasetDict = {
+                    upload: uploadId,
+                    datasetName: await this.generateDatasetName(),
+                    datasetDescription: '',
+                    mainFile: 'draw.json',
+                };
+
+                const dataset = await firstValueFrom(this.datasetService.autoCreateDataset(create));
+
+                const workflowId = await firstValueFrom(
+                    this.projectService.registerWorkflow({
+                        type: 'Vector',
+                        operator: {
+                            type: 'OgrSource',
+                            params: {
+                                data: dataset.datasetName,
+                            },
+                        },
+                    }),
+                );
+
+                const observable = this.dataSelectionService.setPolygonLayer(
+                    new VectorLayer({
+                        workflowId,
+                        name: 'drawn area',
+                        symbology: PolygonSymbology.fromPolygonSymbologyDict({
+                            type: 'polygon',
+                            stroke: {
+                                width: {
+                                    type: 'static',
+                                    value: 2,
+                                },
+                                color: {
+                                    type: 'static',
+                                    color: [54, 154, 203, 255],
+                                },
+                            },
+                            fillColor: {
+                                type: 'static',
+                                color: [54, 154, 203, 0],
+                            },
+                            autoSimplified: true,
+                        }),
+                        isLegendVisible: false,
+                        isVisible: true,
+                    }),
+                );
+
+                await firstValueFrom(observable);
+            }
+            this.isSelectingBox$.next(false);
+
+            // this.setEditedExtent();
+        });
+    }
+
+    private async generateDatasetName(): Promise<string> {
+        const sessionId = await firstValueFrom(this.userService.getSessionTokenForRequest());
+        const unixTime = Date.now();
+        return `${sessionId}_${unixTime}`;
     }
 
     analyze(): void {
