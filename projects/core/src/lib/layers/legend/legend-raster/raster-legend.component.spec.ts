@@ -1,5 +1,11 @@
 import {BLACK, ColorBreakpoint} from '@geoengine/common';
-import {calculateNumberPipeParameters, unifyDecimals} from './raster-legend.component';
+import {Measurement} from '@geoengine/openapi-client';
+import {
+    calculateNumberPipeParameters,
+    CastMeasurementToClassificationPipe,
+    CastMeasurementToContinuousPipe,
+    unifyDecimals,
+} from './raster-legend.component';
 
 describe('RasterLegend', () => {
     it('calculateNumberPipeParameters', () => {
@@ -90,5 +96,53 @@ describe('RasterLegend', () => {
         const values10: number[] = [81.123123, 81.123456, 81.123987];
         const expect10: number[] = [81.12312, 81.12345, 81.12398];
         expect(unifyDecimals(values10)).toEqual(expect10);
+    });
+
+    it('convertsToContinuousMeasurement', () => {
+        const pipe = new CastMeasurementToContinuousPipe();
+
+        let measurement: Measurement = {
+            type: 'continuous',
+            measurement: 'measurement',
+            unit: 'unit',
+        };
+
+        let transformed = pipe.transform(measurement);
+
+        expect(transformed).not.toBeNull();
+
+        measurement = {
+            type: 'classification',
+            measurement: 'measurement',
+            classes: {class: 'class'},
+        };
+
+        transformed = pipe.transform(measurement);
+
+        expect(transformed).toBeNull();
+    });
+
+    it('convertsToClassificationMeasurement', () => {
+        const pipe = new CastMeasurementToClassificationPipe();
+
+        let measurement: Measurement = {
+            type: 'classification',
+            measurement: 'measurement',
+            classes: {class: 'class'},
+        };
+
+        let transformed = pipe.transform(measurement);
+
+        expect(transformed).not.toBeNull();
+
+        measurement = {
+            type: 'continuous',
+            measurement: 'measurement',
+            unit: 'unit',
+        };
+
+        transformed = pipe.transform(measurement);
+
+        expect(transformed).toBeNull();
     });
 });

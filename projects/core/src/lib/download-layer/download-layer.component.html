@@ -10,25 +10,28 @@
 
             <mat-card-content>
                 <div fxLayout="row wrap" fxLayoutGap="1rem">
-                    <mat-form-field appearance="fill">
-                        <mat-label>min X</mat-label>
-                        <input matInput type="number" formControlName="bboxMinX" />
-                    </mat-form-field>
+                    <div fxLayout="row wrap" fxLayoutGap="1rem">
+                        <mat-form-field appearance="fill">
+                            <mat-label>min X</mat-label>
+                            <input matInput type="number" formControlName="bboxMinX" (input)="setEditedExtent()" />
+                        </mat-form-field>
 
-                    <mat-form-field appearance="fill">
-                        <mat-label>max X</mat-label>
-                        <input matInput type="number" formControlName="bboxMaxX" />
-                    </mat-form-field>
+                        <mat-form-field appearance="fill">
+                            <mat-label>max X</mat-label>
+                            <input matInput type="number" formControlName="bboxMaxX" (input)="setEditedExtent()" />
+                        </mat-form-field>
+                    </div>
+                    <div fxLayout="row wrap" fxLayoutGap="1rem">
+                        <mat-form-field appearance="fill">
+                            <mat-label>min Y</mat-label>
+                            <input matInput type="number" formControlName="bboxMinY" (input)="setEditedExtent()" />
+                        </mat-form-field>
 
-                    <mat-form-field appearance="fill">
-                        <mat-label>min Y</mat-label>
-                        <input matInput type="number" formControlName="bboxMinY" />
-                    </mat-form-field>
-
-                    <mat-form-field appearance="fill">
-                        <mat-label>max Y</mat-label>
-                        <input matInput type="number" formControlName="bboxMaxY" />
-                    </mat-form-field>
+                        <mat-form-field appearance="fill">
+                            <mat-label>max Y</mat-label>
+                            <input matInput type="number" formControlName="bboxMaxY" (input)="setEditedExtent()" />
+                        </mat-form-field>
+                    </div>
                 </div>
 
                 <button mat-raised-button color="accent" (click)="selectBox()" [disabled]="isSelectingBox">Select region on the map</button>
@@ -42,7 +45,11 @@
             </mat-card-header>
 
             <mat-card-content>
-                <geoengine-time-interval-input formControlName="timeInterval"></geoengine-time-interval-input>
+                <geoengine-time-interval-input
+                    [allowRanges]="config.TIME.ALLOW_RANGES"
+                    formControlName="timeInterval"
+                    (input)="unsubscribeTime()"
+                ></geoengine-time-interval-input>
             </mat-card-content>
         </mat-card>
 
@@ -64,7 +71,7 @@
                 <div fxLayout="row" *ngIf="form.get('inputResolution')?.value === 'value'">
                     <mat-form-field *ngIf="layer.layerType === 'vector'" appearance="fill">
                         <mat-label>Input resolution</mat-label>
-                        <input matInput type="number" formControlName="inputResolutionX" />
+                        <input matInput type="number" formControlName="inputResolutionX" (input)="setEditedResolution()" />
                         <mat-hint
                             class="error"
                             *ngIf="form.controls.inputResolutionX.errors?.required || form.controls.inputResolutionX.errors?.valueNotLarger"
@@ -76,7 +83,7 @@
                     <div *ngIf="layer.layerType === 'raster'">
                         <mat-form-field appearance="fill">
                             <mat-label>Input resolution (x)</mat-label>
-                            <input matInput type="number" formControlName="inputResolutionX" />
+                            <input matInput type="number" formControlName="inputResolutionX" (input)="setEditedResolution()" />
                             <mat-hint
                                 class="error"
                                 *ngIf="
@@ -89,7 +96,7 @@
 
                         <mat-form-field appearance="fill">
                             <mat-label>Input resolution (y)</mat-label>
-                            <input matInput type="number" formControlName="inputResolutionY" />
+                            <input matInput type="number" formControlName="inputResolutionY" (input)="setEditedResolution()" />
                             <mat-hint
                                 class="error"
                                 *ngIf="

@@ -29,6 +29,7 @@ import {RgbaCompositeComponent as RgbaCompositeComponent} from '../rgb-composite
 import {RasterStackerComponent} from '../raster-stacker/raster-stacker.component';
 import {VectorExpressionComponent} from '../vector-expression/vector-expression.component';
 import {BandwiseExpressionOperatorComponent} from '../bandwise-expression-operator/bandwise-expression-operator.component';
+import {BandNeighborhoodAggregateComponent} from '../band-neighborhood-aggregate/band-neighborhood-aggregate.component';
 
 /**
  * This type encapsulates…
@@ -168,6 +169,14 @@ export class OperatorListComponent implements OnInit, OnChanges {
     ];
 
     static readonly DEFAULT_RASTER_OPERATOR_DIALOGS: Array<OperatorListType> = [
+        {
+            component: BandNeighborhoodAggregateComponent,
+            type: {
+                NAME: 'Band Neighborhood Aggregate',
+                ICON_URL: createIconDataUrl('Band Neighborhood Aggregate'),
+            },
+            description: 'Compute an aggregate function over neighboring bands.',
+        },
         {
             component: BandwiseExpressionOperatorComponent,
             type: {
