@@ -21,8 +21,9 @@
 }
 
 .map-container {
+    margin: 1rem;
     height: 50vh;
-    width: 100%;
+    width: calc(100% - 30px);
 }
 
 button {

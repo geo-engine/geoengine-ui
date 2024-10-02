@@ -87,10 +87,12 @@
     <geoengine-time-step-selector [timeSteps]="timeSteps" timeFormat="YYYY-MM"></geoengine-time-step-selector>
 
     <!-- analyze button -->
-    <button mat-raised-button color="primary" (click)="analyze()">Analyze</button>
+    <button mat-raised-button color="primary" (click)="analyze()" [disabled]="!selectedIndicator || !selectedBBox">Analyze</button>
 </ng-template>
 
 <ng-template #review>
     <!-- vega component -->
-    <geoengine-vega-viewer [width]="400" [height]="300" [chartData]="chartData"></geoengine-vega-viewer>
+    <geoengine-vega-viewer [width]="400" [height]="300" *ngIf="plotData$ | async as plot" [chartData]="plot"></geoengine-vega-viewer>
+
+    <mat-spinner color="accent" *ngIf="plotLoading$ | async"></mat-spinner>
 </ng-template>

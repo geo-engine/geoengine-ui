@@ -1,4 +1,13 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, inject, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    inject,
+    TemplateRef,
+    ViewChild,
+    ViewContainerRef,
+} from '@angular/core';
 import {Breakpoints, BreakpointObserver} from '@angular/cdk/layout';
 import {map} from 'rxjs/operators';
 import {AsyncPipe} from '@angular/common';
@@ -12,6 +21,7 @@ import {PortalModule} from '@angular/cdk/portal';
 import {BehaviorSubject, firstValueFrom, lastValueFrom, Observable} from 'rxjs';
 import {
     AutoCreateDatasetDict,
+    BackendService,
     CoreModule,
     DatasetService,
     Extent,
@@ -19,22 +29,31 @@ import {
     MapService,
     NotificationService,
     ProjectService,
+    SpatialReferenceService,
+    TimeStepSelectorComponent,
     UploadResponseDict,
     UserService,
     WGS_84,
 } from '@geoengine/core';
 import {
+    ALL_COLORMAPS,
     BLACK,
     Color,
     ColorBreakpoint,
+    ColorMapSelectorComponent,
+    ContinuousMeasurement,
+    extentToBboxDict,
+    HistogramDict,
     Layer,
     LinearGradient,
+    Measurement,
     PaletteColorizer,
     PolygonSymbology,
     RasterColorizer,
     RasterLayer,
     RasterSymbology,
     SingleBandRasterColorizer,
+    SpatialReference,
     Time,
     TRANSPARENT,
     VectorLayer,
@@ -48,12 +67,16 @@ import {Workflow} from '@geoengine/openapi-client';
 import {createBox} from 'ol/interaction/Draw';
 import OlFormatGeoJson from 'ol/format/GeoJSON';
 import {HttpResponse} from '@angular/common/http';
+import {set} from 'immutable';
+import proj4 from 'proj4';
+import {transform, transformExtent} from 'ol/proj';
 
 interface Indicator {
     name: string;
     workflow: Workflow;
     symbology: RasterSymbology;
     dataRange: DataRange;
+    measurement: 'continuous' | 'classification';
 }
 
 @Component({
@@ -102,6 +125,7 @@ export class DashboardComponent implements AfterViewInit {
                 ),
             ),
             dataRange: {min: 0, max: 7},
+            measurement: 'classification',
         },
         {
             name: 'Vegetation',
@@ -187,7 +211,10 @@ export class DashboardComponent implements AfterViewInit {
                 new SingleBandRasterColorizer(
                     0,
                     new LinearGradient(
-                        [new ColorBreakpoint(0, WHITE), new ColorBreakpoint(1, BLACK)],
+                        ColorMapSelectorComponent.createLinearBreakpoints(ALL_COLORMAPS.VIRIDIS, 16, false, {min: -1, max: 1}),
+                        // [
+                        // (new ColorBreakpoint(-1, WHITE), new ColorBreakpoint(1, Color.fromRgbaLike([0, 255, 0, 1])))
+                        // ],
                         TRANSPARENT,
                         TRANSPARENT,
                         TRANSPARENT,
@@ -195,12 +222,15 @@ export class DashboardComponent implements AfterViewInit {
                 ),
             ),
             dataRange: {min: 0, max: 1},
+            measurement: 'continuous',
         },
     ];
 
-    mapExtent: Extent = [6.740740267260039, 50.43569510381453, 7.751905182567441, 51.0505744676345];
+    selectedIndicator: Indicator | undefined;
+    selectedBBox: Extent | undefined;
 
     @ViewChild(MapContainerComponent, {static: false}) mapComponent!: MapContainerComponent;
+    // @ViewChild(TimeStepSelectorComponent, {static: false}) timeSelectorComponent!: TimeStepSelectorComponent;
 
     @ViewChild('welcome') welcome!: TemplateRef<unknown>;
     @ViewChild('inspect') inspect!: TemplateRef<unknown>;
@@ -222,42 +252,8 @@ export class DashboardComponent implements AfterViewInit {
         // new Time(utc('2024-06-01')),
     ];
 
-    chartData: VegaChartData = {
-        vegaString: `{
-                  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-                  "width": "container",
-                  "data": {
-                    "values": [
-                      {
-                        "foobar": "bar",
-                        "Frequency": 3
-                      },
-                      {
-                        "foobar": "baz",
-                        "Frequency": 10
-                      },
-                      {
-                        "foobar": "foo",
-                        "Frequency": 1
-                      }
-                    ]
-                  },
-                  "mark": "bar",
-                  "encoding": {
-                    "x": {
-                      "field": "foobar",
-                      "type": "nominal",
-                      "axis": {
-                          "labelAngle": -45
-                      }
-                    },
-                    "y": {
-                      "field": "Frequency",
-                      "type": "quantitative"
-                    }
-                  }
-                }`,
-    };
+    readonly plotData$ = new BehaviorSubject<any>(undefined);
+    readonly plotLoading$ = new BehaviorSubject(false);
 
     constructor(
         readonly userService: UserService,
@@ -266,11 +262,14 @@ export class DashboardComponent implements AfterViewInit {
         readonly notificationService: NotificationService,
         readonly mapService: MapService,
         readonly datasetService: DatasetService,
+        readonly changeDetectorRef: ChangeDetectorRef,
+        readonly backend: BackendService,
+        readonly spatialReferenceService: SpatialReferenceService,
     ) {
         this.layersReverse$ = this.dataSelectionService.layers;
     }
 
-    ngAfterViewInit(): void {
+    async ngAfterViewInit(): Promise<void> {
         this.breakpointObserver
             .observe(Breakpoints.Handset)
             .pipe(
@@ -321,6 +320,7 @@ export class DashboardComponent implements AfterViewInit {
 
     async changeIndicator(event: MatSelectChange): Promise<void> {
         const indicator = event.value as Indicator;
+        this.selectedIndicator = indicator;
 
         const workflowId = await firstValueFrom(this.projectService.registerWorkflow(indicator.workflow));
 
@@ -340,9 +340,9 @@ export class DashboardComponent implements AfterViewInit {
         this.notificationService.info('Select region on the map');
 
         this.mapComponent.startDrawInteraction('Circle', true, createBox(), async (feature) => {
-            const b = feature.getGeometry()?.getExtent();
-            if (b) {
-                console.log(b);
+            const bbox = feature.getGeometry()?.getExtent();
+            if (bbox) {
+                this.selectedBBox = [bbox[0], bbox[1], bbox[2], bbox[3]];
 
                 const olFeatureWriter = new OlFormatGeoJson();
 
@@ -400,12 +400,12 @@ export class DashboardComponent implements AfterViewInit {
                                 },
                                 color: {
                                     type: 'static',
-                                    color: [54, 154, 203, 255],
+                                    color: [128, 0, 0, 255],
                                 },
                             },
                             fillColor: {
                                 type: 'static',
-                                color: [54, 154, 203, 0],
+                                color: [128, 0, 0, 128],
                             },
                             autoSimplified: true,
                         }),
@@ -428,13 +428,102 @@ export class DashboardComponent implements AfterViewInit {
         return `${sessionId}_${unixTime}`;
     }
 
-    analyze(): void {
-        throw new Error('Method not implemented.');
+    async analyze(): Promise<void> {
+        const indicator = this.selectedIndicator;
+
+        if (!indicator) {
+            return;
+        }
+
+        if (!this.selectedBBox) {
+            this.notificationService.error('Please select a region on the map');
+            return;
+        }
+
+        let workflow: Workflow;
+        if (indicator.measurement === 'classification') {
+            workflow = {
+                type: 'Plot',
+                operator: {
+                    type: 'ClassHistogram',
+                    params: {
+                        columnName: null,
+                    },
+                    sources: {
+                        source: indicator.workflow.operator,
+                    },
+                },
+            };
+        } else if (indicator.measurement === 'continuous') {
+            workflow = {
+                type: 'Plot',
+                operator: {
+                    type: 'Histogram',
+                    params: {
+                        attributeName: 'NDVI',
+                        bounds: {
+                            min: -1.0,
+                            max: 1.0,
+                        },
+                        buckets: {
+                            type: 'number',
+                            value: 15,
+                        },
+                        interactive: false,
+                    },
+                    sources: {
+                        source: indicator.workflow.operator,
+                    },
+                } as HistogramDict,
+            };
+        } else {
+            this.notificationService.error('Invalid measurement for plotting');
+            return;
+        }
+
+        this.plotLoading$.next(true);
+
+        const workflowId = await firstValueFrom(this.projectService.registerWorkflow(workflow));
+        const sessionId = await firstValueFrom(this.userService.getSessionTokenForRequest());
+
+        const time = await firstValueFrom(this.projectService.getTimeOnce());
+
+        // reproject selectedBbox to EPSG:32632 using proj4
+
+        // TODO: use proj string from spatial reference service
+        const projString = '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +type=crs';
+
+        const ll = proj4('EPSG:4326', projString, [this.selectedBBox[0], this.selectedBBox[1]]);
+        const ur = proj4('EPSG:4326', projString, [this.selectedBBox[2], this.selectedBBox[3]]);
+        const extent = [ll[0], ll[1], ur[0], ur[1]];
+
+        console.log(this.selectedBBox, extent);
+
+        const plot = await firstValueFrom(
+            this.backend.getPlot(
+                workflowId,
+                {
+                    time: {
+                        start: time.start.unix() * 1_000,
+                        end: time.end.unix() * 1_000 + 1 /* add one millisecond to include the end time */,
+                    },
+                    bbox: extentToBboxDict([extent[0], extent[1], extent[2], extent[3]]),
+                    // always use WGS 84 for computing the plot
+                    crs: 'EPSG:32632',
+                    spatialResolution: [10, 10],
+                },
+                sessionId,
+            ),
+        );
+
+        console.log(plot);
+        this.plotData$.next(plot.data);
+        this.plotLoading$.next(false);
     }
-    reset(): void {
-        throw new Error('Method not implemented.');
-    }
-    draw(): void {
-        throw new Error('Method not implemented.');
+
+    async reset(): Promise<void> {
+        this.selectedBBox = undefined;
+        await firstValueFrom(this.dataSelectionService.clearPolygonLayer());
+        this.changeDetectorRef.markForCheck();
     }
 }
