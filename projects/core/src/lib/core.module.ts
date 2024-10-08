@@ -30,7 +30,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {ColorPickerModule} from 'ngx-color-picker';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {HttpClientModule} from '@angular/common/http';
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {DialogHeaderComponent} from './dialogs/dialog-header/dialog-header.component';
 import {DialogSectionHeadingComponent} from './dialogs/dialog-section-heading/dialog-section-heading.component';
 import {VatLogoComponent} from './logo.component';
@@ -201,7 +201,6 @@ const CORE_COMPONENTS = [
     ChangeSpatialReferenceComponent,
     ClassHistogramOperatorComponent,
     CodeEditorComponent,
-
     BandNeighborhoodAggregateComponent,
     BandwiseExpressionOperatorComponent,
     ColumnRangeFilterComponent,
@@ -249,7 +248,6 @@ const CORE_COMPONENTS = [
     NewProjectComponent,
     NotFoundPageComponent,
     NotificationsComponent,
-
     OidcComponent,
     OlRasterLayerComponent,
     OlVectorLayerComponent,
@@ -263,18 +261,16 @@ const CORE_COMPONENTS = [
     PointInPolygonFilterOperatorComponent,
     ProvenanceTableComponent,
     QuotaInfoComponent,
-
     RasterizationComponent,
     RasterLegendComponent,
     RasterLegendComponent,
-
     RasterScalingComponent,
     RasterStackerComponent,
-
     RasterTypeConversionComponent,
     RasterVectorJoinComponent,
     RenameLayerComponent,
     RgbaCompositeComponent,
+    RolesComponent,
     SaveProjectAsComponent,
     ScatterplotOperatorComponent,
     SidenavContainerComponent,
@@ -298,26 +294,12 @@ const CORE_COMPONENTS = [
     VatLogoComponent,
     VectorExpressionComponent,
     VectorLegendComponent,
-
     WorkspaceSettingsComponent,
     ZoomHandlesComponent,
 ];
 
 @NgModule({
-    declarations: [...CORE_PIPES, ...CORE_COMPONENTS, RolesComponent],
-    imports: [
-        ...MATERIAL_MODULES,
-        ColorPickerModule,
-        AngularCommonModule,
-        CommonModule,
-        DragDropModule,
-        FormsModule,
-        HttpClientModule,
-        NgxMatSelectSearchModule,
-        PortalModule,
-        ReactiveFormsModule,
-        ScrollingModule,
-    ],
+    declarations: [...CORE_PIPES, ...CORE_COMPONENTS],
     exports: [
         /* re-exports */
         ...MATERIAL_MODULES,
@@ -329,10 +311,23 @@ const CORE_COMPONENTS = [
         ...CORE_COMPONENTS,
         CommonModule,
     ],
+    imports: [
+        ...MATERIAL_MODULES,
+        ColorPickerModule,
+        AngularCommonModule,
+        CommonModule,
+        DragDropModule,
+        FormsModule,
+        NgxMatSelectSearchModule,
+        PortalModule,
+        ReactiveFormsModule,
+        ScrollingModule,
+    ],
     providers: [
         {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}},
         {provide: MAT_CARD_CONFIG, useValue: {appearance: 'outlined'}},
         CommonConfig,
+        provideHttpClient(withInterceptorsFromDi()),
     ],
 })
 export class CoreModule {}

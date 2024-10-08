@@ -1,8 +1,8 @@
 import {HttpEventType} from '@angular/common/http';
-import {ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, input, OnInit} from '@angular/core';
 import {FormControl, FormGroup, UntypedFormBuilder, ValidatorFn, Validators} from '@angular/forms';
 import moment from 'moment';
-import {combineLatest, mergeMap, Subscription} from 'rxjs';
+import {combineLatest, mergeMap} from 'rxjs';
 import {RasterResultDescriptorDict, WcsParamsDict, WfsParamsDict} from '../backend/backend.model';
 import {BackendService} from '../backend/backend.service';
 import {MapService} from '../map/map.service';
@@ -14,6 +14,7 @@ import {bboxAsOgcString, gridOffsetsAsOgcString, gridOriginAsOgcString} from '..
 import {Layer, SpatialReference, Time, olExtentToTuple, extentToBboxDict, geoengineValidators, TimeInterval} from '@geoengine/common';
 import {TypedResultDescriptor} from '@geoengine/openapi-client';
 import {Config} from '../config.service';
+import {toSignal} from '@angular/core/rxjs-interop';
 
 export interface DownloadLayerForm {
     bboxMinX: FormControl<number>;
@@ -35,8 +36,17 @@ export interface DownloadLayerForm {
     styleUrls: ['./download-layer.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DownloadLayerComponent implements OnInit, OnDestroy {
-    @Input() layer!: Layer;
+export class DownloadLayerComponent implements OnInit {
+    protected readonly backend = inject(BackendService);
+    protected readonly projectService = inject(ProjectService);
+    protected readonly userService = inject(UserService);
+    protected readonly mapService = inject(MapService);
+    protected readonly notificationService = inject(NotificationService);
+    protected readonly spatialReferenceService = inject(SpatialReferenceService);
+    private readonly formBuilder = inject(UntypedFormBuilder);
+    public readonly config = inject(Config);
+
+    layer = input.required<Layer>();
 
     readonly rasterInterpolationMethods = [
         ['Nearest Neighbor', 'nearestNeighbor'],
@@ -47,22 +57,14 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
 
     isSelectingBox = false;
 
-    private projectTimeSubscription?: Subscription;
-    private viewportSizeSubscription?: Subscription;
-
     private editedExtent = false;
     private editedResolution = false;
+    private editedTime = false;
 
-    constructor(
-        protected backend: BackendService,
-        protected projectService: ProjectService,
-        protected userService: UserService,
-        protected mapService: MapService,
-        protected notificationService: NotificationService,
-        protected spatialReferenceService: SpatialReferenceService,
-        private formBuilder: UntypedFormBuilder,
-        public readonly config: Config,
-    ) {
+    private readonly projectTime = toSignal(this.projectService.getTimeStream());
+    private readonly viewportSize = toSignal(this.mapService.getViewportSizeStream());
+
+    constructor() {
         // initialize with the current time to have a defined value
         const time = new Time(moment.utc(), moment.utc());
 
@@ -106,52 +108,53 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
         });
 
         this.updateRegionByExtent(olExtentToTuple(this.mapService.getViewportSize().extent));
-    }
 
-    ngOnInit(): void {
-        this.projectTimeSubscription = this.projectService.getTimeStream().subscribe((t) => {
-            const time = t.clone();
+        effect(() => {
+            const t = this.projectTime();
+
+            if (!t) return;
+
+            if (this.editedTime) return;
+
+            const newTime = t.clone();
 
             this.form.controls['timeInterval'].setValue({
-                start: time.start,
-                end: time.end,
-                timeAsPoint: time.start.isSame(time.end),
+                start: newTime.start,
+                end: newTime.end,
+                timeAsPoint: newTime.start.isSame(newTime.end),
             });
         });
 
-        this.viewportSizeSubscription = this.mapService.getViewportSizeStream().subscribe((viewport) => {
+        effect(() => {
+            const viewport = this.viewportSize();
+
+            if (!viewport) return;
+
+            if (this.editedExtent && this.editedResolution) return;
+
             const extent = olExtentToTuple(viewport.extent);
 
             if (!this.editedExtent) this.updateRegionByExtent(extent);
             if (!this.editedResolution) this.updateResolution(viewport.resolution);
         });
+    }
 
-        if (this.layer.layerType === 'vector') {
+    ngOnInit(): void {
+        if (this.layer().layerType === 'vector') {
             this.form.controls['inputResolution'].setValue('value');
         }
     }
 
-    ngOnDestroy(): void {
-        this.projectTimeSubscription?.unsubscribe();
-        this.viewportSizeSubscription?.unsubscribe();
-    }
-
-    unsubscribeTime(): void {
-        this.projectTimeSubscription?.unsubscribe();
-    }
-
     setEditedExtent(): void {
         this.editedExtent = true;
-        this.maybeUnsubscribeViewportSize();
     }
 
     setEditedResolution(): void {
         this.editedResolution = true;
-        this.maybeUnsubscribeViewportSize();
     }
 
-    maybeUnsubscribeViewportSize(): void {
-        if (this.editedExtent && this.editedResolution) this.viewportSizeSubscription?.unsubscribe();
+    setEditedTime(): void {
+        this.editedTime = true;
     }
 
     selectBox(): void {
@@ -176,9 +179,9 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
             return;
         }
 
-        if (this.layer.layerType === 'raster') {
+        if (this.layer().layerType === 'raster') {
             this.rasterDownload();
-        } else if (this.layer.layerType === 'vector') {
+        } else if (this.layer().layerType === 'vector') {
             this.vectorDownload();
         }
     }
@@ -187,13 +190,13 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
         combineLatest([
             this.projectService.getSpatialReferenceOnce(),
             this.userService.getSessionTokenForRequest(),
-            this.projectService.getWorkflowMetaData(this.layer.workflowId),
+            this.projectService.getWorkflowMetaData(this.layer().workflowId),
         ])
             .pipe(
                 mergeMap(([sref, sessionToken, resultDescriptor]) => {
                     const params: WcsParamsDict = this.makeWcsParams(sref, resultDescriptor);
 
-                    return this.backend.downloadRasterLayer(this.layer.workflowId, sessionToken, params);
+                    return this.backend.downloadRasterLayer(this.layer().workflowId, sessionToken, params);
                 }),
             )
             .subscribe({
@@ -221,7 +224,7 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
         combineLatest([
             this.projectService.getSpatialReferenceOnce(),
             this.userService.getSessionTokenForRequest(),
-            this.projectService.getWorkflowMetaData(this.layer.workflowId),
+            this.projectService.getWorkflowMetaData(this.layer().workflowId),
         ])
             .pipe(
                 mergeMap(([sref, sessionToken, resultDescriptor]) => {
@@ -289,7 +292,7 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
             service: 'WCS',
             request: 'GetCoverage',
             version: '1.1.1',
-            identifier: this.layer.workflowId,
+            identifier: this.layer().workflowId,
             boundingbox: `${bboxOgc},${wcsUrn}`,
             format: 'image/tiff',
             gridbasecrs: wcsUrn,
@@ -325,7 +328,7 @@ export class DownloadLayerComponent implements OnInit, OnDestroy {
             queryResolution: resolution,
             time: time,
             srsName: sref.srsString,
-            workflowId: this.layer.workflowId,
+            workflowId: this.layer().workflowId,
         };
     }
 

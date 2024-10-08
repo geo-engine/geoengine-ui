@@ -46,13 +46,12 @@
                     {
                         "default": {
                             "memberTypes": [
-                                "public-field",
-                                "protected-field",
-                                "private-field",
+                                "signature",
+                                "field",
+                                "static-initialization",
                                 "constructor",
-                                "public-method",
-                                "protected-method",
-                                "private-method"
+                                "accessor",
+                                ["get", "set", "method"]
                             ]
                         }
                     }
@@ -126,7 +125,8 @@
                 "@typescript-eslint/no-unused-vars": [
                     "error",
                     {
-                        "argsIgnorePattern": "^_"
+                        "argsIgnorePattern": "^_",
+                        "caughtErrorsIgnorePattern": "^_"
                     }
                 ],
                 "no-shadow": "off",

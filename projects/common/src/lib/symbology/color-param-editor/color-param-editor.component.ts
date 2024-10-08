@@ -189,7 +189,7 @@ export class ColorParamEditorComponent implements ControlValueAccessor {
         emit = true,
     ): void {
         const defaultColor = params.defaultColor ?? this.colorParam.getDefault();
-        this._colorAttributeName = params.colorAttributeName === null ? undefined : params.colorAttributeName ?? this.colorAttributeName;
+        this._colorAttributeName = params.colorAttributeName === null ? undefined : (params.colorAttributeName ?? this.colorAttributeName);
 
         if (this._colorAttributeName) {
             this._colorizerType = params.colorizerType ?? this.colorizerType;

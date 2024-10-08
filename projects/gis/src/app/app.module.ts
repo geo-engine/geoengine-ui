@@ -1,7 +1,7 @@
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserModule} from '@angular/platform-browser';
-import {HttpClientModule} from '@angular/common/http';
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 
 import {AppComponent} from './app.component';
 import {
@@ -25,7 +25,8 @@ import {RegisterComponent} from './register/register.component';
 
 @NgModule({
     declarations: [AppComponent, LoginComponent, MainComponent, RegisterComponent],
-    imports: [BrowserAnimationsModule, BrowserModule, HttpClientModule, AppRoutingModule, CoreModule],
+    bootstrap: [AppComponent],
+    imports: [BrowserAnimationsModule, BrowserModule, AppRoutingModule, CoreModule],
     providers: [
         {provide: Config, useClass: AppConfig},
         {
@@ -43,7 +44,7 @@ import {RegisterComponent} from './register/register.component';
         SpatialReferenceService,
         UserService,
         TabsService,
+        provideHttpClient(withInterceptorsFromDi()),
     ],
-    bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -398,7 +398,7 @@ export class RgbaCompositeComponent implements AfterViewInit {
             );
         }
 
-        const time = await firstValueFrom(this.projectService.getTimeOnce());
+        const time = await this.projectService.getTimeOnce();
 
         // for sampling, we choose a reasonable resolution
         const NUM_PIXELS = 1024;

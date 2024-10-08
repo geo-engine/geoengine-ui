@@ -1,7 +1,7 @@
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserModule} from '@angular/platform-browser';
-import {HttpClientModule} from '@angular/common/http';
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {RouterModule} from '@angular/router';
 import {AppComponent} from './app.component';
 import {
@@ -28,10 +28,10 @@ import {LayoutModule} from '@angular/cdk/layout';
 
 @NgModule({
     declarations: [AppComponent, AttributionsComponent, LegendComponent, CountrySelectorComponent, EbvSelectorComponent],
+    bootstrap: [AppComponent],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,
-        HttpClientModule,
         RouterModule.forRoot([{path: '**', component: AppComponent}], {useHash: true}),
         CoreModule,
         PortalModule,
@@ -55,7 +55,7 @@ import {LayoutModule} from '@angular/cdk/layout';
         SpatialReferenceService,
         DataSelectionService,
         UserService,
+        provideHttpClient(withInterceptorsFromDi()),
     ],
-    bootstrap: [AppComponent],
 })
 export class AppModule {}
