@@ -608,7 +608,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         if (this.config.MAP.VALID_CRS.includes(projection.srsString)) {
             backgroundLayer = this.config.MAP.BACKGROUND_LAYER;
         } else {
-            backgroundLayer = 'fallback';
+            backgroundLayer = 'empty';
         }
 
         switch (backgroundLayer) {
@@ -640,7 +640,6 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 return layer;
             }
             case 'fallback':
-            default:
                 if (backgroundLayer === 'fallback') {
                     console.warn(`Using fallback background layer for ${projection.srsString}`);
                 } else {
@@ -670,6 +669,9 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                         }
                     },
                 });
+            case 'empty':
+            default:
+                return new OlLayerVector();
         }
     }
 
@@ -679,7 +681,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         if (this.config.MAP.VALID_CRS.includes(projection.srsString)) {
             backgroundLayer = this.config.MAP.BACKGROUND_LAYER;
         } else {
-            backgroundLayer = 'fallback';
+            backgroundLayer = 'empty';
         }
 
         switch (backgroundLayer) {
@@ -730,8 +732,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     projection: projection.srsString,
                 });
             }
-            case 'fallback':
-            default: {
+            case 'fallback': {
                 if (backgroundLayer !== 'fallback') {
                     console.error(`Unknown background layer (source): ${this.config.MAP.BACKGROUND_LAYER}`);
                 }
@@ -759,6 +760,9 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
 
                 return source;
             }
+            case 'empty':
+            default:
+                return new OlSourceVector();
         }
     }
 }

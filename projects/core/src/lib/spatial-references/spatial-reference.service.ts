@@ -7,6 +7,7 @@ import {UserService} from '../users/user.service';
 import {get as olGetProjection, addProjection as olAddProjection} from 'ol/proj';
 import {register as olProj4Register} from 'ol/proj/proj4';
 import OlProjection from 'ol/proj/Projection';
+import Units from 'ol/proj/Units';
 import proj4 from 'proj4';
 import {Config} from '../config.service';
 import {transformExtent} from 'ol/proj';
@@ -154,14 +155,15 @@ export class SpatialReferenceService {
             map((dict: SpatialReferenceSpecificationDict) => {
                 const spec = SpatialReferenceSpecification.fromDict(dict);
 
-                proj4.defs(spec.projString);
+                proj4.defs(spec.spatialReference.srsString, spec.projString);
+                const def = proj4.defs(spec.spatialReference.srsString);
                 olProj4Register(proj4);
 
                 olAddProjection(
                     new OlProjection({
                         code: spec.spatialReference.srsString,
                         extent: spec.extent,
-                        units: undefined, // TODO: get units from proj or backend
+                        units: def?.units as Units.Units,
                     }),
                 );
 

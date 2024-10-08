@@ -45,7 +45,7 @@ const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CONFIG, {
             AVAILABLE: true,
         },
         MAP_RESOLUTION_EXTENT_OVERLAY: {
-            AVAILABLE: true,
+            AVAILABLE: false,
         },
     },
     BRANDING: {
