@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {mergeDeepOverrideLists} from '@geoengine/common';
-import {Config, ConfigStructure, ConfigDefaults, ConfigMap, DEFAULT_CONFIG} from '@geoengine/core';
+import {ConfigDefaults, ConfigMap, CoreConfig, CoreConfigStructure, DEFAULT_CORE_CONFIG} from '@geoengine/core';
 
 interface Components {
     readonly PLAYBACK: {
@@ -8,13 +8,13 @@ interface Components {
     };
 }
 
-interface AppConfigStructure extends ConfigStructure {
+interface AppConfigStructure extends CoreConfigStructure {
     readonly COMPONENTS: Components;
     readonly DEFAULTS: ConfigDefaults;
     readonly MAP: ConfigMap;
 }
 
-const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CONFIG, {
+const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CORE_CONFIG, {
     COMPONENTS: {
         PLAYBACK: {
             AVAILABLE: false,
@@ -48,7 +48,7 @@ const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CONFIG, {
 }) as AppConfigStructure;
 
 @Injectable()
-export class AppConfig extends Config {
+export class AppConfig extends CoreConfig {
     protected override config!: AppConfigStructure;
 
     get COMPONENTS(): Components {
@@ -63,7 +63,7 @@ export class AppConfig extends Config {
         return this.config.DEFAULTS;
     }
 
-    override load(): Promise<void> {
+    override async load(): Promise<void> {
         return super.load(APP_CONFIG_DEFAULTS);
     }
 }

@@ -1,0 +1,53 @@
+.grid-container {
+    margin: 20px;
+}
+
+.dashboard-card {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+}
+
+.more-button {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+}
+
+.dashboard-card-content {
+    text-align: left;
+}
+
+.map-container {
+    margin: 1rem;
+    height: 50vh;
+    width: calc(100% - 30px);
+}
+
+button {
+    margin: 1rem;
+}
+
+geoengine-legend {
+    z-index: 4;
+    position: absolute;
+    top: 5rem;
+    left: 2.5rem;
+    background-color: rgba(255, 255, 255, 0.87);
+}
+
+.chart-container {
+    display: flex;
+    align-items: center;
+}
+
+.chart-container geoengine-vega-viewer {
+    margin-right: 5rem;
+    text-align: center;
+}
+
+.chart-container p {
+    margin: 0;
+}

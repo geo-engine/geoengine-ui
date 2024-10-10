@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {
-    Config,
     ProjectService,
     UserService,
     BackendService,
@@ -89,7 +88,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
     constructor(
         private readonly userService: UserService,
-        @Inject(Config) private readonly config: AppConfig,
+        @Inject(AppConfig) private readonly config: AppConfig,
         private readonly changeDetectorRef: ChangeDetectorRef,
         private readonly http: HttpClient,
         private readonly projectService: ProjectService,

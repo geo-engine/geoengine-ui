@@ -6,7 +6,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {LayoutService, SidenavConfig} from '../../layout.service';
 import {MapService} from '../../map/map.service';
 import {ProjectService} from '../../project/project.service';
-import {Config} from '../../config.service';
+import {CoreConfig} from '../../config.service';
 import {AddDataComponent} from '../../datasets/add-data/add-data.component';
 import {TabsService} from '../../tabs/tabs.service';
 import {SimpleChanges} from '@angular/core';
@@ -62,7 +62,7 @@ export class LayerListComponent implements OnDestroy, OnChanges {
         public layoutService: LayoutService,
         public projectService: ProjectService,
         public mapService: MapService,
-        public config: Config,
+        public config: CoreConfig,
         public changeDetectorRef: ChangeDetectorRef,
         protected readonly tabsService: TabsService,
         protected readonly clipboard: Clipboard,

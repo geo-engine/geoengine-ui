@@ -3,7 +3,7 @@ import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
-import {Config} from '../../config.service';
+import {CoreConfig} from '../../config.service';
 import {User} from '../user.model';
 import {Session} from '../session.model';
 import {MatDialogRef} from '@angular/material/dialog';
@@ -41,7 +41,7 @@ export class ModalLoginComponent implements OnDestroy {
     private formStatusSubscription?: Subscription;
 
     constructor(
-        private readonly config: Config,
+        private readonly config: CoreConfig,
         private dialogRef: MatDialogRef<ModalLoginComponent>,
     ) {
         this.loginForm = new UntypedFormGroup({
