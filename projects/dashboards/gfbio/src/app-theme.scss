@@ -113,16 +113,16 @@ $gfbio-green: (
 );
 
 // Define App Theme
-$geoengine-primary: mat.define-palette($gfbio-darkblue);
-$geoengine-accent: mat.define-palette($gfbio-green, A200, A100, A400);
-$geoengine-warn: mat.define-palette(mat.$red-palette);
+$geoengine-primary: mat.m2-define-palette($gfbio-darkblue);
+$geoengine-accent: mat.m2-define-palette($gfbio-green, A200, A100, A400);
+$geoengine-warn: mat.m2-define-palette(mat.$m2-red-palette);
 
-$geoengine-typography: mat.define-typography-config(
+$geoengine-typography: mat.m2-define-typography-config(
     $font-family: 'Poppins',
 );
 
 // Create the theme object
-$geoengine-theme: mat.define-light-theme(
+$geoengine-theme: mat.m2-define-light-theme(
     (
         color: (
             primary: $geoengine-primary,

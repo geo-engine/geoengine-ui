@@ -159,7 +159,7 @@ export class AddDatasetComponent {
         } else {
             try {
                 metaData = JSON.parse(this.form.controls.rawLoadingInfo.value) as MetaDataDefinition;
-            } catch (e) {
+            } catch (_e) {
                 this.snackBar.open('Invalid loading information.', 'Close', {panelClass: ['error-snackbar']});
                 return;
             }

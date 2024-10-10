@@ -113,7 +113,7 @@ export class NumberParamEditorComponent implements ControlValueAccessor {
     ): void {
         const defaultNumber = params.defaultNumber ?? this.numberParam.getDefault();
         this._numberAttributeName =
-            params.numberAttributeName === null ? undefined : params.numberAttributeName ?? this.numberAttributeName;
+            params.numberAttributeName === null ? undefined : (params.numberAttributeName ?? this.numberAttributeName);
 
         if (this._numberAttributeName) {
             this._factor = params.factor ?? this.factor;

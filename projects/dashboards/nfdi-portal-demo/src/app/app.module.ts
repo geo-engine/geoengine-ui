@@ -1,7 +1,7 @@
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserModule} from '@angular/platform-browser';
-import {HttpClientModule} from '@angular/common/http';
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {AppComponent} from './app.component';
 import {
     LayoutService,
@@ -30,16 +30,8 @@ import {CommonConfig} from '@geoengine/common';
 
 @NgModule({
     declarations: [AppComponent, AttributionsComponent, LegendComponent, SpeciesSelectorComponent, MainComponent, LoginComponent],
-    imports: [
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        BrowserModule,
-        CoreModule,
-        FormsModule,
-        HttpClientModule,
-        NgxMatSelectSearchModule,
-        PortalModule,
-    ],
+    bootstrap: [AppComponent],
+    imports: [AppRoutingModule, BrowserAnimationsModule, BrowserModule, CoreModule, FormsModule, NgxMatSelectSearchModule, PortalModule],
     providers: [
         AppConfig,
         {
@@ -65,7 +57,7 @@ import {CommonConfig} from '@geoengine/common';
         SpatialReferenceService,
         DataSelectionService,
         UserService,
+        provideHttpClient(withInterceptorsFromDi()),
     ],
-    bootstrap: [AppComponent],
 })
 export class AppModule {}

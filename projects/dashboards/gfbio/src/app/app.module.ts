@@ -1,7 +1,7 @@
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserModule} from '@angular/platform-browser';
-import {HttpClientModule} from '@angular/common/http';
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {MatTableModule} from '@angular/material/table';
 import {MatButtonModule} from '@angular/material/button';
 import {RouterModule} from '@angular/router';
@@ -29,10 +29,10 @@ import {CommonConfig} from '@geoengine/common';
 
 @NgModule({
     declarations: [AppComponent, HelpComponent, SplashDialogComponent, GfBioCollectionDialogComponent],
+    bootstrap: [AppComponent],
     imports: [
         BrowserAnimationsModule,
         BrowserModule,
-        HttpClientModule,
         MatTableModule,
         MatButtonModule,
         RouterModule.forRoot([{path: '**', component: AppComponent}], {useHash: true}),
@@ -64,7 +64,7 @@ import {CommonConfig} from '@geoengine/common';
         SpatialReferenceService,
         UserService,
         TabsService,
+        provideHttpClient(withInterceptorsFromDi()),
     ],
-    bootstrap: [AppComponent],
 })
 export class AppModule {}

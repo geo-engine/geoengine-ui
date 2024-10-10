@@ -206,7 +206,7 @@ export class DatasetEditorComponent implements OnChanges {
         } else {
             try {
                 return JSON.parse(this.rawLoadingInfo) as MetaDataDefinition;
-            } catch (e) {
+            } catch (_e) {
                 this.snackBar.open('Invalid loading information.', 'Close', {panelClass: ['error-snackbar']});
                 return undefined;
             }

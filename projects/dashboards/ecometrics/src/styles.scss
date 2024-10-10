@@ -6,7 +6,7 @@
     --geoengine-accent-color: #{mat.get-theme-color(theme.$geoengine-theme, accent)};
     --geoengine-warn-color: #{mat.get-theme-color(theme.$geoengine-theme, warn)};
 
-    --geoengine-faded-accent-color: #{mat.get-color-from-palette(theme.$geoengine-accent, 0.32)};
+    --geoengine-faded-accent-color: #{mat.m2-get-color-from-palette(theme.$geoengine-accent, 0.32)};
 
     --geoengine-foreground-text-color: #{mat.get-theme-color(theme.$geoengine-theme, foreground, text)};
     --geoengine-foreground-secondary-text-color: #{mat.get-theme-color(theme.$geoengine-theme, foreground, secondary-text)};

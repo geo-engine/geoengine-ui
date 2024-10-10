@@ -497,7 +497,7 @@ export class DashboardComponent implements AfterViewInit {
         const workflowId = await firstValueFrom(this.projectService.registerWorkflow(workflow));
         const sessionId = await firstValueFrom(this.userService.getSessionTokenForRequest());
 
-        const time = await firstValueFrom(this.projectService.getTimeOnce());
+        const time = await this.projectService.getTimeOnce();
 
         // reproject selectedBbox to EPSG:32632 using proj4
 

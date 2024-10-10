@@ -394,7 +394,7 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
         }
 
         // unsetting with null
-        const text = params.text === null ? undefined : params.text ?? this.currentSymbology.text;
+        const text = params.text === null ? undefined : (params.text ?? this.currentSymbology.text);
 
         this.currentSymbology = new PointSymbology(
             params.radius ?? this.currentSymbology.radius,
@@ -425,7 +425,7 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
         }
 
         // unsetting with null
-        const text = params.text === null ? undefined : params.text ?? this.currentSymbology.text;
+        const text = params.text === null ? undefined : (params.text ?? this.currentSymbology.text);
 
         this.currentSymbology = new LineSymbology(
             params.stroke ?? this.currentSymbology.stroke,
@@ -442,7 +442,7 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
         }
 
         // unsetting with null
-        const text = params.text === null ? undefined : params.text ?? this.currentSymbology.text;
+        const text = params.text === null ? undefined : (params.text ?? this.currentSymbology.text);
 
         this.currentSymbology = new PolygonSymbology(
             params.fillColor ?? this.currentSymbology.fillColor,

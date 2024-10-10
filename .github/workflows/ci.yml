@@ -11,7 +11,7 @@ jobs:
 
         strategy:
             matrix:
-                node-version: [ 18.13.x, 20.9.x ]
+                node-version: [ 18.19.x, 20.11.x ]
                 app: [ gis, manager, dashboards/gfbio, dashboards/data-atlas, dashboards/nfdi-portal-demo, dashboards/ebv-analyzer ]
 
         steps:
@@ -24,10 +24,16 @@ jobs:
             -   run: npm ci
             -   name: Build common
                 run: npm run build-prod:common
+                env:
+                    CI: true
             -   name: Build core
                 run: npm run build-prod:core
+                env:
+                    CI: true
             -   name: Build app ${{ matrix.app }}
                 run: npm run build-prod:${{ matrix.app }}
+                env:
+                    CI: true
             -   run: npm test
                 env:
                     CI: true

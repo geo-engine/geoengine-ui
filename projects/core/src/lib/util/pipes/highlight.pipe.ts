@@ -8,7 +8,7 @@ export class HighlightPipe implements PipeTransform {
         if (term) {
             try {
                 rexp = new RegExp('(' + term + ')', 'gi');
-            } catch (e) {
+            } catch (_e) {
                 // TODO: what to do?
             }
             if (rexp) {
