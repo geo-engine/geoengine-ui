@@ -71,8 +71,10 @@
                     </ng-template>
                 </ng-template>
             </ng-container>
-        </geoengine-map-container></div
-></ng-template>
+        </geoengine-map-container>
+    </div>
+    <geoengine-legend *ngIf="dataSelectionService.rasterLayer | async as rasterLayer" [layer]="rasterLayer"></geoengine-legend>
+</ng-template>
 
 <ng-template #select>
     <!-- two button for draw and reset -->
@@ -92,7 +94,17 @@
 
 <ng-template #review>
     <!-- vega component -->
-    <geoengine-vega-viewer [width]="400" [height]="300" *ngIf="plotData$ | async as plot" [chartData]="plot"></geoengine-vega-viewer>
+    @if (plotData$ | async; as plot) {
+        <div class="chart-container">
+            <geoengine-vega-viewer [width]="500" [height]="300" [chartData]="plot"></geoengine-vega-viewer>
 
+            <p>
+                The chart shows the distribution of values for the selected indicator within the area of interest. The x-axis represents the
+                classes or values and the y-axis the amount of pixels with this value.
+            </p>
+        </div>
+    } @else {
+        <p>Please select an indicator and a region of interest.</p>
+    }
     <mat-spinner color="accent" *ngIf="plotLoading$ | async"></mat-spinner>
 </ng-template>

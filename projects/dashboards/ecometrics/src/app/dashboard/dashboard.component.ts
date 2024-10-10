@@ -70,6 +70,7 @@ import {HttpResponse} from '@angular/common/http';
 import {set} from 'immutable';
 import proj4 from 'proj4';
 import {transform, transformExtent} from 'ol/proj';
+import {LegendComponent} from '../legend/legend.component';
 
 interface Indicator {
     name: string;
@@ -85,7 +86,17 @@ interface Indicator {
     styleUrl: './dashboard.component.scss',
     standalone: true,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CoreModule, PortalModule, AsyncPipe, MatGridListModule, MatMenuModule, MatIconModule, MatButtonModule, MatCardModule],
+    imports: [
+        CoreModule,
+        PortalModule,
+        AsyncPipe,
+        MatGridListModule,
+        MatMenuModule,
+        MatIconModule,
+        MatButtonModule,
+        MatCardModule,
+        LegendComponent,
+    ],
 })
 export class DashboardComponent implements AfterViewInit {
     private breakpointObserver = inject(BreakpointObserver);

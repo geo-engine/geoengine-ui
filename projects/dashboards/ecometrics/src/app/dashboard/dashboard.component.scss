@@ -29,3 +29,25 @@
 button {
     margin: 1rem;
 }
+
+geoengine-legend {
+    z-index: 4;
+    position: absolute;
+    top: 5rem;
+    left: 2.5rem;
+    background-color: rgba(255, 255, 255, 0.87);
+}
+
+.chart-container {
+    display: flex;
+    align-items: center;
+}
+
+.chart-container geoengine-vega-viewer {
+    margin-right: 5rem;
+    text-align: center;
+}
+
+.chart-container p {
+    margin: 0;
+}
