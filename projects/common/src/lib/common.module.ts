@@ -60,6 +60,7 @@ import {MeasurementComponent} from './measurement/measurement.component';
 import {TimeInputComponent} from './time/time-input/time-input.component';
 import {TimeIntervalInputComponent} from './time/time-interval-input/time-interval-input.component';
 import {PercentileBreakpointSelectorComponent} from './colors/percentile-breakpoint-selector/percentile-breakpoint-selector.component';
+import {OgrDatasetComponent} from './datasets/ogr-dataset/ogr-dataset.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -133,7 +134,15 @@ const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGa
 
 @NgModule({
     declarations: [...COMMON_COMPONENTS, ...COMMON_PIPES, ...FXFLEX_LEGACY_DIRECTIVES],
-    imports: [...MATERIAL_MODULES, ColorPickerModule, FormsModule, ReactiveFormsModule, AngularCommonModule, ScrollingModule],
+    imports: [
+        ...MATERIAL_MODULES,
+        ColorPickerModule,
+        FormsModule,
+        ReactiveFormsModule,
+        AngularCommonModule,
+        ScrollingModule,
+        OgrDatasetComponent,
+    ],
     exports: [
         ...COMMON_COMPONENTS,
         ...COMMON_PIPES,
@@ -144,6 +153,7 @@ const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGa
         ReactiveFormsModule,
         AngularCommonModule,
         ScrollingModule,
+        OgrDatasetComponent,
     ],
 })
 export class CommonModule {}

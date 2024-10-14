@@ -148,6 +148,7 @@ import {MapResolutionExtentOverlayComponent} from './map/map-info/map-resolution
 import {DownloadLayerComponent} from './download-layer/download-layer.component';
 import {BandwiseExpressionOperatorComponent} from './operators/dialogs/bandwise-expression-operator/bandwise-expression-operator.component';
 import {BandNeighborhoodAggregateComponent} from './operators/dialogs/band-neighborhood-aggregate/band-neighborhood-aggregate.component';
+// import {OgrDatasetComponent} from 'projects/common/src/public-api';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
