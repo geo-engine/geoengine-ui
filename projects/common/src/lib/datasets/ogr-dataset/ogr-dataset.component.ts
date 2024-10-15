@@ -7,6 +7,7 @@ import {MatChipInputEvent, MatChipsModule} from '@angular/material/chips';
 import {
     MetaDataDefinition,
     MetaDataSuggestion,
+    OgrMetaData,
     OgrSourceDatasetTimeType,
     OgrSourceDurationSpec,
     OgrSourceTimeFormat,
@@ -59,6 +60,8 @@ export class OgrDatasetComponent implements OnChanges {
     readonly timeGranularityOptions: Array<TimeGranularity> = timeStepGranularityOptions;
 
     @Input() uploadId?: UUID;
+    @Input() volumeName?: string;
+    @Input() metaData?: OgrMetaData;
 
     formMetaData: UntypedFormGroup;
 
@@ -102,6 +105,17 @@ export class OgrDatasetComponent implements OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.uploadId && changes.uploadId.currentValue) {
             this.setUpMetadataSpecification(changes.uploadId.currentValue);
+            return;
+        }
+
+        if (changes.metaData && changes.metaData.currentValue) {
+            const metaData = changes.metaData.currentValue as OgrMetaData;
+            this.fillMetaDataForm({
+                mainFile: metaData.loadingInfo.fileName,
+                layerName: metaData.loadingInfo.layerName,
+                metaData: metaData,
+            });
+            return;
         }
     }
 
@@ -297,6 +311,8 @@ export class OgrDatasetComponent implements OnChanges {
             return;
         }
 
+        console.log(suggest);
+
         const info = suggest.metaData.loadingInfo;
 
         const start = this.getStartTime(info?.time);
@@ -310,7 +326,7 @@ export class OgrDatasetComponent implements OnChanges {
             timeStartFormat: start ? start.startFormat.format : '',
             timeStartFormatCustom: start ? (start.startFormat.format == 'custom' ? start.startFormat.customFormat : '') : '',
             timeStartFormatUnix: start ? (start.startFormat.format == 'unixTimeStamp' ? start.startFormat.timestampType : '') : '',
-            timeDurationColumn: info?.time?.type === 'startDuration' ? info?.time.durationField : '',
+            timeDurationColumn: info?.time?.type === 'start+duration' ? info?.time.durationField : '',
             timeDurationValue: info?.time?.type === 'start' ? info?.time.duration : 1,
             timeDurationValueType: info?.time?.type === 'start' ? info?.time.duration.type : 'infinite',
             timeEndColumn: end ? end.endField : '',
@@ -325,6 +341,24 @@ export class OgrDatasetComponent implements OnChanges {
             errorHandling: info?.onError,
             spatialReference: suggest.metaData.resultDescriptor.spatialReference,
         });
+    }
+
+    async loadLayers(): Promise<void> {
+        if (!this.volumeName) {
+            return;
+        }
+        const layers = await this.datasetsService.getVolumeFileLayers(this.volumeName, this.formMetaData.controls.mainFile.value);
+
+        this.uploadFileLayers = layers.layers;
+
+        const form = this.formMetaData.controls;
+        const layer = form.layerName.value;
+
+        if (this.uploadFileLayers.length > 0 && !this.uploadFileLayers.includes(layer)) {
+            form.layerName.setValue(this.uploadFileLayers[0]);
+        }
+
+        this.changeDetectorRef.markForCheck();
     }
 
     private async setUpMetadataSpecification(uploadId: string): Promise<void> {
@@ -346,13 +380,19 @@ export class OgrDatasetComponent implements OnChanges {
     }
 
     async suggest(mainFile: string | undefined = undefined, layerName: string | undefined = undefined): Promise<void> {
-        if (!this.uploadId) {
+        let dataPath = undefined;
+
+        if (this.uploadId) {
+            dataPath = {upload: this.uploadId};
+        } else if (this.volumeName) {
+            dataPath = {volume: this.volumeName};
+        } else {
             return;
         }
 
         // TODO: error handling
         const suggest = await this.datasetsService.suggestMetaData({
-            suggestMetaData: {dataPath: {upload: this.uploadId}, mainFile, layerName},
+            suggestMetaData: {dataPath, mainFile, layerName},
         });
 
         this.fillMetaDataForm(suggest);
@@ -376,7 +416,7 @@ export class OgrDatasetComponent implements OnChanges {
             return undefined;
         }
 
-        if (time.type === 'startEnd') {
+        if (time.type === 'start+end') {
             return time;
         }
 
@@ -460,7 +500,7 @@ export class OgrDatasetComponent implements OnChanges {
             };
 
             time = {
-                type: 'startEnd',
+                type: 'start+end',
                 startField: formMeta.timeStartColumn.value,
                 startFormat: this.getStartTimeFormat(),
                 endField: formMeta.timeEndColumn.value,
@@ -472,7 +512,7 @@ export class OgrDatasetComponent implements OnChanges {
             };
 
             time = {
-                type: 'startDuration',
+                type: 'start+duration',
                 startField: formMeta.timeStartColumn.value,
                 startFormat: this.getStartTimeFormat(),
                 durationField: formMeta.timeDurationColumn.value,
@@ -525,9 +565,9 @@ export class OgrDatasetComponent implements OnChanges {
         }
         if (time.type === 'start') {
             return 'Start';
-        } else if (time.type === 'startDuration') {
+        } else if (time.type === 'start+duration') {
             return 'Start/Duration';
-        } else if (time.type === 'startEnd') {
+        } else if (time.type === 'start+end') {
             return 'Start/End';
         }
         return 'None';

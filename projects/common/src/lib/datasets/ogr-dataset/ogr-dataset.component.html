@@ -1,12 +1,23 @@
 <form [formGroup]="formMetaData">
-    <mat-form-field appearance="fill">
-        <mat-label>Choose the main file</mat-label>
-        <mat-select id="mainFile" formControlName="mainFile" (selectionChange)="changeMainFile()">
-            <mat-option *ngFor="let file of uploadFiles" [value]="file">
-                {{ file }}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
+    @if (uploadId) {
+        <mat-form-field appearance="fill">
+            <mat-label>Choose the main file</mat-label>
+            <mat-select id="mainFile" formControlName="mainFile" (selectionChange)="changeMainFile()">
+                <mat-option *ngFor="let file of uploadFiles" [value]="file">
+                    {{ file }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    } @else {
+        <mat-form-field appearance="fill">
+            <mat-label>Specify the main file</mat-label>
+            <input matInput type="text" formControlName="mainFile" />
+        </mat-form-field>
+
+        <div class="actions">
+            <button type="submit" mat-raised-button (click)="loadLayers()">Load File Layers</button>
+        </div>
+    }
 
     <mat-form-field appearance="fill">
         <mat-label>Choose the layer</mat-label>
