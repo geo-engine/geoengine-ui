@@ -11,8 +11,10 @@
         </div>
         <mat-progress-bar *ngIf="progress$ | async as progress" mode="determinate" [value]="progress"></mat-progress-bar>
     </mat-step>
-    <mat-step>
-        <geoengine-ogr-dataset [uploadId]="upload" [selectedFiles]="selectedFiles"></geoengine-ogr-dataset>
+
+    <mat-step [stepControl]="formMetaData">
+        <ng-template matStepLabel>Specify meta data</ng-template>
+        <geoengine-ogr-dataset [uploadId]="uploadId"></geoengine-ogr-dataset>
     </mat-step>
 
     <mat-step [stepControl]="formNameDescription">

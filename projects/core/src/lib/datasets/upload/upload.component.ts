@@ -2,8 +2,8 @@ import {HttpEventType} from '@angular/common/http';
 import {Component, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef, OnDestroy} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatStepper} from '@angular/material/stepper';
-import {Subject, Subscription, of, zip} from 'rxjs';
-import {map, mergeMap} from 'rxjs/operators';
+import {Subject, Subscription} from 'rxjs';
+import {mergeMap} from 'rxjs/operators';
 import {AddDatasetDict, UUID} from '../../backend/backend.model';
 import {NotificationService} from '../../notification.service';
 import {ProjectService} from '../../project/project.service';
@@ -130,8 +130,6 @@ export class UploadComponent implements OnDestroy {
                         this.stepper.selected.editable = false;
                     }
                     this.stepper.next();
-
-                    this.setUpMetadataSpecification(uploadId);
                 }
             },
             (err) => {
@@ -172,49 +170,36 @@ export class UploadComponent implements OnDestroy {
             metaData,
         };
 
-        const datasetName = await this.datasetsService.createDataset(
-            {
-                upload: this.uploadId,
-            },
-            definition,
-        );
+        try {
+            const datasetName = await this.datasetsService.createDataset(
+                {
+                    upload: this.uploadId,
+                },
+                definition,
+            );
 
-        this.datasetName = datasetName;
-        if (this.stepper.selected) {
-            this.stepper.selected.completed = true;
-            this.stepper.selected.editable = false;
+            this.datasetName = datasetName;
+            if (this.stepper.selected) {
+                this.stepper.selected.completed = true;
+                this.stepper.selected.editable = false;
+            }
+            const prevStep = this.stepper.steps.get(this.stepper.selectedIndex - 1);
+            if (prevStep) {
+                prevStep.completed = true;
+                prevStep.editable = false;
+            }
+
+            this.stepper.next();
+        } catch (err) {
+            this.notificationService.error('Create dataset failed: ' + err);
+            return;
         }
-        const prevStep = this.stepper.steps.get(this.stepper.selectedIndex - 1);
-        if (prevStep) {
-            prevStep.completed = true;
-            prevStep.editable = false;
-        }
-
-        this.stepper.next();
-
-        this.ogrDatasetComponent.suggest();
-
-        // TODO ERROR handling
-        // (err) => {
-        //     this.notificationService.error('Create dataset failed: ' + err.message);
-        // },
     }
 
-    private async setUpMetadataSpecification(uploadId: string): Promise<void> {
-        let uploadFiles = this.uploadFiles;
-
-        if (!uploadFiles) {
-            const res = await this.uploadsService.getUploadFiles(uploadId);
-            uploadFiles = res.files;
+    get formMetaData(): FormGroup {
+        if (!this.ogrDatasetComponent) {
+            return new FormGroup({});
         }
-
-        const suggest = await this.datasetsService.suggestMetaData({suggestMetaData: {dataPath: {upload: uploadId}}});
-
-        const layers = await this.uploadsService.getUploadFileLayers(uploadId, suggest.mainFile);
-
-        this.uploadFiles = uploadFiles;
-        this.uploadFileLayers = layers.layers;
-        // this.ogrDatasetComponent.fillMetaDataForm(suggest);
-        this.changeDetectorRef.markForCheck();
+        return this.ogrDatasetComponent.formMetaData;
     }
 }

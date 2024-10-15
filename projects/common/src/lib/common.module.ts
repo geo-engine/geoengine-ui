@@ -133,7 +133,7 @@ const COMMON_PIPES = [
 const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGapDirective, FxLayoutAlignDirective];
 
 @NgModule({
-    declarations: [...COMMON_COMPONENTS, ...COMMON_PIPES, ...FXFLEX_LEGACY_DIRECTIVES],
+    declarations: [...COMMON_COMPONENTS, ...COMMON_PIPES],
     imports: [
         ...MATERIAL_MODULES,
         ColorPickerModule,
@@ -142,6 +142,7 @@ const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGa
         AngularCommonModule,
         ScrollingModule,
         OgrDatasetComponent,
+        ...FXFLEX_LEGACY_DIRECTIVES,
     ],
     exports: [
         ...COMMON_COMPONENTS,

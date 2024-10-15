@@ -1,11 +1,9 @@
 <form [formGroup]="formMetaData">
-    <ng-template matStepLabel>Specify meta data</ng-template>
-
     <mat-form-field appearance="fill">
         <mat-label>Choose the main file</mat-label>
         <mat-select id="mainFile" formControlName="mainFile" (selectionChange)="changeMainFile()">
-            <mat-option *ngFor="let file of selectedFiles" [value]="file.name">
-                {{ file.name }}
+            <mat-option *ngFor="let file of uploadFiles" [value]="file">
+                {{ file }}
             </mat-option>
         </mat-select>
     </mat-form-field>

@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {FormsModule, ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {DatasetsService} from '../datasets.service';
 import {UploadsService} from '../../uploads/uploads.service';
@@ -14,20 +14,42 @@ import {
     VectorColumnInfo,
 } from '@geoengine/openapi-client';
 import {UUID} from '../dataset.model';
-import {CommonModule} from '@angular/common';
+import {CommonModule as AngularCommonModule} from '@angular/common';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {timeStepGranularityOptions} from '../../time/time.model';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {
+    FxFlexDirective,
+    FxLayoutAlignDirective,
+    FxLayoutDirective,
+    FxLayoutGapDirective,
+} from '../../util/directives/flexbox-legacy.directive';
 
 @Component({
     selector: 'geoengine-ogr-dataset',
     standalone: true,
-    imports: [CommonModule, MatInputModule, MatFormFieldModule, FormsModule, ReactiveFormsModule, MatSelectModule, MatChipsModule],
+    imports: [
+        AngularCommonModule,
+        MatInputModule,
+        MatFormFieldModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatSelectModule,
+        MatChipsModule,
+        MatButtonModule,
+        MatIconModule,
+        FxFlexDirective,
+        FxLayoutDirective,
+        FxLayoutGapDirective,
+        FxLayoutAlignDirective,
+    ],
     templateUrl: './ogr-dataset.component.html',
     styleUrl: './ogr-dataset.component.css',
 })
-export class OgrDatasetComponent {
+export class OgrDatasetComponent implements OnChanges {
     vectorDataTypes = ['Data', 'MultiPoint', 'MultiLineString', 'MultiPolygon'];
     timeDurationValueTypes = ['infinite', 'value', 'zero'];
     timeTypes = ['None', 'Start', 'Start/End', 'Start/Duration'];
@@ -37,10 +59,10 @@ export class OgrDatasetComponent {
     readonly timeGranularityOptions: Array<TimeGranularity> = timeStepGranularityOptions;
 
     @Input() uploadId?: UUID;
-    @Input() selectedFiles: Array<File> = [];
 
     formMetaData: UntypedFormGroup;
 
+    uploadFiles?: Array<string>;
     uploadFileLayers: Array<string> = [];
 
     readonly defaultTimeGranularity: TimeGranularity = 'seconds';
@@ -76,6 +98,11 @@ export class OgrDatasetComponent {
             errorHandling: new UntypedFormControl('skip', Validators.required),
             spatialReference: new UntypedFormControl('EPSG:4326', Validators.required), // TODO: validate sref string
         });
+    }
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.uploadId && changes.uploadId.currentValue) {
+            this.setUpMetadataSpecification(changes.uploadId.currentValue);
+        }
     }
 
     changeTimeType(): void {
@@ -298,6 +325,24 @@ export class OgrDatasetComponent {
             errorHandling: info?.onError,
             spatialReference: suggest.metaData.resultDescriptor.spatialReference,
         });
+    }
+
+    private async setUpMetadataSpecification(uploadId: string): Promise<void> {
+        let uploadFiles = this.uploadFiles;
+
+        if (!uploadFiles) {
+            const res = await this.uploadsService.getUploadFiles(uploadId);
+            uploadFiles = res.files;
+        }
+
+        const suggest = await this.datasetsService.suggestMetaData({suggestMetaData: {dataPath: {upload: uploadId}}});
+
+        const layers = await this.uploadsService.getUploadFileLayers(uploadId, suggest.mainFile);
+
+        this.uploadFiles = uploadFiles;
+        this.uploadFileLayers = layers.layers;
+        this.fillMetaDataForm(suggest);
+        this.changeDetectorRef.markForCheck();
     }
 
     async suggest(mainFile: string | undefined = undefined, layerName: string | undefined = undefined): Promise<void> {
