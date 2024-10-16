@@ -15,7 +15,6 @@ import {
     UploadResponseDict,
     UUID,
 } from '../backend/backend.model';
-import {RandomColorService} from '../util/services/random-color.service';
 import {ProjectService} from '../project/project.service';
 import {
     ClusteredPointSymbology,
@@ -24,6 +23,7 @@ import {
     LineSymbology,
     PointSymbology,
     PolygonSymbology,
+    RandomColorService,
     RasterLayer,
     RasterSymbology,
     VectorDataTypes,

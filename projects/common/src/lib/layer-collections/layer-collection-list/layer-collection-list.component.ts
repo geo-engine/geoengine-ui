@@ -3,21 +3,18 @@ import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, EMPTY, from, Observable, range, Subject} from 'rxjs';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {concatMap, first, map, scan, startWith, tap} from 'rxjs/operators';
-import {LayoutService} from '../../layout.service';
+import {LayerCollectionItemOrSearch, LayerCollectionSearch} from '../layer-collection.model';
 import {
-    LayerCollectionItemDict,
-    LayerCollectionLayerDict,
-    LayerCollectionListingDict,
-    ProviderLayerCollectionIdDict,
-    ProviderLayerIdDict,
-    UUID,
-} from '../../backend/backend.model';
-import {LayerCollectionService} from '../layer-collection.service';
+    TypedResultDescriptor,
+    CollectionItem as LayerCollectionItemDict,
+    ProviderLayerCollectionId as ProviderLayerCollectionIdDict,
+    LayerListing as LayerCollectionLayerDict,
+    LayerCollectionListing as LayerCollectionListingDict,
+    ProviderLayerId,
+} from '@geoengine/openapi-client';
+import {LayersService} from '../layers.service';
 import {createIconDataUrl} from '../../util/icons';
-import {ProjectService} from '../../project/project.service';
-import {NotificationService} from '../../notification.service';
-import {LayerCollectionSearch} from '../layer-collection.model';
-import {TypedResultDescriptor} from '@geoengine/openapi-client';
+import {WorkflowsService} from '../../workflows/workflows.service';
 
 @Component({
     selector: 'geoengine-layer-collection-list',
@@ -39,18 +36,20 @@ export class LayerCollectionListComponent implements OnChanges {
     collection?: ProviderLayerCollectionIdDict | LayerCollectionSearch = undefined;
 
     @Output()
-    selectCollection = new EventEmitter<LayerCollectionListingDict>();
+    selectCollection = new EventEmitter<LayerCollectionItemOrSearch>();
+
+    @Output()
+    selectLayer = new EventEmitter<ProviderLayerId>();
 
     readonly itemSizePx = 72;
 
-    readonly loadingSpinnerDiameterPx: number = 3 * LayoutService.remInPx;
+    @Input() loadingSpinnerDiameterPx: number = 100; // TODO = 3 * LayoutService.remInPx;
 
     source?: LayerCollectionItemDataSource;
 
     constructor(
-        private readonly layerCollectionService: LayerCollectionService,
-        private readonly projectService: ProjectService,
-        private readonly notificationService: NotificationService,
+        private readonly layersService: LayersService,
+        private readonly workflowsService: WorkflowsService,
     ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -89,24 +88,24 @@ export class LayerCollectionListComponent implements OnChanges {
     }
 
     select(item: LayerCollectionItemDict): void {
+        console.log('selected', item);
         if (item.type === 'collection') {
-            this.selectCollection.next(item as LayerCollectionListingDict);
+            this.selectCollection.next(item);
         } else if (item.type === 'layer') {
             const layer = item as LayerCollectionLayerDict;
-            this.layerCollectionService.addLayerToProject(layer.id).subscribe(() => this.showGbifHint(layer.id));
+            // this.layersService.addLayerToProject(layer.id).subscribe(() => this.showGbifHint(layer.id));
+            // TODO
+            this.selectLayer.next(layer.id);
         }
     }
 
-    getWorkflowMetaData(workflowId: UUID): Observable<TypedResultDescriptor> {
-        return this.projectService.getWorkflowMetaData(workflowId);
-    }
-
-    addLayer(layerId: ProviderLayerIdDict): void {
-        this.layerCollectionService.addLayerToProject(layerId).subscribe(() => this.showGbifHint(layerId));
+    addLayer(layerId: ProviderLayerId): void {
+        // TODO
+        // this.layerCollectionService.addLayerToProject(layerId).subscribe(() => this.showGbifHint(layerId));
     }
 
     protected setUpSource(): void {
-        this.source = new LayerCollectionItemDataSource(this.layerCollectionService, this.collection);
+        this.source = new LayerCollectionItemDataSource(this.layersService, this.collection);
 
         setTimeout(() => {
             this.source?.init(this.calculateInitialNumberOfElements());
@@ -120,9 +119,10 @@ export class LayerCollectionListComponent implements OnChanges {
         return numberOfElements + 1;
     }
 
-    private showGbifHint(layerId: ProviderLayerIdDict): void {
+    private showGbifHint(layerId: ProviderLayerId): void {
         if (layerId.providerId === '1c01dbb9-e3ab-f9a2-06f5-228ba4b6bf7a') {
-            this.notificationService.info('Loading this layer might time out. In this case, try zooming in to request less occurrences.');
+            // TODO
+            // this.notificationService.info('Loading this layer might time out. In this case, try zooming in to request less occurrences.');
         }
     }
 }
@@ -140,41 +140,37 @@ class LayerCollectionItemDataSource extends DataSource<LayerCollectionItemDict> 
     protected noMoreData = false;
     protected offset = 0;
 
-    protected getCollectionItems: (offset: number, limit: number) => Observable<Array<LayerCollectionItemDict>>;
+    protected getCollectionItems: (offset: number, limit: number) => Promise<Array<LayerCollectionItemDict>>;
 
     constructor(
-        protected layerCollectionService: LayerCollectionService,
+        protected layersService: LayersService,
         protected collection?: ProviderLayerCollectionIdDict | LayerCollectionSearch,
     ) {
         super();
 
         if (collection && 'providerId' in collection && 'collectionId' in collection) {
-            this.getCollectionItems = (offset, limit): Observable<Array<LayerCollectionItemDict>> =>
-                layerCollectionService.getLayerCollectionItems(collection.providerId, collection.collectionId, offset, limit).pipe(
-                    first(), // first because we only want to fetch once
-                    map((c) => c.items),
-                );
+            this.getCollectionItems = async (offset, limit): Promise<Array<LayerCollectionItemDict>> => {
+                const res = await layersService.getLayerCollectionItems(collection.providerId, collection.collectionId, offset, limit);
+                return res.items;
+            };
         } else if (collection && 'type' in collection && collection.type === 'search') {
             const search: LayerCollectionSearch = collection;
-            this.getCollectionItems = (offset, limit): Observable<Array<LayerCollectionItemDict>> =>
-                from(
-                    layerCollectionService
-                        .search({
-                            provider: search.id.providerId,
-                            collection: search.id.collectionId,
-                            searchType: search.searchType,
-                            searchString: search.searchString,
-                            limit,
-                            offset,
-                        })
-                        .then((c) => c.items as Array<LayerCollectionListingDict>),
-                );
+            this.getCollectionItems = async (offset, limit): Promise<Array<LayerCollectionItemDict>> => {
+                const res = await layersService.search({
+                    provider: search.id.providerId,
+                    collection: search.id.collectionId,
+                    searchType: search.searchType,
+                    searchString: search.searchString,
+                    limit,
+                    offset,
+                });
+                return res.items;
+            };
         } else {
-            this.getCollectionItems = (offset, limit): Observable<Array<LayerCollectionItemDict>> =>
-                layerCollectionService.getRootLayerCollectionItems(offset, limit).pipe(
-                    first(), // first because we only want to fetch once
-                    map((c) => c.items),
-                );
+            this.getCollectionItems = async (offset, limit): Promise<Array<LayerCollectionItemDict>> => {
+                const res = await layersService.getRootLayerCollectionItems(offset, limit);
+                return res.items;
+            };
         }
     }
 
@@ -211,7 +207,7 @@ class LayerCollectionItemDataSource extends DataSource<LayerCollectionItemDict> 
         const offset = this.offset;
         const limit = this.scrollFetchSize;
 
-        return this.getCollectionItems(offset, limit).pipe(
+        return from(this.getCollectionItems(offset, limit)).pipe(
             tap((items) => {
                 this.offset += items.length;
 

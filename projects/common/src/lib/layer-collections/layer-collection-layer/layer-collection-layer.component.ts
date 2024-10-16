@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
-import {mergeMap} from 'rxjs';
-import {LayerCollectionLayerDict, ProviderLayerIdDict} from '../../backend/backend.model';
-import {LayerCollectionService} from '../layer-collection.service';
-import {RasterLayerMetadata, VectorDataTypes, VectorLayerMetadata} from '@geoengine/common';
+import {LayerListing as LayerCollectionLayerDict, ProviderLayerId as ProviderLayerIdDict} from '@geoengine/openapi-client';
+import {LayersService} from '../layers.service';
+import {VectorDataTypes} from '../../operators/datatype.model';
+import {RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metadata.model';
 
 @Component({
     selector: 'geoengine-layer-collection-layer',
@@ -25,7 +25,7 @@ export class LayerCollectionLayerComponent implements OnChanges {
     protected loading = false;
 
     constructor(
-        private layerService: LayerCollectionService,
+        private layerService: LayersService,
         private changeDetectorRef: ChangeDetectorRef,
     ) {}
 
@@ -35,20 +35,18 @@ export class LayerCollectionLayerComponent implements OnChanges {
         }
     }
 
-    toggleExpand(): void {
+    async toggleExpand(): Promise<void> {
         if (this.layer) {
             this.expanded = !this.expanded;
             this.description = this.layer.description;
             if (!this.layerMetadata) {
                 this.loading = true;
-                this.layerService
-                    .registerAndGetLayerWorkflowId(this.layer.id.providerId, this.layer.id.layerId)
-                    .pipe(mergeMap((workflowId) => this.layerService.getWorkflowIdMetadata(workflowId)))
-                    .subscribe((resultDescriptor) => {
-                        this.layerMetadata = resultDescriptor;
-                        this.loading = false;
-                        this.changeDetectorRef.markForCheck();
-                    });
+                const workflowId = await this.layerService.registerAndGetLayerWorkflowId(this.layer.id.providerId, this.layer.id.layerId);
+                const resultDescriptor = await this.layerService.getWorkflowIdMetadata(workflowId);
+
+                this.layerMetadata = resultDescriptor;
+                this.loading = false;
+                this.changeDetectorRef.markForCheck();
             } else {
                 this.changeDetectorRef.markForCheck();
             }

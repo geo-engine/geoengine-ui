@@ -28,6 +28,7 @@ import {
     Layer,
     LayerData,
     LayerMetadata,
+    LayersService,
     LineSimplificationDict,
     LineSymbology,
     Plot,
@@ -52,6 +53,7 @@ import {
 } from '@geoengine/common';
 import {
     ProjectLayer as ProjectLayerDict,
+    ProviderLayerId,
     TypedOperatorOperator,
     TypedResultDescriptor,
     Workflow as WorkflowDict,
@@ -99,6 +101,7 @@ export class ProjectService {
         protected backend: BackendService,
         protected userService: UserService,
         protected spatialReferenceService: SpatialReferenceService,
+        protected layersService: LayersService,
     ) {
         // set the starting project upon login
         this.userService
@@ -1591,5 +1594,26 @@ export class ProjectService {
                 next: (data) => data$.next(data),
                 error: (error) => error, // ignore error
             });
+    }
+
+    // /**
+    //  * Add all layers (directly) contained in a layer collection to the current project.
+    //  */
+    // addCollectionLayersToProject(collectionItems: Array<LayerCollectionItem>): Promise<void> {
+    //     const layersObservable = collectionItems
+    //         .filter((layer) => layer.type === 'layer')
+    //         .map((layer) => layer as LayerListing)
+    //         .map((layer) => this.layersService.resolveLayer(layer.id));
+
+    //     // TODO: lookup in parallel
+    //     return subscribeAndProvide(zip(layersObservable).pipe(mergeMap((layers) => this.addLayers(layers))));
+    // }
+
+    /**
+     * Add a layer to the current project.
+     */
+    async addLayerbyId(layerId: ProviderLayerId): Promise<void> {
+        const layer = await this.layersService.resolveLayer(layerId);
+        this.addLayer(layer);
     }
 }
