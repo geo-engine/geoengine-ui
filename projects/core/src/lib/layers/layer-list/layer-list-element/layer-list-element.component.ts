@@ -2,7 +2,7 @@ import {Component, ChangeDetectionStrategy, ChangeDetectorRef, Input} from '@ang
 import {Clipboard} from '@angular/cdk/clipboard';
 import {MatDialog} from '@angular/material/dialog';
 import {TabsService} from '../../../tabs/tabs.service';
-import {Config} from '../../../config.service';
+import {CoreConfig} from '../../../config.service';
 import {MapService} from '../../../map/map.service';
 import {ProjectService} from '../../../project/project.service';
 import {LayoutService} from '../../../layout.service';
@@ -51,7 +51,7 @@ export class LayerListElementComponent {
         public readonly layoutService: LayoutService,
         public readonly projectService: ProjectService,
         public readonly mapService: MapService,
-        public readonly config: Config,
+        public readonly config: CoreConfig,
         public readonly changeDetectorRef: ChangeDetectorRef,
         protected readonly backend: BackendService,
         protected readonly userService: UserService,

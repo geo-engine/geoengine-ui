@@ -5,7 +5,6 @@ import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 
 import {AppComponent} from './app.component';
 import {
-    Config,
     LayoutService,
     MapService,
     NotificationService,
@@ -16,23 +15,33 @@ import {
     TabsService,
     UserService,
     CoreModule,
+    CoreConfig,
 } from '@geoengine/core';
 import {AppConfig} from './app-config.service';
 import {LoginComponent} from './login/login.component';
 import {MainComponent} from './main/main.component';
 import {AppRoutingModule} from './app-routing.module';
 import {RegisterComponent} from './register/register.component';
+import {CommonConfig} from '@geoengine/common';
 
 @NgModule({
     declarations: [AppComponent, LoginComponent, MainComponent, RegisterComponent],
     bootstrap: [AppComponent],
     imports: [BrowserAnimationsModule, BrowserModule, AppRoutingModule, CoreModule],
     providers: [
-        {provide: Config, useClass: AppConfig},
+        AppConfig,
+        {
+            provide: CoreConfig,
+            useExisting: AppConfig,
+        },
+        {
+            provide: CommonConfig,
+            useExisting: AppConfig,
+        },
         {
             provide: APP_INITIALIZER,
             useFactory: (config: AppConfig) => (): Promise<void> => config.load(),
-            deps: [Config],
+            deps: [AppConfig],
             multi: true,
         },
         LayoutService,

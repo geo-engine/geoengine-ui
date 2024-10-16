@@ -4,7 +4,6 @@ import {MatIconRegistry} from '@angular/material/icon';
 import {
     LayoutService,
     UserService,
-    Config,
     ProjectService,
     MapService,
     MapContainerComponent,
@@ -52,7 +51,7 @@ export class MainComponent implements OnInit, AfterViewInit {
     );
 
     constructor(
-        @Inject(Config) readonly config: AppConfig,
+        @Inject(AppConfig) readonly config: AppConfig,
         readonly layoutService: LayoutService,
         readonly projectService: ProjectService,
         readonly userService: UserService,
