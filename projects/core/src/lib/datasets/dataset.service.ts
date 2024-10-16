@@ -6,10 +6,7 @@ import {map, mergeMap} from 'rxjs/operators';
 import {HttpEvent} from '@angular/common/http';
 import {
     AutoCreateDatasetDict,
-    CreateDatasetDict,
     DatasetNameResponseDict,
-    MetaDataSuggestionDict,
-    SuggestMetaDataDict,
     UploadFileLayersResponseDict,
     UploadFilesResponseDict,
     UploadResponseDict,
@@ -73,16 +70,8 @@ export class DatasetService {
             .pipe(mergeMap((token) => this.backend.getUploadFileLayers(token, uploadId, fileName)));
     }
 
-    createDataset(create: CreateDatasetDict): Observable<DatasetNameResponseDict> {
-        return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.createDataset(token, create)));
-    }
-
     autoCreateDataset(create: AutoCreateDatasetDict): Observable<DatasetNameResponseDict> {
         return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.autoCreateDataset(token, create)));
-    }
-
-    suggestMetaData(suggest: SuggestMetaDataDict): Observable<MetaDataSuggestionDict> {
-        return this.userService.getSessionTokenForRequest().pipe(mergeMap((token) => this.backend.suggestMetaData(token, suggest)));
     }
 
     addDatasetToMap(dataset: Dataset): Observable<void> {
