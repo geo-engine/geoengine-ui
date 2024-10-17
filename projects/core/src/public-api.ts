@@ -111,7 +111,6 @@ export * from './lib/users/user-session/user-session.component';
 export * from './lib/util/components/backend-status-page/backend-status-page.component';
 export * from './lib/util/components/code-editor.component';
 export * from './lib/util/components/not-found/not-found-page.component';
-export * from './lib/util/directives/autocomplete-select.directive';
 
 // Pipes
 export * from './lib/util/pipes/css-string-to-rgba.pipe';

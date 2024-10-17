@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {PlotDataDict} from '../../backend/backend.model';
 import {LoadingState} from '../../project/loading-state.model';
-
 import {ProjectService} from '../../project/project.service';
 import {PlotDetailViewComponent} from '../plot-detail-view/plot-detail-view.component';
 import {MatDialog} from '@angular/material/dialog';

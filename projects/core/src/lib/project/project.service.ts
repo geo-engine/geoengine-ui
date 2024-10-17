@@ -1,4 +1,4 @@
-import {BehaviorSubject, combineLatest, firstValueFrom, Observable, Observer, of, ReplaySubject, Subject, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, firstValueFrom, Observable, Observer, of, ReplaySubject, Subject, Subscription, zip} from 'rxjs';
 import {debounceTime, distinctUntilChanged, filter, first, map, mergeMap, skip, switchMap, take, tap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
@@ -52,6 +52,8 @@ import {
     VisualPointClusteringParams,
 } from '@geoengine/common';
 import {
+    CollectionItem,
+    LayerListing,
     ProjectLayer as ProjectLayerDict,
     ProviderLayerId,
     TypedOperatorOperator,
@@ -1596,18 +1598,18 @@ export class ProjectService {
             });
     }
 
-    // /**
-    //  * Add all layers (directly) contained in a layer collection to the current project.
-    //  */
-    // addCollectionLayersToProject(collectionItems: Array<LayerCollectionItem>): Promise<void> {
-    //     const layersObservable = collectionItems
-    //         .filter((layer) => layer.type === 'layer')
-    //         .map((layer) => layer as LayerListing)
-    //         .map((layer) => this.layersService.resolveLayer(layer.id));
+    /**
+     * Add all layers (directly) contained in a layer collection to the current project.
+     */
+    addCollectionLayersToProject(collectionItems: Array<CollectionItem>): Observable<void> {
+        const layersObservable = collectionItems
+            .filter((layer) => layer.type === 'layer')
+            .map((layer) => layer as LayerListing)
+            .map((layer) => this.layersService.resolveLayer(layer.id));
 
-    //     // TODO: lookup in parallel
-    //     return subscribeAndProvide(zip(layersObservable).pipe(mergeMap((layers) => this.addLayers(layers))));
-    // }
+        // TODO: lookup in parallel
+        return subscribeAndProvide(zip(layersObservable).pipe(mergeMap((layers) => this.addLayers(layers))));
+    }
 
     /**
      * Add a layer to the current project.

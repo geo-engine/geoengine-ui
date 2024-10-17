@@ -66,6 +66,7 @@ import {LayerCollectionLayerComponent} from './layer-collections/layer-collectio
 import {LayerCollectionLayerDetailsComponent} from './layer-collections/layer-collection-layer-details/layer-collection-layer-details.component';
 import {LayerCollectionListComponent} from './layer-collections/layer-collection-list/layer-collection-list.component';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
+import {AutocompleteSelectDirective} from './util/directives/autocomplete-select.directive';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -125,6 +126,7 @@ const COMMON_COMPONENTS = [
     LayerCollectionLayerComponent,
     LayerCollectionLayerDetailsComponent,
     LayerCollectionListComponent,
+    AutocompleteSelectDirective,
 ];
 
 const COMMON_PIPES = [

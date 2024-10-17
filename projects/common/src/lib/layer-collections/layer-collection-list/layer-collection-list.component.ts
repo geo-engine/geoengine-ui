@@ -2,10 +2,9 @@ import {Component, ChangeDetectionStrategy, ViewChild, Input, Output, EventEmitt
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, EMPTY, from, Observable, range, Subject} from 'rxjs';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
-import {concatMap, first, map, scan, startWith, tap} from 'rxjs/operators';
+import {concatMap, scan, startWith, tap} from 'rxjs/operators';
 import {LayerCollectionItemOrSearch, LayerCollectionSearch} from '../layer-collection.model';
 import {
-    TypedResultDescriptor,
     CollectionItem as LayerCollectionItemDict,
     ProviderLayerCollectionId as ProviderLayerCollectionIdDict,
     LayerListing as LayerCollectionLayerDict,
@@ -47,10 +46,7 @@ export class LayerCollectionListComponent implements OnChanges {
 
     source?: LayerCollectionItemDataSource;
 
-    constructor(
-        private readonly layersService: LayersService,
-        private readonly workflowsService: WorkflowsService,
-    ) {}
+    constructor(private readonly layersService: LayersService) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.collection) {
@@ -88,20 +84,12 @@ export class LayerCollectionListComponent implements OnChanges {
     }
 
     select(item: LayerCollectionItemDict): void {
-        console.log('selected', item);
         if (item.type === 'collection') {
             this.selectCollection.next(item);
         } else if (item.type === 'layer') {
             const layer = item as LayerCollectionLayerDict;
-            // this.layersService.addLayerToProject(layer.id).subscribe(() => this.showGbifHint(layer.id));
-            // TODO
             this.selectLayer.next(layer.id);
         }
-    }
-
-    addLayer(layerId: ProviderLayerId): void {
-        // TODO
-        // this.layerCollectionService.addLayerToProject(layerId).subscribe(() => this.showGbifHint(layerId));
     }
 
     protected setUpSource(): void {
@@ -117,13 +105,6 @@ export class LayerCollectionListComponent implements OnChanges {
         const numberOfElements = Math.ceil(element.clientHeight / this.itemSizePx);
         // add one such that scrolling happens
         return numberOfElements + 1;
-    }
-
-    private showGbifHint(layerId: ProviderLayerId): void {
-        if (layerId.providerId === '1c01dbb9-e3ab-f9a2-06f5-228ba4b6bf7a') {
-            // TODO
-            // this.notificationService.info('Loading this layer might time out. In this case, try zooming in to request less occurrences.');
-        }
     }
 }
 

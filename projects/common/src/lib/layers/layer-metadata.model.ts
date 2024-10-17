@@ -56,8 +56,6 @@ export class VectorLayerMetadata extends LayerMetadata {
     readonly dataTypes: Immutable.Map<string, VectorColumnDataType>;
     readonly measurements: Immutable.Map<string, Measurement>;
 
-    readonly columns: Immutable.Map<string, VectorColumnDataType> = Immutable.Map();
-
     constructor(
         dataType: VectorDataType,
         spatialReference: SpatialReference,

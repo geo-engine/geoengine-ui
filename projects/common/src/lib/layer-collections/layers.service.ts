@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, firstValueFrom, Observable, of, ReplaySubject, zip} from 'rxjs';
-import {map, mergeMap} from 'rxjs/operators';
+import {firstValueFrom, ReplaySubject} from 'rxjs';
 import {
     AutocompleteHandlerRequest,
     LayerCollection,
@@ -8,16 +7,13 @@ import {
     ProviderCapabilities,
     SearchHandlerRequest,
     Layer as LayerDict,
-    CollectionItem as LayerCollectionItemDict,
     TypedResultDescriptor,
     ProviderLayerId,
-    LayerListing,
-    VectorDataType,
     RasterSymbology as RasterSymbologyDict,
 } from '@geoengine/openapi-client';
 
 import {apiConfigurationWithAccessKey, UserService} from '../user/user.service';
-import {UUID, VectorResultDescriptor} from '../datasets/dataset.model';
+import {UUID} from '../datasets/dataset.model';
 import {WorkflowsService} from '../workflows/workflows.service';
 import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../layers/layer-metadata.model';
 import {RandomColorService} from '../util/services/random-color.service';
@@ -75,26 +71,6 @@ export class LayersService {
     async getWorkflowIdMetadataDict(workflowId: UUID): Promise<TypedResultDescriptor> {
         return await this.workflowsService.getMetadata(workflowId);
     }
-
-    // /**
-    //  * Add all layers (directly) contained in a layer collection to the current project.
-    //  */
-    // addCollectionLayersToProject(collectionItems: Array<LayerCollectionItemDict>): Promise<void> {
-    //     const layersObservable = collectionItems
-    //         .filter((layer) => layer.type === 'layer')
-    //         .map((layer) => layer as LayerListing)
-    //         .map((layer) => this.resolveLayer(layer.id));
-
-    //     // TODO: lookup in parallel
-    //     return subscribeAndProvide(zip(layersObservable).pipe(mergeMap((layers) => this.projectService.addLayers(layers))));
-    // }
-
-    // /**
-    //  * Add a layer to the current project.
-    //  */
-    // addLayerToProject(layerId: ProviderLayerIdDict): Observable<void> {
-    //     return subscribeAndProvide(this.resolveLayer(layerId).pipe(mergeMap((layer: Layer) => this.projectService.addLayer(layer))));
-    // }
 
     /**
      * Fetches the capabilities of a layer provider.

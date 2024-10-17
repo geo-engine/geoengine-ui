@@ -108,7 +108,6 @@ import {LayerListMenuComponent} from './layers/layer-list/layer-list-menu/layer-
 import {ModalLoginComponent} from './users/modal-login/modal-login.component';
 import {CodeEditorComponent} from './util/components/code-editor.component';
 import {TimeStepSelectorComponent} from './time/time-step-selector/time-step-selector.component';
-import {AutocompleteSelectDirective} from './util/directives/autocomplete-select.directive';
 import {TokenLoginComponent} from './users/token-login/token-login.component';
 import {TimeSliderComponent} from './time/time-slider/time-slider.component';
 import {FullDisplayComponent} from './datatable/table/full-display/full-display.component';
@@ -190,7 +189,6 @@ const CORE_PIPES = [
 const CORE_COMPONENTS = [
     AddDataComponent,
     AddWorkflowComponent,
-    AutocompleteSelectDirective,
     BackendStatusPageComponent,
     BoxPlotOperatorComponent,
     ChangeSpatialReferenceComponent,
