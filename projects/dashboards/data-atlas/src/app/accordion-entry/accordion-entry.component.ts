@@ -1,17 +1,9 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef} from '@angular/core';
-import {mergeMap, BehaviorSubject, combineLatest, of, forkJoin, Observable, map} from 'rxjs';
-import {
-    LayerCollectionDict,
-    LayerCollectionItemDict,
-    LayerCollectionLayerDict,
-    LayerCollectionListingDict,
-    LayerCollectionService,
-    ProjectService,
-    ProviderLayerCollectionIdDict,
-    ProviderLayerIdDict,
-} from '@geoengine/core';
+import {mergeMap, BehaviorSubject, combineLatest, of, forkJoin, Observable, map, from} from 'rxjs';
+import {LayerCollectionListingDict, ProjectService, ProviderLayerCollectionIdDict} from '@geoengine/core';
 import {DataRange, DataSelectionService} from '../data-selection.service';
-import {RasterLayer, RasterSymbology, Time} from '@geoengine/common';
+import {LayersService, RasterLayer, RasterSymbology, Time} from '@geoengine/common';
+import {CollectionItem, LayerCollection, LayerListing, ProviderLayerId} from '@geoengine/openapi-client';
 
 @Component({
     selector: 'geoengine-accordion-entry',
@@ -24,29 +16,26 @@ export class AccordionEntryComponent implements OnInit {
     @Input() otherCollection?: ProviderLayerCollectionIdDict;
     @Input() icon = 'class';
 
-    readonly selectedLayers$ = new BehaviorSubject<Array<ProviderLayerIdDict | undefined>>([]);
-    readonly collections$ = new BehaviorSubject<Array<LayerCollectionDict>>([]);
+    readonly selectedLayers$ = new BehaviorSubject<Array<ProviderLayerId | undefined>>([]);
+    readonly collections$ = new BehaviorSubject<Array<LayerCollection>>([]);
 
     constructor(
-        private readonly layerCollectionService: LayerCollectionService,
+        private readonly layersService: LayersService,
         readonly projectService: ProjectService,
         readonly dataSelectionService: DataSelectionService,
         private readonly changeDetectorRef: ChangeDetectorRef,
     ) {}
 
     ngOnInit(): void {
-        let otherCollectionItems$: Observable<Array<LayerCollectionItemDict>> = of([]);
+        let otherCollectionItems$: Observable<Array<CollectionItem>> = of([]);
         if (this.otherCollection) {
-            otherCollectionItems$ = this.layerCollectionService
-                .getLayerCollectionItems(this.otherCollection.providerId, this.otherCollection.collectionId)
-                .pipe(map((c) => c.items));
+            otherCollectionItems$ = from(
+                this.layersService.getLayerCollectionItems(this.otherCollection.providerId, this.otherCollection.collectionId),
+            ).pipe(map((c) => c.items));
         }
 
         forkJoin({
-            providerCollections: this.layerCollectionService.getLayerCollectionItems(
-                this.collection.providerId,
-                this.collection.collectionId,
-            ),
+            providerCollections: this.layersService.getLayerCollectionItems(this.collection.providerId, this.collection.collectionId),
             otherCollectionItems: otherCollectionItems$,
         }).subscribe(({providerCollections, otherCollectionItems}) => {
             const collections = [];
@@ -54,18 +43,14 @@ export class AccordionEntryComponent implements OnInit {
             for (const item of providerCollections.items) {
                 if (item.type === 'collection') {
                     const collection = item as LayerCollectionListingDict;
-                    collections.push(
-                        this.layerCollectionService.getLayerCollectionItems(collection.id.providerId, collection.id.collectionId),
-                    );
+                    collections.push(this.layersService.getLayerCollectionItems(collection.id.providerId, collection.id.collectionId));
                 }
             }
 
             for (const item of otherCollectionItems) {
                 if (item.type === 'collection') {
                     const collection = item as LayerCollectionListingDict;
-                    collections.push(
-                        this.layerCollectionService.getLayerCollectionItems(collection.id.providerId, collection.id.collectionId),
-                    );
+                    collections.push(this.layersService.getLayerCollectionItems(collection.id.providerId, collection.id.collectionId));
                 }
             }
 
@@ -78,7 +63,7 @@ export class AccordionEntryComponent implements OnInit {
         });
     }
 
-    layerSelected(i: number, layer: LayerCollectionLayerDict | undefined): void {
+    layerSelected(i: number, layer: LayerListing | undefined): void {
         const selected = this.selectedLayers$.getValue();
         selected[i] = layer?.id;
         this.selectedLayers$.next(selected);
@@ -90,8 +75,7 @@ export class AccordionEntryComponent implements OnInit {
             return;
         }
 
-        this.layerCollectionService
-            .getLayer(id.providerId, id.layerId)
+        from(this.layersService.getLayer(id.providerId, id.layerId))
             .pipe(
                 mergeMap((layer) => combineLatest([of(layer), this.projectService.registerWorkflow(layer.workflow)])),
                 mergeMap(([layer, workflowId]) => {

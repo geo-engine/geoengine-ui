@@ -1,11 +1,11 @@
 import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
-import {concatMap, first, Observable, range, reduce, takeWhile} from 'rxjs';
-import {LayerCollectionNavigationComponent} from '../../layer-collections/layer-collection-navigation/layer-collection-navigation.component';
-import {LayerCollectionService} from '../../layer-collections/layer-collection.service';
+import {concatMap, first, from, Observable, range, reduce, takeWhile} from 'rxjs';
 import {LayoutService, SidenavConfig} from '../../layout.service';
 import {AddWorkflowComponent} from '../add-workflow/add-workflow.component';
 import {DrawFeaturesComponent} from '../draw-features/draw-features.component';
 import {UploadComponent} from '../upload/upload.component';
+import {LayersService} from '@geoengine/common';
+import {LayerCollectionSelectionComponent} from '../../layer-collections/layer-collection-selection.component';
 
 export interface AddDataButton {
     name: string;
@@ -41,13 +41,13 @@ export class AddDataComponent {
         this.layoutService.setSidenavContentComponent(sidenavConfig);
     }
 
-    static createLayerRootCollectionButtons(layerService: LayerCollectionService): Observable<Array<AddDataButton>> {
+    static createLayerRootCollectionButtons(layersService: LayersService): Observable<Array<AddDataButton>> {
         const MAX_NUMBER_OF_QUERIES = 10;
         const BATCH_SIZE = 20;
         return range(0, MAX_NUMBER_OF_QUERIES).pipe(
             concatMap((i) => {
                 const start = i * BATCH_SIZE;
-                return layerService.getRootLayerCollectionItems(start, BATCH_SIZE).pipe(first());
+                return from(layersService.getRootLayerCollectionItems(start, BATCH_SIZE)).pipe(first());
             }),
             takeWhile((collection) => collection.items.length > 0),
             reduce((acc, collection) => {
@@ -56,7 +56,7 @@ export class AddDataComponent {
                     description: item.description,
                     icon: 'layers',
                     sidenavConfig: {
-                        component: LayerCollectionNavigationComponent,
+                        component: LayerCollectionSelectionComponent,
                         keepParent: true,
                         config: {rootCollectionItem: item},
                     },

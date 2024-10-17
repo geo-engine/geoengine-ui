@@ -10,15 +10,22 @@ import {
     SimpleChanges,
     OnDestroy,
     HostListener,
+    Output,
+    EventEmitter,
 } from '@angular/core';
-import {LayerCollectionListingDict, ProviderLayerCollectionIdDict, UUID} from '../../backend/backend.model';
 import {MatInput} from '@angular/material/input';
-import {SearchCapabilities, SearchType, SearchTypes} from '@geoengine/openapi-client';
-import {UserService} from '../../users/user.service';
+import {
+    LayerCollectionListing,
+    ProviderLayerCollectionId,
+    ProviderLayerId,
+    SearchCapabilities,
+    SearchType,
+    SearchTypes,
+} from '@geoengine/openapi-client';
 import {BehaviorSubject, Observable, debounceTime, distinctUntilChanged, switchMap} from 'rxjs';
 import {LayerCollectionItem, LayerCollectionItemOrSearch, LayerCollectionSearch} from '../layer-collection.model';
-import {Config} from '../../config.service';
-import {LayerCollectionService} from '../layer-collection.service';
+import {LayersService} from '../layers.service';
+import {UUID} from '../../datasets/dataset.model';
 
 @Component({
     selector: 'geoengine-layer-collection-navigation',
@@ -27,7 +34,7 @@ import {LayerCollectionService} from '../layer-collection.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerCollectionNavigationComponent implements OnInit, OnChanges, OnDestroy {
-    @Input({required: true}) rootCollectionItem!: LayerCollectionListingDict;
+    @Input({required: true}) rootCollectionItem!: LayerCollectionListing;
 
     @ViewChild('scrollElement', {read: ElementRef}) public scrollElement!: ElementRef<HTMLDivElement>;
 
@@ -36,10 +43,11 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
 
     selectedCollection?: LayerCollectionItemOrSearch;
 
+    @Output() selectLayer = new EventEmitter<ProviderLayerId>();
+
     constructor(
-        protected readonly userService: UserService,
-        protected readonly config: Config,
-        protected readonly layerCollectionService: LayerCollectionService,
+        // protected readonly config: Config,
+        protected readonly layerCollectionService: LayersService,
         private readonly changeDetectorRef: ChangeDetectorRef,
     ) {}
 
@@ -103,7 +111,7 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
         }
     }
 
-    get providerLayerCollectionIdOrSearch(): ProviderLayerCollectionIdDict | LayerCollectionSearch | undefined {
+    get providerLayerCollectionIdOrSearch(): ProviderLayerCollectionId | LayerCollectionSearch | undefined {
         if (this.selectedCollection && this.selectedCollection.type === 'collection') {
             return this.selectedCollection.id;
         } else if (this.selectedCollection && this.selectedCollection.type === 'search') {
@@ -122,12 +130,12 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
 
     protected createSearch(): Search {
         return new Search({
-            layerCollectionService: this.layerCollectionService,
+            layersService: this.layerCollectionService,
             selectedCollection: () => this.selectedCollection?.id ?? this.rootCollectionItem.id,
             searchResult: (searchResult): void => {
                 this.breadcrumbs.selectCollection(searchResult);
             },
-            debounceTimeMs: this.config.DELAYS.DEBOUNCE,
+            debounceTimeMs: 100, // TODO: this.config.DELAYS.DEBOUNCE,
             maxAutocompleteResults: 10,
         });
     }
@@ -140,7 +148,7 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
     }
 
     protected updateListView(id?: LayerCollectionItemOrSearch): void {
-        this.selectedCollection = id ?? this.rootCollectionItem;
+        this.selectedCollection = id ?? (this.rootCollectionItem as LayerCollectionItemOrSearch);
 
         this.search.updateSearchCapabilities(this.selectedCollection.id).then(() => {
             this.changeDetectorRef.markForCheck();
@@ -176,25 +184,25 @@ class Search {
     protected searchCapabilitiesProviderId: UUID = '';
     protected autocompleteAbortController?: AbortController;
 
-    protected layerCollectionService: LayerCollectionService;
-    protected selectedCollection: () => ProviderLayerCollectionIdDict;
+    protected layersService: LayersService;
+    protected selectedCollection: () => ProviderLayerCollectionId;
     protected searchResult: (_: LayerCollectionSearch) => void;
     protected maxAutocompleteResults: number;
 
     constructor({
-        layerCollectionService,
+        layersService,
         selectedCollection,
         searchResult,
         debounceTimeMs,
         maxAutocompleteResults,
     }: {
-        readonly layerCollectionService: LayerCollectionService;
-        readonly selectedCollection: () => ProviderLayerCollectionIdDict;
+        readonly layersService: LayersService;
+        readonly selectedCollection: () => ProviderLayerCollectionId;
         readonly searchResult: (_: LayerCollectionSearch) => void;
         readonly debounceTimeMs: number;
         readonly maxAutocompleteResults: number;
     }) {
-        this.layerCollectionService = layerCollectionService;
+        this.layersService = layersService;
         this.selectedCollection = selectedCollection;
         this.searchResult = searchResult;
         this.maxAutocompleteResults = maxAutocompleteResults;
@@ -246,7 +254,7 @@ class Search {
 
         const collection = this.selectedCollection();
 
-        return await this.layerCollectionService.autocompleteSearch(
+        return await this.layersService.autocompleteSearch(
             {
                 provider: collection.providerId,
                 collection: collection.collectionId,
@@ -271,13 +279,13 @@ class Search {
         } as LayerCollectionSearch);
     }
 
-    async updateSearchCapabilities(layerCollection: ProviderLayerCollectionIdDict): Promise<void> {
+    async updateSearchCapabilities(layerCollection: ProviderLayerCollectionId): Promise<void> {
         const providerId = layerCollection.providerId;
         if (this.searchCapabilitiesProviderId === providerId) {
             return; // same provider, no need to re-query
         }
 
-        this.searchCapabilities = (await this.layerCollectionService.capabilities(providerId)).search;
+        this.searchCapabilities = (await this.layersService.capabilities(providerId)).search;
         this.searchCapabilitiesProviderId = providerId;
 
         // set some default settings
@@ -382,7 +390,7 @@ class BreadcrumbNavigation {
         if (this.selectedCollection === -1) {
             return;
         }
-        const newTrail: Array<LayerCollectionListingDict> = [];
+        const newTrail: Array<LayerCollectionItemOrSearch> = [];
         this.allTrails.push(newTrail);
         this.selectedCollection = this.allTrails.length - 2;
         this.forward();

@@ -1,12 +1,11 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {PlotDataDict} from '../../backend/backend.model';
 import {LoadingState} from '../../project/loading-state.model';
-import {createIconDataUrl} from '../../util/icons';
 import {ProjectService} from '../../project/project.service';
 import {PlotDetailViewComponent} from '../plot-detail-view/plot-detail-view.component';
 import {MatDialog} from '@angular/material/dialog';
 import {GeoEngineError} from '../../util/errors';
-import {Plot} from '@geoengine/common';
+import {createIconDataUrl, Plot} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-plot-list-entry',

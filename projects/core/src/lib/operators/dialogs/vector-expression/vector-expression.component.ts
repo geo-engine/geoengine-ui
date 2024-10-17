@@ -3,11 +3,11 @@ import {Validators, FormBuilder, FormControl, FormArray, FormGroup, AsyncValidat
 import {ProjectService} from '../../../project/project.service';
 import {BehaviorSubject, combineLatest, firstValueFrom, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {map, mergeMap, startWith} from 'rxjs/operators';
-import {RandomColorService} from '../../../util/services/random-color.service';
 import {
     ColumnOutputColumn,
     GeometryOutputColumn,
     Measurement,
+    RandomColorService,
     ResultTypes,
     SymbologyType,
     UnitlessMeasurement,
