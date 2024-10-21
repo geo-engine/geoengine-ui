@@ -898,6 +898,15 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
+                        "allowedCommonJsDependencies": [
+                            "codemirror",
+                            "dagre-d3",
+                            "json-stringify-pretty-compact",
+                            "fast-json-stable-stringify",
+                            "lerc",
+                            "moment",
+                            "xml-utils"
+                        ],
                         "outputPath": "dist/dashboards/ecometrics",
                         "index": "projects/dashboards/ecometrics/src/index.html",
                         "main": "projects/dashboards/ecometrics/src/main.ts",
