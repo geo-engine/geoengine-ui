@@ -74,6 +74,7 @@ import {LegendComponent} from '../legend/legend.component';
 
 interface Indicator {
     name: string;
+    description: string;
     workflow: Workflow;
     symbology: RasterSymbology;
     dataRange: DataRange;
@@ -106,6 +107,7 @@ export class DashboardComponent implements AfterViewInit {
     indicators: Array<Indicator> = [
         {
             name: 'Land type',
+            description: 'Analyze the types of land within your selected area.',
             workflow: {
                 type: 'Raster',
                 operator: {
@@ -140,6 +142,7 @@ export class DashboardComponent implements AfterViewInit {
         },
         {
             name: 'Vegetation',
+            description: 'Assess the vegetation health and density in your chosen region.',
             workflow: {
                 type: 'Raster',
                 operator: {

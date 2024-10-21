@@ -34,15 +34,11 @@
 
 <ng-template #indicator>
     <p>Please choose one of the following indicators:</p>
-    <ul>
-        <li>Land Classification: Analyze the types of land within your selected area.</li>
-        <li>Vegetation Index: Assess the vegetation health and density in your chosen region.</li>
-    </ul>
     <mat-form-field>
         <mat-label>Select Indicator</mat-label>
         <mat-select (selectionChange)="changeIndicator($event)">
             <mat-option *ngFor="let indicator of indicators" [value]="indicator">
-                {{ indicator.name }}
+                <b>{{ indicator.name }}:</b> {{ indicator.description }}
             </mat-option>
         </mat-select>
     </mat-form-field>
