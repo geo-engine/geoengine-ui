@@ -370,8 +370,6 @@ export class DashboardComponent implements AfterViewInit {
                 });
 
                 const blob = new Blob([JSON.stringify(geoJson)], {type: 'application/json'});
-                console.log(JSON.stringify(geoJson));
-                console.log(blob);
 
                 const form = new FormData();
                 form.append('file', blob, 'draw.json');
@@ -515,8 +513,6 @@ export class DashboardComponent implements AfterViewInit {
         const ur = proj4('EPSG:4326', projString, [this.selectedBBox[2], this.selectedBBox[3]]);
         const extent = [ll[0], ll[1], ur[0], ur[1]];
 
-        console.log(this.selectedBBox, extent);
-
         const plot = await firstValueFrom(
             this.backend.getPlot(
                 workflowId,
@@ -534,7 +530,6 @@ export class DashboardComponent implements AfterViewInit {
             ),
         );
 
-        console.log(plot);
         this.plotData$.next(plot.data);
         this.plotLoading$.next(false);
     }
