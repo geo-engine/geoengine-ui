@@ -245,6 +245,7 @@ export class DashboardComponent implements AfterViewInit {
 
     @ViewChild('welcome') welcome!: TemplateRef<unknown>;
     @ViewChild('inspect') inspect!: TemplateRef<unknown>;
+    @ViewChild('indicator') indicator!: TemplateRef<unknown>;
     @ViewChild('select') select!: TemplateRef<unknown>;
     @ViewChild('review') review!: TemplateRef<unknown>;
 
@@ -295,8 +296,14 @@ export class DashboardComponent implements AfterViewInit {
                         {
                             title: 'Inspect',
                             cols: 1,
-                            rows: 2,
+                            rows: 3,
                             content: new TemplatePortal(this.inspect, this._viewContainerRef),
+                        },
+                        {
+                            title: 'Select Indicator',
+                            cols: 1,
+                            rows: 1,
+                            content: new TemplatePortal(this.indicator, this._viewContainerRef),
                         },
                         {
                             title: 'Draw Area and Select Time',
@@ -307,7 +314,7 @@ export class DashboardComponent implements AfterViewInit {
                         {
                             title: 'Review Indicator',
                             cols: 2,
-                            rows: 1,
+                            rows: 2,
                             content: new TemplatePortal(this.review, this._viewContainerRef),
                         },
                     ];

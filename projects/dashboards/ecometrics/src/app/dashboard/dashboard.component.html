@@ -1,5 +1,5 @@
 <div class="grid-container">
-    <mat-grid-list cols="2" rowHeight="400px">
+    <mat-grid-list cols="2" rowHeight="300px">
         @for (card of cards | async; track card) {
             <mat-grid-tile [colspan]="card.cols" [rowspan]="card.rows">
                 <mat-card class="dashboard-card">
@@ -28,15 +28,18 @@
     <p>Welcome to the Environmental Indicators Dashboard!</p>
     <p>
         Here, you can analyze specific areas of interest by selecting an indicator and drawing the area directly on the map. To get started,
-        please choose one of the following indicators:
+        please select an indicator. Then, simply draw your area of interest on the map and start the analysis.
     </p>
+</ng-template>
+
+<ng-template #indicator>
+    <p>Please choose one of the following indicators:</p>
     <ul>
         <li>Land Classification: Analyze the types of land within your selected area.</li>
         <li>Vegetation Index: Assess the vegetation health and density in your chosen region.</li>
     </ul>
-    <p>Simply draw your area of interest on the map and select the desired indicator to begin your analysis.</p>
     <mat-form-field>
-        <mat-label>Indicator</mat-label>
+        <mat-label>Select Indicator</mat-label>
         <mat-select (selectionChange)="changeIndicator($event)">
             <mat-option *ngFor="let indicator of indicators" [value]="indicator">
                 {{ indicator.name }}
@@ -96,7 +99,7 @@
     <!-- vega component -->
     @if (plotData$ | async; as plot) {
         <div class="chart-container">
-            <geoengine-vega-viewer [width]="500" [height]="300" [chartData]="plot"></geoengine-vega-viewer>
+            <geoengine-vega-viewer [width]="500" [height]="500" [chartData]="plot"></geoengine-vega-viewer>
 
             <p>
                 The chart shows the distribution of values for the selected indicator within the area of interest. The x-axis represents the

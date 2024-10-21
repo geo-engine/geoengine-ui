@@ -22,8 +22,12 @@
 
 .map-container {
     margin: 1rem;
-    height: 50vh;
-    width: calc(100% - 30px);
+    height: calc(100% - 2rem);
+    width: calc(100% - 2rem);
+}
+
+mat-card-content {
+    height: 100%;
 }
 
 button {
@@ -50,4 +54,8 @@ geoengine-legend {
 
 .chart-container p {
     margin: 0;
+}
+
+mat-form-field {
+    width: 100%;
 }
