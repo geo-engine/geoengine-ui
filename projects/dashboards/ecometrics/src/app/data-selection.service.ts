@@ -98,7 +98,9 @@ export class DataSelectionService {
             first(),
             mergeMap((currentLayer) => {
                 if (currentLayer) {
-                    return this.projectService.removeLayer(currentLayer);
+                    const o = this.projectService.removeLayer(currentLayer);
+                    this._polygonLayer.next(undefined);
+                    return o;
                 } else {
                     return of(undefined);
                 }
