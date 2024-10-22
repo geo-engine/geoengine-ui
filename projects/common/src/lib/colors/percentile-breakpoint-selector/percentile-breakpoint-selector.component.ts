@@ -143,7 +143,6 @@ export class PercentileBreakpointSelectorComponent implements OnInit, OnDestroy,
     }
 
     setNumPercentiles(num: number): void {
-        console.log('foo');
         if (num < 2 || num > this.MAX_PERCENTILES + 2) {
             return;
         }

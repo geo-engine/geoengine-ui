@@ -6,8 +6,5 @@
         "types": []
     },
     "files": ["src/main.ts"],
-    "include": [],
-    "paths": {
-        "@geoengine/common": ["dist/common"]
-    }
+    "include": []
 }
