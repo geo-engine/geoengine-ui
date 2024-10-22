@@ -13,10 +13,6 @@ mat-spinner {
     margin: 1rem auto;
 }
 
-textarea {
-    width: 99%;
-}
-
 mat-form-field {
     width: 100% !important;
 }
