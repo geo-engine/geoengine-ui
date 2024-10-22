@@ -4,7 +4,7 @@ import {LayoutService, SidenavConfig} from '../../layout.service';
 import {ThemePalette} from '@angular/material/core';
 import {distinctUntilChanged, map, mergeScan} from 'rxjs/operators';
 import {UserService} from '../../users/user.service';
-import {Config} from '../../config.service';
+import {CoreConfig} from '../../config.service';
 import {SidenavRef} from '../sidenav-ref.service';
 import {OidcComponent} from '../../users/oidc/oidc.component';
 
@@ -116,7 +116,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
     static createLoginButton(
         userService: UserService,
         layoutService: LayoutService,
-        config: Config,
+        config: CoreConfig,
         loginSidenavConfig?: SidenavConfig,
     ): NavigationButton {
         loginSidenavConfig = loginSidenavConfig ? loginSidenavConfig : {component: OidcComponent};

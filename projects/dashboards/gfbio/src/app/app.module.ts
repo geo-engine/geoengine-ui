@@ -8,7 +8,6 @@ import {RouterModule} from '@angular/router';
 
 import {AppComponent} from './app.component';
 import {
-    Config,
     DatasetService,
     LayoutService,
     MapService,
@@ -20,11 +19,13 @@ import {
     TabsService,
     UserService,
     CoreModule,
+    CoreConfig,
 } from '@geoengine/core';
 import {AppConfig} from './app-config.service';
 import {HelpComponent} from './help/help.component';
 import {SplashDialogComponent} from './splash-dialog/splash-dialog.component';
 import {GfBioCollectionDialogComponent} from './gfbio-collection/gfbio-collection-dialog.component';
+import {CommonConfig} from '@geoengine/common';
 
 @NgModule({
     declarations: [AppComponent, HelpComponent, SplashDialogComponent, GfBioCollectionDialogComponent],
@@ -38,11 +39,19 @@ import {GfBioCollectionDialogComponent} from './gfbio-collection/gfbio-collectio
         CoreModule,
     ],
     providers: [
-        {provide: Config, useClass: AppConfig},
+        AppConfig,
+        {
+            provide: CoreConfig,
+            useExisting: AppConfig,
+        },
+        {
+            provide: CommonConfig,
+            useExisting: AppConfig,
+        },
         {
             provide: APP_INITIALIZER,
             useFactory: (config: AppConfig) => (): Promise<void> => config.load(),
-            deps: [Config],
+            deps: [AppConfig],
             multi: true,
         },
         DatasetService,

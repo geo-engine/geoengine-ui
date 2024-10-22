@@ -4,7 +4,7 @@ import {debounceTime, distinctUntilChanged, filter, first, map, mergeMap, skip, 
 import {Injectable} from '@angular/core';
 
 import {Project} from './project.model';
-import {Config} from '../config.service';
+import {CoreConfig} from '../config.service';
 import {LoadingState} from './loading-state.model';
 import {NotificationService} from '../notification.service';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -93,7 +93,7 @@ export class ProjectService {
     private readonly selectedFeature$ = new BehaviorSubject<FeatureSelection>({feature: undefined});
 
     constructor(
-        protected config: Config,
+        protected config: CoreConfig,
         protected notificationService: NotificationService,
         protected mapService: MapService,
         protected backend: BackendService,

@@ -6,7 +6,7 @@ import {Injectable} from '@angular/core';
 import {utc} from 'moment';
 
 import {BackendStatus, User} from './user.model';
-import {Config} from '../config.service';
+import {CoreConfig} from '../config.service';
 import {NotificationService} from '../notification.service';
 import {BackendService} from '../backend/backend.service';
 import {AuthCodeRequestURL, BackendInfoDict, RoleDescription, UUID} from '../backend/backend.model';
@@ -20,7 +20,9 @@ const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '
 /**
  * A service that is responsible for retrieving user information and modifying the current user.
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class UserService {
     protected readonly session$ = new ReplaySubject<Session | undefined>(1);
     protected readonly backendStatus$ = new BehaviorSubject<BackendStatus>({available: false, initial: true});
@@ -32,7 +34,7 @@ export class UserService {
     protected sessionInitialized = false;
 
     constructor(
-        protected readonly config: Config,
+        protected readonly config: CoreConfig,
         protected readonly backend: BackendService,
         protected readonly notificationService: NotificationService,
         protected readonly router: Router,

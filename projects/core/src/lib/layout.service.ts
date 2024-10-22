@@ -1,7 +1,7 @@
 import {fromEvent, combineLatest, BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
 import {Injectable, Type} from '@angular/core';
-import {Config} from './config.service';
+import {CoreConfig} from './config.service';
 
 /**
  * Layout settings serialization format.
@@ -58,7 +58,7 @@ export class LayoutService {
 
     private sidenavContentMaxWidth$: Subject<number> = new ReplaySubject(1);
 
-    constructor(protected config: Config) {
+    constructor(protected config: CoreConfig) {
         this.setupSidenavWidthStream();
     }
 

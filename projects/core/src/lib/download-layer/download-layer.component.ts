@@ -13,7 +13,7 @@ import {UserService} from '../users/user.service';
 import {bboxAsOgcString, gridOffsetsAsOgcString, gridOriginAsOgcString} from '../util/spatial_reference';
 import {Layer, SpatialReference, Time, olExtentToTuple, extentToBboxDict, geoengineValidators, TimeInterval} from '@geoengine/common';
 import {TypedResultDescriptor} from '@geoengine/openapi-client';
-import {Config} from '../config.service';
+import {CoreConfig} from '../config.service';
 import {toSignal} from '@angular/core/rxjs-interop';
 
 export interface DownloadLayerForm {
@@ -44,7 +44,7 @@ export class DownloadLayerComponent implements OnInit {
     protected readonly notificationService = inject(NotificationService);
     protected readonly spatialReferenceService = inject(SpatialReferenceService);
     private readonly formBuilder = inject(UntypedFormBuilder);
-    public readonly config = inject(Config);
+    public readonly config = inject(CoreConfig);
 
     layer = input.required<Layer>();
 

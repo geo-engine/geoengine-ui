@@ -17,7 +17,7 @@ import {SearchCapabilities, SearchType, SearchTypes} from '@geoengine/openapi-cl
 import {UserService} from '../../users/user.service';
 import {BehaviorSubject, Observable, debounceTime, distinctUntilChanged, switchMap} from 'rxjs';
 import {LayerCollectionItem, LayerCollectionItemOrSearch, LayerCollectionSearch} from '../layer-collection.model';
-import {Config} from '../../config.service';
+import {CoreConfig} from '../../config.service';
 import {LayerCollectionService} from '../layer-collection.service';
 
 @Component({
@@ -38,7 +38,7 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
 
     constructor(
         protected readonly userService: UserService,
-        protected readonly config: Config,
+        protected readonly config: CoreConfig,
         protected readonly layerCollectionService: LayerCollectionService,
         private readonly changeDetectorRef: ChangeDetectorRef,
     ) {}
