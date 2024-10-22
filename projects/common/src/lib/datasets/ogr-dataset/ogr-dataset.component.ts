@@ -311,8 +311,6 @@ export class OgrDatasetComponent implements OnChanges {
             return;
         }
 
-        console.log(suggest);
-
         const info = suggest.metaData.loadingInfo;
 
         const start = this.getStartTime(info?.time);
