@@ -58,7 +58,7 @@ export class AddDataComponent {
                     sidenavConfig: {
                         component: LayerCollectionSelectionComponent,
                         keepParent: true,
-                        config: {rootCollectionItem: item},
+                        config: {collectionId: item.id, collectionName: item.name},
                     },
                 }));
                 return acc.concat(buttons);

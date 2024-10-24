@@ -14,14 +14,7 @@ import {
     EventEmitter,
 } from '@angular/core';
 import {MatInput} from '@angular/material/input';
-import {
-    LayerCollectionListing,
-    ProviderLayerCollectionId,
-    ProviderLayerId,
-    SearchCapabilities,
-    SearchType,
-    SearchTypes,
-} from '@geoengine/openapi-client';
+import {LayerListing, ProviderLayerCollectionId, SearchCapabilities, SearchType, SearchTypes} from '@geoengine/openapi-client';
 import {BehaviorSubject, Observable, debounceTime, distinctUntilChanged, switchMap} from 'rxjs';
 import {LayerCollectionItem, LayerCollectionItemOrSearch, LayerCollectionSearch} from '../layer-collection.model';
 import {LayersService} from '../layers.service';
@@ -34,7 +27,7 @@ import {UUID} from '../../datasets/dataset.model';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerCollectionNavigationComponent implements OnInit, OnChanges, OnDestroy {
-    @Input({required: true}) rootCollectionItem!: LayerCollectionListing;
+    @Input({required: true}) collectionId!: ProviderLayerCollectionId;
 
     @ViewChild('scrollElement', {read: ElementRef}) public scrollElement!: ElementRef<HTMLDivElement>;
 
@@ -43,7 +36,7 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
 
     selectedCollection?: LayerCollectionItemOrSearch;
 
-    @Output() selectLayer = new EventEmitter<ProviderLayerId>();
+    @Output() selectLayer = new EventEmitter<LayerListing>();
 
     constructor(
         // protected readonly config: Config,
@@ -131,7 +124,7 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
     protected createSearch(): Search {
         return new Search({
             layersService: this.layerCollectionService,
-            selectedCollection: () => this.selectedCollection?.id ?? this.rootCollectionItem.id,
+            selectedCollection: () => this.selectedCollection?.id ?? this.collectionId,
             searchResult: (searchResult): void => {
                 this.breadcrumbs.selectCollection(searchResult);
             },
@@ -148,7 +141,7 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
     }
 
     protected updateListView(id?: LayerCollectionItemOrSearch): void {
-        this.selectedCollection = id ?? (this.rootCollectionItem as LayerCollectionItemOrSearch);
+        this.selectedCollection = id ?? {type: 'collection', id: this.collectionId};
 
         this.search.updateSearchCapabilities(this.selectedCollection.id).then(() => {
             this.changeDetectorRef.markForCheck();

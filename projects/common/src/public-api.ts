@@ -69,6 +69,7 @@ export * from './lib/util/pipes/color-gradients.pipe';
 // Misc
 export * from './lib/colors/colormaps/mpl-colormaps';
 export * from './lib/colors/colormaps/colormaps';
+export * from './lib/util/constants';
 export * from './lib/util/conversions';
 export * from './lib/util/directives/flexbox-legacy.directive';
 export * from './lib/util/directives/autocomplete-select.directive';

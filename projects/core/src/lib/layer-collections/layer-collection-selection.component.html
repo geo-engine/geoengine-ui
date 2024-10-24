@@ -1,6 +1,6 @@
-<geoengine-sidenav-header>{{ rootCollectionItem.name }}</geoengine-sidenav-header>
+<geoengine-sidenav-header>{{ collectionName }}</geoengine-sidenav-header>
 
 <geoengine-layer-collection-navigation
-    [rootCollectionItem]="rootCollectionItem"
+    [collectionId]="collectionId"
     (selectLayer)="selectLayer($event)"
 ></geoengine-layer-collection-navigation>

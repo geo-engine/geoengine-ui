@@ -1,5 +1,5 @@
 import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
-import {LayerCollectionListing, ProviderLayerId} from '@geoengine/openapi-client';
+import {LayerListing, ProviderLayerCollectionId} from '@geoengine/openapi-client';
 import {ProjectService} from '../project/project.service';
 
 @Component({
@@ -9,11 +9,12 @@ import {ProjectService} from '../project/project.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerCollectionSelectionComponent {
-    @Input({required: true}) rootCollectionItem!: LayerCollectionListing;
+    @Input({required: true}) collectionId!: ProviderLayerCollectionId;
+    @Input({required: false}) collectionName = 'Layer Collection';
 
     constructor(private readonly projectService: ProjectService) {}
 
-    selectLayer(id: ProviderLayerId): void {
-        this.projectService.addLayerbyId(id);
+    selectLayer(layer: LayerListing): void {
+        this.projectService.addLayerbyId(layer.id);
     }
 }

@@ -9,7 +9,7 @@ import {
     ProviderLayerCollectionId as ProviderLayerCollectionIdDict,
     LayerListing as LayerCollectionLayerDict,
     LayerCollectionListing as LayerCollectionListingDict,
-    ProviderLayerId,
+    LayerListing,
 } from '@geoengine/openapi-client';
 import {LayersService} from '../layers.service';
 import {createIconDataUrl} from '../../util/icons';
@@ -38,7 +38,7 @@ export class LayerCollectionListComponent implements OnChanges {
     selectCollection = new EventEmitter<LayerCollectionItemOrSearch>();
 
     @Output()
-    selectLayer = new EventEmitter<ProviderLayerId>();
+    selectLayer = new EventEmitter<LayerListing>();
 
     readonly itemSizePx = 72;
 
@@ -88,7 +88,7 @@ export class LayerCollectionListComponent implements OnChanges {
             this.selectCollection.next(item);
         } else if (item.type === 'layer') {
             const layer = item as LayerCollectionLayerDict;
-            this.selectLayer.next(layer.id);
+            this.selectLayer.next(layer);
         }
     }
 
