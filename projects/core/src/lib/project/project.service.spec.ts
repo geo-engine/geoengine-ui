@@ -13,7 +13,7 @@ import {UserService} from '../users/user.service';
 import {SpatialReferenceService, WGS_84} from '../spatial-references/spatial-reference.service';
 import {first, mergeMap, tap} from 'rxjs/operators';
 import {Configuration, DefaultConfig} from '@geoengine/openapi-client';
-import {SpatialReferenceSpecification, Time} from '@geoengine/common';
+import {LayersService, SpatialReferenceSpecification, Time} from '@geoengine/common';
 
 describe('test project methods in projectService', () => {
     let notificationServiceSpy: {get: jasmine.Spy};
@@ -21,6 +21,7 @@ describe('test project methods in projectService', () => {
     let backendSpy: {createProject: jasmine.Spy; listProjects: jasmine.Spy; updateProject: jasmine.Spy};
     let userServiceSpy: {getSessionStream: jasmine.Spy; getSessionTokenForRequest: jasmine.Spy};
     let spatialReferenceSpy: {getSpatialReferenceSpecification: jasmine.Spy};
+    let layersServiceSpy: {resolveLayer: jasmine.Spy};
 
     let projectService: ProjectService;
 
@@ -30,6 +31,7 @@ describe('test project methods in projectService', () => {
         backendSpy = jasmine.createSpyObj('BackendService', ['createProject', 'listProjects', 'setSessionProject', 'updateProject']);
         userServiceSpy = jasmine.createSpyObj('UserService', ['getSessionStream', 'getSessionTokenForRequest']);
         spatialReferenceSpy = jasmine.createSpyObj('SpatialRefernceService', ['getSpatialReferenceSpecification']);
+        layersServiceSpy = jasmine.createSpyObj('LayersSerivce', ['resolveLayer']);
 
         const sessionToken = 'ffffffff-ffff-4fff-afff-ffffffffffff';
 
@@ -101,6 +103,7 @@ describe('test project methods in projectService', () => {
             backendSpy as unknown as BackendService,
             userServiceSpy as unknown as UserService,
             spatialReferenceSpy as unknown as SpatialReferenceService,
+            layersServiceSpy as unknown as LayersService,
         );
     });
 

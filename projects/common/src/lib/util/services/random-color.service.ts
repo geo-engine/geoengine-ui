@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Color, RgbTuple} from '@geoengine/common';
+import {Color, RgbTuple} from '../../colors/color';
 
 @Injectable()
 export class RandomColorService {

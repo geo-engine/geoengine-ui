@@ -2,7 +2,6 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy} from '
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {EMPTY, Subscription, combineLatest} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
-import {RandomColorService} from '../../../util/services/random-color.service';
 
 import {filter, map, mergeMap} from 'rxjs/operators';
 import {NotificationService} from '../../../notification.service';
@@ -10,6 +9,7 @@ import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-laye
 import {
     ColumnNamesDict,
     PointSymbology,
+    RandomColorService,
     RasterLayer,
     RasterLayerMetadata,
     RasterVectorJoinDict,

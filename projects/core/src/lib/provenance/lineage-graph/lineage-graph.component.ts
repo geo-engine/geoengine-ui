@@ -7,8 +7,8 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {OperatorParams, OperatorSourcesDict} from '../../backend/backend.model';
 import {LayoutService} from '../../layout.service';
 import {ProjectService} from '../../project/project.service';
-import {createIconDataUrl} from '../../util/icons';
-import {Layer} from '@geoengine/common';
+
+import {createIconDataUrl, Layer} from '@geoengine/common';
 import {TypedOperatorOperator} from '@geoengine/openapi-client';
 
 const GRAPH_STYLE = {

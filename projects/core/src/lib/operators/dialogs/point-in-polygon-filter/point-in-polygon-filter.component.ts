@@ -1,5 +1,4 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
-import {RandomColorService} from '../../../util/services/random-color.service';
 import {UntypedFormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
 
 import {ProjectService} from '../../../project/project.service';
@@ -9,6 +8,7 @@ import {
     Layer,
     PointInPolygonFilterDict,
     PointSymbology,
+    RandomColorService,
     ResultTypes,
     VectorLayer,
     colorToDict,

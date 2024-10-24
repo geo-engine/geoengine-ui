@@ -9,7 +9,6 @@ import {
     MapService,
     NotificationService,
     ProjectService,
-    RandomColorService,
     SidenavRef,
     SpatialReferenceService,
     UserService,
@@ -26,6 +25,7 @@ import {LoginComponent} from './login/login.component';
 import {AppRoutingModule} from './app-routing.module';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {FormsModule} from '@angular/forms';
+import {RandomColorService} from '@geoengine/common';
 
 @NgModule({
     declarations: [AppComponent, AttributionsComponent, LegendComponent, SpeciesSelectorComponent, MainComponent, LoginComponent],

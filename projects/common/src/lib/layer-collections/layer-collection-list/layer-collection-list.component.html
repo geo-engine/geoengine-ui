@@ -9,7 +9,7 @@
                 </mat-list-item>
             </ng-template>
             <ng-template [ngIf]="item.type === 'layer'">
-                <geoengine-layer-collection-layer [layer]="item" (addClick)="addLayer($event)"></geoengine-layer-collection-layer>
+                <geoengine-layer-collection-layer [layer]="item" (addClick)="select(item)"></geoengine-layer-collection-layer>
             </ng-template>
         </ng-container>
     </mat-nav-list>

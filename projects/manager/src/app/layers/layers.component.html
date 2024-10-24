@@ -1,1 +1,13 @@
-<p>layers works!</p>
+<div class="container">
+    <geoengine-layer-collection-navigation
+        class="left"
+        [collectionId]="collectionId"
+        (selectLayer)="selectLayer($event)"
+    ></geoengine-layer-collection-navigation>
+
+    @if (selectedLayer(); as layer) {
+        <geoengine-manager-layer-editor [layerListing]="layer"></geoengine-manager-layer-editor>
+    } @else {
+        <div class="no-dataset">Please select a layer</div>
+    }
+</div>

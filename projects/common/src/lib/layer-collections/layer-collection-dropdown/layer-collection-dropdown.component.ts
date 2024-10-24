@@ -11,14 +11,14 @@ import {
     SimpleChanges,
 } from '@angular/core';
 import {
-    LayerCollectionDict,
-    LayerCollectionListingDict,
-    LayerCollectionItemDict,
-    ProviderLayerCollectionIdDict,
-    LayerCollectionLayerDict,
-} from '../../backend/backend.model';
-import {LayerCollectionService} from '../layer-collection.service';
+    LayerCollection as LayerCollectionDict,
+    CollectionItem as LayerCollectionItemDict,
+    ProviderLayerCollectionId as ProviderLayerCollectionIdDict,
+    LayerListing as LayerCollectionLayerDict,
+    LayerCollectionListing as LayerCollectionListingDict,
+} from '@geoengine/openapi-client';
 import {BehaviorSubject, Observable, Subject, firstValueFrom, map} from 'rxjs';
+import {LayersService} from '../layers.service';
 
 interface CollectionAndSelected {
     collection: LayerCollectionDict;
@@ -61,7 +61,7 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
     private onDestroy$: Subject<boolean> = new Subject();
 
     constructor(
-        protected readonly layerCollectionService: LayerCollectionService,
+        protected readonly layersService: LayersService,
         private readonly changeDetectorRef: ChangeDetectorRef,
     ) {
         this.collectionsAndSelected = this.collections.pipe(
@@ -145,10 +145,12 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
 
             const collection = found as LayerCollectionListingDict;
 
-            const collectionItems = await firstValueFrom(
-                this.layerCollectionService.getLayerCollectionItems(collection.id.providerId, collection.id.collectionId, 0, FETCH_SIZE),
+            const collectionItems = await this.layersService.getLayerCollectionItems(
+                collection.id.providerId,
+                collection.id.collectionId,
+                0,
+                FETCH_SIZE,
             );
-
             newCollections.push(collectionItems);
         }
 
@@ -162,7 +164,7 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
         this.changeDetectorRef.markForCheck();
     }
 
-    selectItem(item: LayerCollectionItemDict, index: number): void {
+    async selectItem(item: LayerCollectionItemDict, index: number): Promise<void> {
         if (item.type === 'layer') {
             this.layerSelected.emit(item as LayerCollectionLayerDict);
             return;
@@ -172,23 +174,21 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
 
         this.layerSelected.emit(undefined);
 
-        this.layerCollectionService
-            .getLayerCollectionItems(collection.id.providerId, collection.id.collectionId, 0, FETCH_SIZE)
-            .subscribe((c) => {
-                const selections = this.selections;
-                selections.splice(index);
-                selections.push(item);
-                this.selections = selections;
+        const c = await this.layersService.getLayerCollectionItems(collection.id.providerId, collection.id.collectionId, 0, FETCH_SIZE);
 
-                const collections = this.collections.value;
-                collections.splice(index + 1);
-                collections.push(c);
-                this.collections.next(collections);
+        const selections = this.selections;
+        selections.splice(index);
+        selections.push(item);
+        this.selections = selections;
 
-                this.pathChange.emit({path: collections, source: PathChangeSource.Manual});
+        const collections = this.collections.value;
+        collections.splice(index + 1);
+        collections.push(c);
+        this.collections.next(collections);
 
-                this.changeDetectorRef.markForCheck();
-            });
+        this.pathChange.emit({path: collections, source: PathChangeSource.Manual});
+
+        this.changeDetectorRef.markForCheck();
     }
 
     searchPredicate(filter: string, element: LayerCollectionItemDict): boolean {
@@ -196,10 +196,9 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
     }
 
     protected async setupRoot(): Promise<void> {
-        const collection$ = this.root
-            ? this.layerCollectionService.getLayerCollectionItems(this.root.providerId, this.root.collectionId, 0, FETCH_SIZE)
-            : this.layerCollectionService.getRootLayerCollectionItems(0, FETCH_SIZE);
-        const collection = await firstValueFrom(collection$);
+        const collection = this.root
+            ? await this.layersService.getLayerCollectionItems(this.root.providerId, this.root.collectionId, 0, FETCH_SIZE)
+            : await this.layersService.getRootLayerCollectionItems(0, FETCH_SIZE);
 
         this.collections.next([collection]);
     }

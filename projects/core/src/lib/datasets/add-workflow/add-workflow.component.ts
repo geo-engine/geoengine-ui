@@ -3,8 +3,7 @@ import {UntypedFormGroup, UntypedFormControl, Validators} from '@angular/forms';
 import {GeoEngineErrorDict, RasterResultDescriptorDict, UUID, VectorResultDescriptorDict} from '../../backend/backend.model';
 import {NotificationService} from '../../notification.service';
 import {ProjectService} from '../../project/project.service';
-import {RandomColorService} from '../../util/services/random-color.service';
-import {RasterLayer, RasterSymbology, VectorLayer, createVectorSymbology, isValidUuid} from '@geoengine/common';
+import {RandomColorService, RasterLayer, RasterSymbology, VectorLayer, createVectorSymbology, isValidUuid} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-add-workflow',

@@ -1,4 +1,4 @@
-import {BehaviorSubject, concat, first, ignoreElements, Observable, of, ReplaySubject} from 'rxjs';
+import {BehaviorSubject, concat, first, from, ignoreElements, Observable, of, ReplaySubject} from 'rxjs';
 import {map, mergeMap, tap} from 'rxjs/operators';
 
 import {
@@ -21,7 +21,6 @@ import {
     AddDataButton,
     AddDataComponent,
     Config,
-    LayerCollectionService,
     LayoutService,
     MapContainerComponent,
     MapService,
@@ -33,7 +32,6 @@ import {
     OperatorListComponent,
     PlotListComponent,
     ProjectService,
-    RandomColorService,
     SidenavConfig,
     SidenavContainerComponent,
     SpatialReferenceService,
@@ -47,7 +45,7 @@ import {AppConfig} from './app-config.service';
 import {HelpComponent} from './help/help.component';
 import {SplashDialogComponent} from './splash-dialog/splash-dialog.component';
 import {GfBioCollectionDialogComponent as GfBioCollectionDialogComponent} from './gfbio-collection/gfbio-collection-dialog.component';
-import {Layer} from '@geoengine/common';
+import {Layer, LayersService, RandomColorService} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-root',
@@ -86,7 +84,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         readonly projectService: ProjectService,
         readonly vcRef: ViewContainerRef, // reference used by color picker
         readonly userService: UserService,
-        private readonly layerService: LayerCollectionService,
+        private readonly layersService: LayersService,
         private readonly changeDetectorRef: ChangeDetectorRef,
         private readonly dialog: MatDialog,
         private readonly iconRegistry: MatIconRegistry,
@@ -242,7 +240,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     private createAddDataListButtons(): Observable<Array<AddDataButton>> {
-        return AddDataComponent.createLayerRootCollectionButtons(this.layerService).pipe(
+        return AddDataComponent.createLayerRootCollectionButtons(this.layersService).pipe(
             map((buttons) => [
                 ...buttons,
                 AddDataComponent.createUploadButton(),
@@ -284,11 +282,11 @@ export class AppComponent implements OnInit, AfterViewInit {
         const handleBasketSubscription: (p: ParamMap) => void = (p: ParamMap) => {
             const collectionId = p.get('collectionId');
             if (collectionId != null) {
-                this.layerService
-                    .getLayerCollectionItems(this.GFBIO_COLLECTIONS_DATA_PROVIDER_ID, `collections/${collectionId}`)
-                    .subscribe((result) => {
-                        this.dialog.open(GfBioCollectionDialogComponent, {data: {result}});
-                    });
+                from(
+                    this.layersService.getLayerCollectionItems(this.GFBIO_COLLECTIONS_DATA_PROVIDER_ID, `collections/${collectionId}`),
+                ).subscribe((result) => {
+                    this.dialog.open(GfBioCollectionDialogComponent, {data: {result}});
+                });
             } else {
                 const showSplash = this.userService.getSettingFromLocalStorage(SplashDialogComponent.SPLASH_DIALOG_NAME);
                 if (showSplash === null || JSON.parse(showSplash)) {

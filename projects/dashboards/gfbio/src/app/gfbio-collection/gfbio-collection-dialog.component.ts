@@ -1,16 +1,11 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {
-    LayerCollectionDict,
-    LayerCollectionItemDict,
-    LayerCollectionLayerDict,
-    LayerCollectionService,
-    NotificationService,
-    ProjectService,
-} from '@geoengine/core';
+import {LayerCollectionItemDict, LayerCollectionLayerDict, NotificationService, ProjectService} from '@geoengine/core';
 import {map, mergeMap} from 'rxjs/operators';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {SelectionModel} from '@angular/cdk/collections';
+import {LayerCollectionItem, LayersService} from '@geoengine/common';
+import {CollectionItem, LayerCollection} from '@geoengine/openapi-client';
 
 enum LayerStatus {
     Ok = 'ok',
@@ -24,20 +19,20 @@ enum LayerStatus {
     styleUrls: ['./gfbio-collection-dialog.component.scss'],
 })
 export class GfBioCollectionDialogComponent {
-    collection: LayerCollectionDict;
+    collection: LayerCollection;
     projectHasLayers$: Observable<boolean>;
 
     readonly okLayersInCollection$ = new BehaviorSubject(false);
     readonly addingLayers$ = new BehaviorSubject(false);
 
-    selection = new SelectionModel<LayerCollectionItemDict>(true);
+    selection = new SelectionModel<CollectionItem>(true);
 
     constructor(
         private readonly projectService: ProjectService,
-        private readonly layerService: LayerCollectionService,
+        private readonly layerService: LayersService,
         private readonly dialogRef: MatDialogRef<GfBioCollectionDialogComponent>,
         private readonly notificationService: NotificationService,
-        @Inject(MAT_DIALOG_DATA) private config: {result: LayerCollectionDict},
+        @Inject(MAT_DIALOG_DATA) private config: {result: LayerCollection},
     ) {
         this.collection = config.result;
         this.projectHasLayers$ = this.projectService.getLayerStream().pipe(map((layers) => layers.length > 0));
@@ -52,8 +47,8 @@ export class GfBioCollectionDialogComponent {
         this.toggleAllRows();
     }
 
-    layerStatus(item: LayerCollectionItemDict): LayerStatus {
-        const status = item.properties.find(([a, _]) => a === 'status');
+    layerStatus(item: CollectionItem): LayerStatus {
+        const status = item.properties?.find(([a, _]) => a === 'status');
 
         if (status) {
             return this.statusFromString(status[1]);
@@ -67,7 +62,7 @@ export class GfBioCollectionDialogComponent {
 
         const filteredLayers = this.getFilteredLayers();
 
-        this.layerService.addCollectionLayersToProject(filteredLayers).subscribe(() => this.dialogRef.close());
+        this.projectService.addCollectionLayersToProject(filteredLayers).subscribe(() => this.dialogRef.close());
     }
 
     replaceLayers(): void {
@@ -77,7 +72,7 @@ export class GfBioCollectionDialogComponent {
 
         this.projectService
             .clearLayers()
-            .pipe(mergeMap(() => this.layerService.addCollectionLayersToProject(filteredLayers)))
+            .pipe(mergeMap(() => this.projectService.addCollectionLayersToProject(filteredLayers)))
             .subscribe(() => this.dialogRef.close());
     }
 
@@ -87,7 +82,7 @@ export class GfBioCollectionDialogComponent {
         return numSelected === numRows;
     }
 
-    toggleSelection(item: LayerCollectionItemDict): void {
+    toggleSelection(item: LayerCollectionItem): void {
         this.selection.toggle(item);
         this.okLayersInCollection$.next(this.getFilteredLayers().length > 0);
     }
@@ -123,11 +118,11 @@ export class GfBioCollectionDialogComponent {
         return false;
     }
 
-    private getFilteredLayers(): LayerCollectionItemDict[] {
+    private getFilteredLayers(): CollectionItem[] {
         return this.collection.items.filter((item) => this.layerStatus(item) === LayerStatus.Ok && this.selection.isSelected(item));
     }
 
-    private getErrorLayers(): LayerCollectionItemDict[] {
+    private getErrorLayers(): CollectionItem[] {
         return this.collection.items.filter((item) => this.layerStatus(item) === LayerStatus.Error);
     }
 
