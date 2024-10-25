@@ -1,12 +1,12 @@
 @if (layer(); as layer) {
     <div class="container">
-        <mat-card class="top">
-            <mat-card-header>
-                <mat-card-title>Layer Details</mat-card-title>
-            </mat-card-header>
+        <form [formGroup]="form">
+            <mat-card class="top">
+                <mat-card-header>
+                    <mat-card-title>Layer Details</mat-card-title>
+                </mat-card-header>
 
-            <mat-card-content>
-                <form [formGroup]="form">
+                <mat-card-content>
                     <mat-form-field appearance="fill">
                         <mat-label>Name</mat-label>
                         <input matInput type="text" formControlName="name" />
@@ -16,35 +16,26 @@
                         <mat-label>Description</mat-label>
                         <textarea matInput formControlName="description"></textarea>
                     </mat-form-field>
-                </form>
 
-                <div class="actions">
-                    <button mat-raised-button color="primary" [disabled]="form.pristine || !form.valid" (click)="applyChanges()">
-                        Apply
-                    </button>
-                </div>
-            </mat-card-content>
-        </mat-card>
-        <!-- <mat-card>
-        <mat-card-header>
-            <mat-card-title>Provenance</mat-card-title>
-        </mat-card-header>
+                    <div class="actions">
+                        <button mat-raised-button color="primary" [disabled]="form.pristine || !form.valid" (click)="applyChanges()">
+                            Apply
+                        </button>
+                    </div>
+                </mat-card-content>
+            </mat-card>
 
-        <mat-card-content>
-            <geoengine-manager-provenance [provenance]="dataset.provenance | valueDefault: []"></geoengine-manager-provenance>
-            <div class="actions">
-                <button
-                    mat-raised-button
-                    color="primary"
-                    [disabled]="!provenanceComponent || provenanceComponent.form.pristine || provenanceComponent.form.invalid"
-                    (click)="saveProvenance()"
-                >
-                    Apply
-                </button>
-            </div></mat-card-content
-        ></mat-card
-    >
+            <mat-card>
+                <mat-card-header>
+                    <mat-card-title>Workflow</mat-card-title>
+                </mat-card-header>
 
+                <mat-card-content>
+                    <geoengine-code-editor formControlName="workflow"></geoengine-code-editor>
+                </mat-card-content>
+            </mat-card>
+        </form>
+        <!-- 
     <mat-card>
         <mat-card-header>
             <mat-card-title>Symbology</mat-card-title>

@@ -784,7 +784,8 @@
                             "projects/manager/src/styles.scss",
                             "dist/common/assets/fonts/poppins/poppins.css",
                             "dist/common/assets/fonts/pacifico/pacifico.css",
-                            "dist/common/assets/fonts/material-design-icons/material-icons.css"
+                            "dist/common/assets/fonts/material-design-icons/material-icons.css",
+                            "node_modules/codemirror/lib/codemirror.css"
                         ],
                         "scripts": [],
                         "browser": "projects/manager/src/main.ts"

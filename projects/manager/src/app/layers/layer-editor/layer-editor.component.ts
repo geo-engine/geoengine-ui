@@ -6,6 +6,7 @@ import {Layer, LayerListing} from '@geoengine/openapi-client';
 export interface LayerForm {
     name: FormControl<string>;
     description: FormControl<string>;
+    workflow: FormControl<string>;
 }
 
 @Component({
@@ -41,6 +42,9 @@ export class LayerEditorComponent implements OnChanges {
             description: new FormControl(layer.description, {
                 nonNullable: true,
             }),
+            workflow: new FormControl(JSON.stringify(layer.workflow.operator, null, ' '), {
+                nonNullable: true,
+            }),
         });
     }
 
@@ -51,6 +55,9 @@ export class LayerEditorComponent implements OnChanges {
                 validators: [Validators.required, Validators.minLength(1)],
             }),
             description: new FormControl('description', {
+                nonNullable: true,
+            }),
+            workflow: new FormControl('{}', {
                 nonNullable: true,
             }),
         });
