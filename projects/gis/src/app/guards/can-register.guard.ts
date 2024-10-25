@@ -7,7 +7,7 @@ import {AppConfig} from '../app-config.service';
     providedIn: 'root',
 })
 export class CanRegisterGuard {
-    constructor(@Inject(AppConfig) private readonly config: AppConfig) {}
+    constructor(private readonly config: AppConfig) {}
 
     canActivate(
         _route: ActivatedRouteSnapshot,

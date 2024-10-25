@@ -74,7 +74,7 @@ export class MainComponent implements OnInit, AfterViewInit {
     private windowHeight$ = new BehaviorSubject<number>(window.innerHeight);
 
     constructor(
-        @Inject(AppConfig) readonly config: AppConfig,
+        readonly config: AppConfig,
         readonly layoutService: LayoutService,
         readonly projectService: ProjectService,
         readonly vcRef: ViewContainerRef, // reference used by color picker, MUST BE EXACTLY THIS NAME
