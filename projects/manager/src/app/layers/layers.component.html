@@ -1,12 +1,24 @@
 <div class="container">
     <geoengine-layer-collection-navigation
         class="left"
+        [showLayerToggle]="false"
+        [collectionNavigation]="CollectionNavigation.Button"
         [collectionId]="collectionId"
         (selectLayer)="selectLayer($event)"
+        (selectCollection)="selectCollection($event)"
     ></geoengine-layer-collection-navigation>
 
-    @if (selectedLayer(); as layer) {
-        <geoengine-manager-layer-editor [layerListing]="layer"></geoengine-manager-layer-editor>
+    @if (selectedItem(); as item) {
+        @switch (item.type) {
+            @case (ItemType.Collection) {
+                <geoengine-manager-layer-collection-editor
+                    [collectionListing]="item.collection"
+                ></geoengine-manager-layer-collection-editor>
+            }
+            @case (ItemType.Layer) {
+                <geoengine-manager-layer-editor [layerListing]="item.layer"></geoengine-manager-layer-editor>
+            }
+        }
     } @else {
         <div class="no-dataset">Please select a layer</div>
     }

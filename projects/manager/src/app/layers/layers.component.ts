@@ -1,6 +1,13 @@
 import {Component, signal, WritableSignal} from '@angular/core';
-import {LAYER_DB_PROVIDER_ID, LAYER_DB_ROOT_COLLECTION_ID, LayersService} from '@geoengine/common';
-import {LayerListing, ProviderLayerCollectionId} from '@geoengine/openapi-client';
+import {CollectionNavigation, LAYER_DB_PROVIDER_ID, LAYER_DB_ROOT_COLLECTION_ID, LayersService} from '@geoengine/common';
+import {LayerCollectionListing, LayerListing, ProviderLayerCollectionId} from '@geoengine/openapi-client';
+
+enum ItemType {
+    Layer,
+    Collection,
+}
+
+type Item = {type: ItemType.Layer; layer: LayerListing} | {type: ItemType.Collection; collection: LayerCollectionListing};
 
 @Component({
     selector: 'geoengine-manager-layers',
@@ -8,13 +15,20 @@ import {LayerListing, ProviderLayerCollectionId} from '@geoengine/openapi-client
     styleUrl: './layers.component.scss',
 })
 export class LayersComponent {
+    readonly CollectionNavigation = CollectionNavigation;
+    readonly ItemType = ItemType;
+
     readonly collectionId: ProviderLayerCollectionId = {providerId: LAYER_DB_PROVIDER_ID, collectionId: LAYER_DB_ROOT_COLLECTION_ID};
 
-    readonly selectedLayer: WritableSignal<LayerListing | undefined> = signal(undefined);
+    readonly selectedItem: WritableSignal<Item | undefined> = signal(undefined);
 
     constructor(protected readonly layersService: LayersService) {}
 
     selectLayer(layer: LayerListing): void {
-        this.selectedLayer.set(layer);
+        this.selectedItem.set({layer, type: ItemType.Layer});
+    }
+
+    selectCollection(collection: LayerCollectionListing): void {
+        this.selectedItem.set({collection, type: ItemType.Collection});
     }
 }

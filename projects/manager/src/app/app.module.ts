@@ -51,6 +51,7 @@ import {ProvenanceComponent} from './provenance/provenance.component';
 import {AddDatasetComponent} from './datasets/add-dataset/add-dataset.component';
 import {GdalMetadataListComponent} from './datasets/loading-info/gdal-metadata-list/gdal-metadata-list.component';
 import {GdalDatasetParametersComponent} from './datasets/loading-info/gdal-dataset-parameters/gdal-dataset-parameters.component';
+import {LayerCollectionEditorComponent} from './layers/layer-collection-editor/layer-collection-editor.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -92,6 +93,7 @@ export const MATERIAL_MODULES = [
         DatasetsComponent,
         LayersComponent,
         LayerEditorComponent,
+        LayerCollectionEditorComponent,
         DatasetListComponent,
         DatasetEditorComponent,
         PermissionsComponent,

@@ -11,6 +11,7 @@ import {RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metad
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerCollectionLayerComponent implements OnChanges {
+    @Input({required: false}) showLayerToggle = true;
     @Input() layer: LayerCollectionLayerDict | undefined = undefined;
     @Output() addClick: EventEmitter<ProviderLayerIdDict> = new EventEmitter();
     @Output() isExpanded: EventEmitter<boolean> = new EventEmitter();

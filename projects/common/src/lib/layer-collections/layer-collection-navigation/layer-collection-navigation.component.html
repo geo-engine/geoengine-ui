@@ -110,7 +110,10 @@
 
 <geoengine-layer-collection-list
     class="portal-outlet"
-    (selectCollection)="breadcrumbs.selectCollection($event)"
+    [showLayerToggle]="showLayerToggle"
+    [collectionNavigation]="collectionNavigation"
+    (navigateCollection)="navigateToCollection($event)"
     (selectLayer)="selectLayer.emit($event)"
+    (selectCollection)="selectCollection.emit($event)"
     [collection]="providerLayerCollectionIdOrSearch"
 ></geoengine-layer-collection-list>

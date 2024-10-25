@@ -2,14 +2,38 @@
     <mat-nav-list>
         <ng-container *cdkVirtualFor="let item of source; trackBy: trackById">
             <ng-template [ngIf]="item.type === 'collection'">
-                <mat-list-item (click)="select(item)">
-                    <mat-icon matListItemIcon>layers</mat-icon>
-                    <h4 matListItemTitle>{{ item.name }}</h4>
-                    <p matListItemLine>{{ item.description }}</p>
-                </mat-list-item>
+                @if (collectionNavigation == CollectionNavigation.Element) {
+                    <mat-list-item (click)="navigateToCollection(item)">
+                        <mat-icon matListItemIcon>layers</mat-icon>
+                        <h4 matListItemTitle>{{ item.name }}</h4>
+                        <p matListItemLine>{{ item.description }}</p>
+                    </mat-list-item>
+                }
+
+                @if (collectionNavigation == CollectionNavigation.Button) {
+                    <ng-container>
+                        <div class="collection-with-button-navigation">
+                            <div matRipple class="click" (click)="select(item)">
+                                <mat-icon class="icon">layers</mat-icon>
+                                <div class="text">
+                                    <h4 class="text-line">{{ item.name }}</h4>
+                                    <p class="text-line secondary-text">{{ item.description }}</p>
+                                </div>
+                            </div>
+
+                            <button class="button" mat-icon-button (click)="navigateToCollection(item)">
+                                <mat-icon>chevron_right</mat-icon>
+                            </button>
+                        </div>
+                    </ng-container>
+                }
             </ng-template>
             <ng-template [ngIf]="item.type === 'layer'">
-                <geoengine-layer-collection-layer [layer]="item" (addClick)="select(item)"></geoengine-layer-collection-layer>
+                <geoengine-layer-collection-layer
+                    [showLayerToggle]="showLayerToggle"
+                    [layer]="item"
+                    (addClick)="select(item)"
+                ></geoengine-layer-collection-layer>
             </ng-template>
         </ng-container>
     </mat-nav-list>

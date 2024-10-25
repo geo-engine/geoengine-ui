@@ -3,17 +3,22 @@ import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, EMPTY, from, Observable, range, Subject} from 'rxjs';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {concatMap, scan, startWith, tap} from 'rxjs/operators';
-import {LayerCollectionItemOrSearch, LayerCollectionSearch} from '../layer-collection.model';
+import {LayerCollectionSearch} from '../layer-collection.model';
 import {
     CollectionItem as LayerCollectionItemDict,
     ProviderLayerCollectionId as ProviderLayerCollectionIdDict,
     LayerListing as LayerCollectionLayerDict,
     LayerCollectionListing as LayerCollectionListingDict,
     LayerListing,
+    LayerCollectionListing,
 } from '@geoengine/openapi-client';
 import {LayersService} from '../layers.service';
 import {createIconDataUrl} from '../../util/icons';
-import {WorkflowsService} from '../../workflows/workflows.service';
+
+export enum CollectionNavigation {
+    Element, // navigate into collection by clicking on it
+    Button, // navigate into collection by clicking a button
+}
 
 @Component({
     selector: 'geoengine-layer-collection-list',
@@ -22,6 +27,8 @@ import {WorkflowsService} from '../../workflows/workflows.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerCollectionListComponent implements OnChanges {
+    readonly CollectionNavigation = CollectionNavigation;
+
     @ViewChild(CdkVirtualScrollViewport)
     viewport!: CdkVirtualScrollViewport;
 
@@ -34,8 +41,15 @@ export class LayerCollectionListComponent implements OnChanges {
     @Input()
     collection?: ProviderLayerCollectionIdDict | LayerCollectionSearch = undefined;
 
+    @Input({required: false}) collectionNavigation = CollectionNavigation.Element;
+
+    @Input({required: false}) showLayerToggle = true;
+
     @Output()
-    selectCollection = new EventEmitter<LayerCollectionItemOrSearch>();
+    navigateCollection = new EventEmitter<LayerCollectionListing>();
+
+    @Output()
+    selectCollection = new EventEmitter<LayerCollectionListing>();
 
     @Output()
     selectLayer = new EventEmitter<LayerListing>();
@@ -90,6 +104,10 @@ export class LayerCollectionListComponent implements OnChanges {
             const layer = item as LayerCollectionLayerDict;
             this.selectLayer.next(layer);
         }
+    }
+
+    navigateToCollection(item: LayerCollectionListing): void {
+        this.navigateCollection.next(item);
     }
 
     protected setUpSource(): void {

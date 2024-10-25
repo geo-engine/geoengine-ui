@@ -14,11 +14,19 @@ import {
     EventEmitter,
 } from '@angular/core';
 import {MatInput} from '@angular/material/input';
-import {LayerListing, ProviderLayerCollectionId, SearchCapabilities, SearchType, SearchTypes} from '@geoengine/openapi-client';
+import {
+    LayerCollectionListing,
+    LayerListing,
+    ProviderLayerCollectionId,
+    SearchCapabilities,
+    SearchType,
+    SearchTypes,
+} from '@geoengine/openapi-client';
 import {BehaviorSubject, Observable, debounceTime, distinctUntilChanged, switchMap} from 'rxjs';
 import {LayerCollectionItem, LayerCollectionItemOrSearch, LayerCollectionSearch} from '../layer-collection.model';
 import {LayersService} from '../layers.service';
 import {UUID} from '../../datasets/dataset.model';
+import {CollectionNavigation} from '../layer-collection-list/layer-collection-list.component';
 
 @Component({
     selector: 'geoengine-layer-collection-navigation',
@@ -27,6 +35,9 @@ import {UUID} from '../../datasets/dataset.model';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerCollectionNavigationComponent implements OnInit, OnChanges, OnDestroy {
+    @Input({required: false}) showLayerToggle = true;
+    @Input({required: false}) collectionNavigation = CollectionNavigation.Element;
+
     @Input({required: true}) collectionId!: ProviderLayerCollectionId;
 
     @ViewChild('scrollElement', {read: ElementRef}) public scrollElement!: ElementRef<HTMLDivElement>;
@@ -37,6 +48,7 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
     selectedCollection?: LayerCollectionItemOrSearch;
 
     @Output() selectLayer = new EventEmitter<LayerListing>();
+    @Output() selectCollection = new EventEmitter<LayerCollectionListing>();
 
     constructor(
         // protected readonly config: Config,
@@ -102,6 +114,11 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
             this.search.toggleSearch();
             eventData.preventDefault();
         }
+    }
+
+    navigateToCollection(item: LayerCollectionListing): void {
+        this.breadcrumbs.selectCollection({type: 'collection', id: item.id, name: item.name} as LayerCollectionItemOrSearch);
+        this.selectCollection.emit(item);
     }
 
     get providerLayerCollectionIdOrSearch(): ProviderLayerCollectionId | LayerCollectionSearch | undefined {
