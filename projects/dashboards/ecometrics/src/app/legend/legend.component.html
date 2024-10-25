@@ -1,10 +1,21 @@
 <div class="legend-container mat-elevation-z4" *ngIf="!!layer">
-    <h4>Legend</h4>
+    @if (visible) {
+        <div class="legend-header">
+            <button mat-icon-button (click)="visible = false">
+                <mat-icon>close</mat-icon>
+            </button>
+            <h4>Legend</h4>
+        </div>
 
-    <geoengine-raster-legend
-        [layer]="layer"
-        [orderValuesDescending]="true"
-        [showSingleBandNames]="false"
-        [detectChanges]="true"
-    ></geoengine-raster-legend>
+        <geoengine-raster-legend
+            [layer]="layer"
+            [orderValuesDescending]="true"
+            [showSingleBandNames]="false"
+            [detectChanges]="true"
+        ></geoengine-raster-legend>
+    } @else {
+        <button mat-icon-button (click)="visible = true">
+            <mat-icon>menu</mat-icon>
+        </button>
+    }
 </div>

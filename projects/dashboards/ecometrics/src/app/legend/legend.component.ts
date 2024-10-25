@@ -13,6 +13,8 @@ import {CoreModule} from '@geoengine/core';
 export class LegendComponent implements OnChanges {
     @Input() layer?: RasterLayer = undefined;
 
+    visible = true;
+
     constructor(readonly changeDetectorRef: ChangeDetectorRef) {}
 
     ngOnChanges(_changes: SimpleChanges): void {
