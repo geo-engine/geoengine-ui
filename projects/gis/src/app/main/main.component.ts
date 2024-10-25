@@ -8,7 +8,6 @@ import {
     Component,
     ElementRef,
     HostListener,
-    Inject,
     OnInit,
     ViewChild,
     ViewContainerRef,
