@@ -109,7 +109,6 @@ export * from './lib/users/roles/roles.component';
 export * from './lib/users/token-login/token-login.component';
 export * from './lib/users/user-session/user-session.component';
 export * from './lib/util/components/backend-status-page/backend-status-page.component';
-export * from './lib/util/components/code-editor.component';
 export * from './lib/util/components/not-found/not-found-page.component';
 
 // Pipes

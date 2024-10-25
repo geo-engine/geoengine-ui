@@ -40,6 +40,7 @@ export * from './lib/symbology/raster-symbology-editor/raster-symbology-editor.c
 export * from './lib/symbology/vector-symbology-editor/vector-symbology-editor.component';
 export * from './lib/time/time-interval-input/time-interval-input.component';
 export * from './lib/time/time-input/time-input.component';
+export * from './lib/util/components/code-editor.component';
 export * from './lib/plots/vega-viewer/vega-viewer.component';
 
 // Models

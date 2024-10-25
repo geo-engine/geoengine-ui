@@ -67,6 +67,7 @@ import {LayerCollectionLayerDetailsComponent} from './layer-collections/layer-co
 import {LayerCollectionListComponent} from './layer-collections/layer-collection-list/layer-collection-list.component';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {AutocompleteSelectDirective} from './util/directives/autocomplete-select.directive';
+import {CodeEditorComponent} from './util/components/code-editor.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -101,6 +102,7 @@ export const MATERIAL_MODULES = [
 ];
 
 const COMMON_COMPONENTS = [
+    CodeEditorComponent,
     ColorAttributeInputComponent,
     ColorBreakpointInputComponent,
     ColorMapSelectorComponent,

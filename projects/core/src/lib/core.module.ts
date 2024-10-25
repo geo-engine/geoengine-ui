@@ -106,7 +106,6 @@ import {ProvenanceTableComponent} from './provenance/table/provenance-table.comp
 import {ScrollingModule} from '@angular/cdk/scrolling';
 import {LayerListMenuComponent} from './layers/layer-list/layer-list-menu/layer-list-menu.component';
 import {ModalLoginComponent} from './users/modal-login/modal-login.component';
-import {CodeEditorComponent} from './util/components/code-editor.component';
 import {TimeStepSelectorComponent} from './time/time-step-selector/time-step-selector.component';
 import {TokenLoginComponent} from './users/token-login/token-login.component';
 import {TimeSliderComponent} from './time/time-slider/time-slider.component';
@@ -193,7 +192,6 @@ const CORE_COMPONENTS = [
     BoxPlotOperatorComponent,
     ChangeSpatialReferenceComponent,
     ClassHistogramOperatorComponent,
-    CodeEditorComponent,
     BandNeighborhoodAggregateComponent,
     BandwiseExpressionOperatorComponent,
     ColumnRangeFilterComponent,
