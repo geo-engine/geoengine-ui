@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpEvent, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable, Subject} from 'rxjs';
-import {Config} from '../config.service';
+import {CoreConfig} from '../config.service';
 import {
     BBoxDict,
     CreateProjectResponseDict,
@@ -51,13 +51,18 @@ import {bboxDictToExtent, unixTimestampToIsoString} from '@geoengine/common';
     providedIn: 'root',
 })
 export class BackendService {
-    readonly wmsBaseUrl = `${this.config.API_URL}/wms`;
-    readonly wcsBaseUrl = `${this.config.API_URL}/wcs`;
-
     constructor(
         protected readonly http: HttpClient,
-        protected readonly config: Config,
+        protected readonly config: CoreConfig,
     ) {}
+
+    get wmsBaseUrl(): string {
+        return `${this.config.API_URL}/wms`;
+    }
+
+    get wcsBaseUrl(): string {
+        return `${this.config.API_URL}/wcs`;
+    }
 
     registerUser(request: {email: string; password: string; realName: string}): Observable<RegistrationDict> {
         return this.http.post<RegistrationDict>(this.config.API_URL + '/user', request);

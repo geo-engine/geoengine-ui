@@ -7,8 +7,9 @@ import {UserService} from '../users/user.service';
 import {get as olGetProjection, addProjection as olAddProjection} from 'ol/proj';
 import {register as olProj4Register} from 'ol/proj/proj4';
 import OlProjection from 'ol/proj/Projection';
+import {Units} from 'ol/proj/Units';
 import proj4 from 'proj4';
-import {Config} from '../config.service';
+import {CoreConfig} from '../config.service';
 import {transformExtent} from 'ol/proj';
 import {getIntersection} from 'ol/extent';
 import {
@@ -25,14 +26,16 @@ export const WGS_84 = new NamedSpatialReference('WGS 84', 'EPSG:4326');
 /**
  * Service for managing spatial references and projections
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class SpatialReferenceService {
     private specs = new Map<string, SpatialReferenceSpecification>();
 
     constructor(
         protected backend: BackendService,
         protected userService: UserService,
-        protected readonly config: Config,
+        protected readonly config: CoreConfig,
     ) {
         this.registerDefaults();
     }
@@ -154,14 +157,15 @@ export class SpatialReferenceService {
             map((dict: SpatialReferenceSpecificationDict) => {
                 const spec = SpatialReferenceSpecification.fromDict(dict);
 
-                proj4.defs(spec.projString);
+                proj4.defs(spec.spatialReference.srsString, spec.projString);
+                const def = proj4.defs(spec.spatialReference.srsString);
                 olProj4Register(proj4);
 
                 olAddProjection(
                     new OlProjection({
                         code: spec.spatialReference.srsString,
                         extent: spec.extent,
-                        units: undefined, // TODO: get units from proj or backend
+                        units: def?.units as Units,
                     }),
                 );
 

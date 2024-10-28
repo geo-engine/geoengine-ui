@@ -114,7 +114,7 @@ export class GfBioCollectionDialogComponent {
                 const abcdLayerId = layer.id.layerId.substring(abcdIdPos);
                 const numberOfComponents = (abcdLayerId.match(/:/g) || []).length;
 
-                if (numberOfComponents === 4) {
+                if (numberOfComponents > 3) {
                     return true;
                 }
             }

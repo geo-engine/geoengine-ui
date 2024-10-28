@@ -61,6 +61,7 @@ import {TimeInputComponent} from './time/time-input/time-input.component';
 import {TimeIntervalInputComponent} from './time/time-interval-input/time-interval-input.component';
 import {PercentileBreakpointSelectorComponent} from './colors/percentile-breakpoint-selector/percentile-breakpoint-selector.component';
 import {OgrDatasetComponent} from './datasets/ogr-dataset/ogr-dataset.component';
+import {CommonConfig} from './config.service';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,

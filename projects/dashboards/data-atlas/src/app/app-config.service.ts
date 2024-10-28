@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {mergeDeepOverrideLists} from '@geoengine/common';
-import {Config, ConfigStructure, DEFAULT_CONFIG} from '@geoengine/core';
+import {CoreConfig, CoreConfigStructure, DEFAULT_CORE_CONFIG} from '@geoengine/core';
 
 interface Data {
     readonly RASTER4D: {
@@ -17,11 +17,11 @@ interface Data {
     };
 }
 
-interface AppConfigStructure extends ConfigStructure {
+interface AppConfigStructure extends CoreConfigStructure {
     readonly DATA: Data;
 }
 
-const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CONFIG, {
+const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CORE_CONFIG, {
     DEFAULTS: {
         PROJECT: {
             NAME: 'Default',
@@ -64,14 +64,14 @@ const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CONFIG, {
 }) as AppConfigStructure;
 
 @Injectable()
-export class AppConfig extends Config {
+export class AppConfig extends CoreConfig {
     protected override config!: AppConfigStructure;
 
     get DATA(): Data {
         return this.config.DATA;
     }
 
-    override load(): Promise<void> {
+    override async load(): Promise<void> {
         return super.load(APP_CONFIG_DEFAULTS);
     }
 }

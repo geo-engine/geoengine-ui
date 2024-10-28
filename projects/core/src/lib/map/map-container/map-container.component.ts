@@ -53,7 +53,7 @@ import {MapLayerComponent} from '../map-layer.component';
 
 import {FeatureSelection, ProjectService} from '../../project/project.service';
 import {Extent, MapService} from '../map.service';
-import {Config} from '../../config.service';
+import {CoreConfig} from '../../config.service';
 import {MatGridList, MatGridTile} from '@angular/material/grid-list';
 import {SpatialReferenceService, WGS_84} from '../../spatial-references/spatial-reference.service';
 import {containsCoordinate, getCenter} from 'ol/extent';
@@ -126,7 +126,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
      * Create the component and inject several dependencies via DI.
      */
     constructor(
-        private config: Config,
+        private config: CoreConfig,
         private changeDetectorRef: ChangeDetectorRef,
         private mapService: MapService,
         private projectService: ProjectService,
@@ -608,7 +608,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         if (this.config.MAP.VALID_CRS.includes(projection.srsString)) {
             backgroundLayer = this.config.MAP.BACKGROUND_LAYER;
         } else {
-            backgroundLayer = 'fallback';
+            backgroundLayer = 'empty';
         }
 
         switch (backgroundLayer) {
@@ -640,7 +640,6 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 return layer;
             }
             case 'fallback':
-            default:
                 if (backgroundLayer === 'fallback') {
                     console.warn(`Using fallback background layer for ${projection.srsString}`);
                 } else {
@@ -670,6 +669,9 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                         }
                     },
                 });
+            case 'empty':
+            default:
+                return new OlLayerVector();
         }
     }
 
@@ -679,7 +681,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         if (this.config.MAP.VALID_CRS.includes(projection.srsString)) {
             backgroundLayer = this.config.MAP.BACKGROUND_LAYER;
         } else {
-            backgroundLayer = 'fallback';
+            backgroundLayer = 'empty';
         }
 
         switch (backgroundLayer) {
@@ -730,8 +732,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     projection: projection.srsString,
                 });
             }
-            case 'fallback':
-            default: {
+            case 'fallback': {
                 if (backgroundLayer !== 'fallback') {
                     console.error(`Unknown background layer (source): ${this.config.MAP.BACKGROUND_LAYER}`);
                 }
@@ -759,6 +760,9 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
 
                 return source;
             }
+            case 'empty':
+            default:
+                return new OlSourceVector();
         }
     }
 }

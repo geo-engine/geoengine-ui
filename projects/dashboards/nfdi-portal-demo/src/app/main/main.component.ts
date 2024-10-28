@@ -6,7 +6,6 @@ import {
     UserService,
     RandomColorService,
     NotificationService,
-    Config,
     ProjectService,
     MapService,
     MapContainerComponent,
@@ -35,7 +34,7 @@ export class MainComponent implements OnInit, AfterViewInit {
     datasetPortal = new ComponentPortal(SpeciesSelectorComponent);
 
     constructor(
-        @Inject(Config) readonly config: AppConfig,
+        @Inject(AppConfig) readonly config: AppConfig,
         readonly layoutService: LayoutService,
         readonly projectService: ProjectService,
         readonly dataSelectionService: DataSelectionService,
