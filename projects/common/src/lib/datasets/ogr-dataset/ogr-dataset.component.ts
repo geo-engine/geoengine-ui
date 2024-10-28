@@ -342,10 +342,17 @@ export class OgrDatasetComponent implements OnChanges {
     }
 
     async loadLayers(): Promise<void> {
-        if (!this.volumeName) {
+        let layers = undefined;
+
+        if (this.volumeName) {
+            layers = await this.datasetsService.getVolumeFileLayers(this.volumeName, this.formMetaData.controls.mainFile.value);
+        } else if (this.uploadId) {
+            layers = await this.uploadsService.getUploadFileLayers(this.uploadId, this.formMetaData.controls.mainFile.value);
+        }
+
+        if (!layers) {
             return;
         }
-        const layers = await this.datasetsService.getVolumeFileLayers(this.volumeName, this.formMetaData.controls.mainFile.value);
 
         this.uploadFileLayers = layers.layers;
 

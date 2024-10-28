@@ -13,24 +13,31 @@
             <mat-label>Specify the main file</mat-label>
             <input matInput type="text" formControlName="mainFile" />
         </mat-form-field>
+    }
 
+    @if (uploadId || volumeName) {
         <div class="actions">
             <button type="submit" mat-raised-button (click)="loadLayers()">Load File Layers</button>
         </div>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Choose the layer</mat-label>
+            <mat-select id="layerName" formControlName="layerName">
+                <mat-option *ngFor="let layer of uploadFileLayers" [value]="layer">
+                    {{ layer }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <div class="actions">
+            <button type="submit" mat-raised-button (click)="reloadSuggestion()">Suggest configuration</button>
+        </div>
+    } @else {
+        <mat-form-field appearance="fill">
+            <mat-label>Specify the layer name</mat-label>
+            <input matInput type="text" formControlName="layerName" />
+        </mat-form-field>
     }
-
-    <mat-form-field appearance="fill">
-        <mat-label>Choose the layer</mat-label>
-        <mat-select id="layerName" formControlName="layerName">
-            <mat-option *ngFor="let layer of uploadFileLayers" [value]="layer">
-                {{ layer }}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-
-    <div class="actions">
-        <button type="submit" mat-raised-button (click)="reloadSuggestion()">Suggest configuration</button>
-    </div>
 
     <mat-form-field appearance="fill">
         <mat-label>Data Type</mat-label>
