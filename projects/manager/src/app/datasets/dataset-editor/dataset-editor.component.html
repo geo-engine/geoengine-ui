@@ -110,6 +110,8 @@
             <mat-card-content>
                 @if (gdalMetaDataList) {
                     <geoengine-manager-gdal-metadata-list [metaData]="gdalMetaDataList"></geoengine-manager-gdal-metadata-list>
+                } @else if (ogrMetaData) {
+                    <geoengine-ogr-dataset [metaData]="ogrMetaData"></geoengine-ogr-dataset>
                 } @else {
                     <textarea [(ngModel)]="rawLoadingInfo" [ngModelOptions]="{standalone: true}" (change)="touchLoadingInfo()"></textarea>
                 }

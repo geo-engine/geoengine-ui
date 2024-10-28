@@ -21,8 +21,6 @@ import {
     UploadResponseDict,
     AutoCreateDatasetDict,
     DatasetNameResponseDict,
-    MetaDataSuggestionDict,
-    SuggestMetaDataDict,
     SpatialReferenceSpecificationDict,
     DataSetProviderListingDict,
     ProvenanceEntryDict,
@@ -37,7 +35,6 @@ import {
     UploadFilesResponseDict,
     UploadFileLayersResponseDict,
     RoleDescription,
-    CreateDatasetDict,
     WfsParamsDict,
 } from './backend.model';
 import {
@@ -308,20 +305,8 @@ export class BackendService {
         });
     }
 
-    createDataset(sessionId: UUID, createDataset: CreateDatasetDict): Observable<DatasetNameResponseDict> {
-        return this.http.post<DatasetNameResponseDict>(this.config.API_URL + '/dataset', createDataset, {
-            headers: BackendService.authorizationHeader(sessionId),
-        });
-    }
-
     autoCreateDataset(sessionId: UUID, createDataset: AutoCreateDatasetDict): Observable<DatasetNameResponseDict> {
         return this.http.post<DatasetNameResponseDict>(this.config.API_URL + '/dataset/auto', createDataset, {
-            headers: BackendService.authorizationHeader(sessionId),
-        });
-    }
-
-    suggestMetaData(sessionId: UUID, suggestMetaData: SuggestMetaDataDict): Observable<MetaDataSuggestionDict> {
-        return this.http.post<MetaDataSuggestionDict>(this.config.API_URL + '/dataset/suggest', suggestMetaData, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }
