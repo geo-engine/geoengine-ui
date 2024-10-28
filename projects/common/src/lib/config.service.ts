@@ -6,7 +6,7 @@ import {mergeWith} from 'immutable';
 /**
  * The structure of the config file containing the URL of the backend API and the branding information.
  */
-export interface ConfigStructure {
+export interface CommonConfigStructure {
     readonly API_URL: string;
     readonly DELAYS: Delays;
     readonly PLOTS: Plots;
@@ -15,7 +15,7 @@ export interface ConfigStructure {
 /**
  * Delay values for different actions.
  */
-interface Delays {
+export interface Delays {
     readonly DEBOUNCE: number;
 }
 
@@ -23,7 +23,7 @@ interface Plots {
     readonly THEME: 'excel' | 'ggplot2' | 'quartz' | 'vox' | 'dark';
 }
 
-export const DEFAULT_CONFIG: ConfigStructure = {
+export const DEFAULT_COMMON_CONFIG: CommonConfigStructure = {
     API_URL: '/api',
     DELAYS: {
         DEBOUNCE: 400,
@@ -37,7 +37,7 @@ export const DEFAULT_CONFIG: ConfigStructure = {
 export class CommonConfig {
     static readonly CONFIG_FILE = 'assets/config.json';
 
-    protected config!: ConfigStructure;
+    protected config!: CommonConfigStructure;
 
     get API_URL(): string {
         return this.config.API_URL;
@@ -55,7 +55,7 @@ export class CommonConfig {
     /**
      * Initialize the config on app start.
      */
-    public async load(defaults: ConfigStructure = DEFAULT_CONFIG): Promise<void> {
+    public async load(defaults: CommonConfigStructure = DEFAULT_COMMON_CONFIG): Promise<void> {
         const configFileResponse = await fetch(CommonConfig.CONFIG_FILE);
 
         const appConfig = await configFileResponse.json().catch(() => ({}));

@@ -1,9 +1,9 @@
 import {BehaviorSubject, Subscription} from 'rxjs';
 
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
-import {Config, NotificationService, UserService, User} from '@geoengine/core';
+import {NotificationService, UserService, User} from '@geoengine/core';
 import {first} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {AppConfig} from '../app-config.service';
@@ -38,7 +38,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     private formStatusSubscription?: Subscription;
 
     constructor(
-        @Inject(Config) readonly config: AppConfig,
+        readonly config: AppConfig,
         private readonly changeDetectorRef: ChangeDetectorRef,
         private readonly userService: UserService,
         private readonly notificationService: NotificationService,

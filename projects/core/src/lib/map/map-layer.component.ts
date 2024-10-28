@@ -17,7 +17,7 @@ import {Layer as OlLayer, Tile as OlLayerTile, Vector as OlLayerVector} from 'ol
 import {ImageTile as OlImageTile} from 'ol';
 import {Source as OlSource, TileWMS as OlTileWmsSource, Vector as OlVectorSource} from 'ol/source';
 import {get as olGetProj} from 'ol/proj';
-import {Config} from '../config.service';
+import {CoreConfig} from '../config.service';
 import {ProjectService} from '../project/project.service';
 import {LoadingState} from '../project/loading-state.model';
 import {BackendService} from '../backend/backend.service';
@@ -199,7 +199,7 @@ export class OlRasterLayerComponent
     constructor(
         protected override projectService: ProjectService,
         protected backend: BackendService,
-        protected config: Config,
+        protected config: CoreConfig,
         protected notificationService: NotificationService,
     ) {
         super(

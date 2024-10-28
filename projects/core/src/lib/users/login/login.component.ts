@@ -3,7 +3,7 @@ import {BehaviorSubject, Subscription} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
-import {Config} from '../../config.service';
+import {CoreConfig} from '../../config.service';
 import {UserService} from '../user.service';
 import {User} from '../user.model';
 import {NotificationService} from '../../notification.service';
@@ -36,7 +36,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly config: Config,
+        private readonly config: CoreConfig,
         private readonly userService: UserService,
         private readonly notificationService: NotificationService,
     ) {
