@@ -2,6 +2,14 @@
     <mat-nav-list>
         <ng-container *cdkVirtualFor="let item of source; trackBy: trackById">
             <ng-template [ngIf]="item.type === 'collection'">
+                @if (collectionNavigation == CollectionNavigation.Disabled) {
+                    <mat-list-item (click)="select(item)">
+                        <mat-icon matListItemIcon>layers</mat-icon>
+                        <h4 matListItemTitle>{{ item.name }}</h4>
+                        <p matListItemLine>{{ item.description }}</p>
+                    </mat-list-item>
+                }
+
                 @if (collectionNavigation == CollectionNavigation.Element) {
                     <mat-list-item (click)="navigateToCollection(item)">
                         <mat-icon matListItemIcon>layers</mat-icon>

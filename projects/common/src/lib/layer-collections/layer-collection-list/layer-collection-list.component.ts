@@ -1,4 +1,14 @@
-import {Component, ChangeDetectionStrategy, ViewChild, Input, Output, EventEmitter, OnChanges, SimpleChanges} from '@angular/core';
+import {
+    Component,
+    ChangeDetectionStrategy,
+    ViewChild,
+    Input,
+    Output,
+    EventEmitter,
+    OnChanges,
+    SimpleChanges,
+    ChangeDetectorRef,
+} from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, EMPTY, from, Observable, range, Subject} from 'rxjs';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
@@ -16,6 +26,7 @@ import {LayersService} from '../layers.service';
 import {createIconDataUrl} from '../../util/icons';
 
 export enum CollectionNavigation {
+    Disabled, // do not navigate into collection, only select it
     Element, // navigate into collection by clicking on it
     Button, // navigate into collection by clicking a button
 }
@@ -60,12 +71,20 @@ export class LayerCollectionListComponent implements OnChanges {
 
     source?: LayerCollectionItemDataSource;
 
-    constructor(private readonly layersService: LayersService) {}
+    constructor(
+        private readonly layersService: LayersService,
+        private readonly changeDetectorRef: ChangeDetectorRef,
+    ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.collection) {
             this.setUpSource();
         }
+    }
+
+    refreshCollection(): void {
+        this.setUpSource();
+        this.changeDetectorRef.markForCheck();
     }
 
     /**

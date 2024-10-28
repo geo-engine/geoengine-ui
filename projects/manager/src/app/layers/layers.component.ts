@@ -2,12 +2,12 @@ import {Component, signal, WritableSignal} from '@angular/core';
 import {CollectionNavigation, LAYER_DB_PROVIDER_ID, LAYER_DB_ROOT_COLLECTION_ID, LayersService} from '@geoengine/common';
 import {LayerCollectionListing, LayerListing, ProviderLayerCollectionId} from '@geoengine/openapi-client';
 
-enum ItemType {
+export enum ItemType {
     Layer,
     Collection,
 }
 
-type Item = {type: ItemType.Layer; layer: LayerListing} | {type: ItemType.Collection; collection: LayerCollectionListing};
+export type Item = {type: ItemType.Layer; layer: LayerListing} | {type: ItemType.Collection; collection: LayerCollectionListing};
 
 @Component({
     selector: 'geoengine-manager-layers',

@@ -118,7 +118,6 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
 
     navigateToCollection(item: LayerCollectionListing): void {
         this.breadcrumbs.selectCollection({type: 'collection', id: item.id, name: item.name} as LayerCollectionItemOrSearch);
-        this.selectCollection.emit(item);
     }
 
     get providerLayerCollectionIdOrSearch(): ProviderLayerCollectionId | LayerCollectionSearch | undefined {

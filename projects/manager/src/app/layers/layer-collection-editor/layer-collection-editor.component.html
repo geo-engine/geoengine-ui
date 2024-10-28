@@ -26,6 +26,30 @@
             </mat-card-content>
         </mat-card>
 
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Collection Items (Children)</mat-card-title>
+            </mat-card-header>
+
+            <mat-card-content>
+                <div class="children">
+                    <geoengine-layer-collection-list
+                        class="left"
+                        [showLayerToggle]="false"
+                        [collectionNavigation]="CollectionNavigation.Disabled"
+                        [collection]="collection.id"
+                        (selectLayer)="selectLayer($event)"
+                        (selectCollection)="selectCollection($event)"
+                    ></geoengine-layer-collection-list>
+                </div>
+                <div>
+                    <button mat-button color="primary" type="button" (click)="addChild()">
+                        <mat-icon>add_circle_outline</mat-icon> Add Child
+                    </button>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
         <div class="actions">
             <button mat-raised-button color="warn" (click)="deleteCollection()">Delete Collection</button>
         </div>

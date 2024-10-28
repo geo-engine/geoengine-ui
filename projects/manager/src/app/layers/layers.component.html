@@ -13,6 +13,8 @@
             @case (ItemType.Collection) {
                 <geoengine-manager-layer-collection-editor
                     [collectionListing]="item.collection"
+                    (layerSelected)="selectLayer($event)"
+                    (collectionSelected)="selectCollection($event)"
                 ></geoengine-manager-layer-collection-editor>
             }
             @case (ItemType.Layer) {

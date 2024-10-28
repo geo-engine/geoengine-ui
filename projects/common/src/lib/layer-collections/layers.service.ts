@@ -172,4 +172,36 @@ export class LayersService {
             throw new Error('Adding this workflow type is unimplemented, yet');
         }
     }
+
+    async addLayerToCollection(layer: UUID, collection: UUID): Promise<void> {
+        const layersApi = await firstValueFrom(this.layersApi);
+        return await layersApi.addExistingLayerToCollection({
+            collection,
+            layer,
+        });
+    }
+
+    async removeLayerFromCollection(layer: UUID, collection: UUID): Promise<void> {
+        const layersApi = await firstValueFrom(this.layersApi);
+        return await layersApi.removeLayerFromCollection({
+            collection,
+            layer,
+        });
+    }
+
+    async addCollectionToCollection(collection: UUID, parent: UUID): Promise<void> {
+        const layersApi = await firstValueFrom(this.layersApi);
+        return await layersApi.addExistingCollectionToCollection({
+            parent,
+            collection,
+        });
+    }
+
+    async removeCollectionFromCollection(collection: UUID, parent: UUID): Promise<void> {
+        const layersApi = await firstValueFrom(this.layersApi);
+        return await layersApi.removeCollectionFromCollection({
+            parent,
+            collection,
+        });
+    }
 }
