@@ -191,7 +191,7 @@ export class ChildActionDialogComponent {
     imports: [MatDialogModule, MatButtonModule, CommonModule],
     template: `
         <h2 mat-dialog-title>Select New Child</h2>
-        <mat-dialog-content>
+        <div class="dialog-content">
             <geoengine-layer-collection-navigation
                 class="left"
                 [showLayerToggle]="false"
@@ -200,11 +200,11 @@ export class ChildActionDialogComponent {
                 (selectLayer)="selectLayer($event)"
                 (selectCollection)="selectCollection($event)"
             ></geoengine-layer-collection-navigation>
-        </mat-dialog-content>
+        </div>
     `,
     styles: [
         `
-            mat-dialog-content {
+            .dialog-content {
                 height: 66vh;
                 width: 66vh;
             }
