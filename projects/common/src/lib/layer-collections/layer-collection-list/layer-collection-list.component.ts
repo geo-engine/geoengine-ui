@@ -87,6 +87,10 @@ export class LayerCollectionListComponent implements OnChanges {
         this.changeDetectorRef.markForCheck();
     }
 
+    refresh(): void {
+        this.changeDetectorRef.markForCheck();
+    }
+
     /**
      * Fetch new data when scrolled to the end of the list.
      */
@@ -120,8 +124,7 @@ export class LayerCollectionListComponent implements OnChanges {
         if (item.type === 'collection') {
             this.selectCollection.next(item);
         } else if (item.type === 'layer') {
-            const layer = item as LayerCollectionLayerDict;
-            this.selectLayer.next(layer);
+            this.selectLayer.next(item);
         }
     }
 

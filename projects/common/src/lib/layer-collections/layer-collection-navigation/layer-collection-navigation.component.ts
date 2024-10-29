@@ -27,7 +27,7 @@ import {LayerCollectionItem, LayerCollectionItemOrSearch, LayerCollectionSearch}
 import {CommonConfig} from '../../config.service';
 import {LayersService} from '../layers.service';
 import {UUID} from '../../datasets/dataset.model';
-import {CollectionNavigation} from '../layer-collection-list/layer-collection-list.component';
+import {CollectionNavigation, LayerCollectionListComponent} from '../layer-collection-list/layer-collection-list.component';
 
 @Component({
     selector: 'geoengine-layer-collection-navigation',
@@ -42,6 +42,8 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
     @Input({required: true}) collectionId!: ProviderLayerCollectionId;
 
     @ViewChild('scrollElement', {read: ElementRef}) public scrollElement!: ElementRef<HTMLDivElement>;
+
+    @ViewChild(LayerCollectionListComponent) layerCollectionListComponent!: LayerCollectionListComponent;
 
     breadcrumbs: BreadcrumbNavigation = this.createBreadcrumbNavigation();
     search: Search = this.createSearch();
@@ -59,6 +61,14 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
 
     ngOnInit(): void {
         this.updateListView(undefined);
+    }
+
+    refreshCollection(): void {
+        this.layerCollectionListComponent.refreshCollection();
+    }
+
+    refresh() {
+        this.layerCollectionListComponent.refresh();
     }
 
     ngOnChanges(changes: SimpleChanges): void {

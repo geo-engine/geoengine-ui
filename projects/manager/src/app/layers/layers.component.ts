@@ -1,5 +1,11 @@
-import {Component, signal, WritableSignal} from '@angular/core';
-import {CollectionNavigation, LAYER_DB_PROVIDER_ID, LAYER_DB_ROOT_COLLECTION_ID, LayersService} from '@geoengine/common';
+import {Component, signal, ViewChild, WritableSignal} from '@angular/core';
+import {
+    CollectionNavigation,
+    LAYER_DB_PROVIDER_ID,
+    LAYER_DB_ROOT_COLLECTION_ID,
+    LayerCollectionNavigationComponent,
+    LayersService,
+} from '@geoengine/common';
 import {LayerCollectionListing, LayerListing, ProviderLayerCollectionId} from '@geoengine/openapi-client';
 
 export enum ItemType {
@@ -22,6 +28,8 @@ export class LayersComponent {
 
     readonly selectedItem: WritableSignal<Item | undefined> = signal(undefined);
 
+    @ViewChild(LayerCollectionNavigationComponent) layerCollectionNavigationComponent!: LayerCollectionNavigationComponent;
+
     constructor(protected readonly layersService: LayersService) {}
 
     selectLayer(layer: LayerListing): void {
@@ -30,5 +38,23 @@ export class LayersComponent {
 
     selectCollection(collection: LayerCollectionListing): void {
         this.selectedItem.set({collection, type: ItemType.Collection});
+    }
+
+    collectionUpdated(): void {
+        this.layerCollectionNavigationComponent.refresh();
+    }
+
+    collectionDeleted(): void {
+        this.layerCollectionNavigationComponent.refreshCollection();
+        this.selectedItem.set(undefined);
+    }
+
+    layerUpdated(): void {
+        this.layerCollectionNavigationComponent.refresh();
+    }
+
+    layerDeleted(): void {
+        this.layerCollectionNavigationComponent.refreshCollection();
+        this.selectedItem.set(undefined);
     }
 }

@@ -10,6 +10,8 @@ import {
     TypedResultDescriptor,
     ProviderLayerId,
     RasterSymbology as RasterSymbologyDict,
+    UpdateLayerCollection,
+    UpdateLayer,
 } from '@geoengine/openapi-client';
 
 import {apiConfigurationWithAccessKey, UserService} from '../user/user.service';
@@ -202,6 +204,36 @@ export class LayersService {
         return await layersApi.removeCollectionFromCollection({
             parent,
             collection,
+        });
+    }
+
+    async updateLayerCollection(collection: UUID, update: UpdateLayerCollection): Promise<void> {
+        const layersApi = await firstValueFrom(this.layersApi);
+        return await layersApi.updateCollection({
+            collection,
+            updateLayerCollection: update,
+        });
+    }
+
+    async removeLayerCollection(collection: UUID): Promise<void> {
+        const layersApi = await firstValueFrom(this.layersApi);
+        return await layersApi.removeCollection({
+            collection,
+        });
+    }
+
+    async updateLayer(layer: UUID, update: UpdateLayer): Promise<void> {
+        const layersApi = await firstValueFrom(this.layersApi);
+        return await layersApi.updateLayer({
+            layer,
+            updateLayer: update,
+        });
+    }
+
+    async removeLayer(layer: UUID): Promise<void> {
+        const layersApi = await firstValueFrom(this.layersApi);
+        return await layersApi.removeLayer({
+            layer,
         });
     }
 }

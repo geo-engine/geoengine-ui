@@ -1,7 +1,11 @@
-import {Component, Input, OnChanges, signal, SimpleChanges, WritableSignal} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, Output, signal, SimpleChanges, WritableSignal} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {LayersService} from '@geoengine/common';
+import {MatDialog} from '@angular/material/dialog';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {ConfirmationComponent, errorToText, LayersService} from '@geoengine/common';
 import {Layer, LayerListing} from '@geoengine/openapi-client';
+import {AppConfig} from '../../app-config.service';
+import {firstValueFrom} from 'rxjs';
 
 export interface LayerForm {
     name: FormControl<string>;
@@ -17,11 +21,19 @@ export interface LayerForm {
 export class LayerEditorComponent implements OnChanges {
     @Input({required: true}) layerListing!: LayerListing;
 
+    @Output() readonly layerUpdated = new EventEmitter<void>();
+    @Output() readonly layerDeleted = new EventEmitter<void>();
+
     readonly layer: WritableSignal<Layer | undefined> = signal(undefined);
 
     form: FormGroup<LayerForm> = this.placeholderForm();
 
-    constructor(private readonly layersService: LayersService) {}
+    constructor(
+        private readonly layersService: LayersService,
+        private readonly dialog: MatDialog,
+        private readonly snackBar: MatSnackBar,
+        private readonly config: AppConfig,
+    ) {}
 
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
         if (changes.layerListing) {
@@ -31,18 +43,16 @@ export class LayerEditorComponent implements OnChanges {
         }
     }
 
-    private async setupLayer(): Promise<void> {}
-
     private setUpForm(layer: Layer): void {
         this.form = new FormGroup<LayerForm>({
             name: new FormControl(layer.name, {
                 nonNullable: true,
-                validators: [Validators.required, Validators.pattern(/^[a-zA-Z0-9_]+$/), Validators.minLength(1)],
+                validators: [Validators.required, Validators.minLength(1)],
             }),
             description: new FormControl(layer.description, {
                 nonNullable: true,
             }),
-            workflow: new FormControl(JSON.stringify(layer.workflow.operator, null, ' '), {
+            workflow: new FormControl(JSON.stringify(layer.workflow, null, ' '), {
                 nonNullable: true,
             }),
         });
@@ -63,11 +73,53 @@ export class LayerEditorComponent implements OnChanges {
         });
     }
 
-    applyChanges(): void {
-        // TODO
+    async applyChanges(): Promise<void> {
+        if (this.form.invalid) {
+            return;
+        }
+
+        const name = this.form.controls.name.value;
+        const description = this.form.controls.description.value;
+        // TODO: properties, metadata
+
+        try {
+            this.layersService.updateLayer(this.layerListing.id.layerId, {
+                description,
+                name,
+                workflow: JSON.parse(this.form.controls.workflow.value),
+            });
+
+            this.snackBar.open('Layer successfully updated.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
+            this.layerListing.name = name;
+            this.layerListing.description = description;
+            this.form.markAsPristine();
+
+            // TODO: make changes properly appear in the layer navigation, like for collection.
+            this.layerUpdated.emit();
+        } catch (error) {
+            const errorMessage = await errorToText(error, 'Updating layer failed.');
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
+        }
     }
 
-    deleteLayer(): void {
-        // TODO
+    async deleteLayer(): Promise<void> {
+        const dialogRef = this.dialog.open(ConfirmationComponent, {
+            data: {message: 'Confirm the deletion of the layer. This cannot be undone.'},
+        });
+
+        const confirm = await firstValueFrom(dialogRef.afterClosed());
+
+        if (!confirm) {
+            return;
+        }
+
+        try {
+            await this.layersService.removeLayer(this.layerListing.id.layerId);
+            this.snackBar.open('Layer successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
+            this.layerDeleted.emit();
+        } catch (error) {
+            const errorMessage = await errorToText(error, 'Deleting layer failed.');
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
+        }
     }
 }

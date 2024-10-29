@@ -17,21 +17,13 @@
                         <textarea matInput formControlName="description"></textarea>
                     </mat-form-field>
 
+                    <geoengine-code-editor formControlName="workflow"></geoengine-code-editor>
+
                     <div class="actions">
                         <button mat-raised-button color="primary" [disabled]="form.pristine || !form.valid" (click)="applyChanges()">
                             Apply
                         </button>
                     </div>
-                </mat-card-content>
-            </mat-card>
-
-            <mat-card>
-                <mat-card-header>
-                    <mat-card-title>Workflow</mat-card-title>
-                </mat-card-header>
-
-                <mat-card-content>
-                    <geoengine-code-editor formControlName="workflow"></geoengine-code-editor>
                 </mat-card-content>
             </mat-card>
         </form>

@@ -15,10 +15,16 @@
                     [collectionListing]="item.collection"
                     (layerSelected)="selectLayer($event)"
                     (collectionSelected)="selectCollection($event)"
+                    (collectionUpdated)="collectionUpdated()"
+                    (collectionDeleted)="collectionDeleted()"
                 ></geoengine-manager-layer-collection-editor>
             }
             @case (ItemType.Layer) {
-                <geoengine-manager-layer-editor [layerListing]="item.layer"></geoengine-manager-layer-editor>
+                <geoengine-manager-layer-editor
+                    [layerListing]="item.layer"
+                    (layerUpdated)="layerUpdated()"
+                    (layerDeleted)="layerDeleted()"
+                ></geoengine-manager-layer-editor>
             }
         }
     } @else {

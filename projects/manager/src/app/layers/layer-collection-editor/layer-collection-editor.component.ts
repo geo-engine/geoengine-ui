@@ -1,22 +1,12 @@
-import {
-    ChangeDetectorRef,
-    Component,
-    EventEmitter,
-    Inject,
-    Input,
-    OnChanges,
-    Output,
-    signal,
-    SimpleChanges,
-    ViewChild,
-    WritableSignal,
-} from '@angular/core';
+import {Component, EventEmitter, Inject, Input, OnChanges, Output, signal, SimpleChanges, ViewChild, WritableSignal} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {
     CollectionNavigation,
     CommonModule,
+    ConfirmationComponent,
+    errorToText,
     LAYER_DB_PROVIDER_ID,
     LAYER_DB_ROOT_COLLECTION_ID,
     LayerCollectionListComponent,
@@ -24,6 +14,9 @@ import {
 } from '@geoengine/common';
 import {LayerCollection, LayerCollectionListing, LayerListing, ProviderLayerCollectionId} from '@geoengine/openapi-client';
 import {Item, ItemType} from '../layers.component';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {AppConfig} from '../../app-config.service';
+import {firstValueFrom} from 'rxjs';
 
 export interface CollectionForm {
     name: FormControl<string>;
@@ -48,6 +41,9 @@ export class LayerCollectionEditorComponent implements OnChanges {
 
     @Output() readonly collectionSelected = new EventEmitter<LayerCollectionListing>();
     @Output() readonly layerSelected = new EventEmitter<LayerListing>();
+    @Output() readonly collectionDeleted = new EventEmitter<void>();
+
+    @Output() readonly collectionUpdated = new EventEmitter<void>();
 
     @ViewChild(LayerCollectionListComponent) layerCollectionListComponent!: LayerCollectionListComponent;
 
@@ -58,7 +54,8 @@ export class LayerCollectionEditorComponent implements OnChanges {
     constructor(
         private readonly layersService: LayersService,
         private readonly dialog: MatDialog,
-        private readonly changeDetectorRef: ChangeDetectorRef,
+        private readonly snackBar: MatSnackBar,
+        private readonly config: AppConfig,
     ) {}
 
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
@@ -74,13 +71,11 @@ export class LayerCollectionEditorComponent implements OnChanges {
         }
     }
 
-    private async setupLayer(): Promise<void> {}
-
     private setUpForm(collection: LayerCollection): void {
         this.form = new FormGroup<CollectionForm>({
             name: new FormControl(collection.name, {
                 nonNullable: true,
-                validators: [Validators.required, Validators.pattern(/^[a-zA-Z0-9_]+$/), Validators.minLength(1)],
+                validators: [Validators.required, Validators.minLength(1)],
             }),
             description: new FormControl(collection.description, {
                 nonNullable: true,
@@ -144,12 +139,52 @@ export class LayerCollectionEditorComponent implements OnChanges {
         });
     }
 
-    applyChanges(): void {
-        // TODO
+    async applyChanges(): Promise<void> {
+        if (this.form.invalid) {
+            return;
+        }
+
+        const name = this.form.controls.name.value;
+        const description = this.form.controls.description.value;
+        // TODO: properties
+
+        try {
+            this.layersService.updateLayerCollection(this.collectionListing.id.collectionId, {
+                description,
+                name,
+            });
+
+            this.snackBar.open('Collection successfully updated.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
+            this.collectionListing.name = name;
+            this.collectionListing.description = description;
+            this.form.markAsPristine();
+
+            this.collectionUpdated.emit();
+        } catch (error) {
+            const errorMessage = await errorToText(error, 'Updating collection failed.');
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
+        }
     }
 
-    deleteCollection(): void {
-        // TODO
+    async deleteCollection(): Promise<void> {
+        const dialogRef = this.dialog.open(ConfirmationComponent, {
+            data: {message: 'Confirm the deletion of the collection. This cannot be undone.'},
+        });
+
+        const confirm = await firstValueFrom(dialogRef.afterClosed());
+
+        if (!confirm) {
+            return;
+        }
+
+        try {
+            await this.layersService.removeLayerCollection(this.collectionListing.id.collectionId);
+            this.snackBar.open('Collection successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
+            this.collectionDeleted.emit();
+        } catch (error) {
+            const errorMessage = await errorToText(error, 'Deleting collection failed.');
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
+        }
     }
 }
 
