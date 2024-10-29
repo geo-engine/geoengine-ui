@@ -24,6 +24,7 @@ import {
 } from '@geoengine/openapi-client';
 import {BehaviorSubject, Observable, debounceTime, distinctUntilChanged, switchMap} from 'rxjs';
 import {LayerCollectionItem, LayerCollectionItemOrSearch, LayerCollectionSearch} from '../layer-collection.model';
+import {CommonConfig} from '../../config.service';
 import {LayersService} from '../layers.service';
 import {UUID} from '../../datasets/dataset.model';
 import {CollectionNavigation} from '../layer-collection-list/layer-collection-list.component';
@@ -51,7 +52,7 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
     @Output() selectCollection = new EventEmitter<LayerCollectionListing>();
 
     constructor(
-        // protected readonly config: Config,
+        protected readonly config: CommonConfig,
         protected readonly layerCollectionService: LayersService,
         private readonly changeDetectorRef: ChangeDetectorRef,
     ) {}
@@ -144,7 +145,7 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
             searchResult: (searchResult): void => {
                 this.breadcrumbs.selectCollection(searchResult);
             },
-            debounceTimeMs: 100, // TODO: this.config.DELAYS.DEBOUNCE,
+            debounceTimeMs: this.config.DELAYS.DEBOUNCE,
             maxAutocompleteResults: 10,
         });
     }

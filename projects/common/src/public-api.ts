@@ -32,6 +32,7 @@ export * from './lib/layer-collections/layer-collection-layer-details/layer-coll
 export * from './lib/layer-collections/layer-collection-list/layer-collection-list.component';
 export * from './lib/layer-collections/layer-collection-navigation/layer-collection-navigation.component';
 export * from './lib/measurement/measurement.component';
+export * from './lib/datasets/ogr-dataset/ogr-dataset.component';
 export * from './lib/symbology/color-param-editor/color-param-editor.component';
 export * from './lib/symbology/number-param-editor/number-param-editor.component';
 export * from './lib/symbology/raster-gradient-symbology-editor/raster-gradient-symbology-editor.component';

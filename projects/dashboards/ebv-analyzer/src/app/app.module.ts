@@ -5,7 +5,6 @@ import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {RouterModule} from '@angular/router';
 import {AppComponent} from './app.component';
 import {
-    Config,
     LayoutService,
     MapService,
     NotificationService,
@@ -14,6 +13,7 @@ import {
     SpatialReferenceService,
     UserService,
     CoreModule,
+    CoreConfig,
 } from '@geoengine/core';
 import {AppConfig} from './app-config.service';
 import {PortalModule} from '@angular/cdk/portal';
@@ -25,6 +25,7 @@ import {DataSelectionService} from './data-selection.service';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {LayoutModule} from '@angular/cdk/layout';
 import {RandomColorService} from '@geoengine/common';
+import {CommonConfig} from '@geoengine/common';
 
 @NgModule({
     declarations: [AppComponent, AttributionsComponent, LegendComponent, CountrySelectorComponent, EbvSelectorComponent],
@@ -39,11 +40,19 @@ import {RandomColorService} from '@geoengine/common';
         LayoutModule,
     ],
     providers: [
-        {provide: Config, useClass: AppConfig},
+        AppConfig,
+        {
+            provide: CoreConfig,
+            useExisting: AppConfig,
+        },
+        {
+            provide: CommonConfig,
+            useExisting: AppConfig,
+        },
         {
             provide: APP_INITIALIZER,
             useFactory: (config: AppConfig) => (): Promise<void> => config.load(),
-            deps: [Config],
+            deps: [AppConfig],
             multi: true,
         },
         LayoutService,

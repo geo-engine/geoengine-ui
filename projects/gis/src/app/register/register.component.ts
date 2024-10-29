@@ -3,7 +3,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
-import {Config, NotificationService, UserService, BackendService} from '@geoengine/core';
+import {CoreConfig, NotificationService, UserService, BackendService} from '@geoengine/core';
 import {map, mergeMap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {geoengineValidators} from '@geoengine/common';
@@ -26,7 +26,7 @@ export class RegisterComponent implements AfterViewInit {
     registrationForm: UntypedFormGroup;
 
     constructor(
-        private readonly config: Config,
+        private readonly config: CoreConfig,
         private readonly userService: UserService,
         private readonly backend: BackendService,
         private readonly notificationService: NotificationService,

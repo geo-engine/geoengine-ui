@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {UploadFileLayersResponse, UploadsApi} from '@geoengine/openapi-client';
+import {UploadFileLayersResponse, UploadFilesResponse, UploadsApi} from '@geoengine/openapi-client';
 import {ReplaySubject, firstValueFrom} from 'rxjs';
 import {UserService, apiConfigurationWithAccessKey} from '../user/user.service';
 
@@ -13,6 +13,12 @@ export class UploadsService {
         this.sessionService.getSessionStream().subscribe({
             next: (session) => this.uploadsApi.next(new UploadsApi(apiConfigurationWithAccessKey(session.id))),
         });
+    }
+
+    async getUploadFiles(uploadId: string): Promise<UploadFilesResponse> {
+        const uploadsApi = await firstValueFrom(this.uploadsApi);
+
+        return uploadsApi.listUploadFilesHandler({uploadId});
     }
 
     async getUploadFileLayers(uploadId: string, fileName: string): Promise<UploadFileLayersResponse> {

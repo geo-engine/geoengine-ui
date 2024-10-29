@@ -5,7 +5,6 @@ import {
     LayoutService,
     UserService,
     NotificationService,
-    Config,
     ProjectService,
     MapService,
     MapContainerComponent,
@@ -40,7 +39,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     datasetPortal = new ComponentPortal(EbvSelectorComponent);
 
     constructor(
-        @Inject(Config) readonly config: AppConfig,
+        @Inject(AppConfig) readonly config: AppConfig,
         readonly layoutService: LayoutService,
         readonly projectService: ProjectService,
         readonly dataSelectionService: DataSelectionService,

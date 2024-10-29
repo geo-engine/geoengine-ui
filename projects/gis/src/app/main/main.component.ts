@@ -8,7 +8,6 @@ import {
     Component,
     ElementRef,
     HostListener,
-    Inject,
     OnInit,
     ViewChild,
     ViewContainerRef,
@@ -21,7 +20,6 @@ import {
     SidenavContainerComponent,
     LayoutService,
     UserService,
-    Config,
     ProjectService,
     NavigationButton,
     NavigationComponent,
@@ -69,7 +67,7 @@ export class MainComponent implements OnInit, AfterViewInit {
     private windowHeight$ = new BehaviorSubject<number>(window.innerHeight);
 
     constructor(
-        @Inject(Config) readonly config: AppConfig,
+        readonly config: AppConfig,
         readonly layoutService: LayoutService,
         readonly projectService: ProjectService,
         readonly vcRef: ViewContainerRef, // reference used by color picker, MUST BE EXACTLY THIS NAME

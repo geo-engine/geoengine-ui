@@ -20,7 +20,6 @@ import {MatTabGroup} from '@angular/material/tabs';
 import {
     AddDataButton,
     AddDataComponent,
-    Config,
     LayoutService,
     MapContainerComponent,
     MapService,
@@ -79,7 +78,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private GFBIO_COLLECTIONS_DATA_PROVIDER_ID = 'f64e2d5b-3b80-476a-83f5-c330956b2909';
 
     constructor(
-        @Inject(Config) readonly config: AppConfig,
+        @Inject(AppConfig) readonly config: AppConfig,
         readonly layoutService: LayoutService,
         readonly projectService: ProjectService,
         readonly vcRef: ViewContainerRef, // reference used by color picker

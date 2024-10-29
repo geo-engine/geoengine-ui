@@ -122,7 +122,7 @@ export const MATERIAL_MODULES = [
     ],
     providers: [
         {provide: AppConfig, useClass: AppConfig},
-        CommonConfig,
+        {provide: CommonConfig, useExisting: AppConfig},
         RandomColorService,
         {
             provide: APP_INITIALIZER,

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpEvent, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable, Subject} from 'rxjs';
-import {Config} from '../config.service';
+import {CoreConfig} from '../config.service';
 import {
     BBoxDict,
     CreateProjectResponseDict,
@@ -21,8 +21,6 @@ import {
     UploadResponseDict,
     AutoCreateDatasetDict,
     DatasetNameResponseDict,
-    MetaDataSuggestionDict,
-    SuggestMetaDataDict,
     SpatialReferenceSpecificationDict,
     DataSetProviderListingDict,
     ProvenanceEntryDict,
@@ -37,7 +35,6 @@ import {
     UploadFilesResponseDict,
     UploadFileLayersResponseDict,
     RoleDescription,
-    CreateDatasetDict,
     WfsParamsDict,
 } from './backend.model';
 import {
@@ -54,13 +51,18 @@ import {bboxDictToExtent, unixTimestampToIsoString} from '@geoengine/common';
     providedIn: 'root',
 })
 export class BackendService {
-    readonly wmsBaseUrl = `${this.config.API_URL}/wms`;
-    readonly wcsBaseUrl = `${this.config.API_URL}/wcs`;
-
     constructor(
         protected readonly http: HttpClient,
-        protected readonly config: Config,
+        protected readonly config: CoreConfig,
     ) {}
+
+    get wmsBaseUrl(): string {
+        return `${this.config.API_URL}/wms`;
+    }
+
+    get wcsBaseUrl(): string {
+        return `${this.config.API_URL}/wcs`;
+    }
 
     registerUser(request: {email: string; password: string; realName: string}): Observable<RegistrationDict> {
         return this.http.post<RegistrationDict>(this.config.API_URL + '/user', request);
@@ -303,20 +305,8 @@ export class BackendService {
         });
     }
 
-    createDataset(sessionId: UUID, createDataset: CreateDatasetDict): Observable<DatasetNameResponseDict> {
-        return this.http.post<DatasetNameResponseDict>(this.config.API_URL + '/dataset', createDataset, {
-            headers: BackendService.authorizationHeader(sessionId),
-        });
-    }
-
     autoCreateDataset(sessionId: UUID, createDataset: AutoCreateDatasetDict): Observable<DatasetNameResponseDict> {
         return this.http.post<DatasetNameResponseDict>(this.config.API_URL + '/dataset/auto', createDataset, {
-            headers: BackendService.authorizationHeader(sessionId),
-        });
-    }
-
-    suggestMetaData(sessionId: UUID, suggestMetaData: SuggestMetaDataDict): Observable<MetaDataSuggestionDict> {
-        return this.http.post<MetaDataSuggestionDict>(this.config.API_URL + '/dataset/suggest', suggestMetaData, {
             headers: BackendService.authorizationHeader(sessionId),
         });
     }

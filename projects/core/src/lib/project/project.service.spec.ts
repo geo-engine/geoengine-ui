@@ -4,7 +4,7 @@ import moment from 'moment';
 import {Session} from '../users/session.model';
 import {User} from '../users/user.model';
 import {NEVER, of} from 'rxjs';
-import {Config, DEFAULT_CONFIG} from '../config.service';
+import {CoreConfig, DEFAULT_CORE_CONFIG} from '../config.service';
 import {CreateProjectResponseDict, STRectangleDict, TimeStepDict, UUID} from '../backend/backend.model';
 import {NotificationService} from '../notification.service';
 import {MapService} from '../map/map.service';
@@ -97,7 +97,7 @@ describe('test project methods in projectService', () => {
         );
 
         projectService = new ProjectService(
-            DEFAULT_CONFIG as Config,
+            DEFAULT_CORE_CONFIG as CoreConfig,
             notificationServiceSpy as unknown as NotificationService,
             mapServiceSpy as unknown as MapService,
             backendSpy as unknown as BackendService,

@@ -1,11 +1,5 @@
-import {inject, Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Configuration, DefaultConfig} from '@geoengine/openapi-client';
-import {CommonConfig, mergeDeepOverrideLists} from '@geoengine/common';
-
-interface Plots {
-    readonly THEME: 'excel' | 'ggplot2' | 'quartz' | 'vox' | 'dark';
-}
+import {Injectable} from '@angular/core';
+import {CommonConfigStructure, CommonConfig, Delays as CommonDelays, mergeDeepOverrideLists} from '@geoengine/common';
 
 interface Wms {
     readonly VERSION: string;
@@ -29,7 +23,7 @@ interface User {
     };
 }
 
-interface Delays {
+interface Delays extends CommonDelays {
     readonly LOADING: {
         readonly MIN: number;
     };
@@ -84,21 +78,19 @@ interface SpatialReferenceConfig {
     readonly SRS_STRING: string;
 }
 
-export interface ConfigStructure {
+export interface CoreConfigStructure extends CommonConfigStructure {
     readonly DEFAULTS: ConfigDefaults;
     readonly DELAYS: Delays;
     readonly MAP: ConfigMap;
-    readonly API_URL: string;
     readonly TIME: Time;
     readonly USER: User;
     readonly WCS: Wcs;
     readonly WFS: Wfs;
     readonly WMS: Wms;
-    readonly PLOTS: Plots;
     readonly SPATIAL_REFERENCES: Array<SpatialReferenceConfig>;
 }
 
-export const DEFAULT_CONFIG: ConfigStructure = {
+export const DEFAULT_CORE_CONFIG: CoreConfigStructure = {
     DEFAULTS: {
         PROJECT: {
             NAME: 'Default',
@@ -199,16 +191,11 @@ export const DEFAULT_CONFIG: ConfigStructure = {
  * Loads a custom file at startup.
  */
 @Injectable()
-export class Config {
-    static readonly CONFIG_FILE = 'assets/config.json';
+export class CoreConfig extends CommonConfig {
+    protected override config!: CoreConfigStructure;
 
-    protected readonly http = inject(HttpClient);
-    protected readonly commonConfig = inject(CommonConfig);
-
-    protected config!: ConfigStructure;
-
-    get API_URL(): string {
-        return this.config.API_URL;
+    override get DELAYS(): Delays {
+        return this.config.DELAYS;
     }
 
     get WMS(): Wms {
@@ -227,10 +214,6 @@ export class Config {
         return this.config.USER;
     }
 
-    get DELAYS(): Delays {
-        return this.config.DELAYS;
-    }
-
     get DEFAULTS(): ConfigDefaults {
         return this.config.DEFAULTS;
     }
@@ -243,42 +226,15 @@ export class Config {
         return this.config.TIME;
     }
 
-    get PLOTS(): Plots {
-        return this.config.PLOTS;
-    }
-
     get SPATIAL_REFERENCES(): Array<SpatialReferenceConfig> {
         return this.config.SPATIAL_REFERENCES;
     }
 
-    // noinspection JSUnusedGlobalSymbols <- function used in parent app
     /**
      * Initialize the config on app start.
      */
-    async load(defaults: ConfigStructure = DEFAULT_CONFIG): Promise<void> {
-        const configFileResponse = await fetch(Config.CONFIG_FILE);
-
-        const appConfig = await configFileResponse.json().catch(() => ({}));
-        this.config = mergeDeepOverrideLists(defaults, {...appConfig});
-
-        await this.commonConfig.load({
-            API_URL: this.config.API_URL,
-            DELAYS: this.config.DELAYS,
-            PLOTS: this.config.PLOTS,
-        });
-
-        // we alter the config in the openapi-client so that it uses the correct API_URL
-        DefaultConfig.config = new Configuration({
-            basePath: this.commonConfig.API_URL,
-            fetchApi: DefaultConfig.fetchApi,
-            middleware: DefaultConfig.middleware,
-            queryParamsStringify: DefaultConfig.queryParamsStringify,
-            username: DefaultConfig.username,
-            password: DefaultConfig.password,
-            apiKey: DefaultConfig.apiKey,
-            accessToken: DefaultConfig.accessToken,
-            headers: DefaultConfig.headers,
-            credentials: DefaultConfig.credentials,
-        });
+    override async load(defaults: CoreConfigStructure = DEFAULT_CORE_CONFIG): Promise<void> {
+        await super.load();
+        this.config = mergeDeepOverrideLists(defaults, {...this.config});
     }
 }

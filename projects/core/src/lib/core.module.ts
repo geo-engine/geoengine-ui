@@ -141,6 +141,7 @@ import {DownloadLayerComponent} from './download-layer/download-layer.component'
 import {BandwiseExpressionOperatorComponent} from './operators/dialogs/bandwise-expression-operator/bandwise-expression-operator.component';
 import {BandNeighborhoodAggregateComponent} from './operators/dialogs/band-neighborhood-aggregate/band-neighborhood-aggregate.component';
 import {LayerCollectionSelectionComponent} from './layer-collections/layer-collection-selection.component';
+import {CoreConfig} from './config.service';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -312,7 +313,7 @@ const CORE_COMPONENTS = [
     providers: [
         {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}},
         {provide: MAT_CARD_CONFIG, useValue: {appearance: 'outlined'}},
-        CommonConfig,
+        {provide: CommonConfig, useExisting: CoreConfig},
         provideHttpClient(withInterceptorsFromDi()),
     ],
 })

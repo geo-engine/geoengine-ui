@@ -1,8 +1,8 @@
 import moment from 'moment';
-import {NON_BREAKING_HYPHEN, estimateTimeFormat} from './data-selection.service';
 import {Time} from '@geoengine/common';
+import {estimateTimeFormat, NON_BREAKING_HYPHEN} from './conversions';
 
-describe('DataSelectionService', () => {
+describe('Conversions', () => {
     it('estimates time formats correctly', () => {
         expect(estimateTimeFormat([new Time(moment.utc('2000-01-01T00:00:00Z'))])).toEqual('YYYY');
         expect(

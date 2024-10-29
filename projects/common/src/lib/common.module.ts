@@ -68,6 +68,7 @@ import {LayerCollectionListComponent} from './layer-collections/layer-collection
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {AutocompleteSelectDirective} from './util/directives/autocomplete-select.directive';
 import {CodeEditorComponent} from './util/components/code-editor.component';
+import {OgrDatasetComponent} from './datasets/ogr-dataset/ogr-dataset.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -147,8 +148,17 @@ const COMMON_PIPES = [
 const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGapDirective, FxLayoutAlignDirective];
 
 @NgModule({
-    declarations: [...COMMON_COMPONENTS, ...COMMON_PIPES, ...FXFLEX_LEGACY_DIRECTIVES],
-    imports: [...MATERIAL_MODULES, ColorPickerModule, FormsModule, ReactiveFormsModule, AngularCommonModule, ScrollingModule],
+    declarations: [...COMMON_COMPONENTS, ...COMMON_PIPES],
+    imports: [
+        ...MATERIAL_MODULES,
+        ColorPickerModule,
+        FormsModule,
+        ReactiveFormsModule,
+        AngularCommonModule,
+        ScrollingModule,
+        OgrDatasetComponent,
+        ...FXFLEX_LEGACY_DIRECTIVES,
+    ],
     exports: [
         ...COMMON_COMPONENTS,
         ...COMMON_PIPES,
@@ -160,6 +170,7 @@ const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGa
         AngularCommonModule,
         ScrollingModule,
         NgxMatSelectSearchModule,
+        OgrDatasetComponent,
     ],
 })
 export class CommonModule {}
