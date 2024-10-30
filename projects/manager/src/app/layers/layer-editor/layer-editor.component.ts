@@ -2,8 +2,20 @@ import {Component, EventEmitter, Input, OnChanges, Output, signal, SimpleChanges
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {ConfirmationComponent, errorToText, LayersService} from '@geoengine/common';
-import {Layer, LayerListing} from '@geoengine/openapi-client';
+import {
+    ConfirmationComponent,
+    errorToText,
+    LayersService,
+    RasterSymbology,
+    Symbology,
+    SymbologyWorkflow,
+    VectorSymbology,
+    WorkflowsService,
+    createVectorSymbology as createDefaultVectorSymbology,
+    WHITE,
+    UUID,
+} from '@geoengine/common';
+import {Layer, LayerListing, TypedResultDescriptor, Symbology as SymbologyDict} from '@geoengine/openapi-client';
 import {AppConfig} from '../../app-config.service';
 import {firstValueFrom} from 'rxjs';
 
@@ -11,6 +23,7 @@ export interface LayerForm {
     name: FormControl<string>;
     description: FormControl<string>;
     workflow: FormControl<string>;
+    symbology: FormControl<SymbologyDict | undefined>;
 }
 
 @Component({
@@ -26,10 +39,23 @@ export class LayerEditorComponent implements OnChanges {
 
     readonly layer: WritableSignal<Layer | undefined> = signal(undefined);
 
+    readonly resultDescriptor: WritableSignal<TypedResultDescriptor | undefined> = signal(undefined);
+
+    rasterSymbology: RasterSymbology | undefined;
+    vectorSymbology: VectorSymbology | undefined;
+
+    rasterSymbologyWorkflow: WritableSignal<SymbologyWorkflow<RasterSymbology> | undefined> = signal(undefined);
+    vectorSymbologyWorkflow: WritableSignal<SymbologyWorkflow<VectorSymbology> | undefined> = signal(undefined);
+
+    // workflowId: WritableSignal<UUID | undefined> = signal(undefined);
+
+    workflowId: UUID | undefined = undefined;
+
     form: FormGroup<LayerForm> = this.placeholderForm();
 
     constructor(
         private readonly layersService: LayersService,
+        private readonly workflowsService: WorkflowsService,
         private readonly dialog: MatDialog,
         private readonly snackBar: MatSnackBar,
         private readonly config: AppConfig,
@@ -37,10 +63,101 @@ export class LayerEditorComponent implements OnChanges {
 
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
         if (changes.layerListing) {
+            this.resetSymbology();
+
             const layer = await this.layersService.getLayer(this.layerListing.id.providerId, this.layerListing.id.layerId);
             this.layer.set(layer);
+
+            this.setUpColorizer(layer);
+
+            this.workflowsService.registerWorkflow(layer.workflow).then(async (workflowId) => {
+                this.workflowId = workflowId;
+                this.setUpSymbology();
+
+                const resultDescriptor = await this.workflowsService.getMetadata(workflowId);
+                this.resultDescriptor.set(resultDescriptor);
+            });
+
             this.setUpForm(layer);
         }
+    }
+
+    private resetSymbology(): void {
+        this.rasterSymbology = undefined;
+        this.vectorSymbology = undefined;
+
+        this.rasterSymbologyWorkflow.set(undefined);
+        this.vectorSymbologyWorkflow.set(undefined);
+    }
+
+    private setUpSymbology(): void {
+        const layer = this.layer();
+        const workflowId = this.workflowId;
+
+        if (!layer || !workflowId) {
+            return;
+        }
+
+        if (layer.workflow.type == 'Raster') {
+            if (this.rasterSymbology) {
+                this.rasterSymbologyWorkflow.set({workflowId, symbology: this.rasterSymbology});
+            }
+        } else if (layer.workflow.type == 'Vector') {
+            if (this.vectorSymbology) {
+                this.vectorSymbologyWorkflow.set({workflowId, symbology: this.vectorSymbology});
+            }
+        }
+    }
+
+    changeVectorSymbology(symbology: VectorSymbology): void {
+        this.vectorSymbology = symbology;
+        this.form.controls.symbology.setValue(symbology.toDict());
+    }
+
+    changeRasterSymbology(symbology: RasterSymbology): void {
+        this.rasterSymbology = symbology;
+        this.form.controls.symbology.setValue(symbology.toDict());
+    }
+
+    createSymbology(layer: Layer): void {
+        if (layer.workflow.type === 'Vector') {
+            this.createVectorSymbology();
+        }
+        if (layer.workflow.type === 'Raster') {
+            this.createRasterSymbology();
+        }
+
+        this.setUpSymbology();
+    }
+
+    private createVectorSymbology(): void {
+        const resultDescriptor = this.resultDescriptor();
+        if (!resultDescriptor || !(resultDescriptor.type === 'vector')) {
+            return;
+        }
+
+        this.vectorSymbology = createDefaultVectorSymbology(resultDescriptor.dataType, WHITE);
+    }
+
+    private createRasterSymbology(): void {
+        this.rasterSymbology = RasterSymbology.fromRasterSymbologyDict({
+            type: 'raster',
+            opacity: 1.0,
+            rasterColorizer: {
+                type: 'singleBand',
+                band: 0,
+                bandColorizer: {
+                    type: 'linearGradient',
+                    breakpoints: [
+                        {value: 1, color: [0, 0, 0, 255]},
+                        {value: 255, color: [255, 255, 255, 255]},
+                    ],
+                    overColor: [255, 255, 255, 127],
+                    underColor: [0, 0, 0, 127],
+                    noDataColor: [0, 0, 0, 0],
+                },
+            },
+        });
     }
 
     private setUpForm(layer: Layer): void {
@@ -53,6 +170,9 @@ export class LayerEditorComponent implements OnChanges {
                 nonNullable: true,
             }),
             workflow: new FormControl(JSON.stringify(layer.workflow, null, ' '), {
+                nonNullable: true,
+            }),
+            symbology: new FormControl(layer.symbology ?? undefined, {
                 nonNullable: true,
             }),
         });
@@ -70,7 +190,31 @@ export class LayerEditorComponent implements OnChanges {
             workflow: new FormControl('{}', {
                 nonNullable: true,
             }),
+            symbology: new FormControl(undefined, {
+                nonNullable: true,
+            }),
         });
+    }
+
+    private setUpColorizer(layer: Layer): void {
+        if (layer.symbology) {
+            const symbology = Symbology.fromDict(layer.symbology);
+
+            if (symbology instanceof RasterSymbology) {
+                this.rasterSymbology = symbology;
+            } else {
+                this.rasterSymbology = undefined;
+            }
+
+            if (symbology instanceof VectorSymbology) {
+                this.vectorSymbology = symbology;
+            } else {
+                this.vectorSymbology = undefined;
+            }
+        } else {
+            this.rasterSymbology = undefined;
+            this.vectorSymbology = undefined;
+        }
     }
 
     async applyChanges(): Promise<void> {
@@ -87,6 +231,7 @@ export class LayerEditorComponent implements OnChanges {
                 description,
                 name,
                 workflow: JSON.parse(this.form.controls.workflow.value),
+                symbology: this.form.controls.symbology.value,
             });
 
             this.snackBar.open('Layer successfully updated.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
