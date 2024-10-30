@@ -55,6 +55,7 @@ export class LayerCollectionListComponent implements OnChanges {
     @Input({required: false}) collectionNavigation = CollectionNavigation.Element;
 
     @Input({required: false}) showLayerToggle = true;
+    @Input({required: false}) highlightSelection = false;
 
     @Output()
     navigateCollection = new EventEmitter<LayerCollectionListing>();
@@ -70,6 +71,9 @@ export class LayerCollectionListComponent implements OnChanges {
     @Input() loadingSpinnerDiameterPx: number = 100; // TODO = 3 * LayoutService.remInPx;
 
     source?: LayerCollectionItemDataSource;
+
+    selectedCollection?: LayerCollectionListing;
+    selectedLayer?: LayerListing;
 
     constructor(
         private readonly layersService: LayersService,
@@ -121,10 +125,14 @@ export class LayerCollectionListComponent implements OnChanges {
     }
 
     select(item: LayerCollectionItemDict): void {
+        this.selectedCollection = undefined;
+        this.selectedLayer = undefined;
         if (item.type === 'collection') {
             this.selectCollection.next(item);
+            this.selectedCollection = item;
         } else if (item.type === 'layer') {
             this.selectLayer.next(item);
+            this.selectedLayer = item;
         }
     }
 

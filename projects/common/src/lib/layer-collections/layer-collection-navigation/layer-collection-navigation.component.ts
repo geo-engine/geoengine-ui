@@ -38,6 +38,7 @@ import {CollectionNavigation, LayerCollectionListComponent} from '../layer-colle
 export class LayerCollectionNavigationComponent implements OnInit, OnChanges, OnDestroy {
     @Input({required: false}) showLayerToggle = true;
     @Input({required: false}) collectionNavigation = CollectionNavigation.Element;
+    @Input({required: false}) highlightSelection = false;
 
     @Input({required: true}) collectionId!: ProviderLayerCollectionId;
 

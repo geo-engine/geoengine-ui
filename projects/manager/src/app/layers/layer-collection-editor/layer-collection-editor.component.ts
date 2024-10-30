@@ -13,20 +13,15 @@ import {
     LayersService,
 } from '@geoengine/common';
 import {LayerCollection, LayerCollectionListing, LayerListing, ProviderLayerCollectionId} from '@geoengine/openapi-client';
-import {Item, ItemType} from '../layers.component';
+import {Item, ItemId, ItemType} from '../layers.component';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {AppConfig} from '../../app-config.service';
 import {firstValueFrom} from 'rxjs';
+import {AddLayerItemComponent} from '../add-layer-item/add-layer-item.component';
 
 export interface CollectionForm {
     name: FormControl<string>;
     description: FormControl<string>;
-}
-
-enum ChildAction {
-    Goto,
-    Delete,
-    Cancel,
 }
 
 @Component({
@@ -50,6 +45,9 @@ export class LayerCollectionEditorComponent implements OnChanges {
     readonly collection: WritableSignal<LayerCollection | undefined> = signal(undefined);
 
     form: FormGroup<CollectionForm> = this.placeholderForm();
+
+    selectedLayer?: LayerListing;
+    selectedCollection?: LayerCollectionListing;
 
     constructor(
         private readonly layersService: LayersService,
@@ -95,30 +93,28 @@ export class LayerCollectionEditorComponent implements OnChanges {
         });
     }
 
-    selectLayer(layer: LayerListing): void {
-        const dialogRef = this.dialog.open(ChildActionDialogComponent);
-
-        dialogRef.afterClosed().subscribe(async (result: ChildAction) => {
-            if (result === ChildAction.Goto) {
-                this.layerSelected.emit(layer);
-            } else if (result === ChildAction.Delete) {
-                await this.layersService.removeLayerFromCollection(layer.id.layerId, this.collectionListing.id.collectionId);
-                this.layerCollectionListComponent.refreshCollection();
-            }
-        });
+    async removeChild(): Promise<void> {
+        if (this.selectedLayer) {
+            await this.layersService.removeLayerFromCollection(this.selectedLayer.id.layerId, this.collectionListing.id.collectionId);
+            this.selectedLayer = undefined;
+        } else if (this.selectedCollection) {
+            await this.layersService.removeCollectionFromCollection(
+                this.selectedCollection.id.collectionId,
+                this.collectionListing.id.collectionId,
+            );
+            this.selectedCollection = undefined;
+        }
+        this.layerCollectionListComponent.refreshCollection();
     }
 
     selectCollection(collection: LayerCollectionListing): void {
-        const dialogRef = this.dialog.open(ChildActionDialogComponent);
+        this.selectedCollection = collection;
+        this.selectedLayer = undefined;
+    }
 
-        dialogRef.afterClosed().subscribe(async (result: ChildAction) => {
-            if (result === ChildAction.Goto) {
-                this.collectionSelected.emit(collection);
-            } else if (result === ChildAction.Delete) {
-                await this.layersService.removeCollectionFromCollection(collection.id.collectionId, this.collectionListing.id.collectionId);
-                this.layerCollectionListComponent.refreshCollection();
-            }
-        });
+    selectLayer(layer: LayerListing): void {
+        this.selectedLayer = layer;
+        this.selectedCollection = undefined;
     }
 
     addChild(): void {
@@ -137,6 +133,30 @@ export class LayerCollectionEditorComponent implements OnChanges {
                 this.layerCollectionListComponent.refreshCollection();
             }
         });
+    }
+
+    async createChild(): Promise<void> {
+        const dialogRef = this.dialog.open(AddLayerItemComponent, {
+            width: '66%',
+            height: 'calc(66%)',
+            autoFocus: false,
+            disableClose: true,
+            data: {
+                parent: this.collectionListing,
+            },
+        });
+
+        const itemId: ItemId = await firstValueFrom(dialogRef.afterClosed());
+
+        if (!itemId) {
+            return;
+        }
+
+        if (itemId.type === ItemType.Layer) {
+            this.layerCollectionListComponent.refreshCollection();
+        } else {
+            this.layerCollectionListComponent.refreshCollection();
+        }
     }
 
     async applyChanges(): Promise<void> {
@@ -189,38 +209,6 @@ export class LayerCollectionEditorComponent implements OnChanges {
 }
 
 @Component({
-    selector: 'geoengine-layer-collection-child-dialog',
-    standalone: true,
-    imports: [MatDialogModule, MatButtonModule],
-    template: `
-        <h2 mat-dialog-title>Child Collection</h2>
-        <mat-dialog-content>
-            <p>Choose an action</p>
-        </mat-dialog-content>
-        <mat-dialog-actions>
-            <button mat-raised-button (click)="onGoto()">Go To</button>
-            <button mat-raised-button (click)="onDelete()" color="warn">Remove from Collection</button>
-            <button mat-raised-button (click)="onCancel()" cdkFocusInitial>Cancel</button>
-        </mat-dialog-actions>
-    `,
-})
-export class ChildActionDialogComponent {
-    constructor(private dialogRef: MatDialogRef<ChildActionDialogComponent>) {}
-
-    onGoto(): void {
-        this.dialogRef.close(ChildAction.Goto);
-    }
-
-    onDelete(): void {
-        this.dialogRef.close(ChildAction.Delete);
-    }
-
-    onCancel(): void {
-        this.dialogRef.close(ChildAction.Cancel);
-    }
-}
-
-@Component({
     selector: 'geoengine-layer-collection-add-child-dialog',
     standalone: true,
     imports: [MatDialogModule, MatButtonModule, CommonModule],
@@ -253,7 +241,7 @@ export class AddChildDialogComponent {
 
     @Inject(MAT_DIALOG_DATA) config!: {collection: ProviderLayerCollectionId};
 
-    constructor(private dialogRef: MatDialogRef<ChildActionDialogComponent>) {}
+    constructor(private dialogRef: MatDialogRef<AddChildDialogComponent>) {}
 
     selectLayer(layer: LayerListing): void {
         this.dialogRef.close({layer, type: ItemType.Layer});

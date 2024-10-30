@@ -93,3 +93,7 @@ mat-list-item {
         color: var(--geoengine-foreground-secondary-text-color);
     }
 }
+
+.selected {
+    background-color: var(--geoengine-primary-color);
+}

@@ -3,7 +3,7 @@
         <ng-container *cdkVirtualFor="let item of source; trackBy: trackById">
             <ng-template [ngIf]="item.type === 'collection'">
                 @if (collectionNavigation == CollectionNavigation.Disabled) {
-                    <mat-list-item (click)="select(item)">
+                    <mat-list-item (click)="select(item)" [class.selected]="highlightSelection && selectedCollection === item">
                         <mat-icon matListItemIcon>layers</mat-icon>
                         <h4 matListItemTitle>{{ item.name }}</h4>
                         <p matListItemLine>{{ item.description }}</p>
@@ -11,7 +11,10 @@
                 }
 
                 @if (collectionNavigation == CollectionNavigation.Element) {
-                    <mat-list-item (click)="navigateToCollection(item)">
+                    <mat-list-item
+                        (click)="navigateToCollection(item)"
+                        [class.selected]="highlightSelection && selectedCollection === item"
+                    >
                         <mat-icon matListItemIcon>layers</mat-icon>
                         <h4 matListItemTitle>{{ item.name }}</h4>
                         <p matListItemLine>{{ item.description }}</p>
@@ -20,7 +23,7 @@
 
                 @if (collectionNavigation == CollectionNavigation.Button) {
                     <ng-container>
-                        <div class="collection-with-button-navigation">
+                        <div class="collection-with-button-navigation" [class.selected]="highlightSelection && selectedCollection === item">
                             <div matRipple class="click" (click)="select(item)">
                                 <mat-icon class="icon">layers</mat-icon>
                                 <div class="text">
@@ -41,6 +44,7 @@
                     [showLayerToggle]="showLayerToggle"
                     [layer]="item"
                     (addClick)="select(item)"
+                    [class.selected]="highlightSelection && selectedLayer === item"
                 ></geoengine-layer-collection-layer>
             </ng-template>
         </ng-container>
