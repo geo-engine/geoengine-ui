@@ -406,6 +406,22 @@ const duplicateValidator =
         return duplicates ? {duplicate: true} : null;
     };
 
+/**
+ * A validator that checks if a value is valid JSON.
+ */
+const validJson: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+    if (control.value === null || control.value === undefined || control.value === '') {
+        return null; // Don't validate empty values, use Validators.required if needed
+    }
+
+    try {
+        JSON.parse(control.value);
+        return null; // Valid JSON
+    } catch (e) {
+        return {invalidJson: true}; // Invalid JSON
+    }
+};
+
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const geoengineValidators = {
     conditionalValidator,
@@ -424,4 +440,5 @@ export const geoengineValidators = {
     startBeforeEndValidator,
     duplicateInFormArrayValidator,
     duplicateValidator,
+    validJson,
 };

@@ -52,6 +52,7 @@ import {AddDatasetComponent} from './datasets/add-dataset/add-dataset.component'
 import {GdalMetadataListComponent} from './datasets/loading-info/gdal-metadata-list/gdal-metadata-list.component';
 import {GdalDatasetParametersComponent} from './datasets/loading-info/gdal-dataset-parameters/gdal-dataset-parameters.component';
 import {LayerCollectionEditorComponent} from './layers/layer-collection-editor/layer-collection-editor.component';
+import {AddLayerItemComponent} from './layers/add-layer-item/add-layer-item.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -104,6 +105,7 @@ export const MATERIAL_MODULES = [
         AddDatasetComponent,
         GdalMetadataListComponent,
         GdalDatasetParametersComponent,
+        AddLayerItemComponent,
     ],
     imports: [
         ...MATERIAL_MODULES,

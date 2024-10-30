@@ -1,12 +1,14 @@
 <div class="container">
-    <geoengine-layer-collection-navigation
-        class="left"
-        [showLayerToggle]="false"
-        [collectionNavigation]="CollectionNavigation.Button"
-        [collectionId]="collectionId"
-        (selectLayer)="selectLayer($event)"
-        (selectCollection)="selectCollection($event)"
-    ></geoengine-layer-collection-navigation>
+    <div class="left">
+        <button class="add-item" mat-raised-button color="primary" (click)="addItem()"><mat-icon>add</mat-icon>Add Item</button>
+        <geoengine-layer-collection-navigation
+            [showLayerToggle]="false"
+            [collectionNavigation]="CollectionNavigation.Button"
+            [collectionId]="collectionId"
+            (selectLayer)="selectLayer($event)"
+            (selectCollection)="selectCollection($event)"
+        ></geoengine-layer-collection-navigation>
+    </div>
 
     @if (selectedItem(); as item) {
         @switch (item.type) {

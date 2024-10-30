@@ -12,6 +12,8 @@ import {
     RasterSymbology as RasterSymbologyDict,
     UpdateLayerCollection,
     UpdateLayer,
+    AddLayerCollection,
+    AddLayer,
 } from '@geoengine/openapi-client';
 
 import {apiConfigurationWithAccessKey, UserService} from '../user/user.service';
@@ -235,5 +237,25 @@ export class LayersService {
         return await layersApi.removeLayer({
             layer,
         });
+    }
+
+    async addCollection(parent: UUID, add: AddLayerCollection): Promise<UUID> {
+        const layersApi = await firstValueFrom(this.layersApi);
+        const response = await layersApi.addCollection({
+            collection: parent,
+            addLayerCollection: add,
+        });
+
+        return response.id;
+    }
+
+    async addLayer(parent: UUID, add: AddLayer): Promise<UUID> {
+        const layersApi = await firstValueFrom(this.layersApi);
+        const response = await layersApi.addLayer({
+            collection: parent,
+            addLayer: add,
+        });
+
+        return response.id;
     }
 }
