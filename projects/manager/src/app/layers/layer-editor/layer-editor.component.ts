@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnChanges, Output, signal, SimpleChanges, WritableSignal} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {
@@ -24,6 +24,7 @@ export interface LayerForm {
     description: FormControl<string>;
     workflow: FormControl<string>;
     symbology: FormControl<SymbologyDict | undefined>;
+    properties: FormArray<FormArray<FormControl<string>>>;
 }
 
 @Component({
@@ -169,6 +170,20 @@ export class LayerEditorComponent implements OnChanges {
             description: new FormControl(layer.description, {
                 nonNullable: true,
             }),
+            properties: new FormArray<FormArray<FormControl<string>>>(
+                layer.properties?.map((p) => {
+                    return new FormArray<FormControl<string>>([
+                        new FormControl(p[0], {
+                            nonNullable: true,
+                            validators: [Validators.required],
+                        }),
+                        new FormControl(p[1], {
+                            nonNullable: true,
+                            validators: [Validators.required],
+                        }),
+                    ]);
+                }) ?? [],
+            ),
             workflow: new FormControl(JSON.stringify(layer.workflow, null, ' '), {
                 nonNullable: true,
             }),
@@ -187,6 +202,7 @@ export class LayerEditorComponent implements OnChanges {
             description: new FormControl('description', {
                 nonNullable: true,
             }),
+            properties: new FormArray<FormArray<FormControl<string>>>([]),
             workflow: new FormControl('{}', {
                 nonNullable: true,
             }),
@@ -194,6 +210,26 @@ export class LayerEditorComponent implements OnChanges {
                 nonNullable: true,
             }),
         });
+    }
+
+    addProperty(): void {
+        this.form.controls.properties.push(
+            new FormArray<FormControl<string>>([
+                new FormControl('newKey', {
+                    nonNullable: true,
+                    validators: [Validators.required],
+                }),
+                new FormControl('newValue', {
+                    nonNullable: true,
+                    validators: [Validators.required],
+                }),
+            ]),
+        );
+    }
+
+    removeProperty(i: number): void {
+        this.form.controls.properties.removeAt(i);
+        this.form.markAsDirty();
     }
 
     private setUpColorizer(layer: Layer): void {
@@ -224,12 +260,14 @@ export class LayerEditorComponent implements OnChanges {
 
         const name = this.form.controls.name.value;
         const description = this.form.controls.description.value;
-        // TODO: properties, metadata
+        const properties = this.form.controls.properties.value;
+        // TODO: metadata
 
         try {
             this.layersService.updateLayer(this.layerListing.id.layerId, {
                 description,
                 name,
+                properties,
                 workflow: JSON.parse(this.form.controls.workflow.value),
                 symbology: this.form.controls.symbology.value,
             });
