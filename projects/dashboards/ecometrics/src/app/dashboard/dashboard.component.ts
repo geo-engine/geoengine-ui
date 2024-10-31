@@ -3,8 +3,11 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     inject,
+    signal,
     TemplateRef,
+    viewChild,
     ViewChild,
     ViewContainerRef,
 } from '@angular/core';
@@ -15,7 +18,7 @@ import {MatGridListModule} from '@angular/material/grid-list';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
-import {MatCardModule} from '@angular/material/card';
+import {MatCard, MatCardModule} from '@angular/material/card';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {PortalModule} from '@angular/cdk/portal';
 import {BehaviorSubject, firstValueFrom, lastValueFrom, Observable} from 'rxjs';
@@ -25,6 +28,7 @@ import {
     CoreModule,
     DatasetService,
     Extent,
+    LayoutService,
     MapContainerComponent,
     MapService,
     NotificationService,
@@ -244,17 +248,14 @@ export class DashboardComponent implements AfterViewInit {
     selectedBBox: Extent | undefined;
 
     @ViewChild(MapContainerComponent, {static: false}) mapComponent!: MapContainerComponent;
-    // @ViewChild(TimeStepSelectorComponent, {static: false}) timeSelectorComponent!: TimeStepSelectorComponent;
 
-    @ViewChild('welcome') welcome!: TemplateRef<unknown>;
-    @ViewChild('inspect') inspect!: TemplateRef<unknown>;
-    @ViewChild('indicator') indicator!: TemplateRef<unknown>;
-    @ViewChild('select') select!: TemplateRef<unknown>;
-    @ViewChild('review') review!: TemplateRef<unknown>;
+    // @ViewChild('analyzecard', {static: false}) analyzeCard!: ElementRef;
+    analyzeCard = viewChild('analyzecard', {read: ElementRef});
 
-    private _viewContainerRef = inject(ViewContainerRef);
+    isLandscape = signal(true);
+    plotWidthPx = signal(100);
+    plotHeightPx = signal(100);
 
-    cards = new BehaviorSubject<Array<{title: string; cols: number; rows: number; content: TemplatePortal}>>([]);
     readonly layersReverse$: Observable<Array<Layer>>;
 
     timeSteps: Time[] = [
@@ -285,54 +286,9 @@ export class DashboardComponent implements AfterViewInit {
     }
 
     async ngAfterViewInit(): Promise<void> {
-        this.breakpointObserver
-            .observe(Breakpoints.Handset)
-            .pipe(
-                map(({matches}) => {
-                    const cards = [
-                        {
-                            title: 'Welcome',
-                            cols: 1,
-                            rows: 1,
-                            content: new TemplatePortal(this.welcome, this._viewContainerRef),
-                        },
-                        {
-                            title: 'Inspect',
-                            cols: 1,
-                            rows: 3,
-                            content: new TemplatePortal(this.inspect, this._viewContainerRef),
-                        },
-                        {
-                            title: 'Select Indicator',
-                            cols: 1,
-                            rows: 1,
-                            content: new TemplatePortal(this.indicator, this._viewContainerRef),
-                        },
-                        {
-                            title: 'Draw Area and Select Time',
-                            cols: 1,
-                            rows: 1,
-                            content: new TemplatePortal(this.select, this._viewContainerRef),
-                        },
-                        {
-                            title: 'Review Indicator',
-                            cols: 2,
-                            rows: 2,
-                            content: new TemplatePortal(this.review, this._viewContainerRef),
-                        },
-                    ];
-
-                    if (matches) {
-                        for (const card of cards) {
-                            card.cols = 2;
-                            card.rows = 1;
-                        }
-                    }
-
-                    return cards;
-                }),
-            )
-            .subscribe(this.cards);
+        this.breakpointObserver.observe(Breakpoints.Web).subscribe((isLandscape) => {
+            this.isLandscape.set(isLandscape.matches);
+        });
     }
 
     idFromLayer(index: number, layer: Layer): number {
@@ -447,6 +403,29 @@ export class DashboardComponent implements AfterViewInit {
         return `${sessionId}_${unixTime}`;
     }
 
+    private computePlotSize(): void {
+        const cardWidth = this.analyzeCard()?.nativeElement.clientWidth ?? 100;
+
+        let plotWidth: number;
+
+        if (this.isLandscape()) {
+            plotWidth = cardWidth / 2 - 2 * LayoutService.remInPx;
+        } else {
+            plotWidth = cardWidth - 4 * LayoutService.remInPx;
+        }
+
+        console.log('plotWidth', plotWidth);
+
+        plotWidth = Math.min(plotWidth, window.innerWidth - 9 * LayoutService.remInPx);
+
+        console.log('plotWidth', plotWidth);
+
+        const plotHeight = Math.min(plotWidth, window.innerHeight / 3);
+
+        this.plotWidthPx.set(plotWidth);
+        this.plotHeightPx.set(plotHeight);
+    }
+
     async analyze(): Promise<void> {
         const indicator = this.selectedIndicator;
 
@@ -458,6 +437,8 @@ export class DashboardComponent implements AfterViewInit {
             this.notificationService.error('Please select a region on the map');
             return;
         }
+
+        this.computePlotSize();
 
         let workflow: Workflow;
         if (indicator.measurement === 'classification') {
