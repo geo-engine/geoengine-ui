@@ -1,4 +1,14 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    input,
+    Input,
+    OnChanges,
+    Output,
+    SimpleChanges,
+} from '@angular/core';
 import {LayerListing as LayerCollectionLayerDict, ProviderLayerId as ProviderLayerIdDict} from '@geoengine/openapi-client';
 import {LayersService} from '../layers.service';
 import {VectorDataTypes} from '../../operators/datatype.model';
@@ -13,6 +23,9 @@ import {RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metad
 export class LayerCollectionLayerComponent implements OnChanges {
     @Input({required: false}) showLayerToggle = true;
     @Input() layer: LayerCollectionLayerDict | undefined = undefined;
+
+    trackBy = input<any>(undefined);
+
     @Output() addClick: EventEmitter<ProviderLayerIdDict> = new EventEmitter();
     @Output() isExpanded: EventEmitter<boolean> = new EventEmitter();
 
