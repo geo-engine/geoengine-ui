@@ -53,6 +53,7 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
 
     @Output() selectLayer = new EventEmitter<LayerListing>();
     @Output() selectCollection = new EventEmitter<LayerCollectionListing>();
+    @Output() navigateCollection = new EventEmitter<LayerCollectionListing>();
 
     constructor(
         protected readonly config: CommonConfig,
@@ -130,6 +131,7 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
 
     navigateToCollection(item: LayerCollectionListing): void {
         this.breadcrumbs.selectCollection({type: 'collection', id: item.id, name: item.name} as LayerCollectionItemOrSearch);
+        this.navigateCollection.emit(item);
     }
 
     get providerLayerCollectionIdOrSearch(): ProviderLayerCollectionId | LayerCollectionSearch | undefined {

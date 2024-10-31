@@ -57,14 +57,11 @@ export class LayerCollectionListComponent implements OnChanges {
     @Input({required: false}) showLayerToggle = true;
     @Input({required: false}) highlightSelection = false;
 
-    @Output()
-    navigateCollection = new EventEmitter<LayerCollectionListing>();
+    @Output() navigateCollection = new EventEmitter<LayerCollectionListing>();
 
-    @Output()
-    selectCollection = new EventEmitter<LayerCollectionListing>();
+    @Output() selectCollection = new EventEmitter<LayerCollectionListing>();
 
-    @Output()
-    selectLayer = new EventEmitter<LayerListing>();
+    @Output() selectLayer = new EventEmitter<LayerListing>();
 
     readonly itemSizePx = 72;
 

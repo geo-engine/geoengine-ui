@@ -33,6 +33,8 @@ export class LayersComponent {
 
     readonly selectedItem: WritableSignal<Item | undefined> = signal(undefined);
 
+    readonly addedItem = signal<LayerListing | LayerCollectionListing | undefined>(undefined);
+
     @ViewChild(LayerCollectionNavigationComponent) layerCollectionNavigationComponent!: LayerCollectionNavigationComponent;
 
     constructor(
@@ -52,18 +54,17 @@ export class LayersComponent {
         this.layerCollectionNavigationComponent.refresh();
     }
 
-    collectionDeleted(): void {
-        this.layerCollectionNavigationComponent.refreshCollection();
+    itemDeleted(): void {
+        if (this.addedItem()) {
+            this.addedItem.set(undefined);
+        } else {
+            this.layerCollectionNavigationComponent.refreshCollection();
+        }
         this.selectedItem.set(undefined);
     }
 
     layerUpdated(): void {
         this.layerCollectionNavigationComponent.refresh();
-    }
-
-    layerDeleted(): void {
-        this.layerCollectionNavigationComponent.refreshCollection();
-        this.selectedItem.set(undefined);
     }
 
     async addItem(): Promise<void> {
@@ -95,6 +96,7 @@ export class LayersComponent {
                 type: 'layer',
             };
             this.selectLayer(listing);
+            this.addedItem.set(listing);
         } else {
             this.layerCollectionNavigationComponent.refreshCollection();
 
@@ -107,6 +109,15 @@ export class LayersComponent {
                 type: 'collection',
             };
             this.selectCollection(listing);
+            this.addedItem.set(listing);
         }
+    }
+
+    backToAllItems(): void {
+        this.addedItem.set(undefined);
+    }
+
+    navigateToCollection(): void {
+        this.selectedItem.set(undefined);
     }
 }
