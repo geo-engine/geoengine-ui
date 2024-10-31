@@ -73,15 +73,15 @@
             </mat-card-content>
         </mat-card>
 
-        <!-- <mat-card>
+        <mat-card>
             <mat-card-header>
                 <mat-card-title>Permissions</mat-card-title>
             </mat-card-header>
 
             <mat-card-content>
-                <geoengine-manager-permissions resourceType="dataset" [resourceId]="layer.id.layerId"></geoengine-manager-permissions>
+                <geoengine-manager-permissions resourceType="layer" [resourceId]="layer.id.layerId"></geoengine-manager-permissions>
             </mat-card-content>
-        </mat-card> -->
+        </mat-card>
 
         <div class="actions">
             <button mat-raised-button color="warn" (click)="deleteLayer()">Delete layer</button>

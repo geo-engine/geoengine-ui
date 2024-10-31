@@ -65,6 +65,19 @@
             </mat-card-content>
         </mat-card>
 
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Permissions</mat-card-title>
+            </mat-card-header>
+
+            <mat-card-content>
+                <geoengine-manager-permissions
+                    resourceType="layerCollection"
+                    [resourceId]="collection.id.collectionId"
+                ></geoengine-manager-permissions>
+            </mat-card-content>
+        </mat-card>
+
         <div class="actions">
             <button mat-raised-button color="warn" (click)="deleteCollection()">Delete Collection</button>
         </div>
