@@ -36,9 +36,9 @@
         <mat-card-content class="dashboard-card-content">
             <div class="map-container">
                 <geoengine-map-container #map [grid]="false">
-                    <ng-container *ngIf="userService.getSessionTokenStream() | async as sessionToken">
-                        <ng-template ngFor let-layer [ngForOf]="layersReverse$ | async" [ngForTrackBy]="idFromLayer">
-                            <ng-template [ngIf]="layer.layerType === 'vector'">
+                    @if (userService.getSessionTokenStream() | async; as sessionToken) {
+                        @for (layer of layersReverse(); track layer.id) {
+                            @if (layer.layerType === 'vector') {
                                 <geoengine-ol-vector-layer
                                     [layerId]="layer.id"
                                     [workflow]="layer.workflowId"
@@ -46,8 +46,8 @@
                                     [isVisible]="layer.isVisible"
                                     (mapRedraw)="map.layerForcesRedraw()"
                                 ></geoengine-ol-vector-layer>
-                            </ng-template>
-                            <ng-template [ngIf]="layer.layerType === 'raster'">
+                            }
+                            @if (layer.layerType === 'raster') {
                                 <geoengine-ol-raster-layer
                                     [layerId]="layer.id"
                                     [workflow]="layer.workflowId"
@@ -56,9 +56,9 @@
                                     [sessionToken]="sessionToken"
                                     (mapRedraw)="map.layerForcesRedraw()"
                                 ></geoengine-ol-raster-layer>
-                            </ng-template>
-                        </ng-template>
-                    </ng-container>
+                            }
+                        }
+                    }
                 </geoengine-map-container>
             </div>
             <geoengine-legend *ngIf="dataSelectionService.rasterLayer | async as rasterLayer" [layer]="rasterLayer"></geoengine-legend>
@@ -77,7 +77,7 @@
         <mat-card-content class="dashboard-card-content">
             <!-- two button for draw and reset -->
             <div>
-                <button mat-raised-button color="accent" (click)="selectBox()" [disabled]="isSelectingBox$ | async">
+                <button mat-raised-button color="accent" (click)="selectBox()" [disabled]="isSelectingBox()">
                     Select region on the map
                 </button>
                 <button mat-raised-button (click)="reset()">Reset</button>
@@ -87,7 +87,9 @@
             <geoengine-time-step-selector [timeSteps]="timeSteps" timeFormat="YYYY-MM"></geoengine-time-step-selector>
 
             <!-- analyze button -->
-            <button mat-raised-button color="primary" (click)="analyze()" [disabled]="!selectedIndicator || !selectedBBox">Analyze</button>
+            <button mat-raised-button color="primary" (click)="analyze()" [disabled]="!selectedIndicator() || !selectedBBox()">
+                Analyze
+            </button>
         </mat-card-content>
     </mat-card>
 
@@ -97,7 +99,7 @@
         </mat-card-header>
         <mat-card-content #analyzecard class="dashboard-card-content">
             <!-- vega component -->
-            @if (plotData$ | async; as plot) {
+            @if (plotData(); as plot) {
                 <div class="chart-container">
                     <geoengine-vega-viewer [width]="plotWidthPx()" [height]="plotHeightPx()" [chartData]="plot"></geoengine-vega-viewer>
 
@@ -109,7 +111,7 @@
             } @else {
                 <p class="center">Please select an indicator and a region of interest.</p>
             }
-            <mat-spinner color="accent" *ngIf="plotLoading$ | async"></mat-spinner>
+            <mat-spinner color="accent" *ngIf="plotLoading()"></mat-spinner>
         </mat-card-content>
     </mat-card>
 </div>

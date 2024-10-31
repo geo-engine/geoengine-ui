@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges, ChangeDetectorRef} from '@angular/core';
+import {Component, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges, ChangeDetectorRef, input, signal} from '@angular/core';
 import {RasterLayer} from '@geoengine/common';
 import {CoreModule} from '@geoengine/core';
 
@@ -10,14 +10,8 @@ import {CoreModule} from '@geoengine/core';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [CoreModule],
 })
-export class LegendComponent implements OnChanges {
-    @Input() layer?: RasterLayer = undefined;
+export class LegendComponent {
+    layer = input<RasterLayer>();
 
-    visible = true;
-
-    constructor(readonly changeDetectorRef: ChangeDetectorRef) {}
-
-    ngOnChanges(_changes: SimpleChanges): void {
-        this.changeDetectorRef.markForCheck();
-    }
+    visible = signal(true);
 }
