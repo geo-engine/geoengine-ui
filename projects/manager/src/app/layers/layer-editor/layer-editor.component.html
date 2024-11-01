@@ -50,38 +50,68 @@
                     <button class="add-entry" mat-raised-button (click)="addProperty()">Add Property</button>
                 </mat-card-content>
             </mat-card>
+
+            <mat-card>
+                <mat-card-header>
+                    <mat-card-title>Metadata</mat-card-title>
+                </mat-card-header>
+
+                <mat-card-content>
+                    <div formArrayName="metadata" *ngFor="let control of form.controls.metadata.controls; let i = index">
+                        <div [formGroupName]="i">
+                            <div class="flex-container">
+                                <mat-form-field appearance="fill">
+                                    <mat-label>Property Key</mat-label>
+                                    <input matInput type="text" formControlName="0" />
+                                </mat-form-field>
+                                <mat-form-field appearance="fill">
+                                    <mat-label>Property Value</mat-label>
+                                    <input matInput type="text" formControlName="1" />
+                                </mat-form-field>
+
+                                <button mat-icon-button (click)="removeMetadata(i)"><mat-icon>delete</mat-icon></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="empty-placeholder" *ngIf="form.controls.properties.controls.length === 0">
+                        <i>No metadata defined.</i>
+                    </div>
+                    <button class="add-entry" mat-raised-button (click)="addMetadata()">Add Metadata</button>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card>
+                <mat-card-header>
+                    <mat-card-title>Symbology</mat-card-title>
+                </mat-card-header>
+
+                <mat-card-content>
+                    @if (rasterSymbologyWorkflow(); as rasterSymbologyWorkflow) {
+                        <geoengine-raster-symbology-editor
+                            [symbologyWorkflow]="rasterSymbologyWorkflow"
+                            (changedSymbology)="changeRasterSymbology($event)"
+                        ></geoengine-raster-symbology-editor>
+                    }
+
+                    @if (vectorSymbologyWorkflow(); as vectorSymbologyWorkflow) {
+                        <geoengine-vector-symbology-editor
+                            [symbologyWorkflow]="vectorSymbologyWorkflow"
+                            (changedSymbology)="changeVectorSymbology($event)"
+                        ></geoengine-vector-symbology-editor>
+                    }
+
+                    @if (!rasterSymbologyWorkflow() && !vectorSymbologyWorkflow()) {
+                        <div>This layer has no symbology yet and uses the default symbology.</div>
+                        <button mat-stroked-button class="symbologyButton" (click)="createSymbology(layer)">Create custom symbology</button>
+                    }
+                </mat-card-content>
+            </mat-card>
+
+            <div class="actions">
+                <button mat-raised-button color="primary" [disabled]="form.pristine || !form.valid" (click)="applyChanges()">Apply</button>
+            </div>
         </form>
-
-        <mat-card>
-            <mat-card-header>
-                <mat-card-title>Symbology</mat-card-title>
-            </mat-card-header>
-
-            <mat-card-content>
-                @if (rasterSymbologyWorkflow(); as rasterSymbologyWorkflow) {
-                    <geoengine-raster-symbology-editor
-                        [symbologyWorkflow]="rasterSymbologyWorkflow"
-                        (changedSymbology)="changeRasterSymbology($event)"
-                    ></geoengine-raster-symbology-editor>
-                }
-
-                @if (vectorSymbologyWorkflow(); as vectorSymbologyWorkflow) {
-                    <geoengine-vector-symbology-editor
-                        [symbologyWorkflow]="vectorSymbologyWorkflow"
-                        (changedSymbology)="changeVectorSymbology($event)"
-                    ></geoengine-vector-symbology-editor>
-                }
-
-                @if (!rasterSymbologyWorkflow() && !vectorSymbologyWorkflow()) {
-                    <div>This layer has no symbology yet and uses the default symbology.</div>
-                    <button mat-stroked-button class="symbologyButton" (click)="createSymbology(layer)">Create custom symbology</button>
-                }
-            </mat-card-content>
-        </mat-card>
-
-        <div class="actions">
-            <button mat-raised-button color="primary" [disabled]="form.pristine || !form.valid" (click)="applyChanges()">Apply</button>
-        </div>
 
         <mat-card>
             <mat-card-header>

@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Inject, Input, OnChanges, Output, signal, SimpleChanges, ViewChild, WritableSignal} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {
@@ -22,6 +22,7 @@ import {AddLayerItemComponent} from '../add-layer-item/add-layer-item.component'
 export interface CollectionForm {
     name: FormControl<string>;
     description: FormControl<string>;
+    properties: FormArray<FormArray<FormControl<string>>>;
 }
 
 @Component({
@@ -78,6 +79,20 @@ export class LayerCollectionEditorComponent implements OnChanges {
             description: new FormControl(collection.description, {
                 nonNullable: true,
             }),
+            properties: new FormArray<FormArray<FormControl<string>>>(
+                collection.properties?.map((c) => {
+                    return new FormArray<FormControl<string>>([
+                        new FormControl(c[0], {
+                            nonNullable: true,
+                            validators: [Validators.required],
+                        }),
+                        new FormControl(c[1], {
+                            nonNullable: true,
+                            validators: [Validators.required],
+                        }),
+                    ]);
+                }) ?? [],
+            ),
         });
     }
 
@@ -90,7 +105,29 @@ export class LayerCollectionEditorComponent implements OnChanges {
             description: new FormControl('description', {
                 nonNullable: true,
             }),
+            properties: new FormArray<FormArray<FormControl<string>>>([]),
         });
+    }
+
+    addProperty(): void {
+        this.form.controls.properties.push(
+            new FormArray<FormControl<string>>([
+                new FormControl('newKey', {
+                    nonNullable: true,
+                    validators: [Validators.required],
+                }),
+                new FormControl('newValue', {
+                    nonNullable: true,
+                    validators: [Validators.required],
+                }),
+            ]),
+        );
+        this.form.markAsDirty();
+    }
+
+    removeProperty(i: number): void {
+        this.form.controls.properties.removeAt(i);
+        this.form.markAsDirty();
     }
 
     async removeChild(): Promise<void> {
@@ -166,12 +203,13 @@ export class LayerCollectionEditorComponent implements OnChanges {
 
         const name = this.form.controls.name.value;
         const description = this.form.controls.description.value;
-        // TODO: properties
+        const properties = this.form.controls.properties.value;
 
         try {
             this.layersService.updateLayerCollection(this.collectionListing.id.collectionId, {
-                description,
                 name,
+                description,
+                properties,
             });
 
             this.snackBar.open('Collection successfully updated.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});

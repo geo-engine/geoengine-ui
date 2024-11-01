@@ -25,6 +25,7 @@ export interface LayerForm {
     workflow: FormControl<string>;
     symbology: FormControl<SymbologyDict | undefined>;
     properties: FormArray<FormArray<FormControl<string>>>;
+    metadata: FormArray<FormArray<FormControl<string>>>;
 }
 
 @Component({
@@ -184,6 +185,21 @@ export class LayerEditorComponent implements OnChanges {
                     ]);
                 }) ?? [],
             ),
+            metadata: new FormArray<FormArray<FormControl<string>>>(
+                Object.entries(layer.metadata ?? {}).map(([key, value]) => {
+                    return new FormArray<FormControl<string>>([
+                        new FormControl(key, {
+                            nonNullable: true,
+                            validators: [Validators.required],
+                        }),
+                        new FormControl(value, {
+                            nonNullable: true,
+                            validators: [Validators.required],
+                        }),
+                    ]);
+                }),
+            ),
+
             workflow: new FormControl(JSON.stringify(layer.workflow, null, ' '), {
                 nonNullable: true,
             }),
@@ -191,6 +207,8 @@ export class LayerEditorComponent implements OnChanges {
                 nonNullable: true,
             }),
         });
+        this.form.controls.workflow.markAsPristine();
+        this.form.markAsPristine();
     }
 
     private placeholderForm(): FormGroup<LayerForm> {
@@ -203,6 +221,7 @@ export class LayerEditorComponent implements OnChanges {
                 nonNullable: true,
             }),
             properties: new FormArray<FormArray<FormControl<string>>>([]),
+            metadata: new FormArray<FormArray<FormControl<string>>>([]),
             workflow: new FormControl('{}', {
                 nonNullable: true,
             }),
@@ -225,10 +244,32 @@ export class LayerEditorComponent implements OnChanges {
                 }),
             ]),
         );
+        this.form.markAsDirty();
     }
 
     removeProperty(i: number): void {
         this.form.controls.properties.removeAt(i);
+        this.form.markAsDirty();
+    }
+
+    addMetadata(): void {
+        this.form.controls.metadata.push(
+            new FormArray<FormControl<string>>([
+                new FormControl('newKey', {
+                    nonNullable: true,
+                    validators: [Validators.required],
+                }),
+                new FormControl('newValue', {
+                    nonNullable: true,
+                    validators: [Validators.required],
+                }),
+            ]),
+        );
+        this.form.markAsDirty();
+    }
+
+    removeMetadata(i: number): void {
+        this.form.controls.metadata.removeAt(i);
         this.form.markAsDirty();
     }
 
@@ -261,13 +302,18 @@ export class LayerEditorComponent implements OnChanges {
         const name = this.form.controls.name.value;
         const description = this.form.controls.description.value;
         const properties = this.form.controls.properties.value;
-        // TODO: metadata
+        const metadataArray = this.form.controls.metadata.value;
+        const metadata: {[key: string]: string} = {};
+        metadataArray.forEach(([key, value]) => {
+            metadata[key] = value;
+        });
 
         try {
             this.layersService.updateLayer(this.layerListing.id.layerId, {
                 description,
                 name,
                 properties,
+                metadata,
                 workflow: JSON.parse(this.form.controls.workflow.value),
                 symbology: this.form.controls.symbology.value,
             });
