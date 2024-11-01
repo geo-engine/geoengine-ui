@@ -31,11 +31,11 @@
                         <div [formGroupName]="i">
                             <div class="flex-container">
                                 <mat-form-field appearance="fill">
-                                    <mat-label>Config Key</mat-label>
+                                    <mat-label>Property Key</mat-label>
                                     <input matInput type="text" formControlName="0" />
                                 </mat-form-field>
                                 <mat-form-field appearance="fill">
-                                    <mat-label>Config Value</mat-label>
+                                    <mat-label>Property Value</mat-label>
                                     <input matInput type="text" formControlName="1" />
                                 </mat-form-field>
 
@@ -47,7 +47,7 @@
                     <div class="empty-placeholder" *ngIf="form.controls.properties.controls.length === 0">
                         <i>No properties defined.</i>
                     </div>
-                    <button class="add-entry" mat-raised-button (click)="addProperty()">Add Config Option</button>
+                    <button class="add-entry" mat-raised-button (click)="addProperty()">Add Property</button>
                 </mat-card-content>
             </mat-card>
         </form>
