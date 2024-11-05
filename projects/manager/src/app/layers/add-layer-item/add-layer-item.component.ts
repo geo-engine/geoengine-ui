@@ -1,7 +1,7 @@
 import {Component, Inject} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {ConfirmationComponent, errorToText, geoengineValidators, LayersService} from '@geoengine/common';
-import {LayerCollectionListing, Workflow} from '@geoengine/openapi-client';
+import {ProviderLayerCollectionId, Workflow} from '@geoengine/openapi-client';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {filter, firstValueFrom, merge} from 'rxjs';
@@ -22,7 +22,7 @@ export interface AddLayerItemForm {
 export class AddLayerItemComponent {
     ItemType = ItemType;
 
-    parent: LayerCollectionListing;
+    parentCollectionId: ProviderLayerCollectionId;
 
     form: FormGroup<AddLayerItemForm> = new FormGroup<AddLayerItemForm>({
         itemType: new FormControl(ItemType.Collection, {
@@ -51,9 +51,9 @@ export class AddLayerItemComponent {
         private readonly snackBar: MatSnackBar,
         private readonly dialogRef: MatDialogRef<AddLayerItemComponent>,
         private readonly dialog: MatDialog,
-        @Inject(MAT_DIALOG_DATA) config: {parent: LayerCollectionListing},
+        @Inject(MAT_DIALOG_DATA) config: {parent: ProviderLayerCollectionId},
     ) {
-        this.parent = config.parent;
+        this.parentCollectionId = config.parent;
         merge(this.dialogRef.backdropClick(), this.dialogRef.keydownEvents().pipe(filter((event) => event.key === 'Escape'))).subscribe(
             async (event) => {
                 event.stopPropagation();
@@ -93,7 +93,7 @@ export class AddLayerItemComponent {
 
         if (this.form.controls.itemType.value === ItemType.Collection) {
             try {
-                const collection = await this.layersService.addCollection(this.parent.id.collectionId, {
+                const collection = await this.layersService.addCollection(this.parentCollectionId.collectionId, {
                     name: this.form.controls.name.value,
                     description: this.form.controls.description.value,
                 });
@@ -106,7 +106,7 @@ export class AddLayerItemComponent {
             }
         } else if (this.form.controls.itemType.value === ItemType.Layer) {
             try {
-                const layer = await this.layersService.addLayer(this.parent.id.collectionId, {
+                const layer = await this.layersService.addLayer(this.parentCollectionId.collectionId, {
                     name: this.form.controls.name.value,
                     description: this.form.controls.description.value,
                     workflow: JSON.parse(this.form.controls.workflow.value ?? '{}') as Workflow,

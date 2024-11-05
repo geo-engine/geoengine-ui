@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Inject, Input, OnChanges, Output, signal, SimpleChanges, ViewChild, WritableSignal} from '@angular/core';
+import {Component, EventEmitter, Inject, Input, OnChanges, Output, signal, SimpleChanges, WritableSignal} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
@@ -9,15 +9,13 @@ import {
     errorToText,
     LAYER_DB_PROVIDER_ID,
     LAYER_DB_ROOT_COLLECTION_ID,
-    LayerCollectionListComponent,
     LayersService,
 } from '@geoengine/common';
 import {LayerCollection, LayerCollectionListing, LayerListing, ProviderLayerCollectionId} from '@geoengine/openapi-client';
-import {Item, ItemId, ItemType} from '../layers.component';
+import {ItemType} from '../layers.component';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {AppConfig} from '../../app-config.service';
 import {firstValueFrom} from 'rxjs';
-import {AddLayerItemComponent} from '../add-layer-item/add-layer-item.component';
 
 export interface CollectionForm {
     name: FormControl<string>;
@@ -41,8 +39,6 @@ export class LayerCollectionEditorComponent implements OnChanges {
     @Output() readonly collectionDeleted = new EventEmitter<void>();
 
     @Output() readonly collectionUpdated = new EventEmitter<void>();
-
-    @ViewChild(LayerCollectionListComponent) layerCollectionListComponent!: LayerCollectionListComponent;
 
     readonly collection: WritableSignal<LayerCollection | undefined> = signal(undefined);
 
@@ -129,82 +125,6 @@ export class LayerCollectionEditorComponent implements OnChanges {
     removeProperty(i: number): void {
         this.form.controls.properties.removeAt(i);
         this.form.markAsDirty();
-    }
-
-    async removeChild(): Promise<void> {
-        const dialogRef = this.dialog.open(ConfirmationComponent, {
-            data: {message: 'Confirm the deletion of the child from this collection.'},
-        });
-
-        const confirm = await firstValueFrom(dialogRef.afterClosed());
-
-        if (!confirm) {
-            return;
-        }
-
-        if (this.selectedLayer) {
-            await this.layersService.removeLayerFromCollection(this.selectedLayer.id.layerId, this.collectionListing.id.collectionId);
-            this.selectedLayer = undefined;
-        } else if (this.selectedCollection) {
-            await this.layersService.removeCollectionFromCollection(
-                this.selectedCollection.id.collectionId,
-                this.collectionListing.id.collectionId,
-            );
-            this.selectedCollection = undefined;
-        }
-        this.layerCollectionListComponent.refreshCollection();
-    }
-
-    selectCollection(collection: LayerCollectionListing): void {
-        this.selectedCollection = collection;
-        this.selectedLayer = undefined;
-    }
-
-    selectLayer(layer: LayerListing): void {
-        this.selectedLayer = layer;
-        this.selectedCollection = undefined;
-    }
-
-    addChild(): void {
-        const dialogRef = this.dialog.open(AddChildDialogComponent, {data: {collection: this.collectionListing.id}});
-
-        dialogRef.afterClosed().subscribe(async (item: Item | undefined) => {
-            if (!item) {
-                return;
-            }
-
-            if (item.type === ItemType.Layer) {
-                await this.layersService.addLayerToCollection(item.layer.id.layerId, this.collectionListing.id.collectionId);
-                this.layerCollectionListComponent.refreshCollection();
-            } else if (item.type === ItemType.Collection) {
-                await this.layersService.addCollectionToCollection(item.collection.id.collectionId, this.collectionListing.id.collectionId);
-                this.layerCollectionListComponent.refreshCollection();
-            }
-        });
-    }
-
-    async createChild(): Promise<void> {
-        const dialogRef = this.dialog.open(AddLayerItemComponent, {
-            width: '66%',
-            height: 'calc(66%)',
-            autoFocus: false,
-            disableClose: true,
-            data: {
-                parent: this.collectionListing,
-            },
-        });
-
-        const itemId: ItemId = await firstValueFrom(dialogRef.afterClosed());
-
-        if (!itemId) {
-            return;
-        }
-
-        if (itemId.type === ItemType.Layer) {
-            this.layerCollectionListComponent.refreshCollection();
-        } else {
-            this.layerCollectionListComponent.refreshCollection();
-        }
     }
 
     async applyChanges(): Promise<void> {
