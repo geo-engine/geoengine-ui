@@ -131,6 +131,16 @@ export class LayerCollectionEditorComponent implements OnChanges {
     }
 
     async removeChild(): Promise<void> {
+        const dialogRef = this.dialog.open(ConfirmationComponent, {
+            data: {message: 'Confirm the deletion of the child from this collection.'},
+        });
+
+        const confirm = await firstValueFrom(dialogRef.afterClosed());
+
+        if (!confirm) {
+            return;
+        }
+
         if (this.selectedLayer) {
             await this.layersService.removeLayerFromCollection(this.selectedLayer.id.layerId, this.collectionListing.id.collectionId);
             this.selectedLayer = undefined;
