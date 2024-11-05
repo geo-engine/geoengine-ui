@@ -29,7 +29,8 @@ export class LayersComponent {
     readonly CollectionNavigation = CollectionNavigation;
     readonly ItemType = ItemType;
 
-    readonly collectionId: ProviderLayerCollectionId = {providerId: LAYER_DB_PROVIDER_ID, collectionId: LAYER_DB_ROOT_COLLECTION_ID};
+    readonly rootCollectionId: ProviderLayerCollectionId = {providerId: LAYER_DB_PROVIDER_ID, collectionId: LAYER_DB_ROOT_COLLECTION_ID};
+    readonly currentCollection = signal<ProviderLayerCollectionId>(this.rootCollectionId);
 
     readonly selectedItem: WritableSignal<Item | undefined> = signal(undefined);
 
@@ -117,7 +118,8 @@ export class LayersComponent {
         this.addedItem.set(undefined);
     }
 
-    navigateToCollection(): void {
+    navigateToCollection(collection: LayerCollectionListing): void {
         this.selectedItem.set(undefined);
+        this.currentCollection.set(collection.id);
     }
 }

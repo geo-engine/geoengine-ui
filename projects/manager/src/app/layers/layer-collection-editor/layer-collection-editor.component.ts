@@ -34,6 +34,7 @@ export class LayerCollectionEditorComponent implements OnChanges {
     readonly CollectionNavigation = CollectionNavigation;
 
     @Input({required: true}) collectionListing!: LayerCollectionListing;
+    @Input({required: true}) parentCollection!: ProviderLayerCollectionId;
 
     @Output() readonly collectionSelected = new EventEmitter<LayerCollectionListing>();
     @Output() readonly layerSelected = new EventEmitter<LayerListing>();
@@ -236,7 +237,7 @@ export class LayerCollectionEditorComponent implements OnChanges {
 
     async deleteCollection(): Promise<void> {
         const dialogRef = this.dialog.open(ConfirmationComponent, {
-            data: {message: 'Confirm the deletion of the collection. This cannot be undone.'},
+            data: {message: 'Confirm the deletion of the collection. It will be removed from ALL collections. This cannot be undone.'},
         });
 
         const confirm = await firstValueFrom(dialogRef.afterClosed());
@@ -251,6 +252,30 @@ export class LayerCollectionEditorComponent implements OnChanges {
             this.collectionDeleted.emit();
         } catch (error) {
             const errorMessage = await errorToText(error, 'Deleting collection failed.');
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
+        }
+    }
+
+    async deleteCollectionFromParent(): Promise<void> {
+        const dialogRef = this.dialog.open(ConfirmationComponent, {
+            data: {message: 'Confirm the removal of the collection from the parent collection.'},
+        });
+
+        const confirm = await firstValueFrom(dialogRef.afterClosed());
+
+        if (!confirm) {
+            return;
+        }
+
+        try {
+            await this.layersService.removeCollectionFromCollection(
+                this.collectionListing.id.collectionId,
+                this.parentCollection.collectionId,
+            );
+            this.snackBar.open('Collection successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
+            this.collectionDeleted.emit();
+        } catch (error) {
+            const errorMessage = await errorToText(error, 'Removing collection failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
         }
     }

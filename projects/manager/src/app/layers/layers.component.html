@@ -15,10 +15,10 @@
                 [showLayerToggle]="false"
                 [highlightSelection]="true"
                 [collectionNavigation]="CollectionNavigation.Button"
-                [collectionId]="collectionId"
+                [collectionId]="rootCollectionId"
                 (selectLayer)="selectLayer($event)"
                 (selectCollection)="selectCollection($event)"
-                (navigateCollection)="navigateToCollection()"
+                (navigateCollection)="navigateToCollection($event)"
             ></geoengine-layer-collection-navigation>
 
             <button class="add-item" mat-raised-button color="primary" (click)="addItem()"><mat-icon>add</mat-icon>Add Item</button>
@@ -30,6 +30,7 @@
             @case (ItemType.Collection) {
                 <geoengine-manager-layer-collection-editor
                     [collectionListing]="item.collection"
+                    [parentCollection]="currentCollection()"
                     (layerSelected)="selectLayer($event)"
                     (collectionSelected)="selectCollection($event)"
                     (collectionUpdated)="collectionUpdated()"
@@ -39,6 +40,7 @@
             @case (ItemType.Layer) {
                 <geoengine-manager-layer-editor
                     [layerListing]="item.layer"
+                    [parentCollection]="currentCollection()"
                     (layerUpdated)="layerUpdated()"
                     (layerDeleted)="itemDeleted()"
                 ></geoengine-manager-layer-editor>

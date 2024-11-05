@@ -15,7 +15,7 @@ import {
     WHITE,
     UUID,
 } from '@geoengine/common';
-import {Layer, LayerListing, TypedResultDescriptor, Symbology as SymbologyDict} from '@geoengine/openapi-client';
+import {Layer, LayerListing, TypedResultDescriptor, Symbology as SymbologyDict, ProviderLayerCollectionId} from '@geoengine/openapi-client';
 import {AppConfig} from '../../app-config.service';
 import {firstValueFrom} from 'rxjs';
 
@@ -35,6 +35,7 @@ export interface LayerForm {
 })
 export class LayerEditorComponent implements OnChanges {
     @Input({required: true}) layerListing!: LayerListing;
+    @Input({required: true}) parentCollection!: ProviderLayerCollectionId;
 
     @Output() readonly layerUpdated = new EventEmitter<void>();
     @Output() readonly layerDeleted = new EventEmitter<void>();
@@ -333,7 +334,7 @@ export class LayerEditorComponent implements OnChanges {
 
     async deleteLayer(): Promise<void> {
         const dialogRef = this.dialog.open(ConfirmationComponent, {
-            data: {message: 'Confirm the deletion of the layer. This cannot be undone.'},
+            data: {message: 'Confirm the deletion of the layer. It will be removed from ALL collections. This cannot be undone.'},
         });
 
         const confirm = await firstValueFrom(dialogRef.afterClosed());
@@ -348,6 +349,27 @@ export class LayerEditorComponent implements OnChanges {
             this.layerDeleted.emit();
         } catch (error) {
             const errorMessage = await errorToText(error, 'Deleting layer failed.');
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
+        }
+    }
+
+    async deleteLayerFromParent(): Promise<void> {
+        const dialogRef = this.dialog.open(ConfirmationComponent, {
+            data: {message: 'Confirm the removal of the layer from the parent collection.'},
+        });
+
+        const confirm = await firstValueFrom(dialogRef.afterClosed());
+
+        if (!confirm) {
+            return;
+        }
+
+        try {
+            await this.layersService.removeLayerFromCollection(this.layerListing.id.layerId, this.parentCollection.collectionId);
+            this.snackBar.open('Layer successfully removed.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
+            this.layerDeleted.emit();
+        } catch (error) {
+            const errorMessage = await errorToText(error, 'Removing layer failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
         }
     }
