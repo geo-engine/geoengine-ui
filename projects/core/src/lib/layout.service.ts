@@ -2,6 +2,7 @@ import {fromEvent, combineLatest, BehaviorSubject, Observable, ReplaySubject, Su
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
 import {Injectable, Type} from '@angular/core';
 import {CoreConfig} from './config.service';
+import {LayoutService as CommonLayoutService} from '@geoengine/common';
 
 /**
  * Layout settings serialization format.
@@ -26,9 +27,7 @@ export interface SidenavConfig {
  * A service that keeps track of app layouting options.
  */
 @Injectable()
-export class LayoutService {
-    static readonly remInPx: number = parseFloat(getComputedStyle(document.documentElement).fontSize);
-
+export class LayoutService extends CommonLayoutService {
     private static _scrollbarWidthPx: number;
 
     /**
@@ -59,6 +58,7 @@ export class LayoutService {
     private sidenavContentMaxWidth$: Subject<number> = new ReplaySubject(1);
 
     constructor(protected config: CoreConfig) {
+        super();
         this.setupSidenavWidthStream();
     }
 

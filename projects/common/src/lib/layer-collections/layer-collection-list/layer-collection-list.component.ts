@@ -24,6 +24,7 @@ import {
 } from '@geoengine/openapi-client';
 import {LayersService} from '../layers.service';
 import {createIconDataUrl} from '../../util/icons';
+import {LayoutService} from '../../layout.service';
 
 /**
  * Enum representing the different modes of collection navigation.
@@ -79,7 +80,7 @@ export class LayerCollectionListComponent implements OnChanges {
 
     readonly itemSizePx = 72;
 
-    @Input() loadingSpinnerDiameterPx: number = 100; // TODO = 3 * LayoutService.remInPx;
+    @Input() loadingSpinnerDiameterPx: number = 3 * LayoutService.remInPx;
 
     source?: LayerCollectionItemDataSource;
 
