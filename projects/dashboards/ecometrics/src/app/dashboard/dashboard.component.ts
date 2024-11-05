@@ -3,21 +3,20 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     inject,
-    TemplateRef,
+    signal,
+    viewChild,
     ViewChild,
-    ViewContainerRef,
+    WritableSignal,
 } from '@angular/core';
 import {Breakpoints, BreakpointObserver} from '@angular/cdk/layout';
-import {map} from 'rxjs/operators';
 import {AsyncPipe} from '@angular/common';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
-import {TemplatePortal} from '@angular/cdk/portal';
-import {PortalModule} from '@angular/cdk/portal';
 import {BehaviorSubject, firstValueFrom, lastValueFrom, Observable} from 'rxjs';
 import {
     AutoCreateDatasetDict,
@@ -25,40 +24,30 @@ import {
     CoreModule,
     DatasetService,
     Extent,
+    LayoutService,
     MapContainerComponent,
-    MapService,
     NotificationService,
     ProjectService,
-    SpatialReferenceService,
-    TimeStepSelectorComponent,
     UploadResponseDict,
     UserService,
     WGS_84,
 } from '@geoengine/core';
 import {
     ALL_COLORMAPS,
-    BLACK,
     Color,
-    ColorBreakpoint,
     ColorMapSelectorComponent,
-    ContinuousMeasurement,
     extentToBboxDict,
     HistogramDict,
     Layer,
     LinearGradient,
-    Measurement,
     PaletteColorizer,
     PolygonSymbology,
-    RasterColorizer,
     RasterLayer,
     RasterSymbology,
     SingleBandRasterColorizer,
-    SpatialReference,
     Time,
     TRANSPARENT,
     VectorLayer,
-    VegaChartData,
-    WHITE,
 } from '@geoengine/common';
 import {utc} from 'moment';
 import {DataRange, DataSelectionService} from '../data-selection.service';
@@ -67,10 +56,9 @@ import {Workflow} from '@geoengine/openapi-client';
 import {createBox} from 'ol/interaction/Draw';
 import OlFormatGeoJson from 'ol/format/GeoJSON';
 import {HttpResponse} from '@angular/common/http';
-import {set} from 'immutable';
 import proj4 from 'proj4';
-import {transform, transformExtent} from 'ol/proj';
 import {LegendComponent} from '../legend/legend.component';
+import {toSignal} from '@angular/core/rxjs-interop';
 
 interface Indicator {
     name: string;
@@ -87,261 +75,45 @@ interface Indicator {
     styleUrl: './dashboard.component.scss',
     standalone: true,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        CoreModule,
-        PortalModule,
-        AsyncPipe,
-        MatGridListModule,
-        MatMenuModule,
-        MatIconModule,
-        MatButtonModule,
-        MatCardModule,
-        LegendComponent,
-    ],
+    imports: [CoreModule, AsyncPipe, MatGridListModule, MatMenuModule, MatIconModule, MatButtonModule, MatCardModule, LegendComponent],
 })
 export class DashboardComponent implements AfterViewInit {
-    private breakpointObserver = inject(BreakpointObserver);
+    readonly userService = inject(UserService);
+    readonly dataSelectionService = inject(DataSelectionService);
+    private readonly breakpointObserver = inject(BreakpointObserver);
+    private readonly projectService = inject(ProjectService);
+    private readonly notificationService = inject(NotificationService);
+    private readonly datasetService = inject(DatasetService);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly backend = inject(BackendService);
 
-    isSelectingBox$ = new BehaviorSubject<boolean>(false);
+    indicators = INDICATORS;
 
-    indicators: Array<Indicator> = [
-        {
-            name: 'Land type',
-            description: 'Analyze the types of land within your selected area.',
-            workflow: {
-                type: 'Raster',
-                operator: {
-                    type: 'GdalSource',
-                    params: {
-                        data: 'rf_lucas_s2_3m_med_16in_sort_opset09_tile11',
-                    },
-                },
-            },
-            symbology: new RasterSymbology(
-                1.0,
-                new SingleBandRasterColorizer(
-                    0,
-                    new PaletteColorizer(
-                        new Map([
-                            [0, Color.fromRgbaLike([0, 0, 0, 1])],
-                            [1, Color.fromRgbaLike([0, 17, 255, 1])],
-                            [2, Color.fromRgbaLike([0, 163, 255, 1])],
-                            [3, Color.fromRgbaLike([64, 255, 182, 1])],
-                            [4, Color.fromRgbaLike([182, 255, 64, 1])],
-                            [5, Color.fromRgbaLike([255, 184, 0, 1])],
-                            [6, Color.fromRgbaLike([255, 50, 0, 1])],
-                            [7, Color.fromRgbaLike([128, 0, 0, 1])],
-                        ]),
-                        TRANSPARENT,
-                        TRANSPARENT,
-                    ),
-                ),
-            ),
-            dataRange: {min: 0, max: 7},
-            measurement: 'classification',
-        },
-        {
-            name: 'Vegetation',
-            description: 'Assess the vegetation health and density in your chosen region.',
-            workflow: {
-                type: 'Raster',
-                operator: {
-                    type: 'TemporalRasterAggregation',
-                    params: {
-                        aggregation: {
-                            type: 'mean',
-                            ignoreNoData: true,
-                            percentile: null,
-                        },
-                        window: {
-                            granularity: 'years',
-                            step: 1,
-                        },
-                        windowReference: null,
-                        outputType: 'F32',
-                    },
-                    sources: {
-                        raster: {
-                            type: 'Expression',
-                            params: {
-                                expression: 'if (C == 3 || (C >= 7 && C <= 11)) { NODATA } else { (A - B) / (A + B) }',
-                                outputType: 'F32',
-                                outputBand: {
-                                    name: 'NDVI',
-                                    measurement: {
-                                        type: 'continuous',
-                                        measurement: 'NDVI',
-                                        unit: 'NDVI',
-                                    },
-                                },
-                                mapNoData: false,
-                            },
-                            sources: {
-                                raster: {
-                                    type: 'RasterStacker',
-                                    params: {
-                                        renameBands: {
-                                            type: 'default',
-                                        },
-                                    },
-                                    sources: {
-                                        rasters: [
-                                            {
-                                                type: 'GdalSource',
-                                                params: {
-                                                    data: 'sentinel2_10m_tile_11_band_B08_2022_2023',
-                                                },
-                                            },
-                                            {
-                                                type: 'GdalSource',
-                                                params: {
-                                                    data: 'sentinel2_10m_tile_11_band_B04_2022_2023',
-                                                },
-                                            },
-                                            {
-                                                type: 'RasterTypeConversion',
-                                                params: {
-                                                    outputDataType: 'U16',
-                                                },
-                                                sources: {
-                                                    raster: {
-                                                        type: 'GdalSource',
-                                                        params: {
-                                                            data: 'sentinel2_20m_tile_11_band_SCL_2022_2023',
-                                                        },
-                                                    },
-                                                },
-                                            },
-                                        ],
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-            symbology: new RasterSymbology(
-                1.0,
-                new SingleBandRasterColorizer(
-                    0,
-                    new LinearGradient(
-                        ColorMapSelectorComponent.createLinearBreakpoints(ALL_COLORMAPS.VIRIDIS, 16, false, {min: -1, max: 1}),
-                        // [
-                        // (new ColorBreakpoint(-1, WHITE), new ColorBreakpoint(1, Color.fromRgbaLike([0, 255, 0, 1])))
-                        // ],
-                        TRANSPARENT,
-                        TRANSPARENT,
-                        TRANSPARENT,
-                    ),
-                ),
-            ),
-            dataRange: {min: 0, max: 1},
-            measurement: 'continuous',
-        },
-    ];
+    isSelectingBox = signal(false);
+    selectedIndicator: WritableSignal<Indicator | undefined> = signal(undefined);
+    selectedBBox: WritableSignal<Extent | undefined> = signal(undefined);
+    isLandscape = signal(true);
+    plotWidthPx = signal(100);
+    plotHeightPx = signal(100);
+    layersReverse = toSignal(this.dataSelectionService.layers);
+    plotData = signal<any>(undefined);
+    plotLoading = signal(false);
 
-    selectedIndicator: Indicator | undefined;
-    selectedBBox: Extent | undefined;
+    mapComponent = viewChild.required(MapContainerComponent);
 
-    @ViewChild(MapContainerComponent, {static: false}) mapComponent!: MapContainerComponent;
-    // @ViewChild(TimeStepSelectorComponent, {static: false}) timeSelectorComponent!: TimeStepSelectorComponent;
+    analyzeCard = viewChild.required('analyzecard', {read: ElementRef});
 
-    @ViewChild('welcome') welcome!: TemplateRef<unknown>;
-    @ViewChild('inspect') inspect!: TemplateRef<unknown>;
-    @ViewChild('indicator') indicator!: TemplateRef<unknown>;
-    @ViewChild('select') select!: TemplateRef<unknown>;
-    @ViewChild('review') review!: TemplateRef<unknown>;
-
-    private _viewContainerRef = inject(ViewContainerRef);
-
-    cards = new BehaviorSubject<Array<{title: string; cols: number; rows: number; content: TemplatePortal}>>([]);
-    readonly layersReverse$: Observable<Array<Layer>>;
-
-    timeSteps: Time[] = [
-        new Time(utc('2022-01-01')),
-        new Time(utc('2023-01-01')),
-        // new Time(utc('2024-02-01')),
-        // new Time(utc('2024-03-01')),
-        // new Time(utc('2024-04-01')),
-        // new Time(utc('2024-05-01')),
-        // new Time(utc('2024-06-01')),
-    ];
-
-    readonly plotData$ = new BehaviorSubject<any>(undefined);
-    readonly plotLoading$ = new BehaviorSubject(false);
-
-    constructor(
-        readonly userService: UserService,
-        readonly projectService: ProjectService,
-        readonly dataSelectionService: DataSelectionService,
-        readonly notificationService: NotificationService,
-        readonly mapService: MapService,
-        readonly datasetService: DatasetService,
-        readonly changeDetectorRef: ChangeDetectorRef,
-        readonly backend: BackendService,
-        readonly spatialReferenceService: SpatialReferenceService,
-    ) {
-        this.layersReverse$ = this.dataSelectionService.layers;
-    }
+    timeSteps: Time[] = [new Time(utc('2022-01-01')), new Time(utc('2023-01-01'))];
 
     async ngAfterViewInit(): Promise<void> {
-        this.breakpointObserver
-            .observe(Breakpoints.Handset)
-            .pipe(
-                map(({matches}) => {
-                    const cards = [
-                        {
-                            title: 'Welcome',
-                            cols: 1,
-                            rows: 1,
-                            content: new TemplatePortal(this.welcome, this._viewContainerRef),
-                        },
-                        {
-                            title: 'Inspect',
-                            cols: 1,
-                            rows: 3,
-                            content: new TemplatePortal(this.inspect, this._viewContainerRef),
-                        },
-                        {
-                            title: 'Select Indicator',
-                            cols: 1,
-                            rows: 1,
-                            content: new TemplatePortal(this.indicator, this._viewContainerRef),
-                        },
-                        {
-                            title: 'Draw Area and Select Time',
-                            cols: 1,
-                            rows: 1,
-                            content: new TemplatePortal(this.select, this._viewContainerRef),
-                        },
-                        {
-                            title: 'Review Indicator',
-                            cols: 2,
-                            rows: 2,
-                            content: new TemplatePortal(this.review, this._viewContainerRef),
-                        },
-                    ];
-
-                    if (matches) {
-                        for (const card of cards) {
-                            card.cols = 2;
-                            card.rows = 1;
-                        }
-                    }
-
-                    return cards;
-                }),
-            )
-            .subscribe(this.cards);
-    }
-
-    idFromLayer(index: number, layer: Layer): number {
-        return layer.id;
+        this.breakpointObserver.observe(Breakpoints.Web).subscribe((isLandscape) => {
+            this.isLandscape.set(isLandscape.matches);
+        });
     }
 
     async changeIndicator(event: MatSelectChange): Promise<void> {
         const indicator = event.value as Indicator;
-        this.selectedIndicator = indicator;
+        this.selectedIndicator.set(indicator);
 
         const workflowId = await firstValueFrom(this.projectService.registerWorkflow(indicator.workflow));
 
@@ -357,13 +129,13 @@ export class DashboardComponent implements AfterViewInit {
     }
 
     selectBox(): void {
-        this.isSelectingBox$.next(true);
+        this.isSelectingBox.set(true);
         this.notificationService.info('Select region on the map');
 
-        this.mapComponent.startDrawInteraction('Circle', true, createBox(), async (feature) => {
+        this.mapComponent().startDrawInteraction('Circle', true, createBox(), async (feature) => {
             const bbox = feature.getGeometry()?.getExtent();
             if (bbox) {
-                this.selectedBBox = [bbox[0], bbox[1], bbox[2], bbox[3]];
+                this.selectedBBox.set([bbox[0], bbox[1], bbox[2], bbox[3]]);
 
                 const olFeatureWriter = new OlFormatGeoJson();
 
@@ -435,7 +207,7 @@ export class DashboardComponent implements AfterViewInit {
 
                 await firstValueFrom(observable);
             }
-            this.isSelectingBox$.next(false);
+            this.isSelectingBox.set(false);
 
             // this.setEditedExtent();
         });
@@ -447,17 +219,38 @@ export class DashboardComponent implements AfterViewInit {
         return `${sessionId}_${unixTime}`;
     }
 
+    private computePlotSize(): void {
+        const cardWidth = this.analyzeCard()?.nativeElement.clientWidth ?? 100;
+
+        let plotWidth: number;
+
+        if (this.isLandscape()) {
+            plotWidth = cardWidth / 2 - 2 * LayoutService.remInPx;
+        } else {
+            plotWidth = cardWidth - 4 * LayoutService.remInPx;
+            plotWidth = Math.min(plotWidth, window.innerWidth - 9 * LayoutService.remInPx);
+        }
+
+        const plotHeight = Math.min(plotWidth, window.innerHeight / 3);
+
+        this.plotWidthPx.set(plotWidth);
+        this.plotHeightPx.set(plotHeight);
+    }
+
     async analyze(): Promise<void> {
-        const indicator = this.selectedIndicator;
+        const indicator = this.selectedIndicator();
+        const selectedBBox = this.selectedBBox();
 
         if (!indicator) {
             return;
         }
 
-        if (!this.selectedBBox) {
+        if (!selectedBBox) {
             this.notificationService.error('Please select a region on the map');
             return;
         }
+
+        this.computePlotSize();
 
         let workflow: Workflow;
         if (indicator.measurement === 'classification') {
@@ -500,7 +293,7 @@ export class DashboardComponent implements AfterViewInit {
             return;
         }
 
-        this.plotLoading$.next(true);
+        this.plotLoading.set(true);
 
         const workflowId = await firstValueFrom(this.projectService.registerWorkflow(workflow));
         const sessionId = await firstValueFrom(this.userService.getSessionTokenForRequest());
@@ -512,8 +305,8 @@ export class DashboardComponent implements AfterViewInit {
         // TODO: use proj string from spatial reference service
         const projString = '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +type=crs';
 
-        const ll = proj4('EPSG:4326', projString, [this.selectedBBox[0], this.selectedBBox[1]]);
-        const ur = proj4('EPSG:4326', projString, [this.selectedBBox[2], this.selectedBBox[3]]);
+        const ll = proj4('EPSG:4326', projString, [selectedBBox[0], selectedBBox[1]]);
+        const ur = proj4('EPSG:4326', projString, [selectedBBox[2], selectedBBox[3]]);
         const extent = [ll[0], ll[1], ur[0], ur[1]];
 
         const plot = await firstValueFrom(
@@ -533,13 +326,149 @@ export class DashboardComponent implements AfterViewInit {
             ),
         );
 
-        this.plotData$.next(plot.data);
-        this.plotLoading$.next(false);
+        this.plotData.set(plot.data);
+        this.plotLoading.set(false);
     }
 
     async reset(): Promise<void> {
-        this.selectedBBox = undefined;
+        this.selectedBBox.set(undefined);
         await firstValueFrom(this.dataSelectionService.clearPolygonLayer());
         this.changeDetectorRef.markForCheck();
     }
 }
+
+const INDICATORS: Array<Indicator> = [
+    {
+        name: 'Land type',
+        description: 'Analyze the types of land within your selected area.',
+        workflow: {
+            type: 'Raster',
+            operator: {
+                type: 'GdalSource',
+                params: {
+                    data: 'rf_lucas_s2_3m_med_16in_sort_opset09_tile11',
+                },
+            },
+        },
+        symbology: new RasterSymbology(
+            1.0,
+            new SingleBandRasterColorizer(
+                0,
+                new PaletteColorizer(
+                    new Map([
+                        [0, Color.fromRgbaLike([0, 0, 0, 1])],
+                        [1, Color.fromRgbaLike([0, 17, 255, 1])],
+                        [2, Color.fromRgbaLike([0, 163, 255, 1])],
+                        [3, Color.fromRgbaLike([64, 255, 182, 1])],
+                        [4, Color.fromRgbaLike([182, 255, 64, 1])],
+                        [5, Color.fromRgbaLike([255, 184, 0, 1])],
+                        [6, Color.fromRgbaLike([255, 50, 0, 1])],
+                        [7, Color.fromRgbaLike([128, 0, 0, 1])],
+                    ]),
+                    TRANSPARENT,
+                    TRANSPARENT,
+                ),
+            ),
+        ),
+        dataRange: {min: 0, max: 7},
+        measurement: 'classification',
+    },
+    {
+        name: 'Vegetation',
+        description: 'Assess the vegetation health and density in your chosen region.',
+        workflow: {
+            type: 'Raster',
+            operator: {
+                type: 'TemporalRasterAggregation',
+                params: {
+                    aggregation: {
+                        type: 'mean',
+                        ignoreNoData: true,
+                        percentile: null,
+                    },
+                    window: {
+                        granularity: 'years',
+                        step: 1,
+                    },
+                    windowReference: null,
+                    outputType: 'F32',
+                },
+                sources: {
+                    raster: {
+                        type: 'Expression',
+                        params: {
+                            expression: 'if (C == 3 || (C >= 7 && C <= 11)) { NODATA } else { (A - B) / (A + B) }',
+                            outputType: 'F32',
+                            outputBand: {
+                                name: 'NDVI',
+                                measurement: {
+                                    type: 'continuous',
+                                    measurement: 'NDVI',
+                                    unit: 'NDVI',
+                                },
+                            },
+                            mapNoData: false,
+                        },
+                        sources: {
+                            raster: {
+                                type: 'RasterStacker',
+                                params: {
+                                    renameBands: {
+                                        type: 'default',
+                                    },
+                                },
+                                sources: {
+                                    rasters: [
+                                        {
+                                            type: 'GdalSource',
+                                            params: {
+                                                data: 'sentinel2_10m_tile_11_band_B08_2022_2023',
+                                            },
+                                        },
+                                        {
+                                            type: 'GdalSource',
+                                            params: {
+                                                data: 'sentinel2_10m_tile_11_band_B04_2022_2023',
+                                            },
+                                        },
+                                        {
+                                            type: 'RasterTypeConversion',
+                                            params: {
+                                                outputDataType: 'U16',
+                                            },
+                                            sources: {
+                                                raster: {
+                                                    type: 'GdalSource',
+                                                    params: {
+                                                        data: 'sentinel2_20m_tile_11_band_SCL_2022_2023',
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    ],
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        symbology: new RasterSymbology(
+            1.0,
+            new SingleBandRasterColorizer(
+                0,
+                new LinearGradient(
+                    ColorMapSelectorComponent.createLinearBreakpoints(ALL_COLORMAPS.VIRIDIS, 16, false, {min: -1, max: 1}),
+                    // [
+                    // (new ColorBreakpoint(-1, WHITE), new ColorBreakpoint(1, Color.fromRgbaLike([0, 255, 0, 1])))
+                    // ],
+                    TRANSPARENT,
+                    TRANSPARENT,
+                    TRANSPARENT,
+                ),
+            ),
+        ),
+        dataRange: {min: 0, max: 1},
+        measurement: 'continuous',
+    },
+];
