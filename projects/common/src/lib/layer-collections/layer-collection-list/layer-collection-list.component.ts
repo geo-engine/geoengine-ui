@@ -25,10 +25,24 @@ import {
 import {LayersService} from '../layers.service';
 import {createIconDataUrl} from '../../util/icons';
 
+/**
+ * Enum representing the different modes of collection navigation.
+ */
 export enum CollectionNavigation {
-    Disabled, // do not navigate into collection, only select it
-    Element, // navigate into collection by clicking on it
-    Button, // navigate into collection by clicking a button
+    /**
+     * Do not navigate into the collection, only select it.
+     */
+    Disabled,
+
+    /**
+     * Navigate into the collection by clicking on it.
+     */
+    Element,
+
+    /**
+     * Navigate into the collection by clicking a button.
+     */
+    Button,
 }
 
 @Component({
