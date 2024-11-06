@@ -1,21 +1,11 @@
-import {Component, EventEmitter, Inject, Input, OnChanges, Output, signal, SimpleChanges, WritableSignal} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, Output, signal, SimpleChanges, WritableSignal} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
-import {
-    CollectionNavigation,
-    CommonModule,
-    ConfirmationComponent,
-    errorToText,
-    LAYER_DB_PROVIDER_ID,
-    LAYER_DB_ROOT_COLLECTION_ID,
-    LayersService,
-} from '@geoengine/common';
-import {LayerCollection, LayerCollectionListing, LayerListing, ProviderLayerCollectionId} from '@geoengine/openapi-client';
-import {ItemType} from '../layers.component';
+import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {AppConfig} from '../../app-config.service';
+import {CollectionNavigation, ConfirmationComponent, errorToText, LayersService} from '@geoengine/common';
+import {LayerCollection, LayerCollectionListing, LayerListing, ProviderLayerCollectionId} from '@geoengine/openapi-client';
 import {firstValueFrom} from 'rxjs';
+import {AppConfig} from '../../app-config.service';
 
 export interface CollectionForm {
     name: FormControl<string>;
@@ -198,49 +188,5 @@ export class LayerCollectionEditorComponent implements OnChanges {
             const errorMessage = await errorToText(error, 'Removing collection failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
         }
-    }
-}
-
-@Component({
-    selector: 'geoengine-layer-collection-add-child-dialog',
-    standalone: true,
-    imports: [MatDialogModule, MatButtonModule, CommonModule],
-    template: `
-        <h2 mat-dialog-title>Select New Child</h2>
-        <div class="dialog-content">
-            <geoengine-layer-collection-navigation
-                class="left"
-                [showLayerToggle]="false"
-                [collectionNavigation]="CollectionNavigation.Button"
-                [collectionId]="rootCollectionId"
-                (selectLayer)="selectLayer($event)"
-                (selectCollection)="selectCollection($event)"
-            ></geoengine-layer-collection-navigation>
-        </div>
-    `,
-    styles: [
-        `
-            .dialog-content {
-                height: 66vh;
-                width: 66vh;
-            }
-        `,
-    ],
-})
-export class AddChildDialogComponent {
-    CollectionNavigation = CollectionNavigation;
-
-    rootCollectionId = {providerId: LAYER_DB_PROVIDER_ID, collectionId: LAYER_DB_ROOT_COLLECTION_ID};
-
-    @Inject(MAT_DIALOG_DATA) config!: {collection: ProviderLayerCollectionId};
-
-    constructor(private dialogRef: MatDialogRef<AddChildDialogComponent>) {}
-
-    selectLayer(layer: LayerListing): void {
-        this.dialogRef.close({layer, type: ItemType.Layer});
-    }
-
-    selectCollection(collection: LayerCollectionListing): void {
-        this.dialogRef.close({collection, type: ItemType.Collection});
     }
 }

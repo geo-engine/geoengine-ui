@@ -10,19 +10,21 @@
                     <p matListItemLine>{{ item.description }}</p>
                 </mat-list-item></mat-nav-list
             >
-        } @else {
-            <geoengine-layer-collection-navigation
-                [showLayerToggle]="false"
-                [highlightSelection]="true"
-                [collectionNavigation]="CollectionNavigation.Button"
-                [collectionId]="rootCollectionId"
-                (selectLayer)="selectLayer($event)"
-                (selectCollection)="selectCollection($event)"
-                (navigateCollection)="navigateToCollection($event)"
-            ></geoengine-layer-collection-navigation>
-
-            <button class="add-item" mat-raised-button color="primary" (click)="addItem()"><mat-icon>add</mat-icon>Add Item</button>
         }
+        <geoengine-layer-collection-navigation
+            [showLayerToggle]="false"
+            [highlightSelection]="true"
+            [collectionNavigation]="CollectionNavigation.Button"
+            [collectionId]="rootCollectionId"
+            (selectLayer)="selectLayer($event)"
+            (selectCollection)="selectCollection($event)"
+            (navigateCollection)="navigateToCollection($event)"
+            [class.hidden]="!!addedItem()"
+        ></geoengine-layer-collection-navigation>
+
+        <button class="add-item" mat-raised-button color="primary" (click)="addItem()" [class.hidden]="!!addedItem()">
+            <mat-icon>add</mat-icon>Add Item
+        </button>
     </div>
 
     @if (selectedItem(); as item) {

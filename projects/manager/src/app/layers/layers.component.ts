@@ -69,13 +69,16 @@ export class LayersComponent {
     }
 
     async addItem(): Promise<void> {
+        if (!this.layerCollectionNavigationComponent.selectedCollection) {
+            return;
+        }
         const dialogRef = this.dialog.open(AddLayerItemComponent, {
-            width: '66%',
+            width: '50%',
             height: 'calc(66%)',
             autoFocus: false,
             disableClose: true,
             data: {
-                parent: this.layerCollectionNavigationComponent.selectedCollection,
+                parent: this.layerCollectionNavigationComponent.selectedCollection.id,
             },
         });
 

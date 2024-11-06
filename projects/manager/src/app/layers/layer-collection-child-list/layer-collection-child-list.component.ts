@@ -5,8 +5,7 @@ import {CollectionNavigation, ConfirmationComponent, LayerCollectionListComponen
 import {LayerCollectionListing, LayerListing, ProviderLayerCollectionId} from '@geoengine/openapi-client';
 import {firstValueFrom} from 'rxjs';
 import {AddLayerItemComponent} from '../add-layer-item/add-layer-item.component';
-import {LayerCollectionChildSelectionComponent} from '../layer-collection-child-selection/layer-collection-child-selection.component';
-import {Item, ItemId, ItemType} from '../layers.component';
+import {ItemId} from '../layers.component';
 
 export interface CollectionForm {
     name: FormControl<string>;
@@ -69,28 +68,10 @@ export class LayerCollectionChildListComponent {
         this.selectedCollection = undefined;
     }
 
-    addChild(): void {
-        const dialogRef = this.dialog.open(LayerCollectionChildSelectionComponent, {data: {collection: this.collectionId}});
-
-        dialogRef.afterClosed().subscribe(async (item: Item | undefined) => {
-            if (!item) {
-                return;
-            }
-
-            if (item.type === ItemType.Layer) {
-                await this.layersService.addLayerToCollection(item.layer.id.layerId, this.collectionId.collectionId);
-                this.layerCollectionListComponent.refreshCollection();
-            } else if (item.type === ItemType.Collection) {
-                await this.layersService.addCollectionToCollection(item.collection.id.collectionId, this.collectionId.collectionId);
-                this.layerCollectionListComponent.refreshCollection();
-            }
-        });
-    }
-
     async createChild(): Promise<void> {
         const dialogRef = this.dialog.open(AddLayerItemComponent, {
-            width: '66%',
-            height: 'calc(66%)',
+            width: '50%',
+            height: 'calc(60%)',
             autoFocus: false,
             disableClose: true,
             data: {
@@ -104,10 +85,6 @@ export class LayerCollectionChildListComponent {
             return;
         }
 
-        if (itemId.type === ItemType.Layer) {
-            this.layerCollectionListComponent.refreshCollection();
-        } else {
-            this.layerCollectionListComponent.refreshCollection();
-        }
+        this.layerCollectionListComponent.refreshCollection();
     }
 }

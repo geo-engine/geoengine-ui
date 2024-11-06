@@ -1,7 +1,15 @@
-import {Component, Inject} from '@angular/core';
+import {Component, Inject, signal} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {ConfirmationComponent, errorToText, geoengineValidators, LayersService} from '@geoengine/common';
-import {ProviderLayerCollectionId, Workflow} from '@geoengine/openapi-client';
+import {
+    CollectionNavigation,
+    ConfirmationComponent,
+    errorToText,
+    geoengineValidators,
+    LAYER_DB_PROVIDER_ID,
+    LAYER_DB_ROOT_COLLECTION_ID,
+    LayersService,
+} from '@geoengine/common';
+import {LayerCollectionListing, LayerListing, ProviderLayerCollectionId, Workflow} from '@geoengine/openapi-client';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {filter, firstValueFrom, merge} from 'rxjs';
@@ -14,6 +22,12 @@ export interface AddLayerItemForm {
     workflow: FormControl<string>;
 }
 
+enum ChildType {
+    Undefined,
+    New,
+    Existing,
+}
+
 @Component({
     selector: 'geoengine-manager-add-layer-item',
     templateUrl: './add-layer-item.component.html',
@@ -21,8 +35,13 @@ export interface AddLayerItemForm {
 })
 export class AddLayerItemComponent {
     ItemType = ItemType;
+    ChildType = ChildType;
+    CollectionNavigation = CollectionNavigation;
 
     parentCollectionId: ProviderLayerCollectionId;
+    rootCollectionId = {providerId: LAYER_DB_PROVIDER_ID, collectionId: LAYER_DB_ROOT_COLLECTION_ID};
+
+    childType = signal(ChildType.Undefined);
 
     form: FormGroup<AddLayerItemForm> = new FormGroup<AddLayerItemForm>({
         itemType: new FormControl(ItemType.Collection, {
@@ -118,6 +137,28 @@ export class AddLayerItemComponent {
                 const errorMessage = await errorToText(error, 'Creating layer failed.');
                 this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
             }
+        }
+    }
+
+    async addExistingLayer(layer: LayerListing): Promise<void> {
+        try {
+            await this.layersService.addLayerToCollection(layer.id.layerId, this.parentCollectionId.collectionId);
+            const res: ItemId = {type: ItemType.Layer, layer: layer.id.layerId};
+            this.dialogRef.close(res);
+        } catch (error) {
+            const errorMessage = await errorToText(error, 'Adding layer failed.');
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
+        }
+    }
+
+    async addExistingCollection(collection: LayerCollectionListing): Promise<void> {
+        try {
+            await this.layersService.addCollectionToCollection(collection.id.collectionId, this.parentCollectionId.collectionId);
+            const res: ItemId = {type: ItemType.Collection, collection: collection.id.collectionId};
+            this.dialogRef.close(res);
+        } catch (error) {
+            const errorMessage = await errorToText(error, 'Adding collection failed.');
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
         }
     }
 }

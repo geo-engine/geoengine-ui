@@ -37,3 +37,25 @@ mat-button-toggle-group {
 form {
     height: 100%;
 }
+
+.button-container {
+    display: flex;
+    gap: 2rem;
+    height: 100%;
+}
+
+.fixed-height-button {
+    height: 100%;
+    flex-grow: 1;
+}
+
+.button-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.icon {
+    transform: scale(2);
+    margin-bottom: 2rem;
+}

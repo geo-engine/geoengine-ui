@@ -1,8 +1,7 @@
 import {Component, Inject} from '@angular/core';
 import {FormArray, FormControl} from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
-import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
-import {CollectionNavigation, CommonModule, LAYER_DB_PROVIDER_ID, LAYER_DB_ROOT_COLLECTION_ID} from '@geoengine/common';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {CollectionNavigation, LAYER_DB_PROVIDER_ID, LAYER_DB_ROOT_COLLECTION_ID} from '@geoengine/common';
 import {LayerCollectionListing, LayerListing, ProviderLayerCollectionId} from '@geoengine/openapi-client';
 import {ItemType} from '../layers.component';
 
@@ -16,8 +15,6 @@ export interface CollectionForm {
     selector: 'geoengine-manager-layer-collection-child-selection',
     templateUrl: './layer-collection-child-selection.component.html',
     styleUrl: './layer-collection-child-selection.component.scss',
-    standalone: true,
-    imports: [MatDialogModule, MatButtonModule, CommonModule],
 })
 export class LayerCollectionChildSelectionComponent {
     CollectionNavigation = CollectionNavigation;
