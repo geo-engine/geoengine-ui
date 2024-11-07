@@ -20,8 +20,8 @@
                 <div>
                     <p>Raster band:</p>
 
-                    <mat-select [ngModel]="selectedBand" (ngModelChange)="setSelectedBand($event)" placeholder="Bands">
-                        <mat-option *ngFor="let band of bands$ | async" [value]="band">{{ band.name }}</mat-option>
+                    <mat-select [ngModel]="selectedBand()" (ngModelChange)="setSelectedBand($event)" placeholder="Bands">
+                        <mat-option *ngFor="let band of bands()" [value]="band">{{ band.name }}</mat-option>
                     </mat-select>
                 </div>
 
@@ -48,9 +48,9 @@
         <geoengine-raster-gradient-symbology-editor
             *ngIf="gradientColorizer"
             [colorizer]="gradientColorizer"
-            [queryParams]="queryParams"
-            [workflowId]="symbologyWorkflow.workflowId"
-            [band]="selectedBand?.name | valueDefault: 'band'"
+            [queryParams]="queryParams()"
+            [workflowId]="symbologyWorkflow().workflowId"
+            [band]="selectedBand()?.name | valueDefault: 'band'"
             (colorizerChange)="updateColorizer($event)"
         ></geoengine-raster-gradient-symbology-editor>
 
