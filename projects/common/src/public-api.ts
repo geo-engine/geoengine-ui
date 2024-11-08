@@ -6,10 +6,13 @@ export * from './lib/common.module';
 
 // Services
 export * from './lib/config.service';
+export * from './lib/layout.service';
 export * from './lib/datasets/datasets.service';
+export * from './lib/layer-collections/layers.service';
 export * from './lib/uploads/uploads.service';
 export * from './lib/permissions/permissions.service';
 export * from './lib/plots/plots.service';
+export * from './lib/util/services/random-color.service';
 export * from './lib/user/user.service';
 export * from './lib/workflows/workflows.service';
 
@@ -24,6 +27,11 @@ export * from './lib/layer-icons/line-icon/line-icon.component';
 export * from './lib/layer-icons/point-icon/point-icon.component';
 export * from './lib/layer-icons/polygon-icon/polygon-icon.component';
 export * from './lib/layer-icons/raster-icon/raster-icon.component';
+export * from './lib/layer-collections/layer-collection-dropdown/layer-collection-dropdown.component';
+export * from './lib/layer-collections/layer-collection-layer/layer-collection-layer.component';
+export * from './lib/layer-collections/layer-collection-layer-details/layer-collection-layer-details.component';
+export * from './lib/layer-collections/layer-collection-list/layer-collection-list.component';
+export * from './lib/layer-collections/layer-collection-navigation/layer-collection-navigation.component';
 export * from './lib/measurement/measurement.component';
 export * from './lib/datasets/ogr-dataset/ogr-dataset.component';
 export * from './lib/symbology/color-param-editor/color-param-editor.component';
@@ -34,6 +42,7 @@ export * from './lib/symbology/raster-symbology-editor/raster-symbology-editor.c
 export * from './lib/symbology/vector-symbology-editor/vector-symbology-editor.component';
 export * from './lib/time/time-interval-input/time-interval-input.component';
 export * from './lib/time/time-input/time-input.component';
+export * from './lib/util/components/code-editor.component';
 export * from './lib/plots/vega-viewer/vega-viewer.component';
 
 // Models
@@ -45,6 +54,7 @@ export * from './lib/layers/layer-data.model';
 export * from './lib/layers/layer-metadata.model';
 export * from './lib/layers/layer.model';
 export * from './lib/layers/measurement';
+export * from './lib/layer-collections/layer-collection.model';
 export * from './lib/operators/datatype.model';
 export * from './lib/operators/operator-type.model';
 export * from './lib/operators/result-type.model';
@@ -62,7 +72,10 @@ export * from './lib/util/pipes/color-gradients.pipe';
 // Misc
 export * from './lib/colors/colormaps/mpl-colormaps';
 export * from './lib/colors/colormaps/colormaps';
+export * from './lib/util/constants';
 export * from './lib/util/conversions';
 export * from './lib/util/directives/flexbox-legacy.directive';
+export * from './lib/util/directives/autocomplete-select.directive';
 export * from './lib/util/form.validators';
 export * from './lib/util/symbologies';
+export * from './lib/util/icons';

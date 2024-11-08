@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 
-import {BehaviorSubject, Subscription} from 'rxjs';
+import {BehaviorSubject, skip, Subscription} from 'rxjs';
 
 import * as CodeMirror from 'codemirror';
 
@@ -186,7 +186,8 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
         if (this.changeSubscription) {
             this.changeSubscription.unsubscribe();
         }
-        this.changeSubscription = this.code$.subscribe(fn);
+        // skip the first value, because it is the initial value
+        this.changeSubscription = this.code$.pipe(skip(1)).subscribe(fn);
     }
 
     /** Implemented as part of ControlValueAccessor. */

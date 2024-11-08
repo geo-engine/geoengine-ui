@@ -1,4 +1,4 @@
-import {hashCode} from '@geoengine/common';
+import {hashCode} from './conversions';
 
 /**
  * Create a Data URI image from a string

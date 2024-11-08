@@ -1,5 +1,3 @@
-<geoengine-sidenav-header>{{ rootCollectionItem.name }}</geoengine-sidenav-header>
-
 @if (search.isSearching) {
     <mat-form-field class="search" appearance="outline" subscriptSizing="dynamic">
         <mat-icon matPrefix>search</mat-icon>
@@ -112,6 +110,11 @@
 
 <geoengine-layer-collection-list
     class="portal-outlet"
-    (selectCollection)="breadcrumbs.selectCollection($event)"
+    [showLayerToggle]="showLayerToggle"
+    [highlightSelection]="highlightSelection"
+    [collectionNavigation]="collectionNavigation"
+    (navigateCollection)="navigateToCollection($event)"
+    (selectLayer)="selectLayer.emit($event)"
+    (selectCollection)="selectCollection.emit($event)"
     [collection]="providerLayerCollectionIdOrSearch"
 ></geoengine-layer-collection-list>

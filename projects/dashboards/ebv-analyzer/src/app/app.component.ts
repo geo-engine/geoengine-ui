@@ -4,7 +4,6 @@ import {MatIconRegistry} from '@angular/material/icon';
 import {
     LayoutService,
     UserService,
-    RandomColorService,
     NotificationService,
     ProjectService,
     MapService,
@@ -19,7 +18,7 @@ import moment from 'moment';
 import {DataSelectionService} from './data-selection.service';
 import {EbvSelectorComponent} from './ebv-selector/ebv-selector.component';
 import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
-import {Layer, Time} from '@geoengine/common';
+import {Layer, RandomColorService, Time} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-root',

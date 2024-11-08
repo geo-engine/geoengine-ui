@@ -4,7 +4,6 @@ import {MatIconRegistry} from '@angular/material/icon';
 import {
     LayoutService,
     UserService,
-    RandomColorService,
     NotificationService,
     ProjectService,
     MapService,
@@ -17,7 +16,7 @@ import {AppConfig} from '../app-config.service';
 import {ComponentPortal} from '@angular/cdk/portal';
 import {DataSelectionService} from '../data-selection.service';
 import {SpeciesSelectorComponent} from '../species-selector/species-selector.component';
-import {Layer} from '@geoengine/common';
+import {Layer, RandomColorService} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-main',

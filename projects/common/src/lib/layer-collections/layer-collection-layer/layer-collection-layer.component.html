@@ -8,7 +8,7 @@
             </div>
         </div>
 
-        <button class="header-button" mat-icon-button (click)="toggleExpand()">
+        <button class="header-button" *ngIf="showLayerToggle" mat-icon-button (click)="toggleExpand()">
             <mat-icon *ngIf="!expanded">expand_more</mat-icon>
             <mat-icon *ngIf="expanded">expand_less</mat-icon>
         </button>

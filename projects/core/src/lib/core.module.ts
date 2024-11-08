@@ -106,18 +106,12 @@ import {ProvenanceTableComponent} from './provenance/table/provenance-table.comp
 import {ScrollingModule} from '@angular/cdk/scrolling';
 import {LayerListMenuComponent} from './layers/layer-list/layer-list-menu/layer-list-menu.component';
 import {ModalLoginComponent} from './users/modal-login/modal-login.component';
-import {CodeEditorComponent} from './util/components/code-editor.component';
 import {TimeStepSelectorComponent} from './time/time-step-selector/time-step-selector.component';
-import {AutocompleteSelectDirective} from './util/directives/autocomplete-select.directive';
 import {TokenLoginComponent} from './users/token-login/token-login.component';
 import {TimeSliderComponent} from './time/time-slider/time-slider.component';
 import {FullDisplayComponent} from './datatable/table/full-display/full-display.component';
-import {LayerCollectionListComponent} from './layer-collections/layer-collection-list/layer-collection-list.component';
-import {LayerCollectionNavigationComponent} from './layer-collections/layer-collection-navigation/layer-collection-navigation.component';
 import {ClassHistogramOperatorComponent} from './operators/dialogs/class-histogram-operator/class-histogram-operator.component';
 import {ColumnRangeFilterComponent} from './operators/dialogs/column-range-filter/column-range-filter.component';
-import {LayerCollectionDropdownComponent} from './layer-collections/layer-collection-dropdown/layer-collection-dropdown.component';
-import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {DialogSplashCheckboxComponent} from './dialogs/dialog-splash-checkbox/dialog-splash-checkbox.component';
 import {MediaviewComponent} from './datatable/mediaview/mediaview.component';
 import {MediaviewDialogComponent} from './datatable/mediaview/dialog/mediaview.dialog.component';
@@ -130,8 +124,6 @@ import {BackendStatusPageComponent} from './util/components/backend-status-page/
 import {SymbologyCreatorComponent} from './layers/symbology/symbology-creator/symbology-creator.component';
 import {OperatorDialogContainerComponent} from './operators/dialogs/helpers/operator-dialog-container/operator-dialog-container.component';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from '@angular/material/form-field';
-import {LayerCollectionLayerComponent} from './layer-collections/layer-collection-layer/layer-collection-layer.component';
-import {LayerCollectionLayerDetailsComponent} from './layer-collections/layer-collection-layer-details/layer-collection-layer-details.component';
 import {TimeShiftComponent} from './operators/dialogs/time-shift/time-shift.component';
 import {PieChartComponent} from './operators/dialogs/pie-chart/pie-chart.component';
 import {RasterizationComponent} from './operators/dialogs/rasterization/rasterization.component';
@@ -148,6 +140,7 @@ import {MapResolutionExtentOverlayComponent} from './map/map-info/map-resolution
 import {DownloadLayerComponent} from './download-layer/download-layer.component';
 import {BandwiseExpressionOperatorComponent} from './operators/dialogs/bandwise-expression-operator/bandwise-expression-operator.component';
 import {BandNeighborhoodAggregateComponent} from './operators/dialogs/band-neighborhood-aggregate/band-neighborhood-aggregate.component';
+import {LayerCollectionSelectionComponent} from './layer-collections/layer-collection-selection.component';
 import {CoreConfig} from './config.service';
 
 export const MATERIAL_MODULES = [
@@ -196,12 +189,10 @@ const CORE_PIPES = [
 const CORE_COMPONENTS = [
     AddDataComponent,
     AddWorkflowComponent,
-    AutocompleteSelectDirective,
     BackendStatusPageComponent,
     BoxPlotOperatorComponent,
     ChangeSpatialReferenceComponent,
     ClassHistogramOperatorComponent,
-    CodeEditorComponent,
     BandNeighborhoodAggregateComponent,
     BandwiseExpressionOperatorComponent,
     ColumnRangeFilterComponent,
@@ -222,11 +213,7 @@ const CORE_COMPONENTS = [
     IfGuestDirective,
     IfLoggedInDirective,
     InterpolationComponent,
-    LayerCollectionDropdownComponent,
-    LayerCollectionLayerComponent,
-    LayerCollectionLayerDetailsComponent,
-    LayerCollectionListComponent,
-    LayerCollectionNavigationComponent,
+    LayerCollectionSelectionComponent,
     LayerListComponent,
     LayerListElementComponent,
     LayerListMenuComponent,
@@ -319,7 +306,6 @@ const CORE_COMPONENTS = [
         CommonModule,
         DragDropModule,
         FormsModule,
-        NgxMatSelectSearchModule,
         PortalModule,
         ReactiveFormsModule,
         ScrollingModule,
