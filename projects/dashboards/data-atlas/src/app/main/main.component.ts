@@ -9,7 +9,6 @@ import {
     MapContainerComponent,
     DatasetService,
     SidenavContainerComponent,
-    LayerCollectionService,
     LayerCollectionListingDict,
     SymbologyEditorComponent,
 } from '@geoengine/core';
@@ -19,7 +18,7 @@ import moment from 'moment';
 import {DataSelectionService} from '../data-selection.service';
 import {AppDatasetService} from '../app-dataset.service';
 import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
-import {Layer, Time} from '@geoengine/common';
+import {Layer, LayersService, Time} from '@geoengine/common';
 
 interface LayerCollectionBiListing {
     name: string;
@@ -61,25 +60,19 @@ export class MainComponent implements OnInit, AfterViewInit {
         private iconRegistry: MatIconRegistry,
         private mapService: MapService,
         private sanitizer: DomSanitizer,
-        private readonly layerCollectionService: LayerCollectionService,
+        private readonly layersService: LayersService,
     ) {
         this.registerIcons();
 
         this.layersReverse$ = this.dataSelectionService.layers;
 
         forkJoin({
-            raster4d: this.layerCollectionService.getLayerCollectionItems(
-                this.config.DATA.RASTER4D.PROVIDER,
-                this.config.DATA.RASTER4D.COLLECTION,
-            ),
-            rasterOther: this.layerCollectionService.getLayerCollectionItems(
+            raster4d: this.layersService.getLayerCollectionItems(this.config.DATA.RASTER4D.PROVIDER, this.config.DATA.RASTER4D.COLLECTION),
+            rasterOther: this.layersService.getLayerCollectionItems(
                 this.config.DATA.RASTER_OTHER.PROVIDER,
                 this.config.DATA.RASTER_OTHER.COLLECTION,
             ),
-            vector: this.layerCollectionService.getLayerCollectionItems(
-                this.config.DATA.VECTOR.PROVIDER,
-                this.config.DATA.VECTOR.COLLECTION,
-            ),
+            vector: this.layersService.getLayerCollectionItems(this.config.DATA.VECTOR.PROVIDER, this.config.DATA.VECTOR.COLLECTION),
         }).subscribe(({raster4d, rasterOther, vector}) => {
             const collections = new Map<string, LayerCollectionBiListing>();
 

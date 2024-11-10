@@ -10,7 +10,6 @@ import {
     MapService,
     NotificationService,
     ProjectService,
-    RandomColorService,
     SidenavRef,
     SpatialReferenceService,
     UserService,
@@ -30,6 +29,7 @@ import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {AccordionEntryComponent} from './accordion-entry/accordion-entry.component';
 import {AccordionVectorEntryComponent} from './accordion-vector-entry/accordion-vector-entry.component';
 import {DataPointComponent} from './data-point/data-point.component';
+import {RandomColorService} from '@geoengine/common';
 import {CommonConfig} from '@geoengine/common';
 
 @NgModule({

@@ -60,8 +60,15 @@ import {MeasurementComponent} from './measurement/measurement.component';
 import {TimeInputComponent} from './time/time-input/time-input.component';
 import {TimeIntervalInputComponent} from './time/time-interval-input/time-interval-input.component';
 import {PercentileBreakpointSelectorComponent} from './colors/percentile-breakpoint-selector/percentile-breakpoint-selector.component';
+import {LayerCollectionNavigationComponent} from './layer-collections/layer-collection-navigation/layer-collection-navigation.component';
+import {LayerCollectionDropdownComponent} from './layer-collections/layer-collection-dropdown/layer-collection-dropdown.component';
+import {LayerCollectionLayerComponent} from './layer-collections/layer-collection-layer/layer-collection-layer.component';
+import {LayerCollectionLayerDetailsComponent} from './layer-collections/layer-collection-layer-details/layer-collection-layer-details.component';
+import {LayerCollectionListComponent} from './layer-collections/layer-collection-list/layer-collection-list.component';
+import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
+import {AutocompleteSelectDirective} from './util/directives/autocomplete-select.directive';
+import {CodeEditorComponent} from './util/components/code-editor.component';
 import {OgrDatasetComponent} from './datasets/ogr-dataset/ogr-dataset.component';
-import {CommonConfig} from './config.service';
 import {RasterMultibandSymbologyEditorComponent} from './symbology/raster-multiband-symbology-editor/raster-multiband-symbology-editor.component';
 
 export const MATERIAL_MODULES = [
@@ -97,6 +104,7 @@ export const MATERIAL_MODULES = [
 ];
 
 const COMMON_COMPONENTS = [
+    CodeEditorComponent,
     ColorAttributeInputComponent,
     ColorBreakpointInputComponent,
     ColorMapSelectorComponent,
@@ -116,8 +124,7 @@ const COMMON_COMPONENTS = [
     RasterSymbologyEditorComponent,
     TimeInputComponent,
     TimeIntervalInputComponent,
-    VectorSymbologyEditorComponent,
-    VegaViewerComponent,
+    PercentileBreakpointSelectorComponent,
 ];
 
 const COMMON_PIPES = [
@@ -157,6 +164,7 @@ const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGa
         ReactiveFormsModule,
         AngularCommonModule,
         ScrollingModule,
+        NgxMatSelectSearchModule,
         OgrDatasetComponent,
     ],
 })

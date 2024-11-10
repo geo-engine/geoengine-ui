@@ -1,13 +1,12 @@
-import {SearchType} from '@geoengine/openapi-client';
-import {LayerCollectionListingDict, ProviderLayerCollectionIdDict} from '../backend/backend.model';
+import {LayerCollectionListing, ProviderLayerCollectionId, SearchType} from '@geoengine/openapi-client';
 
 export interface LayerCollectionItemOrSearch {
     type: 'collection' | 'search';
-    id: ProviderLayerCollectionIdDict;
+    id: ProviderLayerCollectionId;
 }
 
 // TODO: use model from OpenAPI client
-export interface LayerCollectionItem extends LayerCollectionItemOrSearch, LayerCollectionListingDict {
+export interface LayerCollectionItem extends LayerCollectionItemOrSearch, LayerCollectionListing {
     type: 'collection';
 }
 

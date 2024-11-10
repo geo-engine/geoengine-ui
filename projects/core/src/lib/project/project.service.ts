@@ -1,4 +1,4 @@
-import {BehaviorSubject, combineLatest, firstValueFrom, Observable, Observer, of, ReplaySubject, Subject, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, firstValueFrom, Observable, Observer, of, ReplaySubject, Subject, Subscription, zip} from 'rxjs';
 import {debounceTime, distinctUntilChanged, filter, first, map, mergeMap, skip, switchMap, take, tap} from 'rxjs/operators';
 
 import {Injectable} from '@angular/core';
@@ -28,6 +28,7 @@ import {
     Layer,
     LayerData,
     LayerMetadata,
+    LayersService,
     LineSimplificationDict,
     LineSymbology,
     Plot,
@@ -51,7 +52,10 @@ import {
     VisualPointClusteringParams,
 } from '@geoengine/common';
 import {
+    CollectionItem,
+    LayerListing,
     ProjectLayer as ProjectLayerDict,
+    ProviderLayerId,
     TypedOperatorOperator,
     TypedResultDescriptor,
     Workflow as WorkflowDict,
@@ -99,6 +103,7 @@ export class ProjectService {
         protected backend: BackendService,
         protected userService: UserService,
         protected spatialReferenceService: SpatialReferenceService,
+        protected layersService: LayersService,
     ) {
         // set the starting project upon login
         this.userService
@@ -1591,5 +1596,26 @@ export class ProjectService {
                 next: (data) => data$.next(data),
                 error: (error) => error, // ignore error
             });
+    }
+
+    /**
+     * Add all layers (directly) contained in a layer collection to the current project.
+     */
+    addCollectionLayersToProject(collectionItems: Array<CollectionItem>): Observable<void> {
+        const layersObservable = collectionItems
+            .filter((layer) => layer.type === 'layer')
+            .map((layer) => layer as LayerListing)
+            .map((layer) => this.layersService.resolveLayer(layer.id));
+
+        // TODO: lookup in parallel
+        return subscribeAndProvide(zip(layersObservable).pipe(mergeMap((layers) => this.addLayers(layers))));
+    }
+
+    /**
+     * Add a layer to the current project.
+     */
+    async addLayerbyId(layerId: ProviderLayerId): Promise<void> {
+        const layer = await this.layersService.resolveLayer(layerId);
+        this.addLayer(layer);
     }
 }

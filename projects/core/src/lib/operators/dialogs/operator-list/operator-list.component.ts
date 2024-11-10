@@ -4,7 +4,6 @@ import {map} from 'rxjs/operators';
 import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges, Type} from '@angular/core';
 import {LayoutService} from '../../../layout.service';
 import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
-import {createIconDataUrl} from '../../../util/icons';
 import {HistogramOperatorComponent} from '../histogram-operator/histogram-operator.component';
 import {BoxPlotOperatorComponent} from '../boxplot-operator/boxplot-operator.component';
 // eslint-disable-next-line max-len
@@ -29,6 +28,7 @@ import {RasterStackerComponent} from '../raster-stacker/raster-stacker.component
 import {VectorExpressionComponent} from '../vector-expression/vector-expression.component';
 import {BandwiseExpressionOperatorComponent} from '../bandwise-expression-operator/bandwise-expression-operator.component';
 import {BandNeighborhoodAggregateComponent} from '../band-neighborhood-aggregate/band-neighborhood-aggregate.component';
+import {createIconDataUrl} from '@geoengine/common';
 
 /**
  * This type encapsulates…

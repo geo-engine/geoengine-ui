@@ -3,7 +3,7 @@ import {provideRouter} from '@angular/router';
 import {provideAnimations} from '@angular/platform-browser/animations';
 
 import {routes} from './app.routes';
-import {CommonConfig} from '@geoengine/common';
+import {RandomColorService} from '@geoengine/common';
 import {
     BackendService,
     CoreConfig,
@@ -11,7 +11,6 @@ import {
     MapService,
     NotificationService,
     ProjectService,
-    RandomColorService,
     SidenavRef,
     SpatialReferenceService,
     UserService,

@@ -9,7 +9,6 @@ import {
     MapService,
     NotificationService,
     ProjectService,
-    RandomColorService,
     SidenavRef,
     SpatialReferenceService,
     TabsService,
@@ -22,6 +21,7 @@ import {LoginComponent} from './login/login.component';
 import {MainComponent} from './main/main.component';
 import {AppRoutingModule} from './app-routing.module';
 import {RegisterComponent} from './register/register.component';
+import {RandomColorService} from '@geoengine/common';
 import {CommonConfig} from '@geoengine/common';
 
 @NgModule({

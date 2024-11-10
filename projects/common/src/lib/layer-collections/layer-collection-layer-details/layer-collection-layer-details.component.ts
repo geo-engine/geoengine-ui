@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
-import {LayerCollectionService} from '../layer-collection.service';
-import {Colorizer, LayerMetadata, RasterLayerMetadata, VectorDataTypes, VectorLayerMetadata} from '@geoengine/common';
+import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metadata.model';
+import {VectorDataTypes} from '../../operators/datatype.model';
+import {Colorizer} from '../../colors/colorizer.model';
 
 @Component({
     selector: 'geoengine-layer-collection-layer-details',
@@ -25,10 +26,7 @@ export class LayerCollectionLayerDetailsComponent {
         noDataColor: [0, 0, 0, 0],
     });
 
-    constructor(
-        private layerService: LayerCollectionService,
-        private changeDetectorRef: ChangeDetectorRef,
-    ) {}
+    constructor() {}
 
     get rasterLayerMetadata(): RasterLayerMetadata | undefined {
         if (this.layerMetadata && this.layerMetadata.layerType === 'raster') {
