@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChange} from '@angular/core';
 import {Color, TRANSPARENT} from '../../colors/color';
-import {Colorizer, LinearGradient, RgbaColorizer} from '../../colors/colorizer.model';
+import {Colorizer, LinearGradient} from '../../colors/colorizer.model';
 import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
 
 /**
@@ -84,9 +84,10 @@ export class RasterIconComponent implements OnInit, OnChanges {
     private cellColor(x: number, y: number): Color {
         let colorizer = this.colorizer;
 
-        if (this.colorizer instanceof RgbaColorizer) {
-            colorizer = RasterIconComponent.RAINBOW_COLORIZER;
-        }
+        // TODO: multiband
+        // if (this.colorizer instanceof RgbaColorizer) {
+        //     colorizer = RasterIconComponent.RAINBOW_COLORIZER;
+        // }
 
         const validSymbology = colorizer && colorizer.getNumberOfColors() > 0;
         if (!validSymbology) {

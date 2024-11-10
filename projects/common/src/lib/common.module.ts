@@ -62,6 +62,7 @@ import {TimeIntervalInputComponent} from './time/time-interval-input/time-interv
 import {PercentileBreakpointSelectorComponent} from './colors/percentile-breakpoint-selector/percentile-breakpoint-selector.component';
 import {OgrDatasetComponent} from './datasets/ogr-dataset/ogr-dataset.component';
 import {CommonConfig} from './config.service';
+import {RasterMultibandSymbologyEditorComponent} from './symbology/raster-multiband-symbology-editor/raster-multiband-symbology-editor.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -99,23 +100,24 @@ const COMMON_COMPONENTS = [
     ColorAttributeInputComponent,
     ColorBreakpointInputComponent,
     ColorMapSelectorComponent,
-    ColorTableEditorComponent,
     ColorParamEditorComponent,
+    ColorTableEditorComponent,
     ConfirmationComponent,
+    LineIconComponent,
     MeasurementComponent,
+    NumberParamEditorComponent,
+    PercentileBreakpointSelectorComponent,
+    PointIconComponent,
+    PolygonIconComponent,
     RasterGradientSymbologyEditorComponent,
+    RasterIconComponent,
+    RasterMultibandSymbologyEditorComponent,
     RasterPaletteSymbologyEditorComponent,
     RasterSymbologyEditorComponent,
-    VectorSymbologyEditorComponent,
-    NumberParamEditorComponent,
-    PointIconComponent,
-    LineIconComponent,
-    PolygonIconComponent,
-    RasterIconComponent,
-    VegaViewerComponent,
     TimeInputComponent,
     TimeIntervalInputComponent,
-    PercentileBreakpointSelectorComponent,
+    VectorSymbologyEditorComponent,
+    VegaViewerComponent,
 ];
 
 const COMMON_PIPES = [
@@ -123,12 +125,12 @@ const COMMON_PIPES = [
     AsyncStringSanitizer,
     AsyncValueDefault,
     BreakpointToCssStringPipe,
+    BreakpointToCssStringPipe,
     ColorBreakpointsCssGradientPipe,
+    ColorizerCssGradientPipe,
     ColorizerCssGradientPipe,
     RasterColorizerCssGradientPipe,
     RgbaArrayCssGradientPipe,
-    BreakpointToCssStringPipe,
-    ColorizerCssGradientPipe,
 ];
 
 const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGapDirective, FxLayoutAlignDirective];

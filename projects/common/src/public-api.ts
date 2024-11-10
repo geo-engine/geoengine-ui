@@ -19,22 +19,23 @@ export * from './lib/colors/color-breakpoint-input/color-breakpoint-input.compon
 export * from './lib/colors/color-map-selector/color-map-selector.component';
 export * from './lib/colors/color-table-editor/color-table-editor.component';
 export * from './lib/colors/percentile-breakpoint-selector/percentile-breakpoint-selector.component';
+export * from './lib/datasets/ogr-dataset/ogr-dataset.component';
 export * from './lib/dialogs/confirmation/confirmation.component';
 export * from './lib/layer-icons/line-icon/line-icon.component';
 export * from './lib/layer-icons/point-icon/point-icon.component';
 export * from './lib/layer-icons/polygon-icon/polygon-icon.component';
 export * from './lib/layer-icons/raster-icon/raster-icon.component';
 export * from './lib/measurement/measurement.component';
-export * from './lib/datasets/ogr-dataset/ogr-dataset.component';
+export * from './lib/plots/vega-viewer/vega-viewer.component';
 export * from './lib/symbology/color-param-editor/color-param-editor.component';
 export * from './lib/symbology/number-param-editor/number-param-editor.component';
 export * from './lib/symbology/raster-gradient-symbology-editor/raster-gradient-symbology-editor.component';
+export * from './lib/symbology/raster-multiband-symbology-editor/raster-multiband-symbology-editor.component';
 export * from './lib/symbology/raster-palette-symbology-editor/raster-palette-symbology-editor.component';
 export * from './lib/symbology/raster-symbology-editor/raster-symbology-editor.component';
 export * from './lib/symbology/vector-symbology-editor/vector-symbology-editor.component';
-export * from './lib/time/time-interval-input/time-interval-input.component';
 export * from './lib/time/time-input/time-input.component';
-export * from './lib/plots/vega-viewer/vega-viewer.component';
+export * from './lib/time/time-interval-input/time-interval-input.component';
 
 // Models
 export * from './lib/colors/color-breakpoint.model';

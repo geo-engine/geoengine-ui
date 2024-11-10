@@ -139,7 +139,6 @@ import {UserSessionComponent} from './users/user-session/user-session.component'
 import {QuotaInfoComponent} from './users/quota/quota-info/quota-info.component';
 import {LineSimplificationComponent} from './operators/dialogs/line-simplification/line-simplification.component';
 import {TaskListComponent} from './tasks/task-list/task-list.component';
-import {RgbaCompositeComponent} from './operators/dialogs/rgb-composite/rgb-composite.component';
 import {RolesComponent} from './users/roles/roles.component';
 import {VectorExpressionComponent} from './operators/dialogs/vector-expression/vector-expression.component';
 import {CommonConfig, CommonModule} from '@geoengine/common';
@@ -270,7 +269,6 @@ const CORE_COMPONENTS = [
     RasterTypeConversionComponent,
     RasterVectorJoinComponent,
     RenameLayerComponent,
-    RgbaCompositeComponent,
     RolesComponent,
     SaveProjectAsComponent,
     ScatterplotOperatorComponent,

@@ -8,7 +8,6 @@ import {
     LayerCollectionItemDict,
     LayerCollectionLayerDict,
     ProviderLayerIdDict,
-    RasterSymbologyDict,
     UUID,
     VectorResultDescriptorDict,
 } from '../backend/backend.model';
@@ -187,7 +186,7 @@ export class LayerCollectionService {
                         isVisible: true,
                         isLegendVisible: false,
                         symbology: layer.symbology
-                            ? RasterSymbology.fromRasterSymbologyDict(layer.symbology as RasterSymbologyDict)
+                            ? (layer.symbology as unknown as RasterSymbology)
                             : RasterSymbology.fromRasterSymbologyDict({
                                   type: 'raster',
                                   opacity: 1.0,
