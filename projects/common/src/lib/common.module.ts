@@ -104,6 +104,7 @@ export const MATERIAL_MODULES = [
 ];
 
 const COMMON_COMPONENTS = [
+    AutocompleteSelectDirective,
     CodeEditorComponent,
     ColorAttributeInputComponent,
     ColorBreakpointInputComponent,
@@ -111,9 +112,16 @@ const COMMON_COMPONENTS = [
     ColorParamEditorComponent,
     ColorTableEditorComponent,
     ConfirmationComponent,
+    LayerCollectionDropdownComponent,
+    LayerCollectionLayerComponent,
+    LayerCollectionLayerDetailsComponent,
+    LayerCollectionListComponent,
+    LayerCollectionNavigationComponent,
+    LineIconComponent,
     LineIconComponent,
     MeasurementComponent,
     NumberParamEditorComponent,
+    PercentileBreakpointSelectorComponent,
     PercentileBreakpointSelectorComponent,
     PointIconComponent,
     PolygonIconComponent,
@@ -124,7 +132,8 @@ const COMMON_COMPONENTS = [
     RasterSymbologyEditorComponent,
     TimeInputComponent,
     TimeIntervalInputComponent,
-    PercentileBreakpointSelectorComponent,
+    VectorSymbologyEditorComponent,
+    VegaViewerComponent,
 ];
 
 const COMMON_PIPES = [

@@ -1,6 +1,6 @@
 {
     "/api/**": {
-        "target": "https://zentrale.app.geoengine.io/",
+        "target": "https://nightly.peter.geoengine.io/",
         "changeOrigin": true,
         "secure": false,
         "logLevel": "debug"
