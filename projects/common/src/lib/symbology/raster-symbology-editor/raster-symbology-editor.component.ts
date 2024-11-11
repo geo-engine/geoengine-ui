@@ -1,14 +1,6 @@
 import {
     Component,
-    Input,
     ChangeDetectionStrategy,
-    OnInit,
-    OnDestroy,
-    OnChanges,
-    SimpleChanges,
-    ChangeDetectorRef,
-    Output,
-    EventEmitter,
     input,
     output,
     computed,
@@ -16,7 +8,6 @@ import {
     effect,
     untracked,
     inject,
-    Signal,
     WritableSignal,
 } from '@angular/core';
 import {
@@ -29,13 +20,8 @@ import {
 import {Colorizer, ColorizerType, LinearGradient, LogarithmicGradient, PaletteColorizer} from '../../colors/colorizer.model';
 import {BLACK, Color, TRANSPARENT, WHITE} from '../../colors/color';
 import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
-import {BehaviorSubject, Subscription, map} from 'rxjs';
-import {
-    BoundingBox2D,
-    RasterBandDescriptor,
-    TypedRasterResultDescriptor as RasterResultDescriptorDict,
-    SpatialResolution,
-} from '@geoengine/openapi-client';
+import {BehaviorSubject} from 'rxjs';
+import {RasterBandDescriptor, TypedRasterResultDescriptor as RasterResultDescriptorDict} from '@geoengine/openapi-client';
 import {WorkflowsService} from '../../workflows/workflows.service';
 
 type RasterSymbologyType = 'singleBand' | 'multiBand';
@@ -273,16 +259,38 @@ export class RasterSymbologyEditorComponent {
         this.changedSymbology.emit(this.symbology());
     }
 
-    private setUp() {
-        this.symbology.set(this.symbologyWorkflow().symbology.clone());
-        const bandIndex = (this.symbology().rasterColorizer as SingleBandRasterColorizer).band;
-        this.workflowsService.getMetadata(this.symbologyWorkflow().workflowId).then((resultDescriptor) => {
-            if (resultDescriptor.type === 'raster') {
-                const rd = resultDescriptor as RasterResultDescriptorDict;
-                this.bands.set(rd.bands);
-                this.selectedBand.set(rd.bands[bandIndex]);
-            }
-        });
+    protected async setUp() {
+        const symbologyWorkflow = this.symbologyWorkflow();
+        const symbology = symbologyWorkflow.symbology.clone();
+
+        // TODO: loading indicator
+        const _resultDescriptor = await this.workflowsService.getMetadata(symbologyWorkflow.workflowId);
+
+        if (_resultDescriptor.type !== 'raster') {
+            throw Error('expected raster result descriptor');
+        }
+
+        const resultDescriptor = _resultDescriptor as RasterResultDescriptorDict;
+
+        let selectedBand = undefined;
+        let selectedBand2 = undefined;
+        let selectedBand3 = undefined;
+        if (symbology.rasterColorizer instanceof SingleBandRasterColorizer) {
+            selectedBand = resultDescriptor.bands[symbology.rasterColorizer.band];
+            // just select some bands
+            selectedBand2 = resultDescriptor.bands[(symbology.rasterColorizer.band + 1) % resultDescriptor.bands.length];
+            selectedBand3 = resultDescriptor.bands[(symbology.rasterColorizer.band + 2) % resultDescriptor.bands.length];
+        } else if (symbology.rasterColorizer instanceof MultiBandRasterColorizer) {
+            selectedBand = resultDescriptor.bands[symbology.rasterColorizer.redBand];
+            selectedBand2 = resultDescriptor.bands[symbology.rasterColorizer.greenBand];
+            selectedBand3 = resultDescriptor.bands[symbology.rasterColorizer.blueBand];
+        }
+
+        this.symbology.set(symbology);
+        this.bands.set(resultDescriptor.bands);
+        this.selectedBand.set(selectedBand);
+        this.selectedBand2.set(selectedBand2);
+        this.selectedBand3.set(selectedBand3);
     }
 
     updateRasterSymbologyType($event: any): void {

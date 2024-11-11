@@ -852,6 +852,35 @@ export class MultiBandRasterColorizer extends RasterColorizer {
         );
     }
 
+    withParams(
+        redMin: number,
+        redMax: number,
+        redScale: number,
+        greenMin: number,
+        greenMax: number,
+        greenScale: number,
+        blueMin: number,
+        blueMax: number,
+        blueScale: number,
+        noDataColor: Color,
+    ): MultiBandRasterColorizer {
+        return new MultiBandRasterColorizer(
+            this.redBand,
+            this.greenBand,
+            this.blueBand,
+            redMin,
+            redMax,
+            redScale,
+            greenMin,
+            greenMax,
+            greenScale,
+            blueMin,
+            blueMax,
+            blueScale,
+            noDataColor,
+        );
+    }
+
     override toDict(): MultiBandRasterColorizerDict {
         return {
             type: 'multiBand',

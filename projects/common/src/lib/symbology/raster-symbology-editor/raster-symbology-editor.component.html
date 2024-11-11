@@ -83,7 +83,18 @@
             (colorizerChange)="updateMultiBandColorizer($event)"
             [queryParams]="queryParams()"
             [workflowId]="symbologyWorkflow().workflowId"
-            [band]="selectedBand()?.name | valueDefault: 'band'"
+            [band1]="{
+                name: getSelectedBand(0)()?.name | valueDefault: '',
+                index: getSelectedBandIndex(0),
+            }"
+            [band2]="{
+                name: getSelectedBand(1)()?.name | valueDefault: '',
+                index: getSelectedBandIndex(1),
+            }"
+            [band3]="{
+                name: getSelectedBand(2)()?.name | valueDefault: '',
+                index: getSelectedBandIndex(2),
+            }"
         ></geoengine-raster-multiband-symbology-editor>
     </div>
 </div>
