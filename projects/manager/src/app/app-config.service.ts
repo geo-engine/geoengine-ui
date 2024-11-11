@@ -38,6 +38,7 @@ interface Homepage {
 }
 
 const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_COMMON_CONFIG, {
+    AUTO_GUEST_LOGIN: false,
     BRANDING: {
         LOGO_URL: 'assets/geoengine.svg',
         LOGO_ICON_URL: 'assets/geoengine-favicon-white.svg',

@@ -10,7 +10,6 @@ import {NotificationService} from '../notification.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {BackendService} from '../backend/backend.service';
 import {BBoxDict, PlotDict, ProvenanceEntryDict, ToDict, UUID} from '../backend/backend.model';
-import {UserService} from '../users/user.service';
 import {Extent, MapService, ViewportSize} from '../map/map.service';
 import {Session} from '../users/session.model';
 import OlFeature from 'ol/Feature';
@@ -45,6 +44,7 @@ import {
     Time,
     TimeStepDuration,
     timeStepDurationToTimeStepDict,
+    UserService,
     VectorColumnDataTypes,
     VectorData,
     VectorLayer,

@@ -10,6 +10,7 @@ export interface CommonConfigStructure {
     readonly API_URL: string;
     readonly DELAYS: Delays;
     readonly PLOTS: Plots;
+    readonly AUTO_GUEST_LOGIN: boolean;
 }
 
 /**
@@ -31,6 +32,7 @@ export const DEFAULT_COMMON_CONFIG: CommonConfigStructure = {
     PLOTS: {
         THEME: 'excel',
     },
+    AUTO_GUEST_LOGIN: true,
 };
 
 @Injectable()

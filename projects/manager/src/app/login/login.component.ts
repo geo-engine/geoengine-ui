@@ -3,6 +3,7 @@ import {Router} from '@angular/router';
 import {AppConfig} from '../app-config.service';
 import {UserService, errorToText} from '@geoengine/common';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {firstValueFrom} from 'rxjs';
 
 @Component({
     selector: 'geoengine-manager-login',
@@ -22,7 +23,7 @@ export class LoginComponent {
 
     async login(): Promise<void> {
         try {
-            await this.userService.login({email: this.email, password: this.password});
+            await firstValueFrom(this.userService.login({email: this.email, password: this.password}));
             this.router.navigate(['navigation']);
         } catch (error) {
             const errorMessage = await errorToText(error, 'Login failed.');

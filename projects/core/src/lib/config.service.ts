@@ -139,6 +139,7 @@ export const DEFAULT_CORE_CONFIG: CoreConfigStructure = {
             PASSWORD: 'guest',
         },
     },
+    AUTO_GUEST_LOGIN: true,
     WCS: {
         SERVICE: 'WCS',
         VERSION: '2.0.1',

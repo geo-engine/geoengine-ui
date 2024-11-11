@@ -4,11 +4,10 @@ import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, On
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
 import {CoreConfig} from '../../config.service';
-import {UserService} from '../user.service';
 import {User} from '../user.model';
 import {NotificationService} from '../../notification.service';
 import {first} from 'rxjs/operators';
-import {geoengineValidators} from '@geoengine/common';
+import {geoengineValidators, UserService} from '@geoengine/common';
 
 enum FormStatus {
     LoggedOut,

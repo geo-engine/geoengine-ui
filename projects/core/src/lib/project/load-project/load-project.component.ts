@@ -5,8 +5,8 @@ import {ProjectService} from '../project.service';
 import {UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl, ValidatorFn, ValidationErrors} from '@angular/forms';
 import {NotificationService} from '../../notification.service';
 import {BackendService} from '../../backend/backend.service';
-import {UserService} from '../../users/user.service';
 import {UUID} from '../../backend/backend.model';
+import {UserService} from '@geoengine/common';
 
 const notCurrentProject =
     (currentProjectId: () => string): ValidatorFn =>

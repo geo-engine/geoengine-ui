@@ -1,9 +1,9 @@
 import {Component, OnDestroy} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {Session} from '../session.model';
-import {UserService} from '../user.service';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {NotificationService} from '../../notification.service';
+import {UserService} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-user-session',

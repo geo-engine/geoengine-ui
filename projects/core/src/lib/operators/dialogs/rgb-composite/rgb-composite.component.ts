@@ -7,7 +7,6 @@ import {BBoxDict, RasterResultDescriptorDict, SrsString, TimeIntervalDict, UUID}
 import {LayoutService, SidenavConfig} from '../../../layout.service';
 import {NotificationService} from '../../../notification.service';
 import {BackendService} from '../../../backend/backend.service';
-import {UserService} from '../../../users/user.service';
 import {SpatialReferenceService} from '../../../spatial-references/spatial-reference.service';
 import {
     Layer,
@@ -19,6 +18,7 @@ import {
     RgbaColorizer,
     SingleBandRasterColorizer,
     StatisticsDict,
+    UserService,
     extentToBboxDict,
     geoengineValidators,
 } from '@geoengine/common';

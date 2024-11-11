@@ -7,8 +7,7 @@ import {mergeMap} from 'rxjs/operators';
 import {AddDatasetDict, UUID} from '../../backend/backend.model';
 import {NotificationService} from '../../notification.service';
 import {ProjectService} from '../../project/project.service';
-import {UserService} from '../../users/user.service';
-import {DatasetsService, OgrDatasetComponent, UploadsService, timeStepGranularityOptions} from '@geoengine/common';
+import {DatasetsService, OgrDatasetComponent, UploadsService, UserService, timeStepGranularityOptions} from '@geoengine/common';
 import {DatasetService} from '../dataset.service';
 import {DatasetDefinition, MetaDataDefinition, MetaDataSuggestion, TimeGranularity} from '@geoengine/openapi-client';
 

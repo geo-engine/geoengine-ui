@@ -16,7 +16,6 @@ export * from './lib/project/project.service';
 export * from './lib/sidenav/sidenav-ref.service';
 export * from './lib/spatial-references/spatial-reference.service';
 export * from './lib/tabs/tabs.service';
-export * from './lib/users/user.service';
 
 // Components
 export * from './lib/datasets/add-data/add-data.component';

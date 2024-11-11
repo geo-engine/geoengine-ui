@@ -63,6 +63,7 @@ export * from './lib/plots/plot.model';
 export * from './lib/spatial-references/spatial-reference.model';
 export * from './lib/symbology/symbology.model';
 export * from './lib/time/time.model';
+export * from './lib/user/user.model';
 
 // Pipes
 export * from './lib/util/pipes/async-converters.pipe';

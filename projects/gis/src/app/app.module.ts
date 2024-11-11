@@ -12,7 +12,6 @@ import {
     SidenavRef,
     SpatialReferenceService,
     TabsService,
-    UserService,
     CoreModule,
     CoreConfig,
 } from '@geoengine/core';
@@ -21,7 +20,7 @@ import {LoginComponent} from './login/login.component';
 import {MainComponent} from './main/main.component';
 import {AppRoutingModule} from './app-routing.module';
 import {RegisterComponent} from './register/register.component';
-import {RandomColorService} from '@geoengine/common';
+import {RandomColorService, UserService} from '@geoengine/common';
 import {CommonConfig} from '@geoengine/common';
 
 @NgModule({

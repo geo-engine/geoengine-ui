@@ -6,7 +6,6 @@ import {map, mergeMap} from 'rxjs/operators';
 import {UUID} from '../../../backend/backend.model';
 import {MapService} from '../../../map/map.service';
 import {BackendService} from '../../../backend/backend.service';
-import {UserService} from '../../../users/user.service';
 
 import {
     ColumnRangeFilterDict,
@@ -15,6 +14,7 @@ import {
     Layer,
     RandomColorService,
     ResultTypes,
+    UserService,
     VectorColumnDataType,
     VectorColumnDataTypes,
     VectorDataType,

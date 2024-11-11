@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BackendService} from '../backend/backend.service';
 import {Observable} from 'rxjs';
-import {UserService} from '../users/user.service';
 import {map, mergeMap} from 'rxjs/operators';
 import {HttpEvent} from '@angular/common/http';
 import {
@@ -23,6 +22,7 @@ import {
     RandomColorService,
     RasterLayer,
     RasterSymbology,
+    UserService,
     VectorDataTypes,
     VectorLayer,
     VectorResultDescriptor,
