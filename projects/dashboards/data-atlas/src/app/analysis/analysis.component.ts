@@ -1,5 +1,5 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
-import {BackendService, BBoxDict, ProjectService, UserService, SourceOperatorDict, RasterResultDescriptorDict} from '@geoengine/core';
+import {BackendService, BBoxDict, ProjectService, SourceOperatorDict, RasterResultDescriptorDict} from '@geoengine/core';
 import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {DataSelectionService} from '../data-selection.service';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
@@ -13,6 +13,7 @@ import {
     RasterLayer,
     RasterStackerDict,
     ReprojectionDict,
+    UserService,
     VectorLayer,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';

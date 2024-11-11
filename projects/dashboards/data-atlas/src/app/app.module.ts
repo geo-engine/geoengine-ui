@@ -12,7 +12,6 @@ import {
     ProjectService,
     SidenavRef,
     SpatialReferenceService,
-    UserService,
     CoreModule,
     CoreConfig,
 } from '@geoengine/core';
@@ -29,7 +28,7 @@ import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {AccordionEntryComponent} from './accordion-entry/accordion-entry.component';
 import {AccordionVectorEntryComponent} from './accordion-vector-entry/accordion-vector-entry.component';
 import {DataPointComponent} from './data-point/data-point.component';
-import {RandomColorService} from '@geoengine/common';
+import {RandomColorService, UserService} from '@geoengine/common';
 import {CommonConfig} from '@geoengine/common';
 
 @NgModule({

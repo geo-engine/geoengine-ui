@@ -10,7 +10,6 @@ import {
     ProjectService,
     SidenavRef,
     SpatialReferenceService,
-    UserService,
     CoreModule,
     CoreConfig,
 } from '@geoengine/core';
@@ -25,7 +24,7 @@ import {LoginComponent} from './login/login.component';
 import {AppRoutingModule} from './app-routing.module';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {FormsModule} from '@angular/forms';
-import {RandomColorService} from '@geoengine/common';
+import {RandomColorService, UserService} from '@geoengine/common';
 import {CommonConfig} from '@geoengine/common';
 
 @NgModule({

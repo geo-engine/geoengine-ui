@@ -35,7 +35,6 @@ import {
     SidenavContainerComponent,
     SpatialReferenceService,
     TimeConfigComponent,
-    UserService,
     WorkspaceSettingsComponent,
 } from '@geoengine/core';
 import {DomSanitizer} from '@angular/platform-browser';
@@ -44,7 +43,7 @@ import {AppConfig} from './app-config.service';
 import {HelpComponent} from './help/help.component';
 import {SplashDialogComponent} from './splash-dialog/splash-dialog.component';
 import {GfBioCollectionDialogComponent as GfBioCollectionDialogComponent} from './gfbio-collection/gfbio-collection-dialog.component';
-import {Layer, LayersService, RandomColorService} from '@geoengine/common';
+import {Layer, LayersService, RandomColorService, UserService} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-root',

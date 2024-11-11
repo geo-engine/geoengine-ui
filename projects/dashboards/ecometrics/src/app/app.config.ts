@@ -3,7 +3,7 @@ import {provideRouter} from '@angular/router';
 import {provideAnimations} from '@angular/platform-browser/animations';
 
 import {routes} from './app.routes';
-import {RandomColorService} from '@geoengine/common';
+import {RandomColorService, UserService} from '@geoengine/common';
 import {
     BackendService,
     CoreConfig,
@@ -13,7 +13,6 @@ import {
     ProjectService,
     SidenavRef,
     SpatialReferenceService,
-    UserService,
 } from '@geoengine/core';
 import {DataSelectionService} from 'projects/dashboards/data-atlas/src/app/data-selection.service';
 import {provideHttpClient} from '@angular/common/http';

@@ -29,7 +29,6 @@ import {
     NotificationService,
     ProjectService,
     UploadResponseDict,
-    UserService,
     WGS_84,
 } from '@geoengine/core';
 import {
@@ -47,6 +46,7 @@ import {
     SingleBandRasterColorizer,
     Time,
     TRANSPARENT,
+    UserService,
     VectorLayer,
 } from '@geoengine/common';
 import {utc} from 'moment';

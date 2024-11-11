@@ -2,7 +2,6 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Injec
 import {HttpClient} from '@angular/common/http';
 import {
     ProjectService,
-    UserService,
     BackendService,
     LayoutService,
     ProviderLayerIdDict,
@@ -35,6 +34,7 @@ import {
     RasterSymbology,
     SourceOperatorDict,
     Time,
+    UserService,
     extentToBboxDict,
 } from '@geoengine/common';
 import {LayerListing} from '@geoengine/openapi-client';
