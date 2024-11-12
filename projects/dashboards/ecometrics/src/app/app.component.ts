@@ -5,7 +5,7 @@ import {CoreConfig, CoreModule} from '@geoengine/core';
 import {DataSelectionService} from './data-selection.service';
 
 @Component({
-    selector: 'app-root',
+    selector: 'geoengine-root',
     standalone: true,
     imports: [RouterOutlet, CoreModule, DashboardComponent],
     providers: [DataSelectionService],

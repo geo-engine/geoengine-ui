@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges, ChangeDetectorRef, input, signal} from '@angular/core';
+import {Component, ChangeDetectionStrategy, input, signal} from '@angular/core';
 import {RasterLayer} from '@geoengine/common';
 import {CoreModule} from '@geoengine/core';
 

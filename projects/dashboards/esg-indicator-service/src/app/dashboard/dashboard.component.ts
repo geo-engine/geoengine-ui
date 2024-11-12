@@ -7,7 +7,6 @@ import {
     inject,
     signal,
     viewChild,
-    ViewChild,
     WritableSignal,
 } from '@angular/core';
 import {Breakpoints, BreakpointObserver} from '@angular/cdk/layout';
@@ -17,7 +16,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
-import {BehaviorSubject, firstValueFrom, lastValueFrom, Observable} from 'rxjs';
+import {firstValueFrom, lastValueFrom} from 'rxjs';
 import {
     AutoCreateDatasetDict,
     BackendService,
@@ -38,7 +37,6 @@ import {
     ColorMapSelectorComponent,
     extentToBboxDict,
     HistogramDict,
-    Layer,
     LinearGradient,
     PaletteColorizer,
     PolygonSymbology,
@@ -70,7 +68,7 @@ interface Indicator {
 }
 
 @Component({
-    selector: 'app-dashboard',
+    selector: 'geoengine-dashboard',
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.scss',
     standalone: true,
@@ -96,6 +94,7 @@ export class DashboardComponent implements AfterViewInit {
     plotWidthPx = signal(100);
     plotHeightPx = signal(100);
     layersReverse = toSignal(this.dataSelectionService.layers);
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     plotData = signal<any>(undefined);
     plotLoading = signal(false);
 
