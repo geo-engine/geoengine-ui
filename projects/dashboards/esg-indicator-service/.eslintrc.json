@@ -1,0 +1,21 @@
+{
+    "extends": "../../../.eslintrc.json",
+    "ignorePatterns": ["!**/*"],
+    "overrides": [
+        {
+            "files": ["*.ts"],
+            "parserOptions": {
+                "project": [
+                    "projects/dashboards/esg-indicator-service/tsconfig.app.json",
+                    "projects/dashboards/esg-indicator-service/tsconfig.spec.json"
+                ],
+                "createDefaultProgram": true
+            },
+            "rules": {}
+        },
+        {
+            "files": ["*.html"],
+            "rules": {}
+        }
+    ]
+}
