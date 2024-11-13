@@ -10,15 +10,16 @@
             <mat-card-title> Welcome </mat-card-title>
         </mat-card-header>
         <mat-card-content class="dashboard-card-content">
-            <p>Welcome to the Environmental Indicators Dashboard!</p>
+            <p>Welcome to the ESG Indicator Service!</p>
             <p>
-                Here, you can analyze specific areas of interest by selecting an indicator and drawing the area directly on the map. To get
-                started, please select an indicator. Then, simply draw your area of interest on the map and start the analysis.
+                Here, you can compute ESG indicators for your properties. To get started, please select a property on the map and a date on
+                the time slider.
             </p>
+            <button mat-raised-button color="primary" (click)="loadProperties()">Load</button>
         </mat-card-content>
     </mat-card>
 
-    <mat-card class="dashboard-card">
+    <!-- <mat-card class="dashboard-card">
         <mat-card-header>
             <mat-card-title> Select Indicator </mat-card-title>
         </mat-card-header>
@@ -33,11 +34,11 @@
                 </mat-select>
             </mat-form-field>
         </mat-card-content>
-    </mat-card>
+    </mat-card> -->
 
     <mat-card class="dashboard-card inspect">
         <mat-card-header>
-            <mat-card-title> Inspect Indicator </mat-card-title>
+            <mat-card-title> Select Property </mat-card-title>
         </mat-card-header>
         <mat-card-content class="dashboard-card-content">
             <div class="map-container">
@@ -78,30 +79,20 @@
 
     <mat-card class="dashboard-card">
         <mat-card-header>
-            <mat-card-title> Select </mat-card-title>
+            <mat-card-title> Select Time </mat-card-title>
         </mat-card-header>
         <mat-card-content class="dashboard-card-content">
-            <!-- two button for draw and reset -->
-            <div>
-                <button mat-raised-button color="accent" (click)="selectBox()" [disabled]="isSelectingBox()">
-                    Select region on the map
-                </button>
-                <button mat-raised-button (click)="reset()">Reset</button>
-            </div>
-
             <!-- time selector -->
             <geoengine-time-step-selector [timeSteps]="timeSteps" timeFormat="YYYY-MM"></geoengine-time-step-selector>
 
             <!-- analyze button -->
-            <button mat-raised-button color="primary" (click)="analyze()" [disabled]="!selectedIndicator() || !selectedBBox()">
-                Analyze
-            </button>
+            <button mat-raised-button color="primary" (click)="analyze()" [disabled]="!selectedFeature()">Analyze</button>
         </mat-card-content>
     </mat-card>
 
     <mat-card class="dashboard-card analyze">
         <mat-card-header>
-            <mat-card-title> Analyze </mat-card-title>
+            <mat-card-title> Score </mat-card-title>
         </mat-card-header>
         <mat-card-content #analyzecard class="dashboard-card-content">
             <!-- vega component -->
@@ -115,7 +106,7 @@
                     </p>
                 </div>
             } @else {
-                <p class="center">Please select an indicator and a region of interest.</p>
+                <p class="center">Please select a property and a date.</p>
             }
             <mat-spinner color="accent" *ngIf="plotLoading()"></mat-spinner>
         </mat-card-content>

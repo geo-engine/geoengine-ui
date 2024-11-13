@@ -46,7 +46,7 @@ h1 {
     .inspect {
         grid-column-start: 2;
         grid-row-start: 1;
-        grid-row-end: 4;
+        grid-row-end: 3;
     }
 
     .chart-container {
@@ -59,7 +59,7 @@ h1 {
 }
 
 .dashboard-card {
-    min-height: 10rem;
+    min-height: 20rem;
 }
 
 .more-button {

@@ -1,9 +1,10 @@
 import {Injectable} from '@angular/core';
 import {LoadingState, ProjectService} from '@geoengine/core';
 import {first, map, mergeMap, tap} from 'rxjs/operators';
-import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
+import {BehaviorSubject, combineLatest, firstValueFrom, Observable, of} from 'rxjs';
 import moment from 'moment';
-import {estimateTimeFormat, Layer, RasterLayer, Time, VectorLayer} from '@geoengine/common';
+import {estimateTimeFormat, Layer, RasterLayer, Time, VectorData, VectorLayer} from '@geoengine/common';
+import OlFeature from 'ol/Feature';
 
 export interface DataRange {
     min: number;
@@ -122,5 +123,16 @@ export class DataSelectionService {
             mergeMap(() => this.projectService.addLayer(layer)),
             tap(() => this._polygonLayer.next(layer)),
         );
+    }
+
+    async getPolygonLayerFeatures(): Promise<Array<OlFeature>> {
+        if (!this._polygonLayer.value) {
+            return [];
+        }
+
+        const data = await firstValueFrom(this.projectService.getLayerDataStream(this._polygonLayer.value));
+        const vectorData = data as VectorData;
+
+        return vectorData.data;
     }
 }
