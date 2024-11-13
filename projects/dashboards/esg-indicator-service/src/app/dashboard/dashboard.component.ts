@@ -57,6 +57,7 @@ import {HttpResponse} from '@angular/common/http';
 import proj4 from 'proj4';
 import {LegendComponent} from '../legend/legend.component';
 import {toSignal} from '@angular/core/rxjs-interop';
+import {Router} from '@angular/router';
 
 interface Indicator {
     name: string;
@@ -84,6 +85,7 @@ export class DashboardComponent implements AfterViewInit {
     private readonly datasetService = inject(DatasetService);
     private readonly changeDetectorRef = inject(ChangeDetectorRef);
     private readonly backend = inject(BackendService);
+    private readonly router = inject(Router);
 
     indicators = INDICATORS;
 
@@ -333,6 +335,11 @@ export class DashboardComponent implements AfterViewInit {
         this.selectedBBox.set(undefined);
         await firstValueFrom(this.dataSelectionService.clearPolygonLayer());
         this.changeDetectorRef.markForCheck();
+    }
+
+    logout(): void {
+        this.userService.logout();
+        this.router.navigate(['/signin']);
     }
 }
 
