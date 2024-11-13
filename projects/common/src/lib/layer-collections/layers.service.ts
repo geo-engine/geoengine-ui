@@ -129,8 +129,6 @@ export class LayersService {
 
         const metadata = await this.getWorkflowIdMetadata(workflowId);
 
-        console.log(metadata);
-
         if (metadata instanceof VectorLayerMetadata) {
             return new VectorLayer({
                 name: layer.name,

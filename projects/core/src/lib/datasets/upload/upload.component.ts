@@ -4,13 +4,13 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatStepper} from '@angular/material/stepper';
 import {Subject, Subscription} from 'rxjs';
 import {mergeMap} from 'rxjs/operators';
-import {AddDatasetDict, UUID} from '../../backend/backend.model';
+import {UUID} from '../../backend/backend.model';
 import {NotificationService} from '../../notification.service';
 import {ProjectService} from '../../project/project.service';
 import {UserService} from '../../users/user.service';
 import {DatasetsService, OgrDatasetComponent, UploadsService, timeStepGranularityOptions} from '@geoengine/common';
 import {DatasetService} from '../dataset.service';
-import {DatasetDefinition, MetaDataDefinition, MetaDataSuggestion, TimeGranularity} from '@geoengine/openapi-client';
+import {AddDataset, DatasetDefinition, MetaDataDefinition, MetaDataSuggestion, TimeGranularity} from '@geoengine/openapi-client';
 
 interface NameDescription {
     name: FormControl<string>;
@@ -158,7 +158,7 @@ export class UploadComponent implements OnDestroy {
 
         const metaData: MetaDataDefinition = this.ogrDatasetComponent.getMetaData();
 
-        const addData: AddDatasetDict = {
+        const addData: AddDataset = {
             name: this.userNamePrefix + ':' + formDataset.name.value,
             displayName: formDataset.displayName.value,
             description: formDataset.description.value,

@@ -69,6 +69,7 @@ import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {AutocompleteSelectDirective} from './util/directives/autocomplete-select.directive';
 import {CodeEditorComponent} from './util/components/code-editor.component';
 import {OgrDatasetComponent} from './datasets/ogr-dataset/ogr-dataset.component';
+import {RasterMultibandSymbologyEditorComponent} from './symbology/raster-multiband-symbology-editor/raster-multiband-symbology-editor.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -103,33 +104,36 @@ export const MATERIAL_MODULES = [
 ];
 
 const COMMON_COMPONENTS = [
+    AutocompleteSelectDirective,
     CodeEditorComponent,
     ColorAttributeInputComponent,
     ColorBreakpointInputComponent,
     ColorMapSelectorComponent,
-    ColorTableEditorComponent,
     ColorParamEditorComponent,
+    ColorTableEditorComponent,
     ConfirmationComponent,
-    MeasurementComponent,
-    RasterGradientSymbologyEditorComponent,
-    RasterPaletteSymbologyEditorComponent,
-    RasterSymbologyEditorComponent,
-    VectorSymbologyEditorComponent,
-    NumberParamEditorComponent,
-    PointIconComponent,
-    LineIconComponent,
-    PolygonIconComponent,
-    RasterIconComponent,
-    VegaViewerComponent,
-    TimeInputComponent,
-    TimeIntervalInputComponent,
-    PercentileBreakpointSelectorComponent,
-    LayerCollectionNavigationComponent,
     LayerCollectionDropdownComponent,
     LayerCollectionLayerComponent,
     LayerCollectionLayerDetailsComponent,
     LayerCollectionListComponent,
-    AutocompleteSelectDirective,
+    LayerCollectionNavigationComponent,
+    LineIconComponent,
+    LineIconComponent,
+    MeasurementComponent,
+    NumberParamEditorComponent,
+    PercentileBreakpointSelectorComponent,
+    PercentileBreakpointSelectorComponent,
+    PointIconComponent,
+    PolygonIconComponent,
+    RasterGradientSymbologyEditorComponent,
+    RasterIconComponent,
+    RasterMultibandSymbologyEditorComponent,
+    RasterPaletteSymbologyEditorComponent,
+    RasterSymbologyEditorComponent,
+    TimeInputComponent,
+    TimeIntervalInputComponent,
+    VectorSymbologyEditorComponent,
+    VegaViewerComponent,
 ];
 
 const COMMON_PIPES = [
@@ -137,12 +141,12 @@ const COMMON_PIPES = [
     AsyncStringSanitizer,
     AsyncValueDefault,
     BreakpointToCssStringPipe,
+    BreakpointToCssStringPipe,
     ColorBreakpointsCssGradientPipe,
+    ColorizerCssGradientPipe,
     ColorizerCssGradientPipe,
     RasterColorizerCssGradientPipe,
     RgbaArrayCssGradientPipe,
-    BreakpointToCssStringPipe,
-    ColorizerCssGradientPipe,
 ];
 
 const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGapDirective, FxLayoutAlignDirective];

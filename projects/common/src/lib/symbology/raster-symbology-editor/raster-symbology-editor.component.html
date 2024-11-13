@@ -17,40 +17,56 @@
                     <span>{{ opacitySliderInput.value }} %</span>
                 </div>
 
-                <div>
-                    <p>Raster band:</p>
+                <p>Colorizer:</p>
 
-                    <mat-select [ngModel]="selectedBand" (ngModelChange)="setSelectedBand($event)" placeholder="Bands">
-                        <mat-option *ngFor="let band of bands$ | async" [value]="band">{{ band.name }}</mat-option>
-                    </mat-select>
-                </div>
+                <mat-button-toggle-group
+                    id="colorizer-type"
+                    [multiple]="false"
+                    [ngModel]="getColorizerType()"
+                    (ngModelChange)="updateColorizerType($event)"
+                >
+                    <mat-button-toggle [value]="linearGradientColorizerType">Linear Gradient</mat-button-toggle>
+                    <mat-button-toggle [value]="logarithmicGradientColorizerType">Logarithmic Gradient</mat-button-toggle>
+                    <mat-button-toggle [value]="paletteColorizerType">Palette</mat-button-toggle>
+                    <mat-button-toggle [value]="multiBandType">Multi Band RGB</mat-button-toggle>
+                </mat-button-toggle-group>
 
                 <mat-divider></mat-divider>
 
-                <p>Colorizer:</p>
+                @if (rasterSymbologyType() === 'singleBand') {
+                    <p>Raster band:</p>
 
-                <div>
-                    <mat-button-toggle-group
-                        id="colorizer-type"
-                        [multiple]="false"
-                        [ngModel]="getColorizerType()"
-                        (ngModelChange)="updateColorizerType($event)"
-                    >
-                        <mat-button-toggle [value]="linearGradientColorizerType">Linear Gradient</mat-button-toggle>
-                        <mat-button-toggle [value]="logarithmicGradientColorizerType">Logarithmic Gradient</mat-button-toggle>
-                        <mat-button-toggle [value]="paletteColorizerType">Palette</mat-button-toggle>
-                        <mat-button-toggle [value]="rgbaColorizerType">RGBA</mat-button-toggle>
-                    </mat-button-toggle-group>
-                </div>
+                    <mat-form-field class="band">
+                        <mat-label>Band</mat-label>
+                        <mat-select [ngModel]="selectedBand()" (ngModelChange)="setSelectedBand($event)">
+                            <mat-option *ngFor="let band of bands()" [value]="band">{{ band.name }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                } @else if (rasterSymbologyType() === 'multiBand') {
+                    <p>RGB Bands:</p>
+
+                    @for (band of ['Red', 'Green', 'Blue']; track $index; let i = $index) {
+                        <mat-form-field class="band">
+                            <mat-label>{{ band }} Band</mat-label>
+                            <mat-select
+                                [ngModel]="getSelectedBand(i)()"
+                                (ngModelChange)="setSelectedBand($event, i)"
+                                placeholder="{{ band }} Band"
+                            >
+                                <mat-option *ngFor="let band of bands()" [value]="band">{{ band.name }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    }
+                }
             </mat-card-content>
         </mat-card>
 
         <geoengine-raster-gradient-symbology-editor
             *ngIf="gradientColorizer"
             [colorizer]="gradientColorizer"
-            [queryParams]="queryParams"
-            [workflowId]="symbologyWorkflow.workflowId"
-            [band]="selectedBand?.name | valueDefault: 'band'"
+            [queryParams]="queryParams()"
+            [workflowId]="symbologyWorkflow().workflowId"
+            [band]="selectedBand()?.name | valueDefault: 'band'"
             (colorizerChange)="updateColorizer($event)"
         ></geoengine-raster-gradient-symbology-editor>
 
@@ -60,5 +76,25 @@
             (colorizerChange)="updateColorizer($event)"
         >
         </geoengine-raster-palette-symbology-editor>
+
+        <geoengine-raster-multiband-symbology-editor
+            *ngIf="multibandColorizer"
+            [colorizer]="multibandColorizer"
+            (colorizerChange)="updateMultiBandColorizer($event)"
+            [queryParams]="queryParams()"
+            [workflowId]="symbologyWorkflow().workflowId"
+            [band1]="{
+                name: getSelectedBand(0)()?.name | valueDefault: '',
+                index: getSelectedBandIndex(0),
+            }"
+            [band2]="{
+                name: getSelectedBand(1)()?.name | valueDefault: '',
+                index: getSelectedBandIndex(1),
+            }"
+            [band3]="{
+                name: getSelectedBand(2)()?.name | valueDefault: '',
+                index: getSelectedBandIndex(2),
+            }"
+        ></geoengine-raster-multiband-symbology-editor>
     </div>
 </div>
