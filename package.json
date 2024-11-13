@@ -18,7 +18,7 @@
         "serve:dashboards/ebv-analyzer:local": "npm run ng-serve-local ebv-analyzer",
         "serve:dashboards/ebv-analyzer:nightly": "ng serve --configuration development ebv-analyzer --proxy-config proxy-ebv-analyzer.conf.json",
         "serve:dashboards/ecometrics:local": "npm run ng-serve-local ecometrics",
-        "serve:dashboards/ecometrics:nightly": "ng serve --configuration development esg-indicator-service --proxy-config proxy-esg-indicator-service.conf.json",
+        "serve:dashboards/ecometrics:nightly": "ng serve --configuration development ecometrics --proxy-config proxy-ecometrics.conf.json",
         "serve:dashboards/esg-indicator-service:local": "npm run ng-serve-local esg-indicator-service",
         "serve:dashboards/esg-indicator-service:nightly": "ng serve --configuration development esg-indicator-service --proxy-config proxy-esg-indicator-service.conf.json",
         "serve:dashboards/gfbio:local": "npm run ng-serve-local gfbio",
