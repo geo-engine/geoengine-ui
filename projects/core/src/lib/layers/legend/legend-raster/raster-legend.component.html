@@ -36,39 +36,40 @@
             </tr>
         </thead>
         <tbody>
-            <ng-template [ngIf]="layer().symbology.rasterColorizer.isContinuous()">
-                <!-- data -->
-                <tr *ngFor="let breakpoint of displayedBreakpoints(); let isFirst = first">
-                    <td
-                        class="gradient"
-                        *ngIf="isFirst"
-                        [rowSpan]="layer().symbology.rasterColorizer.getBreakpoints().length"
-                        [style.background]="layer().symbology.rasterColorizer | geoengineRasterColorizerCssGradient: gradientAngle()"
-                    ></td>
-                    <td>{{ breakpoint }}</td>
-                </tr>
-            </ng-template>
-
-            <ng-container *ngIf="layer().symbology.rasterColorizer.isDiscrete()">
-                <ng-container *ngIf="!(bands[0].measurement | classificationMeasurement)">
-                    <tr *ngFor="let breakpoint of colorizerBreakpoints()">
-                        <td class="classes">
-                            <div class="icon" [style.background-color]="breakpoint | breakpointToCssStringPipe"></div>
-                        </td>
-                        <td>{{ breakpoint.value }}</td>
+            @if (layer().symbology.rasterColorizer.isContinuous()) {
+                @for (breakpoint of displayedBreakpoints(); track breakpoint) {
+                    <tr>
+                        <td
+                            class="gradient"
+                            *ngIf="$first"
+                            [rowSpan]="layer().symbology.rasterColorizer.getBreakpoints().length"
+                            [style.background]="layer().symbology.rasterColorizer | geoengineRasterColorizerCssGradient: gradientAngle()"
+                        ></td>
+                        <td>{{ breakpoint }}</td>
                     </tr>
-                </ng-container>
-
-                <ng-container *ngIf="bands[0].measurement | classificationMeasurement as measurement">
-                    <tr *ngFor="let breakpoint of colorizerBreakpoints(); let isFirst = first">
-                        <td class="classes">
-                            <div class="icon" [style.background-color]="breakpoint | breakpointToCssStringPipe"></div>
-                        </td>
-                        <td class="classes">{{ breakpoint.value }}</td>
-                        <td>{{ measurement.classes[breakpoint.value] }}</td>
-                    </tr>
-                </ng-container>
-            </ng-container>
+                }
+            } @else if (layer().symbology.rasterColorizer.isDiscrete() && bands[0]) {
+                @if (bands[0].measurement | classificationMeasurement; as measurement) {
+                    @for (breakpoint of colorizerBreakpoints(); track breakpoint) {
+                        <tr>
+                            <td class="classes">
+                                <div class="icon" [style.background-color]="breakpoint | breakpointToCssStringPipe"></div>
+                            </td>
+                            <td class="classes">{{ breakpoint.value }}</td>
+                            <td>{{ measurement.classes[breakpoint.value] }}</td>
+                        </tr>
+                    }
+                } @else {
+                    @for (breakpoint of colorizerBreakpoints(); track breakpoint) {
+                        <tr>
+                            <td class="classes">
+                                <div class="icon" [style.background-color]="breakpoint | breakpointToCssStringPipe"></div>
+                            </td>
+                            <td>{{ breakpoint.value }}</td>
+                        </tr>
+                    }
+                }
+            }
         </tbody>
     </table>
 } @else {
