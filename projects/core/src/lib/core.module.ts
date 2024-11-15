@@ -54,11 +54,7 @@ import {RenameLayerComponent} from './layers/rename-layer/rename-layer.component
 import {VectorLegendComponent} from './layers/legend/legend-vector/vector-legend.component';
 import {LayerListComponent} from './layers/layer-list/layer-list.component';
 import {LayerListElementComponent} from './layers/layer-list/layer-list-element/layer-list-element.component';
-import {
-    CastMeasurementToClassificationPipe,
-    CastMeasurementToContinuousPipe,
-    RasterLegendComponent,
-} from './layers/legend/legend-raster/raster-legend.component';
+import {RasterLegendComponent} from './layers/legend/legend-raster/raster-legend.component';
 import {SafeStylePipe} from './util/pipes/safe-style.pipe';
 import {SmallTimeInteractionComponent} from './time/small-time-interaction/small-time-interaction.component';
 import {TimeConfigComponent} from './time/time-config/time-config.component';
@@ -174,16 +170,7 @@ export const MATERIAL_MODULES = [
     MatTooltipModule,
 ];
 
-const CORE_PIPES = [
-    CastMeasurementToClassificationPipe,
-    CastMeasurementToContinuousPipe,
-    CssStringToRgbaPipe,
-    HighlightPipe,
-    RgbaToCssStringPipe,
-    SafeHtmlPipe,
-    SafeStylePipe,
-    TrimPipe,
-];
+const CORE_PIPES = [CssStringToRgbaPipe, HighlightPipe, RgbaToCssStringPipe, SafeHtmlPipe, SafeStylePipe, TrimPipe];
 
 const CORE_COMPONENTS = [
     AddDataComponent,
@@ -249,8 +236,6 @@ const CORE_COMPONENTS = [
     ProvenanceTableComponent,
     QuotaInfoComponent,
     RasterizationComponent,
-    RasterLegendComponent,
-    RasterLegendComponent,
     RasterScalingComponent,
     RasterStackerComponent,
     RasterTypeConversionComponent,
@@ -307,6 +292,7 @@ const CORE_COMPONENTS = [
         PortalModule,
         ReactiveFormsModule,
         ScrollingModule,
+        RasterLegendComponent,
     ],
     providers: [
         {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}},
