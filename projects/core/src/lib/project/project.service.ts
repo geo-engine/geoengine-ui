@@ -1,7 +1,19 @@
-import {BehaviorSubject, combineLatest, firstValueFrom, Observable, Observer, of, ReplaySubject, Subject, Subscription, zip} from 'rxjs';
+import {
+    BehaviorSubject,
+    combineLatest,
+    firstValueFrom,
+    merge,
+    Observable,
+    Observer,
+    of,
+    ReplaySubject,
+    Subject,
+    Subscription,
+    zip,
+} from 'rxjs';
 import {debounceTime, distinctUntilChanged, filter, first, map, mergeMap, skip, switchMap, take, tap} from 'rxjs/operators';
 
-import {Injectable} from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 
 import {Project} from './project.model';
 import {CoreConfig} from '../config.service';
@@ -72,7 +84,7 @@ export interface FeatureSelection {
  * All layers, plots, and provenance are registered with the ProjectService.
  */
 @Injectable()
-export class ProjectService {
+export class ProjectService implements OnDestroy {
     private project$ = new ReplaySubject<Project>(1);
 
     private readonly layers = new Map<number, ReplaySubject<Layer>>();
@@ -108,15 +120,28 @@ export class ProjectService {
         // set the starting project upon login
         this.userService
             .getSessionStream()
-            .pipe(mergeMap((session) => this.loadMostRecentProject(session)))
+            .pipe(
+                mergeMap((session) =>
+                    config.PROJECT.CREATE_TEMPORARY_PROJECT_AT_STARTUP
+                        ? this.createTemporaryProject(session.sessionToken)
+                        : firstValueFrom(this.loadMostRecentProject(session)),
+                ),
+            )
             .subscribe((project) => this.setProject(project));
+    }
+
+    async ngOnDestroy(): Promise<void> {
+        if (this.config.PROJECT.CREATE_TEMPORARY_PROJECT_AT_STARTUP) {
+            const session = await firstValueFrom(this.userService.getSessionTokenForRequest());
+            this.deleteCurrentProject(session);
+        }
     }
 
     /**
      * Generate a default Project with values from the config file.
      */
-    createDefaultProject(): Observable<Project> {
-        const name = this.config.DEFAULTS.PROJECT.NAME;
+    createDefaultProject(projectName?: string): Observable<Project> {
+        const name = projectName ?? this.config.DEFAULTS.PROJECT.NAME;
         const timeConfig = this.config.DEFAULTS.PROJECT.TIME;
         let time: Time;
         if (typeof timeConfig === 'string') {
@@ -1015,6 +1040,20 @@ export class ProjectService {
                 source: inputOperator,
             },
         } as ReprojectionDict;
+    }
+
+    protected async createTemporaryProject(sessionToken: string): Promise<Project> {
+        await this.deleteCurrentProject(sessionToken);
+
+        return await firstValueFrom(this.createDefaultProject(crypto.randomUUID()));
+    }
+
+    private async deleteCurrentProject(sessionToken: string): Promise<void> {
+        const oldProject = await firstValueFrom(merge(this.project$, of(undefined)).pipe(first()));
+
+        if (oldProject) {
+            await firstValueFrom(this.backend.deleteProject(oldProject.id, sessionToken));
+        }
     }
 
     protected loadMostRecentProject(session: Session): Observable<Project> {
