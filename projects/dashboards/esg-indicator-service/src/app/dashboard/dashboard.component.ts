@@ -22,7 +22,6 @@ import {
     BBoxDict,
     CoreModule,
     DatasetService,
-    LayoutService,
     MapContainerComponent,
     NotificationService,
     ProjectService,
@@ -31,6 +30,7 @@ import {
 } from '@geoengine/core';
 import {
     ColumnRangeFilterDict,
+    extentToBboxDict,
     PolygonSymbology,
     RasterVectorJoinDict,
     SourceOperatorDict,
@@ -44,6 +44,7 @@ import {Workflow} from '@geoengine/openapi-client';
 import {LegendComponent} from '../legend/legend.component';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {Router} from '@angular/router';
+import proj4 from 'proj4';
 
 interface SelectedProperty {
     featureId: number;
@@ -69,15 +70,16 @@ export class DashboardComponent implements AfterViewInit {
     private readonly backend = inject(BackendService);
     private readonly router = inject(Router);
 
+    maxScore = 2;
+
     isSelectingBox = signal(false);
     selectedFeature: WritableSignal<SelectedProperty | undefined> = signal(undefined);
     isLandscape = signal(true);
     plotWidthPx = signal(100);
     plotHeightPx = signal(100);
     layersReverse = toSignal(this.dataSelectionService.layers);
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    plotData = signal<any>(undefined);
     plotLoading = signal(false);
+    score = signal<number | undefined>(undefined);
 
     mapComponent = viewChild.required(MapContainerComponent);
 
@@ -98,7 +100,7 @@ export class DashboardComponent implements AfterViewInit {
                 if (featureSelection.feature) {
                     const actualFeature = features.find((f) => f.getId() === featureSelection.feature);
                     const props = actualFeature?.getProperties();
-                    const id = props?.id;
+                    const id = props?.[PROPERTY_IDENTIFIER_COLUMN_NAME];
                     const bbox = actualFeature?.getGeometry()?.getExtent();
 
                     if (!id || !bbox) {
@@ -136,24 +138,6 @@ export class DashboardComponent implements AfterViewInit {
         return await firstValueFrom(this.dataSelectionService.setPolygonLayer(polygonLayer));
     }
 
-    private computePlotSize(): void {
-        const cardWidth = this.analyzeCard()?.nativeElement.clientWidth ?? 100;
-
-        let plotWidth: number;
-
-        if (this.isLandscape()) {
-            plotWidth = cardWidth / 2 - 2 * LayoutService.remInPx;
-        } else {
-            plotWidth = cardWidth - 4 * LayoutService.remInPx;
-            plotWidth = Math.min(plotWidth, window.innerWidth - 9 * LayoutService.remInPx);
-        }
-
-        const plotHeight = Math.min(plotWidth, window.innerHeight / 3);
-
-        this.plotWidthPx.set(plotWidth);
-        this.plotHeightPx.set(plotHeight);
-    }
-
     async analyze(): Promise<void> {
         const feature = this.selectedFeature();
         if (!feature) {
@@ -163,7 +147,7 @@ export class DashboardComponent implements AfterViewInit {
         const columnFilter: ColumnRangeFilterDict = {
             type: 'ColumnRangeFilter',
             params: {
-                column: 'id',
+                column: PROPERTY_IDENTIFIER_COLUMN_NAME,
                 ranges: [[feature.featureId, feature.featureId]],
                 keepNulls: false,
             },
@@ -190,7 +174,7 @@ export class DashboardComponent implements AfterViewInit {
                     {
                         type: 'GdalSource',
                         params: {
-                            data: 'ndvi',
+                            data: 'esg',
                         },
                     },
                 ],
@@ -206,23 +190,40 @@ export class DashboardComponent implements AfterViewInit {
 
         const time = await this.projectService.getTimeOnce();
 
+        // reproject bbox to EPSG:32632
+        const ll = proj4('EPSG:4326', 'EPSG:32632', [feature.bbox.lowerLeftCoordinate.x, feature.bbox.lowerLeftCoordinate.y]);
+        const ur = proj4('EPSG:4326', 'EPSG:32632', [feature.bbox.upperRightCoordinate.x, feature.bbox.upperRightCoordinate.y]);
+        const extent: [number, number, number, number] = [ll[0], ll[1], ur[0], ur[1]];
+
         const wfsParams: WfsParamsDict = {
             workflowId,
-            bbox: feature.bbox,
+            bbox: extentToBboxDict(extent),
             time: {
                 start: time.start.unix() * 1_000,
                 end: time.end.unix() * 1_000,
             },
             queryResolution: CLASSIFICATION_RESOLUTION,
+            srsName: 'EPSG:32632',
         };
 
         const sessionId = await firstValueFrom(this.userService.getSessionTokenForRequest());
 
         const wfsResponse = await firstValueFrom(this.backend.wfsGetFeature(wfsParams, sessionId));
 
-        // console.log('wfs response', wfsResponse);
+        const features = wfsResponse?.features;
+        if (!Array.isArray(features) || features.length === 0) {
+            // TODO: show error
+            return;
+        }
 
-        // TODO: extract and display score
+        const score = features[0].properties?.score;
+
+        if (!score) {
+            // TODO: show error
+            return;
+        }
+
+        this.score.set(score);
     }
 
     async reset(): Promise<void> {
@@ -238,13 +239,15 @@ export class DashboardComponent implements AfterViewInit {
 
 const PROPERTIES_SOURCE_OP: SourceOperatorDict = {
     type: 'OgrSource',
-    params: {data: '94ea7ae6-f464-454f-b0f9-ead706a2f093:bahn_properties'},
+    params: {data: 'bahn_properties'},
 };
 
 const PROPERTIES_WORKFLOW: Workflow = {
     type: 'Vector',
     operator: PROPERTIES_SOURCE_OP,
 };
+
+const PROPERTY_IDENTIFIER_COLUMN_NAME = 'identifier';
 
 const PROPERTIES_SYMBOLOGY: VectorSymbology = PolygonSymbology.fromPolygonSymbologyDict({
     type: 'polygon',
@@ -265,4 +268,4 @@ const PROPERTIES_SYMBOLOGY: VectorSymbology = PolygonSymbology.fromPolygonSymbol
     autoSimplified: true,
 });
 
-const CLASSIFICATION_RESOLUTION = 0.1;
+const CLASSIFICATION_RESOLUTION = 10;

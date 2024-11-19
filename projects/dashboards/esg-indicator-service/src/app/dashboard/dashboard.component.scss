@@ -119,3 +119,14 @@ mat-spinner {
 .center {
     text-align: center;
 }
+
+.score-spinner {
+    margin-top: -5rem;
+}
+
+.score-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}

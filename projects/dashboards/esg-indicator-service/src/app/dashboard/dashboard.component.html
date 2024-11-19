@@ -15,26 +15,8 @@
                 Here, you can compute ESG indicators for your properties. To get started, please select a property on the map and a date on
                 the time slider.
             </p>
-            <button mat-raised-button color="primary" (click)="loadProperties()">Load</button>
         </mat-card-content>
     </mat-card>
-
-    <!-- <mat-card class="dashboard-card">
-        <mat-card-header>
-            <mat-card-title> Select Indicator </mat-card-title>
-        </mat-card-header>
-        <mat-card-content class="dashboard-card-content">
-            <p>Please choose one of the following indicators:</p>
-            <mat-form-field>
-                <mat-label>Select Indicator</mat-label>
-                <mat-select (selectionChange)="changeIndicator($event)">
-                    <mat-option *ngFor="let indicator of indicators" [value]="indicator">
-                        <b>{{ indicator.name }}:</b> {{ indicator.description }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-        </mat-card-content>
-    </mat-card> -->
 
     <mat-card class="dashboard-card inspect">
         <mat-card-header>
@@ -94,17 +76,12 @@
         <mat-card-header>
             <mat-card-title> Score </mat-card-title>
         </mat-card-header>
-        <mat-card-content #analyzecard class="dashboard-card-content">
+        <mat-card-content #analyzecard class="dashboard-card-content score-container">
             <!-- vega component -->
-            @if (plotData(); as plot) {
-                <div class="chart-container">
-                    <geoengine-vega-viewer [width]="plotWidthPx()" [height]="plotHeightPx()" [chartData]="plot"></geoengine-vega-viewer>
-
-                    <p>
-                        The chart shows the distribution of values for the selected indicator within the area of interest. The x-axis
-                        represents the classes or values and the y-axis the amount of pixels with this value.
-                    </p>
-                </div>
+            @if (score(); as score) {
+                <p class="center">{{ score.toFixed(1) }}</p>
+                <!-- TODO: apply custom color based on score -->
+                <mat-progress-spinner class="score-spinner" [value]="(score / maxScore) * 100" [color]="'#fefefe'"></mat-progress-spinner>
             } @else {
                 <p class="center">Please select a property and a date.</p>
             }
