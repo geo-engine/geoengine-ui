@@ -39,9 +39,9 @@ h1 {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .analyze {
-        grid-column: span 2;
-    }
+    // .analyze {
+    //     grid-column: span 2;
+    // }
 
     .inspect {
         grid-column-start: 2;

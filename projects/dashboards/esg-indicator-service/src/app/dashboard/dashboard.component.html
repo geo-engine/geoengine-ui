@@ -72,12 +72,11 @@
         </mat-card-content>
     </mat-card>
 
-    <mat-card class="dashboard-card analyze">
+    <mat-card class="dashboard-card score">
         <mat-card-header>
             <mat-card-title> Score </mat-card-title>
         </mat-card-header>
         <mat-card-content #analyzecard class="dashboard-card-content score-container">
-            <!-- vega component -->
             @if (score(); as score) {
                 <p class="center">{{ score.toFixed(1) }}</p>
                 <!-- TODO: apply custom color based on score -->
@@ -85,7 +84,22 @@
             } @else {
                 <p class="center">Please select a property and a date.</p>
             }
-            <mat-spinner color="accent" *ngIf="plotLoading()"></mat-spinner>
+            <mat-spinner color="accent" *ngIf="scoreLoading()"></mat-spinner>
+        </mat-card-content>
+    </mat-card>
+
+    <mat-card class="dashboard-card usage">
+        <mat-card-header>
+            <mat-card-title> Usage log </mat-card-title>
+        </mat-card-header>
+        <mat-card-content #analyzecard class="dashboard-card-content score-container">
+            @if (usage(); as usage) {
+                {{ usage }}
+            } @else {
+                <p class="center">Usage log will be visible after an analysis was performed.</p>
+            }
+
+            <mat-spinner color="accent" *ngIf="usageLoading()"></mat-spinner>
         </mat-card-content>
     </mat-card>
 </div>

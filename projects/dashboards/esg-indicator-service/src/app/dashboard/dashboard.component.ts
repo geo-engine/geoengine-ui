@@ -37,6 +37,7 @@ import {
     Time,
     VectorLayer,
     VectorSymbology,
+    UserService as CommonUserService,
 } from '@geoengine/common';
 import {utc} from 'moment';
 import {DataSelectionService} from '../data-selection.service';
@@ -61,6 +62,7 @@ interface SelectedProperty {
 })
 export class DashboardComponent implements AfterViewInit {
     readonly userService = inject(UserService);
+    readonly commonUserService = inject(CommonUserService);
     readonly dataSelectionService = inject(DataSelectionService);
     private readonly breakpointObserver = inject(BreakpointObserver);
     private readonly projectService = inject(ProjectService);
@@ -78,8 +80,11 @@ export class DashboardComponent implements AfterViewInit {
     plotWidthPx = signal(100);
     plotHeightPx = signal(100);
     layersReverse = toSignal(this.dataSelectionService.layers);
-    plotLoading = signal(false);
+    scoreLoading = signal(false);
     score = signal<number | undefined>(undefined);
+
+    usageLoading = signal(false);
+    usage = signal<string | undefined>(undefined);
 
     mapComponent = viewChild.required(MapContainerComponent);
 
@@ -143,6 +148,8 @@ export class DashboardComponent implements AfterViewInit {
         if (!feature) {
             return;
         }
+
+        this.scoreLoading.set(true);
 
         const columnFilter: ColumnRangeFilterDict = {
             type: 'ColumnRangeFilter',
@@ -224,6 +231,12 @@ export class DashboardComponent implements AfterViewInit {
         }
 
         this.score.set(score);
+        this.scoreLoading.set(false);
+
+        this.usageLoading.set(true);
+        const usage = await this.commonUserService.computationsQuota(workflowId, 1);
+        this.usage.set(JSON.stringify(usage));
+        this.usageLoading.set(false);
     }
 
     async reset(): Promise<void> {

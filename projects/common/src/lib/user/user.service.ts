@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Configuration, DefaultConfig, SessionApi, UserApi, UserSession} from '@geoengine/openapi-client';
+import {ComputationQuota, Configuration, DefaultConfig, SessionApi, UserApi, UserSession} from '@geoengine/openapi-client';
 import {Observable, ReplaySubject, filter, first, firstValueFrom, map} from 'rxjs';
 import {UUID} from '../datasets/dataset.model';
 
@@ -83,6 +83,15 @@ export class UserService {
 
     logout(): void {
         this.session$.next(undefined);
+    }
+
+    async computationsQuota(workflow: UUID, limit: number): Promise<ComputationQuota[]> {
+        const userApi = await firstValueFrom(this.userApi);
+
+        return userApi.computationsQuotaHandler({
+            workflow,
+            limit,
+        });
     }
 
     async createSessionWithToken(sessionToken: string): Promise<UserSession> {
