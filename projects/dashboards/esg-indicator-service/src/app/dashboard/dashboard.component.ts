@@ -1,4 +1,5 @@
 import {
+    AfterContentInit,
     AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
@@ -41,7 +42,7 @@ import {
 } from '@geoengine/common';
 import {utc} from 'moment';
 import {DataSelectionService} from '../data-selection.service';
-import {Workflow} from '@geoengine/openapi-client';
+import {ComputationQuota, Workflow} from '@geoengine/openapi-client';
 import {LegendComponent} from '../legend/legend.component';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {Router} from '@angular/router';
@@ -60,7 +61,7 @@ interface SelectedProperty {
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [CoreModule, AsyncPipe, MatGridListModule, MatMenuModule, MatIconModule, MatButtonModule, MatCardModule, LegendComponent],
 })
-export class DashboardComponent implements AfterViewInit {
+export class DashboardComponent implements AfterViewInit, AfterContentInit {
     readonly userService = inject(UserService);
     readonly commonUserService = inject(CommonUserService);
     readonly dataSelectionService = inject(DataSelectionService);
@@ -84,7 +85,7 @@ export class DashboardComponent implements AfterViewInit {
     score = signal<number | undefined>(undefined);
 
     usageLoading = signal(false);
-    usage = signal<string | undefined>(undefined);
+    usage = signal<ComputationQuota | undefined>(undefined);
 
     mapComponent = viewChild.required(MapContainerComponent);
 
@@ -96,36 +97,36 @@ export class DashboardComponent implements AfterViewInit {
         this.breakpointObserver.observe(Breakpoints.Web).subscribe((isLandscape) => {
             this.isLandscape.set(isLandscape.matches);
         });
+    }
 
-        setTimeout(async () => {
-            await this.loadProperties();
+    async ngAfterContentInit(): Promise<void> {
+        await this.loadProperties();
 
-            this.projectService.getSelectedFeatureStream().subscribe(async (featureSelection) => {
-                const features = await this.dataSelectionService.getPolygonLayerFeatures();
-                if (featureSelection.feature) {
-                    const actualFeature = features.find((f) => f.getId() === featureSelection.feature);
-                    const props = actualFeature?.getProperties();
-                    const id = props?.[PROPERTY_IDENTIFIER_COLUMN_NAME];
-                    const bbox = actualFeature?.getGeometry()?.getExtent();
+        this.projectService.getSelectedFeatureStream().subscribe(async (featureSelection) => {
+            const features = await this.dataSelectionService.getPolygonLayerFeatures();
+            if (featureSelection.feature) {
+                const actualFeature = features.find((f) => f.getId() === featureSelection.feature);
+                const props = actualFeature?.getProperties();
+                const id = props?.[PROPERTY_IDENTIFIER_COLUMN_NAME];
+                const bbox = actualFeature?.getGeometry()?.getExtent();
 
-                    if (!id || !bbox) {
-                        // TODO: show error message
+                if (!id || !bbox) {
+                    // TODO: show error message
 
-                        this.selectedFeature.set(undefined);
-                        return;
-                    }
-
-                    this.selectedFeature.set({
-                        featureId: id,
-                        bbox: {
-                            lowerLeftCoordinate: {x: bbox[0], y: bbox[1]},
-                            upperRightCoordinate: {x: bbox[2], y: bbox[3]},
-                        },
-                    });
-                } else {
                     this.selectedFeature.set(undefined);
+                    return;
                 }
-            });
+
+                this.selectedFeature.set({
+                    featureId: id,
+                    bbox: {
+                        lowerLeftCoordinate: {x: bbox[0], y: bbox[1]},
+                        upperRightCoordinate: {x: bbox[2], y: bbox[3]},
+                    },
+                });
+            } else {
+                this.selectedFeature.set(undefined);
+            }
         });
     }
 
@@ -235,7 +236,11 @@ export class DashboardComponent implements AfterViewInit {
 
         this.usageLoading.set(true);
         const usage = await this.commonUserService.computationsQuota(workflowId, 1);
-        this.usage.set(JSON.stringify(usage));
+
+        if (usage.length > 0) {
+            this.usage.set(usage[0]);
+        }
+
         this.usageLoading.set(false);
     }
 
