@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@ang
 import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metadata.model';
 import {VectorDataTypes} from '../../operators/datatype.model';
 import {Colorizer} from '../../colors/colorizer.model';
+import {SingleBandRasterColorizer} from '../../symbology/symbology.model';
 
 @Component({
     selector: 'geoengine-layer-collection-layer-details',
@@ -15,16 +16,19 @@ export class LayerCollectionLayerDetailsComponent {
 
     readonly VectorDataTypes = VectorDataTypes;
 
-    readonly rasterColorizer = Colorizer.fromDict({
-        type: 'linearGradient',
-        breakpoints: [
-            {value: 0, color: [122, 122, 122, 255]},
-            {value: 1, color: [255, 255, 255, 255]},
-        ],
-        overColor: [255, 255, 255, 127],
-        underColor: [122, 122, 122, 127],
-        noDataColor: [0, 0, 0, 0],
-    });
+    readonly rasterColorizer = new SingleBandRasterColorizer(
+        0,
+        Colorizer.fromDict({
+            type: 'linearGradient',
+            breakpoints: [
+                {value: 0, color: [122, 122, 122, 255]},
+                {value: 1, color: [255, 255, 255, 255]},
+            ],
+            overColor: [255, 255, 255, 127],
+            underColor: [122, 122, 122, 127],
+            noDataColor: [0, 0, 0, 0],
+        }),
+    );
 
     constructor() {}
 

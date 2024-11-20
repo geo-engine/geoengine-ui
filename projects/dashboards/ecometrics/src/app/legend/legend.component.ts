@@ -1,6 +1,6 @@
 import {Component, ChangeDetectionStrategy, input, signal} from '@angular/core';
 import {RasterLayer} from '@geoengine/common';
-import {CoreModule} from '@geoengine/core';
+import {CoreModule, RasterLegendComponent} from '@geoengine/core';
 
 @Component({
     selector: 'geoengine-legend', // eslint-disable-line @angular-eslint/component-selector
@@ -8,7 +8,7 @@ import {CoreModule} from '@geoengine/core';
     styleUrls: ['./legend.component.scss'],
     standalone: true,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CoreModule],
+    imports: [CoreModule, RasterLegendComponent],
 })
 export class LegendComponent {
     layer = input<RasterLayer>();

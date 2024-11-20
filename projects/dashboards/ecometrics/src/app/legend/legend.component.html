@@ -7,12 +7,7 @@
             <h4>Legend</h4>
         </div>
         @if (layer(); as layer) {
-            <geoengine-raster-legend
-                [layer]="layer"
-                [orderValuesDescending]="true"
-                [showSingleBandNames]="false"
-                [detectChanges]="true"
-            ></geoengine-raster-legend>
+            <geoengine-raster-legend [layer]="layer" [orderValuesDescending]="true" [showBandNames]="false"></geoengine-raster-legend>
         }
     } @else {
         <button mat-icon-button (click)="visible.set(true)">

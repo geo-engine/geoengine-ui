@@ -1,17 +1,18 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef} from '@angular/core';
 import {mergeMap, BehaviorSubject, of, forkJoin, from} from 'rxjs';
-import {
-    LayerCollectionLayerDict,
-    ProjectService,
-    ProviderLayerCollectionIdDict,
-    UUID,
-    VectorResultDescriptorDict,
-    VectorSymbologyDict,
-} from '@geoengine/core';
+import {LayerCollectionLayerDict, ProjectService, ProviderLayerCollectionIdDict, UUID, VectorResultDescriptorDict} from '@geoengine/core';
 import {DataSelectionService} from '../data-selection.service';
 import moment from 'moment';
 import {Layer as LayerDict} from '@geoengine/openapi-client';
-import {LayersService, RandomColorService, Time, VectorLayer, VectorSymbology, createVectorSymbology} from '@geoengine/common';
+import {
+    LayersService,
+    RandomColorService,
+    Time,
+    VectorLayer,
+    VectorSymbology,
+    VectorSymbologyDict,
+    createVectorSymbology,
+} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-accordion-vector-entry',

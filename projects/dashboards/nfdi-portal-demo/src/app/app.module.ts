@@ -13,6 +13,7 @@ import {
     UserService,
     CoreModule,
     CoreConfig,
+    RasterLegendComponent,
 } from '@geoengine/core';
 import {AppConfig} from './app-config.service';
 import {PortalModule} from '@angular/cdk/portal';
@@ -31,7 +32,16 @@ import {CommonConfig} from '@geoengine/common';
 @NgModule({
     declarations: [AppComponent, AttributionsComponent, LegendComponent, SpeciesSelectorComponent, MainComponent, LoginComponent],
     bootstrap: [AppComponent],
-    imports: [AppRoutingModule, BrowserAnimationsModule, BrowserModule, CoreModule, FormsModule, NgxMatSelectSearchModule, PortalModule],
+    imports: [
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        BrowserModule,
+        CoreModule,
+        FormsModule,
+        NgxMatSelectSearchModule,
+        PortalModule,
+        RasterLegendComponent,
+    ],
     providers: [
         AppConfig,
         {
