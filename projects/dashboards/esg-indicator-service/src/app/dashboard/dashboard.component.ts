@@ -4,9 +4,11 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    effect,
     ElementRef,
     inject,
     signal,
+    untracked,
     viewChild,
     WritableSignal,
 } from '@angular/core';
@@ -39,6 +41,9 @@ import {
     VectorLayer,
     VectorSymbology,
     UserService as CommonUserService,
+    ColorMapSelectorComponent,
+    ALL_COLORMAPS,
+    ColorBreakpoint,
 } from '@geoengine/common';
 import {utc} from 'moment';
 import {DataSelectionService} from '../data-selection.service';
@@ -47,6 +52,7 @@ import {LegendComponent} from '../legend/legend.component';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {Router} from '@angular/router';
 import proj4 from 'proj4';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 interface SelectedProperty {
     featureId: number;
@@ -92,6 +98,25 @@ export class DashboardComponent implements AfterViewInit, AfterContentInit {
     analyzeCard = viewChild.required('analyzecard', {read: ElementRef});
 
     timeSteps: Time[] = [new Time(utc('2022-01-01')), new Time(utc('2023-01-01'))];
+
+    readonly scoreIndicator = viewChild<MatProgressSpinner>('scoreIndicator');
+    readonly scoreColors = ColorMapSelectorComponent.createLinearBreakpoints(ALL_COLORMAPS['RdYlGn'], 16, false, {
+        min: 0,
+        max: this.maxScore,
+    });
+
+    constructor() {
+        effect(() => {
+            const score = this.score();
+            const scoreIndicator = this.scoreIndicator();
+
+            if (!score || !scoreIndicator) {
+                return;
+            }
+
+            untracked(() => colorizeScoreIndicator(scoreIndicator, score, this.scoreColors));
+        });
+    }
 
     async ngAfterViewInit(): Promise<void> {
         this.breakpointObserver.observe(Breakpoints.Web).subscribe((isLandscape) => {
@@ -287,3 +312,18 @@ const PROPERTIES_SYMBOLOGY: VectorSymbology = PolygonSymbology.fromPolygonSymbol
 });
 
 const CLASSIFICATION_RESOLUTION = 10;
+
+/** Colorizes the score indicator based on the given score and breakpoints */
+function colorizeScoreIndicator(element: MatProgressSpinner, score: number, breakpoints: Array<ColorBreakpoint>): void {
+    const circle = element._elementRef.nativeElement.getElementsByTagName('circle')[0];
+    if (!circle) {
+        return;
+    }
+
+    for (let i = 0; i < breakpoints.length - 1; i++) {
+        if (score >= breakpoints[i].value && score < breakpoints[i + 1].value) {
+            circle.style.stroke = breakpoints[i].color.rgbaCssString();
+            return;
+        }
+    }
+}

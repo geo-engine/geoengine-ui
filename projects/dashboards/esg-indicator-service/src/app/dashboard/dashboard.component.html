@@ -79,8 +79,8 @@
         <mat-card-content #analyzecard class="dashboard-card-content score-container">
             @if (score(); as score) {
                 <p class="center score">{{ score.toFixed(1) }}</p>
-                <!-- TODO: apply custom color based on score -->
                 <mat-progress-spinner
+                    #scoreIndicator
                     class="score-spinner"
                     diameter="150"
                     [value]="(score / maxScore) * 100"
