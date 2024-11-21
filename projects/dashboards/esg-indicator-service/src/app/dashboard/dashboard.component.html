@@ -88,7 +88,7 @@
                 ></mat-progress-spinner>
             } @else {
                 @if (scoreLoading()) {
-                    <mat-spinner color="accent" *ngIf="scoreLoading()"></mat-spinner>
+                    <mat-spinner color="accent"></mat-spinner>
                 } @else {
                     <p class="center">Please select a property and a date.</p>
                 }
@@ -120,7 +120,7 @@
                     <tr class="mat-row">
                         <td class="mat-cell">Operator</td>
                         @for (operator of usage.operators; track $index) {
-                            <td class="mat-cell">{{ operator.operatorPath }}</td>
+                            <td class="mat-cell">{{ operator.operatorName }} {{ operator.operatorPath }}</td>
                         }
                     </tr>
                     <tr class="mat-row">
@@ -131,10 +131,12 @@
                     </tr>
                 </table>
             } @else {
-                <p class="center">Usage log will be visible after an analysis was performed.</p>
+                @if (usageLoading()) {
+                    <mat-spinner color="accent"></mat-spinner>
+                } @else {
+                    <p class="center">Usage log will be visible after an analysis was performed.</p>
+                }
             }
-
-            <mat-spinner color="accent" *ngIf="usageLoading()"></mat-spinner>
         </mat-card-content>
     </mat-card>
 </div>

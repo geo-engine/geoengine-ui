@@ -44,6 +44,8 @@ import {
     ColorMapSelectorComponent,
     ALL_COLORMAPS,
     ColorBreakpoint,
+    RasterLayer,
+    RasterSymbology,
 } from '@geoengine/common';
 import {utc} from 'moment';
 import {DataSelectionService} from '../data-selection.service';
@@ -97,7 +99,7 @@ export class DashboardComponent implements AfterViewInit, AfterContentInit {
 
     analyzeCard = viewChild.required('analyzecard', {read: ElementRef});
 
-    timeSteps: Time[] = [new Time(utc('2022-01-01')), new Time(utc('2023-01-01'))];
+    timeSteps: Time[] = [new Time(utc('2022-05-01')), new Time(utc('2023-05-01'))];
 
     readonly scoreIndicator = viewChild<MatProgressSpinner>('scoreIndicator');
     readonly scoreColors = ColorMapSelectorComponent.createLinearBreakpoints(ALL_COLORMAPS['RdYlGn'], 16, false, {
@@ -125,6 +127,7 @@ export class DashboardComponent implements AfterViewInit, AfterContentInit {
     }
 
     async ngAfterContentInit(): Promise<void> {
+        this.loadClassification();
         await this.loadProperties();
 
         this.projectService.getSelectedFeatureStream().subscribe(async (featureSelection) => {
@@ -155,6 +158,20 @@ export class DashboardComponent implements AfterViewInit, AfterContentInit {
         });
     }
 
+    async loadClassification(): Promise<void> {
+        const workflowId = await firstValueFrom(this.projectService.registerWorkflow(CLASSIFICATION_WORKFLOW));
+
+        const rasterLayer = new RasterLayer({
+            name: 'ESG Classification',
+            workflowId,
+            isVisible: true,
+            isLegendVisible: false,
+            symbology: CLASSIFICATION_SYMBOLOGY,
+        });
+
+        return await firstValueFrom(this.dataSelectionService.setRasterLayer(rasterLayer, this.timeSteps, CLASSIFICIATION_DATA_RANGE));
+    }
+
     async loadProperties(): Promise<void> {
         const workflowId = await firstValueFrom(this.projectService.registerWorkflow(PROPERTIES_WORKFLOW));
 
@@ -176,6 +193,7 @@ export class DashboardComponent implements AfterViewInit, AfterContentInit {
         }
 
         this.scoreLoading.set(true);
+        this.score.set(undefined);
 
         const columnFilter: ColumnRangeFilterDict = {
             type: 'ColumnRangeFilter',
@@ -301,17 +319,73 @@ const PROPERTIES_SYMBOLOGY: VectorSymbology = PolygonSymbology.fromPolygonSymbol
         },
         color: {
             type: 'static',
-            color: [128, 0, 0, 255],
+            color: [255, 127, 80, 255],
         },
     },
     fillColor: {
         type: 'static',
-        color: [128, 0, 0, 128],
+        color: [255, 127, 80, 128],
     },
     autoSimplified: true,
 });
 
+const CLASSIFICATION_SOURCE_OP: SourceOperatorDict = {
+    type: 'GdalSource',
+    params: {data: 'esg'},
+};
+
+const CLASSIFICATION_WORKFLOW: Workflow = {
+    type: 'Raster',
+    operator: CLASSIFICATION_SOURCE_OP,
+};
+
 const CLASSIFICATION_RESOLUTION = 10;
+
+const CLASSIFICIATION_DATA_RANGE = {
+    min: 0,
+    max: 5,
+};
+
+const CLASSIFICATION_SYMBOLOGY: RasterSymbology = RasterSymbology.fromRasterSymbologyDict({
+    type: 'raster',
+    opacity: 1,
+    rasterColorizer: {
+        type: 'singleBand',
+        band: 0,
+        bandColorizer: {
+            type: 'linearGradient',
+            breakpoints: [
+                {
+                    value: 0,
+                    color: [142, 1, 82, 255],
+                },
+                {
+                    value: 1,
+                    color: [222, 119, 174, 255],
+                },
+                {
+                    value: 2,
+                    color: [253, 224, 239, 255],
+                },
+                {
+                    value: 3,
+                    color: [230, 245, 208, 255],
+                },
+                {
+                    value: 4,
+                    color: [127, 188, 65, 255],
+                },
+                {
+                    value: 5,
+                    color: [39, 100, 25, 255],
+                },
+            ],
+            noDataColor: [0, 0, 0, 0],
+            overColor: [0, 0, 0, 0],
+            underColor: [0, 0, 0, 0],
+        },
+    },
+});
 
 /** Colorizes the score indicator based on the given score and breakpoints */
 function colorizeScoreIndicator(element: MatProgressSpinner, score: number, breakpoints: Array<ColorBreakpoint>): void {
