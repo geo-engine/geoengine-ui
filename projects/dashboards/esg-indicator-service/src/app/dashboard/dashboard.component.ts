@@ -310,16 +310,16 @@ const PROPERTIES_SYMBOLOGY: VectorSymbology = PolygonSymbology.fromPolygonSymbol
     stroke: {
         width: {
             type: 'static',
-            value: 2,
+            value: 4,
         },
         color: {
             type: 'static',
-            color: [255, 127, 80, 255],
+            color: [0, 0, 200, 255],
         },
     },
     fillColor: {
         type: 'static',
-        color: [255, 127, 80, 128],
+        color: [0, 0, 200, 128],
     },
     autoSimplified: true,
 });

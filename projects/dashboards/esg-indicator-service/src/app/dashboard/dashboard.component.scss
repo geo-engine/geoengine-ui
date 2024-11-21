@@ -55,11 +55,11 @@ h1 {
 }
 
 .inspect {
-    min-height: 50vh !important;
+    min-height: 35vh !important;
 }
 
 .dashboard-card {
-    min-height: 20rem;
+    min-height: 10rem;
 }
 
 .more-button {
@@ -134,6 +134,7 @@ mat-spinner {
 .mat-table {
     width: 100%;
     border-collapse: collapse;
+    margin-top: 1rem;
 }
 
 .mat-header-cell,
@@ -160,4 +161,12 @@ mat-spinner {
 
 .score {
     transform: scale(3);
+}
+
+.usage-card {
+    min-height: 20rem;
+}
+
+.score-card {
+    min-height: 20rem;
 }
