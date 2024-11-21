@@ -109,13 +109,8 @@ export class DashboardComponent implements AfterViewInit, AfterContentInit {
 
     constructor() {
         effect(() => {
-            const score = this.score();
-            const scoreIndicator = this.scoreIndicator();
-
-            if (!score || !scoreIndicator) {
-                return;
-            }
-
+            const [score, scoreIndicator] = [this.score(), this.scoreIndicator()];
+            if (!score || !scoreIndicator) return;
             untracked(() => colorizeScoreIndicator(scoreIndicator, score, this.scoreColors));
         });
     }
@@ -390,14 +385,17 @@ const CLASSIFICATION_SYMBOLOGY: RasterSymbology = RasterSymbology.fromRasterSymb
 /** Colorizes the score indicator based on the given score and breakpoints */
 function colorizeScoreIndicator(element: MatProgressSpinner, score: number, breakpoints: Array<ColorBreakpoint>): void {
     const circle = element._elementRef.nativeElement.getElementsByTagName('circle')[0];
-    if (!circle) {
+    if (!circle || breakpoints.length === 0) {
         return;
     }
 
-    for (let i = 0; i < breakpoints.length - 1; i++) {
-        if (score >= breakpoints[i].value && score < breakpoints[i + 1].value) {
-            circle.style.stroke = breakpoints[i].color.rgbaCssString();
-            return;
+    let color = breakpoints[0].color;
+    for (const breakpoint of breakpoints) {
+        if (score < breakpoint.value) {
+            break;
         }
+        color = breakpoint.color;
     }
+
+    circle.style.stroke = color.rgbaCssString();
 }
