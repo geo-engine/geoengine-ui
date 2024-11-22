@@ -897,7 +897,7 @@
             "prefix": "app",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
+                    "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
                             "codemirror",
@@ -908,9 +908,10 @@
                             "moment",
                             "xml-utils"
                         ],
-                        "outputPath": "dist/dashboards/ecometrics",
+                        "outputPath": {
+                            "base": "dist/dashboards/ecometrics"
+                        },
                         "index": "projects/dashboards/ecometrics/src/index.html",
-                        "main": "projects/dashboards/ecometrics/src/main.ts",
                         "polyfills": ["zone.js"],
                         "tsConfig": "projects/dashboards/ecometrics/tsconfig.app.json",
                         "inlineStyleLanguage": "scss",
@@ -930,7 +931,8 @@
                             "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
-                        "scripts": []
+                        "scripts": [],
+                        "browser": "projects/dashboards/ecometrics/src/main.ts"
                     },
                     "configurations": {
                         "production": {
@@ -1009,7 +1011,7 @@
             "prefix": "app",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
+                    "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
                             "codemirror",
@@ -1020,9 +1022,10 @@
                             "moment",
                             "xml-utils"
                         ],
-                        "outputPath": "dist/dashboards/esg-indicator-service",
+                        "outputPath": {
+                            "base": "dist/dashboards/esg-indicator-service"
+                        },
                         "index": "projects/dashboards/esg-indicator-service/src/index.html",
-                        "main": "projects/dashboards/esg-indicator-service/src/main.ts",
                         "polyfills": ["zone.js"],
                         "tsConfig": "projects/dashboards/esg-indicator-service/tsconfig.app.json",
                         "inlineStyleLanguage": "scss",
@@ -1042,7 +1045,8 @@
                             "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
-                        "scripts": []
+                        "scripts": [],
+                        "browser": "projects/dashboards/esg-indicator-service/src/main.ts"
                     },
                     "configurations": {
                         "production": {
