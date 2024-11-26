@@ -1,9 +1,9 @@
-import {BehaviorSubject, Subscription} from 'rxjs';
+import {BehaviorSubject, firstValueFrom, Subscription} from 'rxjs';
 
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
-import {NotificationService, UserService, User, CoreModule} from '@geoengine/core';
+import {NotificationService, UserService, User, CoreModule, ProjectService} from '@geoengine/core';
 import {first} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {AsyncPipe} from '@angular/common';
@@ -46,6 +46,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         private readonly changeDetectorRef: ChangeDetectorRef,
         private readonly userService: UserService,
         private readonly notificationService: NotificationService,
+        private readonly projectService: ProjectService,
         private readonly router: Router,
     ) {
         this.loginForm = new UntypedFormGroup({
@@ -106,11 +107,13 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
                 password: this.loginForm.controls['password'].value,
             })
             .subscribe(
-                (session) => {
+                async (session) => {
                     this.user = session.user;
                     this.invalidCredentials$.next(false);
                     this.formStatus$.next(FormStatus.LoggedIn);
 
+                    // wait for project to be loaded before redirecting
+                    await firstValueFrom(this.projectService.getProjectOnce());
                     this.redirectToMainView();
                 },
                 () => {

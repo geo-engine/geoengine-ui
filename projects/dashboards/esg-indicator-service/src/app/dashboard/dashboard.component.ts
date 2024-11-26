@@ -282,11 +282,6 @@ export class DashboardComponent implements AfterViewInit, AfterContentInit {
         this.usageLoading.set(false);
     }
 
-    async reset(): Promise<void> {
-        await firstValueFrom(this.dataSelectionService.clearPolygonLayer());
-        this.changeDetectorRef.markForCheck();
-    }
-
     logout(): void {
         this.userService.logout();
         this.router.navigate(['/signin']);

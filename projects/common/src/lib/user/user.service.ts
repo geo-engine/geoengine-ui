@@ -49,6 +49,14 @@ export class UserService {
         return this.session$.pipe(filter(isDefined));
     }
 
+    /**
+     * @returns Retrieve a stream that notifies about the current session.
+     *          May be undefined if there is no current session.
+     */
+    getSessionOrUndefinedStream(): Observable<UserSession | undefined> {
+        return this.session$;
+    }
+
     isLoggedIn(): Observable<boolean> {
         return this.session$.pipe(first(), map(isDefined));
     }

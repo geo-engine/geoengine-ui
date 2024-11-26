@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {LoadingState, ProjectService} from '@geoengine/core';
+import {LoadingState, ProjectService, UserService, Project} from '@geoengine/core';
 import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, firstValueFrom, Observable, of} from 'rxjs';
 import moment from 'moment';
@@ -30,16 +30,21 @@ export class DataSelectionService {
     protected readonly _rasterLayer = new BehaviorSubject<RasterLayer | undefined>(undefined);
     protected readonly _polygonLayer = new BehaviorSubject<VectorLayer | undefined>(undefined);
 
-    constructor(private readonly projectService: ProjectService) {
+    protected oldProject: Project | undefined;
+
+    constructor(
+        private readonly projectService: ProjectService,
+        readonly userService: UserService,
+    ) {
         this.rasterLayer = this._rasterLayer.pipe(
-            mergeMap((rasterLayer) =>
-                rasterLayer ? (projectService.getLayerChangesStream(rasterLayer) as Observable<RasterLayer>) : of(undefined),
-            ),
+            mergeMap((rasterLayer) => {
+                return rasterLayer ? (projectService.getLayerChangesStream(rasterLayer) as Observable<RasterLayer>) : of(undefined);
+            }),
         );
         this.polygonLayer = this._polygonLayer.pipe(
-            mergeMap((polygonLayer) =>
-                polygonLayer ? (projectService.getLayerChangesStream(polygonLayer) as Observable<VectorLayer>) : of(undefined),
-            ),
+            mergeMap((polygonLayer) => {
+                return polygonLayer ? (projectService.getLayerChangesStream(polygonLayer) as Observable<VectorLayer>) : of(undefined);
+            }),
         );
 
         this.layers = combineLatest([this.rasterLayer, this.polygonLayer]).pipe(
@@ -66,6 +71,12 @@ export class DataSelectionService {
             }),
             map((loadingState) => loadingState === LoadingState.LOADING),
         );
+
+        this.userService.getSessionOrUndefinedStream().subscribe(async (_session) => {
+            this.oldProject = await firstValueFrom(this.projectService.getProjectOnce());
+            this._rasterLayer.next(undefined);
+            this._polygonLayer.next(undefined);
+        });
     }
 
     setRasterLayer(layer: RasterLayer, timeSteps: Array<Time>, dataRange: DataRange): Observable<void> {
@@ -90,21 +101,6 @@ export class DataSelectionService {
                 this.timeFormat.next(estimateTimeFormat(timeSteps));
                 this.projectService.setTime(timeSteps[0]);
                 this.dataRange.next(dataRange);
-            }),
-        );
-    }
-
-    clearPolygonLayer(): Observable<void> {
-        return this._polygonLayer.pipe(
-            first(),
-            mergeMap((currentLayer) => {
-                if (currentLayer) {
-                    const o = this.projectService.removeLayer(currentLayer);
-                    this._polygonLayer.next(undefined);
-                    return o;
-                } else {
-                    return of(undefined);
-                }
             }),
         );
     }
