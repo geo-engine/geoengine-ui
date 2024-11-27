@@ -1,4 +1,4 @@
-import {BehaviorSubject, firstValueFrom, Subscription} from 'rxjs';
+import {BehaviorSubject, Subscription} from 'rxjs';
 
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
@@ -112,8 +112,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.invalidCredentials$.next(false);
                     this.formStatus$.next(FormStatus.LoggedIn);
 
-                    // wait for project to be loaded before redirecting
-                    await firstValueFrom(this.projectService.getProjectOnce());
                     this.redirectToMainView();
                 },
                 () => {

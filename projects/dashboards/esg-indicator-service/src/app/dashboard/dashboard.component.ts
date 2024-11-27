@@ -50,11 +50,11 @@ import {
 import {utc} from 'moment';
 import {DataSelectionService} from '../data-selection.service';
 import {ComputationQuota, Workflow} from '@geoengine/openapi-client';
-import {LegendComponent} from '../legend/legend.component';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {Router} from '@angular/router';
 import proj4 from 'proj4';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {QuotaLogComponent} from '../quota-log/quota-log.component';
 
 interface SelectedProperty {
     featureId: number;
@@ -67,7 +67,7 @@ interface SelectedProperty {
     styleUrl: './dashboard.component.scss',
     standalone: true,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CoreModule, AsyncPipe, MatGridListModule, MatMenuModule, MatIconModule, MatButtonModule, MatCardModule, LegendComponent],
+    imports: [CoreModule, AsyncPipe, MatGridListModule, MatMenuModule, MatIconModule, MatButtonModule, MatCardModule, QuotaLogComponent],
 })
 export class DashboardComponent implements AfterViewInit, AfterContentInit {
     readonly userService = inject(UserService);
@@ -122,8 +122,7 @@ export class DashboardComponent implements AfterViewInit, AfterContentInit {
     }
 
     async ngAfterContentInit(): Promise<void> {
-        this.loadClassification();
-        await this.loadProperties();
+        this.loadData();
 
         this.projectService.getSelectedFeatureStream().subscribe(async (featureSelection) => {
             const features = await this.dataSelectionService.getPolygonLayerFeatures();
@@ -151,6 +150,14 @@ export class DashboardComponent implements AfterViewInit, AfterContentInit {
                 this.selectedFeature.set(undefined);
             }
         });
+    }
+
+    private async loadData(): Promise<void> {
+        // wait for project to be loaded before redirecting
+        await firstValueFrom(this.projectService.getProjectOnce());
+
+        this.loadClassification();
+        await this.loadProperties();
     }
 
     async loadClassification(): Promise<void> {
@@ -272,14 +279,14 @@ export class DashboardComponent implements AfterViewInit, AfterContentInit {
         this.score.set(score);
         this.scoreLoading.set(false);
 
-        this.usageLoading.set(true);
-        const usage = await this.commonUserService.computationsQuota(workflowId, 1);
+        // this.usageLoading.set(true);
+        // const usage = await this.commonUserService.computationsQuota(workflowId, 1);
 
-        if (usage.length > 0) {
-            this.usage.set(usage[0]);
-        }
+        // if (usage.length > 0) {
+        //     this.usage.set(usage[0]);
+        // }
 
-        this.usageLoading.set(false);
+        // this.usageLoading.set(false);
     }
 
     logout(): void {

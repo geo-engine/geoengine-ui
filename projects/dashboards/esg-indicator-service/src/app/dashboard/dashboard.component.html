@@ -101,45 +101,7 @@
             <mat-card-title> Usage log </mat-card-title>
         </mat-card-header>
         <mat-card-content #analyzecard class="dashboard-card-content score-container">
-            @if (usage(); as usage) {
-                <table class="mat-elevation-z8 mat-table">
-                    <tr class="mat-row">
-                        <td class="mat-cell">Workflow</td>
-                        <td class="mat-cell">{{ usage.workflowId }}</td>
-                    </tr>
-                    <tr class="mat-row">
-                        <td class="mat-cell">Computation</td>
-                        <td class="mat-cell">{{ usage.computationId }}</td>
-                    </tr>
-                </table>
-
-                <table class="mat-elevation-z8 mat-table">
-                    <tr class="mat-row">
-                        <td class="mat-cell">Operator</td>
-                        @for (operator of usage.operators; track $index) {
-                            <td class="mat-cell">{{ operator.operatorName }}</td>
-                        }
-                    </tr>
-                    <!-- <tr class="mat-row">
-                        <td class="mat-cell">Path</td>
-                        @for (operator of usage.operators; track $index) {
-                            <td class="mat-cell">{{ operator.operatorPath }}</td>
-                        }
-                    </tr> -->
-                    <tr class="mat-row">
-                        <td class="mat-cell">Count</td>
-                        @for (operator of usage.operators; track $index) {
-                            <td class="mat-cell">{{ operator.count }}</td>
-                        }
-                    </tr>
-                </table>
-            } @else {
-                @if (usageLoading()) {
-                    <mat-spinner color="accent"></mat-spinner>
-                } @else {
-                    <p class="center">Usage log will be visible after an analysis was performed.</p>
-                }
-            }
+            <geoengine-quota-log></geoengine-quota-log>
         </mat-card-content>
     </mat-card>
 </div>
