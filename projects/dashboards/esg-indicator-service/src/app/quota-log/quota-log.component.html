@@ -65,4 +65,6 @@
     </table>
 }
 
-<mat-progress-bar class="loading-indicator" mode="query" *ngIf="source.loading()"></mat-progress-bar>
+@if (source.loading()) {
+    <mat-progress-bar class="loading-indicator" mode="query"></mat-progress-bar>
+}
