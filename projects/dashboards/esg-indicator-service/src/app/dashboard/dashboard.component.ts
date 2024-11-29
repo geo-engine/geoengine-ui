@@ -99,6 +99,8 @@ export class DashboardComponent implements AfterViewInit, AfterContentInit {
 
     analyzeCard = viewChild.required('analyzecard', {read: ElementRef});
 
+    usageCompontent = viewChild.required(QuotaLogComponent);
+
     timeSteps: Time[] = [new Time(utc('2022-05-01')), new Time(utc('2023-05-01'))];
 
     readonly scoreIndicator = viewChild<MatProgressSpinner>('scoreIndicator');
@@ -279,14 +281,7 @@ export class DashboardComponent implements AfterViewInit, AfterContentInit {
         this.score.set(score);
         this.scoreLoading.set(false);
 
-        // this.usageLoading.set(true);
-        // const usage = await this.commonUserService.computationsQuota(workflowId, 1);
-
-        // if (usage.length > 0) {
-        //     this.usage.set(usage[0]);
-        // }
-
-        // this.usageLoading.set(false);
+        this.usageCompontent().refresh();
     }
 
     logout(): void {

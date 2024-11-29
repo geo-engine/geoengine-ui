@@ -1,5 +1,5 @@
 import {DataSource} from '@angular/cdk/collections';
-import {AfterViewInit, ChangeDetectionStrategy, Component, signal, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, signal, ViewChild} from '@angular/core';
 import {Observable, Subject, tap} from 'rxjs';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {UserService} from '@geoengine/common';
@@ -30,7 +30,12 @@ export class QuotaLogComponent implements AfterViewInit {
     readonly detailsVisible = signal(false);
     readonly details = signal<OperatorQuota[] | undefined>(undefined);
 
-    constructor(private readonly userService: UserService) {
+    private refreshInterval: ReturnType<typeof setInterval> | undefined;
+
+    constructor(
+        private readonly userService: UserService,
+        private readonly changeDetectorRef: ChangeDetectorRef,
+    ) {
         this.setUpSource();
     }
 
@@ -47,6 +52,11 @@ export class QuotaLogComponent implements AfterViewInit {
     hideDetails(): void {
         this.details.set(undefined);
         this.detailsVisible.set(false);
+    }
+
+    refresh(): void {
+        this.setUpSource();
+        this.changeDetectorRef.markForCheck();
     }
 
     protected loadQuotaLogsPage(): void {
