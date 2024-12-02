@@ -81,7 +81,7 @@ export class DashboardComponent implements AfterViewInit, AfterContentInit {
     private readonly backend = inject(BackendService);
     private readonly router = inject(Router);
 
-    maxScore = 2;
+    maxScore = 5;
 
     isSelectingBox = signal(false);
     selectedFeature: WritableSignal<SelectedProperty | undefined> = signal(undefined);
@@ -219,7 +219,7 @@ export class DashboardComponent implements AfterViewInit, AfterContentInit {
                     values: ['score'],
                 },
                 featureAggregation: 'mean',
-                temporalAggregation: 'mean',
+                temporalAggregation: 'none',
                 featureAggregationIgnoreNoData: true,
                 temporalAggregationIgnoreNoData: true,
             },
