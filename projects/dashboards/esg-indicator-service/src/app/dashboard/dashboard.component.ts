@@ -101,7 +101,7 @@ export class DashboardComponent implements AfterViewInit, AfterContentInit {
 
     usageCompontent = viewChild.required(QuotaLogComponent);
 
-    timeSteps: Time[] = [new Time(utc('2022-05-01')), new Time(utc('2023-05-01'))];
+    timeSteps: Time[] = [new Time(utc('2021-05-01')), new Time(utc('2022-05-01'))];
 
     readonly scoreIndicator = viewChild<MatProgressSpinner>('scoreIndicator');
     readonly scoreColors = ColorMapSelectorComponent.createLinearBreakpoints(ALL_COLORMAPS['RdYlGn'], 16, false, {
