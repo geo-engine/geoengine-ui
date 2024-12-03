@@ -897,7 +897,7 @@
             "prefix": "app",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
+                    "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
                             "codemirror",
@@ -908,9 +908,10 @@
                             "moment",
                             "xml-utils"
                         ],
-                        "outputPath": "dist/dashboards/ecometrics",
+                        "outputPath": {
+                            "base": "dist/dashboards/ecometrics"
+                        },
                         "index": "projects/dashboards/ecometrics/src/index.html",
-                        "main": "projects/dashboards/ecometrics/src/main.ts",
                         "polyfills": ["zone.js"],
                         "tsConfig": "projects/dashboards/ecometrics/tsconfig.app.json",
                         "inlineStyleLanguage": "scss",
@@ -930,7 +931,8 @@
                             "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
-                        "scripts": []
+                        "scripts": [],
+                        "browser": "projects/dashboards/ecometrics/src/main.ts"
                     },
                     "configurations": {
                         "production": {
@@ -983,6 +985,132 @@
                         "assets": ["projects/dashboards/ecometrics/src/favicon.ico", "projects/dashboards/ecometrics/src/assets"],
                         "styles": ["projects/dashboards/ecometrics/src/styles.scss"],
                         "scripts": []
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-eslint/builder:lint",
+                    "options": {
+                        "lintFilePatterns": ["projects/dashboards/ecometrics/**/*.ts", "projects/dashboards/ecometrics/**/*.html"]
+                    }
+                }
+            }
+        },
+        "esg-indicator-service": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:component": {
+                    "changeDetection": "OnPush",
+                    "inlineStyle": false,
+                    "inlineTemplate": false,
+                    "prefix": "geoengine",
+                    "style": "scss"
+                }
+            },
+            "root": "projects/dashboards/esg-indicator-service",
+            "sourceRoot": "projects/dashboards/esg-indicator-service/src",
+            "prefix": "app",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:application",
+                    "options": {
+                        "allowedCommonJsDependencies": [
+                            "codemirror",
+                            "dagre-d3",
+                            "json-stringify-pretty-compact",
+                            "fast-json-stable-stringify",
+                            "lerc",
+                            "moment",
+                            "xml-utils"
+                        ],
+                        "outputPath": {
+                            "base": "dist/dashboards/esg-indicator-service"
+                        },
+                        "index": "projects/dashboards/esg-indicator-service/src/index.html",
+                        "polyfills": ["zone.js"],
+                        "tsConfig": "projects/dashboards/esg-indicator-service/tsconfig.app.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "projects/dashboards/esg-indicator-service/src/favicon.ico",
+                            "projects/dashboards/esg-indicator-service/src/assets",
+                            {
+                                "glob": "**/*",
+                                "input": "dist/common/assets",
+                                "output": "assets"
+                            }
+                        ],
+                        "styles": [
+                            "projects/dashboards/esg-indicator-service/src/styles.scss",
+                            "dist/common/assets/fonts/material-design-icons/material-icons.css",
+                            "dist/common/assets/fonts/poppins/poppins.css",
+                            "node_modules/codemirror/lib/codemirror.css",
+                            "node_modules/ol/ol.css"
+                        ],
+                        "scripts": [],
+                        "browser": "projects/dashboards/esg-indicator-service/src/main.ts"
+                    },
+                    "configurations": {
+                        "production": {
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "5mb",
+                                    "maximumError": "10mb"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "6kb",
+                                    "maximumError": "10kb"
+                                }
+                            ],
+                            "outputHashing": "all"
+                        },
+                        "development": {
+                            "optimization": false,
+                            "extractLicenses": false,
+                            "sourceMap": true
+                        }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "serve": {
+                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "configurations": {
+                        "production": {
+                            "buildTarget": "esg-indicator-service:build:production"
+                        },
+                        "development": {
+                            "buildTarget": "esg-indicator-service:build:development"
+                        }
+                    },
+                    "defaultConfiguration": "development"
+                },
+                "extract-i18n": {
+                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "options": {
+                        "buildTarget": "esg-indicator-service:build"
+                    }
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "polyfills": ["zone.js", "zone.js/testing"],
+                        "tsConfig": "projects/dashboards/esg-indicator-service/tsconfig.spec.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "projects/dashboards/esg-indicator-service/src/favicon.ico",
+                            "projects/dashboards/esg-indicator-service/src/assets"
+                        ],
+                        "styles": ["projects/dashboards/esg-indicator-service/src/styles.scss"],
+                        "scripts": []
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-eslint/builder:lint",
+                    "options": {
+                        "lintFilePatterns": [
+                            "projects/dashboards/esg-indicator-service/**/*.ts",
+                            "projects/dashboards/esg-indicator-service/**/*.html"
+                        ]
                     }
                 }
             }

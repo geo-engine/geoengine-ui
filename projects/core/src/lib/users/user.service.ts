@@ -233,6 +233,10 @@ export class UserService {
         return result.asObservable();
     }
 
+    logout(): void {
+        this.session$.next(undefined);
+    }
+
     createSessionWithToken(sessionToken: UUID): Observable<Session> {
         return from(
             new SessionApi(apiConfigurationWithAccessKey(sessionToken)).sessionHandler().then((response) => this.sessionFromDict(response)),

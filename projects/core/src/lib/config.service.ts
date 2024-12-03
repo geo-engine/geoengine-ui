@@ -78,16 +78,21 @@ interface SpatialReferenceConfig {
     readonly SRS_STRING: string;
 }
 
+interface Project {
+    readonly CREATE_TEMPORARY_PROJECT_AT_STARTUP: boolean;
+}
+
 export interface CoreConfigStructure extends CommonConfigStructure {
     readonly DEFAULTS: ConfigDefaults;
     readonly DELAYS: Delays;
     readonly MAP: ConfigMap;
+    readonly PROJECT: Project;
+    readonly SPATIAL_REFERENCES: Array<SpatialReferenceConfig>;
     readonly TIME: Time;
     readonly USER: User;
     readonly WCS: Wcs;
     readonly WFS: Wfs;
     readonly WMS: Wms;
-    readonly SPATIAL_REFERENCES: Array<SpatialReferenceConfig>;
 }
 
 export const DEFAULT_CORE_CONFIG: CoreConfigStructure = {
@@ -184,6 +189,9 @@ export const DEFAULT_CORE_CONFIG: CoreConfigStructure = {
             SRS_STRING: 'EPSG:32737',
         },
     ],
+    PROJECT: {
+        CREATE_TEMPORARY_PROJECT_AT_STARTUP: false,
+    },
 };
 
 /**
@@ -228,6 +236,10 @@ export class CoreConfig extends CommonConfig {
 
     get SPATIAL_REFERENCES(): Array<SpatialReferenceConfig> {
         return this.config.SPATIAL_REFERENCES;
+    }
+
+    get PROJECT(): Project {
+        return this.config.PROJECT;
     }
 
     /**
