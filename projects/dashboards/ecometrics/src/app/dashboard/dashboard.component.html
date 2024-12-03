@@ -109,9 +109,12 @@
                     </p>
                 </div>
             } @else {
-                <p class="center">Please select an indicator and a region of interest.</p>
+                @if (plotLoading()) {
+                    <mat-spinner color="accent" *ngIf="plotLoading()"></mat-spinner>
+                } @else {
+                    <p class="center">Please select an indicator and a region of interest.</p>
+                }
             }
-            <mat-spinner color="accent" *ngIf="plotLoading()"></mat-spinner>
         </mat-card-content>
     </mat-card>
 </div>
