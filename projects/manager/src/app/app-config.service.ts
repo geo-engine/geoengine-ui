@@ -39,12 +39,6 @@ interface Homepage {
 
 const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_COMMON_CONFIG, {
     AUTO_GUEST_LOGIN: false,
-    BRANDING: {
-        LOGO_URL: 'assets/geoengine.svg',
-        LOGO_ICON_URL: 'assets/geoengine-favicon-white.svg',
-        LOGO_ALT_URL: 'assets/geoengine-white.svg',
-        PAGE_TITLE: 'Geo Engine',
-    },
     DEFAULTS: {
         SNACKBAR_DURATION: 2000,
     },
@@ -53,10 +47,6 @@ const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_COMMON_CONFIG, {
 @Injectable()
 export class AppConfig extends CommonConfig {
     protected override config!: AppConfigStructure;
-
-    get BRANDING(): Branding {
-        return this.config.BRANDING;
-    }
 
     get DEFAULTS(): ConfigDefaults {
         return this.config.DEFAULTS;

@@ -16,13 +16,6 @@ interface Wcs {
     readonly VERSION: string;
 }
 
-interface User {
-    readonly GUEST: {
-        readonly NAME: string;
-        readonly PASSWORD: string;
-    };
-}
-
 interface Delays extends CommonDelays {
     readonly LOADING: {
         readonly MIN: number;
@@ -83,7 +76,6 @@ export interface CoreConfigStructure extends CommonConfigStructure {
     readonly DELAYS: Delays;
     readonly MAP: ConfigMap;
     readonly TIME: Time;
-    readonly USER: User;
     readonly WCS: Wcs;
     readonly WFS: Wfs;
     readonly WMS: Wms;
@@ -99,6 +91,12 @@ export const DEFAULT_CORE_CONFIG: CoreConfigStructure = {
             PROJECTION: 'EPSG:4326', // TODO: change back to 'EPSG:3857'
         },
         FOCUS_EXTENT: [-180, -90, 180, 90],
+    },
+    BRANDING: {
+        LOGO_URL: 'assets/geoengine.svg',
+        LOGO_ICON_URL: 'assets/geoengine-favicon-white.svg',
+        LOGO_ALT_URL: 'assets/geoengine-white.svg',
+        PAGE_TITLE: 'Geo Engine',
     },
     DELAYS: {
         LOADING: {
@@ -133,13 +131,6 @@ export const DEFAULT_CORE_CONFIG: CoreConfigStructure = {
     TIME: {
         ALLOW_RANGES: true,
     },
-    USER: {
-        GUEST: {
-            NAME: 'guest',
-            PASSWORD: 'guest',
-        },
-    },
-    AUTO_GUEST_LOGIN: true,
     WCS: {
         SERVICE: 'WCS',
         VERSION: '2.0.1',
@@ -185,6 +176,14 @@ export const DEFAULT_CORE_CONFIG: CoreConfigStructure = {
             SRS_STRING: 'EPSG:32737',
         },
     ],
+    USER: {
+        GUEST: {
+            NAME: 'guest',
+            PASSWORD: 'guest',
+        },
+        AUTO_GUEST_LOGIN: true,
+        REGISTRATION_AVAILABLE: true,
+    },
 };
 
 /**
@@ -209,10 +208,6 @@ export class CoreConfig extends CommonConfig {
 
     get WCS(): Wcs {
         return this.config.WCS;
-    }
-
-    get USER(): User {
-        return this.config.USER;
     }
 
     get DEFAULTS(): ConfigDefaults {

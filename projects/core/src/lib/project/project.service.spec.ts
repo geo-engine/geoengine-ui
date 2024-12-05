@@ -6,14 +6,12 @@ import {User} from '../users/user.model';
 import {NEVER, of} from 'rxjs';
 import {CoreConfig, DEFAULT_CORE_CONFIG} from '../config.service';
 import {CreateProjectResponseDict, STRectangleDict, TimeStepDict, UUID} from '../backend/backend.model';
-import {NotificationService} from '../notification.service';
 import {MapService} from '../map/map.service';
 import {BackendService} from '../backend/backend.service';
-import {UserService} from '../users/user.service';
 import {SpatialReferenceService, WGS_84} from '../spatial-references/spatial-reference.service';
 import {first, mergeMap, tap} from 'rxjs/operators';
 import {Configuration, DefaultConfig} from '@geoengine/openapi-client';
-import {LayersService, SpatialReferenceSpecification, Time} from '@geoengine/common';
+import {LayersService, NotificationService, SpatialReferenceSpecification, Time, UserService} from '@geoengine/common';
 
 describe('test project methods in projectService', () => {
     let notificationServiceSpy: {get: jasmine.Spy};

@@ -2,8 +2,7 @@ import {BehaviorSubject} from 'rxjs';
 import {Component, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
 import {UntypedFormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
 import {ProjectService} from '../project.service';
-import {NotificationService} from '../../notification.service';
-import {geoengineValidators} from '@geoengine/common';
+import {geoengineValidators, NotificationService} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-save-project-as',

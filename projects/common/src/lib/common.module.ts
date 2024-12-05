@@ -70,6 +70,7 @@ import {AutocompleteSelectDirective} from './util/directives/autocomplete-select
 import {CodeEditorComponent} from './util/components/code-editor.component';
 import {OgrDatasetComponent} from './datasets/ogr-dataset/ogr-dataset.component';
 import {RasterMultibandSymbologyEditorComponent} from './symbology/raster-multiband-symbology-editor/raster-multiband-symbology-editor.component';
+import {LoginComponent} from './login/login.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -119,6 +120,7 @@ const COMMON_COMPONENTS = [
     LayerCollectionNavigationComponent,
     LineIconComponent,
     LineIconComponent,
+    LoginComponent,
     MeasurementComponent,
     NumberParamEditorComponent,
     PercentileBreakpointSelectorComponent,

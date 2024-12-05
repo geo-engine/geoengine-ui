@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {NavigationComponent} from './navigation/navigation.component';
 import {LogInGuard} from './util/guards/log-in.guard';
-import {LoginComponent} from './login/login.component';
+import {LoginComponent} from '@geoengine/common';
 
 const routes: Routes = [
     {path: '', redirectTo: 'navigation', pathMatch: 'full'},

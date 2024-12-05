@@ -2,9 +2,9 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {BackendStatusPageComponent, LogInGuard, NotFoundPageComponent, BackendAvailableGuard} from '@geoengine/core';
 import {CanRegisterGuard} from './guards/can-register.guard';
-import {LoginComponent} from './login/login.component';
 import {MainComponent} from './main/main.component';
 import {RegisterComponent} from './register/register.component';
+import {LoginComponent} from '@geoengine/common';
 
 const routes: Routes = [
     {path: '', redirectTo: 'map', pathMatch: 'full'},

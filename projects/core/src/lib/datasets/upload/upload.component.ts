@@ -5,9 +5,15 @@ import {MatStepper} from '@angular/material/stepper';
 import {Subject, Subscription} from 'rxjs';
 import {mergeMap} from 'rxjs/operators';
 import {UUID} from '../../backend/backend.model';
-import {NotificationService} from '../../notification.service';
 import {ProjectService} from '../../project/project.service';
-import {DatasetsService, OgrDatasetComponent, UploadsService, UserService, timeStepGranularityOptions} from '@geoengine/common';
+import {
+    DatasetsService,
+    NotificationService,
+    OgrDatasetComponent,
+    UploadsService,
+    UserService,
+    timeStepGranularityOptions,
+} from '@geoengine/common';
 import {DatasetService} from '../dataset.service';
 import {AddDataset, DatasetDefinition, MetaDataDefinition, MetaDataSuggestion, TimeGranularity} from '@geoengine/openapi-client';
 
