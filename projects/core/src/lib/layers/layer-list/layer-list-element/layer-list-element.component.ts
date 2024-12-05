@@ -16,7 +16,7 @@ import {LoadingState} from '../../../project/loading-state.model';
 import {BackendService} from '../../../backend/backend.service';
 import {HttpEventType} from '@angular/common/http';
 import {filenameFromHttpHeaders} from '../../../util/http';
-import {IconStyle, Layer, RasterLayerMetadata, Symbology, SymbologyType, UserService} from '@geoengine/common';
+import {IconStyle, Layer, RasterLayerMetadata, RasterSymbology, Symbology, SymbologyType, UserService} from '@geoengine/common';
 import {RasterBandDescriptor} from '@geoengine/openapi-client';
 import {SymbologyEditorComponent} from '../../symbology/symbology-editor/symbology-editor.component';
 import {DownloadLayerComponent} from '../../../download-layer/download-layer.component';
@@ -182,5 +182,9 @@ export class LayerListElementComponent {
 
     showDownload(layer: Layer): void {
         this.layoutService.setSidenavContentComponent({component: DownloadLayerComponent, config: {layer}});
+    }
+
+    rasterSymbology(layer: Layer): RasterSymbology {
+        return layer.symbology as RasterSymbology;
     }
 }
