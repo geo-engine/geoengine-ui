@@ -1,8 +1,8 @@
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, ViewChild} from '@angular/core';
-import {UserService} from '../user.service';
 import {BehaviorSubject, Subscription} from 'rxjs';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatTableDataSource} from '@angular/material/table';
+import {UserService} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-roles',

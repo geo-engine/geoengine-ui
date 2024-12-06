@@ -3,11 +3,11 @@ import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 
 import {map, mergeMap} from 'rxjs/operators';
-import {NotificationService} from '../../../notification.service';
 import {Observable} from 'rxjs';
 import {
     MeanRasterPixelValuesOverTimeDict,
     MeanRasterPixelValuesOverTimeParams,
+    NotificationService,
     Plot,
     RasterLayer,
     ResultTypes,

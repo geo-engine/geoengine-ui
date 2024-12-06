@@ -7,9 +7,9 @@ import {ProjectService} from '../../../project/project.service';
 import {UUID} from '../../../backend/backend.model';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {LayoutService, SidenavConfig} from '../../../layout.service';
-import {GeoEngineError} from '../../../util/errors';
 import {
     ExpressionDict,
+    GeoEngineError,
     Layer,
     MeasurementComponent,
     RasterDataType,

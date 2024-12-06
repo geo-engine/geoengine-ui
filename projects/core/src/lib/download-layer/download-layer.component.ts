@@ -6,12 +6,20 @@ import {combineLatest, mergeMap} from 'rxjs';
 import {RasterResultDescriptorDict, WcsParamsDict, WfsParamsDict} from '../backend/backend.model';
 import {BackendService} from '../backend/backend.service';
 import {MapService} from '../map/map.service';
-import {NotificationService} from '../notification.service';
 import {ProjectService} from '../project/project.service';
 import {SpatialReferenceService} from '../spatial-references/spatial-reference.service';
-import {UserService} from '../users/user.service';
 import {bboxAsOgcString, gridOffsetsAsOgcString, gridOriginAsOgcString} from '../util/spatial_reference';
-import {Layer, SpatialReference, Time, olExtentToTuple, extentToBboxDict, geoengineValidators, TimeInterval} from '@geoengine/common';
+import {
+    Layer,
+    SpatialReference,
+    Time,
+    olExtentToTuple,
+    extentToBboxDict,
+    geoengineValidators,
+    TimeInterval,
+    UserService,
+    NotificationService,
+} from '@geoengine/common';
 import {TypedResultDescriptor} from '@geoengine/openapi-client';
 import {CoreConfig} from '../config.service';
 import {toSignal} from '@angular/core/rxjs-interop';

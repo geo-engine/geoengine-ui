@@ -1,6 +1,6 @@
 import moment from 'moment';
-import {Time} from '@geoengine/common';
 import {estimateTimeFormat, NON_BREAKING_HYPHEN} from './conversions';
+import {Time} from '../time/time.model';
 
 describe('Conversions', () => {
     it('estimates time formats correctly', () => {

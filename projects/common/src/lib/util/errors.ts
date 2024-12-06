@@ -1,4 +1,4 @@
-import {GeoEngineErrorDict} from '../backend/backend.model';
+import {ErrorResponse} from '@geoengine/openapi-client';
 
 /**
  * Error when getting an unexpected result type.
@@ -18,7 +18,7 @@ export class GeoEngineError extends Error {
         this.name = error;
     }
 
-    static fromDict(dict: GeoEngineErrorDict): GeoEngineError {
+    static fromDict(dict: ErrorResponse): GeoEngineError {
         return new GeoEngineError(dict.error, dict.message);
     }
 }

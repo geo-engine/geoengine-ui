@@ -3,11 +3,11 @@ import {FormControl, FormGroup, Validators, ValidatorFn, AbstractControl, Valida
 import {ProjectService} from '../../../project/project.service';
 
 import {map, mergeMap} from 'rxjs/operators';
-import {NotificationService} from '../../../notification.service';
 import {UUID} from '../../../backend/backend.model';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 import {
+    NotificationService,
     RasterDataTypes,
     RasterLayer,
     RasterMetadataKey,

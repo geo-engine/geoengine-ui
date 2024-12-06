@@ -1,13 +1,15 @@
 import {BehaviorSubject, Subscription} from 'rxjs';
 
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, input, OnDestroy, OnInit} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
-import {NotificationService, UserService, User} from '@geoengine/core';
 import {first} from 'rxjs/operators';
 import {Router} from '@angular/router';
-import {AppConfig} from '../app-config.service';
-import {geoengineValidators} from '@geoengine/common';
+import {CommonConfig} from '../config.service';
+import {UserService} from '../user/user.service';
+import {geoengineValidators} from '../util/form.validators';
+import {User} from '../user/user.model';
+import {NotificationService} from '../notification.service';
 
 enum FormStatus {
     LoggedOut,
@@ -25,8 +27,10 @@ enum FormStatus {
 export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly FormStatus = FormStatus;
 
+    loginRedirect = input('/map');
+
     formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.Loading);
-    canRegister = this.config.COMPONENTS.REGISTRATION.AVAILABLE;
+    canRegister = this.config.USER.REGISTRATION_AVAILABLE;
 
     loginForm: UntypedFormGroup;
 
@@ -38,7 +42,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     private formStatusSubscription?: Subscription;
 
     constructor(
-        readonly config: AppConfig,
+        readonly config: CommonConfig,
         private readonly changeDetectorRef: ChangeDetectorRef,
         private readonly userService: UserService,
         private readonly notificationService: NotificationService,
@@ -139,6 +143,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     redirectToMainView(): void {
-        this.router.navigate(['map']);
+        this.router.navigate([this.loginRedirect()]);
     }
 }

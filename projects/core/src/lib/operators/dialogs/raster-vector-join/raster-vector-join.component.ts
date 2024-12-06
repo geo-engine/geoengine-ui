@@ -4,10 +4,10 @@ import {EMPTY, Subscription, combineLatest} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 
 import {filter, map, mergeMap} from 'rxjs/operators';
-import {NotificationService} from '../../../notification.service';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {
     ColumnNamesDict,
+    NotificationService,
     PointSymbology,
     RandomColorService,
     RasterLayer,

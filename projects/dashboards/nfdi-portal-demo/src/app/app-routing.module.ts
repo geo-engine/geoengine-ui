@@ -1,8 +1,9 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {BackendAvailableGuard, BackendStatusPageComponent, LogInGuard, NotFoundPageComponent} from '@geoengine/core';
+import {BackendStatusPageComponent, NotFoundPageComponent} from '@geoengine/core';
 import {LoginComponent} from './login/login.component';
 import {MainComponent} from './main/main.component';
+import {BackendAvailableGuard, LogInGuard} from '@geoengine/common';
 
 const routes: Routes = [
     {path: '', redirectTo: 'map', pathMatch: 'full'},

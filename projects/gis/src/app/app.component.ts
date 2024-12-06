@@ -2,9 +2,9 @@ import {ChangeDetectionStrategy, Component, Inject, OnInit, ViewContainerRef} fr
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer, Title} from '@angular/platform-browser';
 import {Router} from '@angular/router';
-import {UserService} from '@geoengine/core';
 import {AppConfig} from './app-config.service';
 import {Location} from '@angular/common';
+import {UserService} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-root',

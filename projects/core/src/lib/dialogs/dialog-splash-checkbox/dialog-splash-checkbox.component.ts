@@ -1,6 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {MatCheckboxChange} from '@angular/material/checkbox';
-import {UserService} from '../../users/user.service';
+import {UserService} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-dialog-splash-checkbox',

@@ -3,8 +3,7 @@ import {MatPaginator, MatPaginatorIntl, PageEvent} from '@angular/material/pagin
 import {combineLatest, forkJoin, map, mergeMap, of, startWith, Subject, Subscription, switchMap} from 'rxjs';
 import {TaskStatusDict, TaskStatusType, UUID} from '../../backend/backend.model';
 import {BackendService} from '../../backend/backend.service';
-import {UserService} from '../../users/user.service';
-import {NotificationService} from '../../notification.service';
+import {NotificationService, UserService} from '@geoengine/common';
 
 @Injectable()
 export class MyCustomPaginatorIntl implements MatPaginatorIntl {

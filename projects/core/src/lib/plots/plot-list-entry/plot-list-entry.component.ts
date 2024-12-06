@@ -4,8 +4,7 @@ import {LoadingState} from '../../project/loading-state.model';
 import {ProjectService} from '../../project/project.service';
 import {PlotDetailViewComponent} from '../plot-detail-view/plot-detail-view.component';
 import {MatDialog} from '@angular/material/dialog';
-import {GeoEngineError} from '../../util/errors';
-import {createIconDataUrl, Plot} from '@geoengine/common';
+import {createIconDataUrl, GeoEngineError, Plot} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-plot-list-entry',

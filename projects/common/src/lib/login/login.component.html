@@ -61,7 +61,7 @@
                         <a routerLink="/register" *ngIf="canRegister">Register</a>
                     </ng-template>
                     <ng-template [ngSwitchCase]="FormStatus.LoggedIn">
-                        <button mat-raised-button (click)="$event.preventDefault(); redirectToMainView()" fxFlex>To Map</button>
+                        <button mat-raised-button (click)="$event.preventDefault(); redirectToMainView()" fxFlex>To App</button>
                         <button mat-raised-button (click)="$event.preventDefault(); logout()" fxFlex color="primary">Logout</button>
                     </ng-template>
                 </mat-card-actions>

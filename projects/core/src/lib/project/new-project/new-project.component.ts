@@ -3,9 +3,8 @@ import {first, mergeMap} from 'rxjs/operators';
 import {Component, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
 import {UntypedFormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
 import {ProjectService} from '../project.service';
-import {NotificationService} from '../../notification.service';
 import {SpatialReferenceService, WEB_MERCATOR} from '../../spatial-references/spatial-reference.service';
-import {NamedSpatialReference, SpatialReferenceSpecification, Time, extentToBboxDict} from '@geoengine/common';
+import {NamedSpatialReference, NotificationService, SpatialReferenceSpecification, Time, extentToBboxDict} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-new-project',

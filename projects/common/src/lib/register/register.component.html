@@ -28,7 +28,7 @@
             </mat-card-content>
             <mat-card-actions fxLayout="row" fxLayoutGap="1rem" fxLayoutAlign="space-between center" *ngIf="notLoading$ | async">
                 <button mat-raised-button type="submit" [disabled]="formIsInvalid$ | async" color="primary">Register</button>
-                <a routerLink="/login">Login</a>
+                <a routerLink="/signin">Login</a>
             </mat-card-actions>
         </mat-card>
     </div>

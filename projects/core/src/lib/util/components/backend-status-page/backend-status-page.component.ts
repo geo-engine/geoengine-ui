@@ -4,7 +4,7 @@ import {first, skipWhile, Subscription} from 'rxjs';
 import {BackendInfoDict} from '../../../backend/backend.model';
 import {BackendService} from '../../../backend/backend.service';
 import {BackendStatus} from '../../../users/user.model';
-import {UserService} from '../../../users/user.service';
+import {UserService} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-backend-status-page',

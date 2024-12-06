@@ -10,8 +10,7 @@ import {CoreConfig} from '../../config.service';
 import {AddDataComponent} from '../../datasets/add-data/add-data.component';
 import {TabsService} from '../../tabs/tabs.service';
 import {SimpleChanges} from '@angular/core';
-import {NotificationService} from '../../notification.service';
-import {Layer} from '@geoengine/common';
+import {Layer, NotificationService} from '@geoengine/common';
 
 /**
  * The layer list component displays active layers, legends and other controlls.

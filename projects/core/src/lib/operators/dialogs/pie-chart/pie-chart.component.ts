@@ -3,8 +3,8 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap, tap} from 'rxjs/operators';
-import {NotificationService} from '../../../notification.service';
 import {
+    NotificationService,
     PieChartCountParams,
     PieChartDict,
     Plot,

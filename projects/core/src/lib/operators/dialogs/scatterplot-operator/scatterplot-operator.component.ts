@@ -4,9 +4,9 @@ import {ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 
 import {map, mergeMap} from 'rxjs/operators';
-import {NotificationService} from '../../../notification.service';
 import {
     Layer,
+    NotificationService,
     Plot,
     ResultTypes,
     ScatterPlotDict,

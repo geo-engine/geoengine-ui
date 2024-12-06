@@ -1,10 +1,10 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {LayerCollectionItemDict, LayerCollectionLayerDict, NotificationService, ProjectService} from '@geoengine/core';
+import {LayerCollectionItemDict, LayerCollectionLayerDict, ProjectService} from '@geoengine/core';
 import {map, mergeMap} from 'rxjs/operators';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {SelectionModel} from '@angular/cdk/collections';
-import {LayerCollectionItem, LayersService} from '@geoengine/common';
+import {LayerCollectionItem, LayersService, NotificationService} from '@geoengine/common';
 import {CollectionItem, LayerCollection} from '@geoengine/openapi-client';
 
 enum LayerStatus {

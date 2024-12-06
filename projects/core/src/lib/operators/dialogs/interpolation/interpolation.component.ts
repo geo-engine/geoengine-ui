@@ -3,7 +3,6 @@ import {FormControl, FormBuilder, FormGroup, Validators, ValidatorFn} from '@ang
 import {ProjectService} from '../../../project/project.service';
 
 import {mergeMap, tap} from 'rxjs/operators';
-import {NotificationService} from '../../../notification.service';
 import {UUID} from '../../../backend/backend.model';
 import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
 import {Layer} from 'ol/layer';
@@ -11,6 +10,7 @@ import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-cre
 import {
     InputResolutionDict,
     InterpolationDict,
+    NotificationService,
     RasterDataTypes,
     RasterLayer,
     RasterSymbology,

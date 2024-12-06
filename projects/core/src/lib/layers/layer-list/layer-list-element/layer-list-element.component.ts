@@ -9,15 +9,22 @@ import {LayoutService} from '../../../layout.service';
 import {last, map, mergeMap, Observable, startWith, tap} from 'rxjs';
 import {ProvenanceTableComponent} from '../../../provenance/table/provenance-table.component';
 import {DataTableComponent} from '../../../datatable/table/table.component';
-import {NotificationService} from '../../../notification.service';
 import {RenameLayerComponent} from '../../rename-layer/rename-layer.component';
 import {LineageGraphComponent} from '../../../provenance/lineage-graph/lineage-graph.component';
 import {LoadingState} from '../../../project/loading-state.model';
 import {BackendService} from '../../../backend/backend.service';
-import {UserService} from '../../../users/user.service';
 import {HttpEventType} from '@angular/common/http';
 import {filenameFromHttpHeaders} from '../../../util/http';
-import {IconStyle, Layer, RasterLayerMetadata, RasterSymbology, Symbology, SymbologyType} from '@geoengine/common';
+import {
+    IconStyle,
+    Layer,
+    NotificationService,
+    RasterLayerMetadata,
+    RasterSymbology,
+    Symbology,
+    SymbologyType,
+    UserService,
+} from '@geoengine/common';
 import {RasterBandDescriptor} from '@geoengine/openapi-client';
 import {SymbologyEditorComponent} from '../../symbology/symbology-editor/symbology-editor.component';
 import {DownloadLayerComponent} from '../../../download-layer/download-layer.component';

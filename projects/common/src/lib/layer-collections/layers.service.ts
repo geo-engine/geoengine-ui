@@ -37,7 +37,7 @@ export class LayersService {
         private randomColorService: RandomColorService,
     ) {
         this.sessionService.getSessionStream().subscribe({
-            next: (session) => this.layersApi.next(new LayersApi(apiConfigurationWithAccessKey(session.id))),
+            next: (session) => this.layersApi.next(new LayersApi(apiConfigurationWithAccessKey(session.sessionToken))),
         });
     }
 

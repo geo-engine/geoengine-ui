@@ -1,13 +1,12 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router} from '@angular/router';
-import {UserService} from '../../users/user.service';
-
-import {Observable, map, skipWhile} from 'rxjs';
+import {Observable, map} from 'rxjs';
+import {UserService} from '../../user/user.service';
 
 @Injectable({
     providedIn: 'root',
 })
-export class BackendAvailableGuard {
+export class LogInGuard {
     constructor(
         private readonly userService: UserService,
         private router: Router,
@@ -17,14 +16,12 @@ export class BackendAvailableGuard {
         _route: ActivatedRouteSnapshot,
         _state: RouterStateSnapshot,
     ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-        const loggedInOrRedirect = this.userService.getBackendStatus().pipe(
-            skipWhile((status) => status.initial === true),
-            map((status) => {
-                if (status.available) {
+        const loggedInOrRedirect = this.userService.isLoggedIn().pipe(
+            map((loggedIn) => {
+                if (loggedIn) {
                     return true;
-                } else {
-                    return this.router.parseUrl('/backend-status');
                 }
+                return this.router.createUrlTree(['/signin']);
             }),
         );
         return loggedInOrRedirect;

@@ -1,9 +1,9 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {BehaviorSubject, finalize, first, SubscriptionLike} from 'rxjs';
 
-import {UserService} from '../user.service';
 import {User} from '../user.model';
 import {Router} from '@angular/router';
+import {UserService} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-oidc',

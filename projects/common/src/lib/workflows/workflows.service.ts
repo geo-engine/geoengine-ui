@@ -12,7 +12,7 @@ export class WorkflowsService {
 
     constructor(private sessionService: UserService) {
         this.sessionService.getSessionStream().subscribe({
-            next: (session) => this.workflowApi.next(new WorkflowsApi(apiConfigurationWithAccessKey(session.id))),
+            next: (session) => this.workflowApi.next(new WorkflowsApi(apiConfigurationWithAccessKey(session.sessionToken))),
         });
     }
 

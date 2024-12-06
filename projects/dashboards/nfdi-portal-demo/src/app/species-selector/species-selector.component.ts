@@ -4,7 +4,6 @@ import {
     DatasetService,
     MapService,
     ProjectService,
-    UserService,
     VectorResultDescriptorDict,
     WGS_84,
     SpatialReferenceService,
@@ -32,6 +31,7 @@ import {
     ReprojectionDict,
     Time,
     TimeProjectionDict,
+    UserService,
     VectorLayer,
     extentToBboxDict,
 } from '@geoengine/common';

@@ -9,7 +9,6 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import {LoginComponent} from './login/login.component';
 import {NavigationComponent} from './navigation/navigation.component';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MAT_CARD_CONFIG, MatCardModule} from '@angular/material/card';
@@ -45,7 +44,7 @@ import {DatasetEditorComponent} from './datasets/dataset-editor/dataset-editor.c
 import {PermissionsComponent} from './permissions/permissions.component';
 import {RasterResultDescriptorComponent} from './result-descriptors/raster-result-descriptor/raster-result-descriptor.component';
 import {VectorResultDescriptorComponent} from './result-descriptors/vector-result-descriptor/vector-result-descriptor.component';
-import {CommonConfig, CommonModule, RandomColorService} from '@geoengine/common';
+import {CommonConfig, CommonModule, NotificationService, RandomColorService} from '@geoengine/common';
 import {SymbologyEditorComponent} from './symbology/symbology-editor/symbology-editor.component';
 import {ProvenanceComponent} from './provenance/provenance.component';
 import {AddDatasetComponent} from './datasets/add-dataset/add-dataset.component';
@@ -92,7 +91,6 @@ export const MATERIAL_MODULES = [
     declarations: [
         AppComponent,
         NavigationComponent,
-        LoginComponent,
         DatasetsComponent,
         LayersComponent,
         LayerEditorComponent,
@@ -130,6 +128,7 @@ export const MATERIAL_MODULES = [
         {provide: AppConfig, useClass: AppConfig},
         {provide: CommonConfig, useExisting: AppConfig},
         RandomColorService,
+        NotificationService,
         {
             provide: APP_INITIALIZER,
             useFactory: (config: AppConfig) => (): Promise<void> => config.load(),

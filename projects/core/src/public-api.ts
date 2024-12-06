@@ -11,12 +11,10 @@ export * from './lib/config.service';
 export * from './lib/datasets/dataset.service';
 export * from './lib/layout.service';
 export * from './lib/map/map.service';
-export * from './lib/notification.service';
 export * from './lib/project/project.service';
 export * from './lib/sidenav/sidenav-ref.service';
 export * from './lib/spatial-references/spatial-reference.service';
 export * from './lib/tabs/tabs.service';
-export * from './lib/users/user.service';
 
 // Components
 export * from './lib/datasets/add-data/add-data.component';
@@ -125,11 +123,6 @@ export * from './lib/project/loading-state.model';
 export * from './lib/users/session.model';
 export * from './lib/users/user.model';
 
-// Guards
-export * from './lib/util/guards/log-in.guard';
-export * from './lib/util/guards/backend-available.guard';
-
 // Misc
 export * from './lib/util/directives/if-guest.directive';
 export * from './lib/util/directives/if-logged-in.directive';
-export * from './lib/util/errors';

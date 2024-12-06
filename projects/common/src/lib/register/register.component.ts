@@ -1,12 +1,15 @@
 import {BehaviorSubject, Observable} from 'rxjs';
 
-import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, input} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
-import {CoreConfig, NotificationService, UserService, BackendService} from '@geoengine/core';
 import {map, mergeMap} from 'rxjs/operators';
 import {Router} from '@angular/router';
-import {geoengineValidators} from '@geoengine/common';
+import {CommonConfig} from '../config.service';
+import {UserService} from '../user/user.service';
+import {NotificationService} from '../notification.service';
+import {geoengineValidators} from '../util/form.validators';
+import {GeoEngineError} from '../util/errors';
 
 @Component({
     selector: 'geoengine-register',
@@ -17,6 +20,8 @@ import {geoengineValidators} from '@geoengine/common';
 export class RegisterComponent implements AfterViewInit {
     PASSWORD_MIN_LENGTH = 8;
 
+    loginRedirect = input('/map');
+
     loading$ = new BehaviorSubject<boolean>(false);
     notLoading$ = this.loading$.pipe(map((loading) => !loading));
     formIsInvalid$: Observable<boolean>;
@@ -26,9 +31,8 @@ export class RegisterComponent implements AfterViewInit {
     registrationForm: UntypedFormGroup;
 
     constructor(
-        private readonly config: CoreConfig,
+        private readonly config: CommonConfig,
         private readonly userService: UserService,
-        private readonly backend: BackendService,
         private readonly notificationService: NotificationService,
         private readonly router: Router,
     ) {
@@ -49,7 +53,7 @@ export class RegisterComponent implements AfterViewInit {
         setTimeout(() => this.registrationForm.updateValueAndValidity());
     }
 
-    register(): void {
+    async register(): Promise<void> {
         this.loading$.next(true);
         this.registrationError$.next('');
 
@@ -57,29 +61,25 @@ export class RegisterComponent implements AfterViewInit {
         const email: string = this.registrationForm.controls['email'].value;
         const password: string = this.registrationForm.controls['password'].value;
 
-        this.backend
-            .registerUser({
+        try {
+            await this.userService.registerUser({
                 email,
                 password,
                 realName,
-            })
-            .pipe(mergeMap(() => this.userService.login({email, password})))
-            .subscribe(
-                () => {
-                    // success
-                    this.notificationService.info('Registration successful!');
-                    this.redirectToMainView();
-                },
-                (error) => {
-                    // on error
-                    this.registrationError$.next(error.error.message);
+            });
 
-                    this.loading$.next(false);
-                },
-            );
+            this.notificationService.info('Registration successful!');
+            this.redirectToMainView();
+        } catch (error) {
+            if (error instanceof GeoEngineError) {
+                this.registrationError$.next(error.message);
+            }
+
+            this.loading$.next(false);
+        }
     }
 
     redirectToMainView(): void {
-        this.router.navigate(['map']);
+        this.router.navigate([this.loginRedirect()]);
     }
 }

@@ -11,7 +11,7 @@ export class UploadsService {
 
     constructor(private sessionService: UserService) {
         this.sessionService.getSessionStream().subscribe({
-            next: (session) => this.uploadsApi.next(new UploadsApi(apiConfigurationWithAccessKey(session.id))),
+            next: (session) => this.uploadsApi.next(new UploadsApi(apiConfigurationWithAccessKey(session.sessionToken))),
         });
     }
 
