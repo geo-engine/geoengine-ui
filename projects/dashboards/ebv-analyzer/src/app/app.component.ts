@@ -3,7 +3,6 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject,
 import {MatIconRegistry} from '@angular/material/icon';
 import {
     LayoutService,
-    NotificationService,
     ProjectService,
     MapService,
     MapContainerComponent,
@@ -46,7 +45,6 @@ export class AppComponent implements OnInit, AfterViewInit {
         readonly userService: UserService,
         private iconRegistry: MatIconRegistry,
         private _randomColorService: RandomColorService,
-        private _notificationService: NotificationService,
         private mapService: MapService,
         private _spatialReferenceService: SpatialReferenceService,
         private sanitizer: DomSanitizer,
