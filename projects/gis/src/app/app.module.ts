@@ -17,12 +17,11 @@ import {
 import {AppConfig} from './app-config.service';
 import {MainComponent} from './main/main.component';
 import {AppRoutingModule} from './app-routing.module';
-import {RegisterComponent} from './register/register.component';
 import {NotificationService, RandomColorService, UserService} from '@geoengine/common';
 import {CommonConfig} from '@geoengine/common';
 
 @NgModule({
-    declarations: [AppComponent, MainComponent, RegisterComponent],
+    declarations: [AppComponent, MainComponent],
     bootstrap: [AppComponent],
     imports: [BrowserAnimationsModule, BrowserModule, AppRoutingModule, CoreModule],
     providers: [

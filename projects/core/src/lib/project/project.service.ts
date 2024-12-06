@@ -16,10 +16,10 @@ import OlGeometry from 'ol/geom/Geometry';
 import {intersects as olIntersects} from 'ol/extent';
 import {getProjectionTarget} from '../util/spatial_reference';
 import {SpatialReferenceService} from '../spatial-references/spatial-reference.service';
-import {GeoEngineError} from '../util/errors';
 import {
     ClusteredPointSymbology,
     extentToBboxDict,
+    GeoEngineError,
     HasLayerId,
     HasLayerType,
     HasPlotId,

@@ -123,11 +123,6 @@ export * from './lib/project/loading-state.model';
 export * from './lib/users/session.model';
 export * from './lib/users/user.model';
 
-// Guards
-export * from './lib/util/guards/log-in.guard';
-export * from './lib/util/guards/backend-available.guard';
-
 // Misc
 export * from './lib/util/directives/if-guest.directive';
 export * from './lib/util/directives/if-logged-in.directive';
-export * from './lib/util/errors';

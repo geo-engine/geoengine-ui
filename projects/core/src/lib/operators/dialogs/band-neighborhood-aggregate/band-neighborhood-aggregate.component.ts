@@ -13,10 +13,10 @@ import {
     RasterSymbology,
     SingleBandRasterColorizer,
     BandNeighborhoodAggregateDict,
+    GeoEngineError,
 } from '@geoengine/common';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
-import {GeoEngineError} from '../../../util/errors';
 
 interface RasterStackerForm {
     rasterLayer: FormControl<RasterLayer | undefined>;

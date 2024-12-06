@@ -8,6 +8,7 @@ import {
     ServerInfo,
     SessionApi,
     UserApi,
+    UserRegistration,
     UserSession,
 } from '@geoengine/openapi-client';
 import {
@@ -32,6 +33,7 @@ import {Session} from './session.model';
 import {BackendStatus, Quota, User} from './user.model';
 import {utc} from 'moment';
 import {CommonConfig} from '../config.service';
+import {NotificationService} from '../notification.service';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
@@ -49,6 +51,7 @@ export class UserService {
     protected readonly refreshSessionQuota$ = new BehaviorSubject<void>(undefined);
 
     userApi = new ReplaySubject<UserApi>(1);
+    sessionApi = new ReplaySubject<SessionApi>(1);
     backendApi = new GeneralApi();
 
     protected logoutCallback?: () => void;
@@ -56,8 +59,7 @@ export class UserService {
 
     constructor(
         protected readonly config: CommonConfig,
-        // protected readonly backend: BackendService,
-        // protected readonly notificationService: NotificationService,
+        protected readonly notificationService: NotificationService,
         protected readonly router: Router,
         protected readonly activatedRoute: ActivatedRoute,
     ) {
@@ -97,7 +99,7 @@ export class UserService {
                         error: (error) => {
                             // only show error if we did not expect it
                             if (error?.error?.error !== 'Unauthorized') {
-                                // this.notificationService.error(error?.error?.message);
+                                this.notificationService.error(error?.error?.message);
                             }
                             this.session$.next(undefined);
                         },
@@ -107,7 +109,7 @@ export class UserService {
             if (!status.available && this.sessionInitialized) {
                 this.sessionInitialized = false;
                 this.session$.next(undefined);
-                // this.notificationService.error('Session close caused by backend shutdown');
+                this.notificationService.error('Session close caused by backend shutdown');
             }
         });
 
@@ -120,7 +122,10 @@ export class UserService {
         });
 
         this.getSessionStream().subscribe({
-            next: (session) => this.userApi.next(new UserApi(apiConfigurationWithAccessKey(session.sessionToken))),
+            next: (session) => {
+                this.userApi.next(new UserApi(apiConfigurationWithAccessKey(session.sessionToken)));
+                this.sessionApi.next(new SessionApi(apiConfigurationWithAccessKey(session.sessionToken)));
+            },
         });
 
         // update quota when session changes or update is triggered
@@ -367,6 +372,11 @@ export class UserService {
                 name: roleName,
             })
             .then((role) => role.id);
+    }
+
+    async registerUser(userRegistration: {email: string; password: string; realName: string}): Promise<string> {
+        const sessionApi = await firstValueFrom(this.sessionApi);
+        return sessionApi.registerUserHandler({userRegistration});
     }
 
     protected sessionFromDict(sessionDict: UserSession): Session {

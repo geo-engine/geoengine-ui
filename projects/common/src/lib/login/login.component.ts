@@ -1,6 +1,6 @@
 import {BehaviorSubject, Subscription} from 'rxjs';
 
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, input, OnDestroy, OnInit} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
 import {first} from 'rxjs/operators';
@@ -26,6 +26,8 @@ enum FormStatus {
 })
 export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly FormStatus = FormStatus;
+
+    loginRedirect = input('/map');
 
     formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.Loading);
     canRegister = this.config.USER.REGISTRATION_AVAILABLE;
@@ -141,6 +143,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     redirectToMainView(): void {
-        this.router.navigate(['map']);
+        this.router.navigate([this.loginRedirect()]);
     }
 }
