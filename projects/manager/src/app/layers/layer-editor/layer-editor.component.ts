@@ -98,6 +98,9 @@ export class LayerEditorComponent implements OnChanges {
         const workflowId = this.workflowId;
 
         if (!layer || !workflowId) {
+            this.snackBar.open('Could not create symbology because the workflow could not be created.', 'Close', {
+                panelClass: ['error-snackbar'],
+            });
             return;
         }
 
