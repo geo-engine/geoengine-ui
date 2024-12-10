@@ -183,6 +183,7 @@ export const DEFAULT_CORE_CONFIG: CoreConfigStructure = {
         },
         AUTO_GUEST_LOGIN: true,
         REGISTRATION_AVAILABLE: true,
+        LOCAL_LOGIN_AVAILABLE: true,
     },
 };
 
@@ -230,7 +231,7 @@ export class CoreConfig extends CommonConfig {
      * Initialize the config on app start.
      */
     override async load(defaults: CoreConfigStructure = DEFAULT_CORE_CONFIG): Promise<void> {
-        await super.load();
+        await super.load(defaults);
         this.config = mergeDeepOverrideLists(defaults, {...this.config});
     }
 }
