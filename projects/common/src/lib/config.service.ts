@@ -61,6 +61,7 @@ export const DEFAULT_COMMON_CONFIG: CommonConfigStructure = {
         },
         AUTO_GUEST_LOGIN: true,
         REGISTRATION_AVAILABLE: true,
+        LOCAL_LOGIN_AVAILABLE: false,
     },
 };
 
@@ -71,6 +72,7 @@ interface User {
     };
     readonly AUTO_GUEST_LOGIN: boolean;
     readonly REGISTRATION_AVAILABLE: boolean;
+    readonly LOCAL_LOGIN_AVAILABLE: boolean;
 }
 
 @Injectable()

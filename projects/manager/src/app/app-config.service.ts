@@ -38,9 +38,12 @@ interface Homepage {
 }
 
 const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_COMMON_CONFIG, {
-    AUTO_GUEST_LOGIN: false,
     DEFAULTS: {
         SNACKBAR_DURATION: 2000,
+    },
+    USER: {
+        AUTO_GUEST_LOGIN: false,
+        LOCAL_LOGIN_AVAILABLE: true,
     },
 }) as AppConfigStructure;
 
@@ -57,7 +60,7 @@ export class AppConfig extends CommonConfig {
      * Initialize the config on app start.
      */
     override async load(defaults: AppConfigStructure = APP_CONFIG_DEFAULTS): Promise<void> {
-        await super.load();
+        await super.load(defaults);
         this.config = mergeDeepOverrideLists(defaults, {...this.config});
     }
 }

@@ -12,8 +12,11 @@
 
                 <mat-card-content [ngSwitch]="formStatus$ | async">
                     <ng-template [ngSwitchCase]="FormStatus.Oidc">
-                        <mat-card-actions>
-                            <button mat-raised-button (click)="oidcLogin()" fxFlex color="primary">Sign in using OIDC</button>
+                        <mat-card-actions class="login-buttons">
+                            <button mat-raised-button (click)="oidcLogin()" color="primary">Sign in using OIDC</button>
+                            @if (config.USER.LOCAL_LOGIN_AVAILABLE) {
+                                <button mat-raised-button (click)="formStatus$.next(FormStatus.LoggedOut)">Use local login</button>
+                            }
                         </mat-card-actions>
                     </ng-template>
                     <ng-template [ngSwitchCase]="FormStatus.LoggedOut">
