@@ -118,35 +118,40 @@ export class LayerEditorComponent implements OnChanges {
     changeVectorSymbology(symbology: VectorSymbology): void {
         this.vectorSymbology = symbology;
         this.form.controls.symbology.setValue(symbology.toDict());
+        this.form.markAsDirty();
     }
 
     changeRasterSymbology(symbology: RasterSymbology): void {
         this.rasterSymbology = symbology;
         this.form.controls.symbology.setValue(symbology.toDict());
+        this.form.markAsDirty();
     }
 
     createSymbology(layer: Layer): void {
         if (layer.workflow.type === 'Vector') {
-            this.createVectorSymbology();
+            this.vectorSymbology = this.createVectorSymbology();
+            this.form.controls.symbology.setValue(this.vectorSymbology.toDict());
         }
         if (layer.workflow.type === 'Raster') {
-            this.createRasterSymbology();
+            this.rasterSymbology = this.createRasterSymbology();
+            this.form.controls.symbology.setValue(this.rasterSymbology.toDict());
         }
 
         this.setUpSymbology();
+        this.form.markAsDirty();
     }
 
-    private createVectorSymbology(): void {
+    private createVectorSymbology(): VectorSymbology {
         const resultDescriptor = this.resultDescriptor();
         if (!resultDescriptor || !(resultDescriptor.type === 'vector')) {
-            return;
+            throw new Error('Cannot create a vector symbology for a non-vector dataset.');
         }
 
-        this.vectorSymbology = createDefaultVectorSymbology(resultDescriptor.dataType, WHITE);
+        return createDefaultVectorSymbology(resultDescriptor.dataType, WHITE);
     }
 
-    private createRasterSymbology(): void {
-        this.rasterSymbology = RasterSymbology.fromRasterSymbologyDict({
+    private createRasterSymbology(): RasterSymbology {
+        return RasterSymbology.fromRasterSymbologyDict({
             type: 'raster',
             opacity: 1.0,
             rasterColorizer: {
