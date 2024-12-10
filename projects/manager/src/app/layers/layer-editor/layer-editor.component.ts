@@ -310,7 +310,7 @@ export class LayerEditorComponent implements OnChanges {
         });
 
         try {
-            this.layersService.updateLayer(this.layerListing.id.layerId, {
+            await this.layersService.updateLayer(this.layerListing.id.layerId, {
                 description,
                 name,
                 properties,
