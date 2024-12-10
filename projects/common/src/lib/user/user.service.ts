@@ -72,45 +72,7 @@ export class UserService {
         });
 
         this.getBackendStatus().subscribe((status) => {
-            // if the backend is not ready, we cannot do anything
-            if (status.initial) {
-                return;
-            }
-
-            if (status.available && !this.sessionInitialized) {
-                this.sessionInitialized = true;
-
-                if (oidcParams) {
-                    this.oidcLogin(oidcParams)
-                        .pipe(first())
-                        .subscribe(() => {
-                            this.router.navigate([], {
-                                // eslint-disable-next-line @typescript-eslint/naming-convention
-                                queryParams: {session_state: undefined, state: undefined, code: undefined},
-                                queryParamsHandling: 'merge',
-                            });
-                        });
-                } else {
-                    // restore old session if possible
-                    this.sessionFromBrowserOrCreateGuest().subscribe({
-                        next: (session) => {
-                            this.session$.next(session);
-                        },
-                        error: (error) => {
-                            // only show error if we did not expect it
-                            if (error?.error?.error !== 'Unauthorized') {
-                                this.notificationService.error(error?.error?.message);
-                            }
-                            this.session$.next(undefined);
-                        },
-                    });
-                }
-            }
-            if (!status.available && this.sessionInitialized) {
-                this.sessionInitialized = false;
-                this.session$.next(undefined);
-                this.notificationService.error('Session close caused by backend shutdown');
-            }
+            this.tryLogin(status, oidcParams);
         });
 
         // update backend info when backend is available
@@ -132,6 +94,62 @@ export class UserService {
         this.createSessionQuotaStream();
 
         this.triggerBackendStatusUpdate();
+    }
+
+    async tryLogin(
+        status: BackendStatus,
+        oidcParams:
+            | {
+                  sessionState: string;
+                  code: string;
+                  state: string;
+              }
+            | undefined,
+    ): Promise<void> {
+        // if the backend is not ready, we cannot do anything
+        if (status.initial) {
+            return;
+        }
+
+        if (!status.available) {
+            if (this.sessionInitialized) {
+                this.notificationService.error('Session close caused by backend shutdown');
+            } else {
+                this.notificationService.error('Backend is not available');
+            }
+
+            this.sessionInitialized = false;
+            this.session$.next(undefined);
+            return;
+        }
+
+        this.sessionInitialized = true;
+
+        if (oidcParams) {
+            this.oidcLogin(oidcParams)
+                .pipe(first())
+                .subscribe(() => {
+                    this.router.navigate([], {
+                        // eslint-disable-next-line @typescript-eslint/naming-convention
+                        queryParams: {session_state: undefined, state: undefined, code: undefined},
+                        queryParamsHandling: 'merge',
+                    });
+                });
+        } else {
+            // restore old session if possible
+            this.sessionFromBrowserOrCreateGuest().subscribe({
+                next: (session) => {
+                    this.session$.next(session);
+                },
+                error: (error) => {
+                    // only show error if we did not expect it
+                    if (error?.error?.error !== 'Unauthorized') {
+                        this.notificationService.error(error?.error?.message);
+                    }
+                    this.session$.next(undefined);
+                },
+            });
+        }
     }
 
     async triggerBackendStatusUpdate(): Promise<void> {
