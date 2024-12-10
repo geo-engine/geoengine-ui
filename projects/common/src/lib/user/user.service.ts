@@ -150,8 +150,7 @@ export class UserService {
 
     sessionFromBrowserOrCreateGuest(): Observable<Session> {
         return this.restoreSessionFromBrowser().pipe(
-            catchError((error) => {
-                console.error(error);
+            catchError((_error) => {
                 return this.createGuestUser();
             }),
         );
