@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Configuration, DefaultConfig, SessionApi, UserApi, UserSession} from '@geoengine/openapi-client';
+import {ComputationQuota, Configuration, DefaultConfig, OperatorQuota, SessionApi, UserApi, UserSession} from '@geoengine/openapi-client';
 import {Observable, ReplaySubject, filter, first, firstValueFrom, map} from 'rxjs';
 import {UUID} from '../datasets/dataset.model';
 
@@ -49,6 +49,14 @@ export class UserService {
         return this.session$.pipe(filter(isDefined));
     }
 
+    /**
+     * @returns Retrieve a stream that notifies about the current session.
+     *          May be undefined if there is no current session.
+     */
+    getSessionOrUndefinedStream(): Observable<UserSession | undefined> {
+        return this.session$;
+    }
+
     isLoggedIn(): Observable<boolean> {
         return this.session$.pipe(first(), map(isDefined));
     }
@@ -83,6 +91,23 @@ export class UserService {
 
     logout(): void {
         this.session$.next(undefined);
+    }
+
+    async computationsQuota(offset: number, limit: number): Promise<ComputationQuota[]> {
+        const userApi = await firstValueFrom(this.userApi);
+
+        return userApi.computationsQuotaHandler({
+            offset,
+            limit,
+        });
+    }
+
+    async computationQuota(computation: UUID): Promise<OperatorQuota[]> {
+        const userApi = await firstValueFrom(this.userApi);
+
+        return userApi.computationQuotaHandler({
+            computation,
+        });
     }
 
     async createSessionWithToken(sessionToken: string): Promise<UserSession> {

@@ -1,7 +1,19 @@
-import {BehaviorSubject, combineLatest, firstValueFrom, Observable, Observer, of, ReplaySubject, Subject, Subscription, zip} from 'rxjs';
+import {
+    BehaviorSubject,
+    combineLatest,
+    firstValueFrom,
+    merge,
+    Observable,
+    Observer,
+    of,
+    ReplaySubject,
+    Subject,
+    Subscription,
+    zip,
+} from 'rxjs';
 import {debounceTime, distinctUntilChanged, filter, first, map, mergeMap, skip, switchMap, take, tap} from 'rxjs/operators';
 
-import {Injectable} from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 
 import {Project} from './project.model';
 import {CoreConfig} from '../config.service';
@@ -72,8 +84,8 @@ export interface FeatureSelection {
  * All layers, plots, and provenance are registered with the ProjectService.
  */
 @Injectable()
-export class ProjectService {
-    private project$ = new ReplaySubject<Project>(1);
+export class ProjectService implements OnDestroy {
+    private project$ = new ReplaySubject<Project | undefined>(1);
 
     private readonly layers = new Map<number, ReplaySubject<Layer>>();
     private readonly layerState$ = new Map<number, Observable<LoadingState>>();
@@ -108,15 +120,29 @@ export class ProjectService {
         // set the starting project upon login
         this.userService
             .getSessionStream()
-            .pipe(mergeMap((session) => this.loadMostRecentProject(session)))
+            .pipe(
+                tap(() => this.project$.next(undefined)),
+                mergeMap((session) =>
+                    config.PROJECT.CREATE_TEMPORARY_PROJECT_AT_STARTUP
+                        ? this.createTemporaryProject(session.sessionToken)
+                        : firstValueFrom(this.loadMostRecentProject(session)),
+                ),
+            )
             .subscribe((project) => this.setProject(project));
+    }
+
+    async ngOnDestroy(): Promise<void> {
+        if (this.config.PROJECT.CREATE_TEMPORARY_PROJECT_AT_STARTUP) {
+            const session = await firstValueFrom(this.userService.getSessionTokenForRequest());
+            this.deleteCurrentProject(session);
+        }
     }
 
     /**
      * Generate a default Project with values from the config file.
      */
-    createDefaultProject(): Observable<Project> {
-        const name = this.config.DEFAULTS.PROJECT.NAME;
+    createDefaultProject(projectName?: string): Observable<Project> {
+        const name = projectName ?? this.config.DEFAULTS.PROJECT.NAME;
         const timeConfig = this.config.DEFAULTS.PROJECT.TIME;
         let time: Time;
         if (typeof timeConfig === 'string') {
@@ -253,14 +279,14 @@ export class ProjectService {
      * Get a stream of Projects. This way compments can react to new Projects.
      */
     getProjectStream(): Observable<Project> {
-        return this.project$;
+        return this.project$.pipe(filter(isDefined));
     }
 
     /**
      * Get the current project and no further updates, e.g. for requests.
      */
     getProjectOnce(): Observable<Project> {
-        return this.project$.pipe(first());
+        return this.getProjectStream().pipe(first());
     }
 
     /**
@@ -353,14 +379,14 @@ export class ProjectService {
      * Get a stream of the projects projection.
      */
     getSpatialReferenceStream(): Observable<SpatialReference> {
-        return this.project$.pipe(
+        return this.getProjectStream().pipe(
             map((project: Project) => project.spatialReference),
             distinctUntilChanged((x, y) => x.srsString === y.srsString),
         );
     }
 
     getSpatialReferenceOnce(): Observable<SpatialReference> {
-        return this.project$.pipe(
+        return this.getProjectStream().pipe(
             first(),
             map((project: Project) => project.spatialReference),
         );
@@ -370,7 +396,7 @@ export class ProjectService {
      * Get a stream of the projects time.
      */
     getTimeStream(): Observable<Time> {
-        return this.project$.pipe(
+        return this.getProjectStream().pipe(
             map((project) => project.time),
             distinctUntilChanged((t1, t2) => t1.isSame(t2)),
         );
@@ -378,7 +404,7 @@ export class ProjectService {
 
     getTimeOnce(): Promise<Time> {
         return firstValueFrom(
-            this.project$.pipe(
+            this.getProjectStream().pipe(
                 first(),
                 map((project) => project.time),
             ),
@@ -389,7 +415,7 @@ export class ProjectService {
      * Get a stream of the projects time step size.
      */
     getTimeStepDurationStream(): Observable<TimeStepDuration> {
-        return this.project$.pipe(
+        return this.getProjectStream().pipe(
             map((project) => project.timeStepDuration),
             distinctUntilChanged(),
         );
@@ -620,7 +646,7 @@ export class ProjectService {
      * Retrieve the layer models array as a stream.
      */
     getLayerStream(): Observable<Array<Layer>> {
-        return this.project$.pipe(
+        return this.getProjectStream().pipe(
             map((project) => project.layers),
             distinctUntilChanged(),
         );
@@ -630,7 +656,7 @@ export class ProjectService {
      * Retrieve the plot models array as a stream.
      */
     getPlotStream(): Observable<Array<Plot>> {
-        return this.project$.pipe(
+        return this.getProjectStream().pipe(
             map((project) => project.plots),
             distinctUntilChanged(),
         );
@@ -768,7 +794,9 @@ export class ProjectService {
 
         const result = this.getProjectOnce().pipe(
             mergeMap((project) => {
-                const layers = project.layers.filter((l) => l.id !== layer.id);
+                const layers = project.layers.filter((l) => {
+                    return l.id !== layer.id;
+                });
 
                 if (project.layers.length === layers.length) {
                     // nothing filtered, so no request
@@ -837,11 +865,13 @@ export class ProjectService {
      * Sets the layers
      */
     setLayers(layers: Array<Layer>): void {
-        this.project$.pipe(first()).subscribe((project) => {
-            if (project.layers !== layers) {
-                this.changeProjectConfig({layers});
-            }
-        });
+        this.getProjectStream()
+            .pipe(first())
+            .subscribe((project) => {
+                if (project.layers !== layers) {
+                    this.changeProjectConfig({layers});
+                }
+            });
     }
 
     changeLayer(
@@ -1015,6 +1045,20 @@ export class ProjectService {
                 source: inputOperator,
             },
         } as ReprojectionDict;
+    }
+
+    protected async createTemporaryProject(sessionToken: string): Promise<Project> {
+        await this.deleteCurrentProject(sessionToken);
+
+        return await firstValueFrom(this.createDefaultProject(crypto.randomUUID()));
+    }
+
+    private async deleteCurrentProject(sessionToken: string): Promise<void> {
+        const oldProject = await firstValueFrom(merge(this.project$, of(undefined)).pipe(first()));
+
+        if (oldProject) {
+            await firstValueFrom(this.backend.deleteProject(oldProject.id, sessionToken));
+        }
     }
 
     protected loadMostRecentProject(session: Session): Observable<Project> {
@@ -1618,4 +1662,12 @@ export class ProjectService {
         const layer = await this.layersService.resolveLayer(layerId);
         this.addLayer(layer);
     }
+}
+
+/**
+ * Used as filter argument for T | undefined
+ */
+// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
+function isDefined<T>(arg: T | null | undefined): arg is T {
+    return arg !== null && arg !== undefined;
 }
