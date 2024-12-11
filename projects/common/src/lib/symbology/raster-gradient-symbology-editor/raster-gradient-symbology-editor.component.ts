@@ -94,6 +94,7 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.colorizer) {
             this.updateScale();
+            this.updateNodataAndDefaultColor();
             this.initializeBreakpoints(this.colorizer.getBreakpoints());
         }
     }
