@@ -3,10 +3,10 @@ import {Component, OnInit, ChangeDetectionStrategy, OnDestroy, Input, ChangeDete
 import {LayoutService, SidenavConfig} from '../../layout.service';
 import {ThemePalette} from '@angular/material/core';
 import {distinctUntilChanged, map, mergeScan} from 'rxjs/operators';
-import {UserService} from '../../users/user.service';
 import {CoreConfig} from '../../config.service';
 import {SidenavRef} from '../sidenav-ref.service';
 import {OidcComponent} from '../../users/oidc/oidc.component';
+import {UserService} from '@geoengine/common';
 
 /**
  * Button config for the sidenav navigation

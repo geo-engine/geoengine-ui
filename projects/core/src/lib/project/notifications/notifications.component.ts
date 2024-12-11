@@ -1,6 +1,5 @@
 import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
-import {NotificationService} from '../../notification.service';
-import {Notification} from '../../notification.service';
+import {NotificationService, Notification} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-notifications',

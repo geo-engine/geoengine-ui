@@ -26,7 +26,7 @@ export class DatasetsService {
 
     constructor(private sessionService: UserService) {
         this.sessionService.getSessionStream().subscribe({
-            next: (session) => this.datasetApi.next(new DatasetsApi(apiConfigurationWithAccessKey(session.id))),
+            next: (session) => this.datasetApi.next(new DatasetsApi(apiConfigurationWithAccessKey(session.sessionToken))),
         });
     }
 

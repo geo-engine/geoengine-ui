@@ -70,6 +70,9 @@ import {AutocompleteSelectDirective} from './util/directives/autocomplete-select
 import {CodeEditorComponent} from './util/components/code-editor.component';
 import {OgrDatasetComponent} from './datasets/ogr-dataset/ogr-dataset.component';
 import {RasterMultibandSymbologyEditorComponent} from './symbology/raster-multiband-symbology-editor/raster-multiband-symbology-editor.component';
+import {LoginComponent} from './login/login.component';
+import {RegisterComponent} from './register/register.component';
+import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -119,6 +122,7 @@ const COMMON_COMPONENTS = [
     LayerCollectionNavigationComponent,
     LineIconComponent,
     LineIconComponent,
+    LoginComponent,
     MeasurementComponent,
     NumberParamEditorComponent,
     PercentileBreakpointSelectorComponent,
@@ -130,6 +134,7 @@ const COMMON_COMPONENTS = [
     RasterMultibandSymbologyEditorComponent,
     RasterPaletteSymbologyEditorComponent,
     RasterSymbologyEditorComponent,
+    RegisterComponent,
     TimeInputComponent,
     TimeIntervalInputComponent,
     VectorSymbologyEditorComponent,
@@ -161,6 +166,9 @@ const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGa
         AngularCommonModule,
         ScrollingModule,
         OgrDatasetComponent,
+        RouterOutlet,
+        RouterLink,
+        RouterLinkActive,
         ...FXFLEX_LEGACY_DIRECTIVES,
     ],
     exports: [

@@ -6,9 +6,9 @@ import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators} f
 import {ProjectService} from '../../../project/project.service';
 import {UUID} from '../../../backend/backend.model';
 import {LayoutService, SidenavConfig} from '../../../layout.service';
-import {GeoEngineError} from '../../../util/errors';
 import {
     BandwiseExpressionDict,
+    GeoEngineError,
     Layer,
     MeasurementComponent,
     RasterDataType,

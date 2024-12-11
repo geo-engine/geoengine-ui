@@ -19,7 +19,6 @@ import {
     AddDataButton,
     SidenavContainerComponent,
     LayoutService,
-    UserService,
     ProjectService,
     NavigationButton,
     NavigationComponent,
@@ -35,7 +34,7 @@ import {
 } from '@geoengine/core';
 import {AppConfig} from '../app-config.service';
 import {ReplaySubject} from 'rxjs';
-import {Layer, LayersService} from '@geoengine/common';
+import {Layer, LayersService, UserService} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-main',

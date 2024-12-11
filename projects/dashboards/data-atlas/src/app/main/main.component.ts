@@ -3,7 +3,6 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject,
 import {MatIconRegistry} from '@angular/material/icon';
 import {
     LayoutService,
-    UserService,
     ProjectService,
     MapService,
     MapContainerComponent,
@@ -18,7 +17,7 @@ import moment from 'moment';
 import {DataSelectionService} from '../data-selection.service';
 import {AppDatasetService} from '../app-dataset.service';
 import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
-import {Layer, LayersService, Time} from '@geoengine/common';
+import {Layer, LayersService, Time, UserService} from '@geoengine/common';
 
 interface LayerCollectionBiListing {
     name: string;

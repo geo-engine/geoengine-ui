@@ -26,8 +26,8 @@ import OlFeature from 'ol/Feature';
 import TileState from 'ol/TileState';
 import {Extent} from './map.service';
 import {Projection} from 'ol/proj';
-import {NotificationService} from '../notification.service';
 import {
+    NotificationService,
     RasterColorizer,
     RasterData,
     RasterSymbology,

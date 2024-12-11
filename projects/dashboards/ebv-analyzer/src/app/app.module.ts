@@ -7,11 +7,9 @@ import {AppComponent} from './app.component';
 import {
     LayoutService,
     MapService,
-    NotificationService,
     ProjectService,
     SidenavRef,
     SpatialReferenceService,
-    UserService,
     CoreModule,
     CoreConfig,
     RasterLegendComponent,
@@ -25,7 +23,7 @@ import {EbvSelectorComponent} from './ebv-selector/ebv-selector.component';
 import {DataSelectionService} from './data-selection.service';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {LayoutModule} from '@angular/cdk/layout';
-import {RandomColorService} from '@geoengine/common';
+import {NotificationService, RandomColorService, UserService} from '@geoengine/common';
 import {CommonConfig} from '@geoengine/common';
 
 @NgModule({

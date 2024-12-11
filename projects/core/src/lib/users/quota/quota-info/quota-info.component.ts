@@ -1,7 +1,6 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {Quota, UserService} from '@geoengine/common';
 import {Subscription, timer} from 'rxjs';
-import {UserService} from '../../user.service';
-import {Quota} from '../quota.model';
 
 @Component({
     selector: 'geoengine-quota-info',

@@ -4,11 +4,11 @@ import {ProjectService} from '../../../project/project.service';
 import {mergeMap} from 'rxjs/operators';
 import {UUID} from '../../../backend/backend.model';
 import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
-import {NotificationService} from '../../../notification.service';
 import {
     DensityRasterizationDict,
     GridRasterizationDict,
     Layer,
+    NotificationService,
     RasterLayer,
     RasterSymbology,
     RasterizationDict,

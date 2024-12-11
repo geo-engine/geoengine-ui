@@ -4,12 +4,12 @@ import {Observable, of, ReplaySubject, Subscription, first} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 
 import {map, mergeMap, tap} from 'rxjs/operators';
-import {NotificationService} from '../../../notification.service';
 import {
     ClassHistogramDict,
     ClassHistogramParams,
     ClassificationMeasurement,
     Layer,
+    NotificationService,
     Plot,
     RasterLayer,
     ResultTypes,

@@ -4,11 +4,11 @@ import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 
 import {map, mergeMap, tap} from 'rxjs/operators';
-import {NotificationService} from '../../../notification.service';
 import {
     BoxPlotDict,
     BoxPlotParams,
     Layer,
+    NotificationService,
     Plot,
     RasterLayer,
     ResultTypes,
