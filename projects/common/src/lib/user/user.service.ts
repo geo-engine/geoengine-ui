@@ -137,7 +137,7 @@ export class UserService {
                 });
         } else {
             // restore old session if possible
-            this.sessionFromBrowserOrCreateGuest().subscribe({
+            this.sessionFromBrowser(this.config.USER.AUTO_GUEST_LOGIN).subscribe({
                 next: (session) => {
                     this.session$.next(session);
                 },
@@ -166,10 +166,14 @@ export class UserService {
         return this.backendStatus$;
     }
 
-    sessionFromBrowserOrCreateGuest(): Observable<Session> {
+    sessionFromBrowser(fallbackToGuest: boolean): Observable<Session | undefined> {
         return this.restoreSessionFromBrowser().pipe(
             catchError((_error) => {
-                return this.createGuestUser();
+                if (fallbackToGuest) {
+                    return this.createGuestUser();
+                } else {
+                    return of(undefined);
+                }
             }),
         );
     }
