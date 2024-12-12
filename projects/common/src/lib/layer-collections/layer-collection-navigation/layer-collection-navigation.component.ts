@@ -172,6 +172,7 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
 
     protected updateListView(id?: LayerCollectionItemOrSearch): void {
         this.selectedCollection = id ?? {type: 'collection', id: this.collectionId};
+        this.navigateCollection.emit(this.selectedCollection as LayerCollectionItem);
 
         this.search.updateSearchCapabilities(this.selectedCollection.id).then(() => {
             this.changeDetectorRef.markForCheck();
