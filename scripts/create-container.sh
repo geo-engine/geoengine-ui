@@ -6,7 +6,7 @@
 podman build \
             --tag "geoengine-ui:${TAG}" \
             --build-arg GEOENGINE_UI_PROJECT=${UI_PROJECT} \
-            -f ../geoengine-container/geoengine-ui/Dockerfile \
+            -f ../container/geoengine-ui/Dockerfile \
             ..
 
 podman login -u="${QUAY_IO_USER}" -p="${QUAY_IO_TOKEN}" quay.io

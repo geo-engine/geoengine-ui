@@ -120,6 +120,7 @@ export * from './lib/util/pipes/trim.pipe';
 export * from './lib/backend/backend.model';
 
 export * from './lib/project/loading-state.model';
+export * from './lib/project/project.model';
 export * from './lib/users/session.model';
 export * from './lib/users/user.model';
 

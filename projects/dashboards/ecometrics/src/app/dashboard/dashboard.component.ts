@@ -7,7 +7,6 @@ import {
     inject,
     signal,
     viewChild,
-    ViewChild,
     WritableSignal,
 } from '@angular/core';
 import {Breakpoints, BreakpointObserver} from '@angular/cdk/layout';
@@ -17,7 +16,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
-import {BehaviorSubject, firstValueFrom, lastValueFrom, Observable} from 'rxjs';
+import {firstValueFrom, lastValueFrom} from 'rxjs';
 import {
     AutoCreateDatasetDict,
     BackendService,
@@ -36,7 +35,6 @@ import {
     ColorMapSelectorComponent,
     extentToBboxDict,
     HistogramDict,
-    Layer,
     LinearGradient,
     NotificationService,
     PaletteColorizer,
@@ -70,7 +68,7 @@ interface Indicator {
 }
 
 @Component({
-    selector: 'app-dashboard',
+    selector: 'geoengine-dashboard',
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.scss',
     standalone: true,
@@ -96,6 +94,7 @@ export class DashboardComponent implements AfterViewInit {
     plotWidthPx = signal(100);
     plotHeightPx = signal(100);
     layersReverse = toSignal(this.dataSelectionService.layers);
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     plotData = signal<any>(undefined);
     plotLoading = signal(false);
 
@@ -103,7 +102,7 @@ export class DashboardComponent implements AfterViewInit {
 
     analyzeCard = viewChild.required('analyzecard', {read: ElementRef});
 
-    timeSteps: Time[] = [new Time(utc('2022-01-01')), new Time(utc('2023-01-01'))];
+    timeSteps: Time[] = [new Time(utc('2021-01-01')), new Time(utc('2022-01-01'))];
 
     async ngAfterViewInit(): Promise<void> {
         this.breakpointObserver.observe(Breakpoints.Web).subscribe((isLandscape) => {
@@ -249,6 +248,8 @@ export class DashboardComponent implements AfterViewInit {
             this.notificationService.error('Please select a region on the map');
             return;
         }
+
+        this.plotData.set(undefined);
 
         this.computePlotSize();
 
@@ -422,13 +423,13 @@ const INDICATORS: Array<Indicator> = [
                                         {
                                             type: 'GdalSource',
                                             params: {
-                                                data: 'sentinel2_10m_tile_11_band_B08_2022_2023',
+                                                data: 'sentinel2_10m_tile_11_band_B08_2022_2023_daily_raw_a',
                                             },
                                         },
                                         {
                                             type: 'GdalSource',
                                             params: {
-                                                data: 'sentinel2_10m_tile_11_band_B04_2022_2023',
+                                                data: 'sentinel2_10m_tile_11_band_B04_2022_2023_daily_raw_a',
                                             },
                                         },
                                         {
@@ -440,7 +441,7 @@ const INDICATORS: Array<Indicator> = [
                                                 raster: {
                                                     type: 'GdalSource',
                                                     params: {
-                                                        data: 'sentinel2_20m_tile_11_band_SCL_2022_2023',
+                                                        data: 'sentinel2_20m_tile_11_band_SCL_2022_2023_daily_raw_a',
                                                     },
                                                 },
                                             },

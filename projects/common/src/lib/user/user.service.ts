@@ -1,14 +1,15 @@
 import {Injectable} from '@angular/core';
 import {
+    ComputationQuota,
     AuthCodeRequestURL,
     Configuration,
     DefaultConfig,
+    OperatorQuota,
     GeneralApi,
     RoleDescription,
     ServerInfo,
     SessionApi,
     UserApi,
-    UserRegistration,
     UserSession,
 } from '@geoengine/openapi-client';
 import {
@@ -27,6 +28,7 @@ import {
     tap,
 } from 'rxjs';
 import {UUID} from '../datasets/dataset.model';
+import {isDefined} from '../util/conversions';
 import {ActivatedRoute, Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Session} from './session.model';
@@ -286,6 +288,23 @@ export class UserService {
         this.session$.next(undefined);
     }
 
+    async computationsQuota(offset: number, limit: number): Promise<ComputationQuota[]> {
+        const userApi = await firstValueFrom(this.userApi);
+
+        return userApi.computationsQuotaHandler({
+            offset,
+            limit,
+        });
+    }
+
+    async computationQuota(computation: UUID): Promise<OperatorQuota[]> {
+        const userApi = await firstValueFrom(this.userApi);
+
+        return userApi.computationQuotaHandler({
+            computation,
+        });
+    }
+
     createSessionWithToken(sessionToken: UUID): Observable<Session> {
         return from(
             new SessionApi(apiConfigurationWithAccessKey(sessionToken)).sessionHandler().then((response) => this.sessionFromDict(response)),
@@ -449,14 +468,6 @@ export class UserService {
 
         return undefined;
     }
-}
-
-/**
- * Used as filter argument for T | undefined
- */
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
-function isDefined<T>(arg: T | null | undefined): arg is T {
-    return arg !== null && arg !== undefined;
 }
 
 export const apiConfigurationWithAccessKey = (accessToken: string): Configuration =>

@@ -216,7 +216,12 @@ export class BackendService {
         return response;
     }
 
-    wfsGetFeature(request: WfsParamsDict, sessionId: UUID): Observable<JSON> {
+    wfsGetFeature(
+        request: WfsParamsDict,
+        sessionId: UUID,
+    ): Observable<{
+        [key: string]: unknown; // GeoJSON
+    }> {
         const params = new NullDiscardingHttpParams();
 
         params.set('service', 'WFS');
@@ -238,7 +243,9 @@ export class BackendService {
         params.set('filter', request.filter);
         params.set('propertyName', request.propertyName);
 
-        return this.http.get<JSON>(`${this.config.API_URL}/wfs/${request.workflowId}`, {
+        return this.http.get<{
+            [key: string]: unknown;
+        }>(`${this.config.API_URL}/wfs/${request.workflowId}`, {
             headers: BackendService.authorizationHeader(sessionId),
             params: params.httpParams,
         });

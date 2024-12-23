@@ -135,3 +135,11 @@ export function estimateTimeFormat(timeSteps: Array<Time>): string {
         return 'YYYY'; // default: yearly
     }
 }
+
+/**
+ * Used as filter argument for T | undefined
+ */
+// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
+export function isDefined<T>(arg: T | null | undefined): arg is T {
+    return arg !== null && arg !== undefined;
+}
