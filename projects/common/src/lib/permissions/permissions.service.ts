@@ -13,7 +13,7 @@ export class PermissionsService {
 
     constructor(private sessionService: UserService) {
         this.sessionService.getSessionStream().subscribe({
-            next: (session) => this.permissionsApi.next(new PermissionsApi(apiConfigurationWithAccessKey(session.id))),
+            next: (session) => this.permissionsApi.next(new PermissionsApi(apiConfigurationWithAccessKey(session.sessionToken))),
         });
     }
 

@@ -16,13 +16,6 @@ interface Wcs {
     readonly VERSION: string;
 }
 
-interface User {
-    readonly GUEST: {
-        readonly NAME: string;
-        readonly PASSWORD: string;
-    };
-}
-
 interface Delays extends CommonDelays {
     readonly LOADING: {
         readonly MIN: number;
@@ -89,7 +82,6 @@ export interface CoreConfigStructure extends CommonConfigStructure {
     readonly PROJECT: Project;
     readonly SPATIAL_REFERENCES: Array<SpatialReferenceConfig>;
     readonly TIME: Time;
-    readonly USER: User;
     readonly WCS: Wcs;
     readonly WFS: Wfs;
     readonly WMS: Wms;
@@ -104,6 +96,12 @@ export const DEFAULT_CORE_CONFIG: CoreConfigStructure = {
             PROJECTION: 'EPSG:4326', // TODO: change back to 'EPSG:3857'
         },
         FOCUS_EXTENT: [-180, -90, 180, 90],
+    },
+    BRANDING: {
+        LOGO_URL: 'assets/geoengine.svg',
+        LOGO_ICON_URL: 'assets/geoengine-favicon-white.svg',
+        LOGO_ALT_URL: 'assets/geoengine-white.svg',
+        PAGE_TITLE: 'Geo Engine',
     },
     DELAYS: {
         LOADING: {
@@ -137,12 +135,6 @@ export const DEFAULT_CORE_CONFIG: CoreConfigStructure = {
     API_URL: '/api',
     TIME: {
         ALLOW_RANGES: true,
-    },
-    USER: {
-        GUEST: {
-            NAME: 'guest',
-            PASSWORD: 'guest',
-        },
     },
     WCS: {
         SERVICE: 'WCS',
@@ -192,6 +184,15 @@ export const DEFAULT_CORE_CONFIG: CoreConfigStructure = {
     PROJECT: {
         CREATE_TEMPORARY_PROJECT_AT_STARTUP: false,
     },
+    USER: {
+        GUEST: {
+            NAME: 'guest',
+            PASSWORD: 'guest',
+        },
+        AUTO_GUEST_LOGIN: true,
+        REGISTRATION_AVAILABLE: true,
+        LOCAL_LOGIN_AVAILABLE: true,
+    },
 };
 
 /**
@@ -218,10 +219,6 @@ export class CoreConfig extends CommonConfig {
         return this.config.WCS;
     }
 
-    get USER(): User {
-        return this.config.USER;
-    }
-
     get DEFAULTS(): ConfigDefaults {
         return this.config.DEFAULTS;
     }
@@ -246,7 +243,7 @@ export class CoreConfig extends CommonConfig {
      * Initialize the config on app start.
      */
     override async load(defaults: CoreConfigStructure = DEFAULT_CORE_CONFIG): Promise<void> {
-        await super.load();
+        await super.load(defaults);
         this.config = mergeDeepOverrideLists(defaults, {...this.config});
     }
 }

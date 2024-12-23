@@ -2,7 +2,6 @@ import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormControl, FormBuilder, FormGroup, Validators, FormArray} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap, tap} from 'rxjs/operators';
-import {NotificationService} from '../../../notification.service';
 import {BehaviorSubject, EMPTY, Observable, combineLatest, of} from 'rxjs';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {
@@ -15,6 +14,7 @@ import {
     ResultTypes,
     RenameBandsDict,
     geoengineValidators,
+    NotificationService,
 } from '@geoengine/common';
 import {TypedOperatorOperator} from '@geoengine/openapi-client';
 

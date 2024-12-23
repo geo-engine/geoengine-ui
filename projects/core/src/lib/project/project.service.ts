@@ -18,11 +18,9 @@ import {Injectable, OnDestroy} from '@angular/core';
 import {Project} from './project.model';
 import {CoreConfig} from '../config.service';
 import {LoadingState} from './loading-state.model';
-import {NotificationService} from '../notification.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {BackendService} from '../backend/backend.service';
 import {BBoxDict, PlotDict, ProvenanceEntryDict, ToDict, UUID} from '../backend/backend.model';
-import {UserService} from '../users/user.service';
 import {Extent, MapService, ViewportSize} from '../map/map.service';
 import {Session} from '../users/session.model';
 import OlFeature from 'ol/Feature';
@@ -30,10 +28,10 @@ import OlGeometry from 'ol/geom/Geometry';
 import {intersects as olIntersects} from 'ol/extent';
 import {getProjectionTarget} from '../util/spatial_reference';
 import {SpatialReferenceService} from '../spatial-references/spatial-reference.service';
-import {GeoEngineError} from '../util/errors';
 import {
     ClusteredPointSymbology,
     extentToBboxDict,
+    GeoEngineError,
     HasLayerId,
     HasLayerType,
     HasPlotId,
@@ -44,6 +42,7 @@ import {
     LayersService,
     LineSimplificationDict,
     LineSymbology,
+    NotificationService,
     Plot,
     PointSymbology,
     PolygonSymbology,
@@ -58,6 +57,7 @@ import {
     Time,
     TimeStepDuration,
     timeStepDurationToTimeStepDict,
+    UserService,
     VectorColumnDataTypes,
     VectorData,
     VectorLayer,

@@ -1,22 +1,13 @@
 import {Observable, BehaviorSubject, first} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
-import {
-    LayoutService,
-    UserService,
-    NotificationService,
-    ProjectService,
-    MapService,
-    MapContainerComponent,
-    SpatialReferenceService,
-    WEB_MERCATOR,
-} from '@geoengine/core';
+import {LayoutService, ProjectService, MapService, MapContainerComponent, SpatialReferenceService, WEB_MERCATOR} from '@geoengine/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AppConfig} from '../app-config.service';
 import {ComponentPortal} from '@angular/cdk/portal';
 import {DataSelectionService} from '../data-selection.service';
 import {SpeciesSelectorComponent} from '../species-selector/species-selector.component';
-import {Layer, RandomColorService} from '@geoengine/common';
+import {Layer, RandomColorService, UserService} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-main',
@@ -41,7 +32,6 @@ export class MainComponent implements OnInit, AfterViewInit {
         readonly userService: UserService,
         private iconRegistry: MatIconRegistry,
         private _randomColorService: RandomColorService,
-        private _notificationService: NotificationService,
         private mapService: MapService,
         private _spatialReferenceService: SpatialReferenceService,
         private sanitizer: DomSanitizer,

@@ -20,17 +20,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
 import {firstValueFrom} from 'rxjs';
-import {
-    BackendService,
-    BBoxDict,
-    CoreModule,
-    DatasetService,
-    MapContainerComponent,
-    NotificationService,
-    ProjectService,
-    UserService,
-    WfsParamsDict,
-} from '@geoengine/core';
+import {BackendService, BBoxDict, CoreModule, DatasetService, MapContainerComponent, ProjectService, WfsParamsDict} from '@geoengine/core';
 import {
     ColumnRangeFilterDict,
     extentToBboxDict,
@@ -46,6 +36,8 @@ import {
     ColorBreakpoint,
     RasterLayer,
     RasterSymbology,
+    UserService,
+    NotificationService,
 } from '@geoengine/common';
 import {utc} from 'moment';
 import {DataSelectionService} from '../data-selection.service';

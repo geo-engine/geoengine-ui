@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
-import {LoadingState, ProjectService, UserService, Project} from '@geoengine/core';
+import {LoadingState, ProjectService, Project} from '@geoengine/core';
 import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, firstValueFrom, Observable, of} from 'rxjs';
 import moment from 'moment';
-import {estimateTimeFormat, Layer, RasterLayer, Time, VectorData, VectorLayer} from '@geoengine/common';
+import {estimateTimeFormat, Layer, RasterLayer, Time, UserService, VectorData, VectorLayer} from '@geoengine/common';
 import OlFeature from 'ol/Feature';
 
 export interface DataRange {

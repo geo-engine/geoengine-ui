@@ -3,8 +3,6 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject,
 import {MatIconRegistry} from '@angular/material/icon';
 import {
     LayoutService,
-    UserService,
-    NotificationService,
     ProjectService,
     MapService,
     MapContainerComponent,
@@ -18,7 +16,7 @@ import moment from 'moment';
 import {DataSelectionService} from './data-selection.service';
 import {EbvSelectorComponent} from './ebv-selector/ebv-selector.component';
 import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
-import {Layer, RandomColorService, Time} from '@geoengine/common';
+import {Layer, RandomColorService, Time, UserService} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-root',
@@ -47,7 +45,6 @@ export class AppComponent implements OnInit, AfterViewInit {
         readonly userService: UserService,
         private iconRegistry: MatIconRegistry,
         private _randomColorService: RandomColorService,
-        private _notificationService: NotificationService,
         private mapService: MapService,
         private _spatialReferenceService: SpatialReferenceService,
         private sanitizer: DomSanitizer,

@@ -11,12 +11,10 @@ import {
     DatasetService,
     LayoutService,
     MapService,
-    NotificationService,
     ProjectService,
     SidenavRef,
     SpatialReferenceService,
     TabsService,
-    UserService,
     CoreModule,
     CoreConfig,
 } from '@geoengine/core';
@@ -24,7 +22,7 @@ import {AppConfig} from './app-config.service';
 import {HelpComponent} from './help/help.component';
 import {SplashDialogComponent} from './splash-dialog/splash-dialog.component';
 import {GfBioCollectionDialogComponent} from './gfbio-collection/gfbio-collection-dialog.component';
-import {RandomColorService} from '@geoengine/common';
+import {NotificationService, RandomColorService, UserService} from '@geoengine/common';
 import {CommonConfig} from '@geoengine/common';
 
 @NgModule({

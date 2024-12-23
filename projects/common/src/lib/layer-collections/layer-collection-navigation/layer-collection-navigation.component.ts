@@ -147,6 +147,7 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
     protected createBreadcrumbNavigation(): BreadcrumbNavigation {
         return new BreadcrumbNavigation(
             (id) => this.updateListView(id),
+            (id) => this.selectCollectionInBreadcrumbs(id),
             () => this.scrollToRight(),
         );
     }
@@ -176,6 +177,11 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
         this.search.updateSearchCapabilities(this.selectedCollection.id).then(() => {
             this.changeDetectorRef.markForCheck();
         });
+    }
+
+    protected selectCollectionInBreadcrumbs(id?: LayerCollectionItemOrSearch): void {
+        this.selectedCollection = id ?? {type: 'collection', id: this.collectionId};
+        this.navigateCollection.emit(this.selectedCollection as LayerCollectionItem);
     }
 }
 
@@ -342,6 +348,7 @@ class BreadcrumbNavigation {
 
     constructor(
         protected readonly updateListView: (_: LayerCollectionItemOrSearch | undefined) => void,
+        protected readonly collectionSelection: (_: LayerCollectionItemOrSearch | undefined) => void,
         protected readonly scrollToRight: () => void,
     ) {}
 
@@ -388,6 +395,7 @@ class BreadcrumbNavigation {
             this.updateListView(undefined);
             this.selectedCollection = -1;
         }
+        this.emitCollectionSelection();
     }
 
     forward(): void {
@@ -396,6 +404,7 @@ class BreadcrumbNavigation {
             this.updateTrailAndCollection();
             this.scrollToRight();
         }
+        this.emitCollectionSelection();
     }
 
     onBreadCrumbClick(index: number): void {
@@ -424,5 +433,14 @@ class BreadcrumbNavigation {
         this.activeTrail = currentTrail;
         const lastId = currentTrail[currentTrail.length - 1];
         this.updateListView(lastId);
+    }
+
+    private emitCollectionSelection(): void {
+        if (this.activeTrail.length == 0) {
+            this.collectionSelection(undefined);
+        } else {
+            const collectionId = this.activeTrail[this.activeTrail.length - 1];
+            this.collectionSelection(collectionId);
+        }
     }
 }

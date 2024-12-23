@@ -9,6 +9,7 @@ export * from './lib/config.service';
 export * from './lib/layout.service';
 export * from './lib/datasets/datasets.service';
 export * from './lib/layer-collections/layers.service';
+export * from './lib/notification.service';
 export * from './lib/uploads/uploads.service';
 export * from './lib/permissions/permissions.service';
 export * from './lib/plots/plots.service';
@@ -33,9 +34,11 @@ export * from './lib/layer-icons/line-icon/line-icon.component';
 export * from './lib/layer-icons/point-icon/point-icon.component';
 export * from './lib/layer-icons/polygon-icon/polygon-icon.component';
 export * from './lib/layer-icons/raster-icon/raster-icon.component';
+export * from './lib/login/login.component';
 export * from './lib/measurement/measurement.component';
 export * from './lib/plots/vega-viewer/vega-viewer.component';
 export * from './lib/plots/vega-viewer/vega-viewer.component';
+export * from './lib/register/register.component';
 export * from './lib/symbology/color-param-editor/color-param-editor.component';
 export * from './lib/symbology/number-param-editor/number-param-editor.component';
 export * from './lib/symbology/raster-gradient-symbology-editor/raster-gradient-symbology-editor.component';
@@ -66,11 +69,17 @@ export * from './lib/plots/plot.model';
 export * from './lib/spatial-references/spatial-reference.model';
 export * from './lib/symbology/symbology.model';
 export * from './lib/time/time.model';
+export * from './lib/user/user.model';
 
 // Pipes
 export * from './lib/util/pipes/async-converters.pipe';
 export * from './lib/util/pipes/breakpoint-to-css-string.pipe';
 export * from './lib/util/pipes/color-gradients.pipe';
+
+// Guards
+export * from './lib/util/guards/backend-available.guard';
+export * from './lib/util/guards/can-register.guard';
+export * from './lib/util/guards/log-in.guard';
 
 // Misc
 export * from './lib/colors/colormaps/mpl-colormaps';
@@ -79,6 +88,7 @@ export * from './lib/util/constants';
 export * from './lib/util/conversions';
 export * from './lib/util/directives/flexbox-legacy.directive';
 export * from './lib/util/directives/autocomplete-select.directive';
+export * from './lib/util/errors';
 export * from './lib/util/form.validators';
 export * from './lib/util/symbologies';
 export * from './lib/util/icons';

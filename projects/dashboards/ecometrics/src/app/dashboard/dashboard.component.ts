@@ -25,10 +25,8 @@ import {
     Extent,
     LayoutService,
     MapContainerComponent,
-    NotificationService,
     ProjectService,
     UploadResponseDict,
-    UserService,
     WGS_84,
 } from '@geoengine/core';
 import {
@@ -38,6 +36,7 @@ import {
     extentToBboxDict,
     HistogramDict,
     LinearGradient,
+    NotificationService,
     PaletteColorizer,
     PolygonSymbology,
     RasterLayer,
@@ -45,6 +44,7 @@ import {
     SingleBandRasterColorizer,
     Time,
     TRANSPARENT,
+    UserService,
     VectorLayer,
 } from '@geoengine/common';
 import {utc} from 'moment';

@@ -8,32 +8,13 @@ interface Components {
     readonly PLAYBACK: {
         readonly AVAILABLE: boolean;
     };
-    readonly REGISTRATION: {
-        readonly AVAILABLE: boolean;
-    };
     readonly MAP_RESOLUTION_EXTENT_OVERLAY: {
         readonly AVAILABLE: boolean;
     };
 }
 
-interface Branding {
-    readonly LOGO_URL: string;
-    readonly LOGO_ICON_URL: string;
-    readonly LOGO_ALT_URL: string;
-    readonly PAGE_TITLE: string;
-    readonly HOMEPAGE?: Homepage;
-}
-
-interface Homepage {
-    readonly URL: string;
-    readonly BUTTON_IMAGE_URL: string;
-    readonly BUTTON_ALT_TEXT: string;
-    readonly BUTTON_TOOLTIP_TEXT: string;
-}
-
 interface AppConfigStructure extends CoreConfigStructure {
     readonly COMPONENTS: Components;
-    readonly BRANDING: Branding;
 }
 
 const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CORE_CONFIG, {
@@ -62,10 +43,6 @@ export class AppConfig extends CoreConfig {
 
     get COMPONENTS(): Components {
         return this.config.COMPONENTS;
-    }
-
-    get BRANDING(): Branding {
-        return this.config.BRANDING;
     }
 
     override load(): Promise<void> {

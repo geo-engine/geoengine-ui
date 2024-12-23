@@ -5,7 +5,6 @@ import {BBoxDict, RasterResultDescriptorDict, SrsString, TimeIntervalDict, UUID}
 import {BackendService} from '../../../backend/backend.service';
 import {ProjectService} from '../../../project/project.service';
 import {SpatialReferenceService} from '../../../spatial-references/spatial-reference.service';
-import {UserService} from '../../../users/user.service';
 import {
     Colorizer,
     ColorMapSelectorComponent,
@@ -20,6 +19,7 @@ import {
     StatisticsParams,
     Time,
     TRANSPARENT,
+    UserService,
 } from '@geoengine/common';
 
 const COLORMAPS = ALL_COLORMAPS;

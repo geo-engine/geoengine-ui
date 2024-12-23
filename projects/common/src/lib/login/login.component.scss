@@ -17,10 +17,17 @@
 }
 
 mat-card-content {
-    margin-top: 1rem;
-
     mat-form-field {
         width: 100%;
+    }
+
+    table {
+        width: 100%;
+
+        th {
+            text-align: left;
+            margin-right: 0.5rem;
+        }
     }
 }
 
@@ -58,4 +65,14 @@ img.logo {
         height: 1.5rem;
         vertical-align: middle;
     }
+}
+
+.login-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.login-buttons button {
+    margin-top: 1rem;
 }

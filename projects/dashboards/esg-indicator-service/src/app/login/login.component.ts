@@ -3,7 +3,7 @@ import {BehaviorSubject, Subscription} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
-import {NotificationService, UserService, User, CoreModule, ProjectService} from '@geoengine/core';
+import {User, CoreModule, ProjectService} from '@geoengine/core';
 import {first} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {AsyncPipe} from '@angular/common';
@@ -12,6 +12,7 @@ import {MatCardModule} from '@angular/material/card';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatIconModule} from '@angular/material/icon';
 import {MatMenuModule} from '@angular/material/menu';
+import {NotificationService, UserService} from '@geoengine/common';
 
 enum FormStatus {
     LoggedOut,
