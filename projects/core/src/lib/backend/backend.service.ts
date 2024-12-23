@@ -220,7 +220,7 @@ export class BackendService {
         request: WfsParamsDict,
         sessionId: UUID,
     ): Observable<{
-        [key: string]: unknown;
+        [key: string]: unknown; // GeoJSON
     }> {
         const params = new NullDiscardingHttpParams();
 

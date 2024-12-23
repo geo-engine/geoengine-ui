@@ -14,6 +14,7 @@ import {Session} from './session.model';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Quota} from './quota/quota.model';
 import {SessionApi, Configuration, UserSession, DefaultConfig} from '@geoengine/openapi-client';
+import {isDefined} from '@geoengine/common';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
@@ -384,14 +385,6 @@ export class UserService {
 
         return undefined;
     }
-}
-
-/**
- * Used as filter argument for T | undefined
- */
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
-function isDefined<T>(arg: T | null | undefined): arg is T {
-    return arg !== null && arg !== undefined;
 }
 
 const apiConfigurationWithAccessKey = (accessToken: string): Configuration =>

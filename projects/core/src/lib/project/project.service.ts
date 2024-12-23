@@ -37,6 +37,7 @@ import {
     HasLayerId,
     HasLayerType,
     HasPlotId,
+    isDefined,
     Layer,
     LayerData,
     LayerMetadata,
@@ -117,6 +118,11 @@ export class ProjectService implements OnDestroy {
         protected spatialReferenceService: SpatialReferenceService,
         protected layersService: LayersService,
     ) {
+        // TODO: currently the ProjectService also handles layer data.
+        //       The temporary projects are a workaround to make dashboards work.
+        //       Instead, the ProjectService should be refactored to only handle
+        //       projects and extract the map layer handing.
+
         // set the starting project upon login
         this.userService
             .getSessionStream()
@@ -794,9 +800,7 @@ export class ProjectService implements OnDestroy {
 
         const result = this.getProjectOnce().pipe(
             mergeMap((project) => {
-                const layers = project.layers.filter((l) => {
-                    return l.id !== layer.id;
-                });
+                const layers = project.layers.filter((l) => l.id !== layer.id);
 
                 if (project.layers.length === layers.length) {
                     // nothing filtered, so no request
@@ -1057,7 +1061,12 @@ export class ProjectService implements OnDestroy {
         const oldProject = await firstValueFrom(merge(this.project$, of(undefined)).pipe(first()));
 
         if (oldProject) {
-            await firstValueFrom(this.backend.deleteProject(oldProject.id, sessionToken));
+            try {
+                await firstValueFrom(this.backend.deleteProject(oldProject.id, sessionToken));
+            } catch (_error) {
+                // could not delete the old project, maybe because the user changed
+                // TODO: remove temporary projects and do not use the project servive for dashboards
+            }
         }
     }
 
@@ -1662,12 +1671,4 @@ export class ProjectService implements OnDestroy {
         const layer = await this.layersService.resolveLayer(layerId);
         this.addLayer(layer);
     }
-}
-
-/**
- * Used as filter argument for T | undefined
- */
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
-function isDefined<T>(arg: T | null | undefined): arg is T {
-    return arg !== null && arg !== undefined;
 }

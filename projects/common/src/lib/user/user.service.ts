@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {ComputationQuota, Configuration, DefaultConfig, OperatorQuota, SessionApi, UserApi, UserSession} from '@geoengine/openapi-client';
 import {Observable, ReplaySubject, filter, first, firstValueFrom, map} from 'rxjs';
 import {UUID} from '../datasets/dataset.model';
+import {isDefined} from '../util/conversions';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
@@ -130,14 +131,6 @@ export class UserService {
 
         return this.createSessionWithToken(sessionToken);
     }
-}
-
-/**
- * Used as filter argument for T | undefined
- */
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
-function isDefined<T>(arg: T | null | undefined): arg is T {
-    return arg !== null && arg !== undefined;
 }
 
 export const apiConfigurationWithAccessKey = (accessToken: string): Configuration =>
