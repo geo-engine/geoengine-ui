@@ -3,7 +3,7 @@ import {Permission, PermissionListing, PermissionsApi} from '@geoengine/openapi-
 import {ReplaySubject, firstValueFrom} from 'rxjs';
 import {UserService, apiConfigurationWithAccessKey} from '../user/user.service';
 
-export type ResourceType = 'dataset' | 'layer' | 'layerCollection' | 'project';
+export type ResourceType = 'dataset' | 'layer' | 'layerCollection' | 'project' | 'mlModel';
 
 @Injectable({
     providedIn: 'root',
