@@ -18,6 +18,7 @@ import moment, {Moment, unitOfTime} from 'moment';
     styleUrls: ['./time-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => TimeInputComponent), multi: true}],
+    standalone: false,
 })
 export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, OnChanges {
     // TODO: also react on disabled state in `ControlValueAccessor`

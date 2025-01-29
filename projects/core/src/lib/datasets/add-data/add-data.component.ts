@@ -21,6 +21,7 @@ export interface AddDataButton {
     templateUrl: './add-data.component.html',
     styleUrls: ['./add-data.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AddDataComponent {
     /**

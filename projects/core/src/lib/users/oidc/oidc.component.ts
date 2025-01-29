@@ -9,6 +9,7 @@ import {UserService} from '@geoengine/common';
     selector: 'geoengine-oidc',
     templateUrl: 'oidc.component.html',
     styleUrls: ['./oidc.component.scss'],
+    standalone: false,
 })
 export class OidcComponent implements OnInit, OnDestroy {
     user?: User;

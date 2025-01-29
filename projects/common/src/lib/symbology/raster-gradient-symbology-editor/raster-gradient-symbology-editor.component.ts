@@ -35,6 +35,7 @@ import {PercentileBreakpointSelectorComponent} from '../../colors/percentile-bre
     templateUrl: 'raster-gradient-symbology-editor.component.html',
     styleUrls: ['raster-gradient-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit, OnChanges {
     @ViewChild(ColorMapSelectorComponent)

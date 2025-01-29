@@ -41,6 +41,7 @@ import {Map} from 'immutable';
     templateUrl: './table.component.html',
     styleUrls: ['./table.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
     @ViewChild(MatPaginator) paginator!: MatPaginator;

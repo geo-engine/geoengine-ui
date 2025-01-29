@@ -25,6 +25,7 @@ import {ALL_COLORMAPS} from '../colormaps/colormaps';
     templateUrl: 'color-map-selector.component.html',
     styleUrls: ['color-map-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
     /**

@@ -108,6 +108,7 @@ export abstract class MapLayerComponent<OL extends OlLayer<OS, any>, OS extends 
     template: '',
     providers: [{provide: MapLayerComponent, useExisting: OlVectorLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OlVectorLayerComponent
     extends MapLayerComponent<OlLayerVector<OlVectorSource<OlFeature>>, OlVectorSource<OlFeature>>
@@ -180,6 +181,7 @@ export class OlVectorLayerComponent
     template: '',
     providers: [{provide: MapLayerComponent, useExisting: OlRasterLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OlRasterLayerComponent
     extends MapLayerComponent<OlLayerTile<OlTileWmsSource>, OlTileWmsSource>

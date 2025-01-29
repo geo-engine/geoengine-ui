@@ -34,6 +34,7 @@ import {CollectionNavigation, LayerCollectionListComponent} from '../layer-colle
     templateUrl: './layer-collection-navigation.component.html',
     styleUrls: ['./layer-collection-navigation.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LayerCollectionNavigationComponent implements OnInit, OnChanges, OnDestroy {
     @Input({required: false}) showLayerToggle = true;

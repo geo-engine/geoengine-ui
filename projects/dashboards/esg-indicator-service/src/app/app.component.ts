@@ -5,7 +5,6 @@ import {DataSelectionService} from './data-selection.service';
 
 @Component({
     selector: 'geoengine-root',
-    standalone: true,
     imports: [RouterOutlet, CoreModule],
     providers: [DataSelectionService],
     templateUrl: './app.component.html',

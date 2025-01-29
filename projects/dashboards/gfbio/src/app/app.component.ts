@@ -49,6 +49,7 @@ import {Layer, LayersService, NotificationService, RandomColorService, UserServi
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;

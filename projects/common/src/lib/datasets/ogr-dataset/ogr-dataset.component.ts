@@ -31,7 +31,6 @@ import {
 
 @Component({
     selector: 'geoengine-ogr-dataset',
-    standalone: true,
     imports: [
         AngularCommonModule,
         MatInputModule,

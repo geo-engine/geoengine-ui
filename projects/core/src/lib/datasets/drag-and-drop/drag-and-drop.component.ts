@@ -5,6 +5,7 @@ import {Component, ChangeDetectionStrategy, ViewChild, Output, EventEmitter, Ele
     templateUrl: './drag-and-drop.component.html',
     styleUrls: ['./drag-and-drop.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DragAndDropComponent {
     selectedFiles?: Array<File>;

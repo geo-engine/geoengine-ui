@@ -32,6 +32,7 @@ enum ChildType {
     selector: 'geoengine-manager-add-layer-item',
     templateUrl: './add-layer-item.component.html',
     styleUrl: './add-layer-item.component.scss',
+    standalone: false,
 })
 export class AddLayerItemComponent {
     ItemType = ItemType;

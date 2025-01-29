@@ -24,6 +24,7 @@ enum State {
     templateUrl: './draw-features.component.html',
     styleUrls: ['./draw-features.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DrawFeaturesComponent implements OnDestroy, OnInit {
     readonly State = State;

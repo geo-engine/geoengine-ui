@@ -1,7 +1,10 @@
 import {Pipe, PipeTransform} from '@angular/core';
 import {TRANSPARENT} from '@geoengine/common';
 
-@Pipe({name: 'cssStringToRgbaPipe'})
+@Pipe({
+    name: 'cssStringToRgbaPipe',
+    standalone: false,
+})
 export class CssStringToRgbaPipe implements PipeTransform {
     // TODO: change to colorutils!
     transform(rgbaCssString: string): [number, number, number, number] {

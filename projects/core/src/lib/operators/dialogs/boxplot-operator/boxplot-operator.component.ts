@@ -47,6 +47,7 @@ const isRasterLayer = (layer: Layer): boolean => {
     templateUrl: './boxplot-operator.component.html',
     styleUrls: ['./boxplot-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class BoxPlotOperatorComponent implements AfterViewInit, OnDestroy {
     readonly inputTypes = ResultTypes.INPUT_TYPES;

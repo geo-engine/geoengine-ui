@@ -9,6 +9,7 @@ import {Time} from '@geoengine/common';
     templateUrl: './time-step-selector.component.html',
     styleUrls: ['./time-step-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class TimeStepSelectorComponent implements OnChanges {
     @Input() timeSteps?: Array<Time>;

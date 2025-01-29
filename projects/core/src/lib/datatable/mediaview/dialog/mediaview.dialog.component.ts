@@ -5,6 +5,7 @@ import {MAT_DIALOG_DATA} from '@angular/material/dialog';
     selector: 'geoengine-mediaview-dialog',
     templateUrl: './mediaview.dialog.component.html',
     styleUrls: ['./mediaview.dialog.component.scss'],
+    standalone: false,
 })
 
 /**

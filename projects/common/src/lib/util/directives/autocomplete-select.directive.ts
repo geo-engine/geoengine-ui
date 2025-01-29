@@ -5,6 +5,7 @@ import {Observable, ReplaySubject, Subscription} from 'rxjs';
 @Directive({
     selector: '[geoengineAutocompleteSelect]',
     exportAs: 'geoengineAutocompleteSelect',
+    standalone: false,
 })
 export class AutocompleteSelectDirective<T> implements OnChanges, OnDestroy {
     @Input('geoengineAutocompleteSelectAllValues') allValues: Array<T> = [];

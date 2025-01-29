@@ -31,6 +31,7 @@ import {ALL_COLORMAPS} from '../colormaps/colormaps';
     templateUrl: 'percentile-breakpoint-selector.component.html',
     styleUrls: ['percentile-breakpoint-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class PercentileBreakpointSelectorComponent implements OnInit, OnDestroy, OnChanges {
     @Input({required: true}) band!: string;

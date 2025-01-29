@@ -13,7 +13,6 @@ import {MatIconModule} from '@angular/material/icon';
     selector: 'geoengine-quota-log',
     templateUrl: './quota-log.component.html',
     styleUrl: './quota-log.component.scss',
-    standalone: true,
     imports: [MatTableModule, MatPaginatorModule, MatProgressBarModule, MatButtonModule, MatIconModule],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })

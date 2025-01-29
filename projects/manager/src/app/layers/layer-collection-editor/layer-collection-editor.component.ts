@@ -17,6 +17,7 @@ export interface CollectionForm {
     selector: 'geoengine-manager-layer-collection-editor',
     templateUrl: './layer-collection-editor.component.html',
     styleUrl: './layer-collection-editor.component.scss',
+    standalone: false,
 })
 export class LayerCollectionEditorComponent implements OnChanges {
     readonly CollectionNavigation = CollectionNavigation;

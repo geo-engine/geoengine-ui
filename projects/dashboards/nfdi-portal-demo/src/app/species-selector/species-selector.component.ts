@@ -349,6 +349,7 @@ interface SpeciesInfo {
     templateUrl: './species-selector.component.html',
     styleUrls: ['./species-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     readonly dragonflySpecies: string[] = DRAGONFLY_SPECIES;

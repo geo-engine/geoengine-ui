@@ -51,6 +51,7 @@ export enum CollectionNavigation {
     templateUrl: './layer-collection-list.component.html',
     styleUrls: ['./layer-collection-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LayerCollectionListComponent implements OnChanges {
     readonly CollectionNavigation = CollectionNavigation;

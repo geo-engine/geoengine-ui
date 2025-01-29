@@ -5,6 +5,7 @@ import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
     templateUrl: './dialog-section-heading.component.html',
     styleUrls: ['./dialog-section-heading.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DialogSectionHeadingComponent {
     @Input() title?: string;

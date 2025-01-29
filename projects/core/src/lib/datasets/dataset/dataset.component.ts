@@ -7,6 +7,7 @@ import {createIconDataUrl, Dataset} from '@geoengine/common';
     templateUrl: './dataset.component.html',
     styleUrls: ['./dataset.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DatasetComponent implements OnInit {
     @Input() dataset!: Dataset;

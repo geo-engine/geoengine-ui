@@ -11,7 +11,10 @@ import {
 } from '@angular/core';
 import {SidenavRef} from '../sidenav-ref.service';
 
-@Directive({selector: '[geoengineSidenavSearchRight]'})
+@Directive({
+    selector: '[geoengineSidenavSearchRight]',
+    standalone: false,
+})
 export class SidenavSearchRightDirective {}
 
 @Component({
@@ -19,6 +22,7 @@ export class SidenavSearchRightDirective {}
     templateUrl: './sidenav-search.component.html',
     styleUrls: ['./sidenav-search.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class SidenavSearchComponent implements AfterViewInit {
     @ContentChildren(SidenavSearchRightDirective, {read: ElementRef}) contentChildren!: QueryList<ElementRef>;

@@ -15,6 +15,7 @@ export enum NavigationType {
     selector: 'geoengine-manager-navigation',
     templateUrl: './navigation.component.html',
     styleUrls: ['./navigation.component.scss'],
+    standalone: false,
 })
 export class NavigationComponent {
     isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset).pipe(

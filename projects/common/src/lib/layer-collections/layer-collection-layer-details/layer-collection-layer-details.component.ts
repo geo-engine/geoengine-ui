@@ -9,6 +9,7 @@ import {SingleBandRasterColorizer} from '../../symbology/symbology.model';
     templateUrl: './layer-collection-layer-details.component.html',
     styleUrls: ['./layer-collection-layer-details.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LayerCollectionLayerDetailsComponent {
     @Input() description: string | undefined;

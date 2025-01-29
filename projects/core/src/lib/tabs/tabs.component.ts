@@ -27,6 +27,7 @@ const TAB_WIDTH_PCT_MAX = 20;
     templateUrl: './tabs.component.html',
     styleUrls: ['./tabs.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class TabsComponent implements OnChanges, OnDestroy {
     @HostBinding('class.mat-elevation-z4') elevationStyle = true;

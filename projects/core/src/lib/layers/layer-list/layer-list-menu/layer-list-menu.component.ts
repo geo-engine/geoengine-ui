@@ -10,6 +10,7 @@ import {CoreConfig} from '../../../config.service';
     templateUrl: './layer-list-menu.component.html',
     styleUrls: ['./layer-list-menu.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LayerListMenuComponent {
     /**

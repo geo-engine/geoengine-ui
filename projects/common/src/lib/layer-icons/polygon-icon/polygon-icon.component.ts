@@ -20,6 +20,7 @@ export interface PolygonIconStyle extends IconStyle {
     templateUrl: './polygon-icon.component.svg',
     styleUrls: ['./polygon-icon.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class PolygonIconComponent {
     // the style to use for the icon

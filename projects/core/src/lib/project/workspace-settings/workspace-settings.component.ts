@@ -11,6 +11,7 @@ import {NotificationsComponent} from '../notifications/notifications.component';
     templateUrl: './workspace-settings.component.html',
     styleUrls: ['./workspace-settings.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class WorkspaceSettingsComponent {
     constructor(protected layoutService: LayoutService) {}

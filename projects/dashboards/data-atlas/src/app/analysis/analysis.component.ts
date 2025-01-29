@@ -23,6 +23,7 @@ import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
     templateUrl: './analysis.component.html',
     styleUrls: ['./analysis.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AnalysisComponent {
     countries = new Array<string>();

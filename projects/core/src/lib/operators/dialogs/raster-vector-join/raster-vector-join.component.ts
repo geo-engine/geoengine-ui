@@ -47,6 +47,7 @@ enum ColumnNames {
     templateUrl: './raster-vector-join.component.html',
     styleUrls: ['./raster-vector-join.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RasterVectorJoinComponent implements OnDestroy {
     minNumberOfRasterInputs = 1;

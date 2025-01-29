@@ -13,6 +13,7 @@ import {SpatialReferenceService} from '../../spatial-references/spatial-referenc
     templateUrl: 'map-resolution-extent-overlay.component.html',
     styleUrls: ['map-resolution-extent-overlay.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class MapResolutionExtentOverlayComponent {
     @Input()

@@ -10,6 +10,7 @@ import {LayerMetadata, VectorData, VectorLayerMetadata} from '@geoengine/common'
     templateUrl: './data-point.component.html',
     styleUrls: ['./data-point.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DataPointComponent {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

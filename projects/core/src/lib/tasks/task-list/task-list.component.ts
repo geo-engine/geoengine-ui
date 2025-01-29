@@ -36,6 +36,7 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     styleUrls: ['./task-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl}],
+    standalone: false,
 })
 export class TaskListComponent implements AfterViewInit, OnDestroy {
     taskStatusOptions: Array<TaskStatusType> = ['running', 'completed', 'aborted', 'failed'];

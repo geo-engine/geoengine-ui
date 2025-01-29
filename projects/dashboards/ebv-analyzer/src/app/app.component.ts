@@ -23,6 +23,7 @@ import {Layer, RandomColorService, Time, UserService} from '@geoengine/common';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;

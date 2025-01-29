@@ -9,6 +9,7 @@ import {NamedSpatialReference, SpatialReference} from '@geoengine/common';
     templateUrl: './change-spatial-reference.component.html',
     styleUrls: ['./change-spatial-reference.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ChangeSpatialReferenceComponent implements OnDestroy {
     readonly SpatialReferences: Array<NamedSpatialReference>;

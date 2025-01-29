@@ -36,6 +36,7 @@ import {DownloadLayerComponent} from '../../../download-layer/download-layer.com
     templateUrl: './layer-list-element.component.html',
     styleUrls: ['./layer-list-element.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LayerListElementComponent {
     @Input()

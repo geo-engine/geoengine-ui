@@ -8,6 +8,7 @@ import {VectorColumnDataType, VectorColumnDataTypes} from '@geoengine/common';
     templateUrl: './mediaview.component.html',
     styleUrls: ['./mediaview.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 
 /**

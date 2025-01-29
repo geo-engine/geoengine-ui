@@ -15,6 +15,7 @@ import {Measurement} from '@geoengine/openapi-client';
     templateUrl: 'raster-palette-symbology-editor.component.html',
     styleUrls: ['raster-palette-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RasterPaletteSymbologyEditorComponent implements OnInit, OnChanges {
     @ViewChild(ColorMapSelectorComponent)

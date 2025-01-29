@@ -4,6 +4,7 @@ import {Subscription} from 'rxjs';
 
 @Directive({
     selector: '[geoengineIfLoggedIn]',
+    standalone: false,
 })
 export class IfLoggedInDirective implements OnDestroy {
     private subscription: Subscription;

@@ -24,6 +24,7 @@ export type ItemId = {type: ItemType.Layer; layer: UUID} | {type: ItemType.Colle
     selector: 'geoengine-manager-layers',
     templateUrl: './layers.component.html',
     styleUrl: './layers.component.scss',
+    standalone: false,
 })
 export class LayersComponent {
     readonly CollectionNavigation = CollectionNavigation;

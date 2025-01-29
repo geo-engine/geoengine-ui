@@ -26,6 +26,7 @@ import {
     templateUrl: 'vector-legend-component.html',
     styleUrls: ['vector-legend.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class VectorLegendComponent implements OnInit {
     readonly ST = SymbologyType;

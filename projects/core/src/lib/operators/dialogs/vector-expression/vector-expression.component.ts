@@ -52,6 +52,7 @@ interface VectorColumn {
     templateUrl: './vector-expression.component.html',
     styleUrls: ['./vector-expression.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
     readonly allowedLayerTypes = ResultTypes.VECTOR_TYPES;
