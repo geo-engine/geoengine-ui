@@ -41,6 +41,7 @@ import {Layer, LayersService, UserService} from '@geoengine/common';
     templateUrl: './main.component.html',
     styleUrls: ['./main.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class MainComponent implements OnInit, AfterViewInit {
     @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;

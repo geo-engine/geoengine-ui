@@ -38,6 +38,7 @@ const isVectorLayer = (layer: Layer): boolean => {
     templateUrl: './histogram-operator.component.html',
     styleUrls: ['./histogram-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class HistogramOperatorComponent implements AfterViewInit, OnDestroy {
     minNumberOfBuckets = 1;

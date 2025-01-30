@@ -51,6 +51,7 @@ const isRasterLayer = (layer: Layer | null): boolean => {
     templateUrl: './statistics-plot.component.html',
     styleUrls: ['./statistics-plot.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class StatisticsPlotComponent implements AfterViewInit, OnDestroy {
     readonly allowedLayerTypes = ResultTypes.LAYER_TYPES;

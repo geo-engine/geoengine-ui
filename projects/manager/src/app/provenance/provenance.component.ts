@@ -22,6 +22,7 @@ export interface ProvenanceChange {
     selector: 'geoengine-manager-provenance',
     templateUrl: './provenance.component.html',
     styleUrl: './provenance.component.scss',
+    standalone: false,
 })
 export class ProvenanceComponent implements OnChanges {
     @Input() provenance?: Array<Provenance>;

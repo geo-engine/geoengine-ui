@@ -63,6 +63,7 @@ export type OperatorListButtonGroups = Array<{
     templateUrl: './operator-list.component.html',
     styleUrls: ['./operator-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OperatorListComponent implements OnInit, OnChanges {
     static readonly DEFAULT_MIXED_OPERATOR_DIALOGS: Array<OperatorListType> = [

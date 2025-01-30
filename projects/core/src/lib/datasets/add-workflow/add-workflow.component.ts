@@ -17,6 +17,7 @@ import {
     templateUrl: './add-workflow.component.html',
     styleUrls: ['./add-workflow.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AddWorkflowComponent {
     readonly form: UntypedFormGroup;

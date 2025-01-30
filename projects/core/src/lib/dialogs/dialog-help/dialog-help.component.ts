@@ -5,5 +5,6 @@ import {Component, ChangeDetectionStrategy} from '@angular/core';
     templateUrl: './dialog-help.component.html',
     styleUrls: ['./dialog-help.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DialogHelpComponent {}

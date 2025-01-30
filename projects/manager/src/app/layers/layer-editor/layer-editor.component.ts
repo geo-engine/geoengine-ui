@@ -32,6 +32,7 @@ export interface LayerForm {
     selector: 'geoengine-manager-layer-editor',
     templateUrl: './layer-editor.component.html',
     styleUrl: './layer-editor.component.scss',
+    standalone: false,
 })
 export class LayerEditorComponent implements OnChanges {
     @Input({required: true}) layerListing!: LayerListing;

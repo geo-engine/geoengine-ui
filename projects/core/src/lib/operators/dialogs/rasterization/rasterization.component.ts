@@ -49,6 +49,7 @@ interface DensityForm {
     templateUrl: './rasterization.component.html',
     styleUrls: ['./rasterization.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RasterizationComponent implements OnDestroy {
     selected = new FormControl(0, {validators: [Validators.required], nonNullable: true});

@@ -23,7 +23,6 @@ enum FormStatus {
 
 @Component({
     selector: 'geoengine-login',
-    standalone: true,
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
     imports: [CoreModule, AsyncPipe, MatGridListModule, MatMenuModule, MatIconModule, MatButtonModule, MatCardModule],

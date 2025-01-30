@@ -21,6 +21,7 @@ interface LineSimplificationForm {
     templateUrl: './line-simplification.component.html',
     styleUrls: ['./line-simplification.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LineSimplificationComponent implements OnInit {
     selected = new FormControl(0, {validators: [Validators.required], nonNullable: true});

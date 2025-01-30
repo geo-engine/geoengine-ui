@@ -30,6 +30,7 @@ interface TimePositionOption {
     templateUrl: './mean-raster-pixel-values-over-time-dialog.component.html',
     styleUrls: ['./mean-raster-pixel-values-over-time-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class MeanRasterPixelValuesOverTimeDialogComponent implements AfterViewInit {
     readonly inputTypes = [ResultTypes.RASTER];

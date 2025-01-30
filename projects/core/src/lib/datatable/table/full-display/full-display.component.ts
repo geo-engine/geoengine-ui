@@ -13,6 +13,7 @@ import OlFormatWKT from 'ol/format/WKT';
     templateUrl: './full-display.component.html',
     styleUrls: ['./full-display.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class FullDisplayComponent implements OnInit {
     xCoords: string[] = [];

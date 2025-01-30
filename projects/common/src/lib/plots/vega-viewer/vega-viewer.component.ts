@@ -21,6 +21,7 @@ import {CommonConfig} from '../../config.service';
     templateUrl: './vega-viewer.component.html',
     styleUrls: ['./vega-viewer.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class VegaViewerComponent implements OnChanges {
     @Input()

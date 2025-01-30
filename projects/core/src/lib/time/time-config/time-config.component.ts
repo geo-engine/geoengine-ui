@@ -15,6 +15,7 @@ export interface TimeConfigForm {
     templateUrl: './time-config.component.html',
     styleUrls: ['./time-config.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     form: FormGroup<TimeConfigForm>;

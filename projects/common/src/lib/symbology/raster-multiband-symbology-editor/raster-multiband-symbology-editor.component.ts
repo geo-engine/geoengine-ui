@@ -53,6 +53,7 @@ type RgbColorName = 'red' | 'green' | 'blue';
     templateUrl: './raster-multiband-symbology-editor.component.html',
     styleUrls: ['./raster-multiband-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RasterMultibandSymbologyEditorComponent implements OnDestroy {
     private readonly formBuilder = inject(FormBuilder);

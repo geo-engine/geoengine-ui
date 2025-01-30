@@ -11,6 +11,7 @@ import {NumberParam, StaticNumber, DerivedNumber} from '../symbology.model';
     styleUrls: ['number-param-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => NumberParamEditorComponent), multi: true}],
+    standalone: false,
 })
 export class NumberParamEditorComponent implements ControlValueAccessor {
     @Input() attributes = new Array<string>();

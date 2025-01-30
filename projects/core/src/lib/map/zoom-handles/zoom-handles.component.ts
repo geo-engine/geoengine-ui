@@ -5,6 +5,7 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Output} from '@angular
     templateUrl: './zoom-handles.component.html',
     styleUrls: ['./zoom-handles.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ZoomHandlesComponent {
     @Output() zoomIn = new EventEmitter<void>();

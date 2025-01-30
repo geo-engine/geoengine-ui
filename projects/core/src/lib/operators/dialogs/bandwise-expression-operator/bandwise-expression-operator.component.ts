@@ -40,6 +40,7 @@ interface ExpressionForm {
     templateUrl: './bandwise-expression-operator.component.html',
     styleUrls: ['./bandwise-expression-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class BandwiseExpressionOperatorComponent implements AfterViewInit {
     /**

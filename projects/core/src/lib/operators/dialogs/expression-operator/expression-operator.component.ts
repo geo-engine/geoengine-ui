@@ -43,6 +43,7 @@ interface ExpressionForm {
     templateUrl: './expression-operator.component.html',
     styleUrls: ['./expression-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ExpressionOperatorComponent implements AfterViewInit {
     /**

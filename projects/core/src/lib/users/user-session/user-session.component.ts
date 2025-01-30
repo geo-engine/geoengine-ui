@@ -8,6 +8,7 @@ import {NotificationService, UserService} from '@geoengine/common';
     selector: 'geoengine-user-session',
     templateUrl: './user-session.component.html',
     styleUrls: ['./user-session.component.scss'],
+    standalone: false,
 })
 export class UserSessionComponent implements OnDestroy {
     protected session: Session | undefined;

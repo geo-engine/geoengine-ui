@@ -43,6 +43,7 @@ export enum PathChangeSource {
     templateUrl: './layer-collection-dropdown.component.html',
     styleUrls: ['./layer-collection-dropdown.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDestroy {
     @Input() root?: ProviderLayerCollectionIdDict = undefined;

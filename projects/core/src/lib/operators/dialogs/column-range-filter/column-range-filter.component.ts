@@ -49,6 +49,7 @@ interface RangeForm {
     templateUrl: './column-range-filter.component.html',
     styleUrls: ['./column-range-filter.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ColumnRangeFilterComponent implements OnDestroy {
     readonly inputTypes = ResultTypes.VECTOR_TYPES;

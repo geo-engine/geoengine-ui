@@ -4,5 +4,6 @@ import {Component} from '@angular/core';
     selector: 'geoengine-dialog-header',
     templateUrl: './dialog-header.component.html',
     styleUrls: ['./dialog-header.component.scss'],
+    standalone: false,
 })
 export class DialogHeaderComponent {}

@@ -16,6 +16,7 @@ import {GeoEngineError} from '../util/errors';
     templateUrl: './register.component.html',
     styleUrls: ['./register.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RegisterComponent implements AfterViewInit {
     PASSWORD_MIN_LENGTH = 8;

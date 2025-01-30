@@ -25,6 +25,7 @@ export interface UserLogin {
     templateUrl: './modal-login.component.html',
     styleUrls: ['./modal-login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ModalLoginComponent implements OnDestroy {
     readonly FormStatus = FormStatus;

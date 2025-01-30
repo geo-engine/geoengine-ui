@@ -11,6 +11,7 @@ import {createIconDataUrl, GeoEngineError, Plot} from '@geoengine/common';
     templateUrl: './plot-list-entry.component.html',
     styleUrls: ['./plot-list-entry.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class PlotListEntryComponent implements OnChanges {
     @Input()

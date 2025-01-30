@@ -6,6 +6,7 @@ import {RasterLayer, VectorLayer} from '@geoengine/common';
     templateUrl: './legend.component.html',
     styleUrls: ['./legend.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LegendComponent implements OnChanges {
     @Input() layer?: VectorLayer | RasterLayer = undefined;

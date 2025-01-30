@@ -18,6 +18,7 @@ export interface PermissionForm {
     selector: 'geoengine-manager-permissions',
     templateUrl: './permissions.component.html',
     styleUrl: './permissions.component.scss',
+    standalone: false,
 })
 export class PermissionsComponent implements AfterViewInit, OnChanges {
     @Input({required: true})

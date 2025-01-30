@@ -8,7 +8,10 @@ import {Colorizer} from '../../colors/colorizer.model';
 /**
  * Pipe to transform a colorizer into a CSS gradient.
  */
-@Pipe({name: 'geoengineColorizerCssGradient'})
+@Pipe({
+    name: 'geoengineColorizerCssGradient',
+    standalone: false,
+})
 export class ColorizerCssGradientPipe implements PipeTransform {
     constructor(protected sanitizer: DomSanitizer) {}
 
@@ -22,7 +25,10 @@ export class ColorizerCssGradientPipe implements PipeTransform {
 /**
  * Pipe to transform a RasterColorizer into a CSS gradient.
  */
-@Pipe({name: 'geoengineRasterColorizerCssGradient'})
+@Pipe({
+    name: 'geoengineRasterColorizerCssGradient',
+    standalone: false,
+})
 export class RasterColorizerCssGradientPipe implements PipeTransform {
     constructor(protected sanitizer: DomSanitizer) {}
 
@@ -36,7 +42,10 @@ export class RasterColorizerCssGradientPipe implements PipeTransform {
 /**
  * Pipe to transform an `Array<ColorBreakpoint>`  into a CSS gradient.
  */
-@Pipe({name: 'geoengineColorBreakpointsCssGradient'})
+@Pipe({
+    name: 'geoengineColorBreakpointsCssGradient',
+    standalone: false,
+})
 export class ColorBreakpointsCssGradientPipe implements PipeTransform {
     constructor(protected sanitizer: DomSanitizer) {}
 
@@ -50,7 +59,10 @@ export class ColorBreakpointsCssGradientPipe implements PipeTransform {
 /**
  * Pipe to transform an `Array<RgbaColor>`  into a CSS gradient.
  */
-@Pipe({name: 'geoengineRgbaTuplesCssGradient'})
+@Pipe({
+    name: 'geoengineRgbaTuplesCssGradient',
+    standalone: false,
+})
 export class RgbaArrayCssGradientPipe implements PipeTransform {
     constructor(protected sanitizer: DomSanitizer) {}
 

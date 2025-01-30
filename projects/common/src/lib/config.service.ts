@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Configuration, DefaultConfig} from '@geoengine/openapi-client';
-import Immutable from 'immutable';
+import * as Immutable from 'immutable';
 import {mergeWith} from 'immutable';
 
 /**

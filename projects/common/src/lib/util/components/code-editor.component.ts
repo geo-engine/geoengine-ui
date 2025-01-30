@@ -46,6 +46,7 @@ const LANGUAGES = ['Rust'];
         },
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy {
     @ViewChild('editor', {static: true}) editorRef!: ElementRef;

@@ -6,6 +6,7 @@ import {Subscription, timer} from 'rxjs';
     selector: 'geoengine-quota-info',
     templateUrl: './quota-info.component.html',
     styleUrls: ['./quota-info.component.scss'],
+    standalone: false,
 })
 export class QuotaInfoComponent implements OnDestroy, OnInit {
     sessionQuota: Quota | undefined;

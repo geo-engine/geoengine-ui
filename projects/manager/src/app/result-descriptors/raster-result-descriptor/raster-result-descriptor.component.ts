@@ -5,6 +5,7 @@ import {RasterBandDescriptor, TypedRasterResultDescriptor} from '@geoengine/open
     selector: 'geoengine-manager-raster-result-descriptor',
     templateUrl: './raster-result-descriptor.component.html',
     styleUrl: './raster-result-descriptor.component.scss',
+    standalone: false,
 })
 export class RasterResultDescriptorComponent {
     @Input() resultDescriptor!: TypedRasterResultDescriptor;

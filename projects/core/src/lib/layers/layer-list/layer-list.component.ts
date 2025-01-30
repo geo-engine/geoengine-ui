@@ -20,6 +20,7 @@ import {Layer, NotificationService} from '@geoengine/common';
     templateUrl: './layer-list.component.html',
     styleUrls: ['./layer-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LayerListComponent implements OnDestroy, OnChanges {
     /**

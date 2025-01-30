@@ -31,6 +31,7 @@ export interface AddDatasetForm {
     selector: 'geoengine-manager-add-dataset',
     templateUrl: './add-dataset.component.html',
     styleUrl: './add-dataset.component.scss',
+    standalone: false,
 })
 export class AddDatasetComponent {
     DataPaths = DataPaths;

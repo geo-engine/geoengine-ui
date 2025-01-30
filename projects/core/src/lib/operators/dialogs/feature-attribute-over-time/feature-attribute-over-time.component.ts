@@ -28,6 +28,7 @@ interface AttributeCandidates {
     templateUrl: './feature-attribute-over-time.component.html',
     styleUrls: ['./feature-attribute-over-time.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class FeatureAttributeOvertimeComponent implements AfterViewInit, OnDestroy {
     inputTypes = ResultTypes.VECTOR_TYPES;

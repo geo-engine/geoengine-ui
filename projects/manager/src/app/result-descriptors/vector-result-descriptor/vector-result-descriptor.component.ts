@@ -11,6 +11,7 @@ interface Column {
     selector: 'geoengine-manager-vector-result-descriptor',
     templateUrl: './vector-result-descriptor.component.html',
     styleUrl: './vector-result-descriptor.component.scss',
+    standalone: false,
 })
 export class VectorResultDescriptorComponent {
     @Input() resultDescriptor!: TypedVectorResultDescriptor;

@@ -19,6 +19,7 @@ enum FormStatus {
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly FormStatus = FormStatus;
