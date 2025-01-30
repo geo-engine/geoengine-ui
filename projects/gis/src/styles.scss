@@ -1,6 +1,6 @@
+@use 'sass:map';
 @use '@angular/material' as mat;
 @use 'app-theme' as theme;
-@use 'sass:map';
 
 :root {
     --geoengine-primary-color: #{mat.get-theme-color(theme.$geoengine-theme, primary)};
