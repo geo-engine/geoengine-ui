@@ -37,6 +37,7 @@ enum RenameBands {
     templateUrl: './raster-stacker.component.html',
     styleUrls: ['./raster-stacker.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RasterStackerComponent implements AfterViewInit {
     readonly inputTypes = [ResultTypes.RASTER];

@@ -10,6 +10,7 @@ import {toSignal} from '@angular/core/rxjs-interop';
     templateUrl: './small-time-interaction.component.html',
     styleUrls: ['./small-time-interaction.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class SmallTimeInteractionComponent {
     private readonly projectService = inject(ProjectService);

@@ -2,7 +2,8 @@
 
 // Material Base Styles
 @include mat.all-component-typographies();
-@include mat.core();
+@include mat.elevation-classes();
+@include mat.app-background();
 
 // Define Colors
 $geoengine-main-green: (

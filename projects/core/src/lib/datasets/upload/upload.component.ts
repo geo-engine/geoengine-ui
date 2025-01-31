@@ -28,6 +28,7 @@ interface NameDescription {
     templateUrl: './upload.component.html',
     styleUrls: ['./upload.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class UploadComponent implements OnDestroy {
     vectorDataTypes = ['Data', 'MultiPoint', 'MultiLineString', 'MultiPolygon'];

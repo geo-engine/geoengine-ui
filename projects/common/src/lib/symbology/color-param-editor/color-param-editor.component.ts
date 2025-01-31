@@ -15,6 +15,7 @@ import {ColorParam, DerivedColor, StaticColor} from '../symbology.model';
     styleUrls: ['color-param-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorParamEditorComponent), multi: true}],
+    standalone: false,
 })
 export class ColorParamEditorComponent implements ControlValueAccessor {
     @Input() attributes = new Array<string>();

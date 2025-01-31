@@ -6,6 +6,7 @@ import {UserService} from '@geoengine/common';
     selector: 'geoengine-dialog-splash-checkbox',
     templateUrl: './dialog-splash-checkbox.component.html',
     styleUrls: ['./dialog-splash-checkbox.component.scss'],
+    standalone: false,
 })
 export class DialogSplashCheckboxComponent {
     /**

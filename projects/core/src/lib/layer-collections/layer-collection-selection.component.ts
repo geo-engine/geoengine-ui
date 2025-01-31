@@ -7,6 +7,7 @@ import {ProjectService} from '../project/project.service';
     templateUrl: './layer-collection-selection.component.html',
     styleUrls: ['./layer-collection-selection.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LayerCollectionSelectionComponent {
     @Input({required: true}) collectionId!: ProviderLayerCollectionId;

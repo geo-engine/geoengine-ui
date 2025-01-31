@@ -1,4 +1,4 @@
-import {APP_INITIALIZER, NgModule} from '@angular/core';
+import {NgModule, inject, provideAppInitializer} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {MatButtonModule} from '@angular/material/button';
@@ -129,12 +129,13 @@ export const MATERIAL_MODULES = [
         {provide: CommonConfig, useExisting: AppConfig},
         RandomColorService,
         NotificationService,
-        {
-            provide: APP_INITIALIZER,
-            useFactory: (config: AppConfig) => (): Promise<void> => config.load(),
-            deps: [AppConfig],
-            multi: true,
-        },
+        provideAppInitializer(() => {
+            const initializerFn = (
+                (config: AppConfig) => (): Promise<void> =>
+                    config.load()
+            )(inject(AppConfig));
+            return initializerFn();
+        }),
         {provide: MAT_CARD_CONFIG, useValue: {appearance: 'outlined'}},
     ],
     bootstrap: [AppComponent],

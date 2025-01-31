@@ -143,7 +143,6 @@ export function oneApart(values: number[]): boolean {
         MatProgressSpinner,
         CommonModule,
     ],
-    standalone: true,
 })
 export class RasterLegendComponent {
     private readonly projectService = inject(ProjectService);

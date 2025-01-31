@@ -35,6 +35,7 @@ export interface RasterResultDescriptorForm {
     templateUrl: './gdal-metadata-list.component.html',
     styleUrl: './gdal-metadata-list.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class GdalMetadataListComponent implements OnChanges {
     RasterDataTypes = Object.values(RasterDataType);

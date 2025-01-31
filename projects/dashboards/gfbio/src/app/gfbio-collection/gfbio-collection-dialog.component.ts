@@ -17,6 +17,7 @@ enum LayerStatus {
     selector: 'geoengine-gfbio-basket-dialog',
     templateUrl: './gfbio-collection-dialog.component.html',
     styleUrls: ['./gfbio-collection-dialog.component.scss'],
+    standalone: false,
 })
 export class GfBioCollectionDialogComponent {
     collection: LayerCollection;

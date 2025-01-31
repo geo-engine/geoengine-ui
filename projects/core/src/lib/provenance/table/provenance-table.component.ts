@@ -20,6 +20,7 @@ import {LayoutService} from '../../layout.service';
     templateUrl: './provenance-table.component.html',
     styleUrls: ['./provenance-table.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ProvenanceTableComponent implements OnInit, OnChanges {
     @ViewChild(MatPaginator) paginator!: MatPaginator;

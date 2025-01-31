@@ -40,6 +40,7 @@ interface RectangleNeighborhoodForm extends NeighborhoodForm {
     templateUrl: './neighborhood-aggregate.component.html',
     styleUrls: ['./neighborhood-aggregate.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy {
     /**

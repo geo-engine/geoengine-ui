@@ -19,6 +19,7 @@ import {
     templateUrl: './accordion-vector-entry.component.html',
     styleUrls: ['./accordion-vector-entry.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AccordionVectorEntryComponent implements OnInit {
     @Input() collection!: ProviderLayerCollectionIdDict;

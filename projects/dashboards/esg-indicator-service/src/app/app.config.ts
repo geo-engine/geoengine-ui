@@ -1,4 +1,4 @@
-import {APP_INITIALIZER, ApplicationConfig} from '@angular/core';
+import {ApplicationConfig, inject, provideAppInitializer} from '@angular/core';
 import {provideRouter, withHashLocation} from '@angular/router';
 import {provideAnimations} from '@angular/platform-browser/animations';
 
@@ -13,12 +13,13 @@ export const appConfig: ApplicationConfig = {
         provideRouter(routes, withHashLocation()),
         provideAnimations(),
         provideHttpClient(),
-        {
-            provide: APP_INITIALIZER,
-            useFactory: (config: CoreConfig) => (): Promise<void> => config.load(),
-            deps: [CoreConfig],
-            multi: true,
-        },
+        provideAppInitializer(() => {
+            const initializerFn = (
+                (config: CoreConfig) => (): Promise<void> =>
+                    config.load()
+            )(inject(CoreConfig));
+            return initializerFn();
+        }),
         {provide: CommonConfig, useExisting: CoreConfig},
         CoreConfig,
         BackendService,

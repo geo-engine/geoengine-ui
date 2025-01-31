@@ -71,7 +71,6 @@ interface Indicator {
     selector: 'geoengine-dashboard',
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.scss',
-    standalone: true,
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [CoreModule, AsyncPipe, MatGridListModule, MatMenuModule, MatIconModule, MatButtonModule, MatCardModule, LegendComponent],
 })

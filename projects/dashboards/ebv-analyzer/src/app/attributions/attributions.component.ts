@@ -7,6 +7,7 @@ import {Observable, map} from 'rxjs';
     templateUrl: './attributions.component.html',
     styleUrls: ['./attributions.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AttributionsComponent {
     @HostBinding('className') componentClass = 'mat-typography';

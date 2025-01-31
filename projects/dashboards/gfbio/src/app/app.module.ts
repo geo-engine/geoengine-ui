@@ -1,4 +1,4 @@
-import {APP_INITIALIZER, NgModule} from '@angular/core';
+import {NgModule, inject, provideAppInitializer} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserModule} from '@angular/platform-browser';
 import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
@@ -46,12 +46,13 @@ import {CommonConfig} from '@geoengine/common';
             provide: CommonConfig,
             useExisting: AppConfig,
         },
-        {
-            provide: APP_INITIALIZER,
-            useFactory: (config: AppConfig) => (): Promise<void> => config.load(),
-            deps: [AppConfig],
-            multi: true,
-        },
+        provideAppInitializer(() => {
+            const initializerFn = (
+                (config: AppConfig) => (): Promise<void> =>
+                    config.load()
+            )(inject(AppConfig));
+            return initializerFn();
+        }),
         DatasetService,
         LayoutService,
         MapService,

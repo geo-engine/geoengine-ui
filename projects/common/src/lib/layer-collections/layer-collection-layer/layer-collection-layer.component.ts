@@ -19,6 +19,7 @@ import {RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metad
     templateUrl: './layer-collection-layer.component.html',
     styleUrls: ['./layer-collection-layer.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LayerCollectionLayerComponent implements OnChanges {
     @Input({required: false}) showLayerToggle = true;

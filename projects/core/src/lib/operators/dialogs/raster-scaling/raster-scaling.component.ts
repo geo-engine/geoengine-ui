@@ -38,6 +38,7 @@ interface SlopeOffsetForm {
     templateUrl: './raster-scaling.component.html',
     styleUrls: ['./raster-scaling.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RasterScalingComponent implements AfterViewInit {
     readonly inputTypes = [ResultTypes.RASTER];

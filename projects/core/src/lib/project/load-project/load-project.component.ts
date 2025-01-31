@@ -32,6 +32,7 @@ interface ProjectListing {
     templateUrl: './load-project.component.html',
     styleUrls: ['./load-project.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LoadProjectComponent implements AfterViewInit {
     form: UntypedFormGroup;

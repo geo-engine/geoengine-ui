@@ -22,6 +22,7 @@ import {ClassificationMeasurement} from '../../layers/measurement';
     templateUrl: './color-table-editor.component.html',
     styleUrls: ['./color-table-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ColorTableEditorComponent implements OnInit, OnChanges {
     // Symbology to use for creating color tabs

@@ -10,6 +10,7 @@ import {UserService} from '@geoengine/common';
     selector: 'geoengine-backend-status-page',
     templateUrl: './backend-status-page.component.html',
     styleUrls: ['./backend-status-page.component.scss'],
+    standalone: false,
 })
 export class BackendStatusPageComponent {
     public backendStatus: BackendStatus | undefined = undefined;

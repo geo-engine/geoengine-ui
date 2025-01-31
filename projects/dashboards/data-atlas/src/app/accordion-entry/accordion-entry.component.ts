@@ -10,6 +10,7 @@ import {CollectionItem, LayerCollection, LayerListing, ProviderLayerId} from '@g
     templateUrl: './accordion-entry.component.html',
     styleUrls: ['./accordion-entry.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AccordionEntryComponent implements OnInit {
     @Input() collection!: ProviderLayerCollectionIdDict;

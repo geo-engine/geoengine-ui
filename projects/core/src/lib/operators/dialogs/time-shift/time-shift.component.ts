@@ -40,6 +40,7 @@ interface TimeShiftForm {
     templateUrl: './time-shift.component.html',
     styleUrls: ['./time-shift.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class TimeShiftComponent implements AfterViewInit {
     readonly inputTypes = [ResultTypes.RASTER, ...ResultTypes.VECTOR_TYPES];

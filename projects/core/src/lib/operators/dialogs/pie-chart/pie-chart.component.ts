@@ -31,6 +31,7 @@ interface PieChartForm {
     templateUrl: './pie-chart.component.html',
     styleUrls: ['./pie-chart.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class PieChartComponent implements AfterViewInit, OnDestroy {
     minNumberOfBuckets = 1;

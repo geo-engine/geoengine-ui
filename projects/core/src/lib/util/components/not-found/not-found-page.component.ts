@@ -5,6 +5,7 @@ import {Router} from '@angular/router';
     selector: 'geoengine-not-found-page',
     templateUrl: './not-found-page.component.html',
     styleUrls: ['./not-found-page.component.scss'],
+    standalone: false,
 })
 export class NotFoundPageComponent {
     constructor(private router: Router) {}

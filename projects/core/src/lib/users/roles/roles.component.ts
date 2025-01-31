@@ -9,6 +9,7 @@ import {UserService} from '@geoengine/common';
     templateUrl: './roles.component.html',
     styleUrls: ['./roles.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RolesComponent implements AfterViewInit, OnDestroy {
     roleNames: Array<string> | undefined;

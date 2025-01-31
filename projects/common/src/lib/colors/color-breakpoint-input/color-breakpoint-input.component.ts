@@ -13,6 +13,7 @@ import {CommonConfig} from '../../config.service';
     styleUrls: ['./color-breakpoint-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorBreakpointInputComponent), multi: true}],
+    standalone: false,
 })
 export class ColorBreakpointInputComponent implements ControlValueAccessor, OnChanges, OnDestroy {
     @Input() readonlyAttribute = false;

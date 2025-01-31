@@ -46,6 +46,7 @@ export interface DatasetForm {
     selector: 'geoengine-manager-dataset-editor',
     templateUrl: './dataset-editor.component.html',
     styleUrl: './dataset-editor.component.scss',
+    standalone: false,
 })
 export class DatasetEditorComponent implements OnChanges {
     @Input({required: true}) datasetListing!: DatasetListing;

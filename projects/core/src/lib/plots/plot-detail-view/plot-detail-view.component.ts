@@ -11,6 +11,7 @@ import {Plot} from '@geoengine/common';
     templateUrl: './plot-detail-view.component.html',
     styleUrls: ['./plot-detail-view.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class PlotDetailViewComponent implements OnInit, AfterViewInit, OnDestroy {
     // TODO: implement strategy for PNGs

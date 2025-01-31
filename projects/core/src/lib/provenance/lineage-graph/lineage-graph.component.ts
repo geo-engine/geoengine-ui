@@ -32,6 +32,7 @@ const GRAPH_STYLE = {
     templateUrl: './lineage-graph.component.html',
     styleUrls: ['./lineage-graph.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LineageGraphComponent implements AfterViewInit {
     @ViewChild('svg', {static: true}) svg!: ElementRef;

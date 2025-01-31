@@ -20,6 +20,7 @@ import {SpatialResolution} from '@geoengine/openapi-client';
     templateUrl: './symbology-editor.component.html',
     styleUrl: './symbology-editor.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class SymbologyEditorComponent implements OnInit, OnDestroy {
     @Input({required: true}) layer!: Layer;

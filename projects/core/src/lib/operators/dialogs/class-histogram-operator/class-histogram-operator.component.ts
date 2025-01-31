@@ -90,6 +90,7 @@ const categoricalInputValidator =
     templateUrl: './class-histogram-operator.component.html',
     styleUrls: ['./class-histogram-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ClassHistogramOperatorComponent implements AfterViewInit, OnDestroy {
     inputTypes = ResultTypes.INPUT_TYPES;

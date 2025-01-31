@@ -42,6 +42,7 @@ const FAUX_RASTER_SYMBOLOGY = new RasterSymbology(
     templateUrl: 'raster-symbology-editor.component.html',
     styleUrls: ['raster-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RasterSymbologyEditorComponent {
     private readonly workflowsService = inject(WorkflowsService);

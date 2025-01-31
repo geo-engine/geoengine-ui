@@ -43,6 +43,7 @@ export interface DownloadLayerForm {
     templateUrl: './download-layer.component.html',
     styleUrls: ['./download-layer.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DownloadLayerComponent implements OnInit {
     protected readonly backend = inject(BackendService);

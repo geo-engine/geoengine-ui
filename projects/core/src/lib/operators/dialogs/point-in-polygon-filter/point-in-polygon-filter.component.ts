@@ -24,6 +24,7 @@ import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
     templateUrl: './point-in-polygon-filter.component.html',
     styleUrls: ['./point-in-polygon-filter.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class PointInPolygonFilterOperatorComponent {
     ResultTypes = ResultTypes;

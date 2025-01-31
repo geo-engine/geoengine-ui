@@ -24,6 +24,7 @@ import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
     templateUrl: './interpolation.component.html',
     styleUrls: ['./interpolation.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class InterpolationComponent implements AfterViewInit, OnDestroy {
     readonly interpolationMethods = [

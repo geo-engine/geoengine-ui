@@ -79,6 +79,7 @@ const MAX_ZOOM_LEVEL = 28;
         contentChildren: new ContentChildren(MapLayerComponent),
     },
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestroy {
     /**

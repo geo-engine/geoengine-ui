@@ -17,6 +17,7 @@ export interface CollectionForm {
     selector: 'geoengine-manager-layer-collection-child-list',
     templateUrl: './layer-collection-child-list.component.html',
     styleUrl: './layer-collection-child-list.component.scss',
+    standalone: false,
 })
 export class LayerCollectionChildListComponent {
     readonly CollectionNavigation = CollectionNavigation;

@@ -21,6 +21,7 @@ import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
     templateUrl: './raster-type-conversion.component.html',
     styleUrls: ['./raster-type-conversion.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RasterTypeConversionComponent implements AfterViewInit {
     readonly inputTypes = [ResultTypes.RASTER];

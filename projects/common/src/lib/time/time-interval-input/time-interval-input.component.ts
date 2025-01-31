@@ -57,6 +57,7 @@ export interface TimeInterval {
             useExisting: TimeIntervalInputComponent,
         },
     ],
+    standalone: false,
 })
 export class TimeIntervalInputComponent implements ControlValueAccessor, Validator, AfterViewInit {
     @Input() allowRanges = true;

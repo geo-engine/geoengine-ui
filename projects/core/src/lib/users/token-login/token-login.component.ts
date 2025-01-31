@@ -19,6 +19,7 @@ enum FormStatus {
     templateUrl: './token-login.component.html',
     styleUrls: ['./token-login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class TokenLoginComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() routeTo?: Array<string>;

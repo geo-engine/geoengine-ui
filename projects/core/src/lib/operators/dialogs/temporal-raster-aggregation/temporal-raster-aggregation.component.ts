@@ -39,6 +39,7 @@ interface TemporalRasterAggregationForm {
     templateUrl: './temporal-raster-aggregation.component.html',
     styleUrls: ['./temporal-raster-aggregation.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class TemporalRasterAggregationComponent implements AfterViewInit {
     readonly inputTypes = [ResultTypes.RASTER];

@@ -49,6 +49,7 @@ interface Path {
     templateUrl: './ebv-selector.component.html',
     styleUrls: ['./ebv-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class EbvSelectorComponent implements OnInit, OnDestroy {
     readonly SUBGROUP_SEARCH_THRESHOLD = 5;

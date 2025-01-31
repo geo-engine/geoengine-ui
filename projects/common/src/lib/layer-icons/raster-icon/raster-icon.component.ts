@@ -23,6 +23,7 @@ interface Cell {
     templateUrl: './raster-icon.component.svg',
     styleUrls: ['./raster-icon.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RasterIconComponent {
     /** number of cells in x direction */

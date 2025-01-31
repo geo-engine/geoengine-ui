@@ -26,6 +26,7 @@ import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
     templateUrl: './scatterplot-operator.component.html',
     styleUrls: ['./scatterplot-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ScatterplotOperatorComponent implements AfterViewInit, OnDestroy {
     inputTypes = ResultTypes.VECTOR_TYPES;

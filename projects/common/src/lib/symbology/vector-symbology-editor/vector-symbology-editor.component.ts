@@ -27,6 +27,7 @@ import {WorkflowsService} from '../../workflows/workflows.service';
     templateUrl: 'vector-symbology-editor.component.html',
     styleUrls: ['vector-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
     @Input({required: true}) symbologyWorkflow!: SymbologyWorkflow<VectorSymbology>;

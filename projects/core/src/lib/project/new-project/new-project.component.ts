@@ -11,6 +11,7 @@ import {NamedSpatialReference, NotificationService, SpatialReferenceSpecificatio
     templateUrl: './new-project.component.html',
     styleUrls: ['./new-project.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class NewProjectComponent implements AfterViewInit {
     spatialReferenceOptions: Array<NamedSpatialReference>;

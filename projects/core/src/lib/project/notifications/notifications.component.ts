@@ -6,6 +6,7 @@ import {NotificationService, Notification} from '@geoengine/common';
     templateUrl: './notifications.component.html',
     styleUrls: ['./notifications.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class NotificationsComponent implements OnInit {
     notifications: Array<Notification>;

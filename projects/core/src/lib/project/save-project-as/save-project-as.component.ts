@@ -9,6 +9,7 @@ import {geoengineValidators, NotificationService} from '@geoengine/common';
     templateUrl: './save-project-as.component.html',
     styleUrls: ['./save-project-as.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class SaveProjectAsComponent implements AfterViewInit {
     form: UntypedFormGroup;

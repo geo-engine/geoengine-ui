@@ -42,6 +42,7 @@ export enum SymbologyCreationType {
             multi: true,
         },
     ],
+    standalone: false,
 })
 export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValueAccessor {
     AS_INPUT = SymbologyCreationType.AS_INPUT;

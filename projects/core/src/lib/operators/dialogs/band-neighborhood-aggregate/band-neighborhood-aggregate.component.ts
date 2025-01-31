@@ -36,6 +36,7 @@ enum NeighborhoodAggregate {
     templateUrl: './band-neighborhood-aggregate.component.html',
     styleUrls: ['./band-neighborhood-aggregate.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class BandNeighborhoodAggregateComponent {
     readonly RASTER_TYPE = [ResultTypes.RASTER];
