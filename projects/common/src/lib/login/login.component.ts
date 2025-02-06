@@ -98,7 +98,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
     oidcLogin(): void {
         this.formStatus$.next(FormStatus.Loading);
-        window.location.href = this.oidcUrl + '&redirect_url=' + window.location.href.replace(/\/signin$/, this.loginRedirect());
+        window.location.href = this.oidcUrl + '&redirect_uri=' + window.location.href.replace(/\/signin$/, this.loginRedirect());
     }
 
     login(): void {
