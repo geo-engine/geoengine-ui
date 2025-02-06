@@ -56,7 +56,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        const redirectUri = window.location.href.replace(/\/signin$/, "/dashboard");
+        const redirectUri = window.location.href.replace(/\/signin$/, '/dashboard');
 
         // check if OIDC login is enabled
         this.userService.oidcInit(redirectUri).subscribe(
