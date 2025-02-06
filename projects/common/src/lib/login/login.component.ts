@@ -59,8 +59,10 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        const redirectUri = window.location.href.replace(/\/signin$/, this.loginRedirect());
+
         // check if OIDC login is enabled
-        this.userService.oidcInit().subscribe(
+        this.userService.oidcInit(redirectUri).subscribe(
             (idr) => {
                 this.oidcUrl = idr.url;
                 this.formStatus$.next(FormStatus.Oidc);
@@ -98,7 +100,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
     oidcLogin(): void {
         this.formStatus$.next(FormStatus.Loading);
-        window.location.href = this.oidcUrl + '&redirect_uri=' + window.location.href.replace(/\/signin$/, this.loginRedirect());
+        window.location.href = this.oidcUrl;
     }
 
     login(): void {
