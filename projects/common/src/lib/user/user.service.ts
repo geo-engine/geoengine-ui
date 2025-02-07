@@ -127,7 +127,7 @@ export class UserService {
 
         this.sessionInitialized = true;
 
-        if (oidcParams) {
+        if (oidcParams && sessionStorage.getItem('redirectUri')) {
             this.oidcLogin(oidcParams)
                 .pipe(first())
                 .subscribe(() => {
