@@ -44,7 +44,7 @@ export class OidcComponent implements OnInit, OnDestroy {
             this.pendingLoginRequest = true;
             this.loginDisabled.next(true);
             this.loginSubscription = this.userService
-                .oidcInit()
+                .oidcInit(window.location.href)
                 .pipe(
                     first(),
                     finalize(() => {

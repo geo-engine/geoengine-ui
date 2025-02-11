@@ -127,7 +127,7 @@ export class UserService {
 
         this.sessionInitialized = true;
 
-        if (oidcParams) {
+        if (oidcParams && sessionStorage.getItem('redirectUri')) {
             this.oidcLogin(oidcParams)
                 .pipe(first())
                 .subscribe(() => {
@@ -343,8 +343,14 @@ export class UserService {
         this.logoutCallback = callback;
     }
 
-    oidcInit(): Observable<AuthCodeRequestURL> {
-        return from(new SessionApi().oidcInit());
+    oidcInit(redirectUri: string): Observable<AuthCodeRequestURL> {
+        sessionStorage.setItem('redirectUri', redirectUri);
+
+        return from(
+            new SessionApi().oidcInit({
+                redirectUri: redirectUri,
+            }),
+        );
     }
 
     oidcLogin(request: {sessionState: string; code: string; state: string}): Observable<Session> {
@@ -353,12 +359,14 @@ export class UserService {
         new SessionApi()
             .oidcLogin({
                 authCodeResponse: request,
+                redirectUri: sessionStorage.getItem('redirectUri')!,
             })
             .then((response) => {
                 const session = this.sessionFromDict(response);
                 this.session$.next(session);
                 result.next(session);
                 result.complete();
+                sessionStorage.removeItem('redirectUri');
             })
             .catch((error) => result.error(error));
 
