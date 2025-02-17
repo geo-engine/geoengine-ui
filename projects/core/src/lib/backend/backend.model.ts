@@ -7,7 +7,7 @@ export type SrsString = string;
 /**
  * Marker dictionary for types that only use primitive types and sub-types.
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface SerializableDict {}
 
 export interface RegistrationDict {
@@ -363,18 +363,6 @@ export interface WorkflowIdResponseDict {
     id: UUID;
 }
 
-export interface CreateDatasetDict {
-    dataPath: {
-        upload: UUID;
-    };
-    definition: DatasetDefinitionDict;
-}
-
-export interface DatasetDefinitionDict {
-    properties: AddDatasetDict;
-    metaData: MetaDataDefinitionDict;
-}
-
 export interface AddDatasetDict {
     name?: string;
     displayName: string;
@@ -397,26 +385,12 @@ export interface SuggestMetaDataDict {
     layerName?: string;
 }
 
-export interface MetaDataSuggestionDict {
-    mainFile: string;
-    layerName: string;
-    metaData: MetaDataDefinitionDict;
-}
-
 export interface UploadFilesResponseDict {
     files: Array<string>;
 }
 
 export interface UploadFileLayersResponseDict {
     layers: Array<string>;
-}
-
-export type MetaDataDefinitionDict = OgrMetaDataDict;
-
-export interface OgrMetaDataDict {
-    type: 'OgrMetaData';
-    loadingInfo: OgrSourceDatasetDict;
-    resultDescriptor: VectorResultDescriptorDict;
 }
 
 export interface OgrSourceDatasetDict {

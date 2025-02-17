@@ -28,6 +28,7 @@ export interface ColorAttributeInputHinter {
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorAttributeInputComponent), multi: true}],
     encapsulation: ViewEncapsulation.Emulated,
+    standalone: false,
 })
 export class ColorAttributeInputComponent implements ControlValueAccessor, OnChanges {
     @Input() readonlyAttribute = false;

@@ -61,6 +61,7 @@ export interface RasterPropertiesKeyForm {
         },
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class GdalDatasetParametersComponent {
     @Input()

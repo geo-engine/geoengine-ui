@@ -15,7 +15,7 @@ export class PlotsService {
 
     constructor(private sessionService: UserService) {
         this.sessionService.getSessionStream().subscribe({
-            next: (session) => this.plotApi.next(new PlotsApi(apiConfigurationWithAccessKey(session.id))),
+            next: (session) => this.plotApi.next(new PlotsApi(apiConfigurationWithAccessKey(session.sessionToken))),
         });
     }
 

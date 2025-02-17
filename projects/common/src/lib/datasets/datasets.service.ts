@@ -13,6 +13,7 @@ import {
     Symbology,
     UpdateDataset,
     Volume,
+    VolumeFileLayersResponse,
 } from '@geoengine/openapi-client';
 import {ReplaySubject, firstValueFrom} from 'rxjs';
 import {UserService, apiConfigurationWithAccessKey} from '../user/user.service';
@@ -25,7 +26,7 @@ export class DatasetsService {
 
     constructor(private sessionService: UserService) {
         this.sessionService.getSessionStream().subscribe({
-            next: (session) => this.datasetApi.next(new DatasetsApi(apiConfigurationWithAccessKey(session.id))),
+            next: (session) => this.datasetApi.next(new DatasetsApi(apiConfigurationWithAccessKey(session.sessionToken))),
         });
     }
 
@@ -122,5 +123,11 @@ export class DatasetsService {
         const datasetApi = await firstValueFrom(this.datasetApi);
 
         return datasetApi.listVolumesHandler();
+    }
+
+    async getVolumeFileLayers(volumeName: string, fileName: string): Promise<VolumeFileLayersResponse> {
+        const uploadsApi = await firstValueFrom(this.datasetApi);
+
+        return uploadsApi.listVolumeFileLayersHandler({volumeName, fileName});
     }
 }

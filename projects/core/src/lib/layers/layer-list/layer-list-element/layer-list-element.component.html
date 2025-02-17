@@ -99,7 +99,7 @@
                                     </ng-template>
                                     <ng-template ngSwitchDefault>
                                         <geoengine-raster-icon
-                                            [colorizer]="$any(layer.symbology).rasterColorizer"
+                                            [colorizer]="rasterSymbology(layer).rasterColorizer"
                                             [xCells]="6"
                                             [yCells]="6"
                                         >

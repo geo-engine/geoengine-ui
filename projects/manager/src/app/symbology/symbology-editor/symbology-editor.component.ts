@@ -16,6 +16,7 @@ import {AppConfig} from '../../app-config.service';
     selector: 'geoengine-manager-symbology-editor',
     templateUrl: './symbology-editor.component.html',
     styleUrl: './symbology-editor.component.scss',
+    standalone: false,
 })
 export class SymbologyEditorComponent implements OnChanges {
     @Input({required: true}) workflowId!: UUID;

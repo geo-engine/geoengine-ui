@@ -3,10 +3,6 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject,
 import {MatIconRegistry} from '@angular/material/icon';
 import {
     LayoutService,
-    UserService,
-    RandomColorService,
-    NotificationService,
-    Config,
     ProjectService,
     MapService,
     MapContainerComponent,
@@ -20,13 +16,14 @@ import moment from 'moment';
 import {DataSelectionService} from './data-selection.service';
 import {EbvSelectorComponent} from './ebv-selector/ebv-selector.component';
 import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
-import {Layer, Time} from '@geoengine/common';
+import {Layer, RandomColorService, Time, UserService} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
@@ -41,7 +38,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     datasetPortal = new ComponentPortal(EbvSelectorComponent);
 
     constructor(
-        @Inject(Config) readonly config: AppConfig,
+        @Inject(AppConfig) readonly config: AppConfig,
         readonly layoutService: LayoutService,
         readonly projectService: ProjectService,
         readonly dataSelectionService: DataSelectionService,
@@ -49,7 +46,6 @@ export class AppComponent implements OnInit, AfterViewInit {
         readonly userService: UserService,
         private iconRegistry: MatIconRegistry,
         private _randomColorService: RandomColorService,
-        private _notificationService: NotificationService,
         private mapService: MapService,
         private _spatialReferenceService: SpatialReferenceService,
         private sanitizer: DomSanitizer,

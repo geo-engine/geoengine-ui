@@ -13,6 +13,7 @@ import {Dataset} from '@geoengine/common';
     templateUrl: './dataset-list.component.html',
     styleUrls: ['./dataset-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DatasetListComponent implements OnInit, AfterViewInit {
     @ViewChild(CdkVirtualScrollViewport)

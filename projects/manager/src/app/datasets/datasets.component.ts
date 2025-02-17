@@ -7,6 +7,7 @@ import {DatasetListComponent} from './dataset-list/dataset-list.component';
     selector: 'geoengine-manager-datasets',
     templateUrl: './datasets.component.html',
     styleUrl: './datasets.component.scss',
+    standalone: false,
 })
 export class DatasetsComponent {
     @ViewChild(DatasetListComponent) datasetList!: DatasetListComponent;

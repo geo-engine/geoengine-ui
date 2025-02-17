@@ -3,7 +3,7 @@ import {Permission, PermissionListing, PermissionsApi} from '@geoengine/openapi-
 import {ReplaySubject, firstValueFrom} from 'rxjs';
 import {UserService, apiConfigurationWithAccessKey} from '../user/user.service';
 
-export type ResourceType = 'dataset' | 'layer' | 'layerCollection' | 'project';
+export type ResourceType = 'dataset' | 'layer' | 'layerCollection' | 'project' | 'mlModel';
 
 @Injectable({
     providedIn: 'root',
@@ -13,7 +13,7 @@ export class PermissionsService {
 
     constructor(private sessionService: UserService) {
         this.sessionService.getSessionStream().subscribe({
-            next: (session) => this.permissionsApi.next(new PermissionsApi(apiConfigurationWithAccessKey(session.id))),
+            next: (session) => this.permissionsApi.next(new PermissionsApi(apiConfigurationWithAccessKey(session.sessionToken))),
         });
     }
 

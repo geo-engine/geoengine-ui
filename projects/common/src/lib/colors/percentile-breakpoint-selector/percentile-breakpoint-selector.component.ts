@@ -31,6 +31,7 @@ import {ALL_COLORMAPS} from '../colormaps/colormaps';
     templateUrl: 'percentile-breakpoint-selector.component.html',
     styleUrls: ['percentile-breakpoint-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class PercentileBreakpointSelectorComponent implements OnInit, OnDestroy, OnChanges {
     @Input({required: true}) band!: string;
@@ -143,7 +144,6 @@ export class PercentileBreakpointSelectorComponent implements OnInit, OnDestroy,
     }
 
     setNumPercentiles(num: number): void {
-        console.log('foo');
         if (num < 2 || num > this.MAX_PERCENTILES + 2) {
             return;
         }

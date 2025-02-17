@@ -7,6 +7,7 @@ import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
     styleUrls: ['./operator-output-name.component.scss'],
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: OperatorOutputNameComponent, multi: true}],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OperatorOutputNameComponent implements ControlValueAccessor, OnChanges, AfterViewInit {
     @Input() type: 'Layer' | 'Plot' = 'Layer';

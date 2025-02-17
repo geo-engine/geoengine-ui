@@ -9,16 +9,12 @@ export * from './lib/core.module';
 export * from './lib/backend/backend.service';
 export * from './lib/config.service';
 export * from './lib/datasets/dataset.service';
-export * from './lib/layer-collections/layer-collection.service';
 export * from './lib/layout.service';
 export * from './lib/map/map.service';
-export * from './lib/notification.service';
 export * from './lib/project/project.service';
 export * from './lib/sidenav/sidenav-ref.service';
 export * from './lib/spatial-references/spatial-reference.service';
 export * from './lib/tabs/tabs.service';
-export * from './lib/users/user.service';
-export * from './lib/util/services/random-color.service';
 
 // Components
 export * from './lib/datasets/add-data/add-data.component';
@@ -38,11 +34,7 @@ export * from './lib/dialogs/dialog-help/dialog-help.component';
 export * from './lib/dialogs/dialog-section-heading/dialog-section-heading.component';
 export * from './lib/dialogs/dialog-splash-checkbox/dialog-splash-checkbox.component';
 export * from './lib/download-layer/download-layer.component';
-export * from './lib/layer-collections/layer-collection-dropdown/layer-collection-dropdown.component';
-export * from './lib/layer-collections/layer-collection-layer/layer-collection-layer.component';
-export * from './lib/layer-collections/layer-collection-layer-details/layer-collection-layer-details.component';
-export * from './lib/layer-collections/layer-collection-list/layer-collection-list.component';
-export * from './lib/layer-collections/layer-collection-navigation/layer-collection-navigation.component';
+export * from './lib/layer-collections/layer-collection-selection.component';
 export * from './lib/layers/layer-list/layer-list-element/layer-list-element.component';
 export * from './lib/layers/layer-list/layer-list-menu/layer-list-menu.component';
 export * from './lib/layers/layer-list/layer-list.component';
@@ -81,7 +73,6 @@ export * from './lib/operators/dialogs/raster-stacker/raster-stacker.component';
 export * from './lib/operators/dialogs/raster-type-conversion/raster-type-conversion.component';
 export * from './lib/operators/dialogs/raster-vector-join/raster-vector-join.component';
 export * from './lib/operators/dialogs/rasterization/rasterization.component';
-export * from './lib/operators/dialogs/rgb-composite/rgb-composite.component';
 export * from './lib/operators/dialogs/scatterplot-operator/scatterplot-operator.component';
 export * from './lib/operators/dialogs/statistics-plot/statistics-plot.component';
 export * from './lib/operators/dialogs/temporal-raster-aggregation/temporal-raster-aggregation.component';
@@ -112,12 +103,11 @@ export * from './lib/users/login/login.component';
 export * from './lib/users/modal-login/modal-login.component';
 export * from './lib/users/oidc/oidc.component';
 export * from './lib/users/quota/quota-info/quota-info.component';
+export * from './lib/users/roles/roles.component';
 export * from './lib/users/token-login/token-login.component';
 export * from './lib/users/user-session/user-session.component';
 export * from './lib/util/components/backend-status-page/backend-status-page.component';
-export * from './lib/util/components/code-editor.component';
 export * from './lib/util/components/not-found/not-found-page.component';
-export * from './lib/util/directives/autocomplete-select.directive';
 
 // Pipes
 export * from './lib/util/pipes/css-string-to-rgba.pipe';
@@ -131,15 +121,10 @@ export * from './lib/util/pipes/trim.pipe';
 export * from './lib/backend/backend.model';
 
 export * from './lib/project/loading-state.model';
+export * from './lib/project/project.model';
 export * from './lib/users/session.model';
 export * from './lib/users/user.model';
-
-// Guards
-export * from './lib/util/guards/log-in.guard';
-export * from './lib/util/guards/backend-available.guard';
 
 // Misc
 export * from './lib/util/directives/if-guest.directive';
 export * from './lib/util/directives/if-logged-in.directive';
-export * from './lib/util/errors';
-export * from './lib/util/icons';

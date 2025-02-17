@@ -70,26 +70,21 @@
             "prefix": "geoengine",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
+                    "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
-                            "clone",
                             "codemirror",
-                            "color-name",
                             "dagre-d3",
-                            "earcut",
-                            "fast-deep-equal",
+                            "json-stringify-pretty-compact",
                             "fast-json-stable-stringify",
-                            "lru-cache",
+                            "lerc",
                             "moment",
-                            "pbf",
-                            "rbush",
-                            "web-worker",
                             "xml-utils"
                         ],
-                        "outputPath": "dist/gis",
+                        "outputPath": {
+                            "base": "dist/gis"
+                        },
                         "index": "projects/gis/src/index.html",
-                        "main": "projects/gis/src/main.ts",
                         "polyfills": ["zone.js"],
                         "tsConfig": "projects/gis/tsconfig.app.json",
                         "assets": [
@@ -111,12 +106,11 @@
                             "./node_modules/vis-timeline/dist/vis-timeline-graph2d.min.css"
                         ],
                         "scripts": ["node_modules/vis-timeline/peer/esm/vis-timeline-graph2d.min.js"],
-                        "vendorChunk": true,
                         "extractLicenses": false,
-                        "buildOptimizer": false,
                         "sourceMap": true,
                         "optimization": false,
-                        "namedChunks": true
+                        "namedChunks": true,
+                        "browser": "projects/gis/src/main.ts"
                     },
                     "configurations": {
                         "production": {
@@ -125,12 +119,10 @@
                             "sourceMap": false,
                             "namedChunks": false,
                             "extractLicenses": true,
-                            "vendorChunk": false,
-                            "buildOptimizer": true,
                             "budgets": [
                                 {
                                     "type": "initial",
-                                    "maximumWarning": "5mb",
+                                    "maximumWarning": "8mb",
                                     "maximumError": "10mb"
                                 },
                                 {
@@ -216,25 +208,21 @@
             "prefix": "geoengine",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
+                    "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
                             "codemirror",
-                            "color-name",
                             "dagre-d3",
-                            "earcut",
+                            "json-stringify-pretty-compact",
+                            "fast-json-stable-stringify",
+                            "lerc",
                             "moment",
-                            "xml-utils",
-                            "lru-cache",
-                            "web-worker",
-                            "rbush",
-                            "clone",
-                            "fast-deep-equal",
-                            "fast-json-stable-stringify"
+                            "xml-utils"
                         ],
-                        "outputPath": "dist/dashboards/data-atlas",
+                        "outputPath": {
+                            "base": "dist/dashboards/data-atlas"
+                        },
                         "index": "projects/dashboards/data-atlas/src/index.html",
-                        "main": "projects/dashboards/data-atlas/src/main.ts",
                         "polyfills": ["zone.js"],
                         "tsConfig": "projects/dashboards/data-atlas/tsconfig.app.json",
                         "assets": [
@@ -255,12 +243,11 @@
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
-                        "vendorChunk": true,
                         "extractLicenses": false,
-                        "buildOptimizer": false,
                         "sourceMap": true,
                         "optimization": false,
-                        "namedChunks": true
+                        "namedChunks": true,
+                        "browser": "projects/dashboards/data-atlas/src/main.ts"
                     },
                     "configurations": {
                         "production": {
@@ -269,8 +256,6 @@
                             "sourceMap": false,
                             "namedChunks": false,
                             "extractLicenses": true,
-                            "vendorChunk": false,
-                            "buildOptimizer": true,
                             "budgets": [
                                 {
                                     "type": "initial",
@@ -360,25 +345,21 @@
             "prefix": "geoengine",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
+                    "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
                             "codemirror",
-                            "color-name",
                             "dagre-d3",
-                            "earcut",
+                            "json-stringify-pretty-compact",
+                            "fast-json-stable-stringify",
+                            "lerc",
                             "moment",
-                            "xml-utils",
-                            "lru-cache",
-                            "web-worker",
-                            "rbush",
-                            "clone",
-                            "fast-deep-equal",
-                            "fast-json-stable-stringify"
+                            "xml-utils"
                         ],
-                        "outputPath": "dist/dashboards/ebv-analyzer",
+                        "outputPath": {
+                            "base": "dist/dashboards/ebv-analyzer"
+                        },
                         "index": "projects/dashboards/ebv-analyzer/src/index.html",
-                        "main": "projects/dashboards/ebv-analyzer/src/main.ts",
                         "polyfills": ["zone.js"],
                         "tsConfig": "projects/dashboards/ebv-analyzer/tsconfig.app.json",
                         "assets": [
@@ -399,12 +380,11 @@
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
-                        "vendorChunk": true,
                         "extractLicenses": false,
-                        "buildOptimizer": false,
                         "sourceMap": true,
                         "optimization": false,
-                        "namedChunks": true
+                        "namedChunks": true,
+                        "browser": "projects/dashboards/ebv-analyzer/src/main.ts"
                     },
                     "configurations": {
                         "production": {
@@ -413,8 +393,6 @@
                             "sourceMap": false,
                             "namedChunks": false,
                             "extractLicenses": true,
-                            "vendorChunk": false,
-                            "buildOptimizer": true,
                             "budgets": [
                                 {
                                     "type": "initial",
@@ -504,26 +482,21 @@
             "prefix": "geoengine",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
+                    "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
-                            "clone",
                             "codemirror",
-                            "color-name",
                             "dagre-d3",
-                            "earcut",
-                            "fast-deep-equal",
+                            "json-stringify-pretty-compact",
                             "fast-json-stable-stringify",
-                            "lru-cache",
+                            "lerc",
                             "moment",
-                            "pbf",
-                            "rbush",
-                            "web-worker",
                             "xml-utils"
                         ],
-                        "outputPath": "dist/dashboards/nfdi-portal-demo",
+                        "outputPath": {
+                            "base": "dist/dashboards/nfdi-portal-demo"
+                        },
                         "index": "projects/dashboards/nfdi-portal-demo/src/index.html",
-                        "main": "projects/dashboards/nfdi-portal-demo/src/main.ts",
                         "polyfills": ["zone.js"],
                         "tsConfig": "projects/dashboards/nfdi-portal-demo/tsconfig.app.json",
                         "assets": [
@@ -544,12 +517,11 @@
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
-                        "vendorChunk": true,
                         "extractLicenses": false,
-                        "buildOptimizer": false,
                         "sourceMap": true,
                         "optimization": false,
-                        "namedChunks": true
+                        "namedChunks": true,
+                        "browser": "projects/dashboards/nfdi-portal-demo/src/main.ts"
                     },
                     "configurations": {
                         "production": {
@@ -558,8 +530,6 @@
                             "sourceMap": false,
                             "namedChunks": false,
                             "extractLicenses": true,
-                            "vendorChunk": false,
-                            "buildOptimizer": true,
                             "budgets": [
                                 {
                                     "type": "initial",
@@ -655,25 +625,21 @@
             "prefix": "geoengine",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
+                    "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
                             "codemirror",
-                            "color-name",
                             "dagre-d3",
-                            "earcut",
+                            "json-stringify-pretty-compact",
+                            "fast-json-stable-stringify",
+                            "lerc",
                             "moment",
-                            "xml-utils",
-                            "lru-cache",
-                            "web-worker",
-                            "rbush",
-                            "clone",
-                            "fast-deep-equal",
-                            "fast-json-stable-stringify"
+                            "xml-utils"
                         ],
-                        "outputPath": "dist/dashboards/gfbio",
+                        "outputPath": {
+                            "base": "dist/dashboards/gfbio"
+                        },
                         "index": "projects/dashboards/gfbio/src/index.html",
-                        "main": "projects/dashboards/gfbio/src/main.ts",
                         "polyfills": ["zone.js"],
                         "tsConfig": "projects/dashboards/gfbio/tsconfig.app.json",
                         "assets": [
@@ -694,12 +660,11 @@
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
-                        "vendorChunk": true,
                         "extractLicenses": false,
-                        "buildOptimizer": false,
                         "sourceMap": true,
                         "optimization": false,
-                        "namedChunks": true
+                        "namedChunks": true,
+                        "browser": "projects/dashboards/gfbio/src/main.ts"
                     },
                     "configurations": {
                         "production": {
@@ -708,12 +673,10 @@
                             "sourceMap": false,
                             "namedChunks": false,
                             "extractLicenses": true,
-                            "vendorChunk": false,
-                            "buildOptimizer": true,
                             "budgets": [
                                 {
                                     "type": "initial",
-                                    "maximumWarning": "5mb",
+                                    "maximumWarning": "6mb",
                                     "maximumError": "10mb"
                                 },
                                 {
@@ -799,11 +762,12 @@
             "prefix": "app",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
+                    "builder": "@angular-devkit/build-angular:application",
                     "options": {
-                        "outputPath": "dist/manager",
+                        "outputPath": {
+                            "base": "dist/manager"
+                        },
                         "index": "projects/manager/src/index.html",
-                        "main": "projects/manager/src/main.ts",
                         "polyfills": ["zone.js"],
                         "tsConfig": "projects/manager/tsconfig.app.json",
                         "inlineStyleLanguage": "scss",
@@ -820,9 +784,11 @@
                             "projects/manager/src/styles.scss",
                             "dist/common/assets/fonts/poppins/poppins.css",
                             "dist/common/assets/fonts/pacifico/pacifico.css",
-                            "dist/common/assets/fonts/material-design-icons/material-icons.css"
+                            "dist/common/assets/fonts/material-design-icons/material-icons.css",
+                            "node_modules/codemirror/lib/codemirror.css"
                         ],
-                        "scripts": []
+                        "scripts": [],
+                        "browser": "projects/manager/src/main.ts"
                     },
                     "configurations": {
                         "production": {
@@ -911,6 +877,240 @@
                     "options": {
                         "tsConfig": "projects/common/tsconfig.spec.json",
                         "polyfills": ["zone.js", "zone.js/testing"]
+                    }
+                }
+            }
+        },
+        "ecometrics": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:component": {
+                    "changeDetection": "OnPush",
+                    "inlineStyle": false,
+                    "inlineTemplate": false,
+                    "prefix": "geoengine",
+                    "style": "scss"
+                }
+            },
+            "root": "projects/dashboards/ecometrics",
+            "sourceRoot": "projects/dashboards/ecometrics/src",
+            "prefix": "app",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:application",
+                    "options": {
+                        "allowedCommonJsDependencies": [
+                            "codemirror",
+                            "dagre-d3",
+                            "json-stringify-pretty-compact",
+                            "fast-json-stable-stringify",
+                            "lerc",
+                            "moment",
+                            "xml-utils"
+                        ],
+                        "outputPath": {
+                            "base": "dist/dashboards/ecometrics"
+                        },
+                        "index": "projects/dashboards/ecometrics/src/index.html",
+                        "polyfills": ["zone.js"],
+                        "tsConfig": "projects/dashboards/ecometrics/tsconfig.app.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "projects/dashboards/ecometrics/src/favicon.ico",
+                            "projects/dashboards/ecometrics/src/assets",
+                            {
+                                "glob": "**/*",
+                                "input": "dist/common/assets",
+                                "output": "assets"
+                            }
+                        ],
+                        "styles": [
+                            "projects/dashboards/ecometrics/src/styles.scss",
+                            "dist/common/assets/fonts/material-design-icons/material-icons.css",
+                            "dist/common/assets/fonts/poppins/poppins.css",
+                            "node_modules/codemirror/lib/codemirror.css",
+                            "node_modules/ol/ol.css"
+                        ],
+                        "scripts": [],
+                        "browser": "projects/dashboards/ecometrics/src/main.ts"
+                    },
+                    "configurations": {
+                        "production": {
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "5mb",
+                                    "maximumError": "10mb"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "6kb",
+                                    "maximumError": "10kb"
+                                }
+                            ],
+                            "outputHashing": "all"
+                        },
+                        "development": {
+                            "optimization": false,
+                            "extractLicenses": false,
+                            "sourceMap": true
+                        }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "serve": {
+                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "configurations": {
+                        "production": {
+                            "buildTarget": "ecometrics:build:production"
+                        },
+                        "development": {
+                            "buildTarget": "ecometrics:build:development"
+                        }
+                    },
+                    "defaultConfiguration": "development"
+                },
+                "extract-i18n": {
+                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "options": {
+                        "buildTarget": "ecometrics:build"
+                    }
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "polyfills": ["zone.js", "zone.js/testing"],
+                        "tsConfig": "projects/dashboards/ecometrics/tsconfig.spec.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": ["projects/dashboards/ecometrics/src/favicon.ico", "projects/dashboards/ecometrics/src/assets"],
+                        "styles": ["projects/dashboards/ecometrics/src/styles.scss"],
+                        "scripts": []
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-eslint/builder:lint",
+                    "options": {
+                        "lintFilePatterns": ["projects/dashboards/ecometrics/**/*.ts", "projects/dashboards/ecometrics/**/*.html"]
+                    }
+                }
+            }
+        },
+        "esg-indicator-service": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:component": {
+                    "changeDetection": "OnPush",
+                    "inlineStyle": false,
+                    "inlineTemplate": false,
+                    "prefix": "geoengine",
+                    "style": "scss"
+                }
+            },
+            "root": "projects/dashboards/esg-indicator-service",
+            "sourceRoot": "projects/dashboards/esg-indicator-service/src",
+            "prefix": "app",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:application",
+                    "options": {
+                        "allowedCommonJsDependencies": [
+                            "codemirror",
+                            "dagre-d3",
+                            "json-stringify-pretty-compact",
+                            "fast-json-stable-stringify",
+                            "lerc",
+                            "moment",
+                            "xml-utils"
+                        ],
+                        "outputPath": {
+                            "base": "dist/dashboards/esg-indicator-service"
+                        },
+                        "index": "projects/dashboards/esg-indicator-service/src/index.html",
+                        "polyfills": ["zone.js"],
+                        "tsConfig": "projects/dashboards/esg-indicator-service/tsconfig.app.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "projects/dashboards/esg-indicator-service/src/favicon.ico",
+                            "projects/dashboards/esg-indicator-service/src/assets",
+                            {
+                                "glob": "**/*",
+                                "input": "dist/common/assets",
+                                "output": "assets"
+                            }
+                        ],
+                        "styles": [
+                            "projects/dashboards/esg-indicator-service/src/styles.scss",
+                            "dist/common/assets/fonts/material-design-icons/material-icons.css",
+                            "dist/common/assets/fonts/poppins/poppins.css",
+                            "node_modules/codemirror/lib/codemirror.css",
+                            "node_modules/ol/ol.css"
+                        ],
+                        "scripts": [],
+                        "browser": "projects/dashboards/esg-indicator-service/src/main.ts"
+                    },
+                    "configurations": {
+                        "production": {
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "5mb",
+                                    "maximumError": "10mb"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "6kb",
+                                    "maximumError": "10kb"
+                                }
+                            ],
+                            "outputHashing": "all"
+                        },
+                        "development": {
+                            "optimization": false,
+                            "extractLicenses": false,
+                            "sourceMap": true
+                        }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "serve": {
+                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "configurations": {
+                        "production": {
+                            "buildTarget": "esg-indicator-service:build:production"
+                        },
+                        "development": {
+                            "buildTarget": "esg-indicator-service:build:development"
+                        }
+                    },
+                    "defaultConfiguration": "development"
+                },
+                "extract-i18n": {
+                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "options": {
+                        "buildTarget": "esg-indicator-service:build"
+                    }
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "polyfills": ["zone.js", "zone.js/testing"],
+                        "tsConfig": "projects/dashboards/esg-indicator-service/tsconfig.spec.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            "projects/dashboards/esg-indicator-service/src/favicon.ico",
+                            "projects/dashboards/esg-indicator-service/src/assets"
+                        ],
+                        "styles": ["projects/dashboards/esg-indicator-service/src/styles.scss"],
+                        "scripts": []
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-eslint/builder:lint",
+                    "options": {
+                        "lintFilePatterns": [
+                            "projects/dashboards/esg-indicator-service/**/*.ts",
+                            "projects/dashboards/esg-indicator-service/**/*.html"
+                        ]
                     }
                 }
             }

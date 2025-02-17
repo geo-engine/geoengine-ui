@@ -11,6 +11,7 @@ import {NumberParam, StaticNumber, DerivedNumber} from '../symbology.model';
     styleUrls: ['number-param-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => NumberParamEditorComponent), multi: true}],
+    standalone: false,
 })
 export class NumberParamEditorComponent implements ControlValueAccessor {
     @Input() attributes = new Array<string>();
@@ -113,7 +114,7 @@ export class NumberParamEditorComponent implements ControlValueAccessor {
     ): void {
         const defaultNumber = params.defaultNumber ?? this.numberParam.getDefault();
         this._numberAttributeName =
-            params.numberAttributeName === null ? undefined : params.numberAttributeName ?? this.numberAttributeName;
+            params.numberAttributeName === null ? undefined : (params.numberAttributeName ?? this.numberAttributeName);
 
         if (this._numberAttributeName) {
             this._factor = params.factor ?? this.factor;

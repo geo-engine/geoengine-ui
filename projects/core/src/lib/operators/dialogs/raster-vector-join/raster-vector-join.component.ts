@@ -2,14 +2,14 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy} from '
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {EMPTY, Subscription, combineLatest} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
-import {RandomColorService} from '../../../util/services/random-color.service';
 
 import {filter, map, mergeMap} from 'rxjs/operators';
-import {NotificationService} from '../../../notification.service';
 import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {
     ColumnNamesDict,
+    NotificationService,
     PointSymbology,
+    RandomColorService,
     RasterLayer,
     RasterLayerMetadata,
     RasterVectorJoinDict,
@@ -47,6 +47,7 @@ enum ColumnNames {
     templateUrl: './raster-vector-join.component.html',
     styleUrls: ['./raster-vector-join.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RasterVectorJoinComponent implements OnDestroy {
     minNumberOfRasterInputs = 1;

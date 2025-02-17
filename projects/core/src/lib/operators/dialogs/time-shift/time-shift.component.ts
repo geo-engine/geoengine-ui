@@ -2,13 +2,13 @@ import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap} from 'rxjs/operators';
-import {NotificationService} from '../../../notification.service';
 import {TimeStepGranularityDict} from '../../../backend/backend.model';
 import {BehaviorSubject, Observable} from 'rxjs';
 import moment from 'moment';
 import {
     AbsoluteTimeShiftDictParams,
     Layer,
+    NotificationService,
     RasterLayer,
     RasterSymbology,
     RelativeTimeShiftDictParams,
@@ -40,6 +40,7 @@ interface TimeShiftForm {
     templateUrl: './time-shift.component.html',
     styleUrls: ['./time-shift.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class TimeShiftComponent implements AfterViewInit {
     readonly inputTypes = [ResultTypes.RASTER, ...ResultTypes.VECTOR_TYPES];

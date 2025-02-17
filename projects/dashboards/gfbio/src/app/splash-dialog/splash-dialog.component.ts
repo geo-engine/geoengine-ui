@@ -5,6 +5,7 @@ import {Component, ChangeDetectionStrategy} from '@angular/core';
     templateUrl: './splash-dialog.component.html',
     styleUrls: ['./splash-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class SplashDialogComponent {
     static SPLASH_DIALOG_NAME = 'showStartupSplashScreen';

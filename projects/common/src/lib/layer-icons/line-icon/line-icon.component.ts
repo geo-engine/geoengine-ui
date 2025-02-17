@@ -19,6 +19,7 @@ export interface LineIconStyle extends IconStyle {
     templateUrl: './line-icon.component.svg',
     styleUrls: ['./line-icon.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LineIconComponent {
     // the style to use for the icon

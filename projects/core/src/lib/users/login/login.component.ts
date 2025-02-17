@@ -3,12 +3,10 @@ import {BehaviorSubject, Subscription} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
-import {Config} from '../../config.service';
-import {UserService} from '../user.service';
+import {CoreConfig} from '../../config.service';
 import {User} from '../user.model';
-import {NotificationService} from '../../notification.service';
 import {first} from 'rxjs/operators';
-import {geoengineValidators} from '@geoengine/common';
+import {geoengineValidators, NotificationService, UserService} from '@geoengine/common';
 
 enum FormStatus {
     LoggedOut,
@@ -21,6 +19,7 @@ enum FormStatus {
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly FormStatus = FormStatus;
@@ -36,7 +35,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly config: Config,
+        private readonly config: CoreConfig,
         private readonly userService: UserService,
         private readonly notificationService: NotificationService,
     ) {

@@ -13,6 +13,7 @@ import {Layer, Time} from '@geoengine/common';
     templateUrl: './time-slider.component.html',
     styleUrls: ['./time-slider.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class TimeSliderComponent implements OnInit, OnDestroy {
     //Timeline Data for vis-timeline
@@ -140,13 +141,12 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
     }
 
     //changes the Timestream of the project according to the Timebars
-    changeTime(): void {
+    async changeTime(): Promise<void> {
         // TODO: Angular recognizes inifinite loop here --> FIX
+        await this.projectService.getTimeOnce();
 
-        this.projectService.getTimeOnce().subscribe(() => {
-            const updatedTime = new Time(moment(this.startTime), moment(this.endTime));
-            this.projectService.setTime(updatedTime);
-        });
+        const updatedTime = new Time(moment(this.startTime), moment(this.endTime));
+        this.projectService.setTime(updatedTime);
     }
 
     ngOnDestroy(): void {
@@ -158,13 +158,12 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
         this.timeline?.moveTo(this.startTime);
     }
 
-    changeScale(selectedScale: DurationInputArg2): void {
-        this.projectService.getTimeOnce().subscribe((t) => {
-            const steps = 8;
-            const startWindow = t.start.clone().subtract(steps / 2, selectedScale);
-            const endWindow = t.start.clone().add(steps / 2, selectedScale);
-            this.timeline?.setWindow(startWindow, endWindow);
-        });
+    async changeScale(selectedScale: DurationInputArg2): Promise<void> {
+        const time = await this.projectService.getTimeOnce();
+        const steps = 8;
+        const startWindow = time.start.clone().subtract(steps / 2, selectedScale);
+        const endWindow = time.start.clone().add(steps / 2, selectedScale);
+        this.timeline?.setWindow(startWindow, endWindow);
     }
 
     //original snap-function from vis-timeline https://github.com/visjs/vis-timeline/blob/master/lib/timeline/TimeStep.js
@@ -282,7 +281,7 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
     //options for the timeline
     getOptions(): void {
         this.options = {
-            moment: (date: Date) => moment(date).utc(), //use utc
+            moment: (date: Date): moment.Moment => moment(date).utc(), //use utc
             snap: (date: Date, scale: string, step: number): Moment => this.snapFunction(date, scale, step),
             start: '2012-01',
             end: '2020-01',

@@ -23,7 +23,7 @@ jobs:
 
     strategy:
       matrix:
-        app: [{project: gis}, {project: gfbio}, {project: data-atlas}, {project: nfdi-portal-demo}, {project: ebv-analyzer}, {project: manager, angular_base_href: "/manager/"}]
+        app: [{project: gis}, {project: gfbio}, {project: data-atlas}, {project: nfdi-portal-demo}, {project: ebv-analyzer}, {project: ecometrics}, {project: esg-indicator-service}, {project: manager, angular_base_href: "/manager/"}]
 
     runs-on: ubuntu-22.04
 

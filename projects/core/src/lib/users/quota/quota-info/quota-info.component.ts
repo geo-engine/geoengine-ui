@@ -1,12 +1,12 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {Quota, UserService} from '@geoengine/common';
 import {Subscription, timer} from 'rxjs';
-import {UserService} from '../../user.service';
-import {Quota} from '../quota.model';
 
 @Component({
     selector: 'geoengine-quota-info',
     templateUrl: './quota-info.component.html',
     styleUrls: ['./quota-info.component.scss'],
+    standalone: false,
 })
 export class QuotaInfoComponent implements OnDestroy, OnInit {
     sessionQuota: Quota | undefined;

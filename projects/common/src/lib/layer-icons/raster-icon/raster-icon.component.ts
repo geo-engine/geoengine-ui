@@ -1,7 +1,8 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChange} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, input, Input, OnChanges, OnInit, SimpleChange, untracked} from '@angular/core';
 import {Color, TRANSPARENT} from '../../colors/color';
-import {Colorizer, LinearGradient, RgbaColorizer} from '../../colors/colorizer.model';
+import {Colorizer, LinearGradient} from '../../colors/colorizer.model';
 import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
+import {RasterColorizer, SingleBandRasterColorizer} from '../../symbology/symbology.model';
 
 /**
  * a simple interface to model a cell in the raster icon
@@ -22,88 +23,89 @@ interface Cell {
     templateUrl: './raster-icon.component.svg',
     styleUrls: ['./raster-icon.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
-export class RasterIconComponent implements OnInit, OnChanges {
-    // number of cells in x and y direction
-    @Input() xCells!: number;
-    @Input() yCells!: number;
-    // the raster style used to color the icon
-    @Input() colorizer!: Colorizer;
+export class RasterIconComponent {
+    /** number of cells in x direction */
+    readonly xCells = input.required<number>();
+    /** number of cells in y direction */
+    readonly yCells = input.required<number>();
+    /** the raster style used to color the icon */
+    readonly colorizer = input.required<RasterColorizer>();
+    /** This is the number of pixels used for the icon */
+    readonly cellSpace = input<number>(24);
 
     /**
      * the array of generated (colored and positioned) cells.
      */
-    cells: Array<Cell> = [];
-    /**
-     * This is the number of pixels used for the icon
-     */
-    cellSpace = 24;
+    cells = computed<Array<Cell>>(() => {
+        const rasterColorizer = this.colorizer();
+        const cellSpace = this.cellSpace();
+        const xCells = this.xCells();
+        const yCells = this.yCells();
 
-    static RAINBOW_COLORIZER: Colorizer = new LinearGradient(
-        [
-            new ColorBreakpoint(0, Color.fromRgbaLike('#ff0000')),
-            new ColorBreakpoint(0, Color.fromRgbaLike('#ffa500')),
-            new ColorBreakpoint(0, Color.fromRgbaLike('#ffff00')),
-            new ColorBreakpoint(0, Color.fromRgbaLike('#008000')),
-            new ColorBreakpoint(0, Color.fromRgbaLike('#0000ff')),
-            new ColorBreakpoint(0, Color.fromRgbaLike('#4b0082')),
-            new ColorBreakpoint(0, Color.fromRgbaLike('#ee82ee')),
-        ],
-        TRANSPARENT,
-        TRANSPARENT,
-        TRANSPARENT,
-    );
+        let colorizer: Colorizer;
+        if (rasterColorizer instanceof SingleBandRasterColorizer) {
+            colorizer = rasterColorizer.bandColorizer;
+        } else {
+            colorizer = RAINBOW_COLORIZER;
+        }
 
-    ngOnChanges(_changes: {[propertyName: string]: SimpleChange}): void {
-        this.generateCells(this.xCells, this.yCells);
-    }
-
-    ngOnInit(): void {
-        this.generateCells(this.xCells, this.yCells);
-    }
+        return RasterIconComponent.generateCells(colorizer, cellSpace, xCells, yCells);
+    });
 
     /**
      * generates an array of cell descriptors which are used by the template
      */
-    generateCells(xCells: number, yCells: number): void {
-        this.cells = new Array<Cell>(xCells * yCells);
-        for (let y = 0; y < this.yCells; y++) {
-            for (let x = 0; x < this.xCells; x++) {
-                const idx = this.xCells * y + x;
-                this.cells[idx] = {
-                    xStart: (x * this.cellSpace) / this.xCells,
-                    yStart: (y * this.cellSpace) / this.yCells,
-                    xSize: this.cellSpace / this.xCells,
-                    ySize: this.cellSpace / this.yCells,
-                    colorString: Color.rgbaToCssString(this.cellColor(x, y)),
+    static generateCells(colorizer: Colorizer, cellSpace: number, xCells: number, yCells: number): Array<Cell> {
+        const cells = new Array<Cell>(xCells * yCells);
+        for (let y = 0; y < yCells; y++) {
+            for (let x = 0; x < xCells; x++) {
+                const idx = xCells * y + x;
+                cells[idx] = {
+                    xStart: (x * cellSpace) / xCells,
+                    yStart: (y * cellSpace) / yCells,
+                    xSize: cellSpace / xCells,
+                    ySize: cellSpace / yCells,
+                    colorString: Color.rgbaToCssString(RasterIconComponent.cellColor(colorizer, xCells, yCells, x, y)),
                 };
             }
         }
+        return cells;
     }
 
-    private cellColor(x: number, y: number): Color {
-        let colorizer = this.colorizer;
-
-        if (this.colorizer instanceof RgbaColorizer) {
-            colorizer = RasterIconComponent.RAINBOW_COLORIZER;
-        }
-
+    private static cellColor(colorizer: Colorizer, xCells: number, yCells: number, x: number, y: number): Color {
         const validSymbology = colorizer && colorizer.getNumberOfColors() > 0;
         if (!validSymbology) {
             return Color.fromRgbaLike('#ff0000');
         }
-        const numberOfCells = this.xCells * this.yCells;
+        const numberOfCells = xCells * yCells;
         const numberOfColors = colorizer.getNumberOfColors();
         const isGradient = colorizer.isGradient();
-        const scale = isGradient ? numberOfColors / (this.xCells + this.yCells - 1) : numberOfColors / numberOfCells;
-        const idx = y * this.xCells + x;
+        const scale = isGradient ? numberOfColors / (xCells + yCells - 1) : numberOfColors / numberOfCells;
+        const idx = y * xCells + x;
         let colorIdx = 0;
         if (numberOfColors === 2) {
             colorIdx = y % 2 === 0 ? x % 2 : (x + 1) % 2;
         } else {
-            const uidx = isGradient ? this.xCells - 1 - x + y : idx;
+            const uidx = isGradient ? xCells - 1 - x + y : idx;
             colorIdx = Math.trunc(uidx * scale) % numberOfColors;
         }
         return colorizer.getColorAtIndex(colorIdx);
     }
 }
+
+export const RAINBOW_COLORIZER: Colorizer = new LinearGradient(
+    [
+        new ColorBreakpoint(0, Color.fromRgbaLike('#ff0000')),
+        new ColorBreakpoint(0, Color.fromRgbaLike('#ffa500')),
+        new ColorBreakpoint(0, Color.fromRgbaLike('#ffff00')),
+        new ColorBreakpoint(0, Color.fromRgbaLike('#008000')),
+        new ColorBreakpoint(0, Color.fromRgbaLike('#0000ff')),
+        new ColorBreakpoint(0, Color.fromRgbaLike('#4b0082')),
+        new ColorBreakpoint(0, Color.fromRgbaLike('#ee82ee')),
+    ],
+    TRANSPARENT,
+    TRANSPARENT,
+    TRANSPARENT,
+);

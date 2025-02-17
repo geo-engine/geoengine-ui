@@ -10,6 +10,7 @@ import {CountryProviderService, Country} from '../country-provider.service';
     templateUrl: './country-selector.component.html',
     styleUrls: ['./country-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class CountrySelectorComponent implements OnInit, AfterViewInit, OnDestroy {
     public readonly countryDataList: Array<Country>;

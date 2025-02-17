@@ -6,6 +6,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {
     ConfirmationComponent,
     DatasetsService,
+    OgrDatasetComponent,
     RasterSymbology,
     Symbology,
     UUID,
@@ -21,6 +22,7 @@ import {
     DatasetListing,
     GdalMetaDataList,
     MetaDataDefinition,
+    OgrMetaData,
     TypedRasterResultDescriptor,
     TypedResultDescriptor,
     TypedVectorResultDescriptor,
@@ -44,6 +46,7 @@ export interface DatasetForm {
     selector: 'geoengine-manager-dataset-editor',
     templateUrl: './dataset-editor.component.html',
     styleUrl: './dataset-editor.component.scss',
+    standalone: false,
 })
 export class DatasetEditorComponent implements OnChanges {
     @Input({required: true}) datasetListing!: DatasetListing;
@@ -53,6 +56,7 @@ export class DatasetEditorComponent implements OnChanges {
     @ViewChild(MatChipInput) tagInput!: MatChipInput;
     @ViewChild(ProvenanceComponent) provenanceComponent!: ProvenanceComponent;
     @ViewChild(GdalMetadataListComponent) gdalMetadataListComponent?: GdalMetadataListComponent;
+    @ViewChild(OgrDatasetComponent) ogrDatasetComponent?: OgrDatasetComponent;
 
     dataset?: Dataset;
     form: FormGroup<DatasetForm> = this.placeholderForm();
@@ -65,6 +69,7 @@ export class DatasetEditorComponent implements OnChanges {
     rawLoadingInfo = '';
     rawLoadingInfoPristine = true;
     gdalMetaDataList?: GdalMetaDataList;
+    ogrMetaData?: OgrMetaData;
 
     constructor(
         private readonly datasetsService: DatasetsService,
@@ -86,8 +91,15 @@ export class DatasetEditorComponent implements OnChanges {
             const loadingInfo = await this.datasetsService.getLoadingInfo(this.dataset.name);
             if (loadingInfo.type === 'GdalMetaDataList') {
                 this.gdalMetaDataList = loadingInfo;
+                this.ogrMetaData = undefined;
+                this.rawLoadingInfo = '';
+            } else if (loadingInfo.type === 'OgrMetaData') {
+                this.ogrMetaData = loadingInfo;
+                this.gdalMetaDataList = undefined;
+                this.rawLoadingInfo = '';
             } else {
                 this.gdalMetaDataList = undefined;
+                this.ogrMetaData = undefined;
                 this.rawLoadingInfo = JSON.stringify(loadingInfo, null, 2);
                 this.rawLoadingInfoPristine = true;
             }
@@ -203,10 +215,12 @@ export class DatasetEditorComponent implements OnChanges {
     getMetaDataDefinition(): MetaDataDefinition | undefined {
         if (this.gdalMetadataListComponent) {
             return this.gdalMetadataListComponent.getMetaData();
+        } else if (this.ogrDatasetComponent) {
+            return this.ogrDatasetComponent.getMetaData();
         } else {
             try {
                 return JSON.parse(this.rawLoadingInfo) as MetaDataDefinition;
-            } catch (e) {
+            } catch (_e) {
                 this.snackBar.open('Invalid loading information.', 'Close', {panelClass: ['error-snackbar']});
                 return undefined;
             }
@@ -216,6 +230,8 @@ export class DatasetEditorComponent implements OnChanges {
     isSaveLoadingInfoDisabled(): boolean {
         if (this.gdalMetadataListComponent) {
             return this.gdalMetadataListComponent.form.pristine || this.gdalMetadataListComponent.form.invalid;
+        } else if (this.ogrDatasetComponent) {
+            return this.ogrDatasetComponent.formMetaData.pristine || this.ogrDatasetComponent.formMetaData.invalid;
         } else {
             return this.rawLoadingInfo === '' || this.rawLoadingInfoPristine;
         }

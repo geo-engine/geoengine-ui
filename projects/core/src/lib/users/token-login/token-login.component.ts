@@ -5,8 +5,8 @@ import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
 import {first} from 'rxjs/operators';
 import {Router} from '@angular/router';
-import {UserService} from '../user.service';
 import {UUID} from '../../backend/backend.model';
+import {UserService} from '@geoengine/common';
 
 enum FormStatus {
     LoggedOut,
@@ -19,6 +19,7 @@ enum FormStatus {
     templateUrl: './token-login.component.html',
     styleUrls: ['./token-login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class TokenLoginComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() routeTo?: Array<string>;

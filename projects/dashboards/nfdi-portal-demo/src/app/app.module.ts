@@ -1,19 +1,17 @@
-import {APP_INITIALIZER, NgModule} from '@angular/core';
+import {NgModule, inject, provideAppInitializer} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserModule} from '@angular/platform-browser';
-import {HttpClientModule} from '@angular/common/http';
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {AppComponent} from './app.component';
 import {
-    Config,
     LayoutService,
     MapService,
-    NotificationService,
     ProjectService,
-    RandomColorService,
     SidenavRef,
     SpatialReferenceService,
-    UserService,
     CoreModule,
+    CoreConfig,
+    RasterLegendComponent,
 } from '@geoengine/core';
 import {AppConfig} from './app-config.service';
 import {PortalModule} from '@angular/cdk/portal';
@@ -26,27 +24,39 @@ import {LoginComponent} from './login/login.component';
 import {AppRoutingModule} from './app-routing.module';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {FormsModule} from '@angular/forms';
+import {NotificationService, RandomColorService, UserService} from '@geoengine/common';
+import {CommonConfig} from '@geoengine/common';
 
 @NgModule({
     declarations: [AppComponent, AttributionsComponent, LegendComponent, SpeciesSelectorComponent, MainComponent, LoginComponent],
+    bootstrap: [AppComponent],
     imports: [
         AppRoutingModule,
         BrowserAnimationsModule,
         BrowserModule,
         CoreModule,
         FormsModule,
-        HttpClientModule,
         NgxMatSelectSearchModule,
         PortalModule,
+        RasterLegendComponent,
     ],
     providers: [
-        {provide: Config, useClass: AppConfig},
+        AppConfig,
         {
-            provide: APP_INITIALIZER,
-            useFactory: (config: AppConfig) => (): Promise<void> => config.load(),
-            deps: [Config],
-            multi: true,
+            provide: CoreConfig,
+            useExisting: AppConfig,
         },
+        {
+            provide: CommonConfig,
+            useExisting: AppConfig,
+        },
+        provideAppInitializer(() => {
+            const initializerFn = (
+                (config: AppConfig) => (): Promise<void> =>
+                    config.load()
+            )(inject(AppConfig));
+            return initializerFn();
+        }),
         LayoutService,
         MapService,
         NotificationService,
@@ -56,7 +66,7 @@ import {FormsModule} from '@angular/forms';
         SpatialReferenceService,
         DataSelectionService,
         UserService,
+        provideHttpClient(withInterceptorsFromDi()),
     ],
-    bootstrap: [AppComponent],
 })
 export class AppModule {}

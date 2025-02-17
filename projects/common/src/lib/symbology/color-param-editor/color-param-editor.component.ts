@@ -15,6 +15,7 @@ import {ColorParam, DerivedColor, StaticColor} from '../symbology.model';
     styleUrls: ['color-param-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorParamEditorComponent), multi: true}],
+    standalone: false,
 })
 export class ColorParamEditorComponent implements ControlValueAccessor {
     @Input() attributes = new Array<string>();
@@ -189,7 +190,7 @@ export class ColorParamEditorComponent implements ControlValueAccessor {
         emit = true,
     ): void {
         const defaultColor = params.defaultColor ?? this.colorParam.getDefault();
-        this._colorAttributeName = params.colorAttributeName === null ? undefined : params.colorAttributeName ?? this.colorAttributeName;
+        this._colorAttributeName = params.colorAttributeName === null ? undefined : (params.colorAttributeName ?? this.colorAttributeName);
 
         if (this._colorAttributeName) {
             this._colorizerType = params.colorizerType ?? this.colorizerType;

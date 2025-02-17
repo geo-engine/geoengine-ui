@@ -5,6 +5,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
     selector: 'geoengine-confirmation-dialog',
     templateUrl: './confirmation.component.html',
     styleUrl: './confirmation.component.css',
+    standalone: false,
 })
 export class ConfirmationComponent {
     constructor(

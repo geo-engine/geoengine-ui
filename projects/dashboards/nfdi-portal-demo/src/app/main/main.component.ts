@@ -1,30 +1,20 @@
 import {Observable, BehaviorSubject, first} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
-import {
-    LayoutService,
-    UserService,
-    RandomColorService,
-    NotificationService,
-    Config,
-    ProjectService,
-    MapService,
-    MapContainerComponent,
-    SpatialReferenceService,
-    WEB_MERCATOR,
-} from '@geoengine/core';
+import {LayoutService, ProjectService, MapService, MapContainerComponent, SpatialReferenceService, WEB_MERCATOR} from '@geoengine/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AppConfig} from '../app-config.service';
 import {ComponentPortal} from '@angular/cdk/portal';
 import {DataSelectionService} from '../data-selection.service';
 import {SpeciesSelectorComponent} from '../species-selector/species-selector.component';
-import {Layer} from '@geoengine/common';
+import {Layer, RandomColorService, UserService} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-main',
     templateUrl: './main.component.html',
     styleUrls: ['./main.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class MainComponent implements OnInit, AfterViewInit {
     @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
@@ -35,7 +25,7 @@ export class MainComponent implements OnInit, AfterViewInit {
     datasetPortal = new ComponentPortal(SpeciesSelectorComponent);
 
     constructor(
-        @Inject(Config) readonly config: AppConfig,
+        @Inject(AppConfig) readonly config: AppConfig,
         readonly layoutService: LayoutService,
         readonly projectService: ProjectService,
         readonly dataSelectionService: DataSelectionService,
@@ -43,7 +33,6 @@ export class MainComponent implements OnInit, AfterViewInit {
         readonly userService: UserService,
         private iconRegistry: MatIconRegistry,
         private _randomColorService: RandomColorService,
-        private _notificationService: NotificationService,
         private mapService: MapService,
         private _spatialReferenceService: SpatialReferenceService,
         private sanitizer: DomSanitizer,

@@ -9,6 +9,7 @@ import {Time} from '@geoengine/common';
     templateUrl: './time-step-selector.component.html',
     styleUrls: ['./time-step-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class TimeStepSelectorComponent implements OnChanges {
     @Input() timeSteps?: Array<Time>;
@@ -45,7 +46,7 @@ export class TimeStepSelectorComponent implements OnChanges {
         );
     }
 
-    ngOnChanges(changes: SimpleChanges): void {
+    async ngOnChanges(changes: SimpleChanges): Promise<void> {
         if (changes.timeSteps) {
             if (this.timeSteps) {
                 // this way min always stays `0` and step always stays `1`
@@ -54,15 +55,14 @@ export class TimeStepSelectorComponent implements OnChanges {
                 this.max = 0;
             }
 
-            this.projectService.getTimeOnce().subscribe((time) => {
-                if (!this.timeSteps) {
-                    return;
-                }
+            const time = await this.projectService.getTimeOnce();
+            if (!this.timeSteps) {
+                return;
+            }
 
-                this.currentTimeIndex = this.timeSteps.findIndex((t) => time.isSame(t));
+            this.currentTimeIndex = this.timeSteps.findIndex((t) => time.isSame(t));
 
-                setTimeout(() => this.changeDetectorRef.detectChanges());
-            });
+            setTimeout(() => this.changeDetectorRef.detectChanges());
         }
 
         if (changes.timeFormat) {

@@ -1,4 +1,4 @@
-import {BehaviorSubject, concat, first, ignoreElements, Observable, of, ReplaySubject} from 'rxjs';
+import {BehaviorSubject, concat, first, from, ignoreElements, Observable, of, ReplaySubject} from 'rxjs';
 import {map, mergeMap, tap} from 'rxjs/operators';
 
 import {
@@ -20,25 +20,20 @@ import {MatTabGroup} from '@angular/material/tabs';
 import {
     AddDataButton,
     AddDataComponent,
-    Config,
-    LayerCollectionService,
     LayoutService,
     MapContainerComponent,
     MapService,
     NavigationButton,
     NavigationComponent,
-    NotificationService,
     OidcComponent,
     OperatorListButtonGroups,
     OperatorListComponent,
     PlotListComponent,
     ProjectService,
-    RandomColorService,
     SidenavConfig,
     SidenavContainerComponent,
     SpatialReferenceService,
     TimeConfigComponent,
-    UserService,
     WorkspaceSettingsComponent,
 } from '@geoengine/core';
 import {DomSanitizer} from '@angular/platform-browser';
@@ -47,13 +42,14 @@ import {AppConfig} from './app-config.service';
 import {HelpComponent} from './help/help.component';
 import {SplashDialogComponent} from './splash-dialog/splash-dialog.component';
 import {GfBioCollectionDialogComponent as GfBioCollectionDialogComponent} from './gfbio-collection/gfbio-collection-dialog.component';
-import {Layer} from '@geoengine/common';
+import {Layer, LayersService, NotificationService, RandomColorService, UserService} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
@@ -81,12 +77,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     private GFBIO_COLLECTIONS_DATA_PROVIDER_ID = 'f64e2d5b-3b80-476a-83f5-c330956b2909';
 
     constructor(
-        @Inject(Config) readonly config: AppConfig,
+        @Inject(AppConfig) readonly config: AppConfig,
         readonly layoutService: LayoutService,
         readonly projectService: ProjectService,
         readonly vcRef: ViewContainerRef, // reference used by color picker
         readonly userService: UserService,
-        private readonly layerService: LayerCollectionService,
+        private readonly layersService: LayersService,
         private readonly changeDetectorRef: ChangeDetectorRef,
         private readonly dialog: MatDialog,
         private readonly iconRegistry: MatIconRegistry,
@@ -242,7 +238,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     private createAddDataListButtons(): Observable<Array<AddDataButton>> {
-        return AddDataComponent.createLayerRootCollectionButtons(this.layerService).pipe(
+        return AddDataComponent.createLayerRootCollectionButtons(this.layersService).pipe(
             map((buttons) => [
                 ...buttons,
                 AddDataComponent.createUploadButton(),
@@ -277,18 +273,18 @@ export class AppComponent implements OnInit, AfterViewInit {
         const state = params.get('state');
 
         let login;
-        if (sessionState && code && state) {
+        if (sessionState && code && state && sessionStorage.getItem('redirectUri')) {
             login = this.userService.oidcLogin({sessionState, code, state}).pipe(first());
         }
 
         const handleBasketSubscription: (p: ParamMap) => void = (p: ParamMap) => {
             const collectionId = p.get('collectionId');
             if (collectionId != null) {
-                this.layerService
-                    .getLayerCollectionItems(this.GFBIO_COLLECTIONS_DATA_PROVIDER_ID, `collections/${collectionId}`)
-                    .subscribe((result) => {
-                        this.dialog.open(GfBioCollectionDialogComponent, {data: {result}});
-                    });
+                from(
+                    this.layersService.getLayerCollectionItems(this.GFBIO_COLLECTIONS_DATA_PROVIDER_ID, `collections/${collectionId}`),
+                ).subscribe((result) => {
+                    this.dialog.open(GfBioCollectionDialogComponent, {data: {result}});
+                });
             } else {
                 const showSplash = this.userService.getSettingFromLocalStorage(SplashDialogComponent.SPLASH_DIALOG_NAME);
                 if (showSplash === null || JSON.parse(showSplash)) {

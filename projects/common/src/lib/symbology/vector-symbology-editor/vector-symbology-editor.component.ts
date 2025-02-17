@@ -27,6 +27,7 @@ import {WorkflowsService} from '../../workflows/workflows.service';
     templateUrl: 'vector-symbology-editor.component.html',
     styleUrls: ['vector-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
     @Input({required: true}) symbologyWorkflow!: SymbologyWorkflow<VectorSymbology>;
@@ -394,7 +395,7 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
         }
 
         // unsetting with null
-        const text = params.text === null ? undefined : params.text ?? this.currentSymbology.text;
+        const text = params.text === null ? undefined : (params.text ?? this.currentSymbology.text);
 
         this.currentSymbology = new PointSymbology(
             params.radius ?? this.currentSymbology.radius,
@@ -425,7 +426,7 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
         }
 
         // unsetting with null
-        const text = params.text === null ? undefined : params.text ?? this.currentSymbology.text;
+        const text = params.text === null ? undefined : (params.text ?? this.currentSymbology.text);
 
         this.currentSymbology = new LineSymbology(
             params.stroke ?? this.currentSymbology.stroke,
@@ -442,7 +443,7 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
         }
 
         // unsetting with null
-        const text = params.text === null ? undefined : params.text ?? this.currentSymbology.text;
+        const text = params.text === null ? undefined : (params.text ?? this.currentSymbology.text);
 
         this.currentSymbology = new PolygonSymbology(
             params.fillColor ?? this.currentSymbology.fillColor,

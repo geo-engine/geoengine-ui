@@ -1,4 +1,4 @@
-import {APP_INITIALIZER, NgModule} from '@angular/core';
+import {NgModule, inject, provideAppInitializer} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {MatButtonModule} from '@angular/material/button';
@@ -9,7 +9,6 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import {LoginComponent} from './login/login.component';
 import {NavigationComponent} from './navigation/navigation.component';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MAT_CARD_CONFIG, MatCardModule} from '@angular/material/card';
@@ -38,18 +37,23 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AppConfig} from './app-config.service';
 import {DatasetsComponent} from './datasets/datasets.component';
 import {LayersComponent} from './layers/layers.component';
+import {LayerEditorComponent} from './layers/layer-editor/layer-editor.component';
 import {ScrollingModule} from '@angular/cdk/scrolling';
 import {DatasetListComponent} from './datasets/dataset-list/dataset-list.component';
 import {DatasetEditorComponent} from './datasets/dataset-editor/dataset-editor.component';
 import {PermissionsComponent} from './permissions/permissions.component';
 import {RasterResultDescriptorComponent} from './result-descriptors/raster-result-descriptor/raster-result-descriptor.component';
 import {VectorResultDescriptorComponent} from './result-descriptors/vector-result-descriptor/vector-result-descriptor.component';
-import {CommonConfig, CommonModule} from '@geoengine/common';
+import {CommonConfig, CommonModule, NotificationService, RandomColorService} from '@geoengine/common';
 import {SymbologyEditorComponent} from './symbology/symbology-editor/symbology-editor.component';
 import {ProvenanceComponent} from './provenance/provenance.component';
 import {AddDatasetComponent} from './datasets/add-dataset/add-dataset.component';
 import {GdalMetadataListComponent} from './datasets/loading-info/gdal-metadata-list/gdal-metadata-list.component';
 import {GdalDatasetParametersComponent} from './datasets/loading-info/gdal-dataset-parameters/gdal-dataset-parameters.component';
+import {LayerCollectionEditorComponent} from './layers/layer-collection-editor/layer-collection-editor.component';
+import {AddLayerItemComponent} from './layers/add-layer-item/add-layer-item.component';
+import {LayerCollectionChildListComponent} from './layers/layer-collection-child-list/layer-collection-child-list.component';
+import {LayerCollectionChildSelectionComponent} from './layers/layer-collection-child-selection/layer-collection-child-selection.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -87,9 +91,10 @@ export const MATERIAL_MODULES = [
     declarations: [
         AppComponent,
         NavigationComponent,
-        LoginComponent,
         DatasetsComponent,
         LayersComponent,
+        LayerEditorComponent,
+        LayerCollectionEditorComponent,
         DatasetListComponent,
         DatasetEditorComponent,
         PermissionsComponent,
@@ -100,6 +105,9 @@ export const MATERIAL_MODULES = [
         AddDatasetComponent,
         GdalMetadataListComponent,
         GdalDatasetParametersComponent,
+        AddLayerItemComponent,
+        LayerCollectionChildListComponent,
+        LayerCollectionChildSelectionComponent,
     ],
     imports: [
         ...MATERIAL_MODULES,
@@ -118,13 +126,16 @@ export const MATERIAL_MODULES = [
     ],
     providers: [
         {provide: AppConfig, useClass: AppConfig},
-        CommonConfig,
-        {
-            provide: APP_INITIALIZER,
-            useFactory: (config: AppConfig) => (): Promise<void> => config.load(),
-            deps: [AppConfig],
-            multi: true,
-        },
+        {provide: CommonConfig, useExisting: AppConfig},
+        RandomColorService,
+        NotificationService,
+        provideAppInitializer(() => {
+            const initializerFn = (
+                (config: AppConfig) => (): Promise<void> =>
+                    config.load()
+            )(inject(AppConfig));
+            return initializerFn();
+        }),
         {provide: MAT_CARD_CONFIG, useValue: {appearance: 'outlined'}},
     ],
     bootstrap: [AppComponent],

@@ -6,9 +6,9 @@ import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators} f
 import {ProjectService} from '../../../project/project.service';
 import {UUID} from '../../../backend/backend.model';
 import {LayoutService, SidenavConfig} from '../../../layout.service';
-import {GeoEngineError} from '../../../util/errors';
 import {
     BandwiseExpressionDict,
+    GeoEngineError,
     Layer,
     MeasurementComponent,
     RasterDataType,
@@ -40,6 +40,7 @@ interface ExpressionForm {
     templateUrl: './bandwise-expression-operator.component.html',
     styleUrls: ['./bandwise-expression-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class BandwiseExpressionOperatorComponent implements AfterViewInit {
     /**

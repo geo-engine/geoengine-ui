@@ -73,7 +73,10 @@
                         <geoengine-manager-gdal-metadata-list [dataPath]="dataPath()"></geoengine-manager-gdal-metadata-list>
                     }
                     @case (DataTypes.Vector) {
-                        <textarea formControlName="rawLoadingInfo"></textarea>
+                        <geoengine-ogr-dataset
+                            [uploadId]="form.controls.uploadId.value"
+                            [volumeName]="form.controls.volumeName.value"
+                        ></geoengine-ogr-dataset>
                     }
                 }
             </mat-card-content>

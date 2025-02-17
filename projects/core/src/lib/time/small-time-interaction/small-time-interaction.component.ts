@@ -1,58 +1,48 @@
-import {Subscription} from 'rxjs';
-import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, Signal, computed, inject} from '@angular/core';
 import {ProjectService} from '../../project/project.service';
 import {LayoutService} from '../../layout.service';
 import {TimeConfigComponent} from '../time-config/time-config.component';
-import {TimeStepDuration} from '@geoengine/common';
+import {Time, TimeStepDuration} from '@geoengine/common';
+import {toSignal} from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'geoengine-small-time-interaction',
     templateUrl: './small-time-interaction.component.html',
     styleUrls: ['./small-time-interaction.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
-export class SmallTimeInteractionComponent implements OnInit, OnDestroy {
-    timeRepresentation?: string;
+export class SmallTimeInteractionComponent {
+    private readonly projectService = inject(ProjectService);
+    private readonly layoutService = inject(LayoutService);
 
-    timeStepDurationStreamSubscription?: Subscription;
-    timeStepDuration: TimeStepDuration = {durationAmount: 1, durationUnit: 'months'}; // TODO: get from DEFAULTS?
+    private readonly time: Signal<Time | undefined> = toSignal(this.projectService.getTimeStream());
 
-    private timeStreamSubscription?: Subscription;
+    readonly timeRepresentation: Signal<string> = computed(() => {
+        const time = this.time();
+        if (time === undefined) {
+            return '';
+        }
+        return time.toString();
+    });
+    readonly hasTimeRepresentation: Signal<boolean> = computed(() => !!this.timeRepresentation());
 
-    constructor(
-        private projectService: ProjectService,
-        private layoutService: LayoutService,
-        private changeDetectorRef: ChangeDetectorRef,
-    ) {}
+    readonly timeStepDuration: Signal<TimeStepDuration> = toSignal(this.projectService.getTimeStepDurationStream(), {
+        initialValue: {durationAmount: 1, durationUnit: 'months'}, // TODO: get from DEFAULTS?
+    });
 
-    ngOnInit(): void {
-        this.timeStreamSubscription = this.projectService.getTimeStream().subscribe((t) => {
-            this.timeRepresentation = t.toString();
-            this.changeDetectorRef.markForCheck();
-        });
+    async timeForward(): Promise<void> {
+        const time = await this.projectService.getTimeOnce();
 
-        this.timeStepDurationStreamSubscription = this.projectService.getTimeStepDurationStream().subscribe((timeStepDuration) => {
-            this.timeStepDuration = timeStepDuration;
-        });
+        const updatedTime = time.add(this.timeStepDuration().durationAmount, this.timeStepDuration().durationUnit);
+        this.projectService.setTime(updatedTime);
     }
 
-    ngOnDestroy(): void {
-        this.timeStreamSubscription?.unsubscribe();
-        this.timeStepDurationStreamSubscription?.unsubscribe();
-    }
+    async timeBackwards(): Promise<void> {
+        const time = await this.projectService.getTimeOnce();
 
-    timeForward(): void {
-        this.projectService.getTimeOnce().subscribe((time) => {
-            const updatedTime = time.add(this.timeStepDuration.durationAmount, this.timeStepDuration.durationUnit);
-            this.projectService.setTime(updatedTime);
-        });
-    }
-
-    timeBackwards(): void {
-        this.projectService.getTimeOnce().subscribe((time) => {
-            const updatedTime = time.subtract(this.timeStepDuration.durationAmount, this.timeStepDuration.durationUnit);
-            this.projectService.setTime(updatedTime);
-        });
+        const updatedTime = time.subtract(this.timeStepDuration().durationAmount, this.timeStepDuration().durationUnit);
+        this.projectService.setTime(updatedTime);
     }
 
     openTimeConfig(): void {

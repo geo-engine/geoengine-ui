@@ -1,25 +1,25 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef} from '@angular/core';
-import {mergeMap, BehaviorSubject, of, forkJoin} from 'rxjs';
-import {
-    LayerCollectionLayerDict,
-    LayerCollectionService,
-    ProjectService,
-    ProviderLayerCollectionIdDict,
-    RandomColorService,
-    UUID,
-    VectorResultDescriptorDict,
-    VectorSymbologyDict,
-} from '@geoengine/core';
+import {mergeMap, BehaviorSubject, of, forkJoin, from} from 'rxjs';
+import {LayerCollectionLayerDict, ProjectService, ProviderLayerCollectionIdDict, UUID, VectorResultDescriptorDict} from '@geoengine/core';
 import {DataSelectionService} from '../data-selection.service';
 import moment from 'moment';
 import {Layer as LayerDict} from '@geoengine/openapi-client';
-import {Time, VectorLayer, VectorSymbology, createVectorSymbology} from '@geoengine/common';
+import {
+    LayersService,
+    RandomColorService,
+    Time,
+    VectorLayer,
+    VectorSymbology,
+    VectorSymbologyDict,
+    createVectorSymbology,
+} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-accordion-vector-entry',
     templateUrl: './accordion-vector-entry.component.html',
     styleUrls: ['./accordion-vector-entry.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AccordionVectorEntryComponent implements OnInit {
     @Input() collection!: ProviderLayerCollectionIdDict;
@@ -28,7 +28,7 @@ export class AccordionVectorEntryComponent implements OnInit {
     readonly layers$ = new BehaviorSubject<Array<LayerCollectionLayerDict>>([]);
 
     constructor(
-        private readonly layerCollectionService: LayerCollectionService,
+        private readonly layersService: LayersService,
         readonly projectService: ProjectService,
         readonly dataSelectionService: DataSelectionService,
         private readonly changeDetectorRef: ChangeDetectorRef,
@@ -36,7 +36,7 @@ export class AccordionVectorEntryComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this.layerCollectionService.getLayerCollectionItems(this.collection.providerId, this.collection.collectionId).subscribe((c) => {
+        from(this.layersService.getLayerCollectionItems(this.collection.providerId, this.collection.collectionId)).subscribe((c) => {
             const layers = [];
             for (const item of c.items) {
                 if (item.type !== 'layer') {
@@ -55,8 +55,8 @@ export class AccordionVectorEntryComponent implements OnInit {
         const id = layerListing.id;
 
         forkJoin({
-            layer: this.layerCollectionService.getLayer(id.providerId, id.layerId),
-            workflowId: this.layerCollectionService.registerAndGetLayerWorkflowId(id.providerId, id.layerId),
+            layer: this.layersService.getLayer(id.providerId, id.layerId),
+            workflowId: this.layersService.registerAndGetLayerWorkflowId(id.providerId, id.layerId),
         })
             .pipe(
                 mergeMap(({layer, workflowId}: {layer: LayerDict; workflowId: UUID}) =>

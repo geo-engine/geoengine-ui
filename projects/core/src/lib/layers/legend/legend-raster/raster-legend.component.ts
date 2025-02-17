@@ -1,20 +1,16 @@
-import {
-    AfterViewInit,
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    Input,
-    OnChanges,
-    OnDestroy,
-    OnInit,
-    Pipe,
-    PipeTransform,
-    SimpleChanges,
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, effect, inject, input, Pipe, PipeTransform, signal, untracked} from '@angular/core';
 import {ProjectService} from '../../../project/project.service';
-import {Subject, Subscription, first} from 'rxjs';
-import {ColorBreakpoint, RasterLayer, RasterLayerMetadata, SingleBandRasterColorizer} from '@geoengine/common';
-import {RasterBandDescriptor, Measurement, ContinuousMeasurement, ClassificationMeasurement} from '@geoengine/openapi-client';
+import {firstValueFrom} from 'rxjs';
+import {ColorBreakpoint, CommonModule, MultiBandRasterColorizer, RasterLayer, SingleBandRasterColorizer} from '@geoengine/common';
+import {
+    RasterBandDescriptor,
+    Measurement,
+    ContinuousMeasurement,
+    ClassificationMeasurement,
+    UnitlessMeasurement,
+} from '@geoengine/openapi-client';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {CommonModule as AngularCommonModule} from '@angular/common';
 
 /**
  * calculate the decimal places for the legend of raster data
@@ -40,6 +36,7 @@ export function calculateNumberPipeParameters(breakpoints: Array<ColorBreakpoint
 @Pipe({
     name: 'classificationMeasurement',
     pure: true,
+    standalone: true,
 })
 export class CastMeasurementToClassificationPipe implements PipeTransform {
     transform(value: Measurement, _args?: unknown): ClassificationMeasurement | null {
@@ -54,10 +51,26 @@ export class CastMeasurementToClassificationPipe implements PipeTransform {
 @Pipe({
     name: 'continuousMeasurement',
     pure: true,
+    standalone: true,
 })
 export class CastMeasurementToContinuousPipe implements PipeTransform {
     transform(value: Measurement, _args?: unknown): ContinuousMeasurement | null {
         if (value.type == 'continuous') {
+            return value;
+        } else {
+            return null;
+        }
+    }
+}
+
+@Pipe({
+    name: 'unitlessMeasurement',
+    pure: true,
+    standalone: true,
+})
+export class CastMeasurementToUnitlessPipe implements PipeTransform {
+    transform(value: Measurement, _args?: unknown): UnitlessMeasurement | null {
+        if (value.type == 'unitless') {
             return value;
         } else {
             return null;
@@ -122,80 +135,80 @@ export function oneApart(values: number[]): boolean {
     templateUrl: 'raster-legend.component.html',
     styleUrls: ['raster-legend.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        AngularCommonModule,
+        CastMeasurementToUnitlessPipe,
+        CastMeasurementToClassificationPipe,
+        CastMeasurementToContinuousPipe,
+        MatProgressSpinner,
+        CommonModule,
+    ],
 })
-export class RasterLegendComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
-    @Input() layer!: RasterLayer;
-    selectedBand$ = new Subject<RasterBandDescriptor>();
-    displayedBreakpoints: number[] = [];
+export class RasterLegendComponent {
+    private readonly projectService = inject(ProjectService);
 
-    @Input()
-    orderValuesDescending = false;
+    readonly layer = input.required<RasterLayer>();
+    readonly orderValuesDescending = input<boolean>(false);
+    readonly showBandNames = input<boolean>(true);
 
-    @Input()
-    showSingleBandNames = true;
-
-    @Input()
-    detectChanges = false; // workaround to force change detection
-
-    private layerMetaDataSubscription?: Subscription;
-
-    constructor(
-        public projectService: ProjectService,
-        private changeDetectorRef: ChangeDetectorRef,
-    ) {}
-
-    ngOnInit(): void {
-        this.calculateDisplayedBreakpoints();
-    }
-
-    ngAfterViewInit(): void {
-        this.layerMetaDataSubscription = this.projectService
-            .getLayerMetadata(this.layer)
-            .pipe(first())
-            .subscribe((m) => {
-                const bands = (m as RasterLayerMetadata).bands;
-                const bandIndex = (this.layer.symbology.rasterColorizer as SingleBandRasterColorizer).band;
-                this.selectedBand$.next(bands[bandIndex]);
-
-                if (this.detectChanges) {
-                    this.changeDetectorRef.detectChanges();
-                }
-            });
-    }
-
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes.layer || changes.orderValuesDescending) {
-            this.calculateDisplayedBreakpoints();
-        }
-        if (!changes.showSingleBandNames == undefined) {
-            this.changeDetectorRef.markForCheck();
-        }
-    }
-
-    ngOnDestroy(): void {
-        if (this.layerMetaDataSubscription) {
-            this.layerMetaDataSubscription.unsubscribe();
-        }
-    }
-
-    protected calculateDisplayedBreakpoints(): void {
-        this.displayedBreakpoints = this.layer.symbology.rasterColorizer.getBreakpoints().map((x) => x.value);
-        this.displayedBreakpoints = unifyDecimals(this.displayedBreakpoints);
-
-        if (this.orderValuesDescending) {
-            this.displayedBreakpoints = this.displayedBreakpoints.reverse();
-        }
-    }
-
-    get gradientAngle(): number {
-        return this.orderValuesDescending ? 0 : 180;
-    }
-
-    get colorizerBreakpoints(): Array<ColorBreakpoint> {
-        if (this.orderValuesDescending) {
-            return this.layer.symbology.rasterColorizer.getBreakpoints().slice().reverse();
+    readonly selectedBands = signal<Array<RasterBandDescriptor> | undefined>(undefined);
+    readonly displayedBreakpoints = computed<Array<number>>(() =>
+        calculateDisplayedBreakpoints(this.layer(), this.orderValuesDescending()),
+    );
+    readonly colorizerBreakpoints = computed<Array<ColorBreakpoint>>(() => {
+        const layer = this.layer();
+        if (this.orderValuesDescending()) {
+            return layer.symbology.rasterColorizer.getBreakpoints().slice().reverse();
         } else {
-            return this.layer.symbology.rasterColorizer.getBreakpoints();
+            return layer.symbology.rasterColorizer.getBreakpoints();
         }
+    });
+    readonly gradientAngle = computed<number>(() => (this.orderValuesDescending() ? 0 : 180));
+    readonly bandsHaveUnits = computed<boolean>(() => {
+        const selectedBands = this.selectedBands();
+        if (!selectedBands) {
+            return false;
+        }
+        return selectedBands.some((band) => band.measurement.type !== 'unitless');
+    });
+
+    constructor() {
+        effect(() => {
+            const layer = this.layer();
+            untracked(() => {
+                firstValueFrom(this.projectService.getRasterLayerMetadata(layer)).then((metadata) => {
+                    const bands = metadata.bands;
+                    const rasterColorizer = layer.symbology.rasterColorizer;
+
+                    let bandDescriptors: Array<RasterBandDescriptor>;
+                    if (rasterColorizer instanceof SingleBandRasterColorizer) {
+                        bandDescriptors = [bands[rasterColorizer.band]];
+                    } else if (rasterColorizer instanceof MultiBandRasterColorizer) {
+                        bandDescriptors = [
+                            bands[rasterColorizer.redBand],
+                            bands[rasterColorizer.greenBand],
+                            bands[rasterColorizer.blueBand],
+                        ];
+                    } else {
+                        throw new Error('Unknown raster colorizer');
+                    }
+                    this.selectedBands.set(bandDescriptors);
+                });
+            });
+        });
     }
+}
+
+/**
+ * Calculate the displayed breakpoints for the legend
+ */
+function calculateDisplayedBreakpoints(layer: RasterLayer, orderValuesDescending: boolean): Array<number> {
+    let displayedBreakpoints = layer.symbology.rasterColorizer.getBreakpoints().map((x) => x.value);
+    displayedBreakpoints = unifyDecimals(displayedBreakpoints);
+
+    if (orderValuesDescending) {
+        displayedBreakpoints = displayedBreakpoints.reverse();
+    }
+
+    return displayedBreakpoints;
 }

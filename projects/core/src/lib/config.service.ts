@@ -1,11 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Configuration, DefaultConfig} from '@geoengine/openapi-client';
-import {CommonConfig, mergeDeepOverrideLists} from '@geoengine/common';
-
-interface Plots {
-    readonly THEME: 'excel' | 'ggplot2' | 'quartz' | 'vox' | 'dark';
-}
+import {CommonConfigStructure, CommonConfig, Delays as CommonDelays, mergeDeepOverrideLists} from '@geoengine/common';
 
 interface Wms {
     readonly VERSION: string;
@@ -22,14 +16,7 @@ interface Wcs {
     readonly VERSION: string;
 }
 
-interface User {
-    readonly GUEST: {
-        readonly NAME: string;
-        readonly PASSWORD: string;
-    };
-}
-
-interface Delays {
+interface Delays extends CommonDelays {
     readonly LOADING: {
         readonly MIN: number;
     };
@@ -84,21 +71,23 @@ interface SpatialReferenceConfig {
     readonly SRS_STRING: string;
 }
 
-export interface ConfigStructure {
+interface Project {
+    readonly CREATE_TEMPORARY_PROJECT_AT_STARTUP: boolean;
+}
+
+export interface CoreConfigStructure extends CommonConfigStructure {
     readonly DEFAULTS: ConfigDefaults;
     readonly DELAYS: Delays;
     readonly MAP: ConfigMap;
-    readonly API_URL: string;
+    readonly PROJECT: Project;
+    readonly SPATIAL_REFERENCES: Array<SpatialReferenceConfig>;
     readonly TIME: Time;
-    readonly USER: User;
     readonly WCS: Wcs;
     readonly WFS: Wfs;
     readonly WMS: Wms;
-    readonly PLOTS: Plots;
-    readonly SPATIAL_REFERENCES: Array<SpatialReferenceConfig>;
 }
 
-export const DEFAULT_CONFIG: ConfigStructure = {
+export const DEFAULT_CORE_CONFIG: CoreConfigStructure = {
     DEFAULTS: {
         PROJECT: {
             NAME: 'Default',
@@ -107,6 +96,12 @@ export const DEFAULT_CONFIG: ConfigStructure = {
             PROJECTION: 'EPSG:4326', // TODO: change back to 'EPSG:3857'
         },
         FOCUS_EXTENT: [-180, -90, 180, 90],
+    },
+    BRANDING: {
+        LOGO_URL: 'assets/geoengine.svg',
+        LOGO_ICON_URL: 'assets/geoengine-favicon-white.svg',
+        LOGO_ALT_URL: 'assets/geoengine-white.svg',
+        PAGE_TITLE: 'Geo Engine',
     },
     DELAYS: {
         LOADING: {
@@ -140,12 +135,6 @@ export const DEFAULT_CONFIG: ConfigStructure = {
     API_URL: '/api',
     TIME: {
         ALLOW_RANGES: true,
-    },
-    USER: {
-        GUEST: {
-            NAME: 'guest',
-            PASSWORD: 'guest',
-        },
     },
     WCS: {
         SERVICE: 'WCS',
@@ -192,6 +181,18 @@ export const DEFAULT_CONFIG: ConfigStructure = {
             SRS_STRING: 'EPSG:32737',
         },
     ],
+    PROJECT: {
+        CREATE_TEMPORARY_PROJECT_AT_STARTUP: false,
+    },
+    USER: {
+        GUEST: {
+            NAME: 'guest',
+            PASSWORD: 'guest',
+        },
+        AUTO_GUEST_LOGIN: true,
+        REGISTRATION_AVAILABLE: true,
+        LOCAL_LOGIN_AVAILABLE: true,
+    },
 };
 
 /**
@@ -199,13 +200,11 @@ export const DEFAULT_CONFIG: ConfigStructure = {
  * Loads a custom file at startup.
  */
 @Injectable()
-export class Config {
-    static readonly CONFIG_FILE = 'assets/config.json';
+export class CoreConfig extends CommonConfig {
+    protected override config!: CoreConfigStructure;
 
-    protected config!: ConfigStructure;
-
-    get API_URL(): string {
-        return this.config.API_URL;
+    override get DELAYS(): Delays {
+        return this.config.DELAYS;
     }
 
     get WMS(): Wms {
@@ -220,14 +219,6 @@ export class Config {
         return this.config.WCS;
     }
 
-    get USER(): User {
-        return this.config.USER;
-    }
-
-    get DELAYS(): Delays {
-        return this.config.DELAYS;
-    }
-
     get DEFAULTS(): ConfigDefaults {
         return this.config.DEFAULTS;
     }
@@ -240,47 +231,19 @@ export class Config {
         return this.config.TIME;
     }
 
-    get PLOTS(): Plots {
-        return this.config.PLOTS;
-    }
-
     get SPATIAL_REFERENCES(): Array<SpatialReferenceConfig> {
         return this.config.SPATIAL_REFERENCES;
     }
 
-    constructor(
-        protected http: HttpClient,
-        protected readonly commonConfig: CommonConfig,
-    ) {}
+    get PROJECT(): Project {
+        return this.config.PROJECT;
+    }
 
-    // noinspection JSUnusedGlobalSymbols <- function used in parent app
     /**
      * Initialize the config on app start.
      */
-    async load(defaults: ConfigStructure = DEFAULT_CONFIG): Promise<void> {
-        const configFileResponse = await fetch(Config.CONFIG_FILE);
-
-        const appConfig = await configFileResponse.json().catch(() => ({}));
-        this.config = mergeDeepOverrideLists(defaults, {...appConfig});
-
-        await this.commonConfig.load({
-            API_URL: this.config.API_URL,
-            DELAYS: this.config.DELAYS,
-            PLOTS: this.config.PLOTS,
-        });
-
-        // we alter the config in the openapi-client so that it uses the correct API_URL
-        DefaultConfig.config = new Configuration({
-            basePath: this.commonConfig.API_URL,
-            fetchApi: DefaultConfig.fetchApi,
-            middleware: DefaultConfig.middleware,
-            queryParamsStringify: DefaultConfig.queryParamsStringify,
-            username: DefaultConfig.username,
-            password: DefaultConfig.password,
-            apiKey: DefaultConfig.apiKey,
-            accessToken: DefaultConfig.accessToken,
-            headers: DefaultConfig.headers,
-            credentials: DefaultConfig.credentials,
-        });
+    override async load(defaults: CoreConfigStructure = DEFAULT_CORE_CONFIG): Promise<void> {
+        await super.load(defaults);
+        this.config = mergeDeepOverrideLists(defaults, {...this.config});
     }
 }

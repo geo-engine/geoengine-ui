@@ -4,12 +4,12 @@ import {Observable, of, ReplaySubject, Subscription, first} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 
 import {map, mergeMap, tap} from 'rxjs/operators';
-import {NotificationService} from '../../../notification.service';
 import {
     ClassHistogramDict,
     ClassHistogramParams,
     ClassificationMeasurement,
     Layer,
+    NotificationService,
     Plot,
     RasterLayer,
     ResultTypes,
@@ -90,6 +90,7 @@ const categoricalInputValidator =
     templateUrl: './class-histogram-operator.component.html',
     styleUrls: ['./class-histogram-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ClassHistogramOperatorComponent implements AfterViewInit, OnDestroy {
     inputTypes = ResultTypes.INPUT_TYPES;

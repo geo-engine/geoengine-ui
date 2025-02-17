@@ -3,14 +3,13 @@ import OlFormatGeoJson from 'ol/format/GeoJSON';
 import {Type as OlGeometryType} from 'ol/geom/Geometry';
 import {BehaviorSubject, of, Subject, Subscription} from 'rxjs';
 import {ProjectService} from '../../project/project.service';
-import {NotificationService} from '../../notification.service';
 import {MapService} from '../../map/map.service';
 import {DatasetService} from '../dataset.service';
 import {HttpEventType, HttpResponse} from '@angular/common/http';
 import {AutoCreateDatasetDict, UploadResponseDict, UUID} from '../../backend/backend.model';
 import {mergeMap} from 'rxjs/operators';
 import {WGS_84} from '../../spatial-references/spatial-reference.service';
-import {ResultType, ResultTypes, SpatialReference} from '@geoengine/common';
+import {NotificationService, ResultType, ResultTypes, SpatialReference} from '@geoengine/common';
 
 enum State {
     Start = 1,
@@ -25,6 +24,7 @@ enum State {
     templateUrl: './draw-features.component.html',
     styleUrls: ['./draw-features.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DrawFeaturesComponent implements OnDestroy, OnInit {
     readonly State = State;

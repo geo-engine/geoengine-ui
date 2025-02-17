@@ -1,4 +1,4 @@
-import {Color, RgbaTuple, WHITE, BLACK, rgbaColorFromDict, colorToDict} from '../colors/color';
+import {Color, RgbaTuple, WHITE, BLACK, rgbaColorFromDict, colorToDict, TRANSPARENT} from '../colors/color';
 import {Feature as OlFeature} from 'ol';
 import {Circle as OlStyleCircle, Fill as OlStyleFill, Stroke as OlStyleStroke, Style as OlStyle, Text as OlStyleText} from 'ol/style';
 import {StyleFunction as OlStyleFunction} from 'ol/style/Style';
@@ -20,6 +20,7 @@ import {
     RasterSymbology as RasterSymbologyDict,
     RasterColorizer as RasterColorizerDict,
     SpatialResolution,
+    MultiBandRasterColorizer as MultiBandRasterColorizerDict,
 } from '@geoengine/openapi-client';
 import {PointIconStyle} from '../layer-icons/point-icon/point-icon.component';
 import {LineIconStyle} from '../layer-icons/line-icon/line-icon.component';
@@ -652,12 +653,27 @@ export class RasterSymbology extends Symbology {
 
 export abstract class RasterColorizer {
     static fromDict(dict: RasterColorizerDict): RasterColorizer {
-        // TODO: multi band
         if (dict.type === 'singleBand') {
             return new SingleBandRasterColorizer(dict.band, Colorizer.fromDict(dict.bandColorizer));
-        } else {
-            throw new Error('unable to deserialize `RasterColorizer`');
         }
+        if (dict.type === 'multiBand') {
+            return new MultiBandRasterColorizer(
+                dict.redBand,
+                dict.greenBand,
+                dict.blueBand,
+                dict.redMin,
+                dict.redMax,
+                dict.redScale ?? 1,
+                dict.greenMin,
+                dict.greenMax,
+                dict.greenScale ?? 1,
+                dict.blueMin,
+                dict.blueMax,
+                dict.blueScale ?? 1,
+                dict.noDataColor ? Color.fromRgbaLike(rgbaColorFromDict(dict.noDataColor)) : TRANSPARENT,
+            );
+        }
+        throw new Error('unable to deserialize `RasterColorizer`');
     }
 
     abstract equals(other: RasterColorizer): boolean;
@@ -730,6 +746,178 @@ export class SingleBandRasterColorizer extends RasterColorizer {
 
     replaceBand(band: number): SingleBandRasterColorizer {
         return new SingleBandRasterColorizer(band, this.bandColorizer.clone());
+    }
+}
+
+export class MultiBandRasterColorizer extends RasterColorizer {
+    readonly redBand: number;
+    readonly greenBand: number;
+    readonly blueBand: number;
+    readonly redMin: number;
+    readonly redMax: number;
+    readonly redScale: number;
+    readonly greenMin: number;
+    readonly greenMax: number;
+    readonly greenScale: number;
+    readonly blueMin: number;
+    readonly blueMax: number;
+    readonly blueScale: number;
+    readonly noDataColor: Color;
+
+    constructor(
+        redBand: number,
+        greenBand: number,
+        blueBand: number,
+        redMin: number,
+        redMax: number,
+        redScale: number,
+        greenMin: number,
+        greenMax: number,
+        greenScale: number,
+        blueMin: number,
+        blueMax: number,
+        blueScale: number,
+        noDataColor: Color,
+    ) {
+        super();
+        this.redBand = redBand;
+        this.greenBand = greenBand;
+        this.blueBand = blueBand;
+        this.redMin = redMin;
+        this.redMax = redMax;
+        this.redScale = redScale;
+        this.greenMin = greenMin;
+        this.greenMax = greenMax;
+        this.greenScale = greenScale;
+        this.blueMin = blueMin;
+        this.blueMax = blueMax;
+        this.blueScale = blueScale;
+        this.noDataColor = noDataColor;
+    }
+
+    override equals(other: RasterColorizer): boolean {
+        if (!(other instanceof MultiBandRasterColorizer)) {
+            return false;
+        }
+
+        return (
+            this.redBand === other.redBand &&
+            this.greenBand === other.greenBand &&
+            this.blueBand === other.blueBand &&
+            this.redMin === other.redMin &&
+            this.redMax === other.redMax &&
+            this.redScale === other.redScale &&
+            this.greenMin === other.greenMin &&
+            this.greenMax === other.greenMax &&
+            this.greenScale === other.greenScale &&
+            this.blueMin === other.blueMin &&
+            this.blueMax === other.blueMax &&
+            this.blueScale === other.blueScale &&
+            this.noDataColor.equals(other.noDataColor)
+        );
+    }
+    override clone(): MultiBandRasterColorizer {
+        return new MultiBandRasterColorizer(
+            this.redBand,
+            this.greenBand,
+            this.blueBand,
+            this.redMin,
+            this.redMax,
+            this.redScale,
+            this.greenMin,
+            this.greenMax,
+            this.greenScale,
+            this.blueMin,
+            this.blueMax,
+            this.blueScale,
+            this.noDataColor,
+        );
+    }
+
+    withBands(redBand: number, greenBand: number, blueBand: number): MultiBandRasterColorizer {
+        return new MultiBandRasterColorizer(
+            redBand,
+            greenBand,
+            blueBand,
+            this.redMin,
+            this.redMax,
+            this.redScale,
+            this.greenMin,
+            this.greenMax,
+            this.greenScale,
+            this.blueMin,
+            this.blueMax,
+            this.blueScale,
+            this.noDataColor,
+        );
+    }
+
+    withParams(
+        redMin: number,
+        redMax: number,
+        redScale: number,
+        greenMin: number,
+        greenMax: number,
+        greenScale: number,
+        blueMin: number,
+        blueMax: number,
+        blueScale: number,
+        noDataColor: Color,
+    ): MultiBandRasterColorizer {
+        return new MultiBandRasterColorizer(
+            this.redBand,
+            this.greenBand,
+            this.blueBand,
+            redMin,
+            redMax,
+            redScale,
+            greenMin,
+            greenMax,
+            greenScale,
+            blueMin,
+            blueMax,
+            blueScale,
+            noDataColor,
+        );
+    }
+
+    override toDict(): MultiBandRasterColorizerDict {
+        return {
+            type: 'multiBand',
+            redBand: this.redBand,
+            greenBand: this.greenBand,
+            blueBand: this.blueBand,
+            redMin: this.redMin,
+            redMax: this.redMax,
+            redScale: this.redScale,
+            greenMin: this.greenMin,
+            greenMax: this.greenMax,
+            greenScale: this.greenScale,
+            blueMin: this.blueMin,
+            blueMax: this.blueMax,
+            blueScale: this.blueScale,
+            noDataColor: colorToDict(this.noDataColor),
+        };
+    }
+
+    override getBreakpoints(): Array<ColorBreakpoint> {
+        return [];
+    }
+
+    override isDiscrete(): boolean {
+        return false;
+    }
+
+    override getNumberOfColors(): number {
+        return 0;
+    }
+
+    override isGradient(): boolean {
+        return false;
+    }
+
+    override getColorAtIndex(index: number): Color {
+        return TRANSPARENT;
     }
 }
 

@@ -4,11 +4,11 @@ import {ProjectService} from '../../../project/project.service';
 import {mergeMap} from 'rxjs/operators';
 import {UUID} from '../../../backend/backend.model';
 import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
-import {NotificationService} from '../../../notification.service';
 import {
     DensityRasterizationDict,
     GridRasterizationDict,
     Layer,
+    NotificationService,
     RasterLayer,
     RasterSymbology,
     RasterizationDict,
@@ -49,6 +49,7 @@ interface DensityForm {
     templateUrl: './rasterization.component.html',
     styleUrls: ['./rasterization.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RasterizationComponent implements OnDestroy {
     selected = new FormControl(0, {validators: [Validators.required], nonNullable: true});

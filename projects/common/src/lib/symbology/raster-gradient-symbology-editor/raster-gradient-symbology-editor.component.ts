@@ -35,6 +35,7 @@ import {PercentileBreakpointSelectorComponent} from '../../colors/percentile-bre
     templateUrl: 'raster-gradient-symbology-editor.component.html',
     styleUrls: ['raster-gradient-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit, OnChanges {
     @ViewChild(ColorMapSelectorComponent)
@@ -94,6 +95,7 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.colorizer) {
             this.updateScale();
+            this.updateNodataAndDefaultColor();
             this.initializeBreakpoints(this.colorizer.getBreakpoints());
         }
     }

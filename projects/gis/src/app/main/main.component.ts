@@ -8,12 +8,10 @@ import {
     Component,
     ElementRef,
     HostListener,
-    Inject,
     OnInit,
     ViewChild,
     ViewContainerRef,
 } from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
 import {MatDrawerToggleResult, MatSidenav, MatSidenavContainer} from '@angular/material/sidenav';
 import {MatTabGroup} from '@angular/material/tabs';
 import {
@@ -21,10 +19,6 @@ import {
     AddDataButton,
     SidenavContainerComponent,
     LayoutService,
-    UserService,
-    RandomColorService,
-    NotificationService,
-    Config,
     ProjectService,
     NavigationButton,
     NavigationComponent,
@@ -36,20 +30,18 @@ import {
     TimeConfigComponent,
     PlotListComponent,
     SidenavConfig,
-    SpatialReferenceService,
-    LayerCollectionService,
     TaskListComponent,
 } from '@geoengine/core';
-import {ActivatedRoute} from '@angular/router';
 import {AppConfig} from '../app-config.service';
 import {ReplaySubject} from 'rxjs';
-import {Layer} from '@geoengine/common';
+import {Layer, LayersService, UserService} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-main',
     templateUrl: './main.component.html',
     styleUrls: ['./main.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class MainComponent implements OnInit, AfterViewInit {
     @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
@@ -75,19 +67,14 @@ export class MainComponent implements OnInit, AfterViewInit {
     private windowHeight$ = new BehaviorSubject<number>(window.innerHeight);
 
     constructor(
-        @Inject(Config) readonly config: AppConfig,
+        readonly config: AppConfig,
         readonly layoutService: LayoutService,
         readonly projectService: ProjectService,
         readonly vcRef: ViewContainerRef, // reference used by color picker, MUST BE EXACTLY THIS NAME
         readonly userService: UserService,
-        private readonly layerService: LayerCollectionService,
+        private readonly layerService: LayersService,
         private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly dialog: MatDialog,
-        private readonly randomColorService: RandomColorService,
-        private readonly activatedRoute: ActivatedRoute,
-        private readonly notificationService: NotificationService,
         private readonly mapService: MapService,
-        private readonly spatialReferenceService: SpatialReferenceService,
     ) {
         vcRef.length; // eslint-disable-line @typescript-eslint/no-unused-expressions
 

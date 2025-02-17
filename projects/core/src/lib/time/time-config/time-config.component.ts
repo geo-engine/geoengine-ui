@@ -2,7 +2,7 @@ import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, On
 import {ProjectService} from '../../project/project.service';
 import {Observable, Subscription} from 'rxjs';
 import {FormControl, FormGroup, NonNullableFormBuilder, Validators} from '@angular/forms';
-import {Config} from '../../config.service';
+import {CoreConfig} from '../../config.service';
 import moment from 'moment';
 import {Time, TimeInterval, TimeStepDuration} from '@geoengine/common';
 
@@ -15,6 +15,7 @@ export interface TimeConfigForm {
     templateUrl: './time-config.component.html',
     styleUrls: ['./time-config.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     form: FormGroup<TimeConfigForm>;
@@ -38,7 +39,7 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
         private projectService: ProjectService,
         private changeDetectorRef: ChangeDetectorRef,
         private formBuilder: NonNullableFormBuilder,
-        public config: Config,
+        public config: CoreConfig,
     ) {
         // initialize with the current time to have a defined value
         this.time = new Time(moment.utc(), moment.utc());

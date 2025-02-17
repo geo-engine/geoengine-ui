@@ -3,12 +3,12 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 
 import {map, mergeMap} from 'rxjs/operators';
-import {NotificationService} from '../../../notification.service';
 import {TimeStepGranularityDict, UUID} from '../../../backend/backend.model';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import moment, {Moment} from 'moment';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 import {
+    NotificationService,
     RasterDataType,
     RasterDataTypes,
     RasterLayer,
@@ -39,6 +39,7 @@ interface TemporalRasterAggregationForm {
     templateUrl: './temporal-raster-aggregation.component.html',
     styleUrls: ['./temporal-raster-aggregation.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class TemporalRasterAggregationComponent implements AfterViewInit {
     readonly inputTypes = [ResultTypes.RASTER];

@@ -6,12 +6,11 @@ import {MatDialog} from '@angular/material/dialog';
 import {LayoutService, SidenavConfig} from '../../layout.service';
 import {MapService} from '../../map/map.service';
 import {ProjectService} from '../../project/project.service';
-import {Config} from '../../config.service';
+import {CoreConfig} from '../../config.service';
 import {AddDataComponent} from '../../datasets/add-data/add-data.component';
 import {TabsService} from '../../tabs/tabs.service';
 import {SimpleChanges} from '@angular/core';
-import {NotificationService} from '../../notification.service';
-import {Layer} from '@geoengine/common';
+import {Layer, NotificationService} from '@geoengine/common';
 
 /**
  * The layer list component displays active layers, legends and other controlls.
@@ -21,6 +20,7 @@ import {Layer} from '@geoengine/common';
     templateUrl: './layer-list.component.html',
     styleUrls: ['./layer-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LayerListComponent implements OnDestroy, OnChanges {
     /**
@@ -62,7 +62,7 @@ export class LayerListComponent implements OnDestroy, OnChanges {
         public layoutService: LayoutService,
         public projectService: ProjectService,
         public mapService: MapService,
-        public config: Config,
+        public config: CoreConfig,
         public changeDetectorRef: ChangeDetectorRef,
         protected readonly tabsService: TabsService,
         protected readonly clipboard: Clipboard,

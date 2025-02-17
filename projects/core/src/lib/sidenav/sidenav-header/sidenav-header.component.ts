@@ -6,6 +6,7 @@ import {SidenavRef} from '../sidenav-ref.service';
     templateUrl: './sidenav-header.component.html',
     styleUrls: ['./sidenav-header.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class SidenavHeaderComponent implements AfterViewInit, AfterViewChecked {
     constructor(

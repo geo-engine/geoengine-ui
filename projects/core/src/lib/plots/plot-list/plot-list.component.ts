@@ -17,6 +17,7 @@ import {Plot} from '@geoengine/common';
     templateUrl: './plot-list.component.html',
     styleUrls: ['./plot-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class PlotListComponent implements AfterViewInit, OnDestroy {
     /**

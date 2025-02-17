@@ -69,8 +69,8 @@ export class VectorLayerMetadata extends LayerMetadata {
         super(spatialReference, time);
 
         this.dataType = dataType;
-        this.dataTypes = Immutable.Map(dataTypes);
-        this.measurements = Immutable.Map(measurements);
+        this.dataTypes = Immutable.Map(Object.entries(dataTypes));
+        this.measurements = Immutable.Map(Object.entries(measurements));
         this.bbox = bbox;
     }
 

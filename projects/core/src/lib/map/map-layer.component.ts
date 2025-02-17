@@ -17,7 +17,7 @@ import {Layer as OlLayer, Tile as OlLayerTile, Vector as OlLayerVector} from 'ol
 import {ImageTile as OlImageTile} from 'ol';
 import {Source as OlSource, TileWMS as OlTileWmsSource, Vector as OlVectorSource} from 'ol/source';
 import {get as olGetProj} from 'ol/proj';
-import {Config} from '../config.service';
+import {CoreConfig} from '../config.service';
 import {ProjectService} from '../project/project.service';
 import {LoadingState} from '../project/loading-state.model';
 import {BackendService} from '../backend/backend.service';
@@ -26,8 +26,8 @@ import OlFeature from 'ol/Feature';
 import TileState from 'ol/TileState';
 import {Extent} from './map.service';
 import {Projection} from 'ol/proj';
-import {NotificationService} from '../notification.service';
 import {
+    NotificationService,
     RasterColorizer,
     RasterData,
     RasterSymbology,
@@ -108,6 +108,7 @@ export abstract class MapLayerComponent<OL extends OlLayer<OS, any>, OS extends 
     template: '',
     providers: [{provide: MapLayerComponent, useExisting: OlVectorLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OlVectorLayerComponent
     extends MapLayerComponent<OlLayerVector<OlVectorSource<OlFeature>>, OlVectorSource<OlFeature>>
@@ -180,6 +181,7 @@ export class OlVectorLayerComponent
     template: '',
     providers: [{provide: MapLayerComponent, useExisting: OlRasterLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OlRasterLayerComponent
     extends MapLayerComponent<OlLayerTile<OlTileWmsSource>, OlTileWmsSource>
@@ -199,7 +201,7 @@ export class OlRasterLayerComponent
     constructor(
         protected override projectService: ProjectService,
         protected backend: BackendService,
-        protected config: Config,
+        protected config: CoreConfig,
         protected notificationService: NotificationService,
     ) {
         super(

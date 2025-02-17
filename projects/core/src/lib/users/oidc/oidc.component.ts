@@ -1,14 +1,15 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {BehaviorSubject, finalize, first, SubscriptionLike} from 'rxjs';
 
-import {UserService} from '../user.service';
 import {User} from '../user.model';
 import {Router} from '@angular/router';
+import {UserService} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-oidc',
     templateUrl: 'oidc.component.html',
     styleUrls: ['./oidc.component.scss'],
+    standalone: false,
 })
 export class OidcComponent implements OnInit, OnDestroy {
     user?: User;
@@ -43,7 +44,7 @@ export class OidcComponent implements OnInit, OnDestroy {
             this.pendingLoginRequest = true;
             this.loginDisabled.next(true);
             this.loginSubscription = this.userService
-                .oidcInit()
+                .oidcInit(window.location.href)
                 .pipe(
                     first(),
                     finalize(() => {

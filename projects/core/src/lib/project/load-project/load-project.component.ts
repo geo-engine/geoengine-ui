@@ -3,10 +3,9 @@ import {map, mergeMap} from 'rxjs/operators';
 import {Component, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
 import {ProjectService} from '../project.service';
 import {UntypedFormBuilder, UntypedFormGroup, Validators, AbstractControl, ValidatorFn, ValidationErrors} from '@angular/forms';
-import {NotificationService} from '../../notification.service';
 import {BackendService} from '../../backend/backend.service';
-import {UserService} from '../../users/user.service';
 import {UUID} from '../../backend/backend.model';
+import {NotificationService, UserService} from '@geoengine/common';
 
 const notCurrentProject =
     (currentProjectId: () => string): ValidatorFn =>
@@ -33,6 +32,7 @@ interface ProjectListing {
     templateUrl: './load-project.component.html',
     styleUrls: ['./load-project.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LoadProjectComponent implements AfterViewInit {
     form: UntypedFormGroup;

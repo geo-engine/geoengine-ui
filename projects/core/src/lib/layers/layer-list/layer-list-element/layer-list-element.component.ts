@@ -2,22 +2,29 @@ import {Component, ChangeDetectionStrategy, ChangeDetectorRef, Input} from '@ang
 import {Clipboard} from '@angular/cdk/clipboard';
 import {MatDialog} from '@angular/material/dialog';
 import {TabsService} from '../../../tabs/tabs.service';
-import {Config} from '../../../config.service';
+import {CoreConfig} from '../../../config.service';
 import {MapService} from '../../../map/map.service';
 import {ProjectService} from '../../../project/project.service';
 import {LayoutService} from '../../../layout.service';
 import {last, map, mergeMap, Observable, startWith, tap} from 'rxjs';
 import {ProvenanceTableComponent} from '../../../provenance/table/provenance-table.component';
 import {DataTableComponent} from '../../../datatable/table/table.component';
-import {NotificationService} from '../../../notification.service';
 import {RenameLayerComponent} from '../../rename-layer/rename-layer.component';
 import {LineageGraphComponent} from '../../../provenance/lineage-graph/lineage-graph.component';
 import {LoadingState} from '../../../project/loading-state.model';
 import {BackendService} from '../../../backend/backend.service';
-import {UserService} from '../../../users/user.service';
 import {HttpEventType} from '@angular/common/http';
 import {filenameFromHttpHeaders} from '../../../util/http';
-import {IconStyle, Layer, RasterLayerMetadata, Symbology, SymbologyType} from '@geoengine/common';
+import {
+    IconStyle,
+    Layer,
+    NotificationService,
+    RasterLayerMetadata,
+    RasterSymbology,
+    Symbology,
+    SymbologyType,
+    UserService,
+} from '@geoengine/common';
 import {RasterBandDescriptor} from '@geoengine/openapi-client';
 import {SymbologyEditorComponent} from '../../symbology/symbology-editor/symbology-editor.component';
 import {DownloadLayerComponent} from '../../../download-layer/download-layer.component';
@@ -29,6 +36,7 @@ import {DownloadLayerComponent} from '../../../download-layer/download-layer.com
     templateUrl: './layer-list-element.component.html',
     styleUrls: ['./layer-list-element.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LayerListElementComponent {
     @Input()
@@ -51,7 +59,7 @@ export class LayerListElementComponent {
         public readonly layoutService: LayoutService,
         public readonly projectService: ProjectService,
         public readonly mapService: MapService,
-        public readonly config: Config,
+        public readonly config: CoreConfig,
         public readonly changeDetectorRef: ChangeDetectorRef,
         protected readonly backend: BackendService,
         protected readonly userService: UserService,
@@ -183,5 +191,9 @@ export class LayerListElementComponent {
 
     showDownload(layer: Layer): void {
         this.layoutService.setSidenavContentComponent({component: DownloadLayerComponent, config: {layer}});
+    }
+
+    rasterSymbology(layer: Layer): RasterSymbology {
+        return layer.symbology as RasterSymbology;
     }
 }

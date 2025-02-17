@@ -1,59 +1,78 @@
-<table *ngIf="selectedBand$ | async as band">
-    <thead>
-        <!-- measurement -->
-        <tr>
-            <td colspan="3" class="measurement">
-                @if (showSingleBandNames) {
-                    <span>
-                        Bandname: <i>{{ band.name }}</i></span
-                    >
-                }
+@if (selectedBands(); as bands) {
+    <table>
+        <thead>
+            <!-- measurement -->
+            <tr>
+                <td colspan="3" class="measurement">
+                    @if (showBandNames()) {
+                        <span>
+                            Bandname<span *ngIf="bands.length > 1">s</span>:
+                            <i>
+                                @for (band of bands; track band.name) {
+                                    {{ band.name }}<span *ngIf="!$last">,</span>
+                                }
+                            </i>
+                        </span>
+                    }
 
-                <ng-container *ngIf="band.measurement | continuousMeasurement as measurement">
-                    Measurement:
-                    <i
-                        >{{ measurement.measurement }} <span *ngIf="measurement.unit">(in {{ measurement.unit }})</span></i
-                    >
-                </ng-container>
-                <ng-container *ngIf="band.measurement | classificationMeasurement as measurement">
-                    Measurement <i>{{ measurement.measurement }}</i>
-                </ng-container>
-            </td>
-        </tr>
-    </thead>
-    <tbody>
-        <ng-template [ngIf]="layer.symbology.rasterColorizer.isContinuous()">
-            <!-- data -->
-            <tr *ngFor="let breakpoint of displayedBreakpoints; let isFirst = first">
-                <td
-                    class="gradient"
-                    *ngIf="isFirst"
-                    [rowSpan]="layer.symbology.rasterColorizer.getBreakpoints().length"
-                    [style.background]="layer.symbology.rasterColorizer | geoengineRasterColorizerCssGradient: gradientAngle"
-                ></td>
-                <td>{{ breakpoint }}</td>
+                    @if (bandsHaveUnits()) {
+                        Measurement<span *ngIf="bands.length > 1">s</span>:
+                        @for (band of bands; track band.name) {
+                            @if (band.measurement | continuousMeasurement; as measurement) {
+                                <i>
+                                    {{ measurement.measurement }}<span *ngIf="measurement.unit"> (in {{ measurement.unit }})</span></i
+                                ><span *ngIf="!$last">, </span>
+                            }
+                            @if (band.measurement | classificationMeasurement; as measurement) {
+                                <i>{{ measurement.measurement }}</i
+                                ><span *ngIf="!$last">, </span>
+                            }
+                            @if (band.measurement | unitlessMeasurement; as measurement) {
+                                <i>unitless</i><span *ngIf="!$last">, </span>
+                            }
+                        }
+                    }
+                </td>
             </tr>
-        </ng-template>
-
-        <ng-container *ngIf="layer.symbology.rasterColorizer.isDiscrete()">
-            <ng-container *ngIf="!(band.measurement | classificationMeasurement)">
-                <tr *ngFor="let breakpoint of colorizerBreakpoints">
-                    <td class="classes">
-                        <div class="icon" [style.background-color]="breakpoint | breakpointToCssStringPipe"></div>
-                    </td>
-                    <td>{{ breakpoint.value }}</td>
-                </tr>
-            </ng-container>
-
-            <ng-container *ngIf="band.measurement | classificationMeasurement as measurement">
-                <tr *ngFor="let breakpoint of colorizerBreakpoints; let isFirst = first">
-                    <td class="classes">
-                        <div class="icon" [style.background-color]="breakpoint | breakpointToCssStringPipe"></div>
-                    </td>
-                    <td class="classes">{{ breakpoint.value }}</td>
-                    <td>{{ measurement.classes[breakpoint.value] }}</td>
-                </tr>
-            </ng-container>
-        </ng-container>
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @if (layer().symbology.rasterColorizer.isContinuous()) {
+                @for (breakpoint of displayedBreakpoints(); track breakpoint) {
+                    <tr>
+                        <td
+                            class="gradient"
+                            *ngIf="$first"
+                            [rowSpan]="layer().symbology.rasterColorizer.getBreakpoints().length"
+                            [style.background]="layer().symbology.rasterColorizer | geoengineRasterColorizerCssGradient: gradientAngle()"
+                        ></td>
+                        <td>{{ breakpoint }}</td>
+                    </tr>
+                }
+            } @else if (layer().symbology.rasterColorizer.isDiscrete() && bands[0]) {
+                @if (bands[0].measurement | classificationMeasurement; as measurement) {
+                    @for (breakpoint of colorizerBreakpoints(); track breakpoint) {
+                        <tr>
+                            <td class="classes">
+                                <div class="icon" [style.background-color]="breakpoint | breakpointToCssStringPipe"></div>
+                            </td>
+                            <td class="classes">{{ breakpoint.value }}</td>
+                            <td>{{ measurement.classes[breakpoint.value] }}</td>
+                        </tr>
+                    }
+                } @else {
+                    @for (breakpoint of colorizerBreakpoints(); track breakpoint) {
+                        <tr>
+                            <td class="classes">
+                                <div class="icon" [style.background-color]="breakpoint | breakpointToCssStringPipe"></div>
+                            </td>
+                            <td>{{ breakpoint.value }}</td>
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+} @else {
+    <!-- loading spinner -->
+    <mat-spinner></mat-spinner>
+}

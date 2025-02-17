@@ -59,6 +59,7 @@ export interface LayerDetails {
     styleUrls: ['./multi-layer-selection.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => MultiLayerSelectionComponent), multi: true}],
+    standalone: false,
 })
 export class MultiLayerSelectionComponent implements ControlValueAccessor, OnChanges, OnDestroy, OnInit {
     /**

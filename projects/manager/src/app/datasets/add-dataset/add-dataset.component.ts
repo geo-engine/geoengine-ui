@@ -1,6 +1,6 @@
 import {Component, ViewChild} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {ConfirmationComponent, DatasetsService, errorToText} from '@geoengine/common';
+import {ConfirmationComponent, DatasetsService, errorToText, OgrDatasetComponent} from '@geoengine/common';
 import {DataPath, MetaDataDefinition, Volume as VolumeDict} from '@geoengine/openapi-client';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
@@ -31,12 +31,14 @@ export interface AddDatasetForm {
     selector: 'geoengine-manager-add-dataset',
     templateUrl: './add-dataset.component.html',
     styleUrl: './add-dataset.component.scss',
+    standalone: false,
 })
 export class AddDatasetComponent {
     DataPaths = DataPaths;
     DataTypes = DataTypes;
 
     @ViewChild(GdalMetadataListComponent) gdalMetaDataList?: GdalMetadataListComponent;
+    @ViewChild(OgrDatasetComponent) ogrDatasetComponent?: OgrDatasetComponent;
 
     volumes$ = new BehaviorSubject<VolumeDict[]>([]);
 
@@ -137,7 +139,13 @@ export class AddDatasetComponent {
     }
 
     isCreateDisabled(): boolean {
-        return this.form.pristine || this.form.invalid || (this.gdalMetaDataList?.form?.invalid ?? false);
+        const general = this.form.pristine || this.form.invalid;
+
+        const raster = this.form.controls.dataType.value === DataTypes.Raster && (this.gdalMetaDataList?.form?.invalid ?? false);
+
+        const vector = this.form.controls.dataType.value === DataTypes.Vector && (this.ogrDatasetComponent?.formMetaData?.invalid ?? false);
+
+        return general || raster || vector;
     }
 
     async createDataset(): Promise<void> {
@@ -156,15 +164,16 @@ export class AddDatasetComponent {
             metaData = this.gdalMetaDataList.getMetaData();
 
             sourceOperator = 'GdalSource';
-        } else {
-            try {
-                metaData = JSON.parse(this.form.controls.rawLoadingInfo.value) as MetaDataDefinition;
-            } catch (e) {
-                this.snackBar.open('Invalid loading information.', 'Close', {panelClass: ['error-snackbar']});
+        } else if (this.form.controls.dataType.value === DataTypes.Vector) {
+            if (!this.ogrDatasetComponent) {
                 return;
             }
 
+            metaData = this.ogrDatasetComponent.getMetaData();
+
             sourceOperator = 'OgrSource';
+        } else {
+            return;
         }
 
         if (!metaData) {

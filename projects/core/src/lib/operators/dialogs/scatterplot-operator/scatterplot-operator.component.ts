@@ -4,9 +4,9 @@ import {ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 
 import {map, mergeMap} from 'rxjs/operators';
-import {NotificationService} from '../../../notification.service';
 import {
     Layer,
+    NotificationService,
     Plot,
     ResultTypes,
     ScatterPlotDict,
@@ -26,6 +26,7 @@ import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
     templateUrl: './scatterplot-operator.component.html',
     styleUrls: ['./scatterplot-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ScatterplotOperatorComponent implements AfterViewInit, OnDestroy {
     inputTypes = ResultTypes.VECTOR_TYPES;

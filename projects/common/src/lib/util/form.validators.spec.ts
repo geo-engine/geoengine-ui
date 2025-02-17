@@ -1,5 +1,5 @@
 import {UntypedFormControl} from '@angular/forms';
-import {isValidUuid} from './form.validators';
+import {isValidUuid, validJson} from './form.validators';
 
 describe('Form Validators', () => {
     it('validates uuids', () => {
@@ -10,5 +10,15 @@ describe('Form Validators', () => {
                 actualValue: 'foo',
             },
         });
+    });
+
+    it('validates JSON strings', () => {
+        const validJsonControl = new UntypedFormControl('{"key": "value"}');
+        const invalidJsonControl = new UntypedFormControl('{"key": "value"');
+        const emptyJsonControl = new UntypedFormControl('');
+
+        expect(validJson(validJsonControl)).toBeNull();
+        expect(validJson(invalidJsonControl)).toEqual({invalidJson: true});
+        expect(validJson(emptyJsonControl)).toBeNull();
     });
 });

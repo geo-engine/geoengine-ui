@@ -4,7 +4,6 @@ import {map} from 'rxjs/operators';
 import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges, Type} from '@angular/core';
 import {LayoutService} from '../../../layout.service';
 import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
-import {createIconDataUrl} from '../../../util/icons';
 import {HistogramOperatorComponent} from '../histogram-operator/histogram-operator.component';
 import {BoxPlotOperatorComponent} from '../boxplot-operator/boxplot-operator.component';
 // eslint-disable-next-line max-len
@@ -26,11 +25,11 @@ import {TimeShiftComponent} from '../time-shift/time-shift.component';
 import {PieChartComponent} from '../pie-chart/pie-chart.component';
 import {RasterizationComponent} from '../rasterization/rasterization.component';
 import {LineSimplificationComponent} from '../line-simplification/line-simplification.component';
-import {RgbaCompositeComponent as RgbaCompositeComponent} from '../rgb-composite/rgb-composite.component';
 import {RasterStackerComponent} from '../raster-stacker/raster-stacker.component';
 import {VectorExpressionComponent} from '../vector-expression/vector-expression.component';
 import {BandwiseExpressionOperatorComponent} from '../bandwise-expression-operator/bandwise-expression-operator.component';
 import {BandNeighborhoodAggregateComponent} from '../band-neighborhood-aggregate/band-neighborhood-aggregate.component';
+import {createIconDataUrl} from '@geoengine/common';
 
 /**
  * This type encapsulates…
@@ -65,6 +64,7 @@ export type OperatorListButtonGroups = Array<{
     templateUrl: './operator-list.component.html',
     styleUrls: ['./operator-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OperatorListComponent implements OnInit, OnChanges {
     static readonly DEFAULT_MIXED_OPERATOR_DIALOGS: Array<OperatorListType> = [
@@ -258,14 +258,6 @@ export class OperatorListComponent implements OnInit, OnChanges {
         //     },
         //     description: 'Apply a mask to a raster',
         // },
-        {
-            component: RgbaCompositeComponent,
-            type: {
-                NAME: 'RGBA Composite',
-                ICON_URL: createIconDataUrl('RGBA Composite'),
-            },
-            description: 'Create an RGB composite from a set of rasters',
-        },
     ];
 
     static readonly DEFAULT_VECTOR_OPERATOR_DIALOGS: Array<OperatorListType> = [

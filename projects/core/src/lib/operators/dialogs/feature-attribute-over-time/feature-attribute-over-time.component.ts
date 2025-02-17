@@ -4,12 +4,12 @@ import {UntypedFormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {of, ReplaySubject, Subscription} from 'rxjs';
 import {map, mergeMap, tap} from 'rxjs/operators';
-import {NotificationService} from '../../../notification.service';
 
 import {
     FeatureAttributeOverTimeDict,
     geoengineValidators,
     Layer,
+    NotificationService,
     Plot,
     ResultTypes,
     VectorColumnDataTypes,
@@ -28,6 +28,7 @@ interface AttributeCandidates {
     templateUrl: './feature-attribute-over-time.component.html',
     styleUrls: ['./feature-attribute-over-time.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class FeatureAttributeOvertimeComponent implements AfterViewInit, OnDestroy {
     inputTypes = ResultTypes.VECTOR_TYPES;

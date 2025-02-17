@@ -3,11 +3,11 @@ import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 
 import {map, mergeMap} from 'rxjs/operators';
-import {NotificationService} from '../../../notification.service';
 import {Observable} from 'rxjs';
 import {
     MeanRasterPixelValuesOverTimeDict,
     MeanRasterPixelValuesOverTimeParams,
+    NotificationService,
     Plot,
     RasterLayer,
     ResultTypes,
@@ -30,6 +30,7 @@ interface TimePositionOption {
     templateUrl: './mean-raster-pixel-values-over-time-dialog.component.html',
     styleUrls: ['./mean-raster-pixel-values-over-time-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class MeanRasterPixelValuesOverTimeDialogComponent implements AfterViewInit {
     readonly inputTypes = [ResultTypes.RASTER];

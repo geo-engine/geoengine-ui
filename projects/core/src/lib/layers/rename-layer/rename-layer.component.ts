@@ -9,6 +9,7 @@ import {Layer} from '@geoengine/common';
     templateUrl: './rename-layer.component.html',
     styleUrls: ['./rename-layer.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RenameLayerComponent implements OnInit {
     form: UntypedFormGroup;

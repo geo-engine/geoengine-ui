@@ -17,6 +17,7 @@ interface AddClassForm {
     selector: 'geoengine-measurement',
     templateUrl: './measurement.component.html',
     styleUrl: './measurement.component.css',
+    standalone: false,
 })
 export class MeasurementComponent {
     @Input() measurement!: Measurement;

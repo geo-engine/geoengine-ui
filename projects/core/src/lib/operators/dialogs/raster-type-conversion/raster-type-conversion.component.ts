@@ -3,10 +3,17 @@ import {FormControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 
 import {map, mergeMap} from 'rxjs/operators';
-import {NotificationService} from '../../../notification.service';
 import {Observable} from 'rxjs';
 import {Layer} from 'ol/layer';
-import {RasterDataType, RasterDataTypes, RasterLayer, RasterTypeConversionDict, ResultTypes, geoengineValidators} from '@geoengine/common';
+import {
+    NotificationService,
+    RasterDataType,
+    RasterDataTypes,
+    RasterLayer,
+    RasterTypeConversionDict,
+    ResultTypes,
+    geoengineValidators,
+} from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
 @Component({
@@ -14,6 +21,7 @@ import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
     templateUrl: './raster-type-conversion.component.html',
     styleUrls: ['./raster-type-conversion.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RasterTypeConversionComponent implements AfterViewInit {
     readonly inputTypes = [ResultTypes.RASTER];

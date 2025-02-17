@@ -1,14 +1,15 @@
 import {ChangeDetectionStrategy, Component, ViewContainerRef} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
-import {UserService} from '@geoengine/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {Router} from '@angular/router';
+import {UserService} from '@geoengine/common';
 
 @Component({
     selector: 'geoengine-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AppComponent {
     constructor(

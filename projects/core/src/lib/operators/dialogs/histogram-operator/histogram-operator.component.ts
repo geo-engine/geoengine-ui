@@ -4,11 +4,11 @@ import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 
 import {map, mergeMap, tap} from 'rxjs/operators';
-import {NotificationService} from '../../../notification.service';
 import {
     HistogramDict,
     HistogramParams,
     Layer,
+    NotificationService,
     Plot,
     RasterLayer,
     RasterLayerMetadata,
@@ -38,6 +38,7 @@ const isVectorLayer = (layer: Layer): boolean => {
     templateUrl: './histogram-operator.component.html',
     styleUrls: ['./histogram-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class HistogramOperatorComponent implements AfterViewInit, OnDestroy {
     minNumberOfBuckets = 1;

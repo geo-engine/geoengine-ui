@@ -7,8 +7,8 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {OperatorParams, OperatorSourcesDict} from '../../backend/backend.model';
 import {LayoutService} from '../../layout.service';
 import {ProjectService} from '../../project/project.service';
-import {createIconDataUrl} from '../../util/icons';
-import {Layer} from '@geoengine/common';
+
+import {createIconDataUrl, Layer} from '@geoengine/common';
 import {TypedOperatorOperator} from '@geoengine/openapi-client';
 
 const GRAPH_STYLE = {
@@ -32,6 +32,7 @@ const GRAPH_STYLE = {
     templateUrl: './lineage-graph.component.html',
     styleUrls: ['./lineage-graph.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LineageGraphComponent implements AfterViewInit {
     @ViewChild('svg', {static: true}) svg!: ElementRef;

@@ -32,6 +32,7 @@ import {MatSidenav} from '@angular/material/sidenav';
     templateUrl: './sidenav-container.component.html',
     styleUrls: ['./sidenav-container.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('target', {read: ViewContainerRef, static: true})
@@ -137,7 +138,7 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
             if (sidenavConfig.config) {
                 for (const key in sidenavConfig.config) {
                     if (Object.hasOwn(sidenavConfig.config, key)) {
-                        this.componentRef.instance[key] = sidenavConfig.config[key];
+                        this.componentRef.setInput(key, sidenavConfig.config[key]);
                     }
                 }
             }

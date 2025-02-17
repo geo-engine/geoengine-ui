@@ -4,6 +4,7 @@ import {Component, Input, Output, EventEmitter} from '@angular/core';
     selector: 'geoengine-mediaview-playlist',
     templateUrl: './mediaview.playlist.component.html',
     styleUrls: ['./mediaview.playlist.component.scss'],
+    standalone: false,
 })
 
 /**

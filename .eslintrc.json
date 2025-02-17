@@ -33,6 +33,7 @@
                         "style": "camelCase"
                     }
                 ],
+                "@angular-eslint/prefer-standalone": "warn", // TODO: make all components standalone
                 "@typescript-eslint/consistent-type-definitions": "error",
                 "@typescript-eslint/dot-notation": "off",
                 "@typescript-eslint/explicit-member-accessibility": [
@@ -46,13 +47,12 @@
                     {
                         "default": {
                             "memberTypes": [
-                                "public-field",
-                                "protected-field",
-                                "private-field",
+                                "signature",
+                                "field",
+                                "static-initialization",
                                 "constructor",
-                                "public-method",
-                                "protected-method",
-                                "private-method"
+                                "accessor",
+                                ["get", "set", "method"]
                             ]
                         }
                     }
@@ -126,7 +126,8 @@
                 "@typescript-eslint/no-unused-vars": [
                     "error",
                     {
-                        "argsIgnorePattern": "^_"
+                        "argsIgnorePattern": "^_",
+                        "caughtErrorsIgnorePattern": "^_"
                     }
                 ],
                 "no-shadow": "off",

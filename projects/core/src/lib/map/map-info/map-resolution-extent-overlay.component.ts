@@ -13,6 +13,7 @@ import {SpatialReferenceService} from '../../spatial-references/spatial-referenc
     templateUrl: 'map-resolution-extent-overlay.component.html',
     styleUrls: ['map-resolution-extent-overlay.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class MapResolutionExtentOverlayComponent {
     @Input()
@@ -77,7 +78,11 @@ export class MapResolutionExtentOverlayComponent {
     }
 
     private getFraction(number: string): string {
-        return number.split('.')[1];
+        const split = number.split('.');
+        if (split.length < 2) {
+            return '';
+        }
+        return split[1];
     }
 
     private countTrailingFractionZeros(number: string): number {

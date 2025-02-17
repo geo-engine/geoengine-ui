@@ -23,6 +23,7 @@ import {AddDatasetComponent} from '../add-dataset/add-dataset.component';
     selector: 'geoengine-manager-dataset-list',
     templateUrl: './dataset-list.component.html',
     styleUrl: './dataset-list.component.scss',
+    standalone: false,
 })
 export class DatasetListComponent implements AfterContentInit {
     @ViewChild(CdkVirtualScrollViewport)

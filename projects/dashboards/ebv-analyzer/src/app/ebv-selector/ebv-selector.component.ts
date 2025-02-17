@@ -1,23 +1,16 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {
-    Config,
     ProjectService,
-    UserService,
     BackendService,
     LayoutService,
     ProviderLayerIdDict,
     ProviderLayerCollectionIdDict,
-    LayerCollectionService,
-    NotificationService,
     PlotDataDict,
     RasterResultDescriptorDict,
     MapService,
     SymbologyEditorComponent,
     WGS_84,
-    LayerCollectionLayerDict,
-    PathChange,
-    PathChangeSource,
 } from '@geoengine/core';
 import {BehaviorSubject, combineLatest, firstValueFrom, from, Observable, of, Subscription} from 'rxjs';
 import {AppConfig} from '../app-config.service';
@@ -28,8 +21,12 @@ import {ActivatedRoute} from '@angular/router';
 import {countryDatasetName} from '../country-selector/country-data.model';
 import {
     ExpressionDict,
+    LayersService,
     MeanRasterPixelValuesOverTimeDict,
+    NotificationService,
     OperatorDict,
+    PathChange,
+    PathChangeSource,
     RasterDataType,
     RasterDataTypes,
     RasterLayer,
@@ -37,8 +34,10 @@ import {
     RasterSymbology,
     SourceOperatorDict,
     Time,
+    UserService,
     extentToBboxDict,
 } from '@geoengine/common';
+import {LayerListing} from '@geoengine/openapi-client';
 
 interface Path {
     collectionId?: string;
@@ -50,6 +49,7 @@ interface Path {
     templateUrl: './ebv-selector.component.html',
     styleUrls: ['./ebv-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class EbvSelectorComponent implements OnInit, OnDestroy {
     readonly SUBGROUP_SEARCH_THRESHOLD = 5;
@@ -84,12 +84,12 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
     // keep track of selection to preselect same values when changing path inside same dataset
     protected previousPath: Path[] = [];
-    protected previousLayer?: LayerCollectionLayerDict;
+    protected previousLayer?: LayerListing;
     // TODO: previous selection as {id, name} because we need both
 
     constructor(
         private readonly userService: UserService,
-        @Inject(Config) private readonly config: AppConfig,
+        @Inject(AppConfig) private readonly config: AppConfig,
         private readonly changeDetectorRef: ChangeDetectorRef,
         private readonly http: HttpClient,
         private readonly projectService: ProjectService,
@@ -99,7 +99,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         private readonly mapService: MapService,
         private readonly backend: BackendService,
         private readonly layoutService: LayoutService,
-        private readonly layerCollectionService: LayerCollectionService,
+        private readonly layersService: LayersService,
         private readonly notificationService: NotificationService,
     ) {
         this.isPlotButtonDisabled$ = this.countryProviderService.getSelectedCountryStream().pipe(map((country) => !country));
@@ -129,7 +129,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
         });
     }
 
-    layerSelected(layer?: LayerCollectionLayerDict): void {
+    layerSelected(layer?: LayerListing): void {
         if (this.layerId) {
             this.lastSelectedLayerId = this.layerId;
         }
@@ -259,8 +259,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
             this.dataSubscription.unsubscribe();
         }
 
-        this.dataSubscription = this.layerCollectionService
-            .getLayer(layerId.providerId, layerId.layerId)
+        this.dataSubscription = from(this.layersService.getLayer(layerId.providerId, layerId.layerId))
             .pipe(
                 mergeMap((layer) => combineLatest([of(layer), this.projectService.registerWorkflow(layer.workflow)])),
                 mergeMap(([layer, workflowId]) => {

@@ -1,6 +1,9 @@
 import {Pipe, PipeTransform} from '@angular/core';
 
-@Pipe({name: 'geoengineHighlightPipe'})
+@Pipe({
+    name: 'geoengineHighlightPipe',
+    standalone: false,
+})
 export class HighlightPipe implements PipeTransform {
     // TODO: replace <span> with a <higlight> component?
     transform(text: string, term: string | null): string {
@@ -8,7 +11,7 @@ export class HighlightPipe implements PipeTransform {
         if (term) {
             try {
                 rexp = new RegExp('(' + term + ')', 'gi');
-            } catch (e) {
+            } catch (_e) {
                 // TODO: what to do?
             }
             if (rexp) {

@@ -5,7 +5,10 @@ import {Pipe, PipeTransform} from '@angular/core';
  * This pipe is a workaround for to strict css sanitazion:
  * see: https://github.com/angular/angular/issues/8491
  */
-@Pipe({name: 'geoengineSafeStyle'})
+@Pipe({
+    name: 'geoengineSafeStyle',
+    standalone: false,
+})
 export class SafeStylePipe implements PipeTransform {
     constructor(private sanitizer: DomSanitizer) {}
 

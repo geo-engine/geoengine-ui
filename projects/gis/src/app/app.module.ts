@@ -1,39 +1,46 @@
-import {APP_INITIALIZER, NgModule} from '@angular/core';
+import {NgModule, inject, provideAppInitializer} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserModule} from '@angular/platform-browser';
-import {HttpClientModule} from '@angular/common/http';
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 
 import {AppComponent} from './app.component';
 import {
-    Config,
     LayoutService,
     MapService,
-    NotificationService,
     ProjectService,
-    RandomColorService,
     SidenavRef,
     SpatialReferenceService,
     TabsService,
-    UserService,
     CoreModule,
+    CoreConfig,
 } from '@geoengine/core';
 import {AppConfig} from './app-config.service';
-import {LoginComponent} from './login/login.component';
 import {MainComponent} from './main/main.component';
 import {AppRoutingModule} from './app-routing.module';
-import {RegisterComponent} from './register/register.component';
+import {NotificationService, RandomColorService, UserService} from '@geoengine/common';
+import {CommonConfig} from '@geoengine/common';
 
 @NgModule({
-    declarations: [AppComponent, LoginComponent, MainComponent, RegisterComponent],
-    imports: [BrowserAnimationsModule, BrowserModule, HttpClientModule, AppRoutingModule, CoreModule],
+    declarations: [AppComponent, MainComponent],
+    bootstrap: [AppComponent],
+    imports: [BrowserAnimationsModule, BrowserModule, AppRoutingModule, CoreModule],
     providers: [
-        {provide: Config, useClass: AppConfig},
+        AppConfig,
         {
-            provide: APP_INITIALIZER,
-            useFactory: (config: AppConfig) => (): Promise<void> => config.load(),
-            deps: [Config],
-            multi: true,
+            provide: CoreConfig,
+            useExisting: AppConfig,
         },
+        {
+            provide: CommonConfig,
+            useExisting: AppConfig,
+        },
+        provideAppInitializer(() => {
+            const initializerFn = (
+                (config: AppConfig) => (): Promise<void> =>
+                    config.load()
+            )(inject(AppConfig));
+            return initializerFn();
+        }),
         LayoutService,
         MapService,
         NotificationService,
@@ -43,7 +50,7 @@ import {RegisterComponent} from './register/register.component';
         SpatialReferenceService,
         UserService,
         TabsService,
+        provideHttpClient(withInterceptorsFromDi()),
     ],
-    bootstrap: [AppComponent],
 })
 export class AppModule {}

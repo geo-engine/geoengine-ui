@@ -1,9 +1,10 @@
 import {Directive, TemplateRef, Component, ViewContainerRef, OnDestroy} from '@angular/core';
-import {UserService} from '../../users/user.service';
+import {UserService} from '@geoengine/common';
 import {Subscription} from 'rxjs';
 
 @Directive({
     selector: '[geoengineIfGuest]',
+    standalone: false,
 })
 export class IfGuestDirective implements OnDestroy {
     private subscription: Subscription;
