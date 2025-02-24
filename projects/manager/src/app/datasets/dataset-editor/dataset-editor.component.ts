@@ -367,7 +367,7 @@ export class DatasetEditorComponent implements OnChanges {
             }),
             name: new FormControl(dataset.name, {
                 nonNullable: true,
-                validators: [Validators.required, Validators.pattern(/^[a-zA-Z0-9_]+$/), Validators.minLength(1)],
+                validators: [Validators.required, Validators.pattern(/^([a-zA-Z0-9_-]+:)?[a-zA-Z0-9_-]+$/), Validators.minLength(1)],
             }),
             displayName: new FormControl(dataset.displayName, {
                 nonNullable: true,

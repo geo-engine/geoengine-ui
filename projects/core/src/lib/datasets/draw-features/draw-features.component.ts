@@ -17,7 +17,7 @@ enum State {
 }
 
 /**
- * The feature draw component. Together with the MapService it allows to add new fueatures by drawing them on the map.
+ * The feature draw component. Together with the MapService it allows to add new features by drawing them on the map.
  */
 @Component({
     selector: 'geoengine-draw-features',

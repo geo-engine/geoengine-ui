@@ -58,7 +58,8 @@
                         <textarea
                             matInput
                             placeholder="Dataset Description"
-                            [value]="datasetDescription"
+                            [(ngModel)]="datasetDescription"
+                            name="datasetDescription"
                             [disabled]="state === State.Finished"
                         ></textarea>
                     </mat-form-field>
