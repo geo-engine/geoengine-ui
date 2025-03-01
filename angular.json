@@ -109,7 +109,7 @@
                             "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css",
                             "./node_modules/vis-timeline/dist/vis-timeline-graph2d.min.css",
-                            "D:/Documents/Universität/Bachelorarbeit/Code/workflow-editor/src/workflow_editor/static/widget.css",
+                            "node_modules/workflow-editor/src/workflow_editor/static/widget.css",
                             "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
                         ],
                         "scripts": ["node_modules/vis-timeline/peer/esm/vis-timeline-graph2d.min.js"],
