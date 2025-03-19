@@ -1,52 +1,60 @@
 name: Node.js CI
 
 on:
-    pull_request:
-    merge_group:
+  pull_request:
+  merge_group:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
-    build:
+  build:
+    runs-on: ubuntu-24.04
+    container: quay.io/geoengine/devcontainer:latest
 
-        runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        app:
+          - gis
+          - manager
+          - dashboards/gfbio
+          - dashboards/data-atlas
+          - dashboards/nfdi-portal-demo
+          - dashboards/ebv-analyzer
+          - dashboards/ecometrics
+          - dashboards/esg-indicator-service
+    
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Dependencies
+        run: npm ci
+      - name: Build common
+        run: npm run build-prod:common
+        env:
+          CI: true
+      - name: Build core
+        run: npm run build-prod:core
+        env:
+          CI: true
+      - name: Build app ${{ matrix.app }}
+        run: npm run build-prod:${{ matrix.app }}
+        env:
+          CI: true
+      - run: npm test
+        env:
+          CI: true
+  
+  codestyle:
+    name: Code Format and Lints
 
-        strategy:
-            matrix:
-                node-version: [ 18.19.x, 20.11.x ]
-                app: [ gis, manager, dashboards/gfbio, dashboards/data-atlas, dashboards/nfdi-portal-demo, dashboards/ebv-analyzer, dashboards/ecometrics, dashboards/esg-indicator-service ]
+    runs-on: ubuntu-24.04
+    container: quay.io/geoengine/devcontainer:latest
 
-        steps:
-            -   uses: actions/checkout@v4
-            -   name: Use Node.js ${{ matrix.node-version }}
-                uses: actions/setup-node@v4
-                with:
-                    node-version: ${{ matrix.node-version }}
-                    cache: 'npm' # can be used only with a lockfile
-            -   run: npm ci
-            -   name: Build common
-                run: npm run build-prod:common
-                env:
-                    CI: true
-            -   name: Build core
-                run: npm run build-prod:core
-                env:
-                    CI: true
-            -   name: Build app ${{ matrix.app }}
-                run: npm run build-prod:${{ matrix.app }}
-                env:
-                    CI: true
-            -   run: npm test
-                env:
-                    CI: true
-
-    codestyle:
-        name: Code Format and Lints
-        runs-on: ubuntu-22.04
-        steps:
-            -   name: Checkout
-                uses: actions/checkout@v4
-            -   name: Install Dependencies
-                run: npm ci
-            -   name: Code Format Check with Prettier
-                run: npm run prettier -- --check .
-            -   name: Check with Linter
-                run: npm run lint
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Dependencies
+        run: npm ci
+      - name: Code Format Check with Prettier
+        run: npm run prettier -- --check .
+      - name: Check with Linter
+        run: npm run lint
