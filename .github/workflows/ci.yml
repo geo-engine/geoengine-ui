@@ -39,7 +39,7 @@ jobs:
         run: npm run build-prod:${{ matrix.app }}
         env:
           CI: true
-      - run: npm test
+      - run: npm run test:ci
         env:
           CI: true
   
