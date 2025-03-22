@@ -38,7 +38,7 @@ jobs:
           - {project: esg-indicator-service}
           - {project: manager, angular_base_href: "/manager/"}
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     env:
       TAG_NAME: nightly
