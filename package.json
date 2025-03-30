@@ -77,7 +77,7 @@
         "propagating-hammerjs": "^2.0.1",
         "rxjs": "^7.4.0",
         "uuid": "9.0.1",
-        "vega": "~5.31.0",
+        "vega": "~6.1.2",
         "vega-embed": "~6.27.0",
         "vega-lite": "~5.23.0",
         "vis-data": "7.1.9",
