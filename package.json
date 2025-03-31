@@ -42,7 +42,8 @@
         "publish:core:major": "version=major scripts/publish-to-github.sh",
         "prettier": "prettier",
         "check": "prettier --check . && ng lint",
-        "test": "CHROME_BIN=$(node chrome-dir.ts) ng test --watch=false --browsers=ChromeHeadless",
+        "test": "ng test --karma-config=karma.conf.js --watch=false --browsers=ChromeHeadless",
+        "test:ci": "ng test --karma-config=karma.conf.js --watch=false --no-progress --browsers=ChromeHeadlessNoSandbox",
         "lint": "ng lint",
         "e2e": "ng e2e"
     },
