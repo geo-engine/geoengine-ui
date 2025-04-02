@@ -45,7 +45,7 @@ export class AddDatasetComponent {
     form: FormGroup<AddDatasetForm> = new FormGroup<AddDatasetForm>({
         name: new FormControl('', {
             nonNullable: true,
-            validators: [Validators.required, Validators.pattern(/^[a-zA-Z0-9_]+$/), Validators.minLength(3)],
+            validators: [Validators.required, Validators.pattern(/^([a-zA-Z0-9_-]+:)?[a-zA-Z0-9_-]+$/), Validators.minLength(3)],
         }),
         displayName: new FormControl('', {
             nonNullable: true,
