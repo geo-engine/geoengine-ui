@@ -3,7 +3,6 @@ import {FormControl, FormBuilder, FormGroup, Validators, ValidatorFn} from '@ang
 import {ProjectService} from '../../../project/project.service';
 
 import {mergeMap, tap} from 'rxjs/operators';
-import {NotificationService} from '../../../notification.service';
 import {UUID} from '../../../backend/backend.model';
 import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
 import {Layer} from 'ol/layer';
@@ -16,6 +15,7 @@ import {
     RasterSymbology,
     ResultTypes,
     geoengineValidators,
+    NotificationService,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
 
@@ -24,6 +24,7 @@ import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
     templateUrl: './downsampling.component.html',
     styleUrls: ['./downsampling.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DownsamplingComponent implements AfterViewInit, OnDestroy {
     readonly downsamplingMethods = [['Nearest Neighbor', 'nearestNeighbor']];

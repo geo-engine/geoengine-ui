@@ -200,6 +200,7 @@ const CORE_COMPONENTS = [
     IfGuestDirective,
     IfLoggedInDirective,
     InterpolationComponent,
+    DownsamplingComponent,
     LayerCollectionSelectionComponent,
     LayerListComponent,
     LayerListElementComponent,
