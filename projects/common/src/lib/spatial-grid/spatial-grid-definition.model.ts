@@ -5,14 +5,11 @@ import {GridBoundingBox2D} from './grid-bounding-box.model';
 import {BoundingBox2D} from '../spatial-bounds/bounding-box';
 import {Coordinate2D} from '../spatial-features/coordinate.model';
 
-export class SpatialGridDefinition implements ToDict<SpatialGridDefinitionDict>{
+export class SpatialGridDefinition implements ToDict<SpatialGridDefinitionDict> {
     readonly geoTransform: GeoTransform;
     readonly gridBounds: GridBoundingBox2D;
 
-    constructor(
-        geoTransform: GeoTransform,
-        gridBounds: GridBoundingBox2D
-    ) {
+    constructor(geoTransform: GeoTransform, gridBounds: GridBoundingBox2D) {
         this.geoTransform = geoTransform;
         this.gridBounds = gridBounds;
     }
@@ -22,15 +19,15 @@ export class SpatialGridDefinition implements ToDict<SpatialGridDefinitionDict>{
     }
 
     public get pixelSizeX(): number {
-        return this.geoTransform.pixelSizeX
+        return this.geoTransform.pixelSizeX;
     }
 
     public get pixelSizeY(): number {
-        return this.geoTransform.pixelSizeY
+        return this.geoTransform.pixelSizeY;
     }
 
     public get originCoordinate(): Coordinate2D {
-        return this.geoTransform.originCoordinate
+        return this.geoTransform.originCoordinate;
     }
 
     public get numberOfPixelsX(): number {
@@ -44,14 +41,11 @@ export class SpatialGridDefinition implements ToDict<SpatialGridDefinitionDict>{
     toDict(): SpatialGridDefinitionDict {
         return {
             geoTransform: this.geoTransform.toDict(),
-            gridBounds: this.gridBounds.toDict()
-        }
+            gridBounds: this.gridBounds.toDict(),
+        };
     }
 
     public static fromDict(dict: SpatialGridDefinitionDict) {
-        return new SpatialGridDefinition(
-            GeoTransform.fromDict(dict.geoTransform),
-            GridBoundingBox2D.fromDict(dict.gridBounds)
-        )
+        return new SpatialGridDefinition(GeoTransform.fromDict(dict.geoTransform), GridBoundingBox2D.fromDict(dict.gridBounds));
     }
 }

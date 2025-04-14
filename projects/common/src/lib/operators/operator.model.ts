@@ -8,8 +8,6 @@ import {
 import {NamedDataDict} from '../datasets/dataset.model';
 import {SrsString} from '../spatial-references/spatial-reference.model';
 
-
-
 /**
  * Marker dictionary for types that only use primitive types and sub-types.
  */
@@ -503,7 +501,7 @@ export interface DownsamplingDict extends OperatorDict {
     };
 }
 
-export type OutputResolutionDict = {type: 'resolution'; x: number; y: number} | {type: 'fraction', x: number; y: number};
+export type OutputResolutionDict = {type: 'resolution'; x: number; y: number} | {type: 'fraction'; x: number; y: number};
 
 export interface RasterUnScalingDict extends OperatorDict {
     type: 'RasterScaling';

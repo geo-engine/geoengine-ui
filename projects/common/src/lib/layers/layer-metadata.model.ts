@@ -17,15 +17,14 @@ import {
     TypedRasterResultDescriptor as RasterResultDescriptorDict,
     TypedVectorResultDescriptor as VectorResultDescriptorDict,
     RasterBandDescriptor,
-    TypedResultDescriptor,    
+    TypedResultDescriptor,
 } from '@geoengine/openapi-client';
-import { SpatialGridDescriptor } from '../spatial-grid/spatial-grid-descriptor.model';
+import {SpatialGridDescriptor} from '../spatial-grid/spatial-grid-descriptor.model';
 
 export abstract class LayerMetadata implements HasLayerType {
     abstract readonly layerType: LayerType;
     readonly spatialReference: SpatialReference;
     readonly time?: Time;
-    
 
     public abstract get resultType(): ResultType;
 
@@ -111,13 +110,13 @@ export class RasterLayerMetadata extends LayerMetadata {
         spatialReference: SpatialReference,
         bands: RasterBandDescriptor[],
         spatialGrid: SpatialGridDescriptor,
-        time?: Time,        
+        time?: Time,
     ) {
         super(spatialReference, time);
 
         this.dataType = dataType;
         this.bands = bands;
-        this.spatialGrid = spatialGrid;        
+        this.spatialGrid = spatialGrid;
     }
 
     static override fromDict(dict: RasterResultDescriptorDict): RasterLayerMetadata {
@@ -126,17 +125,11 @@ export class RasterLayerMetadata extends LayerMetadata {
         const time = dict.time ? Time.fromDict(dict.time) : undefined;
         const spatialGrid = SpatialGridDescriptor.fromDict(dict.spatialGrid);
 
-        return new RasterLayerMetadata(
-            dataType,
-            SpatialReference.fromSrsString(dict.spatialReference),
-            bands,
-            spatialGrid,
-            time,                       
-        );
+        return new RasterLayerMetadata(dataType, SpatialReference.fromSrsString(dict.spatialReference), bands, spatialGrid, time);
     }
 
     public get bbox(): BoundingBox2D {
-        return this.spatialGrid.spatialGrid.bbox()
+        return this.spatialGrid.spatialGrid.bbox();
     }
 
     public get numberOfPixelsX(): number {
