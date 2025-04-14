@@ -54,6 +54,26 @@
                 <p class="details-row-text-line">{{ rasterLayerMetadata.bands.length }}</p>
             </span>
         </span>
+        <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
+            <mat-icon class="details-row-icon">
+                <geoengine-raster-icon [xCells]="4" [yCells]="4" [colorizer]="rasterColorizer"></geoengine-raster-icon>
+            </mat-icon>
+            <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
+                <p class="details-row-text-line">Grid shape</p>
+                <p class="details-row-text-line">→ {{ rasterLayerMetadata.numberOfPixelsX }} px</p>
+                <p class="details-row-text-line">↓ {{ rasterLayerMetadata.numberOfPixelsY }} px</p>
+            </span>
+        </span>
+        <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
+            <mat-icon class="details-row-icon"
+                ><geoengine-raster-icon [xCells]="4" [yCells]="4" [colorizer]="rasterColorizer"></geoengine-raster-icon
+            ></mat-icon>
+            <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
+                <p class="details-row-text-line">Pixel size</p>
+                <p class="details-row-text-line">→ {{ rasterLayerMetadata.pixelSizeX }} unit</p>
+                <p class="details-row-text-line">↓ {{ rasterLayerMetadata.pixelSizeY }} unit</p>
+            </span>
+        </span>
     </ng-template>
     <ng-template [ngIf]="vectorLayerMetadata">
         <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
