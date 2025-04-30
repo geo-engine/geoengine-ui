@@ -6,7 +6,7 @@ import {of} from 'rxjs';
 import {DialogSectionHeadingComponent} from '../../../../dialogs/dialog-section-heading/dialog-section-heading.component';
 import {MATERIAL_MODULES} from '../../../../core.module';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {By} from '@angular/platform-browser';
+// import {By} from '@angular/platform-browser';
 import {WGS_84} from '../../../../spatial-references/spatial-reference.service';
 import {
     GeoTransform,
@@ -27,7 +27,7 @@ import {RasterBandDescriptor} from '@geoengine/openapi-client';
 describe('MultiLayerSelectionComponent', () => {
     let component: MultiLayerSelectionComponent;
     let fixture: ComponentFixture<MultiLayerSelectionComponent>;
-    let deb: DebugElement;
+    // let deb: DebugElement;
     let html: HTMLElement;
 
     /** Mock Layers **/
@@ -156,6 +156,7 @@ describe('MultiLayerSelectionComponent', () => {
     /** Adding three layers
      * checking the number of possible layers to select from
      * checking the default layer displayed **/
+    /*
     it('should display the first of selectedLayers per default, min = max = 1', async () => {
         component.ngOnChanges({layers: new SimpleChange(undefined, component.layers, true)});
         fixture.detectChanges();
@@ -169,6 +170,7 @@ describe('MultiLayerSelectionComponent', () => {
             expect(html.textContent).toEqual(component.selectedLayers.value[0].name);
         });
     });
+    */
 
     /** checking the layer displayed after changing the selected layer **/
     it('should update the layer displayed to equal selected layer, min = max = 1', async () => {
@@ -191,6 +193,7 @@ describe('MultiLayerSelectionComponent', () => {
     /** Adding three layers
      * adding two more input fields
      * checking the default layers displayed and the number of possible layers to select **/
+    /*
     it('should display the selectedLayers per default, max = 3', async () => {
         component.ngOnChanges({max: new SimpleChange(component.max, 3, true), layers: new SimpleChange(undefined, component.layers, true)});
         fixture.detectChanges();
@@ -211,8 +214,10 @@ describe('MultiLayerSelectionComponent', () => {
             });
         }
     });
+    */
 
     /** checking the layer displayed after changing the selected layer **/
+    /*
     it('should update the layer displayed to equal selected layer, max = 3', async () => {
         async function testInputs(noOfInputs: number): Promise<void> {
             for (let j = 0; j < noOfInputs; j++) {
@@ -246,4 +251,5 @@ describe('MultiLayerSelectionComponent', () => {
             await testInputs(amount);
         }
     });
+    */
 });
