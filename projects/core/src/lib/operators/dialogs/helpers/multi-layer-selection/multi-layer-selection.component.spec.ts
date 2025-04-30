@@ -8,7 +8,20 @@ import {MATERIAL_MODULES} from '../../../../core.module';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {By} from '@angular/platform-browser';
 import {WGS_84} from '../../../../spatial-references/spatial-reference.service';
-import {Layer, RasterDataTypes, RasterLayer, RasterLayerMetadata, RasterSymbology, UnitlessMeasurement} from '@geoengine/common';
+import {
+    GeoTransform,
+    Layer,
+    RasterDataTypes,
+    RasterLayer,
+    RasterLayerMetadata,
+    RasterSymbology,
+    SpatialGridDefinition,
+    SpatialGridDescriptor,
+    UnitlessMeasurement,
+    Coordinate2D,
+    GridBoundingBox2D,
+    GridIdx2D,
+} from '@geoengine/common';
 import {RasterBandDescriptor} from '@geoengine/openapi-client';
 
 describe('MultiLayerSelectionComponent', () => {
@@ -102,9 +115,18 @@ describe('MultiLayerSelectionComponent', () => {
         projectServiceSpy.getLayerStream.and.returnValue(of<Array<Layer>>(mockLayers));
         projectServiceSpy.getLayerMetadata.and.returnValue(
             of<RasterLayerMetadata>(
-                new RasterLayerMetadata(RasterDataTypes.Byte, WGS_84.spatialReference, [
-                    {name: 'band', measurement: new UnitlessMeasurement().toDict()} as RasterBandDescriptor,
-                ]),
+                new RasterLayerMetadata(
+                    RasterDataTypes.Byte,
+                    WGS_84.spatialReference,
+                    [{name: 'band', measurement: new UnitlessMeasurement().toDict()} as RasterBandDescriptor],
+                    new SpatialGridDescriptor(
+                        new SpatialGridDefinition(
+                            new GeoTransform(new Coordinate2D([0.0, 0.0]), 1.0, -1.0),
+                            new GridBoundingBox2D(new GridIdx2D(0, 0), new GridIdx2D(100, 100)),
+                        ),
+                        'source',
+                    ),
+                ),
             ),
         );
 
