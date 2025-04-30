@@ -9,7 +9,7 @@
         <input matInput type="text" readonly [value]="resultDescriptor.spatialReference" />
     </mat-form-field>
 
-    @if (resultDescriptor.bbox; as bbox) {
+    @if (boundingBox; as bbox) {
         <div class="flex-container">
             <mat-form-field>
                 <mat-label>Min X</mat-label>
@@ -33,7 +33,7 @@
         </div>
     }
 
-    @if (resultDescriptor.resolution; as resolution) {
+    @if (spatialResolution; as resolution) {
         <div class="flex-container">
             <mat-form-field>
                 <mat-label>Resolution X</mat-label>

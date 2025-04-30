@@ -1,7 +1,17 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {GdalDatasetParametersComponent, GdalDatasetParametersForm} from '../gdal-dataset-parameters/gdal-dataset-parameters.component';
-import {DatasetsService, TimeInterval, errorToText} from '@geoengine/common';
+import {
+    DatasetsService,
+    GeoTransform,
+    GridBoundingBox2D,
+    GridIdx2D,
+    TimeInterval,
+    errorToText,
+    BoundingBox2D,
+    SpatialGridDefinition,
+    SpatialGridDescriptor,
+} from '@geoengine/common';
 import moment from 'moment';
 import {
     DataPath,
@@ -145,7 +155,7 @@ export class GdalMetadataListComponent implements OnChanges {
         };
     }
 
-    getMetaData(): MetaDataDefinition {
+    getMetaData(): MetaDataDefinition | undefined {
         const params = this.form.controls.timeSlices.controls.map((control) => {
             return {
                 time: {
@@ -160,6 +170,25 @@ export class GdalMetadataListComponent implements OnChanges {
 
         const resultDescriptorControl = this.form.controls.rasterResultDescriptor.controls;
 
+        const boundsIter = params
+            .filter((p) => !!p.params)
+            .map((p) => {
+                const gt = GeoTransform.fromGdalDatasetGeoTransform(p.params.geoTransform);
+                const bounds = gt.gridBoundsToSpatialBounds(
+                    new GridBoundingBox2D(new GridIdx2D(0, 0), new GridIdx2D(p.params.width - 1, p.params.height - 1)),
+                );
+                return bounds;
+            });
+        const bounds = BoundingBox2D.unionFold(boundsIter);
+        if (!bounds) {
+            return undefined;
+        }
+        const gt = GeoTransform.fromGdalDatasetGeoTransform(params.filter((p) => !!p.params).map((p) => p.params.geoTransform)[0]);
+        const pxBounds = gt.spatialToGridBounds(bounds);
+
+        const spatialGrid = new SpatialGridDefinition(gt, pxBounds);
+        const spatialGridDesc = new SpatialGridDescriptor(spatialGrid, 'source');
+
         const resultDescriptor: RasterResultDescriptor = {
             bands: [
                 {
@@ -171,6 +200,7 @@ export class GdalMetadataListComponent implements OnChanges {
             ],
             spatialReference: resultDescriptorControl.spatialReference.value,
             dataType: resultDescriptorControl.dataType.value,
+            spatialGrid: spatialGridDesc.toDict(),
         };
 
         return {
