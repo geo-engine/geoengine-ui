@@ -1,0 +1,20 @@
+<mat-tab-group #tabs (selectedTabChange)="onTabChange($event)">
+    <mat-tab label="Form" *ngIf="providerType !== ProviderType.OTHER" [ngSwitch]="providerType">
+        <geoengine-manager-aruna-editor-form
+            *ngSwitchCase="ProviderType.ARUNA"
+            [createNew]="createNew"
+            [provider]="provider"
+            [visible]="!jsonInputVisible"
+            [readonly]="readonly"
+            (changed)="setChangedDefinition($event)"
+        ></geoengine-manager-aruna-editor-form>
+    </mat-tab>
+    <mat-tab label="JSON">
+        <geoengine-manager-provider-json-input
+            [provider]="provider"
+            [readonly]="readonly"
+            (changed)="setChangedDefinition($event)"
+            [visible]="jsonInputVisible"
+        ></geoengine-manager-provider-json-input>
+    </mat-tab>
+</mat-tab-group>

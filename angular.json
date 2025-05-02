@@ -787,7 +787,7 @@
                             "dist/common/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/codemirror/lib/codemirror.css"
                         ],
-                        "scripts": [],
+                        "scripts": ["node_modules/codemirror/lib/codemirror.js"],
                         "browser": "projects/manager/src/main.ts"
                     },
                     "configurations": {
