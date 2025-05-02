@@ -1,7 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MultiLayerSelectionComponent} from './multi-layer-selection.component';
 import {ProjectService} from '../../../../project/project.service';
-import {DebugElement, SimpleChange} from '@angular/core';
+import {SimpleChange} from '@angular/core';
 import {of} from 'rxjs';
 import {DialogSectionHeadingComponent} from '../../../../dialogs/dialog-section-heading/dialog-section-heading.component';
 import {MATERIAL_MODULES} from '../../../../core.module';
