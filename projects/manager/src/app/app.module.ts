@@ -54,6 +54,7 @@ import {LayerCollectionEditorComponent} from './layers/layer-collection-editor/l
 import {AddLayerItemComponent} from './layers/add-layer-item/add-layer-item.component';
 import {LayerCollectionChildListComponent} from './layers/layer-collection-child-list/layer-collection-child-list.component';
 import {LayerCollectionChildSelectionComponent} from './layers/layer-collection-child-selection/layer-collection-child-selection.component';
+import {ProvidersComponent} from './providers/providers.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -97,7 +98,6 @@ export const MATERIAL_MODULES = [
         LayerCollectionEditorComponent,
         DatasetListComponent,
         DatasetEditorComponent,
-        PermissionsComponent,
         RasterResultDescriptorComponent,
         VectorResultDescriptorComponent,
         SymbologyEditorComponent,
@@ -123,6 +123,8 @@ export const MATERIAL_MODULES = [
         BrowserAnimationsModule,
         ScrollingModule,
         CommonModule,
+        ProvidersComponent,
+        PermissionsComponent,
     ],
     providers: [
         {provide: AppConfig, useClass: AppConfig},

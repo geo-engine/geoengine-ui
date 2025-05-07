@@ -1,0 +1,28 @@
+@if (provider) {
+    <div class="container">
+        <mat-card class="top">
+            <mat-card-header>
+                <mat-card-title>{{ providerListing.name }}</mat-card-title>
+                <mat-card-subtitle>{{ providerListing.id }}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content style="white-space: pre-wrap">
+                <mat-hint *ngIf="readonly">You do not have permission to edit this provider</mat-hint>
+                <geoengine-manager-provider-input
+                    *ngIf="provider"
+                    (changed)="setChangedDefinition($event)"
+                    [providerType]="providerType"
+                    [provider]="provider"
+                    [readonly]="readonly"
+                >
+                </geoengine-manager-provider-input>
+            </mat-card-content>
+            <button class="actions" mat-raised-button color="primary" [disabled]="!changedDefinition" (click)="submitUpdate()">
+                Save changes
+            </button>
+            <button class="actions" mat-raised-button color="warn" [disabled]="readonly" (click)="delete()">Delete provider</button>
+            <mat-card-content>
+                <geoengine-manager-permissions resourceType="provider" [resourceId]="providerListing.id"></geoengine-manager-permissions>
+            </mat-card-content>
+        </mat-card>
+    </div>
+}
