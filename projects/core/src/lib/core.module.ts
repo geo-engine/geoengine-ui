@@ -27,7 +27,6 @@ import {MatTableModule} from '@angular/material/table';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
-import {ColorPickerModule} from 'ngx-color-picker';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
@@ -284,7 +283,6 @@ const CORE_COMPONENTS = [
     ],
     imports: [
         ...MATERIAL_MODULES,
-        ColorPickerModule,
         AngularCommonModule,
         CommonModule,
         DragDropModule,
