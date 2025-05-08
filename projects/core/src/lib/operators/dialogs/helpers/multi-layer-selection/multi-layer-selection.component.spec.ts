@@ -137,15 +137,15 @@ describe('MultiLayerSelectionComponent', () => {
     it('should display the first of selectedLayers per default, min = max = 1', async () => {
         component.ngOnChanges({layers: new SimpleChange(undefined, component.layers, true)});
         fixture.detectChanges();
+        await fixture.whenStable();
         html = fixture.nativeElement.querySelector('mat-select');
         html.click();
         fixture.detectChanges();
-        await fixture.whenStable().then(() => {
-            const inquiryOptions = fixture.debugElement.queryAll(By.css('.mat-option-0'));
-            expect(inquiryOptions.length).toEqual(mockLayers.length);
-            expect(component.selectedLayers.value).not.toEqual([]);
-            expect(html.textContent).toEqual(component.selectedLayers.value[0].name);
-        });
+        await fixture.whenStable();
+        const inquiryOptions = fixture.debugElement.queryAll(By.css('.mat-option-0'));
+        expect(inquiryOptions.length).toEqual(mockLayers.length);
+        expect(component.selectedLayers.value).not.toEqual([]);
+        expect(html.textContent).toEqual(component.selectedLayers.value[0].name);
     });
 
     /** checking the layer displayed after changing the selected layer **/
@@ -178,7 +178,7 @@ describe('MultiLayerSelectionComponent', () => {
         expect(amount).toEqual(mockLayers.length);
         for (let j = 0; j < amount; j++) {
             await fixture.whenStable();
-            deb = fixture.debugElement.query(By.css('#mat-select-' + j + '-panel'));
+            deb = fixture.debugElement.query(By.css('.mat-select-' + j));
             html = deb.nativeElement;
             html.click();
             fixture.detectChanges();
