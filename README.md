@@ -1,4 +1,4 @@
-[![CI](https://github.com/geo-engine/geoengine-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/geo-engine/geoengine-ui/actions/workflows/ci.yml)
+[![CI](https://github.com/geo-engine/geoengine-ui/actions/workflows/ci.yml/badge.svg?event=merge_group)](https://github.com/geo-engine/geoengine-ui/actions/workflows/ci.yml?query=event%3Amerge_group)
 
 # Geo Engine UI
 

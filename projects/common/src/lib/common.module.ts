@@ -30,7 +30,6 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ScrollingModule} from '@angular/cdk/scrolling';
-import {ColorPickerModule} from 'ngx-color-picker';
 import {AsyncNumberSanitizer, AsyncStringSanitizer, AsyncValueDefault} from './util/pipes/async-converters.pipe';
 import {ColorAttributeInputComponent} from './colors/color-attribute-input/color-attribute-input.component';
 import {ColorBreakpointInputComponent} from './colors/color-breakpoint-input/color-breakpoint-input.component';
@@ -73,6 +72,7 @@ import {RasterMultibandSymbologyEditorComponent} from './symbology/raster-multib
 import {LoginComponent} from './login/login.component';
 import {RegisterComponent} from './register/register.component';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
+import {ColorPickerComponent, ColorPickerDirective} from 'ngx-color-picker';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -160,7 +160,8 @@ const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGa
     declarations: [...COMMON_COMPONENTS, ...COMMON_PIPES],
     imports: [
         ...MATERIAL_MODULES,
-        ColorPickerModule,
+        ColorPickerComponent,
+        ColorPickerDirective,
         FormsModule,
         ReactiveFormsModule,
         AngularCommonModule,
@@ -176,7 +177,6 @@ const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGa
         ...COMMON_PIPES,
         ...FXFLEX_LEGACY_DIRECTIVES,
         ...MATERIAL_MODULES,
-        ColorPickerModule,
         FormsModule,
         ReactiveFormsModule,
         AngularCommonModule,
