@@ -21,11 +21,11 @@
         <div class="flex-container" *ngFor="let class of classificationMeasurement.classes | keyvalue">
             <mat-form-field appearance="fill">
                 <mat-label>Class value</mat-label>
-                <input matInput type="number" required="true" [(ngModel)]="class.key" />
+                <input matInput type="number" required="true" [(ngModel)]="class.key" (input)="inputChange($event)" />
             </mat-form-field>
             <mat-form-field appearance="fill">
                 <mat-label>Class label</mat-label>
-                <input matInput type="text" required="true" [(ngModel)]="class.value" />
+                <input matInput type="text" required="true" [(ngModel)]="class.value" (input)="inputChange($event)" />
             </mat-form-field>
 
             <button mat-icon-button (click)="removeClass(class.key)">
@@ -37,11 +37,11 @@
             <div class="flex-container">
                 <mat-form-field appearance="fill">
                     <mat-label>New class value</mat-label>
-                    <input matInput type="number" formControlName="key" />
+                    <input matInput type="number" formControlName="key" (input)="inputChange($event)" />
                 </mat-form-field>
                 <mat-form-field appearance="fill">
                     <mat-label>New class label</mat-label>
-                    <input matInput type="text" formControlName="value" />
+                    <input matInput type="text" formControlName="value" (input)="inputChange($event)" />
                 </mat-form-field>
 
                 <button mat-icon-button [disabled]="!addClassForm.valid" (click)="addClass()">
@@ -55,11 +55,11 @@
         <div class="flex-container">
             <mat-form-field appearance="fill">
                 <mat-label>Measurement</mat-label>
-                <input matInput type="text" required="true" [(ngModel)]="continuousMeasurement.measurement" />
+                <input matInput type="text" required="true" [(ngModel)]="continuousMeasurement.measurement" (input)="inputChange($event)" />
             </mat-form-field>
             <mat-form-field appearance="fill">
                 <mat-label>Unit</mat-label>
-                <input matInput type="text" [(ngModel)]="continuousMeasurement.unit" />
+                <input matInput type="text" [(ngModel)]="continuousMeasurement.unit" (input)="inputChange($event)" />
             </mat-form-field>
         </div>
     }

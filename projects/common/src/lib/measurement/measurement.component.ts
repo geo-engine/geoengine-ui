@@ -1,7 +1,8 @@
 import {Component, EventEmitter, Input, OnChanges, Output} from '@angular/core';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ClassificationMeasurement, ContinuousMeasurement, Measurement, UnitlessMeasurement} from '@geoengine/openapi-client';
-import {CommonModule, MATERIAL_MODULES} from '../common.module';
+import {MATERIAL_MODULES} from '../common.module';
+import {CommonModule as AngularCommonModule} from '@angular/common';
 
 enum MeasurementType {
     Classification = 'classification',
@@ -18,12 +19,13 @@ interface AddClassForm {
     selector: 'geoengine-measurement',
     templateUrl: './measurement.component.html',
     styleUrl: './measurement.component.css',
-    imports: [MATERIAL_MODULES, FormsModule, ReactiveFormsModule],
+    imports: [MATERIAL_MODULES, FormsModule, ReactiveFormsModule, AngularCommonModule],
 })
 export class MeasurementComponent implements OnChanges {
     @Input() measurement!: Measurement;
 
     @Output() measurementChange = new EventEmitter<Measurement>();
+    @Output() onInputChange = new EventEmitter<Event>();
 
     MeasurementType = MeasurementType;
 
@@ -51,6 +53,12 @@ export class MeasurementComponent implements OnChanges {
         this.initMeasurement(this.measurement);
     }
 
+    public reset() {
+        this.classificationMeasurement = undefined;
+        this.continuousMeasurement = undefined;
+        this.unitlessMeasurement = undefined;
+    }
+
     getMeasurementType(): MeasurementType {
         switch (this.measurement.type) {
             case 'classification':
@@ -76,9 +84,9 @@ export class MeasurementComponent implements OnChanges {
                 break;
             case MeasurementType.Unitless:
                 this.unitlessMeasurement = {type: 'unitless'};
+                break;
         }
         this.measurement = measurement;
-        this.measurementChange.emit(this.measurement);
     }
 
     updateMeasurementType(type: MeasurementType): void {
@@ -139,5 +147,9 @@ export class MeasurementComponent implements OnChanges {
 
         this.addClassForm.reset();
         this.addClassForm.markAsPristine();
+    }
+
+    inputChange(content: Event) {
+        this.onInputChange.emit(content);
     }
 }

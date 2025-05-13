@@ -205,4 +205,25 @@
         <mat-label>Spatial Reference</mat-label>
         <input matInput type="text" formControlName="spatialReference" />
     </mat-form-field>
+
+    <mat-form-field class="column">
+        <mat-label>Column</mat-label>
+        <mat-select [ngModel]="selectedColumn()" (ngModelChange)="setSelectedColumn($event)" [ngModelOptions]="{standalone:true}"
+                    (selectionChange)="onColumnMatSelectChange($event)">
+            <!--
+            this causes an infinite loop in.
+            I think that's because we create a new column vector every time we call this method?
+            -->
+            <!--            <mat-option *ngFor="let col of _columns" [value]="col">{{ col }}</mat-option>-->
+            @for (col of sortedColumns(); track col.name) {
+                <mat-option [value]="col.name">{{ col.name }}</mat-option>
+            }
+        </mat-select>
+    </mat-form-field>
+    <geoengine-measurement
+        [measurement]="newMeasurementForColumn()"
+        (measurementChange)="onMeasurementChange($event)"
+        (onInputChange)="markDirty()"
+    ></geoengine-measurement>
+
 </form>
