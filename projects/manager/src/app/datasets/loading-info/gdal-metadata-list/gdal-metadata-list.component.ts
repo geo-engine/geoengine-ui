@@ -1,12 +1,13 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
 import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {GdalDatasetParametersComponent, GdalDatasetParametersForm} from '../gdal-dataset-parameters/gdal-dataset-parameters.component';
-import {DatasetsService, TimeInterval, errorToText} from '@geoengine/common';
+import {DatasetsService, MeasurementComponent, TimeInterval, errorToText} from '@geoengine/common';
 import moment from 'moment';
 import {
     DataPath,
     GdalDatasetParameters,
     GdalMetaDataList,
+    Measurement,
     MetaDataDefinition,
     RasterDataType,
     RasterResultDescriptor,
@@ -47,6 +48,8 @@ export class GdalMetadataListComponent implements OnChanges {
     @Input() dataPath?: DataPath;
 
     @Input() metaData?: GdalMetaDataList;
+
+    @ViewChild(MeasurementComponent) measurementComponent?: MeasurementComponent;
 
     selectedTimeSlice = 0;
 
@@ -160,13 +163,13 @@ export class GdalMetadataListComponent implements OnChanges {
 
         const resultDescriptorControl = this.form.controls.rasterResultDescriptor.controls;
 
+        const measurement = this.measurementComponent?.measurement || {type: 'unitless'};
+
         const resultDescriptor: RasterResultDescriptor = {
             bands: [
                 {
                     name: resultDescriptorControl.bandName.value,
-                    measurement: {
-                        type: 'unitless',
-                    },
+                    measurement: measurement,
                 },
             ],
             spatialReference: resultDescriptorControl.spatialReference.value,
@@ -322,6 +325,10 @@ export class GdalMetadataListComponent implements OnChanges {
         });
 
         return form;
+    }
+
+    onMeasurementChange() {
+        this.form.markAsDirty();
     }
 }
 
