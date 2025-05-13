@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, OnChanges, Output} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ClassificationMeasurement, ContinuousMeasurement, Measurement, UnitlessMeasurement} from '@geoengine/openapi-client';
+import {CommonModule, MATERIAL_MODULES} from '../common.module';
 
 enum MeasurementType {
     Classification = 'classification',
@@ -17,7 +18,7 @@ interface AddClassForm {
     selector: 'geoengine-measurement',
     templateUrl: './measurement.component.html',
     styleUrl: './measurement.component.css',
-    standalone: false,
+    imports: [MATERIAL_MODULES, FormsModule, ReactiveFormsModule],
 })
 export class MeasurementComponent implements OnChanges {
     @Input() measurement!: Measurement;

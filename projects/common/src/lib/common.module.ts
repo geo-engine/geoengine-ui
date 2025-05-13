@@ -123,7 +123,6 @@ const COMMON_COMPONENTS = [
     LineIconComponent,
     LineIconComponent,
     LoginComponent,
-    MeasurementComponent,
     NumberParamEditorComponent,
     PercentileBreakpointSelectorComponent,
     PercentileBreakpointSelectorComponent,
@@ -166,6 +165,7 @@ const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGa
         AngularCommonModule,
         ScrollingModule,
         OgrDatasetComponent,
+        MeasurementComponent,
         RouterOutlet,
         RouterLink,
         RouterLinkActive,
@@ -183,6 +183,7 @@ const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGa
         ScrollingModule,
         NgxMatSelectSearchModule,
         OgrDatasetComponent,
+        MeasurementComponent,
     ],
 })
 export class CommonModule {}
