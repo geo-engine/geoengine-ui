@@ -1,5 +1,4 @@
 <div>
-    Output Measurement:
     <mat-button-toggle-group
         id="measurement-type"
         [multiple]="false"
@@ -52,15 +51,15 @@
         </form>
     }
 
-    @if (measurement.type === MeasurementType.Continuous && continousMeasurement) {
+    @if (measurement.type === MeasurementType.Continuous && continuousMeasurement) {
         <div class="flex-container">
             <mat-form-field appearance="fill">
                 <mat-label>Measurement</mat-label>
-                <input matInput type="text" required="true" [(ngModel)]="continousMeasurement.measurement" />
+                <input matInput type="text" required="true" [(ngModel)]="continuousMeasurement.measurement" />
             </mat-form-field>
             <mat-form-field appearance="fill">
                 <mat-label>Unit</mat-label>
-                <input matInput type="text" [(ngModel)]="continousMeasurement.unit" />
+                <input matInput type="text" [(ngModel)]="continuousMeasurement.unit" />
             </mat-form-field>
         </div>
     }
