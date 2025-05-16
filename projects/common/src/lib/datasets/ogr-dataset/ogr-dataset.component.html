@@ -208,8 +208,12 @@
 
     <mat-form-field class="column">
         <mat-label>Column</mat-label>
-        <mat-select [ngModel]="selectedColumn()" (ngModelChange)="setSelectedColumn($event)" [ngModelOptions]="{standalone:true}"
-                    (selectionChange)="onColumnMatSelectChange($event)">
+        <mat-select
+            [ngModel]="selectedColumn()"
+            (ngModelChange)="setSelectedColumn($event)"
+            [ngModelOptions]="{standalone: true}"
+            (selectionChange)="onColumnMatSelectChange($event)"
+        >
             <!--
             this causes an infinite loop in.
             I think that's because we create a new column vector every time we call this method?
@@ -225,5 +229,4 @@
         (measurementChange)="onMeasurementChange($event)"
         (onInputChange)="markDirty()"
     ></geoengine-measurement>
-
 </form>
