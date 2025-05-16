@@ -1,10 +1,11 @@
-import {ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnChanges, OnInit, signal, SimpleChanges, ViewChild} from '@angular/core';
 import {FormsModule, ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {DatasetsService} from '../datasets.service';
 import {UploadsService} from '../../uploads/uploads.service';
 import {UserService} from '../../user/user.service';
 import {MatChipInputEvent, MatChipsModule} from '@angular/material/chips';
 import {
+    Measurement,
     MetaDataDefinition,
     MetaDataSuggestion,
     OgrMetaData,
@@ -18,16 +19,21 @@ import {UUID} from '../dataset.model';
 import {CommonModule as AngularCommonModule} from '@angular/common';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatSelectModule} from '@angular/material/select';
+import {MatSelectChange, MatSelectModule} from '@angular/material/select';
 import {timeStepGranularityOptions} from '../../time/time.model';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
-import {
-    FxFlexDirective,
-    FxLayoutAlignDirective,
-    FxLayoutDirective,
-    FxLayoutGapDirective,
-} from '../../util/directives/flexbox-legacy.directive';
+import {FxLayoutDirective} from '../../util/directives/flexbox-legacy.directive';
+import {MeasurementComponent} from '../../measurement/measurement.component';
+
+interface Column {
+    name: string;
+    vectorColumnInfo: VectorColumnInfo;
+    newMeasurement: Measurement;
+    dataType: string;
+}
+
+type ColumnInfo = {[name: string]: Column};
 
 @Component({
     selector: 'geoengine-ogr-dataset',
@@ -41,15 +47,13 @@ import {
         MatChipsModule,
         MatButtonModule,
         MatIconModule,
-        FxFlexDirective,
         FxLayoutDirective,
-        FxLayoutGapDirective,
-        FxLayoutAlignDirective,
+        MeasurementComponent,
     ],
     templateUrl: './ogr-dataset.component.html',
     styleUrl: './ogr-dataset.component.css',
 })
-export class OgrDatasetComponent implements OnChanges {
+export class OgrDatasetComponent implements OnChanges, OnInit {
     vectorDataTypes = ['Data', 'MultiPoint', 'MultiLineString', 'MultiPolygon'];
     timeDurationValueTypes = ['infinite', 'value', 'zero'];
     timeTypes = ['None', 'Start', 'Start/End', 'Start/Duration'];
@@ -62,12 +66,16 @@ export class OgrDatasetComponent implements OnChanges {
     @Input() volumeName?: string;
     @Input() metaData?: OgrMetaData;
 
+    @ViewChild(MeasurementComponent) measurementComponent?: MeasurementComponent;
+
     formMetaData: UntypedFormGroup;
 
     uploadFiles?: Array<string>;
     uploadFileLayers: Array<string> = [];
 
     readonly defaultTimeGranularity: TimeGranularity = 'seconds';
+
+    columns: ColumnInfo = {};
 
     constructor(
         protected datasetsService: DatasetsService,
@@ -101,6 +109,7 @@ export class OgrDatasetComponent implements OnChanges {
             spatialReference: new UntypedFormControl('EPSG:4326', Validators.required), // TODO: validate sref string
         });
     }
+
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.uploadId && changes.uploadId.currentValue) {
             this.setUpMetadataSpecification(changes.uploadId.currentValue);
@@ -115,6 +124,13 @@ export class OgrDatasetComponent implements OnChanges {
                 metaData: metaData,
             });
             return;
+        }
+    }
+
+    ngOnInit() {
+        this.columns = this.getColumnsAsMap();
+        if (this.columns) {
+            this.setSelectedColumn(this.sortedColumns()[0].name);
         }
     }
 
@@ -427,40 +443,38 @@ export class OgrDatasetComponent implements OnChanges {
         return undefined;
     }
 
-    private getColumnsAsMap(): {[key: string]: VectorColumnInfo} {
+    private getColumnsAsMap(): ColumnInfo {
         const formMeta = this.formMetaData.controls;
-        const columns: {[key: string]: VectorColumnInfo} = {};
+        const columns: ColumnInfo = {};
 
-        for (const column of formMeta.columnsText.value as Array<string>) {
-            columns[column] = {
-                dataType: 'text',
-                measurement: {
-                    // TODO: incorporate in selection
-                    type: 'unitless',
-                },
-            };
+        if (!this.metaData) {
+            return {};
+        }
+        for (const name of formMeta.columnsText.value as Array<string>) {
+            this.setColumnInfo(columns, name, 'text');
         }
 
         for (const column of formMeta.columnsInt.value as Array<string>) {
-            columns[column] = {
-                dataType: 'int',
-                measurement: {
-                    // TODO: incorporate in selection
-                    type: 'unitless',
-                },
-            };
+            this.setColumnInfo(columns, column, 'int');
         }
 
         for (const column of formMeta.columnsFloat.value as Array<string>) {
-            columns[column] = {
-                dataType: 'float',
-                measurement: {
-                    // TODO: incorporate in selection
-                    type: 'unitless',
-                },
-            };
+            this.setColumnInfo(columns, column, 'float');
         }
         return columns;
+    }
+
+    private setColumnInfo(columns: ColumnInfo, name: string, type_: 'float' | 'int' | 'text') {
+        const vectorInfo = this.metaData?.resultDescriptor.columns[name];
+        if (!vectorInfo) {
+            return;
+        }
+        columns[name] = {
+            name: name,
+            vectorColumnInfo: vectorInfo,
+            newMeasurement: vectorInfo.measurement,
+            dataType: type_,
+        };
     }
 
     private getDuration(): OgrSourceDurationSpec {
@@ -577,9 +591,21 @@ export class OgrDatasetComponent implements OnChanges {
         return 'None';
     }
 
+    columnInfoToVectorInfo() {
+        const keys = Object.keys(this.columns);
+        const ret: {[key: string]: VectorColumnInfo} = {};
+        for (const column of keys) {
+            // copy to avoid modification
+            const info = {...this.columns[column].vectorColumnInfo};
+            info['measurement'] = this.columns[column].newMeasurement;
+            ret[column] = info;
+        }
+        return ret;
+    }
+
     getMetaData(): MetaDataDefinition {
         const formMeta = this.formMetaData.controls;
-
+        const columns = this.columnInfoToVectorInfo();
         return {
             type: 'OgrMetaData',
             loadingInfo: {
@@ -600,8 +626,56 @@ export class OgrDatasetComponent implements OnChanges {
             resultDescriptor: {
                 dataType: formMeta.dataType.value,
                 spatialReference: formMeta.spatialReference.value,
-                columns: this.getColumnsAsMap(),
+                columns: columns,
             },
         };
+    }
+
+    _selectedColumn: string | undefined = undefined;
+    previousColumn = signal<string | undefined>(undefined);
+
+    selectedColumn() {
+        return this._selectedColumn;
+    }
+
+    sortedColumns() {
+        return Object.values(this.columns).sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    setSelectedColumn(name: string) {
+        this.previousColumn.set(this._selectedColumn);
+        this._selectedColumn = name;
+    }
+
+    newMeasurementForColumn(): Measurement {
+        const key = this.selectedColumn();
+        if (key) {
+            const searchResult = this.columns[key];
+            if (searchResult) {
+                return searchResult.newMeasurement;
+            }
+        }
+        return {type: 'unitless'};
+    }
+
+    onMeasurementChange(measurement: Measurement) {
+        const key = this.selectedColumn();
+        if (key) {
+            this.columns[key].newMeasurement = measurement;
+        }
+        this.markDirty();
+    }
+
+    markDirty() {
+        this.formMetaData.markAsDirty();
+    }
+
+    onColumnMatSelectChange(event: MatSelectChange) {
+        const measurement = this.measurementComponent?.measurement || {type: 'unitless'};
+        const prev = this.previousColumn();
+        if (prev) {
+            this.columns[prev].newMeasurement = measurement;
+        }
+        this.measurementComponent?.reset(); // reset cached components for new column
     }
 }

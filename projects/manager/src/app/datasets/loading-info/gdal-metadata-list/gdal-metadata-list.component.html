@@ -31,6 +31,13 @@
             <mat-label>Band Name</mat-label>
             <input matInput type="text" formControlName="bandName" />
         </mat-form-field>
+
+        <ng-container *ngIf="metaData as meta">
+            <geoengine-measurement
+                [measurement]="meta.resultDescriptor.bands[0].measurement || {type: 'unitless'}"
+                (measurementChange)="onMeasurementChange()"
+            ></geoengine-measurement>
+        </ng-container>
     </div>
 
     <div class="container">
