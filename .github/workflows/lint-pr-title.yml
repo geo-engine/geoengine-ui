@@ -1,0 +1,35 @@
+name: "Lint PR"
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+
+jobs:
+  title:
+    name: Title
+    if: github.event.action == 'opened' || github.event.changes.title.from
+    runs-on: ubuntu-latest
+    steps:
+      - uses: geo-engine/conventional-pr-title@v1
+        with:
+          types: |-
+            build
+            ci
+            docs
+            feat
+            fix
+            perf
+            refactor
+            test
+          scopes: |-
+            common
+            core
+            gis
+            manager
+            data-atlas
+            ebv-analyzer
+            ecometrics
+            esg-indicator-service
+            gfbio
+            nfdi-portal-demo
