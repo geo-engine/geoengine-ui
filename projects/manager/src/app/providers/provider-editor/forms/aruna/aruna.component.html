@@ -1,6 +1,6 @@
 <mat-card>
     <mat-card-content [formGroup]="form">
-        <geoengine-manager-id-input *ngIf="createNew" [id]="idControl"></geoengine-manager-id-input>
+        <geoengine-manager-id-input *ngIf="createNew" formControlName="id"></geoengine-manager-id-input>
         <mat-form-field>
             <mat-label>Name</mat-label>
             <input matInput formControlName="name" />

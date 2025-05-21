@@ -120,8 +120,4 @@ export class ArunaComponent implements OnInit, OnChanges {
             }, 50);
         }
     }
-
-    get idControl(): FormControl {
-        return this.form.get('id') as FormControl;
-    }
 }
