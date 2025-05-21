@@ -176,20 +176,6 @@ class ProviderDataSource extends DataSource<LayerProviderListing> {
                 this.noMoreData = true;
             }
 
-            //TODO This hides "Pro providers" for which no endpoint exists (and cannot be distinguished from listing). Can be removed once Pro is removed
-            const toKeep = await Promise.all(
-                items.map(async (item) => {
-                    try {
-                        await this.layersService.getProviderDefinition(item.id);
-                        return true;
-                    } catch (_) {
-                        return false;
-                    }
-                }),
-            );
-
-            items = items.filter((_, i) => toKeep[i]);
-
             this.loading$.next(false);
 
             return items;
