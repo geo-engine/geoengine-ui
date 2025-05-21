@@ -3,7 +3,7 @@
         <mat-card class="top">
             <mat-card-header>
                 <mat-card-title>{{ providerListing.name }}</mat-card-title>
-                <mat-card-subtitle>{{ providerListing.id }}</mat-card-subtitle>
+                <mat-card-subtitle>Type: {{ provider.type }}, ID: {{ providerListing.id }}</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content style="white-space: pre-wrap">
                 <mat-hint *ngIf="readonly">You do not have permission to edit this provider</mat-hint>
