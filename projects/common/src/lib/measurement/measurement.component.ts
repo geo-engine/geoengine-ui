@@ -1,6 +1,12 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {Component, EventEmitter, Input, OnChanges, Output} from '@angular/core';
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ClassificationMeasurement, ContinuousMeasurement, Measurement, UnitlessMeasurement} from '@geoengine/openapi-client';
+import {CommonModule as AngularCommonModule} from '@angular/common';
+import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle';
+import {MatFormField, MatLabel} from '@angular/material/form-field';
+import {MatIcon} from '@angular/material/icon';
+import {MatInput} from '@angular/material/input';
+import {MatIconButton} from '@angular/material/button';
 
 enum MeasurementType {
     Classification = 'classification',
@@ -17,17 +23,29 @@ interface AddClassForm {
     selector: 'geoengine-measurement',
     templateUrl: './measurement.component.html',
     styleUrl: './measurement.component.css',
-    standalone: false,
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        AngularCommonModule,
+        MatButtonToggle,
+        MatFormField,
+        MatLabel,
+        MatIcon,
+        MatButtonToggleGroup,
+        MatInput,
+        MatIconButton,
+    ],
 })
-export class MeasurementComponent {
+export class MeasurementComponent implements OnChanges {
     @Input() measurement!: Measurement;
 
     @Output() measurementChange = new EventEmitter<Measurement>();
+    @Output() onInputChange = new EventEmitter<Event>();
 
     MeasurementType = MeasurementType;
 
     classificationMeasurement?: ClassificationMeasurement;
-    continousMeasurement?: ContinuousMeasurement;
+    continuousMeasurement?: ContinuousMeasurement;
     unitlessMeasurement?: UnitlessMeasurement;
 
     addClassForm: FormGroup<AddClassForm> = new FormGroup<AddClassForm>({
@@ -41,12 +59,19 @@ export class MeasurementComponent {
         }),
     });
 
-    constructor() {
+    ngOnChanges() {
         if (!this.measurement) {
             this.measurement = {
                 type: 'unitless',
             };
         }
+        this.initMeasurement(this.measurement);
+    }
+
+    public reset() {
+        this.classificationMeasurement = undefined;
+        this.continuousMeasurement = undefined;
+        this.unitlessMeasurement = undefined;
     }
 
     getMeasurementType(): MeasurementType {
@@ -58,6 +83,25 @@ export class MeasurementComponent {
             case 'unitless':
                 return MeasurementType.Unitless;
         }
+    }
+
+    /**
+     * If created with a measurement as @Input, set the appropriate fields
+     * for Classification and Continuous MeasurementType's.
+     */
+    private initMeasurement(measurement: Measurement): void {
+        switch (measurement.type) {
+            case MeasurementType.Classification:
+                this.classificationMeasurement = measurement;
+                break;
+            case MeasurementType.Continuous:
+                this.continuousMeasurement = measurement;
+                break;
+            case MeasurementType.Unitless:
+                this.unitlessMeasurement = {type: 'unitless'};
+                break;
+        }
+        this.measurement = measurement;
     }
 
     updateMeasurementType(type: MeasurementType): void {
@@ -74,14 +118,14 @@ export class MeasurementComponent {
                 this.measurement = this.classificationMeasurement;
                 break;
             case MeasurementType.Continuous:
-                if (!this.continousMeasurement) {
-                    this.continousMeasurement = {
+                if (!this.continuousMeasurement) {
+                    this.continuousMeasurement = {
                         type: 'continuous',
                         measurement: 'continuous',
                     };
                 }
 
-                this.measurement = this.continousMeasurement;
+                this.measurement = this.continuousMeasurement;
                 break;
             case MeasurementType.Unitless:
                 if (!this.unitlessMeasurement) {
@@ -95,6 +139,7 @@ export class MeasurementComponent {
                 };
                 break;
         }
+        this.measurementChange.emit(this.measurement);
     }
 
     removeClass(key: string) {
@@ -117,5 +162,9 @@ export class MeasurementComponent {
 
         this.addClassForm.reset();
         this.addClassForm.markAsPristine();
+    }
+
+    inputChange(content: Event) {
+        this.onInputChange.emit(content);
     }
 }
