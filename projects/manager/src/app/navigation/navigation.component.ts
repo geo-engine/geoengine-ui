@@ -9,6 +9,7 @@ import {UserService} from '@geoengine/common';
 export enum NavigationType {
     Datasets = 'datasets',
     Layers = 'layers',
+    Providers = 'providers',
 }
 
 @Component({
