@@ -1348,6 +1348,7 @@ export class ProjectService implements OnDestroy {
                     aggregateType = 'meanNumber';
                     break;
                 case VectorColumnDataTypes.Text:
+                case VectorColumnDataTypes.DateTime:
                     aggregateType = 'stringSample';
                     break;
                 default:

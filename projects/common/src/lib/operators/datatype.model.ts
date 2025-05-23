@@ -320,6 +320,11 @@ class MediaColumn extends VectorColumnDataType {
     readonly isNumeric = false;
 }
 
+class DateTimeColumn extends VectorColumnDataType {
+    readonly code = 'dateTime';
+    readonly isNumeric = false;
+}
+
 export class VectorColumnDataTypeCollection {
     static readonly INSTANCE = new VectorColumnDataTypeCollection();
 
@@ -329,6 +334,7 @@ export class VectorColumnDataTypeCollection {
     readonly Text: VectorColumnDataType = new TextColumn();
     readonly Category: VectorColumnDataType = new CategoryColumn();
     readonly Media: VectorColumnDataType = new MediaColumn();
+    readonly DateTime: VectorColumnDataType = new DateTimeColumn();
 
     fromCode(code: string): VectorColumnDataType {
         switch (code) {
@@ -342,6 +348,8 @@ export class VectorColumnDataTypeCollection {
                 return this.Category;
             case this.Media.code:
                 return this.Media;
+            case this.DateTime.code:
+                return this.DateTime;
             default:
                 throw new Error(`Invalid Column Data Type: ${code}`);
         }
