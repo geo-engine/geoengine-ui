@@ -1,14 +1,5 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {
-    AbstractControl,
-    FormBuilder,
-    FormControl,
-    FormGroup,
-    ReactiveFormsModule,
-    ValidationErrors,
-    ValidatorFn,
-    Validators,
-} from '@angular/forms';
+import {AbstractControl, FormBuilder, FormControl, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {ArunaDataProviderDefinition, TypedDataProviderDefinition} from '@geoengine/openapi-client';
 import {isValidUuid} from '@geoengine/common';
 import {IdInputComponent} from '../util/id-input/id-input.component';
@@ -46,7 +37,25 @@ export class ArunaComponent implements OnInit, OnChanges {
 
     @Output() changed = new EventEmitter<TypedDataProviderDefinition>();
 
-    form: FormGroup = this.fb.group({});
+    form = this.fb.group({
+        apiToken: this.fb.nonNullable.control('', Validators.required),
+        apiUrl: this.fb.nonNullable.control('', Validators.required),
+        description: this.fb.nonNullable.control(''),
+        filterLabel: this.fb.nonNullable.control(''),
+        id: this.fb.nonNullable.control('', [isValidUuid, Validators.required]),
+        name: this.fb.nonNullable.control('', Validators.required),
+        projectId: this.fb.nonNullable.control('', Validators.required),
+        cacheTtl: this.fb.nonNullable.control<number | undefined>(0, [
+            Validators.min(0),
+            Validators.max(31536000),
+            this.integerValidator(),
+        ]),
+        priority: this.fb.nonNullable.control<number | null | undefined>(0, [
+            Validators.min(-32768),
+            Validators.max(32767),
+            this.integerValidator(),
+        ]),
+    });
 
     errorStateMatcher: ErrorStateMatcher = {
         isErrorState: (control: FormControl | null): boolean => !!control && control.invalid && (control.dirty || control.touched),
@@ -74,25 +83,7 @@ export class ArunaComponent implements OnInit, OnChanges {
             };
         }
 
-        this.form = this.fb.group({
-            apiToken: this.fb.nonNullable.control(definition.apiToken, Validators.required),
-            apiUrl: this.fb.nonNullable.control(definition.apiUrl, Validators.required),
-            description: this.fb.nonNullable.control(definition.description),
-            filterLabel: this.fb.nonNullable.control(definition.filterLabel),
-            id: this.fb.nonNullable.control(definition.id, [isValidUuid, Validators.required]),
-            name: this.fb.nonNullable.control(definition.name, Validators.required),
-            projectId: this.fb.nonNullable.control(definition.projectId, Validators.required),
-            cacheTtl: this.fb.nonNullable.control(definition.cacheTtl, [
-                Validators.min(0),
-                Validators.max(31536000),
-                this.integerValidator(),
-            ]),
-            priority: this.fb.nonNullable.control(definition.priority, [
-                Validators.min(-32768),
-                Validators.max(32767),
-                this.integerValidator(),
-            ]),
-        });
+        this.setFormValue(definition);
 
         if (this.readonly) {
             this.form.disable();
@@ -126,20 +117,7 @@ export class ArunaComponent implements OnInit, OnChanges {
         } else if (this.provider && !this.editing) {
             setTimeout(() => {
                 const provider = this.provider as ArunaDataProviderDefinition;
-                this.form.setValue(
-                    {
-                        apiToken: provider.apiToken,
-                        apiUrl: provider.apiUrl,
-                        description: provider.description,
-                        cacheTtl: provider.cacheTtl,
-                        filterLabel: provider.filterLabel,
-                        id: provider.id,
-                        name: provider.name,
-                        priority: provider.priority,
-                        projectId: provider.projectId,
-                    },
-                    {emitEvent: false},
-                );
+                this.setFormValue(provider);
 
                 if (this.readonly) {
                     this.form.disable({emitEvent: false});
@@ -166,5 +144,22 @@ export class ArunaComponent implements OnInit, OnChanges {
             const num = Number(value);
             return Number.isInteger(num) ? null : {notInteger: true};
         };
+    }
+
+    private setFormValue(provider: ArunaDataProviderDefinition): void {
+        this.form.setValue(
+            {
+                apiToken: provider.apiToken,
+                apiUrl: provider.apiUrl,
+                description: provider.description,
+                cacheTtl: provider.cacheTtl,
+                filterLabel: provider.filterLabel,
+                id: provider.id,
+                name: provider.name,
+                priority: provider.priority,
+                projectId: provider.projectId,
+            },
+            {emitEvent: false},
+        );
     }
 }
