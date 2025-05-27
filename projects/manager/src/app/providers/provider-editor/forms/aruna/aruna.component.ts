@@ -1,14 +1,24 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {
+    AbstractControl,
+    FormBuilder,
+    FormControl,
+    FormGroup,
+    ReactiveFormsModule,
+    ValidationErrors,
+    ValidatorFn,
+    Validators,
+} from '@angular/forms';
 import {ArunaDataProviderDefinition, TypedDataProviderDefinition} from '@geoengine/openapi-client';
 import {isValidUuid} from '@geoengine/common';
 import {IdInputComponent} from '../util/id-input/id-input.component';
 import {MatCard, MatCardContent} from '@angular/material/card';
-import {MatFormField} from '@angular/material/form-field';
+import {MatError, MatFormField} from '@angular/material/form-field';
 import {MatInput, MatLabel} from '@angular/material/input';
 import {NgIf} from '@angular/common';
 import {CdkTextareaAutosize} from '@angular/cdk/text-field';
 import {MatTooltip} from '@angular/material/tooltip';
+import {ErrorStateMatcher} from '@angular/material/core';
 
 @Component({
     selector: 'geoengine-manager-aruna-editor-form',
@@ -22,6 +32,7 @@ import {MatTooltip} from '@angular/material/tooltip';
         MatFormField,
         MatLabel,
         MatInput,
+        MatError,
         NgIf,
         CdkTextareaAutosize,
         MatTooltip,
@@ -37,6 +48,12 @@ export class ArunaComponent implements OnInit, OnChanges {
 
     form: FormGroup = this.fb.group({});
 
+    errorStateMatcher: ErrorStateMatcher = {
+        isErrorState: (control: FormControl | null): boolean => !!control && control.invalid && (control.dirty || control.touched),
+    };
+
+    private editing: boolean = false;
+
     constructor(private fb: FormBuilder) {}
 
     ngOnInit(): void {
@@ -51,6 +68,8 @@ export class ArunaComponent implements OnInit, OnChanges {
                 id: '',
                 name: '',
                 projectId: '',
+                cacheTtl: 0,
+                priority: 0,
                 type: 'Aruna',
             };
         }
@@ -63,8 +82,16 @@ export class ArunaComponent implements OnInit, OnChanges {
             id: this.fb.nonNullable.control(definition.id, [isValidUuid, Validators.required]),
             name: this.fb.nonNullable.control(definition.name, Validators.required),
             projectId: this.fb.nonNullable.control(definition.projectId, Validators.required),
-            cacheTtl: this.fb.nonNullable.control(definition.cacheTtl),
-            priority: this.fb.nonNullable.control(definition.priority),
+            cacheTtl: this.fb.nonNullable.control(definition.cacheTtl, [
+                Validators.min(0),
+                Validators.max(31536000),
+                this.integerValidator(),
+            ]),
+            priority: this.fb.nonNullable.control(definition.priority, [
+                Validators.min(-32768),
+                Validators.max(32767),
+                this.integerValidator(),
+            ]),
         });
 
         if (this.readonly) {
@@ -94,7 +121,9 @@ export class ArunaComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(_: SimpleChanges): void {
-        if (this.provider && this.visible) {
+        if (!this.visible) {
+            this.editing = false;
+        } else if (this.provider && !this.editing) {
             setTimeout(() => {
                 const provider = this.provider as ArunaDataProviderDefinition;
                 this.form.setValue(
@@ -116,8 +145,26 @@ export class ArunaComponent implements OnInit, OnChanges {
                     this.form.disable({emitEvent: false});
                 } else {
                     this.form.enable({emitEvent: false});
+                    this.editing = true;
                 }
             }, 50);
         }
+    }
+
+    get priority() {
+        return this.form.controls['priority'];
+    }
+
+    get cacheTtl() {
+        return this.form.controls['cacheTtl'];
+    }
+
+    private integerValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value;
+
+            const num = Number(value);
+            return Number.isInteger(num) ? null : {notInteger: true};
+        };
     }
 }
