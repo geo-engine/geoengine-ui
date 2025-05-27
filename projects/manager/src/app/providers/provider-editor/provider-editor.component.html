@@ -20,6 +20,8 @@
                 <button mat-raised-button color="primary" [disabled]="!changedDefinition" (click)="submitUpdate()">Save changes</button>
                 <button mat-raised-button color="warn" [disabled]="readonly" (click)="delete()">Delete provider</button>
             </div>
+        </mat-card>
+        <mat-card>
             <mat-card-content>
                 <geoengine-manager-permissions resourceType="provider" [resourceId]="providerListing.id"></geoengine-manager-permissions>
             </mat-card-content>
