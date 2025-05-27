@@ -30,7 +30,7 @@ interface Column {
     name: string;
     vectorColumnInfo: VectorColumnInfo;
     newMeasurement: Measurement;
-    dataType: string;
+    dataType: 'float' | 'int' | 'text';
 }
 
 type ColumnInfo = {[name: string]: Column};
@@ -130,7 +130,7 @@ export class OgrDatasetComponent implements OnChanges, OnInit {
     ngOnInit() {
         this.columns = this.getColumnsAsMap();
         if (this.columns) {
-            this.setSelectedColumn(this.sortedColumns()[0].name);
+            this.setSelectedColumn(this.sortedNonTextColumns()[0].name);
         }
     }
 
@@ -255,6 +255,7 @@ export class OgrDatasetComponent implements OnChanges, OnInit {
         if (index > -1) {
             columns.splice(index, 1);
         }
+        delete this.columns[column];
     }
 
     addText(event: MatChipInputEvent): void {
@@ -269,6 +270,7 @@ export class OgrDatasetComponent implements OnChanges, OnInit {
         if (input) {
             input.value = '';
         }
+        this.setColumnInfo(this.columns, column, 'text');
     }
 
     removeInt(column: string): void {
@@ -278,6 +280,7 @@ export class OgrDatasetComponent implements OnChanges, OnInit {
         if (index > -1) {
             columns.splice(index, 1);
         }
+        delete this.columns[column];
     }
 
     addInt(event: MatChipInputEvent): void {
@@ -292,6 +295,7 @@ export class OgrDatasetComponent implements OnChanges, OnInit {
         if (input) {
             input.value = '';
         }
+        this.setColumnInfo(this.columns, column, 'int');
     }
 
     removeFloat(column: string): void {
@@ -301,6 +305,7 @@ export class OgrDatasetComponent implements OnChanges, OnInit {
         if (index > -1) {
             columns.splice(index, 1);
         }
+        delete this.columns[column];
     }
 
     addFloat(event: MatChipInputEvent): void {
@@ -315,6 +320,7 @@ export class OgrDatasetComponent implements OnChanges, OnInit {
         if (input) {
             input.value = '';
         }
+        this.setColumnInfo(this.columns, column, 'float');
     }
 
     reloadSuggestion(): void {
@@ -465,10 +471,10 @@ export class OgrDatasetComponent implements OnChanges, OnInit {
     }
 
     private setColumnInfo(columns: ColumnInfo, name: string, type_: 'float' | 'int' | 'text') {
-        const vectorInfo = this.metaData?.resultDescriptor.columns[name];
-        if (!vectorInfo) {
-            return;
-        }
+        let vectorInfo = this.metaData?.resultDescriptor.columns[name] || {
+            dataType: type_,
+            measurement: {type: 'unitless'},
+        };
         columns[name] = {
             name: name,
             vectorColumnInfo: vectorInfo,
@@ -638,8 +644,13 @@ export class OgrDatasetComponent implements OnChanges, OnInit {
         return this._selectedColumn;
     }
 
-    sortedColumns() {
-        return Object.values(this.columns).sort((a, b) => a.name.localeCompare(b.name));
+    /**
+     * Also filters the text columns out of the available columns
+     * */
+    sortedNonTextColumns() {
+        return Object.values(this.columns)
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .filter((c) => c.dataType !== 'text');
     }
 
     setSelectedColumn(name: string) {
@@ -673,7 +684,7 @@ export class OgrDatasetComponent implements OnChanges, OnInit {
     onColumnMatSelectChange(event: MatSelectChange) {
         const measurement = this.measurementComponent?.measurement || {type: 'unitless'};
         const prev = this.previousColumn();
-        if (prev) {
+        if (prev && this.columns[prev]) {
             this.columns[prev].newMeasurement = measurement;
         }
         this.measurementComponent?.reset(); // reset cached components for new column

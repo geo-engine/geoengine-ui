@@ -219,7 +219,7 @@
             I think that's because we create a new column vector every time we call this method?
             -->
             <!--            <mat-option *ngFor="let col of _columns" [value]="col">{{ col }}</mat-option>-->
-            @for (col of sortedColumns(); track col.name) {
+            @for (col of sortedNonTextColumns(); track col.name) {
                 <mat-option [value]="col.name">{{ col.name }}</mat-option>
             }
         </mat-select>
