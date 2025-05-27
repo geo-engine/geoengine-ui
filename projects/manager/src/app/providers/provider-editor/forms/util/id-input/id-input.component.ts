@@ -21,9 +21,10 @@ import {MatButton} from '@angular/material/button';
 export class IdInputComponent implements AfterViewInit, ControlValueAccessor {
     idControl = new FormControl<string>('');
 
-    private onChange: (value: string) => void = () => {};
-    protected onTouched: () => void = () => {};
     protected disabled = false;
+    protected onTouched: () => void = () => {};
+
+    private onChange: (value: string) => void = () => {};
 
     ngAfterViewInit(): void {
         if (!this.idControl.value) {

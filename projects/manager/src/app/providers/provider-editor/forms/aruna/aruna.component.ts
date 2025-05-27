@@ -129,11 +129,11 @@ export class ArunaComponent implements OnInit, OnChanges {
         }
     }
 
-    get priority() {
+    get priority(): FormControl<number | null | undefined> {
         return this.form.controls['priority'];
     }
 
-    get cacheTtl() {
+    get cacheTtl(): FormControl<number | undefined> {
         return this.form.controls['cacheTtl'];
     }
 
