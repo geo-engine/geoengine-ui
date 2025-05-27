@@ -16,10 +16,10 @@
                 >
                 </geoengine-manager-provider-input>
             </mat-card-content>
-            <button class="actions" mat-raised-button color="primary" [disabled]="!changedDefinition" (click)="submitUpdate()">
-                Save changes
-            </button>
-            <button class="actions" mat-raised-button color="warn" [disabled]="readonly" (click)="delete()">Delete provider</button>
+            <div class="actions">
+                <button mat-raised-button color="primary" [disabled]="!changedDefinition" (click)="submitUpdate()">Save changes</button>
+                <button mat-raised-button color="warn" [disabled]="readonly" (click)="delete()">Delete provider</button>
+            </div>
             <mat-card-content>
                 <geoengine-manager-permissions resourceType="provider" [resourceId]="providerListing.id"></geoengine-manager-permissions>
             </mat-card-content>
