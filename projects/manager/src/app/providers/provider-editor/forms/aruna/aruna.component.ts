@@ -99,12 +99,12 @@ export class ArunaComponent implements OnInit, OnChanges {
                     type: 'Aruna',
                     apiToken: this.form.controls['apiToken'].value,
                     apiUrl: this.form.controls['apiUrl'].value,
-                    cacheTtl: this.form.controls['cacheTtl'].value,
+                    cacheTtl: this.convertToNumber(this.form.controls['cacheTtl'].value),
                     description: this.form.controls['description'].value,
                     filterLabel: this.form.controls['filterLabel'].value,
                     id: this.form.controls['id'].value,
                     name: this.form.controls['name'].value,
-                    priority: this.form.controls['priority'].value,
+                    priority: this.convertToNumber(this.form.controls['priority'].value),
                     projectId: this.form.controls['projectId'].value,
                 });
             }
@@ -146,6 +146,10 @@ export class ArunaComponent implements OnInit, OnChanges {
         };
     }
 
+    private convertToNumber(value: number | null | undefined): number | undefined {
+        return value ? Number(value) : undefined;
+    }
+
     private setFormValue(provider: ArunaDataProviderDefinition): void {
         this.form.setValue(
             {
@@ -156,7 +160,7 @@ export class ArunaComponent implements OnInit, OnChanges {
                 filterLabel: provider.filterLabel,
                 id: provider.id,
                 name: provider.name,
-                priority: provider.priority,
+                priority: provider.priority ?? 0,
                 projectId: provider.projectId,
             },
             {emitEvent: false},
