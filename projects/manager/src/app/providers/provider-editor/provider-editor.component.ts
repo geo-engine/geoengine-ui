@@ -96,8 +96,12 @@ export class ProviderEditorComponent implements OnChanges, OnInit {
     }
 
     setChangedDefinition(definition: TypedDataProviderDefinition): void {
-        this.changedDefinition = true;
-        this.provider = definition;
+        if (definition) {
+            this.changedDefinition = true;
+            this.provider = definition;
+        } else {
+            this.changedDefinition = false;
+        }
     }
 
     async submitUpdate(): Promise<void> {
