@@ -29,7 +29,7 @@
 
 <mat-paginator [pageSize]="5" [pageSizeOptions]="[5, 10, 20]"></mat-paginator>
 
-<form [formGroup]="form">
+<form [formGroup]="form" *ngIf="source.isOwner$ | async">
     <div class="flex-container">
         <mat-form-field appearance="fill">
             <mat-label>Role Name</mat-label>
