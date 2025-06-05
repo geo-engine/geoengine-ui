@@ -8,6 +8,7 @@ import {
     Component,
     ContentChildren,
     ElementRef,
+    inject,
     Input,
     OnChanges,
     OnDestroy,
@@ -59,6 +60,7 @@ import {SpatialReferenceService, WGS_84} from '../../spatial-references/spatial-
 import {containsCoordinate, getCenter} from 'ol/extent';
 import {applyBackground, stylefunction} from 'ol-mapbox-style';
 import {olExtentToTuple, SpatialReference, VectorSymbology} from '@geoengine/common';
+import {BasemapService} from '../../layers/basemap.service';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type MapLayer = MapLayerComponent<OlLayer<OlSource, any>, OlSource>;
@@ -122,6 +124,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     private endDrawCallback?: (feature: OlFeature<OlGeometry>) => void;
 
     private subscriptions: Array<Subscription> = [];
+
+    private readonly basemapService = inject(BasemapService);
 
     /**
      * Create the component and inject several dependencies via DI.
@@ -485,10 +489,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         }
 
         if (projectionChanged || !this.backgroundLayerSource) {
-            this.backgroundLayerSource = this.createBackgroundLayerSource(
-                projection,
-                this.config.MAP.BASEMAPS[this.config.MAP.DEFAULT_BASEMAP],
-            );
+            this.backgroundLayerSource = this.createBackgroundLayerSource(projection, this.basemapService.basemap());
 
             this.backgroundLayers.length = 0;
         }
@@ -499,7 +500,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         }
         while (this.backgroundLayers.length < this.desiredNumberOfMaps()) {
             // create background layers if necessary
-            this.backgroundLayers.push(this.createBackgroundLayer(projection, this.config.MAP.BASEMAPS[this.config.MAP.DEFAULT_BASEMAP]));
+            this.backgroundLayers.push(this.createBackgroundLayer(projection, this.basemapService.basemap()));
         }
 
         this.maps.forEach((map, index) => {
