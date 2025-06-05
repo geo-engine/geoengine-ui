@@ -3,7 +3,7 @@
         <geoengine-manager-id-input *ngIf="createNew" formControlName="id"></geoengine-manager-id-input>
         <mat-form-field>
             <mat-label>Name</mat-label>
-            <input matInput formControlName="name" />
+            <input matInput formControlName="name" [errorStateMatcher]="errorStateMatcher" />
         </mat-form-field>
         <mat-form-field>
             <mat-label>Description</mat-label>
@@ -11,15 +11,15 @@
         </mat-form-field>
         <mat-form-field>
             <mat-label>API URL</mat-label>
-            <input matInput formControlName="apiUrl" />
+            <input matInput formControlName="apiUrl" [errorStateMatcher]="errorStateMatcher" />
         </mat-form-field>
         <mat-form-field>
             <mat-label>API Token</mat-label>
-            <textarea matInput cdkTextareaAutosize formControlName="apiToken"></textarea>
+            <textarea matInput cdkTextareaAutosize formControlName="apiToken" [errorStateMatcher]="errorStateMatcher"></textarea>
         </mat-form-field>
         <mat-form-field>
             <mat-label>Project ID</mat-label>
-            <input matInput formControlName="projectId" />
+            <input matInput formControlName="projectId" [errorStateMatcher]="errorStateMatcher" />
         </mat-form-field>
         <mat-form-field>
             <mat-label matTooltip="The label for filtering">Filter label</mat-label>

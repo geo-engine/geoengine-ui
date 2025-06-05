@@ -58,7 +58,7 @@ export class ArunaComponent implements OnInit, OnChanges {
     });
 
     errorStateMatcher: ErrorStateMatcher = {
-        isErrorState: (control: FormControl | null): boolean => !!control && control.invalid && (control.dirty || control.touched),
+        isErrorState: (control: FormControl | null): boolean => !!control && control.invalid,
     };
 
     private editing: boolean = false;
