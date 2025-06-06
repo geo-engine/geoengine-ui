@@ -6,7 +6,6 @@ import {LayoutService} from '../../../layout.service';
 import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
 import {HistogramOperatorComponent} from '../histogram-operator/histogram-operator.component';
 import {BoxPlotOperatorComponent} from '../boxplot-operator/boxplot-operator.component';
-// eslint-disable-next-line max-len
 import {MeanRasterPixelValuesOverTimeDialogComponent} from '../mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
 import {PointInPolygonFilterOperatorComponent} from '../point-in-polygon-filter/point-in-polygon-filter.component';
 import {RasterVectorJoinComponent} from '../raster-vector-join/raster-vector-join.component';

@@ -45,7 +45,7 @@ type VectorData = any; // TODO: use correct type
  * The `ol-layer` component represents a single layer object of open layers.
  */
 @Directive()
-// eslint-disable-next-line @angular-eslint/directive-class-suffix, @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export abstract class MapLayerComponent<OL extends OlLayer<OS, any>, OS extends OlSource> {
     @Input() layerId!: number;
     @Input() isVisible = true;

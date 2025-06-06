@@ -2,7 +2,7 @@ import {Component, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges, Cha
 import {RasterLayer, VectorLayer} from '@geoengine/common';
 
 @Component({
-    selector: 'geoengine-legend', // eslint-disable-line @angular-eslint/component-selector
+    selector: 'geoengine-legend',
     templateUrl: './legend.component.html',
     styleUrls: ['./legend.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

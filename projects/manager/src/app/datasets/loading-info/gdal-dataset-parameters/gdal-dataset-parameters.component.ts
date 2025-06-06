@@ -73,8 +73,6 @@ export class GdalDatasetParametersComponent {
     FileNotFoundHandling = Object.values(FileNotFoundHandling);
     RasterPropertiesEntryType = Object.values(RasterPropertiesEntryType);
 
-    constructor() {}
-
     removePropertyMapping(i: number): void {
         this.form.controls.propertiesMapping.removeAt(i);
         this.form.markAsDirty();
