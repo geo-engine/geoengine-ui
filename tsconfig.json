@@ -20,7 +20,6 @@
         "strict": true,
         "noImplicitOverride": true,
         "noImplicitReturns": true,
-        // this is `true` for angular in general, but is maybe inconvenient for us
         "noPropertyAccessFromIndexSignature": false,
         "noFallthroughCasesInSwitch": true,
         "useDefineForClassFields": false

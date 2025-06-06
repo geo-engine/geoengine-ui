@@ -260,7 +260,7 @@ export class RasterSymbologyEditorComponent {
         this.changedSymbology.emit(this.symbology());
     }
 
-    protected async setUp(): void {
+    protected async setUp(): Promise<void> {
         const symbologyWorkflow = this.symbologyWorkflow();
         const symbology = symbologyWorkflow.symbology.clone();
 
