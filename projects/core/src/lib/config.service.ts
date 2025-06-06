@@ -58,7 +58,7 @@ export interface ConfigMap {
 export interface VectorTiles {
     readonly STYLE_URL: string;
     readonly SOURCE: string;
-    readonly BACKGROUND_LAYER_EXTENTS: {[epsg: string]: [number, number, number, number]};
+    readonly BACKGROUND_LAYER_EXTENTS: Record<string, [number, number, number, number]>;
     readonly MAX_ZOOM: number;
 }
 

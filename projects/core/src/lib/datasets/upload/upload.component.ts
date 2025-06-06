@@ -129,7 +129,7 @@ export class UploadComponent implements OnDestroy {
                     const fraction = event.total ? event.loaded / event.total : 1;
                     this.progress$.next(Math.round(100 * fraction));
                 } else if (event.type === HttpEventType.Response) {
-                    const uploadId = event.body?.id as UUID;
+                    const uploadId = event.body?.id;
                     this.uploadId = uploadId;
                     if (this.stepper.selected) {
                         this.stepper.selected.completed = true;
@@ -197,7 +197,7 @@ export class UploadComponent implements OnDestroy {
 
             this.stepper.next();
         } catch (err) {
-            this.notificationService.error('Create dataset failed: ' + err);
+            this.notificationService.error('Create dataset failed: ' + err.toString());
             return;
         }
     }

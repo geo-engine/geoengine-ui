@@ -122,7 +122,7 @@ export class RasterStackerComponent implements AfterViewInit {
                     // is already set at a meaningful type
                     return;
                 }
-                let selectedDataType: RasterDataType = currentDataType ? currentDataType : outputDataTypes[0][0]; // use default
+                let selectedDataType: RasterDataType = currentDataType ?? outputDataTypes[0][0]; // use default
                 if (rasterDataTypes.length) {
                     selectedDataType = rasterDataTypes[0];
                 }

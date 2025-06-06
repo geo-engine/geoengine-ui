@@ -107,6 +107,6 @@ export class LayerListComponent implements OnDestroy, OnChanges {
      * helper method to cast AbstractSymbology to VectorSymbology
      */
     vectorLayerCast(layer: Layer): Layer {
-        return layer as Layer;
+        return layer;
     }
 }

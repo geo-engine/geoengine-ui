@@ -137,7 +137,7 @@ export class StatisticsPlotComponent implements AfterViewInit, OnDestroy {
     }
 
     add(): void {
-        const inputLayer = this.form.controls['layer'].value as Layer;
+        const inputLayer = this.form.controls['layer'].value!;
 
         const columnNames = this.columnNames.controls.map((fc) => (fc ? fc.value?.toString() : ''));
 

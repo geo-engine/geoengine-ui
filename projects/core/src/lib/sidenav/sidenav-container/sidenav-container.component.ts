@@ -132,7 +132,7 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
             this.target.clear();
             this.componentRef.destroy();
         }
-        if (this.target && sidenavConfig && sidenavConfig.component) {
+        if (this.target && sidenavConfig?.component) {
             this.componentRef = this.target.createComponent(sidenavConfig.component);
 
             if (sidenavConfig.config) {

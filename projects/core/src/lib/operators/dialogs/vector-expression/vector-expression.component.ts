@@ -95,6 +95,7 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
             ],
             geoengineValidators.conditionalAsyncValidator(
                 attributeNameCollision(this.allAttributes$.pipe(map((attributes) => attributes.keySeq().toArray()))),
+                // eslint-disable-next-line @typescript-eslint/require-await
                 async () => this.outputColumnType.value === 'column',
             ),
         );
@@ -169,15 +170,15 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
                             return of([[], []]);
                         }
 
-                        const usedColumns = inputColumns.filter((column) => column !== null) as Array<string>;
+                        const usedColumns = inputColumns.filter((column) => column !== null);
 
                         return this.projectService.getVectorLayerMetadata(source).pipe(
                             map<VectorLayerMetadata, [Array<VectorColumn>, Immutable.Map<string, VectorColumnDataType>]>(
                                 (metadata: VectorLayerMetadata) => [
                                     metadata.dataTypes
-                                        .filter((columnType) => ALLOWED_EXPRESSION_COLUMN_TYPES.indexOf(columnType) >= 0)
+                                        .filter((columnType) => ALLOWED_EXPRESSION_COLUMN_TYPES.includes(columnType))
                                         .entrySeq()
-                                        .filter(([columnName, _columnType]) => usedColumns.indexOf(columnName) < 0)
+                                        .filter(([columnName, _columnType]) => !usedColumns.includes(columnName))
                                         .map(([columnName, columnType]) => ({name: columnName, datatype: columnType}))
                                         .toArray(),
                                     metadata.dataTypes,
@@ -198,9 +199,10 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
             outputGeometryType: this.form.controls.outputGeometryType.valueChanges,
         }).pipe(
             map(({columns, geometryName, outputGeometryType}) => {
-                const variables = columns.filter((c) => c !== null).map((c) => canonicalizeVariableName(c as string));
+                const variables = columns.filter((c) => c !== null).map((c) => canonicalizeVariableName(c));
                 const geometryComma = variables.length > 0 ? ', ' : '';
                 const returnType = this.outputColumnType.value === 'column' ? VectorColumnDataTypes.Float : outputGeometryType;
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                 return `fn(${geometryName}${geometryComma}${variables.join(', ')}) -> ${returnType} {`;
             }),
         );
@@ -248,7 +250,7 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
         }
         this.loading$.next(true);
 
-        const sourceLayer = this.form.controls.source.value as VectorLayer;
+        const sourceLayer = this.form.controls.source.value!;
 
         const inputColumns = this.columnNames.controls.map((fc) => (fc ? fc.value?.toString() : ''));
 
@@ -345,7 +347,7 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
  */
 function canonicalizeVariableName(name: string): string {
     // if starts with number
-    const additionalPrefix = name.match(/^\d/) ? '_' : '';
+    const additionalPrefix = /^\d/.exec(name) ? '_' : '';
 
     // replace all non-alphanumeric characters with _
     const canonicalName = name.replace(/[^a-zA-Z0-9_]/g, '_');
@@ -391,7 +393,7 @@ const attributeNameCollision =
         const attributes = await firstValueFrom(attributes$);
         const attribute = control.value;
 
-        if (attributes.indexOf(attribute) >= 0) {
+        if (attributes.includes(attribute)) {
             return {duplicateName: true};
         }
 

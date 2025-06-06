@@ -120,7 +120,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
         config: CoreConfig,
         loginSidenavConfig?: SidenavConfig,
     ): NavigationButton {
-        loginSidenavConfig = loginSidenavConfig ? loginSidenavConfig : {component: OidcComponent};
+        loginSidenavConfig = loginSidenavConfig ?? {component: OidcComponent};
         return {
             sidenavConfig: loginSidenavConfig,
             icon: {

@@ -68,6 +68,7 @@ export class MediaviewComponent implements OnInit {
             this.mediaType = [];
             this.mediaUrls = [];
 
+            // eslint-disable-next-line @typescript-eslint/no-for-in-array
             for (const i in this.urls) {
                 if (Object.hasOwn(this.urls, i)) {
                     const checkMediaType = MediaviewComponent.getType(this.urls[i]);

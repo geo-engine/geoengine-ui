@@ -69,6 +69,7 @@ export class BackendStatusPageComponent {
                 first(),
             )
             .subscribe((_status) => {
+                // eslint-disable-next-line @typescript-eslint/no-misused-promises
                 setTimeout(() => this.router.navigate(['/map']));
             });
 

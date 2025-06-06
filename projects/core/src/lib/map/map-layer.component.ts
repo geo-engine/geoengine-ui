@@ -25,7 +25,6 @@ import {UUID} from '../backend/backend.model';
 import OlFeature from 'ol/Feature';
 import TileState from 'ol/TileState';
 import {Extent} from './map.service';
-import {Projection} from 'ol/proj';
 import {
     NotificationService,
     RasterColorizer,
@@ -332,7 +331,7 @@ export class OlRasterLayerComponent
             wrapX: false,
         });
 
-        const proj = olGetProj(this.spatialReference.srsString) as Projection;
+        const proj = olGetProj(this.spatialReference.srsString)!;
         const tileGrid = this.source.getTileGridForProjection(proj);
 
         this.source.setTileLoadFunction((olTile, src) => {

@@ -107,6 +107,7 @@ describe('test project methods in projectService', () => {
 
     it('#createDefaultProject should create a default project', (done) => {
         projectService.createDefaultProject().subscribe(
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
             (project) =>
                 expect(project.toDict()).toEqual(
                     new Project({
@@ -175,6 +176,7 @@ describe('test project methods in projectService', () => {
                 },
             })
             .subscribe(
+                // eslint-disable-next-line @typescript-eslint/no-misused-promises
                 (project) =>
                     expect(project.toDict()).toEqual(
                         new Project({

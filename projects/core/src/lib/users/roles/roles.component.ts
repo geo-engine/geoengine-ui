@@ -15,7 +15,7 @@ export class RolesComponent implements AfterViewInit, OnDestroy {
     roleNames: Array<string> | undefined;
     displayedColumns: string[] = ['roleName'];
     roleTable: MatTableDataSource<string> | undefined;
-    numberOfRoles: BehaviorSubject<number> = new BehaviorSubject(0);
+    numberOfRoles = new BehaviorSubject<number>(0);
 
     @ViewChild(MatPaginator) paginator!: MatPaginator;
 
