@@ -41,15 +41,16 @@ export abstract class Layer implements HasLayerId, HasLayerType, ToDict<ProjectL
      * Create the suitable layer type
      */
     static fromDict(dict: ProjectLayerDict): Layer {
-        if (dict.symbology.type === 'raster') {
+        const symbologyType = dict.symbology.type;
+        if (symbologyType === 'raster') {
             return RasterLayer.fromDict(dict);
         }
 
-        if (dict.symbology.type === 'point' || dict.symbology.type === 'line' || dict.symbology.type === 'polygon') {
+        if (symbologyType === 'point' || symbologyType === 'line' || symbologyType === 'polygon') {
             return VectorLayer.fromDict(dict);
         }
 
-        throw new Error(`Unknown layer type »${dict}«`);
+        throw new Error(`Unknown layer type »${symbologyType as string}«`);
     }
 
     // TODO: remove method, here?

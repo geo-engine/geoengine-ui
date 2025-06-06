@@ -1,4 +1,4 @@
-import {Color, RgbaColorDict, TRANSPARENT, colorToDict, rgbaColorFromDict} from './color';
+import {Color, RgbaColorDict, colorToDict, rgbaColorFromDict} from './color';
 import {ColorBreakpoint} from './color-breakpoint.model';
 import {
     Colorizer as ColorizerDict,
@@ -401,9 +401,7 @@ export class PaletteColorizer extends Colorizer {
     }
 
     toDict(): ColorizerDict {
-        const colors: {
-            [numberValue: string]: RgbaColorDict;
-        } = {};
+        const colors: Record<string, RgbaColorDict> = {};
 
         for (const [i, color] of this.colors.entries()) {
             colors[i] = colorToDict(color);

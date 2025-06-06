@@ -142,6 +142,7 @@ export default defineConfig([
                 {
                     argsIgnorePattern: '^_',
                     caughtErrorsIgnorePattern: '^_',
+                    varsIgnorePattern: '^_',
                 },
             ],
             '@typescript-eslint/no-shadow': 'error',

@@ -25,10 +25,11 @@ export class LayerCollectionLayerComponent implements OnChanges {
     @Input({required: false}) showLayerToggle = true;
     @Input() layer: LayerCollectionLayerDict | undefined = undefined;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     trackBy = input<any>(undefined);
 
-    @Output() addClick: EventEmitter<ProviderLayerIdDict> = new EventEmitter();
-    @Output() isExpanded: EventEmitter<boolean> = new EventEmitter();
+    @Output() addClick = new EventEmitter<ProviderLayerIdDict>();
+    @Output() isExpanded = new EventEmitter<boolean>();
 
     expanded = false;
 

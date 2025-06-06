@@ -1,7 +1,8 @@
 /**
  * Options allowed when cloning the operator
  */
-export interface OperatorTypeCloneOptions {} // eslint-disable-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface OperatorTypeCloneOptions {}
 
 /**
  * Dictionary for serializing the operator type.

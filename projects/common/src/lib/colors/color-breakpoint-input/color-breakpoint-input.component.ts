@@ -34,10 +34,12 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, OnCh
             .subscribe((colorBreakpoint) => this.onChange(colorBreakpoint.clone()));
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    onTouched = (): void => {};
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    onChange = (_: ColorBreakpoint): void => {};
+    onTouched = (): void => {
+        // do nothing
+    };
+    onChange = (_: ColorBreakpoint): void => {
+        // do nothing
+    };
 
     ngOnDestroy(): void {
         this.onChangePropagationSubscription.unsubscribe();

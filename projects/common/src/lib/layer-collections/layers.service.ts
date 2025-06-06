@@ -138,7 +138,7 @@ export class LayersService {
                 symbology: layer.symbology
                     ? VectorSymbology.fromVectorSymbologyDict(layer.symbology as VectorSymbologyDict)
                     : createVectorSymbology(
-                          (metadata as VectorLayerMetadata).dataType.getCode(),
+                          (metadata).dataType.getCode(),
                           this.randomColorService.getRandomColorRgba(),
                       ),
             });
