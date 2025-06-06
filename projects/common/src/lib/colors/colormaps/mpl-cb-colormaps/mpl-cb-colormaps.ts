@@ -14,6 +14,8 @@
  * RGB values taken from Brewer's Excel sheet, divided by 255
  */
 
+/* eslint-disable no-loss-of-precision */ // <-- okay for RGB values
+
 import {RgbaTuple, convertFractionsToRgbas} from '../../color';
 
 const COLORMAP_BLUES_DATA: Array<[number, number, number]> = [
@@ -358,7 +360,7 @@ const COLORMAP_YLORRD_DATA: Array<[number, number, number]> = [
     [0.50196078431372548, 0.0, 0.14901960784313725],
 ];
 
-export const MPL_CB_COLORMAPS: {[name: string]: Array<RgbaTuple>} = {
+export const MPL_CB_COLORMAPS: Record<string, Array<RgbaTuple>> = {
     Greys: convertFractionsToRgbas(COLORMAP_GRAYS_DATA),
     Blues: convertFractionsToRgbas(COLORMAP_BLUES_DATA),
     BrBG: convertFractionsToRgbas(COLORMAP_BRBG_DATA),

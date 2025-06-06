@@ -48,7 +48,7 @@ export class ColorTableEditorComponent implements OnInit, OnChanges {
         }
     }
 
-    ngOnChanges(changes: SimpleChanges): void {
+    ngOnChanges(_changes: SimpleChanges): void {
         this.updateColorAttributes();
     }
 

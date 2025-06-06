@@ -19,10 +19,8 @@ export interface TabContent {
     removeTriggerSubscription: Subscription;
 }
 
-export interface TabInputs {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [property: string]: any;
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type TabInputs = Record<string, any>;
 
 @Injectable({
     providedIn: 'root',

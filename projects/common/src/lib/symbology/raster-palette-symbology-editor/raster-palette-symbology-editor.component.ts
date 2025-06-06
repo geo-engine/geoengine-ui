@@ -1,4 +1,4 @@
-import {Component, Input, ChangeDetectionStrategy, OnInit, ViewChild, Output, EventEmitter, OnChanges, SimpleChanges} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy, ViewChild, Output, EventEmitter, OnChanges, SimpleChanges} from '@angular/core';
 import {PaletteColorizer} from '../../colors/colorizer.model';
 import {ColorAttributeInput} from '../../colors/color-attribute-input/color-attribute-input.component';
 import {Color} from '../../colors/color';
@@ -17,7 +17,7 @@ import {Measurement} from '@geoengine/openapi-client';
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false,
 })
-export class RasterPaletteSymbologyEditorComponent implements OnInit, OnChanges {
+export class RasterPaletteSymbologyEditorComponent implements OnChanges {
     @ViewChild(ColorMapSelectorComponent)
     colorMapSelector!: ColorMapSelectorComponent;
 
@@ -38,10 +38,6 @@ export class RasterPaletteSymbologyEditorComponent implements OnInit, OnChanges 
 
     protected defaultColor?: ColorAttributeInput;
     protected noDataColor?: ColorAttributeInput;
-
-    constructor() {}
-
-    ngOnInit(): void {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.colorizer) {
@@ -84,7 +80,7 @@ export class RasterPaletteSymbologyEditorComponent implements OnInit, OnChanges 
     }
 
     updateBounds(histogramSignal: {binStart: [number, number]}): void {
-        if (!histogramSignal || !histogramSignal.binStart || histogramSignal.binStart.length !== 2) {
+        if (!histogramSignal?.binStart || histogramSignal.binStart.length !== 2) {
             return;
         }
 
@@ -131,7 +127,7 @@ export class RasterPaletteSymbologyEditorComponent implements OnInit, OnChanges 
 
     createColorMap(): Map<number, Color> {
         const colorMap = new Map<number, Color>();
-        const colorizer: PaletteColorizer = this.colorizer as PaletteColorizer;
+        const colorizer: PaletteColorizer = this.colorizer;
         colorizer.getBreakpoints().forEach((bp, index) => {
             colorMap.set(bp.value, colorizer.getColorAtIndex(index));
         });

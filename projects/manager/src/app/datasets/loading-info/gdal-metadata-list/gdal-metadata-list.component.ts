@@ -56,6 +56,7 @@ export class GdalMetadataListComponent implements OnChanges {
         private readonly changeDetectorRef: ChangeDetectorRef,
     ) {}
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/require-await
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
         if (changes.metaData && this.metaData) {
             this.setUpFormFromMetaData(this.metaData);
@@ -345,7 +346,7 @@ export const overlappingTimeIntervalsValidator =
             return null;
         }
 
-        const formArray = control as FormArray;
+        const formArray = control;
 
         const controls = formArray.controls;
         const values: TimeInterval[] = controls.map((c) => c.value.time);

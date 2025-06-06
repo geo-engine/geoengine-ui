@@ -13,7 +13,6 @@ export class CanRegisterGuard {
         _route: ActivatedRouteSnapshot,
         _state: RouterStateSnapshot,
     ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-        console.log('CanRegisterGuard#canActivate called', this.config.USER.REGISTRATION_AVAILABLE);
         return this.config.USER.REGISTRATION_AVAILABLE;
     }
 }

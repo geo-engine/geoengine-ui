@@ -3,7 +3,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, input} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
-import {map, mergeMap} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {CommonConfig} from '../config.service';
 import {UserService} from '../user/user.service';

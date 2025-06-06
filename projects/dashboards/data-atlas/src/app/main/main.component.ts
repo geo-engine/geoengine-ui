@@ -96,7 +96,7 @@ export class MainComponent implements OnInit, AfterViewInit {
 
                 const collection = collections.get(item.name);
 
-                if (collection && collection.raster) {
+                if (collection?.raster) {
                     collection.otherRaster = item as LayerCollectionListingDict;
                 } else {
                     collections.set(item.name, {

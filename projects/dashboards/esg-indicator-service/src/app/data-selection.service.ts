@@ -72,6 +72,7 @@ export class DataSelectionService {
             map((loadingState) => loadingState === LoadingState.LOADING),
         );
 
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.userService.getSessionOrUndefinedStream().subscribe(async (_session) => {
             this.oldProject = await firstValueFrom(this.projectService.getProjectOnce());
             this._rasterLayer.next(undefined);

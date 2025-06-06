@@ -103,19 +103,17 @@ export class LayerSelectionComponent implements OnChanges, OnDestroy, ControlVal
                         return forkJoin(layersAndMetadata);
                     }),
                     map((layers: Array<[Layer, LayerMetadata]>) =>
-                        layers.filter(([_layer, meta]) => this.types.indexOf(meta.resultType) >= 0).map(([layer, _]) => layer),
+                        layers.filter(([_layer, meta]) => this.types.includes(meta.resultType)).map(([layer, _]) => layer),
                     ),
                 )
                 .subscribe((l) => this.filteredLayers.next(l));
             this.subscriptions.push(sub);
 
-            if (this.title === undefined) {
-                // set title out of types
-                this.title = this.types
-                    .map((type) => type.toString())
-                    .map((name) => (name.endsWith('s') ? name.substr(0, name.length - 1) : name))
-                    .join(', ');
-            }
+            // set title out of types
+            this.title ??= this.types
+                .map((type) => type.toString())
+                .map((name) => (name.endsWith('s') ? name.substr(0, name.length - 1) : name))
+                .join(', ');
         }
     }
 

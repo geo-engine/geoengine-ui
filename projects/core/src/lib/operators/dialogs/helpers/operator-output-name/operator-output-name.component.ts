@@ -38,7 +38,7 @@ export class OperatorOutputNameComponent implements ControlValueAccessor, OnChan
         setTimeout(() => this.changeDetectorRef.markForCheck());
     }
 
-    ngOnChanges(changes: {[propertyName: string]: SimpleChange}): void {
+    ngOnChanges(changes: Record<string, SimpleChange>): void {
         // eslint-disable-next-line guard-for-in
         for (const propName in changes) {
             switch (propName) {

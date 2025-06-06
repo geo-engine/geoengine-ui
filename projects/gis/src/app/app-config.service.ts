@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 import {Injectable} from '@angular/core';
 import {mergeDeepOverrideLists} from '@geoengine/common';
 import {CoreConfig, CoreConfigStructure, DEFAULT_CORE_CONFIG} from '@geoengine/core';

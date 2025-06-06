@@ -10,7 +10,7 @@ import {
 import * as Immutable from 'immutable';
 import {Measurement} from './measurement';
 import {ResultType, ResultTypes} from '../operators/result-type.model';
-import {SpatialReference, SrsString} from '../spatial-references/spatial-reference.model';
+import {SpatialReference} from '../spatial-references/spatial-reference.model';
 import {Time} from '../time/time.model';
 import {BoundingBox2D} from '../spatial-bounds/bounding-box';
 import {
@@ -27,13 +27,13 @@ export abstract class LayerMetadata implements HasLayerType {
     readonly time?: Time;
     readonly bbox?: BoundingBox2D;
 
-    public abstract get resultType(): ResultType;
-
     constructor(spatialReference: SpatialReference, time?: Time, bbox?: BoundingBox2D) {
         this.spatialReference = spatialReference;
         this.time = time;
         this.bbox = bbox;
     }
+
+    public abstract get resultType(): ResultType;
 
     public static fromDict(
         dict: RasterResultDescriptorDict | VectorResultDescriptorDict | TypedResultDescriptor,
@@ -59,8 +59,8 @@ export class VectorLayerMetadata extends LayerMetadata {
     constructor(
         dataType: VectorDataType,
         spatialReference: SpatialReference,
-        dataTypes: {[index: string]: VectorColumnDataType},
-        measurements: {[index: string]: Measurement},
+        dataTypes: Record<string, VectorColumnDataType>,
+        measurements: Record<string, Measurement>,
         time?: Time,
         bbox?: BoundingBox2D,
     ) {
@@ -74,12 +74,12 @@ export class VectorLayerMetadata extends LayerMetadata {
     static override fromDict(dict: VectorResultDescriptorDict): VectorLayerMetadata {
         const dataType = VectorDataTypes.fromCode(dict.dataType);
 
-        const columns: {[index: string]: VectorColumnDataType} = {};
+        const columns: Record<string, VectorColumnDataType> = {};
         for (const columnName of Object.keys(dict.columns)) {
             columns[columnName] = VectorColumnDataTypes.fromCode(dict.columns[columnName].dataType);
         }
 
-        const measurements: {[index: string]: Measurement} = {};
+        const measurements: Record<string, Measurement> = {};
         for (const columnName of Object.keys(dict.columns)) {
             measurements[columnName] = Measurement.fromDict(dict.columns[columnName].measurement);
         }
@@ -131,7 +131,7 @@ export class RasterLayerMetadata extends LayerMetadata {
             bands,
             time,
             bbox,
-            dict.resolution ? dict.resolution : undefined,
+            dict.resolution ?? undefined,
         );
     }
 

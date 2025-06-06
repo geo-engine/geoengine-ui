@@ -101,7 +101,7 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     protected formToTime(): Time {
-        const timeInterval = this.form.get('timeInterval')?.value as TimeInterval;
+        const timeInterval = this.form.get('timeInterval')!.value;
 
         const start = timeInterval.start;
         const timeAsPoint = timeInterval.timeAsPoint;

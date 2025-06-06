@@ -80,7 +80,6 @@ import {BoxPlotOperatorComponent} from './operators/dialogs/boxplot-operator/box
 import {ScatterplotOperatorComponent} from './operators/dialogs/scatterplot-operator/scatterplot-operator.component';
 import {LayerSelectionComponent} from './operators/dialogs/helpers/layer-selection/layer-selection.component';
 import {LineageGraphComponent} from './provenance/lineage-graph/lineage-graph.component';
-// eslint-disable-next-line max-len
 import {MeanRasterPixelValuesOverTimeDialogComponent} from './operators/dialogs/mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
 import {RasterVectorJoinComponent} from './operators/dialogs/raster-vector-join/raster-vector-join.component';
 import {RasterStackerComponent} from './operators/dialogs/raster-stacker/raster-stacker.component';

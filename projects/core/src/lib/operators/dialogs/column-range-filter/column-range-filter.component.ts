@@ -205,7 +205,7 @@ export class ColumnRangeFilterComponent implements OnDestroy {
     }
 
     updateBounds(histogramSignal: {binStart: [number, number]} | null, filterIndex: number, rangeIndex: number): void {
-        if (!histogramSignal || !histogramSignal.binStart || histogramSignal.binStart.length !== 2) {
+        if (!histogramSignal?.binStart || histogramSignal.binStart.length !== 2) {
             return;
         }
 
@@ -218,8 +218,8 @@ export class ColumnRangeFilterComponent implements OnDestroy {
      * creates a new layer with the filtered values
      */
     add(): void {
-        const name = (this.form.get('name')?.value as string) || ('Filtered Layer' as string);
-        const inputLayer = this.form.controls['layer'].value as Layer;
+        const name = this.form.get('name')?.value ?? ('Filtered Layer' as string);
+        const inputLayer = this.form.controls['layer'].value!;
         const filterValues = this.filters.value;
 
         this.projectService
@@ -343,7 +343,7 @@ export class ColumnRangeFilterComponent implements OnDestroy {
     }
 
     private createHistogramWorkflowId(attribute: string): Observable<UUID> {
-        const inputLayer = this.form.controls['layer'].value as Layer;
+        const inputLayer = this.form.controls['layer'].value!;
         const attributeName = attribute;
         return this.projectService.getWorkflow(inputLayer.workflowId).pipe(
             mergeMap((workflow) =>

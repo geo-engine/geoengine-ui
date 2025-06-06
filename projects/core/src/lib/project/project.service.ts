@@ -137,6 +137,7 @@ export class ProjectService implements OnDestroy {
             .subscribe((project) => this.setProject(project));
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     async ngOnDestroy(): Promise<void> {
         if (this.config.PROJECT.CREATE_TEMPORARY_PROJECT_AT_STARTUP) {
             const session = await firstValueFrom(this.userService.getSessionTokenForRequest());
@@ -156,6 +157,7 @@ export class ProjectService implements OnDestroy {
 
             if (!time.start.isValid()) {
                 throw new Error(
+                    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands, @typescript-eslint/no-base-to-string
                     "Couldn't create default project because the configured start time is invalid:" + this.config.DEFAULTS.PROJECT.TIME,
                 );
             }
@@ -166,6 +168,7 @@ export class ProjectService implements OnDestroy {
 
             if (!time.start.isValid() || (isRange && (!time.end.isValid() || time.end.isBefore(time.start)))) {
                 throw new Error(
+                    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands, @typescript-eslint/no-base-to-string
                     "Couldn't create default project because the configured time range is invalid:" + this.config.DEFAULTS.PROJECT.TIME,
                 );
             }
@@ -1002,20 +1005,14 @@ export class ProjectService implements OnDestroy {
             tap(([time, _viewportSize, session, sref, _layerRemoved]) => {
                 // capture the initial values at the start of the query
                 // s.t. we can detect a change later
-                if (!initialTime) {
-                    initialTime = time;
-                }
-                if (!initialSref) {
-                    initialSref = sref;
-                }
-                if (!initialSession) {
-                    initialSession = session;
-                }
+                initialTime ??= time;
+                initialSref ??= sref;
+                initialSession ??= session;
             }),
             skip(1),
             filter(
                 ([time, viewportSize, session, sref, layerRemoved]) =>
-                    !time.isSame(initialTime as Time) ||
+                    !time.isSame(initialTime!) ||
                     viewportSize.resolution !== tileResolution ||
                     !olIntersects(tileExtent, viewportSize.extent) ||
                     session !== initialSession ||
@@ -1316,6 +1313,7 @@ export class ProjectService implements OnDestroy {
                 tap({
                     next: () => loadingState$.next(LoadingState.OK),
                     error: (reason: Response) => {
+                        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-base-to-string
                         this.notificationService.error(`${layer.name}: ${reason}`);
                         loadingState$.next(LoadingState.ERROR);
                     },
@@ -1332,12 +1330,13 @@ export class ProjectService implements OnDestroy {
      * This puts a new operator on top of the actual workflow.
      */
     private createClusteredPointLayerQueryWorkflow(workflowId: UUID, metadata: VectorLayerMetadata): Observable<UUID> {
-        const columnAggregates: {
-            [columnName: string]: {
+        const columnAggregates: Record<
+            string,
+            {
                 columnName: string;
                 aggregateType: 'meanNumber' | 'stringSample' | 'null';
-            };
-        } = {};
+            }
+        > = {};
 
         for (const [columnName, dataType] of metadata.dataTypes.entries()) {
             let aggregateType: 'meanNumber' | 'stringSample' | 'null';

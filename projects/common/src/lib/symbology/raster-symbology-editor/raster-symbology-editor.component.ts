@@ -260,7 +260,7 @@ export class RasterSymbologyEditorComponent {
         this.changedSymbology.emit(this.symbology());
     }
 
-    protected async setUp() {
+    protected async setUp(): Promise<void> {
         const symbologyWorkflow = this.symbologyWorkflow();
         const symbology = symbologyWorkflow.symbology.clone();
 
@@ -294,7 +294,8 @@ export class RasterSymbologyEditorComponent {
         this.selectedBand3.set(selectedBand3);
     }
 
-    updateRasterSymbologyType($event: any): void {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    updateRasterSymbologyType(_$event: any): void {
         throw new Error('Method not implemented.');
     }
 
@@ -332,7 +333,7 @@ export class RasterSymbologyEditorComponent {
             underColor = colorizer.underColor;
         } else if (colorizer instanceof PaletteColorizer) {
             // Must be a palette then, so use values from the color selectors or RGBA 0, 0, 0, 0 as a fallback
-            const paletteColorizer = colorizer as PaletteColorizer;
+            const paletteColorizer = colorizer;
             const defaultColor: Color = paletteColorizer.defaultColor ? paletteColorizer.defaultColor : TRANSPARENT;
 
             breakpoints = paletteColorizer.getBreakpoints();
@@ -365,7 +366,7 @@ export class RasterSymbologyEditorComponent {
             defaultColor = TRANSPARENT;
         } else if (colorizer instanceof PaletteColorizer) {
             // Must be a palette then, so use values from the color selectors or RGBA 0, 0, 0, 0 as a fallback
-            const paletteColorizer = colorizer as PaletteColorizer;
+            const paletteColorizer = colorizer;
 
             breakpoints = paletteColorizer.getBreakpoints();
             noDataColor = paletteColorizer.noDataColor ? paletteColorizer.noDataColor : TRANSPARENT;

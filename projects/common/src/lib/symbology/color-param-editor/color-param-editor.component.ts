@@ -40,15 +40,15 @@ export class ColorParamEditorComponent implements ControlValueAccessor {
         this.onTouched();
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    onTouched = (): void => {};
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    onChange = (_: ColorParam | null): void => {};
+    onTouched = (): void => {
+        // do nothing
+    };
+    onChange = (_: ColorParam | null): void => {
+        // do nothing
+    };
 
     writeValue(value: ColorParam | null): void {
-        if (!value) {
-            value = this.defaultColorParam;
-        }
+        value ??= this.defaultColorParam;
 
         if (value instanceof StaticColor) {
             this.update(

@@ -45,6 +45,7 @@ export class LayerCollectionEditorComponent implements OnChanges {
         private readonly config: AppConfig,
     ) {}
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
         if (changes.collectionListing) {
             const collection = await this.layersService.getLayerCollectionItems(

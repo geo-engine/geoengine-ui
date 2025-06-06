@@ -59,7 +59,7 @@ export class TimeShiftComponent implements AfterViewInit {
         private readonly projectService: ProjectService,
         private readonly notificationService: NotificationService,
     ) {
-        const form: FormGroup<TimeShiftForm> = new FormGroup({
+        const form = new FormGroup<TimeShiftForm>({
             name: new FormControl('Time Shift', {
                 validators: [Validators.required, geoengineValidators.notOnlyWhitespace],
                 nonNullable: true,
@@ -154,6 +154,7 @@ export class TimeShiftComponent implements AfterViewInit {
                 value: this.form.controls['value'].value,
             } as RelativeTimeShiftDictParams;
         } else {
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             throw Error(`Invalid time shift type ${type}`);
         }
 
@@ -163,6 +164,7 @@ export class TimeShiftComponent implements AfterViewInit {
         } else if (sourceLayer.layerType === 'vector') {
             layerType = 'Vector';
         } else {
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             throw Error(`Invalid layer type ${sourceLayer.layerType}`);
         }
 
@@ -205,6 +207,7 @@ export class TimeShiftComponent implements AfterViewInit {
                             }),
                         );
                     } else {
+                        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                         throw Error(`Invalid layer type ${layerType}`);
                     }
                 }),

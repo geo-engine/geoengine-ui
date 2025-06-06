@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metadata.model';
 import {VectorDataTypes} from '../../operators/datatype.model';
 import {Colorizer} from '../../colors/colorizer.model';
@@ -30,8 +30,6 @@ export class LayerCollectionLayerDetailsComponent {
             noDataColor: [0, 0, 0, 0],
         }),
     );
-
-    constructor() {}
 
     get rasterLayerMetadata(): RasterLayerMetadata | undefined {
         if (this.layerMetadata && this.layerMetadata.layerType === 'raster') {
@@ -87,14 +85,14 @@ export class LayerCollectionLayerDetailsComponent {
     }
 
     get bboxLowerLeftString(): string | undefined {
-        if (this.layerMetadata && this.layerMetadata.bbox) {
+        if (this.layerMetadata?.bbox) {
             return `Min: ${this.layerMetadata.bbox.xmin} : ${this.layerMetadata.bbox.ymin}`;
         }
         return undefined;
     }
 
     get bboxUpperRightString(): string | undefined {
-        if (this.layerMetadata && this.layerMetadata.bbox) {
+        if (this.layerMetadata?.bbox) {
             return `Max: ${this.layerMetadata.bbox.xmax} : ${this.layerMetadata.bbox.ymax}`;
         }
         return undefined;

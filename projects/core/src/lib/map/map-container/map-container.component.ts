@@ -178,7 +178,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         );
     }
 
-    ngOnChanges(changes: {[propertyName: string]: SimpleChange}): void {
+    ngOnChanges(changes: Record<string, SimpleChange>): void {
         for (const propName in changes) {
             if (propName === 'grid') {
                 this.projection$.pipe(first()).subscribe((projection) => this.redrawLayers(projection));
@@ -531,7 +531,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         const centerCoord = this.view?.getCenter();
         if (centerCoord) {
             const oldCenterPoint = new OlGeomPoint(centerCoord);
-            newCenterPoint = oldCenterPoint.transform(this.view.getProjection(), olProjection) as OlGeomPoint;
+            newCenterPoint = oldCenterPoint.transform(this.view.getProjection(), olProjection);
 
             if (!containsCoordinate(olProjection.getExtent(), newCenterPoint.getCoordinates())) {
                 newCenterPoint = new OlGeomPoint(getCenter(olProjection.getExtent()));
@@ -745,6 +745,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     wrapX: false,
                 });
 
+                // eslint-disable-next-line @typescript-eslint/no-misused-promises
                 source.setLoader(async (_extent, _resolution, sourceProjection): Promise<void> => {
                     const dataProjection = 'EPSG:4326';
                     const response = await fetch('assets/fallback-base-layer/ne_50m_land.fgb');
@@ -754,8 +755,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     }
 
                     for await (const _feature of flatgeobuf.deserialize(response.body)) {
-                        const feature = _feature as OlFeature;
-                        const geometry = feature.getGeometry() as OlGeometry;
+                        const feature = _feature;
+                        const geometry = feature.getGeometry()!;
 
                         geometry.transform(dataProjection, sourceProjection);
                         source.addFeature(feature);

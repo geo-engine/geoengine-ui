@@ -120,7 +120,7 @@ export class RasterizationComponent implements OnDestroy {
             return; // don't add while loading
         }
 
-        const pointsLayer = this.form.controls['layer'].value as Layer;
+        const pointsLayer = this.form.controls['layer'].value!;
         const layerName: string = this.form.controls['name'].value;
         const params = this.rasterizationParams();
 
