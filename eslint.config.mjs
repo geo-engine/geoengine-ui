@@ -24,16 +24,11 @@ export default defineConfig([
         },
 
         languageOptions: {
-            // ecmaVersion: 5,
-            // sourceType: 'script',
             parser: tseslint.parser,
 
             parserOptions: {
                 project: ['tsconfig.json', 'e2e/tsconfig.json'],
                 createDefaultProgram: false,
-                // createDefaultProgram: true,
-                // tsconfigRootDir: ['./tsconfig.json'],
-                // project: true,
             },
         },
 
@@ -68,7 +63,7 @@ export default defineConfig([
                     style: 'camelCase',
                 },
             ],
-            '@angular-eslint/prefer-standalone': 'off', // 'warn', // TODO: make all components standalone
+            '@angular-eslint/prefer-standalone': 'warn', // TODO: make all components standalone
 
             '@typescript-eslint/array-type': ['off', {default: 'generic'}],
             '@typescript-eslint/consistent-type-definitions': 'error',
@@ -147,14 +142,14 @@ export default defineConfig([
             ],
             '@typescript-eslint/no-shadow': 'error',
             '@typescript-eslint/explicit-function-return-type': 'error',
-            '@typescript-eslint/no-unsafe-assignment': 'off', // 'warn', // TODO: use typed forms
-            '@typescript-eslint/no-unsafe-argument': 'off', // 'warn', // TODO: use typed forms
-            '@typescript-eslint/no-unsafe-member-access': 'off', // 'warn', // TODO: use typed forms
-            '@typescript-eslint/no-unsafe-indexed-object-style': 'off', // 'warn', // TODO: use typed forms
-            '@typescript-eslint/no-unsafe-call': 'off', // 'warn', // TODO: use typed forms
-            '@typescript-eslint/no-unsafe-return': 'off', // 'warn', // TODO: use typed forms
+            '@typescript-eslint/no-unsafe-assignment': 'warn', // TODO: use typed forms
+            '@typescript-eslint/no-unsafe-argument': 'warn', // TODO: use typed forms
+            '@typescript-eslint/no-unsafe-member-access': 'warn', // TODO: use typed forms
+            '@typescript-eslint/no-unsafe-indexed-object-style': 'warn', // TODO: use typed forms
+            '@typescript-eslint/no-unsafe-call': 'warn', // TODO: use typed forms
+            '@typescript-eslint/no-unsafe-return': 'warn', // TODO: use typed forms
             '@typescript-eslint/unbound-method': ['error', {ignoreStatic: true}],
-            '@typescript-eslint/no-floating-promises': 'off', // 'warn', // TODO: fix promises
+            '@typescript-eslint/no-floating-promises': 'warn', // TODO: fix promises
             '@typescript-eslint/no-inferrable-types': ['error', {ignoreParameters: true, ignoreProperties: true}],
 
             'prefer-arrow/prefer-arrow-functions': [
