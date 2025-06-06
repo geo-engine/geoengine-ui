@@ -137,10 +137,7 @@ export class LayersService {
                 isLegendVisible: false,
                 symbology: layer.symbology
                     ? VectorSymbology.fromVectorSymbologyDict(layer.symbology as VectorSymbologyDict)
-                    : createVectorSymbology(
-                          (metadata).dataType.getCode(),
-                          this.randomColorService.getRandomColorRgba(),
-                      ),
+                    : createVectorSymbology(metadata.dataType.getCode(), this.randomColorService.getRandomColorRgba()),
             });
         } else if (metadata instanceof RasterLayerMetadata) {
             return new RasterLayer({

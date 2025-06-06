@@ -17,8 +17,8 @@ import {CommonModule as AngularCommonModule} from '@angular/common';
  */
 export function calculateNumberPipeParameters(breakpoints: Array<ColorBreakpoint>): string {
     //minimal and maximal breakpoint
-    const firstNumber = (breakpoints[0].value).toString(10);
-    const lastNumber = (breakpoints[breakpoints.length - 1].value).toString(10);
+    const firstNumber = breakpoints[0].value.toString(10);
+    const lastNumber = breakpoints[breakpoints.length - 1].value.toString(10);
     //maximal decimal places of the minimal and maximal breakpoint
     const decimalPlacesFirst = firstNumber.includes('.') ? firstNumber.split('.')[1].length : 0;
     const decimalPlacesLast = lastNumber.includes('.') ? lastNumber.split('.')[1].length : 0;

@@ -294,7 +294,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     protected resolveClassification(columnName: string, value: number): string {
         const measurement = this.measurements.get(columnName)!;
         if (measurement instanceof ClassificationMeasurement) {
-            const mapping = (measurement).classes.get(value);
+            const mapping = measurement.classes.get(value);
             if (mapping) {
                 return mapping;
             }

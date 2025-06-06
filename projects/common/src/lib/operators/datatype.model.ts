@@ -156,7 +156,6 @@ class Float64 extends RasterDataType {
 export class RasterDataTypeCollection {
     static readonly INSTANCE = new RasterDataTypeCollection();
 
-     
     Byte: RasterDataType = new Byte();
     Int16: RasterDataType = new Int16();
     UInt16: RasterDataType = new UInt16();
@@ -164,7 +163,6 @@ export class RasterDataTypeCollection {
     UInt32: RasterDataType = new UInt32();
     Float32: RasterDataType = new Float32();
     Float64: RasterDataType = new Float64();
-     
 
     ALL_DATATYPES: Array<RasterDataType>;
 

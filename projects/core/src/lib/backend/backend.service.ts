@@ -216,10 +216,7 @@ export class BackendService {
         return response;
     }
 
-    wfsGetFeature(
-        request: WfsParamsDict,
-        sessionId: UUID,
-    ): Observable<Record<string, unknown>> {
+    wfsGetFeature(request: WfsParamsDict, sessionId: UUID): Observable<Record<string, unknown>> {
         const params = new NullDiscardingHttpParams();
 
         params.set('service', 'WFS');

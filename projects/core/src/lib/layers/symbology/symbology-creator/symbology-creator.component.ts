@@ -251,14 +251,17 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
                     throw new Error('Expected `Statistics` plot.');
                 }
 
-                return plot.data as Record<string, {
+                return plot.data as Record<
+                    string,
+                    {
                         valueCount: number;
                         validCount: number;
                         min: number;
                         max: number;
                         mean: number;
                         stddev: number;
-                    }>;
+                    }
+                >;
             }),
             map((statistics) => {
                 const min = statistics[rasterName].min;
