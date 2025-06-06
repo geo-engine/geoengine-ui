@@ -49,7 +49,7 @@ export class BasemapService {
         return this.config.MAP.BASEMAPS;
     }
 
-    selectBasemap(name: string) {
+    selectBasemap(name: string): void {
         const basemap = this.basemaps[name];
         if (!basemap) {
             throw new Error(`Basemap ${name} is not defined in the configuration`);

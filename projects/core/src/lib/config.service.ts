@@ -36,9 +36,9 @@ export interface ConfigMap {
     readonly VALID_CRS: Array<string>;
 }
 
-export type Basemaps = {
+export interface Basemaps {
     [name: string]: Basemap;
-};
+}
 
 export interface Basemap {
     readonly TYPE: Wms['TYPE'] | VectorTiles['TYPE'];
@@ -112,19 +112,21 @@ export const DEFAULT_CORE_CONFIG: CoreConfigStructure = {
     MAP: {
         DEFAULT_BASEMAP: 'Natural Earth Countries 10m',
         BASEMAPS: {
+            /* eslint-disable @typescript-eslint/naming-convention */
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             'Natural Earth Countries 10m': {
                 TYPE: 'MVT',
                 URL: 'https://basemap.geoengine.io/natural-earth/{epsg}/{z}/{x}/{y}.pbf',
                 STYLE_URL: 'assets/mvt/ne-ge.json',
                 SOURCE: 'ne',
                 LAYER_EXTENTS: {
-                    // eslint-disable-next-line @typescript-eslint/naming-convention
                     'EPSG:4326': [-180, -180, 180, 180],
                     // eslint-disable-next-line @typescript-eslint/naming-convention
                     'EPSG:3857': [-20037508.3427892, -20037508.3427892, 20037508.3427892, 20037508.3427892],
                 },
                 MAX_ZOOM: 22,
             } as const as VectorTiles,
+            // eslint-disable-next-line @typescript-eslint/naming-convention
             'Blue Marble (DLR EOC Basemap)': {
                 TYPE: 'WMS',
                 URL: 'https://geoservice.dlr.de/eoc/basemap/wms',

@@ -29,12 +29,9 @@ import OlLayerVector from 'ol/layer/Vector';
 import OlLayerVectorTile from 'ol/layer/VectorTile';
 
 import OlSource from 'ol/source/Source';
-import OlSourceOSM from 'ol/source/OSM';
-import OlTileSource from 'ol/source/Tile';
 import OlTileWmsSource from 'ol/source/TileWMS';
 import OlSourceVector from 'ol/source/Vector';
 import OlSourceVectorTile from 'ol/source/VectorTile';
-import XYZ from 'ol/source/XYZ';
 
 import {Type as OlGeometryType} from 'ol/geom/Geometry';
 import OlGeomPoint from 'ol/geom/Point';
@@ -658,8 +655,6 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 return layer;
             }
             case 'WMS': {
-                const wmsBasemap = basemap as Wms;
-
                 return new OlLayerTile({
                     source: this.backgroundLayerSource as OlTileWmsSource,
                 });
@@ -735,12 +730,14 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
 
 function allowedBasemapProjections(basemap: Basemap): Array<string> {
     switch (basemap.TYPE) {
-        case 'MVT':
+        case 'MVT': {
             const vectorTilesBasemap = basemap as VectorTiles;
             return Object.keys(vectorTilesBasemap.LAYER_EXTENTS);
-        case 'WMS':
+        }
+        case 'WMS': {
             const wmsBasemap = basemap as Wms;
             return wmsBasemap.PROJECTIONS;
+        }
     }
     throw new Error(`Unknown basemap type: ${basemap.TYPE}`);
 }
