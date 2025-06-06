@@ -80,6 +80,7 @@ export class DatasetEditorComponent implements OnChanges {
         private readonly changeDetectorRef: ChangeDetectorRef,
     ) {}
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
         if (changes.datasetListing) {
             this.dataset = await this.datasetsService.getDataset(this.datasetListing.name);

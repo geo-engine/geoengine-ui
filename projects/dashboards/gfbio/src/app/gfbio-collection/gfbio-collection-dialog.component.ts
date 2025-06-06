@@ -108,7 +108,7 @@ export class GfBioCollectionDialogComponent {
             if (abcdIdPos >= 0) {
                 // detect units based on the number of components (seperated by ":") in the id
                 const abcdLayerId = layer.id.layerId.substring(abcdIdPos);
-                const numberOfComponents = (abcdLayerId.match(/:/g) || []).length;
+                const numberOfComponents = (abcdLayerId.match(/:/g) ?? []).length;
 
                 if (numberOfComponents > 3) {
                     return true;

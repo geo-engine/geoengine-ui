@@ -75,6 +75,6 @@ export class CountrySelectorComponent implements OnInit, AfterViewInit, OnDestro
         } else {
             search = search.toLowerCase();
         }
-        this.filteredCountries.next(this.countryDataList.filter((country) => country.name.toLowerCase().indexOf(search) > -1));
+        this.filteredCountries.next(this.countryDataList.filter((country) => country.name.toLowerCase().includes(search)));
     }
 }

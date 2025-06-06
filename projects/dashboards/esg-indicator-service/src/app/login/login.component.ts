@@ -70,7 +70,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
                     .getSessionOrUndefinedStream()
                     .pipe(first())
                     .subscribe((session) => {
-                        if (!session || !session.user || session.user.isGuest) {
+                        if (!session?.user || session.user.isGuest) {
                             this.formStatus$.next(FormStatus.LoggedOut);
                         } else {
                             this.user = session.user;
@@ -109,6 +109,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
                 password: this.loginForm.controls['password'].value,
             })
             .subscribe(
+                // eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/require-await
                 async (session) => {
                     this.user = session.user;
                     this.invalidCredentials$.next(false);
