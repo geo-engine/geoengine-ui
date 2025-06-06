@@ -296,7 +296,7 @@ const FISH_SPECIES = [
     'Zoarces viviparus',
 ];
 /* eslint-disable @typescript-eslint/naming-convention */
-const SPECIES_INFO: {[key: string]: SpeciesInfo} = {
+const SPECIES_INFO: Record<string, SpeciesInfo> = {
     'Anax imperator': {
         text: `Die Große Königslibelle erreicht Flügelspannweiten von 9,5 bis 11 Zentimetern. Der Brustabschnitt (Thorax) der Tiere ist grün gefärbt,
         der Hinterleib (Abdomen) der Männchen ist hellblau mit einem durchgehenden schwarzen Längsband am Rücken, das an jedem Segment eine zahnartige

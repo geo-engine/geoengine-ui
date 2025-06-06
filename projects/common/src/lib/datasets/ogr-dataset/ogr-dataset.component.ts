@@ -102,12 +102,12 @@ export class OgrDatasetComponent implements OnChanges {
         });
     }
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.uploadId && changes.uploadId.currentValue) {
+        if (changes.uploadId?.currentValue) {
             this.setUpMetadataSpecification(changes.uploadId.currentValue);
             return;
         }
 
-        if (changes.metaData && changes.metaData.currentValue) {
+        if (changes.metaData?.currentValue) {
             const metaData = changes.metaData.currentValue as OgrMetaData;
             this.fillMetaDataForm({
                 mainFile: metaData.loadingInfo.fileName,
@@ -427,9 +427,9 @@ export class OgrDatasetComponent implements OnChanges {
         return undefined;
     }
 
-    private getColumnsAsMap(): {[key: string]: VectorColumnInfo} {
+    private getColumnsAsMap(): Record<string, VectorColumnInfo> {
         const formMeta = this.formMetaData.controls;
-        const columns: {[key: string]: VectorColumnInfo} = {};
+        const columns: Record<string, VectorColumnInfo> = {};
 
         for (const column of formMeta.columnsText.value as Array<string>) {
             columns[column] = {
@@ -499,10 +499,6 @@ export class OgrDatasetComponent implements OnChanges {
                 duration: this.getDuration(),
             };
         } else if (formMeta.timeType.value === 'Start/End') {
-            const startFormat: OgrSourceTimeFormat = {
-                format: formMeta.timeStartFormat.value,
-            };
-
             time = {
                 type: 'start+end',
                 startField: formMeta.timeStartColumn.value,
@@ -511,10 +507,6 @@ export class OgrDatasetComponent implements OnChanges {
                 endFormat: this.getEndTimeFormat(),
             };
         } else if (formMeta.timeType.value === 'Start/Duration') {
-            const format: OgrSourceTimeFormat = {
-                format: formMeta.timeStartFormat.value,
-            };
-
             time = {
                 type: 'start+duration',
                 startField: formMeta.timeStartColumn.value,

@@ -181,8 +181,9 @@ class DatasetDataSource extends DataSource<DatasetListing> {
     /**
      * Clean up resources
      */
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    disconnect(): void {}
+    disconnect(): void {
+        // do nothing
+    }
 
     fetchMoreData(numberOfTimes: number): void {
         if (this.noMoreData) {

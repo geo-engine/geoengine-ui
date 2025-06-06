@@ -58,7 +58,7 @@ export interface VectorTiles extends Basemap {
     readonly TYPE: 'MVT';
     readonly STYLE_URL: string;
     readonly SOURCE: string;
-    readonly LAYER_EXTENTS: {[epsg: string]: [number, number, number, number]};
+    readonly LAYER_EXTENTS: Record<string, [number, number, number, number]>;
     readonly MAX_ZOOM: number;
 }
 

@@ -44,6 +44,6 @@ const COLORMAP_MORELAND_DATA: Array<[number, number, number]> = [
     [0.705673158, 0.01555616, 0.150232812],
 ];
 
-export const MORELAND_COLORMAPS: {[name: string]: Array<RgbaTuple>} = {
+export const MORELAND_COLORMAPS: Record<string, Array<RgbaTuple>> = {
     COLDWARM: convertFractionsToRgbas(COLORMAP_MORELAND_DATA),
 };

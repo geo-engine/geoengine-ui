@@ -103,6 +103,7 @@ export class DashboardComponent implements AfterViewInit {
 
     timeSteps: Time[] = [new Time(utc('2021-01-01')), new Time(utc('2022-01-01'))];
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/require-await
     async ngAfterViewInit(): Promise<void> {
         this.breakpointObserver.observe(Breakpoints.Web).subscribe((isLandscape) => {
             this.isLandscape.set(isLandscape.matches);
@@ -130,6 +131,7 @@ export class DashboardComponent implements AfterViewInit {
         this.isSelectingBox.set(true);
         this.notificationService.info('Select region on the map');
 
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.mapComponent().startDrawInteraction('Circle', true, createBox(), async (feature) => {
             const bbox = feature.getGeometry()?.getExtent();
             if (bbox) {

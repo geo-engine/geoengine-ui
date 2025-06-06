@@ -20,7 +20,7 @@ export interface SidenavConfig {
     keepParent?: boolean;
     parent?: SidenavConfig;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    config?: {[key: string]: any};
+    config?: Record<string, any>;
 }
 
 /**
@@ -43,12 +43,12 @@ export class LayoutService extends CommonLayoutService {
     /**
      * What is the currently visible tab?
      */
-    private layerDetailViewTabIndex$: BehaviorSubject<number> = new BehaviorSubject(0);
+    private layerDetailViewTabIndex$ = new BehaviorSubject<number>(0);
 
     /**
      * What is the height of the layer detail view as a percentage of the available space.
      */
-    private layerDetailViewHeightPercentage$: BehaviorSubject<number> = new BehaviorSubject(2 / 5);
+    private layerDetailViewHeightPercentage$ = new BehaviorSubject<number>(2 / 5);
 
     /**
      *  Sidenav content

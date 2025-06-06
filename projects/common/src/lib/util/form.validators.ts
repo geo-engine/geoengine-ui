@@ -128,7 +128,7 @@ const minAndMaxNumOrStr = (
  */
 const conditionalValidator =
     (validator: (control: AbstractControl) => ValidationErrors | null, condition: () => boolean) =>
-    (control: AbstractControl): {[key: string]: boolean} | null => {
+    (control: AbstractControl): Record<string, boolean> | null => {
         if (condition()) {
             return validator(control);
         } else {
@@ -155,7 +155,7 @@ const conditionalAsyncValidator =
 const keywordValidator =
     (keywords: Array<string>) =>
     (control: AbstractControl): {keyword: true} | null =>
-        keywords.indexOf(control.value) >= 0 ? {keyword: true} : null;
+        keywords.includes(control.value) ? {keyword: true} : null;
 
 /**
  * Checks if the project name is unique.
@@ -382,7 +382,7 @@ export const duplicateInFormArrayValidator =
             return null;
         }
 
-        const formArray = control as FormArray;
+        const formArray = control;
 
         const controls = formArray.controls;
         const values = controls.map((c) => c.value);
@@ -417,12 +417,11 @@ export const validJson: ValidatorFn = (control: AbstractControl): ValidationErro
     try {
         JSON.parse(control.value);
         return null; // Valid JSON
-    } catch (e) {
+    } catch (_e) {
         return {invalidJson: true}; // Invalid JSON
     }
 };
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const geoengineValidators = {
     conditionalValidator,
     conditionalAsyncValidator,

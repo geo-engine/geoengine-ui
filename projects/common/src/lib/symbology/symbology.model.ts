@@ -54,7 +54,7 @@ export const MAX_ALLOWED_TEXT_LENGTH = 25;
 
 // export type StrokeDashStyle = Array<number>;
 
-const STYLE_CACHE: {[key: string]: OlStyle} = {};
+const STYLE_CACHE: Record<string, OlStyle> = {};
 
 export type VectorSymbologyDict = PointSymbologyDict | LineSymbologyDict | PolygonSymbologyDict;
 
@@ -63,7 +63,7 @@ export interface SymbologyWorkflow<SymbologyType> {
     workflowId: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface IconStyle {}
 
 export abstract class Symbology {
@@ -916,7 +916,7 @@ export class MultiBandRasterColorizer extends RasterColorizer {
         return false;
     }
 
-    override getColorAtIndex(index: number): Color {
+    override getColorAtIndex(_index: number): Color {
         return TRANSPARENT;
     }
 }

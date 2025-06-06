@@ -32,7 +32,7 @@ import {WorkflowsService} from '../../workflows/workflows.service';
 export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
     @Input({required: true}) symbologyWorkflow!: SymbologyWorkflow<VectorSymbology>;
 
-    @Output() changedSymbology: EventEmitter<VectorSymbology> = new EventEmitter();
+    @Output() changedSymbology = new EventEmitter<VectorSymbology>();
 
     currentSymbology!: VectorSymbology;
 

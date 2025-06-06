@@ -117,7 +117,7 @@ export class TabsComponent implements OnChanges, OnDestroy {
     }
 
     protected removeRenderedTabContent(): void {
-        if (this.portalOutlet && this.portalOutlet.hasAttached()) {
+        if (this.portalOutlet?.hasAttached()) {
             this.portalOutlet.detach();
         }
     }

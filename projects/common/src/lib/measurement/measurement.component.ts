@@ -63,32 +63,26 @@ export class MeasurementComponent {
     updateMeasurementType(type: MeasurementType): void {
         switch (type) {
             case MeasurementType.Classification:
-                if (!this.classificationMeasurement) {
-                    this.classificationMeasurement = {
-                        type: 'classification',
-                        measurement: 'classification',
-                        classes: {},
-                    };
-                }
+                this.classificationMeasurement ??= {
+                    type: 'classification',
+                    measurement: 'classification',
+                    classes: {},
+                };
 
                 this.measurement = this.classificationMeasurement;
                 break;
             case MeasurementType.Continuous:
-                if (!this.continousMeasurement) {
-                    this.continousMeasurement = {
-                        type: 'continuous',
-                        measurement: 'continuous',
-                    };
-                }
+                this.continousMeasurement ??= {
+                    type: 'continuous',
+                    measurement: 'continuous',
+                };
 
                 this.measurement = this.continousMeasurement;
                 break;
             case MeasurementType.Unitless:
-                if (!this.unitlessMeasurement) {
-                    this.unitlessMeasurement = {
-                        type: 'unitless',
-                    };
-                }
+                this.unitlessMeasurement ??= {
+                    type: 'unitless',
+                };
 
                 this.measurement = {
                     type: 'unitless',
@@ -97,7 +91,7 @@ export class MeasurementComponent {
         }
     }
 
-    removeClass(key: string) {
+    removeClass(key: string): void {
         if (!this.classificationMeasurement) {
             return;
         }
@@ -105,7 +99,7 @@ export class MeasurementComponent {
         delete this.classificationMeasurement.classes[key];
     }
 
-    addClass() {
+    addClass(): void {
         if (!this.classificationMeasurement) {
             return;
         }

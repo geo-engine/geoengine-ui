@@ -362,7 +362,7 @@ export class DownloadLayerComponent implements OnInit {
     }
 
     private formToTime(): Time {
-        const timeInterval = this.form.get('timeInterval')?.value as TimeInterval;
+        const timeInterval = this.form.get('timeInterval')!.value;
 
         const start = timeInterval.start;
         const timeAsPoint = timeInterval.timeAsPoint;

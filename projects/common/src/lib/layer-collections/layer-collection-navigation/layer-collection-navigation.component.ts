@@ -70,7 +70,7 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
         this.layerCollectionListComponent.refreshCollection();
     }
 
-    refresh() {
+    refresh(): void {
         this.layerCollectionListComponent.refresh();
     }
 
@@ -297,6 +297,7 @@ class Search {
         );
     }
 
+    // eslint-disable-next-line @typescript-eslint/require-await
     async search(searchString: string): Promise<void> {
         const collection = this.selectedCollection();
 

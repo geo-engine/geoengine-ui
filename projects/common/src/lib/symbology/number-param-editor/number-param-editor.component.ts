@@ -32,15 +32,15 @@ export class NumberParamEditorComponent implements ControlValueAccessor {
         this.onTouched();
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    onTouched = (): void => {};
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    onChange = (_: NumberParam | null): void => {};
+    onTouched = (): void => {
+        // do nothing
+    };
+    onChange = (_: NumberParam | null): void => {
+        // do nothing
+    };
 
     writeValue(value: NumberParam | null): void {
-        if (!value) {
-            value = this.defaultNumberParam;
-        }
+        value ??= this.defaultNumberParam;
 
         if (value instanceof StaticNumber) {
             this.update(

@@ -81,10 +81,10 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
         //listens to events of the custom timebars
         this.timeline.on('timechanged', (properties) => {
             if (properties.id === 'start') {
-                this.startTime = this.timeline?.getCustomTime(properties.id) as Date;
+                this.startTime = this.timeline!.getCustomTime(properties.id);
             }
             if (properties.id === 'end') {
-                this.endTime = this.timeline?.getCustomTime(properties.id) as Date;
+                this.endTime = this.timeline!.getCustomTime(properties.id);
             }
             if (!this.isRange) {
                 this.endTime = this.startTime;

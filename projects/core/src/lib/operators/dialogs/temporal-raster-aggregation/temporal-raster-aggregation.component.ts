@@ -101,6 +101,7 @@ export class TemporalRasterAggregationComponent implements AfterViewInit {
                     return '';
                 }
 
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                 return `(${metadata.dataType})`;
             }),
         );

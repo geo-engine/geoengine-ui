@@ -130,7 +130,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
         this.updateLayersForSelection();
     }
 
-    ngOnChanges(changes: {[propertyName: string]: SimpleChange}): void {
+    ngOnChanges(changes: Record<string, SimpleChange>): void {
         let minMaxChanged = false;
 
         // eslint-disable-next-line guard-for-in
@@ -160,14 +160,12 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
                                 return forkJoin(layersAndMetadata);
                             }),
                             map((layers: Array<[Layer, LayerMetadata]>) =>
-                                layers.filter(([_layer, meta]) => this.types.indexOf(meta.resultType) >= 0).map(([layer, _]) => layer),
+                                layers.filter(([_layer, meta]) => this.types.includes(meta.resultType)).map(([layer, _]) => layer),
                             ),
                         )
                         .subscribe((l) => this.filteredLayers.next(l));
 
-                    if (this.title === undefined) {
-                        this.title = this.types.map((type) => type.toString()).join(', ');
-                    }
+                    this.title ??= this.types.map((type) => type.toString()).join(', ');
 
                     break;
                 }
@@ -287,7 +285,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
             return [];
         }
 
-        const layersForSelection = [...layers].filter((layer) => blacklist.indexOf(layer) < 0);
+        const layersForSelection = [...layers].filter((layer) => !blacklist.includes(layer));
 
         while (layersForSelection.length < amount) {
             layersForSelection.push(layers[0]);

@@ -118,9 +118,7 @@ export interface LogarithmitGradientDict {
 
 export interface PaletteDict {
     type: 'palette';
-    colors: {
-        [numberValue: string]: RgbaColorDict;
-    };
+    colors: Record<string, RgbaColorDict>;
     noDataColor: RgbaColorDict;
     defaultColor: RgbaColorDict;
 }
@@ -242,15 +240,11 @@ export interface OperatorDict {
     sources: OperatorSourcesDict;
 }
 
-export interface OperatorSourcesDict {
-    [name: string]: OperatorDict | SourceOperatorDict | Array<OperatorDict | SourceOperatorDict> | undefined;
-}
+export type OperatorSourcesDict = Record<string, OperatorDict | SourceOperatorDict | Array<OperatorDict | SourceOperatorDict> | undefined>;
 
 type ParamTypes = string | number | boolean | Array<ParamTypes> | {[key: string]: ParamTypes} | SerializableDict | undefined;
 
-export interface OperatorParams {
-    [key: string]: ParamTypes;
-}
+export type OperatorParams = Record<string, ParamTypes>;
 
 export type NamedDataDict = string;
 
@@ -314,9 +308,7 @@ export interface RasterResultDescriptorDict extends ResultDescriptorDict {
 export interface VectorResultDescriptorDict extends ResultDescriptorDict {
     type: 'vector';
     dataType: VectorDataType;
-    columns: {
-        [key: string]: VectorColumnInfoDict;
-    };
+    columns: Record<string, VectorColumnInfoDict>;
     bbox?: BBoxDict;
 }
 
@@ -344,9 +336,7 @@ export interface ContinuousMeasurementDict {
 export interface ClassificationMeasurementDict {
     type: 'classification';
     measurement: string;
-    classes: {
-        [key: number]: string;
-    };
+    classes: Record<number, string>;
 }
 
 export interface UploadResponseDict {

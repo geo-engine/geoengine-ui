@@ -1044,7 +1044,7 @@ const COLORMAP_VIRIDIS_DATA: Array<[number, number, number]> = [
     [0.993248, 0.906157, 0.143936],
 ];
 
-export const MPL_COLORMAPS: {[name: string]: Array<RgbaTuple>} = {
+export const MPL_COLORMAPS: Record<string, Array<RgbaTuple>> = {
     MAGMA: convertFractionsToRgbas(COLORMAP_MAGMA_DATA),
     INFERNO: convertFractionsToRgbas(COLORMAP_INFERNO_DATA),
     PLASMA: convertFractionsToRgbas(COLORMAP_PLASMA_DATA),

@@ -79,6 +79,7 @@ export class AddDatasetComponent {
         private readonly dialog: MatDialog,
     ) {
         merge(this.dialogRef.backdropClick(), this.dialogRef.keydownEvents().pipe(filter((event) => event.key === 'Escape'))).subscribe(
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
             async (event) => {
                 event.stopPropagation();
 

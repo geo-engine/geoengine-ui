@@ -34,7 +34,7 @@ export class VegaViewerComponent implements OnChanges {
     height?: number;
 
     @Output()
-    interactionChange = new EventEmitter<{[signal: string]: unknown}>();
+    interactionChange = new EventEmitter<Record<string, unknown>>();
 
     @ViewChild('chart', {static: true}) protected chartContainer!: ElementRef;
 
@@ -64,7 +64,7 @@ export class VegaViewerComponent implements OnChanges {
 
         const div = this.chartContainer.nativeElement;
 
-        const width = this.width ?? (div.clientWidth || this.element.nativeElement.offsetWidth);
+        const width = this.width ?? div.clientWidth ?? this.element.nativeElement.offsetWidth;
         const height = this.height ?? width / 2;
 
         const spec = JSON.parse(this.chartData.vegaString);
@@ -91,7 +91,7 @@ export class VegaViewerComponent implements OnChanges {
             .then((result) => {
                 this.vegaHandle = result;
 
-                if (this.chartData?.metadata && this.chartData.metadata.selectionName) {
+                if (this.chartData?.metadata?.selectionName) {
                     this.vegaHandle.view.addSignalListener(this.chartData.metadata.selectionName, (_name, value) => {
                         this.interactionChange.next(value);
                     });

@@ -6,7 +6,6 @@ import {LayoutService} from '../../../layout.service';
 import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
 import {HistogramOperatorComponent} from '../histogram-operator/histogram-operator.component';
 import {BoxPlotOperatorComponent} from '../boxplot-operator/boxplot-operator.component';
-// eslint-disable-next-line max-len
 import {MeanRasterPixelValuesOverTimeDialogComponent} from '../mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
 import {PointInPolygonFilterOperatorComponent} from '../point-in-polygon-filter/point-in-polygon-filter.component';
 import {RasterVectorJoinComponent} from '../raster-vector-join/raster-vector-join.component';
@@ -40,7 +39,7 @@ export interface OperatorListType {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     component: Type<any>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    config?: {[key: string]: any};
+    config?: Record<string, any>;
     type: {NAME: string; ICON_URL: string};
     description: string;
 }
@@ -352,7 +351,7 @@ export class OperatorListComponent implements OnInit, OnChanges {
      * Load a selected dialog into the sidenav
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    load(component: Type<any>, config?: {[key: string]: any}): void {
+    load(component: Type<any>, config?: Record<string, any>): void {
         this.layoutService.setSidenavContentComponent({component, config, keepParent: true});
     }
 }

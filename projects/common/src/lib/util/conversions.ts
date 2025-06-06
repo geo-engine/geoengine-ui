@@ -55,7 +55,7 @@ export function hashCode(str: string): number {
 // TODO: use a faster hash function
 export function featureToHash(feature: OlFeature<OlGeometry>): number {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const sortObjKeys = (obj: {[_: string]: any}): any => {
+    const sortObjKeys = (obj: Record<string, any>): any => {
         Object.keys(obj)
             .sort()
             .reduce(
@@ -64,7 +64,7 @@ export function featureToHash(feature: OlFeature<OlGeometry>): number {
                     return x;
                 },
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                {} as {[_: string]: any},
+                {} as Record<string, any>,
             );
     };
 
@@ -93,11 +93,12 @@ export function subscribeAndProvide<T>(observable: Observable<T>): Observable<T>
     return subject.asObservable();
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function errorToText(error: any, defaultMessage: string): Promise<string> {
     if (!(error instanceof ResponseError)) {
         return defaultMessage;
     }
-    const e = error as ResponseError;
+    const e = error;
     const errorJson = await e.response.json().catch(() => ({}));
     const errorMessage = errorJson.message ?? defaultMessage;
 
@@ -105,7 +106,7 @@ export async function errorToText(error: any, defaultMessage: string): Promise<s
 }
 
 // we use this non-breaking hyphen to avoid line breaks in the time format
-export const NON_BREAKING_HYPHEN: string = '‑';
+export const NON_BREAKING_HYPHEN = '‑';
 
 /**
  * Checks if the `timeSteps` contain information about months or days.

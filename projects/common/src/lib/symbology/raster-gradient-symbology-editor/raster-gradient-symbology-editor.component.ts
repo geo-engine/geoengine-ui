@@ -21,7 +21,7 @@ import {ColorTableEditorComponent} from '../../colors/color-table-editor/color-t
 import {UUID} from '../../datasets/dataset.model';
 import {VegaChartData} from '../../plots/plot.model';
 import {WorkflowsService} from '../../workflows/workflows.service';
-import {HistogramDict, HistogramParams, WorkflowDict} from '../../operators/operator.model';
+import {HistogramDict, HistogramParams} from '../../operators/operator.model';
 import {Workflow} from '@geoengine/openapi-client';
 import {PlotsService} from '../../plots/plots.service';
 import {SymbologyQueryParams} from '../symbology.model';
@@ -132,7 +132,7 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     }
 
     updateBounds(histogramSignal: {binStart: [number, number]}): void {
-        if (!histogramSignal || !histogramSignal.binStart || histogramSignal.binStart.length !== 2) {
+        if (!histogramSignal?.binStart || histogramSignal.binStart.length !== 2) {
             return;
         }
 

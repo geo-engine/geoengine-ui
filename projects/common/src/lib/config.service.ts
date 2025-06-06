@@ -130,7 +130,7 @@ export class CommonConfig {
 /**
  * A version of ImmutableJS `mergeDeep` that replaces Lists instead of concatenating them.
  */
-export function mergeDeepOverrideLists<C>(a: C, b: Iterable<unknown> | Iterable<[unknown, unknown]> | {[key: string]: unknown}): C {
+export function mergeDeepOverrideLists<C>(a: C, b: Iterable<unknown> | Iterable<[unknown, unknown]> | Record<string, unknown>): C {
     // If b is null, it would overwrite a, even if a is mergeable
     if (b === null) return b;
 

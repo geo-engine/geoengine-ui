@@ -93,7 +93,7 @@ export class LayerListElementComponent {
      * helper method to cast AbstractSymbology to VectorSymbology
      */
     vectorLayerCast(layer: Layer): Layer {
-        return layer as Layer;
+        return layer;
     }
 
     showChannelParameterSlider(_layer: Layer): boolean {

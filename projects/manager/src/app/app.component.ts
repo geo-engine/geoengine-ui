@@ -19,6 +19,7 @@ export class AppComponent implements OnInit {
         private readonly userService: UserService,
     ) {}
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     async ngOnInit(): Promise<void> {
         // wait for login to be completed before initializing the router
         await firstValueFrom(this.userService.getSessionOrUndefinedStream());
