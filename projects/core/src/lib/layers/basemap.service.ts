@@ -1,5 +1,5 @@
 import {effect, inject, Injectable, Signal, signal, WritableSignal} from '@angular/core';
-import {Basemap, Basemaps, CoreConfig} from '../config.service';
+import {Basemap, Basemaps, CoreConfig, VectorTiles, Wms} from '../config.service';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_'); // TODO: de-duplicate with user service?
 const STORAGE_KEY = 'basemap';
@@ -19,16 +19,13 @@ export class BasemapService {
         const defaultBasemap = this.config.MAP.DEFAULT_BASEMAP;
         checkBasemaps(basemaps, defaultBasemap);
 
-        let basemap = basemaps[defaultBasemap];
-
         const preferredBasemap = loadBasemapPreferenceFromBrowser();
-        if (preferredBasemap && basemaps[preferredBasemap]) {
-            basemap = basemaps[preferredBasemap];
-        }
+
+        const basemap = basemaps[preferredBasemap] && basemaps[defaultBasemap];
 
         this.selectedBasemap = signal<NamedBasemap>({
             name: defaultBasemap,
-            ...basemaps[defaultBasemap],
+            ...basemap,
         } as NamedBasemap);
 
         effect(() => {
@@ -66,7 +63,7 @@ export class BasemapService {
  *
  *  TODO: proper type parsing/checking
  */
-function checkBasemaps(basemaps: Basemaps, defaultBasemap: string) {
+function checkBasemaps(basemaps: Basemaps, defaultBasemap: string): void {
     if (!defaultBasemap) {
         throw new Error('CONFIG ERROR: Default basemap undefined');
     }
@@ -87,10 +84,21 @@ function saveBasemapPreferenceInBrowser(preferredBasemap: string): void {
     localStorage.setItem(PATH_PREFIX + STORAGE_KEY, preferredBasemap);
 }
 
-function loadBasemapPreferenceFromBrowser(): string {
-    return localStorage.getItem(PATH_PREFIX + STORAGE_KEY) ?? '';
-}
+const loadBasemapPreferenceFromBrowser = (): string => localStorage.getItem(PATH_PREFIX + STORAGE_KEY) ?? '';
 
 function removeBasemapPreferenceInBrowser(): void {
     localStorage.removeItem(PATH_PREFIX + STORAGE_KEY);
+}
+
+export function allowedBasemapProjections(basemap: Basemap): Array<string> {
+    switch (basemap.TYPE) {
+        case 'MVT': {
+            const vectorTilesBasemap = basemap as VectorTiles;
+            return Object.keys(vectorTilesBasemap.LAYER_EXTENTS);
+        }
+        case 'WMS': {
+            const wmsBasemap = basemap as Wms;
+            return wmsBasemap.PROJECTIONS;
+        }
+    }
 }

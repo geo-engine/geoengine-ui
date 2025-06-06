@@ -57,7 +57,7 @@ import {SpatialReferenceService, WGS_84} from '../../spatial-references/spatial-
 import {containsCoordinate, getCenter} from 'ol/extent';
 import {applyBackground, stylefunction} from 'ol-mapbox-style';
 import {olExtentToTuple, SpatialReference, VectorSymbology} from '@geoengine/common';
-import {BasemapService} from '../../layers/basemap.service';
+import {allowedBasemapProjections, BasemapService} from '../../layers/basemap.service';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type MapLayer = MapLayerComponent<OlLayer<OlSource, any>, OlSource>;
@@ -727,18 +727,4 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             }
         }
     }
-}
-
-function allowedBasemapProjections(basemap: Basemap): Array<string> {
-    switch (basemap.TYPE) {
-        case 'MVT': {
-            const vectorTilesBasemap = basemap as VectorTiles;
-            return Object.keys(vectorTilesBasemap.LAYER_EXTENTS);
-        }
-        case 'WMS': {
-            const wmsBasemap = basemap as Wms;
-            return wmsBasemap.PROJECTIONS;
-        }
-    }
-    throw new Error(`Unknown basemap type: ${basemap.TYPE}`);
 }

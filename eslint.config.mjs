@@ -27,7 +27,7 @@ export default defineConfig([
             parser: tseslint.parser,
 
             parserOptions: {
-                project: ['tsconfig.json', 'e2e/tsconfig.json'],
+                project: ['tsconfig.json'],
                 createDefaultProgram: false,
             },
         },
@@ -142,11 +142,10 @@ export default defineConfig([
             ],
             '@typescript-eslint/no-shadow': 'error',
             '@typescript-eslint/explicit-function-return-type': 'error',
-            '@typescript-eslint/no-unsafe-assignment': 'warn', // TODO: use typed forms
             '@typescript-eslint/no-unsafe-argument': 'warn', // TODO: use typed forms
-            '@typescript-eslint/no-unsafe-member-access': 'warn', // TODO: use typed forms
-            '@typescript-eslint/no-unsafe-indexed-object-style': 'warn', // TODO: use typed forms
+            '@typescript-eslint/no-unsafe-assignment': 'warn', // TODO: use typed forms
             '@typescript-eslint/no-unsafe-call': 'warn', // TODO: use typed forms
+            '@typescript-eslint/no-unsafe-member-access': 'warn', // TODO: use typed forms
             '@typescript-eslint/no-unsafe-return': 'warn', // TODO: use typed forms
             '@typescript-eslint/unbound-method': ['error', {ignoreStatic: true}],
             '@typescript-eslint/no-floating-promises': 'warn', // TODO: fix promises
