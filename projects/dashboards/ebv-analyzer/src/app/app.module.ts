@@ -14,6 +14,7 @@ import {
     CoreConfig,
     RasterLegendComponent,
     MapContainerComponent,
+    SidenavHeaderComponent,
 } from '@geoengine/core';
 import {AppConfig} from './app-config.service';
 import {PortalModule} from '@angular/cdk/portal';
@@ -40,6 +41,7 @@ import {CommonConfig} from '@geoengine/common';
         LayoutModule,
         RasterLegendComponent,
         MapContainerComponent,
+        SidenavHeaderComponent,
     ],
     providers: [
         AppConfig,

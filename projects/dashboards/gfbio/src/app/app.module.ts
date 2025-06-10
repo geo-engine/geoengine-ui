@@ -18,6 +18,7 @@ import {
     CoreModule,
     CoreConfig,
     MapContainerComponent,
+    SidenavHeaderComponent,
 } from '@geoengine/core';
 import {AppConfig} from './app-config.service';
 import {HelpComponent} from './help/help.component';
@@ -37,6 +38,7 @@ import {CommonConfig} from '@geoengine/common';
         RouterModule.forRoot([{path: '**', component: AppComponent}], {useHash: true}),
         CoreModule,
         MapContainerComponent,
+        SidenavHeaderComponent,
     ],
     providers: [
         AppConfig,
