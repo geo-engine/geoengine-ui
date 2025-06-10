@@ -7,6 +7,7 @@ import {
     ChangeDetectorRef,
     Component,
     ContentChildren,
+    effect,
     ElementRef,
     inject,
     Input,
@@ -143,6 +144,14 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 view: this.view,
             }),
         ];
+
+        effect(() => {
+            this.basemapService.basemap();
+            this.projection$.pipe(first()).subscribe((projection) => {
+                this.backgroundLayerSource = undefined; // reset source to force recreation
+                this.redrawLayers(projection);
+            });
+        });
     }
 
     ngOnDestroy(): void {
