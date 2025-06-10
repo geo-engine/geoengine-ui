@@ -58,7 +58,17 @@ interface SelectedProperty {
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CoreModule, AsyncPipe, MatGridListModule, MatMenuModule, MatIconModule, MatButtonModule, MatCardModule, QuotaLogComponent],
+    imports: [
+        CoreModule,
+        AsyncPipe,
+        MatGridListModule,
+        MatMenuModule,
+        MatIconModule,
+        MatButtonModule,
+        MatCardModule,
+        QuotaLogComponent,
+        MapContainerComponent,
+    ],
 })
 export class DashboardComponent implements AfterViewInit, AfterContentInit {
     readonly userService = inject(UserService);

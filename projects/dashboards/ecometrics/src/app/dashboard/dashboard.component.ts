@@ -72,7 +72,17 @@ interface Indicator {
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CoreModule, AsyncPipe, MatGridListModule, MatMenuModule, MatIconModule, MatButtonModule, MatCardModule, LegendComponent],
+    imports: [
+        CoreModule,
+        AsyncPipe,
+        MatGridListModule,
+        MatMenuModule,
+        MatIconModule,
+        MatButtonModule,
+        MatCardModule,
+        LegendComponent,
+        MapContainerComponent,
+    ],
 })
 export class DashboardComponent implements AfterViewInit {
     readonly userService = inject(UserService);

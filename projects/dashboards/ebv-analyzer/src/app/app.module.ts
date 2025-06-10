@@ -13,6 +13,7 @@ import {
     CoreModule,
     CoreConfig,
     RasterLegendComponent,
+    MapContainerComponent,
 } from '@geoengine/core';
 import {AppConfig} from './app-config.service';
 import {PortalModule} from '@angular/cdk/portal';
@@ -38,6 +39,7 @@ import {CommonConfig} from '@geoengine/common';
         NgxMatSelectSearchModule,
         LayoutModule,
         RasterLegendComponent,
+        MapContainerComponent,
     ],
     providers: [
         AppConfig,

@@ -53,7 +53,7 @@ import {MapLayerComponent} from '../map-layer.component';
 import {FeatureSelection, ProjectService} from '../../project/project.service';
 import {Extent, MapService} from '../map.service';
 import {Basemap, CoreConfig, VectorTiles, Wms} from '../../config.service';
-import {MatGridList, MatGridTile} from '@angular/material/grid-list';
+import {MatGridList, MatGridListModule, MatGridTile} from '@angular/material/grid-list';
 import {SpatialReferenceService, WGS_84} from '../../spatial-references/spatial-reference.service';
 import {containsCoordinate, getCenter} from 'ol/extent';
 import {applyBackground, stylefunction} from 'ol-mapbox-style';
@@ -79,7 +79,7 @@ const MAX_ZOOM_LEVEL = 28;
         contentChildren: new ContentChildren(MapLayerComponent),
     },
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [MatGridListModule],
 })
 export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestroy {
     /**
