@@ -4,7 +4,6 @@ import {Subscription} from 'rxjs';
 
 @Directive({
     selector: '[geoengineIfGuest]',
-    standalone: false,
 })
 export class IfGuestDirective implements OnDestroy {
     private subscription: Subscription;

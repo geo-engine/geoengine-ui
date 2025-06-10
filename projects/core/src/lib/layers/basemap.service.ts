@@ -1,4 +1,4 @@
-import {effect, inject, Injectable, Signal, signal, WritableSignal} from '@angular/core';
+import {computed, effect, inject, Injectable, Signal, signal, WritableSignal} from '@angular/core';
 import {Basemap, Basemaps, CoreConfig, VectorTiles, Wms} from '../config.service';
 
 const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_'); // TODO: de-duplicate with user service?
@@ -15,21 +15,28 @@ export class BasemapService {
     protected selectedBasemap: WritableSignal<NamedBasemap>;
 
     constructor() {
-        const basemaps = this.config.MAP.BASEMAPS;
         const defaultBasemap = this.config.MAP.DEFAULT_BASEMAP;
-        checkBasemaps(basemaps, defaultBasemap);
+        checkBasemaps(this.basemaps, defaultBasemap);
 
         const preferredBasemap = loadBasemapPreferenceFromBrowser();
 
-        const basemap = basemaps[preferredBasemap] && basemaps[defaultBasemap];
-
-        this.selectedBasemap = signal<NamedBasemap>({
+        let basemap: NamedBasemap = {
             name: defaultBasemap,
-            ...basemap,
-        } as NamedBasemap);
+            ...this.basemaps[defaultBasemap],
+        };
+
+        if (preferredBasemap && this.basemaps[preferredBasemap]) {
+            basemap = {
+                name: preferredBasemap,
+                ...this.basemaps[preferredBasemap],
+            };
+        }
+
+        this.selectedBasemap = signal<NamedBasemap>(basemap);
 
         effect(() => {
             const currentBasemap = this.selectedBasemap();
+
             if (!currentBasemap || currentBasemap.name === defaultBasemap) {
                 return removeBasemapPreferenceInBrowser();
             }
@@ -40,6 +47,10 @@ export class BasemapService {
 
     get basemap(): Signal<Basemap> {
         return this.selectedBasemap.asReadonly();
+    }
+
+    get selectedBasemapName(): Signal<string> {
+        return computed(() => this.selectedBasemap().name);
     }
 
     get basemaps(): Basemaps {
@@ -84,7 +95,7 @@ function saveBasemapPreferenceInBrowser(preferredBasemap: string): void {
     localStorage.setItem(PATH_PREFIX + STORAGE_KEY, preferredBasemap);
 }
 
-const loadBasemapPreferenceFromBrowser = (): string => localStorage.getItem(PATH_PREFIX + STORAGE_KEY) ?? '';
+const loadBasemapPreferenceFromBrowser = (): string | undefined => localStorage.getItem(PATH_PREFIX + STORAGE_KEY) ?? undefined;
 
 function removeBasemapPreferenceInBrowser(): void {
     localStorage.removeItem(PATH_PREFIX + STORAGE_KEY);
