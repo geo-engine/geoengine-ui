@@ -1,5 +1,5 @@
-import {Component, Input} from '@angular/core';
-import {Measurement, VectorColumnInfo, TypedVectorResultDescriptor} from '@geoengine/openapi-client';
+import {Component, Input, OnChanges} from '@angular/core';
+import {Measurement, TypedVectorResultDescriptor, VectorColumnInfo} from '@geoengine/openapi-client';
 
 interface Column {
     name: string;
@@ -13,7 +13,7 @@ interface Column {
     styleUrl: './vector-result-descriptor.component.scss',
     standalone: false,
 })
-export class VectorResultDescriptorComponent {
+export class VectorResultDescriptorComponent implements OnChanges {
     @Input() resultDescriptor!: TypedVectorResultDescriptor;
 
     displayedColumns: string[] = ['name', 'dataType', 'measurement'];
@@ -23,7 +23,13 @@ export class VectorResultDescriptorComponent {
         return date.toISOString();
     }
 
-    get columnsDataSource(): Column[] {
+    columns: Column[] = [];
+
+    ngOnChanges() {
+        this.columns = this.columnsDataSource();
+    }
+
+    private columnsDataSource(): Column[] {
         const keys = Object.keys(this.resultDescriptor.columns).sort();
 
         const columns: Column[] = [];
