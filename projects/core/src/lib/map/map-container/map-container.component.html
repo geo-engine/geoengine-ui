@@ -1,9 +1,9 @@
 <mat-grid-list [cols]="numberOfColumns" [rowHeight]="rowHeight" gutterSize="1">
-    <!-- *ngIf="grid"> -->
-    <ng-template [ngIf]="grid && mapLayers.length" [ngIfElse]="singleMap">
-        <mat-grid-tile class="map" *ngFor="let layerRef of mapLayers; index as i"></mat-grid-tile>
-    </ng-template>
-    <ng-template #singleMap>
+    @if (grid && mapLayers.length) {
+        @for (layerRef of mapLayers; track layerRef) {
+            <mat-grid-tile class="map"></mat-grid-tile>
+        }
+    } @else {
         <mat-grid-tile class="map"></mat-grid-tile>
-    </ng-template>
+    }
 </mat-grid-list>

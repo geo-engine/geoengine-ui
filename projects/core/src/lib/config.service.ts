@@ -1,21 +1,6 @@
 import {Injectable} from '@angular/core';
 import {CommonConfigStructure, CommonConfig, Delays as CommonDelays, mergeDeepOverrideLists} from '@geoengine/common';
 
-interface Wms {
-    readonly VERSION: string;
-    readonly FORMAT: string;
-}
-
-interface Wfs {
-    readonly VERSION: string;
-    readonly FORMAT: string;
-}
-
-interface Wcs {
-    readonly SERVICE: string;
-    readonly VERSION: string;
-}
-
 interface Delays extends CommonDelays {
     readonly LOADING: {
         readonly MIN: number;
@@ -45,20 +30,36 @@ export interface ConfigDefaults {
 }
 
 export interface ConfigMap {
-    readonly BACKGROUND_LAYER: 'OSM' | 'countries' | 'hosted' | 'XYZ' | 'eumetview' | 'MVT' | 'fallback';
-    readonly BACKGROUND_LAYER_URL: string;
-    readonly HOSTED_BACKGROUND_SERVICE: string;
-    readonly HOSTED_BACKGROUND_LAYER_NAME: string;
-    readonly HOSTED_BACKGROUND_SERVICE_VERSION: string;
-    readonly VECTOR_TILES: VectorTiles;
+    readonly BASEMAPS: Basemaps;
+    readonly DEFAULT_BASEMAP: keyof Basemaps;
     readonly REFRESH_LAYERS_ON_CHANGE: boolean;
     readonly VALID_CRS: Array<string>;
 }
 
-export interface VectorTiles {
+export type Basemaps = Record<string, Basemap>;
+
+export interface Basemap {
+    readonly TYPE: Wms['TYPE'] | VectorTiles['TYPE'];
+    readonly URL: string;
+    readonly ATTRIBUTION: string;
+}
+
+export interface Wms extends Basemap {
+    readonly TYPE: 'WMS';
+    readonly LAYER: string | LayerPerProjection;
+    readonly VERSION: string;
+    readonly FORMAT: string;
+    readonly PROJECTIONS: Array<string>;
+    readonly MAP_900913?: boolean;
+}
+
+export type LayerPerProjection = Record<string, string>;
+
+export interface VectorTiles extends Basemap {
+    readonly TYPE: 'MVT';
     readonly STYLE_URL: string;
     readonly SOURCE: string;
-    readonly BACKGROUND_LAYER_EXTENTS: Record<string, [number, number, number, number]>;
+    readonly LAYER_EXTENTS: Record<string, [number, number, number, number]>;
     readonly MAX_ZOOM: number;
 }
 
@@ -82,9 +83,6 @@ export interface CoreConfigStructure extends CommonConfigStructure {
     readonly PROJECT: Project;
     readonly SPATIAL_REFERENCES: Array<SpatialReferenceConfig>;
     readonly TIME: Time;
-    readonly WCS: Wcs;
-    readonly WFS: Wfs;
-    readonly WMS: Wms;
 }
 
 export const DEFAULT_CORE_CONFIG: CoreConfigStructure = {
@@ -113,21 +111,41 @@ export const DEFAULT_CORE_CONFIG: CoreConfigStructure = {
         GUEST_LOGIN_HINT: 5000,
     },
     MAP: {
-        BACKGROUND_LAYER: 'MVT',
-        BACKGROUND_LAYER_URL: 'https://basemap.geoengine.io/natural-earth/{epsg}/{z}/{x}/{y}.pbf',
-        HOSTED_BACKGROUND_SERVICE: '/mapcache/',
-        HOSTED_BACKGROUND_LAYER_NAME: 'osm',
-        HOSTED_BACKGROUND_SERVICE_VERSION: '1.1.1',
-        VECTOR_TILES: {
-            STYLE_URL: 'assets/mvt/ne-ge.json',
-            SOURCE: 'ne',
-            BACKGROUND_LAYER_EXTENTS: {
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                'EPSG:4326': [-180, -180, 180, 180],
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                'EPSG:3857': [-20037508.3427892, -20037508.3427892, 20037508.3427892, 20037508.3427892],
-            },
-            MAX_ZOOM: 22,
+        DEFAULT_BASEMAP: 'Natural Earth Countries 10m',
+        BASEMAPS: {
+            /* eslint-disable @typescript-eslint/naming-convention */
+            'Natural Earth Countries 10m': {
+                TYPE: 'MVT',
+                URL: 'https://basemap.geoengine.io/natural-earth/{epsg}/{z}/{x}/{y}.pbf',
+                STYLE_URL: 'assets/mvt/ne-ge.json',
+                SOURCE: 'ne',
+                LAYER_EXTENTS: {
+                    'EPSG:4326': [-180, -180, 180, 180],
+                    'EPSG:3857': [-20037508.3427892, -20037508.3427892, 20037508.3427892, 20037508.3427892],
+                },
+                MAX_ZOOM: 22,
+                ATTRIBUTION: 'Made with Natural Earth. © 2025 Geo Engine GmbH',
+            } as const as VectorTiles,
+            'Blue Marble (DLR EOC Basemap)': {
+                TYPE: 'WMS',
+                URL: 'https://geoservice.dlr.de/eoc/basemap/wms',
+                LAYER: 'blue_marble:blue_marble',
+                VERSION: '1.3.0',
+                FORMAT: 'image/png',
+                PROJECTIONS: ['EPSG:4326', 'EPSG:3857'],
+                ATTRIBUTION: "2004 NASA's Earth Observatory, © 2025 DLR EOC",
+            } as const as Wms,
+            'Sentinel-2 cloudless layer for 2016 by EOX': {
+                TYPE: 'WMS',
+                URL: 'https://tiles.maps.eox.at/wms',
+                LAYER: {'EPSG:4326': 's2cloudless', 'EPSG:3857': 's2cloudless_3857'},
+                VERSION: '1.1.1',
+                FORMAT: 'image/png',
+                PROJECTIONS: ['EPSG:4326', 'EPSG:3857'],
+                MAP_900913: true,
+                ATTRIBUTION:
+                    'Sentinel-2 cloudless - https://s2maps.eu by EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2016 & 2017)',
+            } as const as Wms,
         },
         REFRESH_LAYERS_ON_CHANGE: false,
         VALID_CRS: ['EPSG:4326', 'EPSG:3857'],
@@ -135,18 +153,6 @@ export const DEFAULT_CORE_CONFIG: CoreConfigStructure = {
     API_URL: '/api',
     TIME: {
         ALLOW_RANGES: true,
-    },
-    WCS: {
-        SERVICE: 'WCS',
-        VERSION: '2.0.1',
-    },
-    WFS: {
-        VERSION: '2.0.0',
-        FORMAT: 'application/json',
-    },
-    WMS: {
-        VERSION: '1.3.0',
-        FORMAT: 'image/png',
     },
     PLOTS: {
         THEME: 'excel',
@@ -193,7 +199,7 @@ export const DEFAULT_CORE_CONFIG: CoreConfigStructure = {
         REGISTRATION_AVAILABLE: true,
         LOCAL_LOGIN_AVAILABLE: true,
     },
-};
+} as const;
 
 /**
  * A service that provides config entries.
@@ -205,18 +211,6 @@ export class CoreConfig extends CommonConfig {
 
     override get DELAYS(): Delays {
         return this.config.DELAYS;
-    }
-
-    get WMS(): Wms {
-        return this.config.WMS;
-    }
-
-    get WFS(): Wfs {
-        return this.config.WFS;
-    }
-
-    get WCS(): Wcs {
-        return this.config.WCS;
     }
 
     get DEFAULTS(): ConfigDefaults {

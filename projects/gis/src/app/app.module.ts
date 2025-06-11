@@ -13,6 +13,7 @@ import {
     TabsService,
     CoreModule,
     CoreConfig,
+    MapContainerComponent,
 } from '@geoengine/core';
 import {AppConfig} from './app-config.service';
 import {MainComponent} from './main/main.component';
@@ -23,7 +24,7 @@ import {CommonConfig} from '@geoengine/common';
 @NgModule({
     declarations: [AppComponent, MainComponent],
     bootstrap: [AppComponent],
-    imports: [BrowserAnimationsModule, BrowserModule, AppRoutingModule, CoreModule],
+    imports: [BrowserAnimationsModule, BrowserModule, AppRoutingModule, CoreModule, MapContainerComponent],
     providers: [
         AppConfig,
         {
