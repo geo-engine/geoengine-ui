@@ -10,3 +10,16 @@
         }
     </mat-select>
 </mat-form-field>
+
+<p>Available projections:</p>
+
+<ul>
+    @for (projection of projections(); track projection) {
+        <li>{{ projection }}</li>
+    }
+</ul>
+
+<p>
+    <em>Note:</em>
+    If you select a basemap that is not compatible with the current projection, the map will use a basic natural earth relief instead.
+</p>

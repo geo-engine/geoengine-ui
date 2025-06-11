@@ -12,7 +12,11 @@ interface NamedBasemap extends Basemap {
 export class BasemapService {
     protected readonly config = inject(CoreConfig);
 
-    protected selectedBasemap: WritableSignal<NamedBasemap>;
+    protected readonly selectedBasemap: WritableSignal<NamedBasemap>;
+    public readonly basemapProjections: Signal<Array<string>> = computed(() => {
+        const currentBasemap = this.selectedBasemap();
+        return allowedBasemapProjections(currentBasemap);
+    });
 
     constructor() {
         const defaultBasemap = this.config.MAP.DEFAULT_BASEMAP;

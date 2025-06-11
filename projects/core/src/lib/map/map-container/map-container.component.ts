@@ -47,6 +47,7 @@ import OlInteractionDraw, {GeometryFunction} from 'ol/interaction/Draw';
 import OlInteractionSelect from 'ol/interaction/Select';
 import {SelectEvent as OlSelectEvent} from 'ol/interaction/Select';
 import OlGeometry from 'ol/geom/Geometry';
+import OlAttribution from 'ol/control/Attribution';
 
 import {MapLayerComponent} from '../map-layer.component';
 
@@ -122,6 +123,10 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     private endDrawCallback?: (feature: OlFeature<OlGeometry>) => void;
 
     private subscriptions: Array<Subscription> = [];
+
+    private readonly attributions = new OlAttribution({
+        collapsible: true,
+    });
 
     private readonly basemapService = inject(BasemapService);
 
@@ -372,7 +377,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     private initOpenlayersMap(projection: SpatialReference): void {
         this.maps = [
             new OlMap({
-                controls: [],
+                controls: [this.attributions],
             }),
         ];
         this.createAndSetView(projection);
@@ -652,14 +657,14 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
 
                 const layer = new OlLayerVectorTile({source: this.backgroundLayerSource as OlSourceVectorTile});
 
-                fetch(vectorTilesBasemap.STYLE_URL).then((response) => {
+                void fetch(vectorTilesBasemap.STYLE_URL)
+                    .then((response) => response.json())
                     // eslint-disable-next-line @typescript-eslint/naming-convention
-                    response.json().then((glStyle: {layers: Array<{id: string; paint: {'background-color'?: string}}>}) => {
-                        applyBackground(layer, glStyle);
+                    .then(async (glStyle: {layers: Array<{id: string; paint: {'background-color'?: string}}>}) => {
+                        await applyBackground(layer, glStyle);
 
                         stylefunction(layer, glStyle, vectorTilesBasemap.SOURCE);
                     });
-                });
 
                 return layer;
             }
@@ -701,6 +706,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             return source;
         }
 
+        const attributions = `<em>Basemap:</em> ${basemap.ATTRIBUTION}`;
+
         switch (basemap.TYPE) {
             case 'MVT': {
                 const vectorTilesBasemap = basemap as VectorTiles;
@@ -717,21 +724,38 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     maxZoom: vectorTilesBasemap.MAX_ZOOM,
                     wrapX: false,
                     projection: projection.srsString,
+                    attributions,
                 });
             }
             case 'WMS': {
                 const wmsBasemap = basemap as Wms;
 
+                let projectionString = projection.srsString;
+
+                if (wmsBasemap.MAP_900913 && projectionString === 'EPSG:3857') {
+                    // use the 900913 projection for WMS layers that require it
+                    projectionString = 'EPSG:900913';
+                }
+
+                let layers: string;
+                if (typeof wmsBasemap.LAYER === 'string') {
+                    layers = wmsBasemap.LAYER;
+                } else {
+                    // use the layer for the current projection
+                    layers = wmsBasemap.LAYER[projection.srsString];
+                }
+
                 return new OlTileWmsSource({
                     url: wmsBasemap.URL,
                     params: {
-                        layers: wmsBasemap.LAYER,
+                        layers,
                         projection: projection.srsString,
                         version: wmsBasemap.VERSION,
                     },
                     wrapX: false,
-                    projection: projection.srsString,
+                    projection: projectionString,
                     crossOrigin: 'anonymous',
+                    attributions,
                 });
             }
         }

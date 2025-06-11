@@ -16,6 +16,7 @@ export class BasemapSelectorComponent {
 
     basemaps = this.basmapService.basemaps;
     selectedBasemap = this.basmapService.selectedBasemapName;
+    projections = this.basmapService.basemapProjections;
 
     selectBasemap(name: string): void {
         this.basmapService.selectBasemap(name);

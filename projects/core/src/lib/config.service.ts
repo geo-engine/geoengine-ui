@@ -41,16 +41,19 @@ export type Basemaps = Record<string, Basemap>;
 export interface Basemap {
     readonly TYPE: Wms['TYPE'] | VectorTiles['TYPE'];
     readonly URL: string;
-    readonly ATTRIBUTION?: string;
+    readonly ATTRIBUTION: string;
 }
 
 export interface Wms extends Basemap {
     readonly TYPE: 'WMS';
-    readonly LAYER: string;
+    readonly LAYER: string | LayerPerProjection;
     readonly VERSION: string;
     readonly FORMAT: string;
     readonly PROJECTIONS: Array<string>;
+    readonly MAP_900913?: boolean;
 }
+
+export type LayerPerProjection = Record<string, string>;
 
 export interface VectorTiles extends Basemap {
     readonly TYPE: 'MVT';
@@ -121,6 +124,7 @@ export const DEFAULT_CORE_CONFIG: CoreConfigStructure = {
                     'EPSG:3857': [-20037508.3427892, -20037508.3427892, 20037508.3427892, 20037508.3427892],
                 },
                 MAX_ZOOM: 22,
+                ATTRIBUTION: 'Made with Natural Earth. © 2025 Geo Engine GmbH',
             } as const as VectorTiles,
             'Blue Marble (DLR EOC Basemap)': {
                 TYPE: 'WMS',
@@ -129,6 +133,18 @@ export const DEFAULT_CORE_CONFIG: CoreConfigStructure = {
                 VERSION: '1.3.0',
                 FORMAT: 'image/png',
                 PROJECTIONS: ['EPSG:4326', 'EPSG:3857'],
+                ATTRIBUTION: "2004 NASA's Earth Observatory, © 2025 DLR EOC",
+            } as const as Wms,
+            'Sentinel-2 cloudless layer for 2016 by EOX - 4326': {
+                TYPE: 'WMS',
+                URL: 'https://tiles.maps.eox.at/wms',
+                LAYER: {'EPSG:4326': 's2cloudless', 'EPSG:3857': 's2cloudless_3857'},
+                VERSION: '1.3.0',
+                FORMAT: 'image/png',
+                PROJECTIONS: ['EPSG:4326', 'EPSG:3857'],
+                MAP_900913: true,
+                ATTRIBUTION:
+                    'Sentinel-2 cloudless - https://s2maps.eu by EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2016 & 2017)',
             } as const as Wms,
         },
         REFRESH_LAYERS_ON_CHANGE: false,
