@@ -135,11 +135,11 @@ export const DEFAULT_CORE_CONFIG: CoreConfigStructure = {
                 PROJECTIONS: ['EPSG:4326', 'EPSG:3857'],
                 ATTRIBUTION: "2004 NASA's Earth Observatory, © 2025 DLR EOC",
             } as const as Wms,
-            'Sentinel-2 cloudless layer for 2016 by EOX - 4326': {
+            'Sentinel-2 cloudless layer for 2016 by EOX': {
                 TYPE: 'WMS',
                 URL: 'https://tiles.maps.eox.at/wms',
                 LAYER: {'EPSG:4326': 's2cloudless', 'EPSG:3857': 's2cloudless_3857'},
-                VERSION: '1.3.0',
+                VERSION: '1.1.1',
                 FORMAT: 'image/png',
                 PROJECTIONS: ['EPSG:4326', 'EPSG:3857'],
                 MAP_900913: true,
