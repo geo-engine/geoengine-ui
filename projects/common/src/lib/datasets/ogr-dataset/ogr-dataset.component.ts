@@ -25,6 +25,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {FxLayoutDirective} from '../../util/directives/flexbox-legacy.directive';
 import {MeasurementComponent} from '../../measurement/measurement.component';
+import {MatCardSubtitle} from '@angular/material/card';
 
 interface Column {
     name: string;
@@ -49,6 +50,7 @@ type ColumnInfo = {[name: string]: Column};
         MatIconModule,
         FxLayoutDirective,
         MeasurementComponent,
+        MatCardSubtitle,
     ],
     templateUrl: './ogr-dataset.component.html',
     styleUrl: './ogr-dataset.component.css',
