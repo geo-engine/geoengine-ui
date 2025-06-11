@@ -33,6 +33,7 @@
         </mat-form-field>
 
         <ng-container *ngIf="metaData as meta">
+            <mat-card-subtitle>Specify the measurement for the selected band</mat-card-subtitle>
             <geoengine-measurement
                 [measurement]="meta.resultDescriptor.bands[0].measurement || {type: 'unitless'}"
                 (measurementChange)="onMeasurementChange()"
