@@ -249,6 +249,7 @@ export class DatasetEditorComponent implements OnChanges {
             this.snackBar.open('Dataset loading information successfully updated.', 'Close', {
                 duration: this.config.DEFAULTS.SNACKBAR_DURATION,
             });
+            this.dataset = await this.datasetsService.getDataset(this.datasetListing.name);
 
             this.rawLoadingInfoPristine = true;
             if (this.gdalMetadataListComponent) {
