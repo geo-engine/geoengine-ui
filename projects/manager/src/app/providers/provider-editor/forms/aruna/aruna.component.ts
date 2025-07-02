@@ -122,7 +122,7 @@ export class ArunaComponent implements OnInit, OnChanges {
                 if (this.readonly) {
                     this.form.disable({emitEvent: false});
                 } else {
-                    this.form.enable({emitEvent: false});
+                    this.form.enable({emitEvent: true});
                     this.editing = true;
                 }
             }, 50);
