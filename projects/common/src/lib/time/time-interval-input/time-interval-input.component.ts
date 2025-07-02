@@ -1,5 +1,5 @@
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, forwardRef} from '@angular/core';
-import {Subscription, distinctUntilChanged} from 'rxjs';
+import {Subscription} from 'rxjs';
 import moment, {Moment} from 'moment';
 import {
     AbstractControl,

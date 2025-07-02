@@ -28,21 +28,6 @@ interface RgbSettingsForm {
     noDataColor: FormControl<Color>;
 }
 
-interface RgbRasterStats {
-    red: {
-        min: number;
-        max: number;
-    };
-    green: {
-        min: number;
-        max: number;
-    };
-    blue: {
-        min: number;
-        max: number;
-    };
-}
-
 type RgbColorName = 'red' | 'green' | 'blue';
 
 /**
@@ -78,9 +63,9 @@ export class RasterMultibandSymbologyEditorComponent implements OnDestroy {
     readonly colorizerChange = output<MultiBandRasterColorizer>();
 
     readonly channels = computed<Array<{color: RgbColorName; label: string}>>(() => {
-        let band1 = this.band1();
-        let band2 = this.band2();
-        let band3 = this.band3();
+        const band1 = this.band1();
+        const band2 = this.band2();
+        const band3 = this.band3();
 
         return [
             {color: 'red', label: band1.name},

@@ -1,6 +1,6 @@
 import {BehaviorSubject, Subscription} from 'rxjs';
 
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, input, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, input, OnDestroy, OnInit} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
 import {first} from 'rxjs/operators';
@@ -73,7 +73,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
                     .getSessionOrUndefinedStream()
                     .pipe(first())
                     .subscribe((session) => {
-                        if (!session || !session.user || session.user.isGuest) {
+                        if (!session?.user || session.user.isGuest) {
                             this.formStatus$.next(FormStatus.LoggedOut);
                         } else {
                             this.user = session.user;

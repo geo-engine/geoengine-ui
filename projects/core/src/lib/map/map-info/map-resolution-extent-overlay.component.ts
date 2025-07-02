@@ -19,7 +19,7 @@ export class MapResolutionExtentOverlayComponent {
     @Input()
     public bottom!: number;
 
-    highPrecision: BehaviorSubject<boolean> = new BehaviorSubject(false);
+    highPrecision = new BehaviorSubject<boolean>(false);
     private static readonly lowNumFractions = 2;
     private static readonly highNumFractions = 12;
 
@@ -68,9 +68,7 @@ export class MapResolutionExtentOverlayComponent {
     }
 
     private trimFraction(number: string, trim?: number): string {
-        if (trim === undefined) {
-            trim = this.countTrailingFractionZeros(number);
-        }
+        trim ??= this.countTrailingFractionZeros(number);
         if (trim == this.getFraction(number).length) {
             trim += 1;
         }

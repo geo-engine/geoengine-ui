@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, input, Input, OnChanges, OnInit, SimpleChange, untracked} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core';
 import {Color, TRANSPARENT} from '../../colors/color';
 import {Colorizer, LinearGradient} from '../../colors/colorizer.model';
 import {ColorBreakpoint} from '../../colors/color-breakpoint.model';

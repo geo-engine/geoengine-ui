@@ -1,15 +1,4 @@
-import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    EventEmitter,
-    Input,
-    OnChanges,
-    OnDestroy,
-    OnInit,
-    Output,
-    SimpleChanges,
-} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
 import {FormArray, UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {BehaviorSubject} from 'rxjs';
 import {Color, RgbaTuple} from '../color';
@@ -33,7 +22,7 @@ import {ALL_COLORMAPS} from '../colormaps/colormaps';
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: false,
 })
-export class PercentileBreakpointSelectorComponent implements OnInit, OnDestroy, OnChanges {
+export class PercentileBreakpointSelectorComponent {
     @Input({required: true}) band!: string;
 
     @Input({required: true}) workflowId!: UUID;
@@ -86,12 +75,6 @@ export class PercentileBreakpointSelectorComponent implements OnInit, OnDestroy,
             colorMapReverseColors: [false],
         });
     }
-
-    ngOnInit(): void {}
-
-    ngOnDestroy(): void {}
-
-    ngOnChanges(changes: SimpleChanges): void {}
 
     /**
      * Replace the min and max values.
@@ -165,7 +148,7 @@ export class PercentileBreakpointSelectorComponent implements OnInit, OnDestroy,
         const breakpoints = new Array<ColorBreakpoint>();
 
         for (let i = 0; i < percentiles.length; i++) {
-            let value = percentiles[i];
+            const value = percentiles[i];
 
             const frac = i / percentiles.length;
 
@@ -242,6 +225,7 @@ export class PercentileBreakpointSelectorComponent implements OnInit, OnDestroy,
             .then((plotData) => {
                 this.statisticsLoading$.next(false);
 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const statistics = plotData.data as any;
 
                 if (!(this.band in plotData.data)) {

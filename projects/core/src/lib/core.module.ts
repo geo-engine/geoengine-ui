@@ -38,7 +38,6 @@ import {SafeHtmlPipe} from './util/pipes/safe-html.pipe';
 import {TrimPipe} from './util/pipes/trim.pipe';
 import {CssStringToRgbaPipe} from './util/pipes/css-string-to-rgba.pipe';
 import {HighlightPipe} from './util/pipes/highlight.pipe';
-
 import {RgbaToCssStringPipe} from './util/pipes/rgba-to-css-string.pipe';
 import {CommonModule as AngularCommonModule} from '@angular/common';
 import {DialogHelpComponent} from './dialogs/dialog-help/dialog-help.component';
@@ -80,7 +79,6 @@ import {BoxPlotOperatorComponent} from './operators/dialogs/boxplot-operator/box
 import {ScatterplotOperatorComponent} from './operators/dialogs/scatterplot-operator/scatterplot-operator.component';
 import {LayerSelectionComponent} from './operators/dialogs/helpers/layer-selection/layer-selection.component';
 import {LineageGraphComponent} from './provenance/lineage-graph/lineage-graph.component';
-// eslint-disable-next-line max-len
 import {MeanRasterPixelValuesOverTimeDialogComponent} from './operators/dialogs/mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
 import {RasterVectorJoinComponent} from './operators/dialogs/raster-vector-join/raster-vector-join.component';
 import {RasterStackerComponent} from './operators/dialogs/raster-stacker/raster-stacker.component';
@@ -136,6 +134,7 @@ import {BandwiseExpressionOperatorComponent} from './operators/dialogs/bandwise-
 import {BandNeighborhoodAggregateComponent} from './operators/dialogs/band-neighborhood-aggregate/band-neighborhood-aggregate.component';
 import {LayerCollectionSelectionComponent} from './layer-collections/layer-collection-selection.component';
 import {CoreConfig} from './config.service';
+import {BasemapSelectorComponent} from './project/basemap-selector/basemap-selector.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -195,8 +194,6 @@ const CORE_COMPONENTS = [
     FeatureAttributeOvertimeComponent,
     FullDisplayComponent,
     HistogramOperatorComponent,
-    IfGuestDirective,
-    IfLoggedInDirective,
     InterpolationComponent,
     LayerCollectionSelectionComponent,
     LayerListComponent,
@@ -208,7 +205,6 @@ const CORE_COMPONENTS = [
     LineSimplificationComponent,
     LoadProjectComponent,
     LoginComponent,
-    MapContainerComponent,
     MapResolutionExtentOverlayComponent,
     MeanRasterPixelValuesOverTimeDialogComponent,
     MediaviewComponent,
@@ -244,7 +240,6 @@ const CORE_COMPONENTS = [
     SaveProjectAsComponent,
     ScatterplotOperatorComponent,
     SidenavContainerComponent,
-    SidenavHeaderComponent,
     SidenavSearchComponent,
     SidenavSearchRightDirective,
     SmallTimeInteractionComponent,
@@ -264,8 +259,17 @@ const CORE_COMPONENTS = [
     VatLogoComponent,
     VectorExpressionComponent,
     VectorLegendComponent,
-    WorkspaceSettingsComponent,
     ZoomHandlesComponent,
+];
+
+const CORE_COMPONENT_IMPORTS = [
+    BasemapSelectorComponent,
+    IfGuestDirective,
+    IfLoggedInDirective,
+    MapContainerComponent,
+    RasterLegendComponent,
+    SidenavHeaderComponent,
+    WorkspaceSettingsComponent,
 ];
 
 @NgModule({
@@ -290,7 +294,7 @@ const CORE_COMPONENTS = [
         PortalModule,
         ReactiveFormsModule,
         ScrollingModule,
-        RasterLegendComponent,
+        ...CORE_COMPONENT_IMPORTS,
     ],
     providers: [
         {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}},

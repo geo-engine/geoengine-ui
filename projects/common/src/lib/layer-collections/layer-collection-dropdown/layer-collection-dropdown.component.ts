@@ -17,7 +17,7 @@ import {
     LayerListing as LayerCollectionLayerDict,
     LayerCollectionListing as LayerCollectionListingDict,
 } from '@geoengine/openapi-client';
-import {BehaviorSubject, Observable, Subject, firstValueFrom, map} from 'rxjs';
+import {BehaviorSubject, Observable, Subject, map} from 'rxjs';
 import {LayersService} from '../layers.service';
 
 interface CollectionAndSelected {
@@ -59,7 +59,7 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
 
     readonly collectionsAndSelected: Observable<Array<CollectionAndSelected>>;
 
-    private onDestroy$: Subject<boolean> = new Subject();
+    private onDestroy$ = new Subject<boolean>();
 
     constructor(
         protected readonly layersService: LayersService,
@@ -81,11 +81,13 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
         );
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     async ngOnInit(): Promise<void> {
         await this.setupRoot();
         await this.preselect(this.preselectedPath);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
         if (changes.root && changes.root.currentValue !== changes.root.previousValue) {
             await this.setupRoot();
@@ -136,7 +138,7 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
                 break; // we cannot continue selecting the next item
             }
 
-            newSelections.push(found as LayerCollectionItemDict);
+            newSelections.push(found);
 
             if (found.type === 'layer') {
                 this.layerSelected.emit(found as LayerCollectionLayerDict);

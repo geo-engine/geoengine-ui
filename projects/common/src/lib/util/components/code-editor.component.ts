@@ -62,7 +62,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
     private onTouched?: () => void;
     private changeSubscription?: Subscription;
 
-    ngOnChanges(changes: {[propKey: string]: SimpleChange}): void {
+    ngOnChanges(changes: Record<string, SimpleChange>): void {
         if (!this.editor) {
             return;
         }

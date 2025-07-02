@@ -3,7 +3,7 @@ import {RasterLayer} from '@geoengine/common';
 import {CoreModule, RasterLegendComponent} from '@geoengine/core';
 
 @Component({
-    selector: 'geoengine-legend', // eslint-disable-line @angular-eslint/component-selector
+    selector: 'geoengine-legend',
     templateUrl: './legend.component.html',
     styleUrls: ['./legend.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

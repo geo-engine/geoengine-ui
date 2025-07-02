@@ -24,7 +24,7 @@ export class TimeStepSelectorComponent implements OnChanges {
     public currentTimeIndex: number | null = 0;
     public max = 0;
 
-    private timeFormat$: BehaviorSubject<string> = new BehaviorSubject(this.timeFormat);
+    private timeFormat$ = new BehaviorSubject<string>(this.timeFormat);
 
     /**
      * Require services by using DI
@@ -46,6 +46,7 @@ export class TimeStepSelectorComponent implements OnChanges {
         );
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
         if (changes.timeSteps) {
             if (this.timeSteps) {

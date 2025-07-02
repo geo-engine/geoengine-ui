@@ -63,7 +63,7 @@ export class ClassificationMeasurement extends Measurement implements ColorAttri
     readonly measurement: string;
     readonly classes: Immutable.Map<number, string>;
 
-    constructor(measurement: string, classes: {[key: number]: string}) {
+    constructor(measurement: string, classes: Record<number, string>) {
         super();
 
         this.measurement = measurement;

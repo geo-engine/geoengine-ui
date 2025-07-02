@@ -177,7 +177,7 @@ export class LineageGraphComponent implements AfterViewInit {
             });
 
             // add children
-            const nonSourceOperator = operator as TypedOperatorOperator;
+            const nonSourceOperator = operator;
             if (nonSourceOperator.sources) {
                 const operatorSources = nonSourceOperator.sources as OperatorSourcesDict;
                 for (const sourceKey of Object.keys(operatorSources)) {
@@ -264,7 +264,7 @@ export class LineageGraphComponent implements AfterViewInit {
         svgGroup
             .transition()
             .duration(500)
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/unbound-method
             .call(zoom.transform as any, d3.zoomIdentity.translate(initialX, initialY).scale(scale));
 
         // add zoom handler
@@ -272,6 +272,7 @@ export class LineageGraphComponent implements AfterViewInit {
         zoom.on('zoom', (zoomEvent: d3.D3ZoomEvent<any, any>) => {
             const zoomTranslate = isNaN(zoomEvent.transform.x) ? [0, 0] : [zoomEvent.transform.x, zoomEvent.transform.y];
             const zoomScale = isNaN(zoomEvent.transform.k) ? 0 : zoomEvent.transform.k;
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             svgGroup.attr('transform', `translate(${zoomTranslate})scale(${zoomScale})`);
         });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

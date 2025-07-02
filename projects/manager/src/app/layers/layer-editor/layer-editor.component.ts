@@ -65,6 +65,7 @@ export class LayerEditorComponent implements OnChanges {
         private readonly config: AppConfig,
     ) {}
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
         if (changes.layerListing) {
             this.resetSymbology();
@@ -313,7 +314,7 @@ export class LayerEditorComponent implements OnChanges {
         const description = this.form.controls.description.value;
         const properties = this.form.controls.properties.value;
         const metadataArray = this.form.controls.metadata.value;
-        const metadata: {[key: string]: string} = {};
+        const metadata: Record<string, string> = {};
         metadataArray.forEach(([key, value]) => {
             metadata[key] = value;
         });

@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {Measurement, VectorColumnInfo, TypedVectorResultDescriptor} from '@geoengine/openapi-client';
+import {Measurement, TypedVectorResultDescriptor} from '@geoengine/openapi-client';
 
 interface Column {
     name: string;
@@ -29,7 +29,7 @@ export class VectorResultDescriptorComponent {
         const columns: Column[] = [];
 
         for (const key of keys) {
-            const column = this.resultDescriptor.columns[key] as VectorColumnInfo;
+            const column = this.resultDescriptor.columns[key];
 
             columns.push({
                 name: key,

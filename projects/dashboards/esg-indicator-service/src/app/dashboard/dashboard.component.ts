@@ -58,7 +58,17 @@ interface SelectedProperty {
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CoreModule, AsyncPipe, MatGridListModule, MatMenuModule, MatIconModule, MatButtonModule, MatCardModule, QuotaLogComponent],
+    imports: [
+        CoreModule,
+        AsyncPipe,
+        MatGridListModule,
+        MatMenuModule,
+        MatIconModule,
+        MatButtonModule,
+        MatCardModule,
+        QuotaLogComponent,
+        MapContainerComponent,
+    ],
 })
 export class DashboardComponent implements AfterViewInit, AfterContentInit {
     readonly userService = inject(UserService);
@@ -108,15 +118,18 @@ export class DashboardComponent implements AfterViewInit, AfterContentInit {
         });
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/require-await
     async ngAfterViewInit(): Promise<void> {
         this.breakpointObserver.observe(Breakpoints.Web).subscribe((isLandscape) => {
             this.isLandscape.set(isLandscape.matches);
         });
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/require-await
     async ngAfterContentInit(): Promise<void> {
         this.loadData();
 
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.projectService.getSelectedFeatureStream().subscribe(async (featureSelection) => {
             const features = await this.dataSelectionService.getPolygonLayerFeatures();
             if (featureSelection.feature) {

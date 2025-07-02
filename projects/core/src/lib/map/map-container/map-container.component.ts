@@ -7,7 +7,9 @@ import {
     ChangeDetectorRef,
     Component,
     ContentChildren,
+    effect,
     ElementRef,
+    inject,
     Input,
     OnChanges,
     OnDestroy,
@@ -28,12 +30,9 @@ import OlLayerVector from 'ol/layer/Vector';
 import OlLayerVectorTile from 'ol/layer/VectorTile';
 
 import OlSource from 'ol/source/Source';
-import OlSourceOSM from 'ol/source/OSM';
-import OlTileSource from 'ol/source/Tile';
 import OlTileWmsSource from 'ol/source/TileWMS';
 import OlSourceVector from 'ol/source/Vector';
 import OlSourceVectorTile from 'ol/source/VectorTile';
-import XYZ from 'ol/source/XYZ';
 
 import {Type as OlGeometryType} from 'ol/geom/Geometry';
 import OlGeomPoint from 'ol/geom/Point';
@@ -48,17 +47,19 @@ import OlInteractionDraw, {GeometryFunction} from 'ol/interaction/Draw';
 import OlInteractionSelect from 'ol/interaction/Select';
 import {SelectEvent as OlSelectEvent} from 'ol/interaction/Select';
 import OlGeometry from 'ol/geom/Geometry';
+import OlAttribution from 'ol/control/Attribution';
 
 import {MapLayerComponent} from '../map-layer.component';
 
 import {FeatureSelection, ProjectService} from '../../project/project.service';
 import {Extent, MapService} from '../map.service';
-import {CoreConfig} from '../../config.service';
-import {MatGridList, MatGridTile} from '@angular/material/grid-list';
+import {Basemap, CoreConfig, VectorTiles, Wms} from '../../config.service';
+import {MatGridList, MatGridListModule, MatGridTile} from '@angular/material/grid-list';
 import {SpatialReferenceService, WGS_84} from '../../spatial-references/spatial-reference.service';
 import {containsCoordinate, getCenter} from 'ol/extent';
 import {applyBackground, stylefunction} from 'ol-mapbox-style';
 import {olExtentToTuple, SpatialReference, VectorSymbology} from '@geoengine/common';
+import {allowedBasemapProjections, BasemapService} from '../../layers/basemap.service';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type MapLayer = MapLayerComponent<OlLayer<OlSource, any>, OlSource>;
@@ -79,7 +80,7 @@ const MAX_ZOOM_LEVEL = 28;
         contentChildren: new ContentChildren(MapLayerComponent),
     },
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [MatGridListModule],
 })
 export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestroy {
     /**
@@ -123,6 +124,12 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
 
     private subscriptions: Array<Subscription> = [];
 
+    private readonly attributions = new OlAttribution({
+        collapsible: true,
+    });
+
+    private readonly basemapService = inject(BasemapService);
+
     /**
      * Create the component and inject several dependencies via DI.
      */
@@ -142,6 +149,14 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 view: this.view,
             }),
         ];
+
+        effect(() => {
+            this.basemapService.basemap();
+            this.projection$.pipe(first()).subscribe((projection) => {
+                this.backgroundLayerSource = undefined; // reset source to force recreation
+                this.redrawLayers(projection);
+            });
+        });
     }
 
     ngOnDestroy(): void {
@@ -178,7 +193,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         );
     }
 
-    ngOnChanges(changes: {[propertyName: string]: SimpleChange}): void {
+    ngOnChanges(changes: Record<string, SimpleChange>): void {
         for (const propName in changes) {
             if (propName === 'grid') {
                 this.projection$.pipe(first()).subscribe((projection) => this.redrawLayers(projection));
@@ -362,7 +377,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     private initOpenlayersMap(projection: SpatialReference): void {
         this.maps = [
             new OlMap({
-                controls: [],
+                controls: [this.attributions],
             }),
         ];
         this.createAndSetView(projection);
@@ -485,7 +500,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         }
 
         if (projectionChanged || !this.backgroundLayerSource) {
-            this.backgroundLayerSource = this.createBackgroundLayerSource(projection);
+            this.backgroundLayerSource = this.createBackgroundLayerSource(projection, this.basemapService.basemap());
 
             this.backgroundLayers.length = 0;
         }
@@ -496,7 +511,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         }
         while (this.backgroundLayers.length < this.desiredNumberOfMaps()) {
             // create background layers if necessary
-            this.backgroundLayers.push(this.createBackgroundLayer(projection));
+            this.backgroundLayers.push(this.createBackgroundLayer(projection, this.basemapService.basemap()));
         }
 
         this.maps.forEach((map, index) => {
@@ -531,7 +546,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         const centerCoord = this.view?.getCenter();
         if (centerCoord) {
             const oldCenterPoint = new OlGeomPoint(centerCoord);
-            newCenterPoint = oldCenterPoint.transform(this.view.getProjection(), olProjection) as OlGeomPoint;
+            newCenterPoint = oldCenterPoint.transform(this.view.getProjection(), olProjection);
 
             if (!containsCoordinate(olProjection.getExtent(), newCenterPoint.getCoordinates())) {
                 newCenterPoint = new OlGeomPoint(getCenter(olProjection.getExtent()));
@@ -606,123 +621,98 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private createBackgroundLayer(projection: SpatialReference): OlLayer<OlSource, any> {
-        // use fallback if background layer is not available for projection
-        let backgroundLayer;
-        if (this.config.MAP.VALID_CRS.includes(projection.srsString)) {
-            backgroundLayer = this.config.MAP.BACKGROUND_LAYER;
-        } else {
-            backgroundLayer = 'empty';
+    private createBackgroundLayer(projection: SpatialReference, basemap: Basemap): OlLayer<OlSource, any> {
+        if (!allowedBasemapProjections(basemap).includes(projection.srsString)) {
+            console.warn(`${basemap.TYPE} basemap is not available for projection ${projection.srsString}`);
+
+            // use fallback if background layer is not available for projection
+            return new OlLayerVector({
+                source: this.backgroundLayerSource as OlSourceVector,
+                background: 'rgba(158, 189, 255, 1)',
+                style: (feature: OlFeatureLike, _resolution: number): OlStyleStyle => {
+                    if (feature.getId() === 'BACKGROUND') {
+                        return new OlStyleStyle({
+                            fill: new OlStyleFill({
+                                color: 'rgba(158, 189, 255, 1)',
+                            }),
+                        });
+                    } else {
+                        return new OlStyleStyle({
+                            stroke: new OlStyleStroke({
+                                color: 'rgba(225, 230, 240, .5)',
+                                width: 1,
+                            }),
+                            fill: new OlStyleFill({
+                                color: 'rgba(225, 230, 240, 1)',
+                            }),
+                        });
+                    }
+                },
+            });
         }
 
-        switch (backgroundLayer) {
-            case 'OSM':
-                return new OlLayerTile({
-                    source: this.backgroundLayerSource as OlTileSource,
-                    // wrapX: false,
-                });
-            case 'hosted':
-            case 'eumetview':
-            case 'XYZ':
-                return new OlLayerTile({
-                    source: this.backgroundLayerSource as OlTileWmsSource,
-                });
+        switch (basemap.TYPE) {
             case 'MVT': {
+                const vectorTilesBasemap = basemap as VectorTiles;
+
                 const layer = new OlLayerVectorTile({source: this.backgroundLayerSource as OlSourceVectorTile});
 
-                fetch(this.config.MAP.VECTOR_TILES.STYLE_URL).then((response) => {
+                void fetch(vectorTilesBasemap.STYLE_URL)
+                    .then((response) => response.json())
                     // eslint-disable-next-line @typescript-eslint/naming-convention
-                    response.json().then((glStyle: {layers: Array<{id: string; paint: {'background-color'?: string}}>}) => {
-                        applyBackground(layer, glStyle);
+                    .then(async (glStyle: {layers: Array<{id: string; paint: {'background-color'?: string}}>}) => {
+                        await applyBackground(layer, glStyle);
 
-                        if (this.config.MAP.VECTOR_TILES?.SOURCE) {
-                            stylefunction(layer, glStyle, this.config.MAP.VECTOR_TILES.SOURCE);
-                        }
+                        stylefunction(layer, glStyle, vectorTilesBasemap.SOURCE);
                     });
-                });
 
                 return layer;
             }
-            case 'fallback':
-                if (backgroundLayer === 'fallback') {
-                    console.warn(`Using fallback background layer for ${projection.srsString}`);
-                } else {
-                    console.error(`Unknown background layer: ${this.config.MAP.BACKGROUND_LAYER}`);
-                }
-
-                return new OlLayerVector({
-                    source: this.backgroundLayerSource as OlSourceVector,
-                    background: 'rgba(158, 189, 255, 1)',
-                    style: (feature: OlFeatureLike, _resolution: number): OlStyleStyle => {
-                        if (feature.getId() === 'BACKGROUND') {
-                            return new OlStyleStyle({
-                                fill: new OlStyleFill({
-                                    color: 'rgba(158, 189, 255, 1)',
-                                }),
-                            });
-                        } else {
-                            return new OlStyleStyle({
-                                stroke: new OlStyleStroke({
-                                    color: 'rgba(225, 230, 240, .5)',
-                                    width: 1,
-                                }),
-                                fill: new OlStyleFill({
-                                    color: 'rgba(225, 230, 240, 1)',
-                                }),
-                            });
-                        }
-                    },
+            case 'WMS': {
+                return new OlLayerTile({
+                    source: this.backgroundLayerSource as OlTileWmsSource,
                 });
-            case 'empty':
-            default:
-                return new OlLayerVector();
+            }
         }
     }
 
-    private createBackgroundLayerSource(projection: SpatialReference): OlSource {
-        // use fallback if background layer is not available for projection
-        let backgroundLayer;
-        if (this.config.MAP.VALID_CRS.includes(projection.srsString)) {
-            backgroundLayer = this.config.MAP.BACKGROUND_LAYER;
-        } else {
-            backgroundLayer = 'empty';
+    private createBackgroundLayerSource(projection: SpatialReference, basemap: Basemap): OlSource {
+        if (!allowedBasemapProjections(basemap).includes(projection.srsString)) {
+            console.warn(`${basemap.TYPE} basemap is not available for projection ${projection.srsString}`);
+
+            // use fallback if background layer is not available for projection
+            const source = new OlSourceVector({
+                wrapX: false,
+            });
+
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            source.setLoader(async (_extent, _resolution, sourceProjection): Promise<void> => {
+                const dataProjection = 'EPSG:4326';
+                const response = await fetch('assets/fallback-base-layer/ne_50m_land.fgb');
+
+                if (response.body === null) {
+                    return;
+                }
+
+                for await (const _feature of flatgeobuf.deserialize(response.body)) {
+                    const feature = _feature;
+                    const geometry = feature.getGeometry()!;
+
+                    geometry.transform(dataProjection, sourceProjection);
+                    source.addFeature(feature);
+                }
+            });
+
+            return source;
         }
 
-        switch (backgroundLayer) {
-            case 'OSM':
-                return new OlSourceOSM();
-            case 'eumetview':
-                return new OlTileWmsSource({
-                    url: 'https://view.eumetsat.int/geoserver/ows',
-                    params: {
-                        layers: 'backgrounds:ne_background',
-                        projection: projection.srsString,
-                        version: '1.3.0',
-                    },
-                    wrapX: false,
-                    projection: projection.srsString,
-                    crossOrigin: 'anonymous',
-                });
-            case 'hosted':
-                return new OlTileWmsSource({
-                    url: this.config.MAP.HOSTED_BACKGROUND_SERVICE,
-                    params: {
-                        layers: this.config.MAP.HOSTED_BACKGROUND_LAYER_NAME,
-                        projection: projection.srsString,
-                        version: this.config.MAP.HOSTED_BACKGROUND_SERVICE_VERSION,
-                    },
-                    wrapX: false,
-                    projection: projection.srsString,
-                    crossOrigin: 'anonymous',
-                });
-            case 'XYZ':
-                return new XYZ({
-                    url: this.config.MAP.BACKGROUND_LAYER_URL,
-                    wrapX: false,
-                    projection: projection.srsString,
-                });
+        const attributions = `<em>Basemap:</em> ${basemap.ATTRIBUTION}`;
+
+        switch (basemap.TYPE) {
             case 'MVT': {
-                let url = this.config.MAP.BACKGROUND_LAYER_URL;
+                const vectorTilesBasemap = basemap as VectorTiles;
+
+                let url = vectorTilesBasemap.URL;
                 // possible custom replacement strings other than `{z}`, `{x}` and `{y}`
                 if (url.includes('{epsg}')) {
                     url = url.replace('{epsg}', projection.srsString.split(':')[1]);
@@ -730,43 +720,44 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 return new OlSourceVectorTile({
                     format: new OlFormatMVT(),
                     url,
-                    extent: this.config.MAP.VECTOR_TILES.BACKGROUND_LAYER_EXTENTS[projection.srsString],
-                    maxZoom: this.config.MAP.VECTOR_TILES.MAX_ZOOM,
+                    extent: vectorTilesBasemap.LAYER_EXTENTS[projection.srsString],
+                    maxZoom: vectorTilesBasemap.MAX_ZOOM,
                     wrapX: false,
                     projection: projection.srsString,
+                    attributions,
                 });
             }
-            case 'fallback': {
-                if (backgroundLayer !== 'fallback') {
-                    console.error(`Unknown background layer (source): ${this.config.MAP.BACKGROUND_LAYER}`);
+            case 'WMS': {
+                const wmsBasemap = basemap as Wms;
+
+                let projectionString = projection.srsString;
+
+                if (wmsBasemap.MAP_900913 && projectionString === 'EPSG:3857') {
+                    // use the 900913 projection for WMS layers that require it
+                    projectionString = 'EPSG:900913';
                 }
 
-                const source = new OlSourceVector({
+                let layers: string;
+                if (typeof wmsBasemap.LAYER === 'string') {
+                    layers = wmsBasemap.LAYER;
+                } else {
+                    // use the layer for the current projection
+                    layers = wmsBasemap.LAYER[projection.srsString];
+                }
+
+                return new OlTileWmsSource({
+                    url: wmsBasemap.URL,
+                    params: {
+                        layers,
+                        projection: projection.srsString,
+                        version: wmsBasemap.VERSION,
+                    },
                     wrapX: false,
+                    projection: projectionString,
+                    crossOrigin: 'anonymous',
+                    attributions,
                 });
-
-                source.setLoader(async (_extent, _resolution, sourceProjection): Promise<void> => {
-                    const dataProjection = 'EPSG:4326';
-                    const response = await fetch('assets/fallback-base-layer/ne_50m_land.fgb');
-
-                    if (response.body === null) {
-                        return;
-                    }
-
-                    for await (const _feature of flatgeobuf.deserialize(response.body)) {
-                        const feature = _feature as OlFeature;
-                        const geometry = feature.getGeometry() as OlGeometry;
-
-                        geometry.transform(dataProjection, sourceProjection);
-                        source.addFeature(feature);
-                    }
-                });
-
-                return source;
             }
-            case 'empty':
-            default:
-                return new OlSourceVector();
         }
     }
 }
