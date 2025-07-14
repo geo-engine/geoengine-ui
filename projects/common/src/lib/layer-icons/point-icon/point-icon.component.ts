@@ -20,7 +20,6 @@ export interface PointIconStyle extends IconStyle {
     templateUrl: './point-icon.component.svg',
     styleUrls: ['./point-icon.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
 })
 export class PointIconComponent {
     // the style to use for the icon

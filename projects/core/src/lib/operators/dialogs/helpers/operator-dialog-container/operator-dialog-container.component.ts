@@ -1,12 +1,14 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, Input} from '@angular/core';
+import {MatCardModule} from '@angular/material/card';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 @Component({
     selector: 'geoengine-operator-dialog-container',
     templateUrl: './operator-dialog-container.component.html',
     styleUrls: ['./operator-dialog-container.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [MatCardModule, MatProgressBarModule],
 })
 export class OperatorDialogContainerComponent {
-    @Input() loading? = false;
+    loading = input<boolean>(false);
 }
