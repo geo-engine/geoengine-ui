@@ -134,7 +134,7 @@ export class MainComponent implements OnInit, AfterViewInit {
         //     }
         // });
 
-        this.debugCallDialog();
+        // this.debugCallDialog();
     }
 
     setTabIndex(index: number): void {
@@ -239,11 +239,11 @@ export class MainComponent implements OnInit, AfterViewInit {
         this.windowHeight$.next(window.innerHeight);
     }
 
-    private async debugCallDialog(): Promise<void> {
-        const core = await import('@geoengine/core');
+    // private async debugCallDialog(): Promise<void> {
+    //     const core = await import('@geoengine/core');
 
-        this.layoutService.setSidenavContentComponent({
-            component: core.ClassHistogramOperatorComponent,
-        });
-    }
+    //     this.layoutService.setSidenavContentComponent({
+    //         component: core.ClassHistogramOperatorComponent,
+    //     });
+    // }
 }
