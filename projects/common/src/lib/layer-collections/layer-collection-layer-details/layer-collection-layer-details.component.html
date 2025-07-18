@@ -3,16 +3,16 @@
         <mat-icon class="details-row-icon">info</mat-icon>
         <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
             <p class="details-row-text-line">Description</p>
-            <p class="details-row-text-multi-line">{{ description }}</p>
+            <p class="details-row-text-multi-line">{{ description() }}</p>
         </span>
     </span>
 
-    <ng-template [ngIf]="layerMetadata">
+    <ng-template [ngIf]="layerMetadata()">
         <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
             <mat-icon class="details-row-icon">language</mat-icon>
             <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
                 <p class="details-row-text-line">SRS</p>
-                <p class="details-row-text-line">{{ layerMetadata.spatialReference.srsString }}</p>
+                <p class="details-row-text-line">{{ layerMetadata()?.spatialReference?.srsString }}</p>
             </span>
         </span>
         <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
