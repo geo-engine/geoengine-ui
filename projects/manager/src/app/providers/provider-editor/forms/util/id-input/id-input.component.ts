@@ -22,9 +22,13 @@ export class IdInputComponent implements AfterViewInit, ControlValueAccessor {
     idControl = new FormControl<string>('');
 
     protected disabled = false;
-    protected onTouched: () => void = () => {};
+    protected onTouched: () => void = () => {
+        /* do nothing */
+    };
 
-    private onChange: (value: string) => void = () => {};
+    private onChange: (value: string) => void = () => {
+        /* do nothing */
+    };
 
     ngAfterViewInit(): void {
         if (!this.idControl.value) {

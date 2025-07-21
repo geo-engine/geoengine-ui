@@ -150,7 +150,9 @@ class ProviderDataSource extends DataSource<LayerProviderListing> {
      * Clean up resources
      */
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    disconnect(): void {}
+    disconnect(): void {
+        /* do nothing */
+    }
 
     fetchMoreData(numberOfTimes: number): void {
         if (this.noMoreData) {
@@ -169,7 +171,7 @@ class ProviderDataSource extends DataSource<LayerProviderListing> {
         const offset = this.offset;
         const limit = this.scrollFetchSize;
 
-        return this.layersService.getProviders(offset, limit).then(async (items) => {
+        return this.layersService.getProviders(offset, limit).then((items) => {
             this.offset += items.length;
 
             if (items.length < limit) {
