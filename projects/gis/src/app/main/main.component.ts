@@ -1,6 +1,5 @@
 import {Observable, BehaviorSubject, of, concat} from 'rxjs';
 import {map, mergeMap, tap} from 'rxjs/operators';
-
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -134,6 +133,8 @@ export class MainComponent implements OnInit, AfterViewInit {
         //         setTimeout(() => this.changeDetectorRef.markForCheck());
         //     }
         // });
+
+        // this.debugCallDialog();
     }
 
     setTabIndex(index: number): void {
@@ -237,4 +238,12 @@ export class MainComponent implements OnInit, AfterViewInit {
     private windowHeight(): void {
         this.windowHeight$.next(window.innerHeight);
     }
+
+    // private async debugCallDialog(): Promise<void> {
+    //     const core = await import('@geoengine/core');
+
+    //     this.layoutService.setSidenavContentComponent({
+    //         component: core.ClassHistogramOperatorComponent,
+    //     });
+    // }
 }
