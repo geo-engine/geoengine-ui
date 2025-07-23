@@ -82,11 +82,7 @@ export class ProviderEditorComponent implements OnChanges, OnInit {
 
             this.permissionsService.getPermissions('provider', this.providerListing.id).then(
                 (permissions) => {
-                    if (!permissions.find((permission) => permission.permission === Permission.Owner)) {
-                        this.readonly = true;
-                    } else {
-                        this.readonly = false;
-                    }
+                    this.readonly = !permissions.find((permission) => permission.permission === Permission.Owner);
                 },
                 (_error) => {
                     this.readonly = true;
