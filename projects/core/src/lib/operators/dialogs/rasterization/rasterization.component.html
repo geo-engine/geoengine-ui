@@ -40,16 +40,16 @@
                         <mat-form-field appearance="fill">
                             <mat-label>Resolution (x)</mat-label>
                             <input matInput type="number" formControlName="resX" />
-                            <mat-hint class="error" *ngIf="form.getError('valueNotLarger', 'rasterization.resolution.resX') as error">
-                                The value must be greater than zero.
-                            </mat-hint>
+                            @if (form.getError('valueNotLarger', 'rasterization.resolution.resX'); as error) {
+                                <mat-hint class="error"> The value must be greater than zero. </mat-hint>
+                            }
                         </mat-form-field>
                         <mat-form-field appearance="fill">
                             <mat-label>Resolution (y)</mat-label>
                             <input matInput type="number" formControlName="resY" />
-                            <mat-hint class="error" *ngIf="form.getError('valueNotLarger', 'rasterization.resolution.resY') as error">
-                                The value must be greater than zero.
-                            </mat-hint>
+                            @if (form.getError('valueNotLarger', 'rasterization.resolution.resY'); as error) {
+                                <mat-hint class="error"> The value must be greater than zero. </mat-hint>
+                            }
                         </mat-form-field>
                     </div>
                     <div formGroupName="origin" class="groupInRow">
@@ -64,34 +64,32 @@
                     </div>
                 </ng-template>
                 <ng-template #densityTemplate>
-                    <div class="groupInRow" *ngIf="selected.value === 1">
-                        <mat-form-field appearance="fill" class="densityContainer">
-                            <mat-label>Cutoff</mat-label>
-                            <input matInput type="number" formControlName="cutoff" />
-                            <mat-hint class="error" *ngIf="form.getError('valueNotInRange', 'rasterization.cutoff') as error">
-                                The value must be in [0, 1).
-                            </mat-hint>
-                        </mat-form-field>
-                        <mat-form-field appearance="fill" class="densityContainer">
-                            <mat-label>Stddev</mat-label>
-                            <input matInput type="number" formControlName="stddev" />
-                            <mat-hint class="error" *ngIf="form.getError('valueNotLarger', 'rasterization.stddev') as error">
-                                The value must be greater than zero.
-                            </mat-hint>
-                        </mat-form-field>
-                    </div>
+                    @if (selected.value === 1) {
+                        <div class="groupInRow">
+                            <mat-form-field appearance="fill" class="densityContainer">
+                                <mat-label>Cutoff</mat-label>
+                                <input matInput type="number" formControlName="cutoff" />
+                                @if (form.getError('valueNotInRange', 'rasterization.cutoff'); as error) {
+                                    <mat-hint class="error"> The value must be in [0, 1). </mat-hint>
+                                }
+                            </mat-form-field>
+                            <mat-form-field appearance="fill" class="densityContainer">
+                                <mat-label>Stddev</mat-label>
+                                <input matInput type="number" formControlName="stddev" />
+                                @if (form.getError('valueNotLarger', 'rasterization.stddev'); as error) {
+                                    <mat-hint class="error"> The value must be greater than zero. </mat-hint>
+                                }
+                            </mat-form-field>
+                        </div>
+                    }
                 </ng-template>
             </div>
         </ng-container>
         <ng-container layerSpecification>
             <geoengine-operator-output-name formControlName="name">
-                <mat-hint
-                    align="end"
-                    class="error"
-                    *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
-                >
-                    The name must be non-empty.
-                </mat-hint>
+                @if (form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace) {
+                    <mat-hint align="end" class="error"> The name must be non-empty. </mat-hint>
+                }
             </geoengine-operator-output-name>
             <geoengine-symbology-creator
                 #symbologyCreator

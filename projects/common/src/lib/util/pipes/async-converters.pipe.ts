@@ -2,7 +2,6 @@ import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
     name: 'stringSanitizer',
-    standalone: false,
 })
 export class AsyncStringSanitizer implements PipeTransform {
     transform(value: string | undefined | null, defaultValue = ''): string {
@@ -16,7 +15,6 @@ export class AsyncStringSanitizer implements PipeTransform {
 
 @Pipe({
     name: 'numberSanitizer',
-    standalone: false,
 })
 export class AsyncNumberSanitizer implements PipeTransform {
     transform(value: number | undefined | null, defaultValue = 0): number {
@@ -30,7 +28,6 @@ export class AsyncNumberSanitizer implements PipeTransform {
 
 @Pipe({
     name: 'valueDefault',
-    standalone: false,
 })
 export class AsyncValueDefault implements PipeTransform {
     transform<T>(value: T | undefined | null, defaultValue: T): T {

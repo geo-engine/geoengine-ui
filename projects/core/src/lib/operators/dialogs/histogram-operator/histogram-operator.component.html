@@ -17,7 +17,9 @@
         <ng-container operatorParameters>
             <mat-form-field>
                 <mat-select placeholder="Attribute" formControlName="attribute">
-                    <mat-option *ngFor="let attribute of attributes$ | async" [value]="attribute">{{ attribute }}</mat-option>
+                    @for (attribute of attributes$ | async; track attribute) {
+                        <mat-option [value]="attribute">{{ attribute }}</mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
             <mat-form-field>
@@ -26,32 +28,42 @@
                     <mat-option [value]="'data'">Data</mat-option>
                 </mat-select>
             </mat-form-field>
-            <div *ngIf="form.controls.rangeType.value === 'custom'" fxLayout="row" formGroupName="range">
-                <mat-form-field fxFlex>
-                    <input matInput type="number" placeholder="Min" formControlName="min" />
-                    <mat-hint class="error" *ngIf="form.controls.range.errors?.noFilter"> Please specify the value. </mat-hint>
-                </mat-form-field>
-                <div fxFlex="1rem"></div>
-                <mat-form-field fxFlex>
-                    <input matInput type="number" placeholder="Max" formControlName="max" />
-                    <mat-hint class="error" *ngIf="form.controls.range.errors?.minOverMax">
-                        The maximum must be greater or equal to the minimum.
-                    </mat-hint>
-                    <mat-hint class="error" *ngIf="form.controls.range.errors?.noFilter"> Please specify the value. </mat-hint>
-                </mat-form-field>
-            </div>
+            @if (form.controls.rangeType.value === 'custom') {
+                <div fxLayout="row" formGroupName="range">
+                    <mat-form-field fxFlex>
+                        <input matInput type="number" placeholder="Min" formControlName="min" />
+                        @if (form.controls.range.errors?.noFilter) {
+                            <mat-hint class="error"> Please specify the value. </mat-hint>
+                        }
+                    </mat-form-field>
+                    <div fxFlex="1rem"></div>
+                    <mat-form-field fxFlex>
+                        <input matInput type="number" placeholder="Max" formControlName="max" />
+                        @if (form.controls.range.errors?.minOverMax) {
+                            <mat-hint class="error"> The maximum must be greater or equal to the minimum. </mat-hint>
+                        }
+                        @if (form.controls.range.errors?.noFilter) {
+                            <mat-hint class="error"> Please specify the value. </mat-hint>
+                        }
+                    </mat-form-field>
+                </div>
+            }
             <mat-checkbox type="checkbox" formControlName="autoBuckets"> Choose number of buckets automatically </mat-checkbox>
-            <div fxLayout="row" *ngIf="(form.controls.autoBuckets.valueChanges | async) === false">
-                <mat-form-field fxFlex>
-                    <input matInput type="number" placeholder="Number of Buckets" formControlName="numberOfBuckets" />
-                    <mat-hint class="error" *ngIf="form.controls.numberOfBuckets.errors?.min || form.controls.numberOfBuckets.errors?.max">
-                        The number of buckets must be between {{ minNumberOfBuckets }} and {{ maxNumberOfBuckets }}.
-                    </mat-hint>
-                    <mat-hint class="error" *ngIf="form.controls.numberOfBuckets.errors?.required">
-                        The number of buckets is required.
-                    </mat-hint>
-                </mat-form-field>
-            </div>
+            @if ((form.controls.autoBuckets.valueChanges | async) === false) {
+                <div fxLayout="row">
+                    <mat-form-field fxFlex>
+                        <input matInput type="number" placeholder="Number of Buckets" formControlName="numberOfBuckets" />
+                        @if (form.controls.numberOfBuckets.errors?.min || form.controls.numberOfBuckets.errors?.max) {
+                            <mat-hint class="error">
+                                The number of buckets must be between {{ minNumberOfBuckets }} and {{ maxNumberOfBuckets }}.
+                            </mat-hint>
+                        }
+                        @if (form.controls.numberOfBuckets.errors?.required) {
+                            <mat-hint class="error"> The number of buckets is required. </mat-hint>
+                        }
+                    </mat-form-field>
+                </div>
+            }
         </ng-container>
 
         <ng-container layerSpecification>
@@ -59,13 +71,9 @@
                 formControlName="name"
                 [suggestion]="'Histogram of ' + (form.controls.layer.valueChanges | async)?.name"
             >
-                <mat-hint
-                    align="end"
-                    class="error"
-                    *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
-                >
-                    The name must be non-empty.
-                </mat-hint>
+                @if (form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace) {
+                    <mat-hint align="end" class="error"> The name must be non-empty. </mat-hint>
+                }
             </geoengine-operator-output-name>
         </ng-container>
 

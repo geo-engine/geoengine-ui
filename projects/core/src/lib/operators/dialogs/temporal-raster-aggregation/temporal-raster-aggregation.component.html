@@ -38,16 +38,20 @@
                 <mat-label>Output Data Type</mat-label>
                 <mat-select formControlName="dataType" placeholder="Same as input {{ inputDataTypeDisplay$ | async }}">
                     <mat-option [value]="undefined">Same as input {{ inputDataTypeDisplay$ | async }}</mat-option>
-                    <mat-option *ngFor="let dataType of rasterDataTypes" [value]="dataType">
-                        {{ dataType }}
-                    </mat-option>
+                    @for (dataType of rasterDataTypes; track dataType) {
+                        <mat-option [value]="dataType">
+                            {{ dataType }}
+                        </mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
 
             <mat-form-field>
                 <mat-label>Time Granularity</mat-label>
                 <mat-select formControlName="granularity">
-                    <mat-option *ngFor="let granularity of timeGranularityOptions" [value]="granularity">{{ granularity }}</mat-option>
+                    @for (granularity of timeGranularityOptions; track granularity) {
+                        <mat-option [value]="granularity">{{ granularity }}</mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
 
@@ -60,10 +64,9 @@
                 <mat-checkbox formControlName="windowReferenceChecked"
                     >Specify a custom point in time for the aggregation window</mat-checkbox
                 >
-                <geoengine-time-input
-                    *ngIf="(form.controls.windowReferenceChecked.valueChanges | async) === true"
-                    formControlName="windowReference"
-                ></geoengine-time-input>
+                @if ((form.controls.windowReferenceChecked.valueChanges | async) === true) {
+                    <geoengine-time-input formControlName="windowReference"></geoengine-time-input>
+                }
             </div>
 
             <mat-checkbox formControlName="ignoreNoData">Ignore No Data</mat-checkbox>
@@ -74,13 +77,9 @@
                 formControlName="name"
                 [suggestion]="'Temporal Aggregation of ' + (form.controls.layer.valueChanges | async)?.name"
             >
-                <mat-hint
-                    align="end"
-                    class="error"
-                    *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
-                >
-                    The name must be non-empty.
-                </mat-hint>
+                @if (form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace) {
+                    <mat-hint align="end" class="error"> The name must be non-empty. </mat-hint>
+                }
             </geoengine-operator-output-name>
 
             <geoengine-symbology-creator #symbologyCreator></geoengine-symbology-creator>

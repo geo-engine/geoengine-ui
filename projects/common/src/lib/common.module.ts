@@ -140,9 +140,7 @@ const COMMON_PIPES = [
     AsyncStringSanitizer,
     AsyncValueDefault,
     BreakpointToCssStringPipe,
-    BreakpointToCssStringPipe,
     ColorBreakpointsCssGradientPipe,
-    ColorizerCssGradientPipe,
     ColorizerCssGradientPipe,
     RasterColorizerCssGradientPipe,
     RgbaArrayCssGradientPipe,
@@ -151,7 +149,7 @@ const COMMON_PIPES = [
 const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGapDirective, FxLayoutAlignDirective];
 
 @NgModule({
-    declarations: [...COMMON_COMPONENTS, ...COMMON_PIPES],
+    declarations: [...COMMON_COMPONENTS],
     imports: [
         ...MATERIAL_MODULES,
         ColorPickerComponent,
@@ -170,6 +168,7 @@ const FXFLEX_LEGACY_DIRECTIVES = [FxFlexDirective, FxLayoutDirective, FxLayoutGa
         PointIconComponent,
         RasterIconComponent,
         ...FXFLEX_LEGACY_DIRECTIVES,
+        ...COMMON_PIPES,
     ],
     exports: [
         ...COMMON_COMPONENTS,

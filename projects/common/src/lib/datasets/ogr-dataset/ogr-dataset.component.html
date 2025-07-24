@@ -3,9 +3,11 @@
         <mat-form-field appearance="fill">
             <mat-label>Choose the main file</mat-label>
             <mat-select id="mainFile" formControlName="mainFile" (selectionChange)="changeMainFile()">
-                <mat-option *ngFor="let file of uploadFiles" [value]="file">
-                    {{ file }}
-                </mat-option>
+                @for (file of uploadFiles; track file) {
+                    <mat-option [value]="file">
+                        {{ file }}
+                    </mat-option>
+                }
             </mat-select>
         </mat-form-field>
     } @else {
@@ -23,9 +25,11 @@
         <mat-form-field appearance="fill">
             <mat-label>Choose the layer</mat-label>
             <mat-select id="layerName" formControlName="layerName">
-                <mat-option *ngFor="let layer of uploadFileLayers" [value]="layer">
-                    {{ layer }}
-                </mat-option>
+                @for (layer of uploadFileLayers; track layer) {
+                    <mat-option [value]="layer">
+                        {{ layer }}
+                    </mat-option>
+                }
             </mat-select>
         </mat-form-field>
 
@@ -42,110 +46,127 @@
     <mat-form-field appearance="fill">
         <mat-label>Data Type</mat-label>
         <mat-select formControlName="dataType">
-            <mat-option *ngFor="let dataType of vectorDataTypes" [value]="dataType">
-                {{ dataType }}
-            </mat-option>
+            @for (dataType of vectorDataTypes; track dataType) {
+                <mat-option [value]="dataType">
+                    {{ dataType }}
+                </mat-option>
+            }
         </mat-select>
     </mat-form-field>
 
     <mat-form-field appearance="fill">
         <mat-label>Time Type</mat-label>
         <mat-select formControlName="timeType" (selectionChange)="changeTimeType()">
-            <mat-option *ngFor="let timeType of timeTypes" [value]="timeType">
-                {{ timeType }}
-            </mat-option>
+            @for (timeType of timeTypes; track timeType) {
+                <mat-option [value]="timeType">
+                    {{ timeType }}
+                </mat-option>
+            }
         </mat-select>
     </mat-form-field>
 
-    <ng-container *ngIf="formMetaData.controls.timeType.value as time">
-        <ng-container *ngIf="time !== 'None'">
+    @if (formMetaData.controls.timeType.value; as time) {
+        @if (time !== 'None') {
             <mat-form-field appearance="fill">
                 <mat-label>Name of column containing start</mat-label>
                 <input matInput type="text" formControlName="timeStartColumn" />
             </mat-form-field>
-
             <mat-form-field appearance="fill">
                 <mat-label>Format of column containing start</mat-label>
                 <mat-select formControlName="timeStartFormat" (selectionChange)="changeTimeStartFormat()">
-                    <mat-option *ngFor="let timeFormat of timeFormats" [value]="timeFormat">
-                        {{ timeFormat }}
-                    </mat-option>
+                    @for (timeFormat of timeFormats; track timeFormat) {
+                        <mat-option [value]="timeFormat">
+                            {{ timeFormat }}
+                        </mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
-
-            <mat-form-field appearance="fill" *ngIf="formMetaData.controls.timeStartFormat.value === 'custom'">
-                <mat-label>Custom format of columns containing start</mat-label>
-                <input matInput type="text" formControlName="timeStartFormatCustom" />
+            @if (formMetaData.controls.timeStartFormat.value === 'custom') {
+                <mat-form-field appearance="fill">
+                    <mat-label>Custom format of columns containing start</mat-label>
+                    <input matInput type="text" formControlName="timeStartFormatCustom" />
+                </mat-form-field>
+            }
+            @if (formMetaData.controls.timeStartFormat.value === 'unixTimeStamp') {
+                <mat-form-field appearance="fill">
+                    <mat-label>Type of Unix Timestamp</mat-label>
+                    <mat-select formControlName="timeStartFormatUnix">
+                        @for (timestampType of timestampTypes; track timestampType) {
+                            <mat-option [value]="timestampType">
+                                {{ timestampType }}
+                            </mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            }
+        }
+        @if (formMetaData.controls.timeType.value === 'Start/Duration') {
+            <mat-form-field appearance="fill">
+                <mat-label>Name of column containing duration</mat-label>
+                <input matInput type="text" formControlName="timeDurationColumn" />
             </mat-form-field>
-
-            <mat-form-field appearance="fill" *ngIf="formMetaData.controls.timeStartFormat.value === 'unixTimeStamp'">
-                <mat-label>Type of Unix Timestamp</mat-label>
-                <mat-select formControlName="timeStartFormatUnix">
-                    <mat-option *ngFor="let timestampType of timestampTypes" [value]="timestampType">
-                        {{ timestampType }}
-                    </mat-option>
+        }
+        @if (formMetaData.controls.timeType.value === 'Start') {
+            <mat-form-field appearance="fill">
+                <mat-label>Duration type of feature validity</mat-label>
+                <mat-select formControlName="timeDurationValueType" (selectionChange)="changeTimeDurationValueType()">
+                    @for (valueType of timeDurationValueTypes; track valueType) {
+                        <mat-option [value]="valueType">
+                            {{ valueType }}
+                        </mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
-        </ng-container>
-
-        <mat-form-field appearance="fill" *ngIf="formMetaData.controls.timeType.value === 'Start/Duration'">
-            <mat-label>Name of column containing duration</mat-label>
-            <input matInput type="text" formControlName="timeDurationColumn" />
-        </mat-form-field>
-
-        <mat-form-field appearance="fill" *ngIf="formMetaData.controls.timeType.value === 'Start'">
-            <mat-label>Duration type of feature validity</mat-label>
-            <mat-select formControlName="timeDurationValueType" (selectionChange)="changeTimeDurationValueType()">
-                <mat-option *ngFor="let valueType of timeDurationValueTypes" [value]="valueType">
-                    {{ valueType }}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-
-        <ng-container *ngIf="formMetaData.controls.timeDurationValueType.value === 'value'">
+        }
+        @if (formMetaData.controls.timeDurationValueType.value === 'value') {
             <mat-form-field appearance="fill">
                 <mat-label>Granularity of Duration</mat-label>
                 <mat-select placeholder="Time Granularity" formControlName="timeDurationGranularity">
-                    <mat-option *ngFor="let granularity of timeGranularityOptions" [value]="granularity">{{ granularity }}</mat-option>
+                    @for (granularity of timeGranularityOptions; track granularity) {
+                        <mat-option [value]="granularity">{{ granularity }}</mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
-
             <mat-form-field appearance="fill">
                 <mat-label>Duration Value</mat-label>
                 <input matInput type="number" formControlName="timeDurationValue" />
             </mat-form-field>
-        </ng-container>
-
-        <ng-container *ngIf="time === 'Start/End'">
+        }
+        @if (time === 'Start/End') {
             <mat-form-field appearance="fill">
                 <mat-label>Name of column containing end</mat-label>
                 <input matInput type="text" formControlName="timeEndColumn" />
             </mat-form-field>
-
             <mat-form-field appearance="fill">
                 <mat-label>Format of column containing end</mat-label>
                 <mat-select formControlName="timeEndFormat" (selectionChange)="changeTimeEndFormat()">
-                    <mat-option *ngFor="let timeFormat of timeFormats" [value]="timeFormat">
-                        {{ timeFormat }}
-                    </mat-option>
+                    @for (timeFormat of timeFormats; track timeFormat) {
+                        <mat-option [value]="timeFormat">
+                            {{ timeFormat }}
+                        </mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
-
-            <mat-form-field appearance="fill" *ngIf="formMetaData.controls.timeEndFormat.value === 'custom'">
-                <mat-label>Custom format of columns containing end</mat-label>
-                <input matInput type="text" formControlName="timeEndFormatCustom" />
-            </mat-form-field>
-
-            <mat-form-field appearance="fill" *ngIf="formMetaData.controls.timeEndFormat.value === 'unixTimeStamp'">
-                <mat-label>Type of Unix Timestamp</mat-label>
-                <mat-select formControlName="timeEndFormatUnix">
-                    <mat-option *ngFor="let timestampType of timestampTypes" [value]="timestampType">
-                        {{ timestampType }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-        </ng-container>
-    </ng-container>
+            @if (formMetaData.controls.timeEndFormat.value === 'custom') {
+                <mat-form-field appearance="fill">
+                    <mat-label>Custom format of columns containing end</mat-label>
+                    <input matInput type="text" formControlName="timeEndFormatCustom" />
+                </mat-form-field>
+            }
+            @if (formMetaData.controls.timeEndFormat.value === 'unixTimeStamp') {
+                <mat-form-field appearance="fill">
+                    <mat-label>Type of Unix Timestamp</mat-label>
+                    <mat-select formControlName="timeEndFormatUnix">
+                        @for (timestampType of timestampTypes; track timestampType) {
+                            <mat-option [value]="timestampType">
+                                {{ timestampType }}
+                            </mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            }
+        }
+    }
 
     <div fxLayout="row">
         <mat-form-field appearance="fill" class="example-full-width">
@@ -162,10 +183,12 @@
     <mat-form-field class="example-chip-list">
         <mat-label>Text Columns</mat-label>
         <mat-chip-grid #columnTextList formControlName="columnsText">
-            <mat-chip-row *ngFor="let column of formMetaData.controls.columnsText.value" (removed)="removeText(column)">
-                {{ column }}
-                <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip-row>
+            @for (column of formMetaData.controls.columnsText.value; track column) {
+                <mat-chip-row (removed)="removeText(column)">
+                    {{ column }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip-row>
+            }
             <input placeholder="New column..." [matChipInputFor]="columnTextList" (matChipInputTokenEnd)="addText($event)" />
         </mat-chip-grid>
     </mat-form-field>
@@ -173,10 +196,12 @@
     <mat-form-field class="example-chip-list">
         <mat-label>Float Columns</mat-label>
         <mat-chip-grid #columnNumericList formControlName="columnsFloat">
-            <mat-chip-row *ngFor="let column of formMetaData.controls.columnsFloat.value" (removed)="removeFloat(column)">
-                {{ column }}
-                <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip-row>
+            @for (column of formMetaData.controls.columnsFloat.value; track column) {
+                <mat-chip-row (removed)="removeFloat(column)">
+                    {{ column }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip-row>
+            }
             <input placeholder="New column..." [matChipInputFor]="columnNumericList" (matChipInputTokenEnd)="addFloat($event)" />
         </mat-chip-grid>
     </mat-form-field>
@@ -184,10 +209,12 @@
     <mat-form-field class="example-chip-list">
         <mat-label>Integer Columns</mat-label>
         <mat-chip-grid #columnDecimalList formControlName="columnsInt">
-            <mat-chip-row *ngFor="let column of formMetaData.controls.columnsInt.value" (removed)="removeInt(column)">
-                {{ column }}
-                <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip-row>
+            @for (column of formMetaData.controls.columnsInt.value; track column) {
+                <mat-chip-row (removed)="removeInt(column)">
+                    {{ column }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip-row>
+            }
             <input placeholder="New column..." [matChipInputFor]="columnDecimalList" (matChipInputTokenEnd)="addInt($event)" />
         </mat-chip-grid>
     </mat-form-field>
@@ -195,9 +222,11 @@
     <mat-form-field appearance="fill">
         <mat-label>Error Handling</mat-label>
         <mat-select formControlName="errorHandling">
-            <mat-option *ngFor="let errorHandling of errorHandlings" [value]="errorHandling">
-                {{ errorHandling }}
-            </mat-option>
+            @for (errorHandling of errorHandlings; track errorHandling) {
+                <mat-option [value]="errorHandling">
+                    {{ errorHandling }}
+                </mat-option>
+            }
         </mat-select>
     </mat-form-field>
 

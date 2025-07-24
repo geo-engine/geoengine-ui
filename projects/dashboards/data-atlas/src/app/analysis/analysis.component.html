@@ -10,9 +10,15 @@
                 #geoengineAutocompleteSelect="geoengineAutocompleteSelect"
             ></ngx-mat-select-search>
         </mat-option>
-        <mat-option *ngFor="let country of geoengineAutocompleteSelect.filteredValues | async" [value]="country">{{ country }}</mat-option>
+        @for (country of geoengineAutocompleteSelect.filteredValues | async; track country) {
+            <mat-option [value]="country">{{ country }}</mat-option>
+        }
     </mat-select>
 </mat-form-field>
 <button mat-stroked-button id="compute-plot" [disabled]="cannotComputePlot$ | async" (click)="computePlot()">Compute Plot</button>
-<geoengine-vega-viewer *ngIf="(plotData | async) !== undefined" [chartData]="plotData | async"></geoengine-vega-viewer>
-<mat-spinner *ngIf="plotLoading | async"></mat-spinner>
+@if ((plotData | async) !== undefined) {
+    <geoengine-vega-viewer [chartData]="plotData | async"></geoengine-vega-viewer>
+}
+@if (plotLoading | async) {
+    <mat-spinner></mat-spinner>
+}

@@ -18,9 +18,11 @@
             <mat-form-field appearance="fill">
                 <mat-label>Interpolation method</mat-label>
                 <mat-select formControlName="interpolationMethod">
-                    <mat-option *ngFor="let method of interpolationMethods" [value]="method[1]">
-                        {{ method[0] }}
-                    </mat-option>
+                    @for (method of interpolationMethods; track method) {
+                        <mat-option [value]="method[1]">
+                            {{ method[0] }}
+                        </mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
 
@@ -32,29 +34,24 @@
                 </mat-select>
             </mat-form-field>
 
-            <div fxLayout="row" *ngIf="form.get('inputResolution')?.value === 'value'">
-                <mat-form-field appearance="fill">
-                    <mat-label>Input resolution (x)</mat-label>
-                    <input matInput type="number" formControlName="inputResolutionX" />
-                    <mat-hint
-                        class="error"
-                        *ngIf="form.controls.inputResolutionX.errors?.required || form.controls.inputResolutionX.errors?.valueNotLarger"
-                    >
-                        The x resolution must be a positive number.
-                    </mat-hint>
-                </mat-form-field>
-
-                <mat-form-field appearance="fill">
-                    <mat-label>Input resolution (y)</mat-label>
-                    <input matInput type="number" formControlName="inputResolutionY" />
-                    <mat-hint
-                        class="error"
-                        *ngIf="form.controls.inputResolutionY.errors?.required || form.controls.inputResolutionY.errors?.valueNotLarger"
-                    >
-                        The y resolution must be a positive number.
-                    </mat-hint>
-                </mat-form-field>
-            </div>
+            @if (form.get('inputResolution')?.value === 'value') {
+                <div fxLayout="row">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Input resolution (x)</mat-label>
+                        <input matInput type="number" formControlName="inputResolutionX" />
+                        @if (form.controls.inputResolutionX.errors?.required || form.controls.inputResolutionX.errors?.valueNotLarger) {
+                            <mat-hint class="error"> The x resolution must be a positive number. </mat-hint>
+                        }
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Input resolution (y)</mat-label>
+                        <input matInput type="number" formControlName="inputResolutionY" />
+                        @if (form.controls.inputResolutionY.errors?.required || form.controls.inputResolutionY.errors?.valueNotLarger) {
+                            <mat-hint class="error"> The y resolution must be a positive number. </mat-hint>
+                        }
+                    </mat-form-field>
+                </div>
+            }
         </ng-container>
 
         <ng-container layerSpecification>
@@ -62,13 +59,9 @@
                 formControlName="name"
                 [suggestion]="(form.controls.layer.valueChanges | async)?.name + ' interpolated'"
             >
-                <mat-hint
-                    align="end"
-                    class="error"
-                    *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
-                >
-                    The name must be non-empty.
-                </mat-hint>
+                @if (form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace) {
+                    <mat-hint align="end" class="error"> The name must be non-empty. </mat-hint>
+                }
             </geoengine-operator-output-name>
 
             <geoengine-symbology-creator #symbologyCreator></geoengine-symbology-creator>

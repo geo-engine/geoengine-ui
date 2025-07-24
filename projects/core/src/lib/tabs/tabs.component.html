@@ -2,26 +2,34 @@
     mat-button
     class="toggle"
     (click)="toggleVisibility()"
-    [ngSwitch]="visible"
     matTooltipPosition="above"
     [matTooltip]="toggleTooltip"
     [matTooltipShowDelay]="toggleTooltipDelay"
 >
-    <mat-icon *ngSwitchCase="false">expand_less</mat-icon>
-    <mat-icon *ngSwitchCase="true">expand_more</mat-icon>
+    @switch (visible) {
+        @case (false) {
+            <mat-icon>expand_less</mat-icon>
+        }
+        @case (true) {
+            <mat-icon>expand_more</mat-icon>
+        }
+    }
 </button>
 <nav mat-tab-nav-bar [tabPanel]="tabPanel" mat-stretch-tabs="false">
-    <a
-        mat-tab-link
-        class="tab-link"
-        [style.width.%]="tabWidthPct | async"
-        *ngFor="let tabContent of this.tabsService.tabs | async"
-        (click)="setTab(tabContent)"
-        [active]="tabContent === tabsService.activeTab"
-    >
-        <span fxFlex *ngIf="tabContent.name | async as tabContentName" [matTooltip]="tabContentName">{{ tabContentName }}</span>
-        <mat-icon class="close-button" style="pointer-events: auto" (click)="closeTab(tabContent)">close</mat-icon>
-    </a>
+    @for (tabContent of this.tabsService.tabs | async; track tabContent) {
+        <a
+            mat-tab-link
+            class="tab-link"
+            [style.width.%]="tabWidthPct | async"
+            (click)="setTab(tabContent)"
+            [active]="tabContent === tabsService.activeTab"
+        >
+            @if (tabContent.name | async; as tabContentName) {
+                <span fxFlex [matTooltip]="tabContentName">{{ tabContentName }}</span>
+            }
+            <mat-icon class="close-button" style="pointer-events: auto" (click)="closeTab(tabContent)">close</mat-icon>
+        </a>
+    }
 </nav>
 <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
 <div [style.height.px]="contentHeight">

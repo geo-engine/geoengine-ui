@@ -39,7 +39,9 @@
                     <mat-form-field class="band">
                         <mat-label>Band</mat-label>
                         <mat-select [ngModel]="selectedBand()" (ngModelChange)="setSelectedBand($event)">
-                            <mat-option *ngFor="let band of bands()" [value]="band">{{ band.name }}</mat-option>
+                            @for (band of bands(); track band) {
+                                <mat-option [value]="band">{{ band.name }}</mat-option>
+                            }
                         </mat-select>
                     </mat-form-field>
                 } @else if (rasterSymbologyType() === 'multiBand') {
@@ -53,7 +55,9 @@
                                 (ngModelChange)="setSelectedBand($event, i)"
                                 placeholder="{{ band }} Band"
                             >
-                                <mat-option *ngFor="let band of bands()" [value]="band">{{ band.name }}</mat-option>
+                                @for (band of bands(); track band) {
+                                    <mat-option [value]="band">{{ band.name }}</mat-option>
+                                }
                             </mat-select>
                         </mat-form-field>
                     }
@@ -61,40 +65,40 @@
             </mat-card-content>
         </mat-card>
 
-        <geoengine-raster-gradient-symbology-editor
-            *ngIf="gradientColorizer"
-            [colorizer]="gradientColorizer"
-            [queryParams]="queryParams()"
-            [workflowId]="symbologyWorkflow().workflowId"
-            [band]="selectedBand()?.name | valueDefault: 'band'"
-            (colorizerChange)="updateColorizer($event)"
-        ></geoengine-raster-gradient-symbology-editor>
+        @if (gradientColorizer) {
+            <geoengine-raster-gradient-symbology-editor
+                [colorizer]="gradientColorizer"
+                [queryParams]="queryParams()"
+                [workflowId]="symbologyWorkflow().workflowId"
+                [band]="selectedBand()?.name | valueDefault: 'band'"
+                (colorizerChange)="updateColorizer($event)"
+            ></geoengine-raster-gradient-symbology-editor>
+        }
 
-        <geoengine-raster-palette-symbology-editor
-            *ngIf="paletteColorizer"
-            [colorizer]="paletteColorizer"
-            (colorizerChange)="updateColorizer($event)"
-        >
-        </geoengine-raster-palette-symbology-editor>
+        @if (paletteColorizer) {
+            <geoengine-raster-palette-symbology-editor [colorizer]="paletteColorizer" (colorizerChange)="updateColorizer($event)">
+            </geoengine-raster-palette-symbology-editor>
+        }
 
-        <geoengine-raster-multiband-symbology-editor
-            *ngIf="multibandColorizer"
-            [colorizer]="multibandColorizer"
-            (colorizerChange)="updateMultiBandColorizer($event)"
-            [queryParams]="queryParams()"
-            [workflowId]="symbologyWorkflow().workflowId"
-            [band1]="{
-                name: getSelectedBand(0)()?.name | valueDefault: '',
-                index: getSelectedBandIndex(0),
-            }"
-            [band2]="{
-                name: getSelectedBand(1)()?.name | valueDefault: '',
-                index: getSelectedBandIndex(1),
-            }"
-            [band3]="{
-                name: getSelectedBand(2)()?.name | valueDefault: '',
-                index: getSelectedBandIndex(2),
-            }"
-        ></geoengine-raster-multiband-symbology-editor>
+        @if (multibandColorizer) {
+            <geoengine-raster-multiband-symbology-editor
+                [colorizer]="multibandColorizer"
+                (colorizerChange)="updateMultiBandColorizer($event)"
+                [queryParams]="queryParams()"
+                [workflowId]="symbologyWorkflow().workflowId"
+                [band1]="{
+                    name: getSelectedBand(0)()?.name | valueDefault: '',
+                    index: getSelectedBandIndex(0),
+                }"
+                [band2]="{
+                    name: getSelectedBand(1)()?.name | valueDefault: '',
+                    index: getSelectedBandIndex(1),
+                }"
+                [band3]="{
+                    name: getSelectedBand(2)()?.name | valueDefault: '',
+                    index: getSelectedBandIndex(2),
+                }"
+            ></geoengine-raster-multiband-symbology-editor>
+        }
     </div>
 </div>

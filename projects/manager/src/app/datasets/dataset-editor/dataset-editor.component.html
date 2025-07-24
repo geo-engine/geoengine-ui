@@ -34,10 +34,12 @@
                     <mat-form-field>
                         <mat-label>Tags</mat-label>
                         <mat-chip-grid #tagsGrid formControlName="tags">
-                            <mat-chip-row *ngFor="let column of form.controls.tags.value" (removed)="removeTag(column)">
-                                {{ column }}
-                                <mat-icon matChipRemove>cancel</mat-icon>
-                            </mat-chip-row>
+                            @for (column of form.controls.tags.value; track column) {
+                                <mat-chip-row (removed)="removeTag(column)">
+                                    {{ column }}
+                                    <mat-icon matChipRemove>cancel</mat-icon>
+                                </mat-chip-row>
+                            }
                             <input
                                 formControlName="newTag"
                                 placeholder="New tag..."
@@ -45,10 +47,12 @@
                                 (matChipInputTokenEnd)="addTag()"
                                 (blur)="addTag()"
                             />
-                            <mat-error *ngIf="tagInputControl.errors?.invalidTag">
-                                Invalid tag. Space, / and ".." are not allowed.
-                            </mat-error>
-                            <mat-error *ngIf="tagsControl.errors?.duplicate">Duplicate tag.</mat-error>
+                            @if (tagInputControl.errors?.invalidTag) {
+                                <mat-error> Invalid tag. Space, / and ".." are not allowed. </mat-error>
+                            }
+                            @if (tagsControl.errors?.duplicate) {
+                                <mat-error>Duplicate tag.</mat-error>
+                            }
                         </mat-chip-grid>
                     </mat-form-field>
                 </form>
@@ -129,15 +133,17 @@
             </mat-card-header>
 
             <mat-card-content>
-                <geoengine-manager-raster-result-descriptor
-                    *ngIf="dataset.resultDescriptor.type === 'raster'"
-                    [resultDescriptor]="dataset.resultDescriptor"
-                ></geoengine-manager-raster-result-descriptor>
+                @if (dataset.resultDescriptor.type === 'raster') {
+                    <geoengine-manager-raster-result-descriptor
+                        [resultDescriptor]="dataset.resultDescriptor"
+                    ></geoengine-manager-raster-result-descriptor>
+                }
 
-                <geoengine-manager-vector-result-descriptor
-                    *ngIf="dataset.resultDescriptor.type === 'vector'"
-                    [resultDescriptor]="dataset.resultDescriptor"
-                ></geoengine-manager-vector-result-descriptor>
+                @if (dataset.resultDescriptor.type === 'vector') {
+                    <geoengine-manager-vector-result-descriptor
+                        [resultDescriptor]="dataset.resultDescriptor"
+                    ></geoengine-manager-vector-result-descriptor>
+                }
             </mat-card-content>
         </mat-card>
 

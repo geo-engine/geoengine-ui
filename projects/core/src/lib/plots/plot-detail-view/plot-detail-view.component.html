@@ -1,20 +1,24 @@
 <geoengine-dialog-header>{{ plot.name }}</geoengine-dialog-header>
-<mat-dialog-content [ngSwitch]="plotData?.outputFormat">
-    <ng-template ngSwitchCase="ImagePng">
-        <img [src]="plotData?.data" [alt]="plot.name" />
-        <mat-progress-bar mode="indeterminate" *ngIf="plotLoading$ | async"></mat-progress-bar>
-    </ng-template>
-    <ng-template ngSwitchCase="JsonPlain">
-        <pre>{{ plotData?.data | json }}</pre>
-    </ng-template>
-    <ng-template ngSwitchCase="JsonVega">
-        <ng-container *ngIf="maxWidth$ | async as maxWidth">
-            <ng-container *ngIf="maxHeight$ | async as maxHeight">
-                <geoengine-vega-viewer [chartData]="plotData?.data" [width]="maxWidth" [height]="maxHeight"></geoengine-vega-viewer>
-            </ng-container>
-        </ng-container>
-    </ng-template>
-    <ng-template ngSwitchDefault>
-        <pre>{{ plotData?.data }}</pre>
-    </ng-template>
+<mat-dialog-content>
+    @switch (plotData?.outputFormat) {
+        @case ('ImagePng') {
+            <img [src]="plotData?.data" [alt]="plot.name" />
+            @if (plotLoading$ | async) {
+                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            }
+        }
+        @case ('JsonPlain') {
+            <pre>{{ plotData?.data | json }}</pre>
+        }
+        @case ('JsonVega') {
+            @if (maxWidth$ | async; as maxWidth) {
+                @if (maxHeight$ | async; as maxHeight) {
+                    <geoengine-vega-viewer [chartData]="plotData?.data" [width]="maxWidth" [height]="maxHeight"></geoengine-vega-viewer>
+                }
+            }
+        }
+        @default {
+            <pre>{{ plotData?.data }}</pre>
+        }
+    }
 </mat-dialog-content>

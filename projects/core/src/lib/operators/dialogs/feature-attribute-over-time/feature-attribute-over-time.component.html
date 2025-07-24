@@ -20,19 +20,22 @@
         </a>
 
         <ng-container operatorParameters>
-            <ng-container *ngIf="attributes$ | async as attributes">
+            @if (attributes$ | async; as attributes) {
                 <mat-form-field appearance="fill">
                     <mat-select placeholder="Id Attribute" formControlName="idAttribute">
-                        <mat-option *ngFor="let attribute of attributes.id" [value]="attribute">{{ attribute }}</mat-option>
+                        @for (attribute of attributes.id; track attribute) {
+                            <mat-option [value]="attribute">{{ attribute }}</mat-option>
+                        }
                     </mat-select>
                 </mat-form-field>
-
                 <mat-form-field appearance="fill">
                     <mat-select placeholder="Value Attribute" formControlName="valueAttribute">
-                        <mat-option *ngFor="let attribute of attributes.value" [value]="attribute">{{ attribute }}</mat-option>
+                        @for (attribute of attributes.value; track attribute) {
+                            <mat-option [value]="attribute">{{ attribute }}</mat-option>
+                        }
                     </mat-select>
                 </mat-form-field>
-            </ng-container>
+            }
         </ng-container>
 
         <ng-container layerSpecification>
@@ -40,13 +43,9 @@
                 formControlName="name"
                 [suggestion]="'Feature Attribute Plot of ' + (form.controls.layer.valueChanges | async)?.name"
             >
-                <mat-hint
-                    align="end"
-                    class="error"
-                    *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
-                >
-                    The name must be non-empty.
-                </mat-hint>
+                @if (form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace) {
+                    <mat-hint align="end" class="error"> The name must be non-empty. </mat-hint>
+                }
             </geoengine-operator-output-name>
         </ng-container>
 

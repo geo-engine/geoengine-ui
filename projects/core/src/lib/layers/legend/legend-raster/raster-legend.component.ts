@@ -1,7 +1,14 @@
 import {ChangeDetectionStrategy, Component, computed, effect, inject, input, Pipe, PipeTransform, signal, untracked} from '@angular/core';
 import {ProjectService} from '../../../project/project.service';
 import {firstValueFrom} from 'rxjs';
-import {ColorBreakpoint, CommonModule, MultiBandRasterColorizer, RasterLayer, SingleBandRasterColorizer} from '@geoengine/common';
+import {
+    BreakpointToCssStringPipe,
+    ColorBreakpoint,
+    MultiBandRasterColorizer,
+    RasterColorizerCssGradientPipe,
+    RasterLayer,
+    SingleBandRasterColorizer,
+} from '@geoengine/common';
 import {
     RasterBandDescriptor,
     Measurement,
@@ -137,11 +144,12 @@ export function oneApart(values: number[]): boolean {
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         AngularCommonModule,
-        CastMeasurementToUnitlessPipe,
+        BreakpointToCssStringPipe,
         CastMeasurementToClassificationPipe,
         CastMeasurementToContinuousPipe,
+        CastMeasurementToUnitlessPipe,
         MatProgressSpinner,
-        CommonModule,
+        RasterColorizerCssGradientPipe,
     ],
 })
 export class RasterLegendComponent {

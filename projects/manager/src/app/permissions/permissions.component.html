@@ -38,9 +38,11 @@
         <mat-form-field>
             <mat-label>Permission</mat-label>
             <mat-select formControlName="permission">
-                <mat-option class="options" *ngFor="let permission of PERMISSIONS" [value]="permission">
-                    {{ permission }}
-                </mat-option>
+                @for (permission of PERMISSIONS; track permission) {
+                    <mat-option class="options" [value]="permission">
+                        {{ permission }}
+                    </mat-option>
+                }
             </mat-select>
         </mat-form-field>
         <button
@@ -55,4 +57,6 @@
     </div>
 </form>
 
-<mat-spinner [diameter]="loadingSpinnerDiameterPx" *ngIf="source?.loading$ | async"></mat-spinner>
+@if (source?.loading$ | async) {
+    <mat-spinner [diameter]="loadingSpinnerDiameterPx"></mat-spinner>
+}

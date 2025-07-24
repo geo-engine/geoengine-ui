@@ -35,12 +35,18 @@
 
             @if (form.controls.columnNamesType.value !== ColumnNames.Default) {
                 <div formArrayName="columnNamesValues">
-                    <mat-form-field *ngFor="let control of columnNameValues.controls; let i = index">
-                        <mat-label>{{ columnNameHint(i) }} </mat-label>
-                        <input matInput type="text" [formControlName]="i" />
-                        <mat-error *ngIf="control.hasError('forbiddenValue')">Conflict with existing column names</mat-error>
-                    </mat-form-field>
-                    <mat-error class="name-error" *ngIf="columnNameValues.hasError('duplicate')">Duplicate Name</mat-error>
+                    @for (control of columnNameValues.controls; track control; let i = $index) {
+                        <mat-form-field>
+                            <mat-label>{{ columnNameHint(i) }} </mat-label>
+                            <input matInput type="text" [formControlName]="i" />
+                            @if (control.hasError('forbiddenValue')) {
+                                <mat-error>Conflict with existing column names</mat-error>
+                            }
+                        </mat-form-field>
+                    }
+                    @if (columnNameValues.hasError('duplicate')) {
+                        <mat-error class="name-error">Duplicate Name</mat-error>
+                    }
                 </div>
             }
             <section>
@@ -64,13 +70,9 @@
 
         <ng-container layerSpecification>
             <geoengine-operator-output-name formControlName="name">
-                <mat-hint
-                    align="end"
-                    class="error"
-                    *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
-                >
-                    The name must be non-empty.
-                </mat-hint>
+                @if (form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace) {
+                    <mat-hint align="end" class="error"> The name must be non-empty. </mat-hint>
+                }
             </geoengine-operator-output-name>
         </ng-container>
 
