@@ -159,6 +159,7 @@ export class SpatialReferenceService {
 
                 proj4.defs(spec.spatialReference.srsString, spec.projString);
                 const def = proj4.defs(spec.spatialReference.srsString);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 olProj4Register(proj4 as any /* TODO: remove any */);
 
                 olAddProjection(
