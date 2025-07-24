@@ -5,7 +5,7 @@
         "declarationMap": true,
         "declaration": true,
         "inlineSources": true,
-        "types": [],
+        "types": ["@types/hammerjs"],
         "lib": ["dom", "es2022"],
         "paths": {
             "@geoengine/common": ["dist/common"]
