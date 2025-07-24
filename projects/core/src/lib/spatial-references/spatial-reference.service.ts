@@ -159,7 +159,7 @@ export class SpatialReferenceService {
 
                 proj4.defs(spec.spatialReference.srsString, spec.projString);
                 const def = proj4.defs(spec.spatialReference.srsString);
-                olProj4Register(proj4);
+                olProj4Register(proj4 as any /* TODO: remove any */);
 
                 olAddProjection(
                     new OlProjection({
