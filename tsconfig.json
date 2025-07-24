@@ -14,7 +14,8 @@
         "lib": ["ES2022", "dom"],
         "paths": {
             "@geoengine/core": ["dist/core"],
-            "@geoengine/common": ["dist/common"]
+            "@geoengine/common": ["dist/common"],
+            "fast-json-patch/index.mjs": ["./node_modules/fast-json-patch/index.d.ts"]
         },
         "forceConsistentCasingInFileNames": true,
         "strict": true,
