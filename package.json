@@ -121,5 +121,10 @@
         "ts-node": "~10.9.2",
         "typescript": "5.8.3",
         "typescript-eslint": "^8.38.0"
+    },
+    "overrides": {
+        "@angular-devkit/build-angular": {
+            "piscina": "5.1.3"
+        }
     }
 }
