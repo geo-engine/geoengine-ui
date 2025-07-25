@@ -61,8 +61,6 @@ export class ArunaComponent implements OnInit, OnChanges {
         isErrorState: (control: FormControl | null): boolean => !!control && control.invalid,
     };
 
-    private editing: boolean = false;
-
     constructor(private fb: FormBuilder) {}
 
     ngOnInit(): void {
@@ -95,26 +93,25 @@ export class ArunaComponent implements OnInit, OnChanges {
             if (!this.form.valid) {
                 this.changed.emit(undefined);
             } else {
-                this.changed.emit({
+                this.provider = {
                     type: 'Aruna',
                     apiToken: this.form.controls['apiToken'].value,
                     apiUrl: this.form.controls['apiUrl'].value,
-                    cacheTtl: this.convertToNumber(this.form.controls['cacheTtl'].value),
+                    cacheTtl: this.convertToNumber(this.form.controls['cacheTtl'].value) ?? 0,
                     description: this.form.controls['description'].value,
                     filterLabel: this.form.controls['filterLabel'].value,
                     id: this.form.controls['id'].value,
                     name: this.form.controls['name'].value,
-                    priority: this.convertToNumber(this.form.controls['priority'].value),
+                    priority: this.convertToNumber(this.form.controls['priority'].value) ?? 0,
                     projectId: this.form.controls['projectId'].value,
-                });
+                };
+                this.changed.emit(this.provider);
             }
         });
     }
 
     ngOnChanges(_: SimpleChanges): void {
-        if (!this.visible) {
-            this.editing = false;
-        } else if (this.provider && !this.editing) {
+        if (this.provider) {
             setTimeout(() => {
                 const provider = this.provider as ArunaDataProviderDefinition;
                 this.setFormValue(provider);
@@ -122,8 +119,7 @@ export class ArunaComponent implements OnInit, OnChanges {
                 if (this.readonly) {
                     this.form.disable({emitEvent: false});
                 } else {
-                    this.form.enable({emitEvent: true});
-                    this.editing = true;
+                    this.form.enable({emitEvent: false});
                 }
             }, 50);
         }
@@ -151,12 +147,12 @@ export class ArunaComponent implements OnInit, OnChanges {
     }
 
     private setFormValue(provider: ArunaDataProviderDefinition): void {
-        this.form.setValue(
+        this.form.patchValue(
             {
                 apiToken: provider.apiToken,
                 apiUrl: provider.apiUrl,
                 description: provider.description,
-                cacheTtl: provider.cacheTtl,
+                cacheTtl: provider.cacheTtl ?? 0,
                 filterLabel: provider.filterLabel,
                 id: provider.id,
                 name: provider.name,

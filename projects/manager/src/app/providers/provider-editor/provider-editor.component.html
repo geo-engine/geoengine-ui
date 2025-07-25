@@ -9,7 +9,7 @@
                 <mat-hint *ngIf="readonly">You do not have permission to edit this provider</mat-hint>
                 <geoengine-manager-provider-input
                     *ngIf="provider"
-                    (changed)="setChangedDefinition($event)"
+                    (updated)="setUpdatedDefinition($event)"
                     [providerType]="providerType"
                     [provider]="provider"
                     [readonly]="readonly"
@@ -17,7 +17,7 @@
                 </geoengine-manager-provider-input>
             </mat-card-content>
             <div class="actions">
-                <button mat-raised-button color="primary" [disabled]="!changedDefinition" (click)="submitUpdate()">Save changes</button>
+                <button mat-raised-button color="primary" [disabled]="!updatedDefinition" (click)="submitUpdate()">Save changes</button>
                 <button mat-raised-button color="warn" [disabled]="readonly" (click)="delete()">Delete provider</button>
             </div>
         </mat-card>

@@ -14,12 +14,14 @@ import {NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
 })
 export class ProviderInputComponent implements OnInit, OnChanges {
     @Input() providerType: ProviderType = ProviderType.OTHER;
-    @Output() changed = new EventEmitter<TypedDataProviderDefinition>();
+    @Output() updated = new EventEmitter<TypedDataProviderDefinition>();
     @Input() provider: TypedDataProviderDefinition | undefined;
     @Input() createNew: boolean = false;
     @Input() readonly: boolean = false;
     @ViewChild('tabs') tabs?: MatTabGroup;
     jsonInputVisible: boolean = false;
+    jsonDefinition: TypedDataProviderDefinition | undefined;
+    formDefinition: TypedDataProviderDefinition | undefined;
 
     protected readonly ProviderType = ProviderType;
 
@@ -31,14 +33,26 @@ export class ProviderInputComponent implements OnInit, OnChanges {
         if (changes['providerType']) {
             setTimeout(() => (this.tabs!.selectedIndex = 0));
         }
+        this.jsonDefinition = undefined;
+        this.formDefinition = undefined;
     }
 
-    setChangedDefinition(provider: TypedDataProviderDefinition): void {
-        this.provider = provider;
-        this.changed.emit(provider);
+    setChangedJSONDefinition(provider: TypedDataProviderDefinition): void {
+        this.jsonDefinition = provider;
+        this.updated.emit(provider);
+    }
+
+    setChangedFormDefinition(provider: TypedDataProviderDefinition): void {
+        this.formDefinition = provider;
+        this.updated.emit(provider);
     }
 
     onTabChange($event: MatTabChangeEvent): void {
         this.jsonInputVisible = $event.tab.textLabel === 'JSON';
+        if (this.jsonInputVisible) {
+            this.updated.emit(this.jsonDefinition);
+        } else {
+            this.updated.emit(this.formDefinition);
+        }
     }
 }

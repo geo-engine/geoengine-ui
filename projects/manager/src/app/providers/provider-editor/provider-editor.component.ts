@@ -43,9 +43,9 @@ export class ProviderEditorComponent implements OnChanges, OnInit {
 
     provider?: TypedDataProviderDefinition;
 
-    providerType: ProviderType = ProviderType.OTHER;
+    updatedDefinition?: TypedDataProviderDefinition;
 
-    changedDefinition = false;
+    providerType: ProviderType = ProviderType.OTHER;
 
     readonly = false;
 
@@ -75,7 +75,7 @@ export class ProviderEditorComponent implements OnChanges, OnInit {
 
     ngOnChanges(_: SimpleChanges): void {
         this.provider = undefined;
-        this.changedDefinition = false;
+        this.updatedDefinition = undefined;
         this.layersService.getProviderDefinition(this.providerListing.id).then((provider) => {
             this.provider = provider;
             this.setProviderType();
@@ -91,24 +91,19 @@ export class ProviderEditorComponent implements OnChanges, OnInit {
         });
     }
 
-    setChangedDefinition(definition: TypedDataProviderDefinition): void {
-        if (definition) {
-            this.changedDefinition = true;
-            this.provider = definition;
-        } else {
-            this.changedDefinition = false;
-        }
+    setUpdatedDefinition(definition?: TypedDataProviderDefinition): void {
+        this.updatedDefinition = definition;
     }
 
     async submitUpdate(): Promise<void> {
-        const provider = this.provider!;
+        const provider = this.updatedDefinition!;
 
         try {
             await this.layersService.updateProviderDefinition(this.providerListing.id, provider);
 
             this.providerUpdated.next();
             this.provider = provider;
-            this.changedDefinition = false;
+            this.updatedDefinition = undefined;
         } catch (e) {
             const error = await errorToText(e, 'Unknown error while updating provider');
             this.snackBar.open(error, 'Error');
