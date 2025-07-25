@@ -24,7 +24,9 @@
             <mat-form-field>
                 <mat-label>Attribute</mat-label>
                 <mat-select formControlName="attribute">
-                    <mat-option *ngFor="let attribute of attributes$ | async" [value]="attribute">{{ attribute }}</mat-option>
+                    @for (attribute of attributes$ | async; track attribute) {
+                        <mat-option [value]="attribute">{{ attribute }}</mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
             <mat-checkbox type="checkbox" formControlName="donut">Draw chart as a donut instead of a pie</mat-checkbox>
@@ -35,13 +37,9 @@
                 formControlName="name"
                 [suggestion]="'Pie Chart of ' + (form.controls.layer.valueChanges | async)?.name"
             >
-                <mat-hint
-                    align="end"
-                    class="error"
-                    *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
-                >
-                    The name must be non-empty.
-                </mat-hint>
+                @if (form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace) {
+                    <mat-hint align="end" class="error"> The name must be non-empty. </mat-hint>
+                }
             </geoengine-operator-output-name>
         </ng-container>
 

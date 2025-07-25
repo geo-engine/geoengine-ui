@@ -27,26 +27,29 @@
                 </mat-card-header>
 
                 <mat-card-content>
-                    <div formArrayName="properties" *ngFor="let control of form.controls.properties.controls; let i = index">
-                        <div [formGroupName]="i">
-                            <div class="flex-container">
-                                <mat-form-field appearance="fill">
-                                    <mat-label>Property Key</mat-label>
-                                    <input matInput type="text" formControlName="0" />
-                                </mat-form-field>
-                                <mat-form-field appearance="fill">
-                                    <mat-label>Property Value</mat-label>
-                                    <input matInput type="text" formControlName="1" />
-                                </mat-form-field>
-
-                                <button mat-icon-button (click)="removeProperty(i)"><mat-icon>delete</mat-icon></button>
+                    @for (control of form.controls.properties.controls; track control; let i = $index) {
+                        <div formArrayName="properties">
+                            <div [formGroupName]="i">
+                                <div class="flex-container">
+                                    <mat-form-field appearance="fill">
+                                        <mat-label>Property Key</mat-label>
+                                        <input matInput type="text" formControlName="0" />
+                                    </mat-form-field>
+                                    <mat-form-field appearance="fill">
+                                        <mat-label>Property Value</mat-label>
+                                        <input matInput type="text" formControlName="1" />
+                                    </mat-form-field>
+                                    <button mat-icon-button (click)="removeProperty(i)"><mat-icon>delete</mat-icon></button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
 
-                    <div class="empty-placeholder" *ngIf="form.controls.properties.controls.length === 0">
-                        <i>No properties defined.</i>
-                    </div>
+                    @if (form.controls.properties.controls.length === 0) {
+                        <div class="empty-placeholder">
+                            <i>No properties defined.</i>
+                        </div>
+                    }
                     <button class="add-entry" mat-raised-button (click)="addProperty()">Add Property</button>
                 </mat-card-content>
             </mat-card>
@@ -57,26 +60,29 @@
                 </mat-card-header>
 
                 <mat-card-content>
-                    <div formArrayName="metadata" *ngFor="let control of form.controls.metadata.controls; let i = index">
-                        <div [formGroupName]="i">
-                            <div class="flex-container">
-                                <mat-form-field appearance="fill">
-                                    <mat-label>Property Key</mat-label>
-                                    <input matInput type="text" formControlName="0" />
-                                </mat-form-field>
-                                <mat-form-field appearance="fill">
-                                    <mat-label>Property Value</mat-label>
-                                    <input matInput type="text" formControlName="1" />
-                                </mat-form-field>
-
-                                <button mat-icon-button (click)="removeMetadata(i)"><mat-icon>delete</mat-icon></button>
+                    @for (control of form.controls.metadata.controls; track control; let i = $index) {
+                        <div formArrayName="metadata">
+                            <div [formGroupName]="i">
+                                <div class="flex-container">
+                                    <mat-form-field appearance="fill">
+                                        <mat-label>Property Key</mat-label>
+                                        <input matInput type="text" formControlName="0" />
+                                    </mat-form-field>
+                                    <mat-form-field appearance="fill">
+                                        <mat-label>Property Value</mat-label>
+                                        <input matInput type="text" formControlName="1" />
+                                    </mat-form-field>
+                                    <button mat-icon-button (click)="removeMetadata(i)"><mat-icon>delete</mat-icon></button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
 
-                    <div class="empty-placeholder" *ngIf="form.controls.properties.controls.length === 0">
-                        <i>No metadata defined.</i>
-                    </div>
+                    @if (form.controls.properties.controls.length === 0) {
+                        <div class="empty-placeholder">
+                            <i>No metadata defined.</i>
+                        </div>
+                    }
                     <button class="add-entry" mat-raised-button (click)="addMetadata()">Add Metadata</button>
                 </mat-card-content>
             </mat-card>
@@ -120,15 +126,17 @@
 
             <mat-card-content>
                 @if (resultDescriptor(); as resultDescriptor) {
-                    <geoengine-manager-raster-result-descriptor
-                        *ngIf="resultDescriptor.type === 'raster'"
-                        [resultDescriptor]="resultDescriptor"
-                    ></geoengine-manager-raster-result-descriptor>
+                    @if (resultDescriptor.type === 'raster') {
+                        <geoengine-manager-raster-result-descriptor
+                            [resultDescriptor]="resultDescriptor"
+                        ></geoengine-manager-raster-result-descriptor>
+                    }
 
-                    <geoengine-manager-vector-result-descriptor
-                        *ngIf="resultDescriptor.type === 'vector'"
-                        [resultDescriptor]="resultDescriptor"
-                    ></geoengine-manager-vector-result-descriptor>
+                    @if (resultDescriptor.type === 'vector') {
+                        <geoengine-manager-vector-result-descriptor
+                            [resultDescriptor]="resultDescriptor"
+                        ></geoengine-manager-vector-result-descriptor>
+                    }
                 }
             </mat-card-content>
         </mat-card>

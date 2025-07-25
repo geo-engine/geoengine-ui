@@ -17,7 +17,7 @@ import {Layer, LayerCollectionLayerDetailsComponent, LayerMetadata, ResultType, 
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
-import {CommonModule} from '@angular/common';
+
 import {MatSelectModule} from '@angular/material/select';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {MatInputModule} from '@angular/material/input';
@@ -35,7 +35,6 @@ import {MatInputModule} from '@angular/material/input';
         MatFormFieldModule,
         MatButtonModule,
         MatIconModule,
-        CommonModule,
         LayerCollectionLayerDetailsComponent,
         MatSelectModule,
         FormsModule,
@@ -54,9 +53,9 @@ export class LayerSelectionComponent implements ControlValueAccessor {
     });
     defaultLayers = toSignal(this.projectService.getLayerStream(), {initialValue: []});
     layers = resource({
-        request: () => ({inputLayers: this._layers(), defaultLayers: this.defaultLayers(), types: this.types()}),
+        params: () => ({inputLayers: this._layers(), defaultLayers: this.defaultLayers(), types: this.types()}),
         defaultValue: [],
-        loader: async ({request: params}): Promise<Array<Layer>> => {
+        loader: async ({params}): Promise<Array<Layer>> => {
             const layers: Array<Layer> = params.inputLayers ?? params.defaultLayers;
 
             const filteredLayers = [];
@@ -116,9 +115,9 @@ export class LayerSelectionComponent implements ControlValueAccessor {
     });
     expanded = signal<boolean>(false);
     metadata = resource({
-        request: () => ({selectedLayer: this.selectedLayer()}),
+        params: () => ({selectedLayer: this.selectedLayer()}),
         defaultValue: undefined,
-        loader: async ({request: params}): Promise<LayerMetadata | undefined> => {
+        loader: async ({params}): Promise<LayerMetadata | undefined> => {
             const selectedLayer = params.selectedLayer;
             if (!selectedLayer) {
                 return undefined;

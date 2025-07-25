@@ -18,12 +18,16 @@
             Please select the two attributes to generate the scatter plot for.
             <mat-form-field>
                 <mat-select placeholder="Attribute X-Axis" formControlName="columnX">
-                    <mat-option *ngFor="let attribute of attributes$ | async" [value]="attribute">{{ attribute }}</mat-option>
+                    @for (attribute of attributes$ | async; track attribute) {
+                        <mat-option [value]="attribute">{{ attribute }}</mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
             <mat-form-field>
                 <mat-select placeholder="Attribute X-Axis" formControlName="columnY">
-                    <mat-option *ngFor="let attribute of attributes$ | async" [value]="attribute">{{ attribute }}</mat-option>
+                    @for (attribute of attributes$ | async; track attribute) {
+                        <mat-option [value]="attribute">{{ attribute }}</mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
         </ng-container>
@@ -33,13 +37,9 @@
                 formControlName="name"
                 [suggestion]="'Scatter Plot of ' + (form.controls.layer.valueChanges | async)?.name"
             >
-                <mat-hint
-                    align="end"
-                    class="error"
-                    *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
-                >
-                    The name must be non-empty.
-                </mat-hint>
+                @if (form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace) {
+                    <mat-hint align="end" class="error"> The name must be non-empty. </mat-hint>
+                }
             </geoengine-operator-output-name>
         </ng-container>
 

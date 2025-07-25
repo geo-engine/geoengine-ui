@@ -1,30 +1,32 @@
 <div class="container">
-    <div
-        cdkDropList
-        class="layer-list"
-        [style.max-height.px]="maxHeight"
-        *ngIf="layerListVisibility$ | async"
-        (cdkDropListDropped)="drop($event)"
-    >
-        <div class="layer-list-box" *ngIf="(projectService.getLayerStream() | async)?.length === 0">
-            <button
-                *ngIf="addAFirstLayerSidenavConfig"
-                mat-button
-                class="no-layer"
-                (click)="layoutService.setSidenavContentComponent(addAFirstLayerSidenavConfig)"
-                matTooltip="Add New Data"
-                matTooltipPosition="after"
-                [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
-            >
-                <mat-icon>add</mat-icon>
-                add a first layer
-            </button>
-            <mat-spinner class="add-first-layer-spinner" *ngIf="addAFirstLayerSidenavConfig === undefined" diameter="24"></mat-spinner>
+    @if (layerListVisibility$ | async) {
+        <div cdkDropList class="layer-list" [style.max-height.px]="maxHeight" (cdkDropListDropped)="drop($event)">
+            @if ((projectService.getLayerStream() | async)?.length === 0) {
+                <div class="layer-list-box">
+                    @if (addAFirstLayerSidenavConfig) {
+                        <button
+                            mat-button
+                            class="no-layer"
+                            (click)="layoutService.setSidenavContentComponent(addAFirstLayerSidenavConfig)"
+                            matTooltip="Add New Data"
+                            matTooltipPosition="after"
+                            [matTooltipShowDelay]="config.DELAYS.TOOLTIP"
+                        >
+                            <mat-icon>add</mat-icon>
+                            add a first layer
+                        </button>
+                    }
+                    @if (addAFirstLayerSidenavConfig === undefined) {
+                        <mat-spinner class="add-first-layer-spinner" diameter="24"></mat-spinner>
+                    }
+                </div>
+            }
+            @for (layer of layerList; track layer) {
+                <div class="layer-list-box" cdkDrag cdkDragLockAxis="y">
+                    <div class="layer-list-element-custom-placeholder" *cdkDragPlaceholder></div>
+                    <geoengine-layer-list-element [layer]="layer"></geoengine-layer-list-element>
+                </div>
+            }
         </div>
-
-        <div class="layer-list-box" cdkDrag *ngFor="let layer of layerList" cdkDragLockAxis="y">
-            <div class="layer-list-element-custom-placeholder" *cdkDragPlaceholder></div>
-            <geoengine-layer-list-element [layer]="layer"></geoengine-layer-list-element>
-        </div>
-    </div>
+    }
 </div>

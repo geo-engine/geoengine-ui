@@ -18,9 +18,11 @@
             <mat-form-field appearance="fill">
                 <mat-label>Output Data Type</mat-label>
                 <mat-select formControlName="dataType">
-                    <mat-option *ngFor="let dataType of rasterDataTypes" [value]="dataType">
-                        {{ dataType }}
-                    </mat-option>
+                    @for (dataType of rasterDataTypes; track dataType) {
+                        <mat-option [value]="dataType">
+                            {{ dataType }}
+                        </mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
         </ng-container>
@@ -32,13 +34,9 @@
                     (form.controls.layer.valueChanges | async)?.name + ' as ' + (form.controls.dataType.valueChanges | async)?.toString()
                 "
             >
-                <mat-hint
-                    align="end"
-                    class="error"
-                    *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
-                >
-                    The name must be non-empty.
-                </mat-hint>
+                @if (form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace) {
+                    <mat-hint align="end" class="error"> The name must be non-empty. </mat-hint>
+                }
             </geoengine-operator-output-name>
         </ng-container>
 

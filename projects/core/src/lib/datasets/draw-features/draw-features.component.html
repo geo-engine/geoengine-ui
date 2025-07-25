@@ -9,7 +9,7 @@
     <p>Note: In the layer's context menu you can change the layer name, edit the symbology and more.</p>
 </geoengine-dialog-help>
 
-<ng-container *ngIf="state$ | async as state">
+@if (state$ | async; as state) {
     <mat-card appearance="outlined">
         <mat-card-header>
             <mat-card-title>Draw features on the map</mat-card-title>
@@ -22,7 +22,9 @@
                     (valueChange)="updateFeatureType($event)"
                     [disabled]="state === State.Finished"
                 >
-                    <mat-option *ngFor="let featureType of featureTypes" [value]="featureType">{{ featureType }}</mat-option>
+                    @for (featureType of featureTypes; track featureType) {
+                        <mat-option [value]="featureType">{{ featureType }}</mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
             <div class="actions">
@@ -32,12 +34,10 @@
             </div>
         </mat-card-content>
     </mat-card>
-
     <mat-card appearance="outlined">
         <mat-card-header>
             <mat-card-title>Create dataset from features</mat-card-title>
         </mat-card-header>
-
         <mat-card-content>
             <form (ngSubmit)="submitCreate()" #drawForm="ngForm">
                 <p>
@@ -64,7 +64,6 @@
                         ></textarea>
                     </mat-form-field>
                 </p>
-
                 <div class="actions">
                     <button type="submit" mat-raised-button color="primary" [disabled]="!drawForm.form.valid || state === State.Finished">
                         Create dataset and add to map
@@ -73,6 +72,7 @@
             </form>
         </mat-card-content>
     </mat-card>
-
-    <mat-spinner *ngIf="indicateLoading$ | async"></mat-spinner>
-</ng-container>
+    @if (indicateLoading$ | async) {
+        <mat-spinner></mat-spinner>
+    }
+}

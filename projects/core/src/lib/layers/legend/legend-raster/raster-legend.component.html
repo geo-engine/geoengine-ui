@@ -6,29 +6,51 @@
                 <td colspan="3" class="measurement">
                     @if (showBandNames()) {
                         <span>
-                            Bandname<span *ngIf="bands.length > 1">s</span>:
+                            Bandname
+                            @if (bands.length > 1) {
+                                <span>s</span>
+                            }
+                            :
                             <i>
                                 @for (band of bands; track band.name) {
-                                    {{ band.name }}<span *ngIf="!$last">,</span>
+                                    {{ band.name }}
+                                    @if (!$last) {
+                                        <span>,</span>
+                                    }
                                 }
                             </i>
                         </span>
                     }
 
                     @if (bandsHaveUnits()) {
-                        Measurement<span *ngIf="bands.length > 1">s</span>:
+                        Measurement
+                        @if (bands.length > 1) {
+                            <span>s</span>
+                        }
+                        :
                         @for (band of bands; track band.name) {
                             @if (band.measurement | continuousMeasurement; as measurement) {
                                 <i>
-                                    {{ measurement.measurement }}<span *ngIf="measurement.unit"> (in {{ measurement.unit }})</span></i
-                                ><span *ngIf="!$last">, </span>
+                                    {{ measurement.measurement }}
+                                    @if (measurement.unit) {
+                                        <span> (in {{ measurement.unit }})</span>
+                                    }
+                                </i>
+                                @if (!$last) {
+                                    <span>, </span>
+                                }
                             }
                             @if (band.measurement | classificationMeasurement; as measurement) {
-                                <i>{{ measurement.measurement }}</i
-                                ><span *ngIf="!$last">, </span>
+                                <i>{{ measurement.measurement }}</i>
+                                @if (!$last) {
+                                    <span>, </span>
+                                }
                             }
                             @if (band.measurement | unitlessMeasurement; as measurement) {
-                                <i>unitless</i><span *ngIf="!$last">, </span>
+                                <i>unitless</i>
+                                @if (!$last) {
+                                    <span>, </span>
+                                }
                             }
                         }
                     }
@@ -39,12 +61,15 @@
             @if (layer().symbology.rasterColorizer.isContinuous()) {
                 @for (breakpoint of displayedBreakpoints(); track breakpoint) {
                     <tr>
-                        <td
-                            class="gradient"
-                            *ngIf="$first"
-                            [rowSpan]="layer().symbology.rasterColorizer.getBreakpoints().length"
-                            [style.background]="layer().symbology.rasterColorizer | geoengineRasterColorizerCssGradient: gradientAngle()"
-                        ></td>
+                        @if ($first) {
+                            <td
+                                class="gradient"
+                                [rowSpan]="layer().symbology.rasterColorizer.getBreakpoints().length"
+                                [style.background]="
+                                    layer().symbology.rasterColorizer | geoengineRasterColorizerCssGradient: gradientAngle()
+                                "
+                            ></td>
+                        }
                         <td>{{ breakpoint }}</td>
                     </tr>
                 }

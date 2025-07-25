@@ -7,8 +7,10 @@
         [(value)]="selectedScale"
         (selectionChange)="changeScale(selectedScale)"
     >
-        <mat-option *ngFor="let scale of timeScale" [value]="scale.value">
-            {{ scale.text }}
-        </mat-option>
+        @for (scale of timeScale; track scale) {
+            <mat-option [value]="scale.value">
+                {{ scale.text }}
+            </mat-option>
+        }
     </mat-select>
 </div>

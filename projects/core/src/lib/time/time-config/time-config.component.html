@@ -35,17 +35,19 @@
                 (ngModelChange)="updateTimeStepDuration($event)"
                 [compareWith]="timeStepComparator"
             >
-                <mat-option *ngFor="let timeStepDuration of timeStepDurations" [value]="timeStepDuration">
-                    {{ timeStepDuration.durationAmount }} {{ timeStepDuration.durationUnit }}
-                </mat-option>
+                @for (timeStepDuration of timeStepDurations; track timeStepDuration) {
+                    <mat-option [value]="timeStepDuration">
+                        {{ timeStepDuration.durationAmount }} {{ timeStepDuration.durationUnit }}
+                    </mat-option>
+                }
             </mat-select>
         </mat-form-field>
     </mat-card-content>
 </mat-card>
 
 <!-- <mat-expansion-panel expanded="true">
-        <mat-expansion-panel-header>
-            <mat-panel-title>Time Slider</mat-panel-title>
-        </mat-expansion-panel-header>
-        <geoengine-time-slider [height]="150"></geoengine-time-slider>
-    </mat-expansion-panel> -->
+<mat-expansion-panel-header>
+  <mat-panel-title>Time Slider</mat-panel-title>
+</mat-expansion-panel-header>
+<geoengine-time-slider [height]="150"></geoengine-time-slider>
+</mat-expansion-panel> -->

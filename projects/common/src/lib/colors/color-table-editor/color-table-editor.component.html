@@ -7,7 +7,9 @@
             [colorAttributeHinter]="colorHints"
         ></geoengine-color-attribute-input>
         <button mat-icon-button (click)="removeColorAt(i)" class="grid-removebutton"><mat-icon>remove</mat-icon></button>
-        <div class="grid-errormsg" *ngIf="isNoNumber(i)">Value must be a number!</div>
+        @if (isNoNumber(i)) {
+            <div class="grid-errormsg">Value must be a number!</div>
+        }
     </div>
 </cdk-virtual-scroll-viewport>
 <br />

@@ -47,15 +47,19 @@
         <mat-tab-group>
             <mat-tab label="Min/Max">
                 @if (queryParams) {
-                    <div class="histogram" *ngIf="histogramCreated === true">
-                        <ng-container *ngIf="histogramData | async as histogramData">
-                            <geoengine-vega-viewer
-                                [chartData]="histogramData"
-                                (interactionChange)="updateBounds($any($event))"
-                            ></geoengine-vega-viewer>
-                        </ng-container>
-                        <mat-progress-bar mode="indeterminate" *ngIf="histogramLoading | async"></mat-progress-bar>
-                    </div>
+                    @if (histogramCreated === true) {
+                        <div class="histogram">
+                            @if (histogramData | async; as histogramData) {
+                                <geoengine-vega-viewer
+                                    [chartData]="histogramData"
+                                    (interactionChange)="updateBounds($any($event))"
+                                ></geoengine-vega-viewer>
+                            }
+                            @if (histogramLoading | async) {
+                                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                            }
+                        </div>
+                    }
                     <div class="histogram-actions">
                         <button mat-stroked-button (click)="updateHistogram()">
                             @if (histogramCreated) {

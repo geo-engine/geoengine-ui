@@ -51,11 +51,9 @@
                 </geoengine-map-container>
             </div>
             <!-- <geoengine-legend *ngIf="dataSelectionService.rasterLayer | async as rasterLayer" [layer]="rasterLayer"></geoengine-legend> -->
-            <mat-progress-bar
-                class="loading-indicator"
-                mode="query"
-                *ngIf="dataSelectionService.rasterLayerLoading | async"
-            ></mat-progress-bar>
+            @if (dataSelectionService.rasterLayerLoading | async) {
+                <mat-progress-bar class="loading-indicator" mode="query"></mat-progress-bar>
+            }
         </mat-card-content>
     </mat-card>
 

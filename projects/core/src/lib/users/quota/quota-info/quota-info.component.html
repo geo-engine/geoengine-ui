@@ -1,4 +1,4 @@
-<ng-container *ngIf="hasQuota()">
+@if (hasQuota()) {
     <span class="pair">
         <span class="label">Available credits</span>
         <span class="value">{{ sessionQuota?.available }}</span>
@@ -7,12 +7,11 @@
         <span class="label">Used credits</span>
         <span class="value">{{ sessionQuota?.used }}</span>
     </span>
-
     <span class="sync">
         <button mat-icon-button (click)="refreshQuota()"><mat-icon>sync</mat-icon></button>
     </span>
-</ng-container>
+}
 
-<ng-container *ngIf="!hasQuota()">
+@if (!hasQuota()) {
     <p>No quota information available.</p>
-</ng-container>
+}
