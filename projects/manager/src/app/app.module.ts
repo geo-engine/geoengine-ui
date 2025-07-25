@@ -88,8 +88,21 @@ export const MATERIAL_MODULES = [
 ];
 
 @NgModule({
-    declarations: [
-        AppComponent,
+    declarations: [AppComponent],
+    imports: [
+        ...MATERIAL_MODULES,
+        FormsModule,
+        ReactiveFormsModule,
+        BrowserModule,
+        AppRoutingModule,
+        MatToolbarModule,
+        MatButtonModule,
+        MatSidenavModule,
+        MatIconModule,
+        MatListModule,
+        BrowserAnimationsModule,
+        ScrollingModule,
+        CommonModule,
         NavigationComponent,
         DatasetsComponent,
         LayersComponent,
@@ -108,21 +121,6 @@ export const MATERIAL_MODULES = [
         AddLayerItemComponent,
         LayerCollectionChildListComponent,
         LayerCollectionChildSelectionComponent,
-    ],
-    imports: [
-        ...MATERIAL_MODULES,
-        FormsModule,
-        ReactiveFormsModule,
-        BrowserModule,
-        AppRoutingModule,
-        MatToolbarModule,
-        MatButtonModule,
-        MatSidenavModule,
-        MatIconModule,
-        MatListModule,
-        BrowserAnimationsModule,
-        ScrollingModule,
-        CommonModule,
     ],
     providers: [
         {provide: AppConfig, useClass: AppConfig},

@@ -4,6 +4,27 @@ import {combineLatest, forkJoin, map, mergeMap, of, startWith, Subject, Subscrip
 import {TaskStatusDict, TaskStatusType, UUID} from '../../backend/backend.model';
 import {BackendService} from '../../backend/backend.service';
 import {NotificationService, UserService} from '@geoengine/common';
+import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
+import {MatFormField, MatLabel} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatMiniFabButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {
+    MatTable,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatCellDef,
+    MatCell,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+} from '@angular/material/table';
+import {MatTooltip} from '@angular/material/tooltip';
+import {JsonPipe, TitleCasePipe} from '@angular/common';
 
 @Injectable()
 export class MyCustomPaginatorIntl implements MatPaginatorIntl {
@@ -36,7 +57,31 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     styleUrls: ['./task-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl}],
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        MatMiniFabButton,
+        MatIcon,
+        MatProgressSpinner,
+        MatTable,
+        MatColumnDef,
+        MatHeaderCellDef,
+        MatHeaderCell,
+        MatCellDef,
+        MatCell,
+        MatTooltip,
+        MatButton,
+        MatHeaderRowDef,
+        MatHeaderRow,
+        MatRowDef,
+        MatRow,
+        MatPaginator,
+        JsonPipe,
+        TitleCasePipe,
+    ],
 })
 export class TaskListComponent implements AfterViewInit, OnDestroy {
     taskStatusOptions: Array<TaskStatusType> = ['running', 'completed', 'aborted', 'failed'];

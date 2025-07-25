@@ -1,5 +1,15 @@
 import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy} from '@angular/core';
-import {Validators, FormBuilder, FormControl, FormArray, FormGroup, AsyncValidatorFn, AbstractControl} from '@angular/forms';
+import {
+    Validators,
+    FormBuilder,
+    FormControl,
+    FormArray,
+    FormGroup,
+    AsyncValidatorFn,
+    AbstractControl,
+    FormsModule,
+    ReactiveFormsModule,
+} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {BehaviorSubject, combineLatest, firstValueFrom, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {map, mergeMap, startWith} from 'rxjs/operators';
@@ -20,9 +30,27 @@ import {
     VectorSymbology,
     createVectorSymbology,
     geoengineValidators,
+    FxLayoutDirective,
+    FxFlexDirective,
+    FxLayoutAlignDirective,
+    CommonModule,
+    AsyncStringSanitizer,
+    AsyncValueDefault,
 } from '@geoengine/common';
 
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {DialogSectionHeadingComponent} from '../../../dialogs/dialog-section-heading/dialog-section-heading.component';
+import {MatFormField, MatLabel, MatInput, MatHint} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatRadioGroup, MatRadioButton} from '@angular/material/radio';
+import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
+import {AsyncPipe} from '@angular/common';
 
 const MAX_NUMBER_OF_COLUMNS = 8;
 const ALLOWED_EXPRESSION_COLUMN_TYPES = [VectorColumnDataTypes.Float, VectorColumnDataTypes.Int];
@@ -52,7 +80,33 @@ interface VectorColumn {
     templateUrl: './vector-expression.component.html',
     styleUrls: ['./vector-expression.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        OperatorDialogContainerComponent,
+        MatIconButton,
+        MatIcon,
+        LayerSelectionComponent,
+        DialogSectionHeadingComponent,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatHint,
+        FxLayoutDirective,
+        FxFlexDirective,
+        FxLayoutAlignDirective,
+        MatButton,
+        MatSelect,
+        MatOption,
+        MatRadioGroup,
+        MatRadioButton,
+        CommonModule,
+        OperatorOutputNameComponent,
+        AsyncPipe,
+        AsyncStringSanitizer,
+        AsyncValueDefault,
+    ],
 })
 export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
     readonly allowedLayerTypes = ResultTypes.VECTOR_TYPES;

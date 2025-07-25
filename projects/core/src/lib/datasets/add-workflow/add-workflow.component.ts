@@ -1,5 +1,5 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
-import {UntypedFormGroup, UntypedFormControl, Validators} from '@angular/forms';
+import {UntypedFormGroup, UntypedFormControl, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {GeoEngineErrorDict, RasterResultDescriptorDict, UUID, VectorResultDescriptorDict} from '../../backend/backend.model';
 import {ProjectService} from '../../project/project.service';
 import {
@@ -11,13 +11,29 @@ import {
     createVectorSymbology,
     isValidUuid,
 } from '@geoengine/common';
+import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
+import {DialogHelpComponent} from '../../dialogs/dialog-help/dialog-help.component';
+import {MatFormField, MatLabel, MatInput, MatHint} from '@angular/material/input';
+import {MatButton} from '@angular/material/button';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-add-workflow',
     templateUrl: './add-workflow.component.html',
     styleUrls: ['./add-workflow.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        DialogHelpComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatHint,
+        MatButton,
+        AsyncPipe,
+    ],
 })
 export class AddWorkflowComponent {
     readonly form: UntypedFormGroup;

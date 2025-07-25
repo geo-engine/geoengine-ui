@@ -4,6 +4,7 @@ import {MapService} from '../map.service';
 import {BehaviorSubject, combineLatestWith, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {SpatialReferenceService} from '../../spatial-references/spatial-reference.service';
+import {AsyncPipe} from '@angular/common';
 
 /**
  * The `geoengine-map-resolution-extent-overlay` displays information about the resolution and extent of the visible map(s).
@@ -13,7 +14,7 @@ import {SpatialReferenceService} from '../../spatial-references/spatial-referenc
     templateUrl: 'map-resolution-extent-overlay.component.html',
     styleUrls: ['map-resolution-extent-overlay.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [AsyncPipe],
 })
 export class MapResolutionExtentOverlayComponent {
     @Input()

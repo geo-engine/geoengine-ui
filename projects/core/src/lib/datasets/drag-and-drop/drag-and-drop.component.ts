@@ -1,11 +1,26 @@
 import {Component, ChangeDetectionStrategy, ViewChild, Output, EventEmitter, ElementRef} from '@angular/core';
+import {MatCard} from '@angular/material/card';
+import {MatButton, MatIconButton} from '@angular/material/button';
+import {MatList, MatListItem, MatListItemMeta, MatListItemTitle, MatListItemLine, MatDivider} from '@angular/material/list';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
     selector: 'geoengine-drag-and-drop',
     templateUrl: './drag-and-drop.component.html',
     styleUrls: ['./drag-and-drop.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatCard,
+        MatButton,
+        MatList,
+        MatListItem,
+        MatIconButton,
+        MatListItemMeta,
+        MatIcon,
+        MatListItemTitle,
+        MatListItemLine,
+        MatDivider,
+    ],
 })
 export class DragAndDropComponent {
     selectedFiles?: Array<File>;

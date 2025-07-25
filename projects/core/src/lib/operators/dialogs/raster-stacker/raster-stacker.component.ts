@@ -1,9 +1,9 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
-import {FormControl, FormBuilder, FormGroup, Validators, FormArray} from '@angular/forms';
+import {FormControl, FormBuilder, FormGroup, Validators, FormArray, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {BehaviorSubject, EMPTY, Observable, combineLatest, of} from 'rxjs';
-import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
+import {LetterNumberConverter, MultiLayerSelectionComponent} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {
     RasterDataType,
     RasterDataTypes,
@@ -17,6 +17,16 @@ import {
     NotificationService,
 } from '@geoengine/common';
 import {TypedOperatorOperator} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {MatButtonToggleGroup, MatButtonToggle} from '@angular/material/button-toggle';
+import {MatFormField, MatLabel, MatInput, MatError, MatHint} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
+import {AsyncPipe} from '@angular/common';
 
 interface RasterStackerForm {
     rasterLayers: FormControl<Array<RasterLayer> | undefined>;
@@ -37,7 +47,27 @@ enum RenameBands {
     templateUrl: './raster-stacker.component.html',
     styleUrls: ['./raster-stacker.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        OperatorDialogContainerComponent,
+        MatIconButton,
+        MatIcon,
+        MultiLayerSelectionComponent,
+        MatButtonToggleGroup,
+        MatButtonToggle,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatError,
+        MatSelect,
+        MatOption,
+        OperatorOutputNameComponent,
+        MatHint,
+        MatButton,
+        AsyncPipe,
+    ],
 })
 export class RasterStackerComponent implements AfterViewInit {
     readonly inputTypes = [ResultTypes.RASTER];

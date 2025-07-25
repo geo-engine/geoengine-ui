@@ -1,11 +1,14 @@
 import {Component, Input, ChangeDetectionStrategy, ViewChild, Output, EventEmitter, OnChanges, SimpleChanges} from '@angular/core';
 import {PaletteColorizer} from '../../colors/colorizer.model';
-import {ColorAttributeInput} from '../../colors/color-attribute-input/color-attribute-input.component';
+import {ColorAttributeInput, ColorAttributeInputComponent} from '../../colors/color-attribute-input/color-attribute-input.component';
 import {Color} from '../../colors/color';
 import {ColorMapSelectorComponent} from '../../colors/color-map-selector/color-map-selector.component';
 import {ColorTableEditorComponent} from '../../colors/color-table-editor/color-table-editor.component';
 import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
 import {Measurement} from '@geoengine/openapi-client';
+import {MatCard, MatCardHeader, MatCardTitleGroup, MatCardTitle, MatCardSubtitle, MatCardContent} from '@angular/material/card';
+import {MatIcon} from '@angular/material/icon';
+import {FormsModule} from '@angular/forms';
 
 /**
  * An editor for generating raster symbologies.
@@ -15,7 +18,18 @@ import {Measurement} from '@geoengine/openapi-client';
     templateUrl: 'raster-palette-symbology-editor.component.html',
     styleUrls: ['raster-palette-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatCard,
+        MatCardHeader,
+        MatCardTitleGroup,
+        MatCardTitle,
+        MatCardSubtitle,
+        MatIcon,
+        MatCardContent,
+        ColorAttributeInputComponent,
+        FormsModule,
+        ColorTableEditorComponent,
+    ],
 })
 export class RasterPaletteSymbologyEditorComponent implements OnChanges {
     @ViewChild(ColorMapSelectorComponent)

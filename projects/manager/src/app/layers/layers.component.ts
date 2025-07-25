@@ -6,11 +6,17 @@ import {
     LayerCollectionNavigationComponent,
     LayersService,
     UUID,
+    CommonModule,
 } from '@geoengine/common';
 import {LayerCollectionListing, LayerListing, ProviderLayerCollectionId} from '@geoengine/openapi-client';
 import {AddLayerItemComponent} from './add-layer-item/add-layer-item.component';
 import {firstValueFrom} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
+import {MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {MatNavList, MatListItem, MatListItemTitle, MatListItemLine} from '@angular/material/list';
+import {LayerCollectionEditorComponent} from './layer-collection-editor/layer-collection-editor.component';
+import {LayerEditorComponent} from './layer-editor/layer-editor.component';
 
 export enum ItemType {
     Layer,
@@ -24,7 +30,17 @@ export type ItemId = {type: ItemType.Layer; layer: UUID} | {type: ItemType.Colle
     selector: 'geoengine-manager-layers',
     templateUrl: './layers.component.html',
     styleUrl: './layers.component.scss',
-    standalone: false,
+    imports: [
+        MatButton,
+        MatIcon,
+        MatNavList,
+        MatListItem,
+        MatListItemTitle,
+        MatListItemLine,
+        CommonModule,
+        LayerCollectionEditorComponent,
+        LayerEditorComponent,
+    ],
 })
 export class LayersComponent {
     readonly CollectionNavigation = CollectionNavigation;

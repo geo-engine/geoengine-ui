@@ -4,13 +4,18 @@ import {MapService} from '../../../map/map.service';
 import {ProjectService} from '../../../project/project.service';
 import {Observable} from 'rxjs';
 import {CoreConfig} from '../../../config.service';
+import {MatIconButton} from '@angular/material/button';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatMenuTrigger, MatMenu, MatMenuItem} from '@angular/material/menu';
+import {MatIcon} from '@angular/material/icon';
+import {NgSwitch, NgSwitchCase, NgIf, AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-layer-list-menu',
     templateUrl: './layer-list-menu.component.html',
     styleUrls: ['./layer-list-menu.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [MatIconButton, MatTooltip, MatMenuTrigger, MatIcon, MatMenu, MatMenuItem, NgSwitch, NgSwitchCase, NgIf, AsyncPipe],
 })
 export class LayerListMenuComponent {
     /**

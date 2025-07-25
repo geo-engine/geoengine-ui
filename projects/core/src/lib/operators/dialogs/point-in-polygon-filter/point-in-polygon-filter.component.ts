@@ -1,5 +1,5 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
-import {UntypedFormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
+import {UntypedFormGroup, UntypedFormBuilder, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap} from 'rxjs/operators';
@@ -13,8 +13,16 @@ import {
     VectorLayer,
     colorToDict,
     geoengineValidators,
+    FxLayoutDirective,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
+import {MatHint} from '@angular/material/input';
 
 /**
  * This component allows creating the point in polygon filter operator.
@@ -24,7 +32,19 @@ import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
     templateUrl: './point-in-polygon-filter.component.html',
     styleUrls: ['./point-in-polygon-filter.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        FxLayoutDirective,
+        ReactiveFormsModule,
+        OperatorDialogContainerComponent,
+        MatIconButton,
+        MatIcon,
+        LayerSelectionComponent,
+        OperatorOutputNameComponent,
+        MatHint,
+        MatButton,
+    ],
 })
 export class PointInPolygonFilterOperatorComponent {
     ResultTypes = ResultTypes;

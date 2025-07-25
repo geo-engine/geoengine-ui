@@ -10,6 +10,16 @@ import {AutoCreateDatasetDict, UploadResponseDict, UUID} from '../../backend/bac
 import {mergeMap} from 'rxjs/operators';
 import {WGS_84} from '../../spatial-references/spatial-reference.service';
 import {NotificationService, ResultType, ResultTypes, SpatialReference} from '@geoengine/common';
+import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
+import {DialogHelpComponent} from '../../dialogs/dialog-help/dialog-help.component';
+import {MatCard, MatCardHeader, MatCardTitle, MatCardContent} from '@angular/material/card';
+import {MatFormField, MatInput} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatButton} from '@angular/material/button';
+import {FormsModule} from '@angular/forms';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {AsyncPipe} from '@angular/common';
 
 enum State {
     Start = 1,
@@ -24,7 +34,22 @@ enum State {
     templateUrl: './draw-features.component.html',
     styleUrls: ['./draw-features.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        DialogHelpComponent,
+        MatCard,
+        MatCardHeader,
+        MatCardTitle,
+        MatCardContent,
+        MatFormField,
+        MatSelect,
+        MatOption,
+        MatButton,
+        FormsModule,
+        MatInput,
+        MatProgressSpinner,
+        AsyncPipe,
+    ],
 })
 export class DrawFeaturesComponent implements OnDestroy, OnInit {
     readonly State = State;

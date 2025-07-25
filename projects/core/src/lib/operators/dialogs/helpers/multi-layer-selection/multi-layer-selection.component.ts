@@ -13,7 +13,22 @@ import {
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {ProjectService} from '../../../../project/project.service';
-import {Layer, LayerMetadata, ResultType, ResultTypes} from '@geoengine/common';
+import {
+    Layer,
+    LayerMetadata,
+    ResultType,
+    ResultTypes,
+    FxLayoutDirective,
+    FxFlexDirective,
+    FxLayoutAlignDirective,
+    LayerCollectionLayerDetailsComponent,
+} from '@geoengine/common';
+import {MatIconButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {MatFormField, MatLabel} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {AsyncPipe} from '@angular/common';
 
 /**
  * Singleton for a letter to number converter for ids.
@@ -59,7 +74,19 @@ export interface LayerDetails {
     styleUrls: ['./multi-layer-selection.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => MultiLayerSelectionComponent), multi: true}],
-    standalone: false,
+    imports: [
+        FxLayoutDirective,
+        FxFlexDirective,
+        FxLayoutAlignDirective,
+        MatIconButton,
+        MatIcon,
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        LayerCollectionLayerDetailsComponent,
+        AsyncPipe,
+    ],
 })
 export class MultiLayerSelectionComponent implements ControlValueAccessor, OnChanges, OnDestroy, OnInit {
     /**

@@ -28,7 +28,7 @@ import {NotificationService, RandomColorService, UserService} from '@geoengine/c
 import {CommonConfig} from '@geoengine/common';
 
 @NgModule({
-    declarations: [AppComponent, HelpComponent, SplashDialogComponent, GfBioCollectionDialogComponent],
+    declarations: [AppComponent],
     bootstrap: [AppComponent],
     imports: [
         BrowserAnimationsModule,
@@ -39,6 +39,9 @@ import {CommonConfig} from '@geoengine/common';
         CoreModule,
         MapContainerComponent,
         SidenavHeaderComponent,
+        HelpComponent,
+        SplashDialogComponent,
+        GfBioCollectionDialogComponent,
     ],
     providers: [
         AppConfig,

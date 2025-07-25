@@ -19,6 +19,14 @@ import {SidenavRef} from '../sidenav-ref.service';
 import {LayoutService, SidenavConfig} from '../../layout.service';
 import {map} from 'rxjs/operators';
 import {MatSidenav} from '@angular/material/sidenav';
+import {MatToolbar} from '@angular/material/toolbar';
+import {FxLayoutDirective, FxFlexDirective} from '@geoengine/common';
+import {MatButton} from '@angular/material/button';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatIcon} from '@angular/material/icon';
+import {MatFormField, MatPrefix, MatLabel, MatInput} from '@angular/material/input';
+import {FormsModule} from '@angular/forms';
+import {AsyncPipe} from '@angular/common';
 
 /**
  * This is a container component that encapsulates sidenav components, dialogs, etc. and
@@ -32,7 +40,20 @@ import {MatSidenav} from '@angular/material/sidenav';
     templateUrl: './sidenav-container.component.html',
     styleUrls: ['./sidenav-container.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatToolbar,
+        FxLayoutDirective,
+        MatButton,
+        MatTooltip,
+        MatIcon,
+        FxFlexDirective,
+        MatFormField,
+        MatPrefix,
+        MatLabel,
+        MatInput,
+        FormsModule,
+        AsyncPipe,
+    ],
 })
 export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('target', {read: ViewContainerRef, static: true})

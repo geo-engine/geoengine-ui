@@ -1,15 +1,29 @@
 import {Component, OnInit, ChangeDetectionStrategy, Inject} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../../project/project.service';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogActions} from '@angular/material/dialog';
 import {Layer} from '@geoengine/common';
+import {DialogHeaderComponent} from '../../dialogs/dialog-header/dialog-header.component';
+import {CdkScrollable} from '@angular/cdk/scrolling';
+import {MatFormField, MatInput} from '@angular/material/input';
+import {MatButton} from '@angular/material/button';
 
 @Component({
     selector: 'geoengine-rename-layer',
     templateUrl: './rename-layer.component.html',
     styleUrls: ['./rename-layer.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        DialogHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        CdkScrollable,
+        MatDialogContent,
+        MatFormField,
+        MatInput,
+        MatDialogActions,
+        MatButton,
+    ],
 })
 export class RenameLayerComponent implements OnInit {
     form: UntypedFormGroup;

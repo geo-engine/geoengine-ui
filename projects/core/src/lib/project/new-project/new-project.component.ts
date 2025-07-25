@@ -1,17 +1,44 @@
 import {BehaviorSubject, zip} from 'rxjs';
 import {first, mergeMap} from 'rxjs/operators';
 import {Component, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
-import {UntypedFormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
+import {UntypedFormGroup, UntypedFormBuilder, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../project.service';
 import {SpatialReferenceService, WEB_MERCATOR} from '../../spatial-references/spatial-reference.service';
-import {NamedSpatialReference, NotificationService, SpatialReferenceSpecification, Time, extentToBboxDict} from '@geoengine/common';
+import {
+    NamedSpatialReference,
+    NotificationService,
+    SpatialReferenceSpecification,
+    Time,
+    extentToBboxDict,
+    FxLayoutDirective,
+    FxFlexDirective,
+} from '@geoengine/common';
+import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
+import {MatFormField, MatInput, MatHint} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatButton} from '@angular/material/button';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-new-project',
     templateUrl: './new-project.component.html',
     styleUrls: ['./new-project.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        FxLayoutDirective,
+        MatFormField,
+        FxFlexDirective,
+        MatInput,
+        MatHint,
+        MatSelect,
+        MatOption,
+        MatButton,
+        AsyncPipe,
+    ],
 })
 export class NewProjectComponent implements AfterViewInit {
     spatialReferenceOptions: Array<NamedSpatialReference>;

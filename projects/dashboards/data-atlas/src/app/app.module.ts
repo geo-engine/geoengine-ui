@@ -34,17 +34,7 @@ import {NotificationService, RandomColorService, UserService} from '@geoengine/c
 import {CommonConfig} from '@geoengine/common';
 
 @NgModule({
-    declarations: [
-        AboutComponent,
-        AccordionEntryComponent,
-        AccordionVectorEntryComponent,
-        AnalysisComponent,
-        AppComponent,
-        DataPointComponent,
-        LegendComponent,
-        LoginComponent,
-        MainComponent,
-    ],
+    declarations: [AppComponent],
     bootstrap: [AppComponent],
     imports: [
         BrowserAnimationsModule,
@@ -57,6 +47,14 @@ import {CommonConfig} from '@geoengine/common';
         RasterLegendComponent,
         MapContainerComponent,
         SidenavHeaderComponent,
+        AboutComponent,
+        AccordionEntryComponent,
+        AccordionVectorEntryComponent,
+        AnalysisComponent,
+        DataPointComponent,
+        LegendComponent,
+        LoginComponent,
+        MainComponent,
     ],
     providers: [
         AppConfig,

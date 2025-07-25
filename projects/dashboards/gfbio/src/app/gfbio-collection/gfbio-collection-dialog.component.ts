@@ -1,11 +1,28 @@
 import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {LayerCollectionItemDict, LayerCollectionLayerDict, ProjectService} from '@geoengine/core';
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogContent} from '@angular/material/dialog';
+import {LayerCollectionItemDict, LayerCollectionLayerDict, ProjectService, CoreModule} from '@geoengine/core';
 import {map, mergeMap} from 'rxjs/operators';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {SelectionModel} from '@angular/cdk/collections';
 import {LayerCollectionItem, LayersService, NotificationService} from '@geoengine/common';
 import {CollectionItem, LayerCollection} from '@geoengine/openapi-client';
+import {CdkScrollable} from '@angular/cdk/scrolling';
+import {
+    MatTable,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatCellDef,
+    MatCell,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+} from '@angular/material/table';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {MatButton} from '@angular/material/button';
+import {MatProgressBar} from '@angular/material/progress-bar';
+import {AsyncPipe} from '@angular/common';
 
 enum LayerStatus {
     Ok = 'ok',
@@ -17,7 +34,25 @@ enum LayerStatus {
     selector: 'geoengine-gfbio-basket-dialog',
     templateUrl: './gfbio-collection-dialog.component.html',
     styleUrls: ['./gfbio-collection-dialog.component.scss'],
-    standalone: false,
+    imports: [
+        CoreModule,
+        CdkScrollable,
+        MatDialogContent,
+        MatTable,
+        MatColumnDef,
+        MatHeaderCellDef,
+        MatHeaderCell,
+        MatCheckbox,
+        MatCellDef,
+        MatCell,
+        MatHeaderRowDef,
+        MatHeaderRow,
+        MatRowDef,
+        MatRow,
+        MatButton,
+        MatProgressBar,
+        AsyncPipe,
+    ],
 })
 export class GfBioCollectionDialogComponent {
     collection: LayerCollection;

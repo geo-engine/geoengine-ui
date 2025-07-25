@@ -1,10 +1,17 @@
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {ProjectService} from '../../project/project.service';
 import {Observable, Subscription} from 'rxjs';
-import {FormControl, FormGroup, NonNullableFormBuilder, Validators} from '@angular/forms';
+import {FormControl, FormGroup, NonNullableFormBuilder, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CoreConfig} from '../../config.service';
 import moment from 'moment';
-import {Time, TimeInterval, TimeStepDuration} from '@geoengine/common';
+import {Time, TimeInterval, TimeStepDuration, CommonModule} from '@geoengine/common';
+import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
+import {MatCard, MatCardHeader, MatCardTitle, MatCardSubtitle, MatCardContent, MatCardActions} from '@angular/material/card';
+import {MatButton} from '@angular/material/button';
+import {MatFormField} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {AsyncPipe} from '@angular/common';
 
 export interface TimeConfigForm {
     timeInterval: FormControl<TimeInterval>;
@@ -15,7 +22,23 @@ export interface TimeConfigForm {
     templateUrl: './time-config.component.html',
     styleUrls: ['./time-config.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        MatCard,
+        MatCardHeader,
+        MatCardTitle,
+        MatCardSubtitle,
+        MatCardContent,
+        FormsModule,
+        ReactiveFormsModule,
+        CommonModule,
+        MatCardActions,
+        MatButton,
+        MatFormField,
+        MatSelect,
+        MatOption,
+        AsyncPipe,
+    ],
 })
 export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     form: FormGroup<TimeConfigForm>;

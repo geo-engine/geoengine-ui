@@ -4,13 +4,14 @@ import {map, mergeMap} from 'rxjs/operators';
 import {DataSelectionService} from '../data-selection.service';
 import {combineLatest, Observable, of} from 'rxjs';
 import {LayerMetadata, VectorData, VectorLayerMetadata} from '@geoengine/common';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-data-point',
     templateUrl: './data-point.component.html',
     styleUrls: ['./data-point.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [AsyncPipe],
 })
 export class DataPointComponent {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

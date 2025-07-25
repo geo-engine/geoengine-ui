@@ -1,22 +1,49 @@
 import {BehaviorSubject, Observable} from 'rxjs';
 
 import {AfterViewInit, ChangeDetectionStrategy, Component, input} from '@angular/core';
-import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {UntypedFormControl, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {map} from 'rxjs/operators';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {CommonConfig} from '../config.service';
 import {UserService} from '../user/user.service';
 import {NotificationService} from '../notification.service';
 import {geoengineValidators} from '../util/form.validators';
 import {GeoEngineError} from '../util/errors';
+import {FxLayoutDirective, FxLayoutAlignDirective, FxLayoutGapDirective} from '../util/directives/flexbox-legacy.directive';
+import {MatCard, MatCardHeader, MatCardTitle, MatCardSubtitle, MatCardContent, MatCardActions} from '@angular/material/card';
+import {MatIcon} from '@angular/material/icon';
+import {MatFormField, MatInput, MatHint} from '@angular/material/input';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {MatButton} from '@angular/material/button';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-register',
     templateUrl: './register.component.html',
     styleUrls: ['./register.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        FxLayoutDirective,
+        FxLayoutAlignDirective,
+        MatCard,
+        MatCardHeader,
+        MatIcon,
+        MatCardTitle,
+        MatCardSubtitle,
+        MatCardContent,
+        MatFormField,
+        MatInput,
+        MatHint,
+        MatProgressSpinner,
+        MatCardActions,
+        FxLayoutGapDirective,
+        MatButton,
+        RouterLink,
+        AsyncPipe,
+    ],
 })
 export class RegisterComponent implements AfterViewInit {
     PASSWORD_MIN_LENGTH = 8;

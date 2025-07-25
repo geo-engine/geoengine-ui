@@ -22,9 +22,9 @@ import {NotificationService, RandomColorService, UserService} from '@geoengine/c
 import {CommonConfig} from '@geoengine/common';
 
 @NgModule({
-    declarations: [AppComponent, MainComponent],
+    declarations: [AppComponent],
     bootstrap: [AppComponent],
-    imports: [BrowserAnimationsModule, BrowserModule, AppRoutingModule, CoreModule, MapContainerComponent],
+    imports: [BrowserAnimationsModule, BrowserModule, AppRoutingModule, CoreModule, MapContainerComponent, MainComponent],
     providers: [
         AppConfig,
         {

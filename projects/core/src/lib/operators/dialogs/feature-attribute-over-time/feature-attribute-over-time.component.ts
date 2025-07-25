@@ -1,5 +1,5 @@
 import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy} from '@angular/core';
-import {UntypedFormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
+import {UntypedFormGroup, UntypedFormBuilder, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {ProjectService} from '../../../project/project.service';
 import {of, ReplaySubject, Subscription} from 'rxjs';
@@ -17,6 +17,16 @@ import {
     VectorLayerMetadata,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {MatFormField, MatHint} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
+import {AsyncPipe} from '@angular/common';
 
 interface AttributeCandidates {
     id: Array<string>;
@@ -28,7 +38,22 @@ interface AttributeCandidates {
     templateUrl: './feature-attribute-over-time.component.html',
     styleUrls: ['./feature-attribute-over-time.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        OperatorDialogContainerComponent,
+        MatIconButton,
+        MatIcon,
+        LayerSelectionComponent,
+        MatFormField,
+        MatSelect,
+        MatOption,
+        OperatorOutputNameComponent,
+        MatHint,
+        MatButton,
+        AsyncPipe,
+    ],
 })
 export class FeatureAttributeOvertimeComponent implements AfterViewInit, OnDestroy {
     inputTypes = ResultTypes.VECTOR_TYPES;

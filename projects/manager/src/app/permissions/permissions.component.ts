@@ -5,9 +5,28 @@ import {BehaviorSubject, Observable, Subject, firstValueFrom, tap} from 'rxjs';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ConfirmationComponent, PermissionsService, ResourceType, UserService, errorToText} from '@geoengine/common';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {AppConfig} from '../app-config.service';
+import {
+    MatTable,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatCellDef,
+    MatCell,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+} from '@angular/material/table';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {AsyncPipe} from '@angular/common';
 
 export interface PermissionForm {
     role: FormControl<string>;
@@ -18,7 +37,31 @@ export interface PermissionForm {
     selector: 'geoengine-manager-permissions',
     templateUrl: './permissions.component.html',
     styleUrl: './permissions.component.scss',
-    standalone: false,
+    imports: [
+        MatTable,
+        MatColumnDef,
+        MatHeaderCellDef,
+        MatHeaderCell,
+        MatCellDef,
+        MatCell,
+        MatIconButton,
+        MatIcon,
+        MatHeaderRowDef,
+        MatHeaderRow,
+        MatRowDef,
+        MatRow,
+        MatPaginator,
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatSelect,
+        MatOption,
+        MatButton,
+        MatProgressSpinner,
+        AsyncPipe,
+    ],
 })
 export class PermissionsComponent implements AfterViewInit, OnChanges {
     @Input({required: true})

@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import {BehaviorSubject, ReplaySubject, Subscription} from 'rxjs';
 import {LinearGradient, LogarithmicGradient} from '../../colors/colorizer.model';
-import {ColorAttributeInput} from '../../colors/color-attribute-input/color-attribute-input.component';
+import {ColorAttributeInput, ColorAttributeInputComponent} from '../../colors/color-attribute-input/color-attribute-input.component';
 import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
 import {ColorMapSelectorComponent} from '../../colors/color-map-selector/color-map-selector.component';
 import {Color} from '../../colors/color';
@@ -26,6 +26,16 @@ import {Workflow} from '@geoengine/openapi-client';
 import {PlotsService} from '../../plots/plots.service';
 import {SymbologyQueryParams} from '../symbology.model';
 import {PercentileBreakpointSelectorComponent} from '../../colors/percentile-breakpoint-selector/percentile-breakpoint-selector.component';
+import {MatCard, MatCardHeader, MatCardTitleGroup, MatCardTitle, MatCardSubtitle, MatCardContent} from '@angular/material/card';
+import {MatIcon} from '@angular/material/icon';
+import {FormsModule} from '@angular/forms';
+import {MatTabGroup, MatTab} from '@angular/material/tabs';
+import {VegaViewerComponent} from '../../plots/vega-viewer/vega-viewer.component';
+import {MatProgressBar} from '@angular/material/progress-bar';
+import {MatButton} from '@angular/material/button';
+import {MatDivider} from '@angular/material/list';
+import {AsyncPipe} from '@angular/common';
+import {ColorizerCssGradientPipe} from '../../util/pipes/color-gradients.pipe';
 
 /**
  * An editor for generating raster symbologies.
@@ -35,7 +45,28 @@ import {PercentileBreakpointSelectorComponent} from '../../colors/percentile-bre
     templateUrl: 'raster-gradient-symbology-editor.component.html',
     styleUrls: ['raster-gradient-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatCard,
+        MatCardHeader,
+        MatCardTitleGroup,
+        MatCardTitle,
+        MatCardSubtitle,
+        MatIcon,
+        MatCardContent,
+        ColorAttributeInputComponent,
+        FormsModule,
+        MatTabGroup,
+        MatTab,
+        VegaViewerComponent,
+        MatProgressBar,
+        MatButton,
+        MatDivider,
+        ColorMapSelectorComponent,
+        PercentileBreakpointSelectorComponent,
+        ColorTableEditorComponent,
+        AsyncPipe,
+        ColorizerCssGradientPipe,
+    ],
 })
 export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit, OnChanges {
     @ViewChild(ColorMapSelectorComponent)

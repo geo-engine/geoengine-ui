@@ -6,14 +6,18 @@ import {LayoutService} from '../../layout.service';
 import {ProjectService} from '../../project/project.service';
 import moment, {DurationInputArg2, Moment} from 'moment';
 import {Subscription} from 'rxjs';
-import {Layer, Time} from '@geoengine/common';
+import {Layer, Time, FxLayoutDirective, FxLayoutGapDirective, FxLayoutAlignDirective} from '@geoengine/common';
+import {MatButton} from '@angular/material/button';
+import {MatSelect} from '@angular/material/select';
+import {FormsModule} from '@angular/forms';
+import {MatOption} from '@angular/material/autocomplete';
 
 @Component({
     selector: 'geoengine-time-slider',
     templateUrl: './time-slider.component.html',
     styleUrls: ['./time-slider.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [FxLayoutDirective, FxLayoutGapDirective, FxLayoutAlignDirective, MatButton, MatSelect, FormsModule, MatOption],
 })
 export class TimeSliderComponent implements OnInit, OnDestroy {
     //Timeline Data for vis-timeline

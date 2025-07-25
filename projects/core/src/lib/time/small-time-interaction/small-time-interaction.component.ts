@@ -4,13 +4,17 @@ import {LayoutService} from '../../layout.service';
 import {TimeConfigComponent} from '../time-config/time-config.component';
 import {Time, TimeStepDuration} from '@geoengine/common';
 import {toSignal} from '@angular/core/rxjs-interop';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatIcon} from '@angular/material/icon';
+import {SafeHtmlPipe} from '../../util/pipes/safe-html.pipe';
 
 @Component({
     selector: 'geoengine-small-time-interaction',
     templateUrl: './small-time-interaction.component.html',
     styleUrls: ['./small-time-interaction.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [MatIconButton, MatTooltip, MatIcon, MatButton, SafeHtmlPipe],
 })
 export class SmallTimeInteractionComponent {
     private readonly projectService = inject(ProjectService);

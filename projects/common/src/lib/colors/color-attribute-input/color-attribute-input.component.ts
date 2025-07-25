@@ -9,8 +9,16 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule} from '@angular/forms';
 import {Color, stringToRgbaStruct} from '../color';
+import {
+    FxLayoutDirective,
+    FxLayoutAlignDirective,
+    FxLayoutGapDirective,
+    FxFlexDirective,
+} from '../../util/directives/flexbox-legacy.directive';
+import {MatFormField, MatInput, MatHint} from '@angular/material/input';
+import {ColorPickerDirective} from 'ngx-color-picker';
 
 export interface ColorAttributeInput {
     readonly key: string;
@@ -28,7 +36,17 @@ export interface ColorAttributeInputHinter {
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorAttributeInputComponent), multi: true}],
     encapsulation: ViewEncapsulation.Emulated,
-    standalone: false,
+    imports: [
+        FxLayoutDirective,
+        FxLayoutAlignDirective,
+        FxLayoutGapDirective,
+        MatFormField,
+        FxFlexDirective,
+        MatInput,
+        FormsModule,
+        MatHint,
+        ColorPickerDirective,
+    ],
 })
 export class ColorAttributeInputComponent implements ControlValueAccessor, OnChanges {
     @Input() readonlyAttribute = false;

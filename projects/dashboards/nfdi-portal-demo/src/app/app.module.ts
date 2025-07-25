@@ -29,7 +29,7 @@ import {NotificationService, RandomColorService, UserService} from '@geoengine/c
 import {CommonConfig} from '@geoengine/common';
 
 @NgModule({
-    declarations: [AppComponent, AttributionsComponent, LegendComponent, SpeciesSelectorComponent, MainComponent, LoginComponent],
+    declarations: [AppComponent],
     bootstrap: [AppComponent],
     imports: [
         AppRoutingModule,
@@ -41,6 +41,11 @@ import {CommonConfig} from '@geoengine/common';
         PortalModule,
         RasterLegendComponent,
         MapContainerComponent,
+        AttributionsComponent,
+        LegendComponent,
+        SpeciesSelectorComponent,
+        MainComponent,
+        LoginComponent,
     ],
     providers: [
         AppConfig,

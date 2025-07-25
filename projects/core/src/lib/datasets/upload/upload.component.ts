@@ -1,7 +1,7 @@
 import {HttpEventType} from '@angular/common/http';
 import {Component, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef, OnDestroy} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {MatStepper} from '@angular/material/stepper';
+import {FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatStepper, MatStep, MatStepLabel} from '@angular/material/stepper';
 import {Subject, Subscription} from 'rxjs';
 import {mergeMap} from 'rxjs/operators';
 import {UUID} from '../../backend/backend.model';
@@ -16,6 +16,12 @@ import {
 } from '@geoengine/common';
 import {DatasetService} from '../dataset.service';
 import {AddDataset, DatasetDefinition, MetaDataDefinition, MetaDataSuggestion, TimeGranularity} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
+import {DragAndDropComponent} from '../drag-and-drop/drag-and-drop.component';
+import {MatButton} from '@angular/material/button';
+import {MatProgressBar} from '@angular/material/progress-bar';
+import {MatFormField, MatLabel, MatInput, MatPrefix} from '@angular/material/input';
+import {AsyncPipe} from '@angular/common';
 
 interface NameDescription {
     name: FormControl<string>;
@@ -28,7 +34,23 @@ interface NameDescription {
     templateUrl: './upload.component.html',
     styleUrls: ['./upload.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        MatStepper,
+        MatStep,
+        MatStepLabel,
+        DragAndDropComponent,
+        MatButton,
+        MatProgressBar,
+        OgrDatasetComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatPrefix,
+        AsyncPipe,
+    ],
 })
 export class UploadComponent implements OnDestroy {
     vectorDataTypes = ['Data', 'MultiPoint', 'MultiLineString', 'MultiPolygon'];

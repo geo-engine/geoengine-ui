@@ -1,6 +1,6 @@
 import {HttpEventType} from '@angular/common/http';
 import {ChangeDetectionStrategy, Component, effect, inject, input, OnInit} from '@angular/core';
-import {FormControl, FormGroup, UntypedFormBuilder, ValidatorFn, Validators} from '@angular/forms';
+import {FormControl, FormGroup, UntypedFormBuilder, ValidatorFn, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import moment from 'moment';
 import {combineLatest, mergeMap} from 'rxjs';
 import {RasterResultDescriptorDict, WcsParamsDict, WfsParamsDict} from '../backend/backend.model';
@@ -19,10 +19,20 @@ import {
     TimeInterval,
     UserService,
     NotificationService,
+    FxLayoutDirective,
+    FxFlexDirective,
+    FxLayoutGapDirective,
+    CommonModule,
 } from '@geoengine/common';
 import {TypedResultDescriptor} from '@geoengine/openapi-client';
 import {CoreConfig} from '../config.service';
 import {toSignal} from '@angular/core/rxjs-interop';
+import {SidenavHeaderComponent} from '../sidenav/sidenav-header/sidenav-header.component';
+import {MatCard, MatCardHeader, MatCardTitle, MatCardSubtitle, MatCardContent} from '@angular/material/card';
+import {MatFormField, MatLabel, MatInput, MatHint} from '@angular/material/input';
+import {MatButton} from '@angular/material/button';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
 
 export interface DownloadLayerForm {
     bboxMinX: FormControl<number>;
@@ -43,7 +53,27 @@ export interface DownloadLayerForm {
     templateUrl: './download-layer.component.html',
     styleUrls: ['./download-layer.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        FxLayoutDirective,
+        ReactiveFormsModule,
+        FxFlexDirective,
+        MatCard,
+        MatCardHeader,
+        MatCardTitle,
+        MatCardSubtitle,
+        MatCardContent,
+        FxLayoutGapDirective,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatButton,
+        CommonModule,
+        MatSelect,
+        MatOption,
+        MatHint,
+    ],
 })
 export class DownloadLayerComponent implements OnInit {
     protected readonly backend = inject(BackendService);

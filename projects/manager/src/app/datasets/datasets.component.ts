@@ -2,12 +2,14 @@ import {Component, ViewChild} from '@angular/core';
 import {DatasetListing} from '@geoengine/openapi-client';
 import {BehaviorSubject} from 'rxjs';
 import {DatasetListComponent} from './dataset-list/dataset-list.component';
+import {DatasetEditorComponent} from './dataset-editor/dataset-editor.component';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-manager-datasets',
     templateUrl: './datasets.component.html',
     styleUrl: './datasets.component.scss',
-    standalone: false,
+    imports: [DatasetListComponent, DatasetEditorComponent, AsyncPipe],
 })
 export class DatasetsComponent {
     @ViewChild(DatasetListComponent) datasetList!: DatasetListComponent;

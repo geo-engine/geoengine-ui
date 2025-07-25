@@ -3,13 +3,18 @@ import {ProjectService} from '../project.service';
 import {SpatialReferenceService} from '../../spatial-references/spatial-reference.service';
 import {Subscription} from 'rxjs/internal/Subscription';
 import {NamedSpatialReference, SpatialReference} from '@geoengine/common';
+import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
+import {MatFormField} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {FormsModule} from '@angular/forms';
+import {MatOption} from '@angular/material/autocomplete';
 
 @Component({
     selector: 'geoengine-change-projection',
     templateUrl: './change-spatial-reference.component.html',
     styleUrls: ['./change-spatial-reference.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [SidenavHeaderComponent, MatFormField, MatSelect, FormsModule, MatOption],
 })
 export class ChangeSpatialReferenceComponent implements OnDestroy {
     readonly SpatialReferences: Array<NamedSpatialReference>;
