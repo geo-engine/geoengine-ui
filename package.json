@@ -103,7 +103,7 @@
         "@types/node": "^24.1.0",
         "@types/topojson-specification": "^1.0.5",
         "angular-eslint": "^20.1.1",
-        "eslint": "^9.31.0",
+        "eslint": "^9.32.0",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-import": "2.32.0",
         "eslint-plugin-jsdoc": "51.4.1",
