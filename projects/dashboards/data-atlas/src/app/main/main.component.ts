@@ -88,7 +88,7 @@ export class MainComponent implements OnInit, AfterViewInit {
     readonly userService = inject(UserService);
     readonly dataSelectionService = inject(DataSelectionService);
     readonly _vcRef = inject(ViewContainerRef);
-    readonly datasetService = inject<AppDatasetService>(DatasetService);
+    readonly datasetService = inject<DatasetService>(AppDatasetService);
     private iconRegistry = inject(MatIconRegistry);
     private mapService = inject(MapService);
     private sanitizer = inject(DomSanitizer);

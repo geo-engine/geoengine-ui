@@ -63,6 +63,7 @@ export default defineConfig([
                     style: 'camelCase',
                 },
             ],
+            '@angular-eslint/prefer-signals': 'warn',
 
             '@typescript-eslint/array-type': ['off', {default: 'generic'}],
             '@typescript-eslint/consistent-type-definitions': 'error',

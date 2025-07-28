@@ -7,10 +7,6 @@ import {Dataset, RandomColorService, RasterLayer, RasterSymbology, Time, UserSer
 
 @Injectable()
 export class AppDatasetService extends DatasetService {
-    protected override readonly backend: BackendService;
-    protected override readonly userService: UserService;
-    protected override readonly projectService: ProjectService;
-    protected override readonly randomColorService: RandomColorService;
     protected readonly dataSelectionService = inject(DataSelectionService);
 
     constructor() {
@@ -19,7 +15,7 @@ export class AppDatasetService extends DatasetService {
         const projectService = inject(ProjectService);
         const randomColorService = inject(RandomColorService);
 
-        super(backend, userService, projectService, randomColorService);
+        super();
 
         this.backend = backend;
         this.userService = userService;
