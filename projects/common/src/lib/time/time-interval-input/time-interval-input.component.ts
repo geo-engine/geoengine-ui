@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, forwardRef} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, forwardRef, inject} from '@angular/core';
 import {Subscription} from 'rxjs';
 import moment, {Moment} from 'moment';
 import {
@@ -65,6 +65,9 @@ export interface TimeInterval {
     imports: [FormsModule, ReactiveFormsModule, TimeInputComponent, FxLayoutDirective, FxLayoutAlignDirective, MatSlideToggle],
 })
 export class TimeIntervalInputComponent implements ControlValueAccessor, Validator, AfterViewInit {
+    private changeDetectorRef = inject(ChangeDetectorRef);
+    private formBuilder = inject(UntypedFormBuilder);
+
     @Input() allowRanges = true;
 
     onTouched?: () => void;
@@ -74,10 +77,7 @@ export class TimeIntervalInputComponent implements ControlValueAccessor, Validat
 
     onChangeSub?: Subscription = undefined;
 
-    constructor(
-        private changeDetectorRef: ChangeDetectorRef,
-        private formBuilder: UntypedFormBuilder,
-    ) {
+    constructor() {
         // initialize with the current time to have a defined value
         const time = new Time(moment.utc(), moment.utc());
 

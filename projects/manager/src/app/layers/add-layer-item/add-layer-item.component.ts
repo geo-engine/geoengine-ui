@@ -1,4 +1,4 @@
-import {Component, Inject, signal} from '@angular/core';
+import {Component, signal, inject} from '@angular/core';
 import {FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
     CollectionNavigation,
@@ -62,6 +62,11 @@ enum ChildType {
     ],
 })
 export class AddLayerItemComponent {
+    private readonly layersService = inject(LayersService);
+    private readonly snackBar = inject(MatSnackBar);
+    private readonly dialogRef = inject<MatDialogRef<AddLayerItemComponent>>(MatDialogRef);
+    private readonly dialog = inject(MatDialog);
+
     ItemType = ItemType;
     ChildType = ChildType;
     CollectionNavigation = CollectionNavigation;
@@ -93,13 +98,11 @@ export class AddLayerItemComponent {
         ),
     });
 
-    constructor(
-        private readonly layersService: LayersService,
-        private readonly snackBar: MatSnackBar,
-        private readonly dialogRef: MatDialogRef<AddLayerItemComponent>,
-        private readonly dialog: MatDialog,
-        @Inject(MAT_DIALOG_DATA) config: {parent: ProviderLayerCollectionId},
-    ) {
+    constructor() {
+        const config = inject<{
+            parent: ProviderLayerCollectionId;
+        }>(MAT_DIALOG_DATA);
+
         this.parentCollectionId = config.parent;
         merge(this.dialogRef.backdropClick(), this.dialogRef.keydownEvents().pipe(filter((event) => event.key === 'Escape'))).subscribe(
             // eslint-disable-next-line @typescript-eslint/no-misused-promises

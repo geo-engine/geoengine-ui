@@ -10,6 +10,7 @@ import {
     OnDestroy,
     OnInit,
     ChangeDetectorRef,
+    inject,
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {ProjectService} from '../../../../project/project.service';
@@ -89,6 +90,9 @@ export interface LayerDetails {
     ],
 })
 export class MultiLayerSelectionComponent implements ControlValueAccessor, OnChanges, OnDestroy, OnInit {
+    private projectService = inject(ProjectService);
+    private changeDetectorRef = inject(ChangeDetectorRef);
+
     /**
      * An array of possible layers.
      */
@@ -129,10 +133,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
     private selectionSubscription: Subscription;
     private layerChangesSubscription?: Subscription;
 
-    constructor(
-        private projectService: ProjectService,
-        private changeDetectorRef: ChangeDetectorRef,
-    ) {
+    constructor() {
         this.selectionSubscription = this.selectedLayers.subscribe((selectedLayers) => {
             if (this.onChange) {
                 this.onChange(selectedLayers);

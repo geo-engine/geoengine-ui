@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, inject} from '@angular/core';
 import {LayoutService} from '../../layout.service';
 import {ChangeSpatialReferenceComponent} from '../change-spatial-reference/change-spatial-reference.component';
 import {NewProjectComponent} from '../new-project/new-project.component';
@@ -20,7 +20,7 @@ import {IfLoggedInDirective} from '../../util/directives/if-logged-in.directive'
     imports: [MatListModule, MatIconModule, SidenavHeaderComponent, IfGuestDirective, IfLoggedInDirective],
 })
 export class WorkspaceSettingsComponent {
-    constructor(protected layoutService: LayoutService) {}
+    protected layoutService = inject(LayoutService);
 
     loadSpatialReferenceDialog(): void {
         this.layoutService.setSidenavContentComponent({component: ChangeSpatialReferenceComponent, keepParent: true});

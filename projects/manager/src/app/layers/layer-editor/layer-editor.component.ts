@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, Output, signal, SimpleChanges, WritableSignal} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, Output, signal, SimpleChanges, WritableSignal, inject} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -60,6 +60,12 @@ export interface LayerForm {
     ],
 })
 export class LayerEditorComponent implements OnChanges {
+    private readonly layersService = inject(LayersService);
+    private readonly workflowsService = inject(WorkflowsService);
+    private readonly dialog = inject(MatDialog);
+    private readonly snackBar = inject(MatSnackBar);
+    private readonly config = inject(AppConfig);
+
     @Input({required: true}) layerListing!: LayerListing;
     @Input({required: true}) parentCollection!: ProviderLayerCollectionId;
 
@@ -81,14 +87,6 @@ export class LayerEditorComponent implements OnChanges {
     workflowId: UUID | undefined = undefined;
 
     form: FormGroup<LayerForm> = this.placeholderForm();
-
-    constructor(
-        private readonly layersService: LayersService,
-        private readonly workflowsService: WorkflowsService,
-        private readonly dialog: MatDialog,
-        private readonly snackBar: MatSnackBar,
-        private readonly config: AppConfig,
-    ) {}
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     async ngOnChanges(changes: SimpleChanges): Promise<void> {

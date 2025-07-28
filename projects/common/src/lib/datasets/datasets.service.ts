@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {
     DataPath,
     Dataset,
@@ -22,9 +22,11 @@ import {UserService, apiConfigurationWithAccessKey} from '../user/user.service';
     providedIn: 'root',
 })
 export class DatasetsService {
+    private sessionService = inject(UserService);
+
     datasetApi = new ReplaySubject<DatasetsApi>(1);
 
-    constructor(private sessionService: UserService) {
+    constructor() {
         this.sessionService.getSessionStream().subscribe({
             next: (session) => this.datasetApi.next(new DatasetsApi(apiConfigurationWithAccessKey(session.sessionToken))),
         });

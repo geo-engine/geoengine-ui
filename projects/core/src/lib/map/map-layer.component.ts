@@ -10,6 +10,7 @@ import {
     Output,
     SimpleChange,
     SimpleChanges,
+    inject,
 } from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 
@@ -46,6 +47,8 @@ type VectorData = any; // TODO: use correct type
 @Directive()
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export abstract class MapLayerComponent<OL extends OlLayer<OS, any>, OS extends OlSource> {
+    protected projectService = inject(ProjectService);
+
     @Input() layerId!: number;
     @Input() isVisible = true;
     @Input() workflow?: UUID;
@@ -65,11 +68,8 @@ export abstract class MapLayerComponent<OL extends OlLayer<OS, any>, OS extends 
     /**
      * Setup of DI
      */
-    protected constructor(
-        protected projectService: ProjectService,
-        source: OS,
-        layer: (_: OS) => OL,
-    ) {
+    // eslint-disable-next-line @angular-eslint/prefer-inject
+    protected constructor(source: OS, layer: (_: OS) => OL) {
         this.source = source;
         this._mapLayer = layer(source);
     }
@@ -116,9 +116,8 @@ export class OlVectorLayerComponent
 
     protected dataSubscription?: Subscription;
 
-    constructor(protected override projectService: ProjectService) {
+    constructor() {
         super(
-            projectService,
             new OlVectorSource({wrapX: false}),
             (source) =>
                 new OlLayerVector({
@@ -184,6 +183,10 @@ export class OlRasterLayerComponent
     extends MapLayerComponent<OlLayerTile<OlTileWmsSource>, OlTileWmsSource>
     implements OnInit, OnDestroy, OnChanges
 {
+    protected backend = inject(BackendService);
+    protected config = inject(CoreConfig);
+    protected notificationService = inject(NotificationService);
+
     override symbology?: RasterSymbology;
 
     @Input() sessionToken?: UUID;
@@ -195,14 +198,8 @@ export class OlRasterLayerComponent
     protected spatialReference?: SpatialReference;
     protected time?: Time;
 
-    constructor(
-        protected override projectService: ProjectService,
-        protected backend: BackendService,
-        protected config: CoreConfig,
-        protected notificationService: NotificationService,
-    ) {
+    constructor() {
         super(
-            projectService,
             new OlTileWmsSource({
                 // empty for start
                 params: {},

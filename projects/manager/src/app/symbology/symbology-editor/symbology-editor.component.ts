@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, Input, OnChanges, SimpleChanges, ViewChild, inject} from '@angular/core';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {
     DatasetsService,
@@ -21,6 +21,10 @@ import {MatButton} from '@angular/material/button';
     imports: [CommonModule, MatButton],
 })
 export class SymbologyEditorComponent implements OnChanges {
+    private readonly datasetsService = inject(DatasetsService);
+    private readonly snackBar = inject(MatSnackBar);
+    private readonly config = inject(AppConfig);
+
     @Input({required: true}) workflowId!: UUID;
     @Input() datasetName: string | undefined;
     @Input() rasterSymbology: RasterSymbology | undefined;
@@ -33,12 +37,6 @@ export class SymbologyEditorComponent implements OnChanges {
     vectorSymbologyWorkflow?: SymbologyWorkflow<VectorSymbology> = undefined;
 
     unappliedChanges = false;
-
-    constructor(
-        private readonly datasetsService: DatasetsService,
-        private readonly snackBar: MatSnackBar,
-        private readonly config: AppConfig,
-    ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.workflowId || changes.rasterSymbology || changes.vectorSymbology) {

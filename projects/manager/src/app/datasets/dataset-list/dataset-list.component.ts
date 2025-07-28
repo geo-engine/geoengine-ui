@@ -1,6 +1,6 @@
 import {DataSource} from '@angular/cdk/collections';
 import {CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf} from '@angular/cdk/scrolling';
-import {AfterContentInit, Component, EventEmitter, Output, ViewChild} from '@angular/core';
+import {AfterContentInit, Component, EventEmitter, Output, ViewChild, inject} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {DatasetsService} from '@geoengine/common';
 import {DatasetListing} from '@geoengine/openapi-client';
@@ -49,6 +49,9 @@ import {AsyncPipe} from '@angular/common';
     ],
 })
 export class DatasetListComponent implements AfterContentInit {
+    private readonly datasetsService = inject(DatasetsService);
+    private readonly dialog = inject(MatDialog);
+
     @ViewChild(CdkVirtualScrollViewport)
     viewport!: CdkVirtualScrollViewport;
 
@@ -69,10 +72,7 @@ export class DatasetListComponent implements AfterContentInit {
 
     private searchSubject$ = new BehaviorSubject<string | undefined>(undefined);
 
-    constructor(
-        private readonly datasetsService: DatasetsService,
-        private readonly dialog: MatDialog,
-    ) {
+    constructor() {
         this.searchSubject$.pipe(skip(1), debounceTime(500), distinctUntilChanged()).subscribe((_searchText) => {
             this.setUpSource();
         });

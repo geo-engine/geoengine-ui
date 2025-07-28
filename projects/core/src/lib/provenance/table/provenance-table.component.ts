@@ -8,6 +8,7 @@ import {
     OnChanges,
     SimpleChanges,
     ChangeDetectorRef,
+    inject,
 } from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
 import {ProjectService} from '../../project/project.service';
@@ -48,6 +49,10 @@ import {
     ],
 })
 export class ProvenanceTableComponent implements OnInit, OnChanges {
+    protected readonly projectService = inject(ProjectService);
+    protected readonly hostElement = inject<ElementRef<HTMLElement>>(ElementRef);
+    protected readonly changeDetectorRef = inject(ChangeDetectorRef);
+
     @ViewChild(MatPaginator) paginator!: MatPaginator;
 
     @Input() layer?: Layer;
@@ -59,12 +64,6 @@ export class ProvenanceTableComponent implements OnInit, OnChanges {
     loading: boolean = true;
 
     readonly loadingSpinnerDiameterPx: number = 3 * LayoutService.remInPx;
-
-    constructor(
-        protected readonly projectService: ProjectService,
-        protected readonly hostElement: ElementRef<HTMLElement>,
-        protected readonly changeDetectorRef: ChangeDetectorRef,
-    ) {}
 
     ngOnInit(): void {
         if (this.layer) {

@@ -10,6 +10,7 @@ import {
     OnInit,
     ViewChild,
     ViewContainerRef,
+    inject,
 } from '@angular/core';
 import {MatDrawerToggleResult, MatSidenav, MatSidenavContainer} from '@angular/material/sidenav';
 import {MatTabGroup} from '@angular/material/tabs';
@@ -61,6 +62,15 @@ import {AsyncPipe} from '@angular/common';
     ],
 })
 export class MainComponent implements OnInit, AfterViewInit {
+    readonly config = inject(AppConfig);
+    readonly layoutService = inject(LayoutService);
+    readonly projectService = inject(ProjectService);
+    readonly vcRef = inject(ViewContainerRef);
+    readonly userService = inject(UserService);
+    private readonly layerService = inject(LayersService);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly mapService = inject(MapService);
+
     @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
     @ViewChild(MatTabGroup, {static: true}) bottomTabs!: MatTabGroup;
 
@@ -83,16 +93,10 @@ export class MainComponent implements OnInit, AfterViewInit {
 
     private windowHeight$ = new BehaviorSubject<number>(window.innerHeight);
 
-    constructor(
-        readonly config: AppConfig,
-        readonly layoutService: LayoutService,
-        readonly projectService: ProjectService,
-        readonly vcRef: ViewContainerRef, // reference used by color picker, MUST BE EXACTLY THIS NAME
-        readonly userService: UserService,
-        private readonly layerService: LayersService,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly mapService: MapService,
-    ) {
+    constructor() {
+        const config = this.config;
+        const vcRef = this.vcRef;
+
         vcRef.length; // eslint-disable-line @typescript-eslint/no-unused-expressions
 
         this.layersReverse$ = this.projectService.getLayerStream().pipe(map((layers) => layers.slice(0).reverse()));

@@ -1,6 +1,6 @@
 import {BehaviorSubject, Subscription} from 'rxjs';
 
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, inject} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {first} from 'rxjs/operators';
@@ -46,6 +46,10 @@ enum FormStatus {
     ],
 })
 export class TokenLoginComponent implements OnInit, AfterViewInit, OnDestroy {
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly userService = inject(UserService);
+    private readonly router = inject(Router);
+
     @Input() routeTo?: Array<string>;
     @Input() invalidTokenText = 'Invalid token';
     @Input() color: 'primary' | 'accent' = 'primary';
@@ -60,11 +64,7 @@ export class TokenLoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private formStatusSubscription?: Subscription;
 
-    constructor(
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly userService: UserService,
-        private readonly router: Router,
-    ) {
+    constructor() {
         this.loginForm = new UntypedFormGroup({
             sessionToken: new UntypedFormControl('', Validators.required),
         });

@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {LoadingState, ProjectService} from '@geoengine/core';
 import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, forkJoin, Observable, of} from 'rxjs';
@@ -14,6 +14,8 @@ export interface DataRange {
     providedIn: 'root',
 })
 export class DataSelectionService {
+    private readonly projectService = inject(ProjectService);
+
     readonly layers: Observable<Array<Layer>>;
 
     readonly rasterLayer: Observable<RasterLayer | undefined>;
@@ -34,7 +36,9 @@ export class DataSelectionService {
 
     protected readonly _vectorLayer = new BehaviorSubject<VectorLayer | undefined>(undefined);
 
-    constructor(private readonly projectService: ProjectService) {
+    constructor() {
+        const projectService = this.projectService;
+
         this.rasterLayer = this._rasterLayer.pipe(
             mergeMap((rasterLayer) =>
                 rasterLayer ? (projectService.getLayerChangesStream(rasterLayer) as Observable<RasterLayer>) : of(undefined),

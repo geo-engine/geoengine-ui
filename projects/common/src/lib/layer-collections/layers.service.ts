@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {firstValueFrom, ReplaySubject} from 'rxjs';
 import {
     AutocompleteHandlerRequest,
@@ -29,13 +29,13 @@ import {createVectorSymbology} from '../util/symbologies';
     providedIn: 'root',
 })
 export class LayersService {
+    private sessionService = inject(UserService);
+    private workflowsService = inject(WorkflowsService);
+    private randomColorService = inject(RandomColorService);
+
     layersApi = new ReplaySubject<LayersApi>(1);
 
-    constructor(
-        private sessionService: UserService,
-        private workflowsService: WorkflowsService,
-        private randomColorService: RandomColorService,
-    ) {
+    constructor() {
         this.sessionService.getSessionStream().subscribe({
             next: (session) => this.layersApi.next(new LayersApi(apiConfigurationWithAccessKey(session.sessionToken))),
         });

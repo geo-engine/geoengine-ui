@@ -1,4 +1,4 @@
-import {OnInit, ViewContainerRef} from '@angular/core';
+import {OnInit, ViewContainerRef, inject} from '@angular/core';
 import {Component} from '@angular/core';
 import {Router, RouterOutlet} from '@angular/router';
 import {Location} from '@angular/common';
@@ -12,12 +12,10 @@ import {firstValueFrom} from 'rxjs';
     imports: [RouterOutlet],
 })
 export class AppComponent implements OnInit {
-    constructor(
-        private readonly vcRef: ViewContainerRef,
-        private readonly router: Router,
-        private readonly location: Location,
-        private readonly userService: UserService,
-    ) {}
+    private readonly vcRef = inject(ViewContainerRef);
+    private readonly router = inject(Router);
+    private readonly location = inject(Location);
+    private readonly userService = inject(UserService);
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     async ngOnInit(): Promise<void> {

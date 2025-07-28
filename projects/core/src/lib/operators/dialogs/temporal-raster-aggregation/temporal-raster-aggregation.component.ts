@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild, inject} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 
@@ -77,6 +77,10 @@ interface TemporalRasterAggregationForm {
     ],
 })
 export class TemporalRasterAggregationComponent implements AfterViewInit {
+    private readonly projectService = inject(ProjectService);
+    private readonly notificationService = inject(NotificationService);
+    private readonly formBuilder = inject(FormBuilder);
+
     readonly inputTypes = [ResultTypes.RASTER];
     readonly rasterDataTypes = RasterDataTypes.ALL_DATATYPES;
 
@@ -104,11 +108,7 @@ export class TemporalRasterAggregationComponent implements AfterViewInit {
     form: FormGroup<TemporalRasterAggregationForm>;
     disallowSubmit: Observable<boolean>;
 
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly notificationService: NotificationService,
-        private readonly formBuilder: FormBuilder,
-    ) {
+    constructor() {
         this.form = this.formBuilder.nonNullable.group({
             name: ['', [Validators.required, geoengineValidators.notOnlyWhitespace]],
             layer: new FormControl<RasterLayer | undefined>(undefined, {nonNullable: true, validators: [Validators.required]}),

@@ -1,5 +1,5 @@
 import {DataSource} from '@angular/cdk/collections';
-import {AfterViewInit, Component, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Input, OnChanges, SimpleChanges, ViewChild, inject} from '@angular/core';
 import {Permission, PermissionListing} from '@geoengine/openapi-client';
 import {BehaviorSubject, Observable, Subject, firstValueFrom, tap} from 'rxjs';
 import {MatPaginator} from '@angular/material/paginator';
@@ -64,6 +64,12 @@ export interface PermissionForm {
     ],
 })
 export class PermissionsComponent implements AfterViewInit, OnChanges {
+    private readonly permissionsService = inject(PermissionsService);
+    private readonly userService = inject(UserService);
+    private readonly snackBar = inject(MatSnackBar);
+    private readonly dialog = inject(MatDialog);
+    private readonly config = inject(AppConfig);
+
     @Input({required: true})
     resourceType!: ResourceType;
     @Input({required: true})
@@ -80,14 +86,6 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
     source!: PermissionDataSource;
 
     displayedColumns: string[] = ['roleName', 'roleId', 'permission', 'remove'];
-
-    constructor(
-        private readonly permissionsService: PermissionsService,
-        private readonly userService: UserService,
-        private readonly snackBar: MatSnackBar,
-        private readonly dialog: MatDialog,
-        private readonly config: AppConfig,
-    ) {}
 
     ngAfterViewInit(): void {
         this.paginator.page.pipe(tap(() => this.loadPermissionsPage())).subscribe();

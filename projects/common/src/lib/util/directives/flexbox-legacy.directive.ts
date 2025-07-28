@@ -1,15 +1,15 @@
 /* These are legacy directives for angular flex layout */
 /* eslint-disable @angular-eslint/directive-selector */
 
-import {Directive, ElementRef, Input, OnChanges} from '@angular/core';
+import {Directive, ElementRef, Input, OnChanges, inject} from '@angular/core';
 
 @Directive({
     selector: '[fxFlex]',
 })
 export class FxFlexDirective implements OnChanges {
-    @Input() fxFlex: '0.5rem' | '1rem' | '4rem' | 'grow' | '' = '';
+    private el = inject(ElementRef);
 
-    constructor(private el: ElementRef) {}
+    @Input() fxFlex: '0.5rem' | '1rem' | '4rem' | 'grow' | '' = '';
 
     ngOnChanges(): void {
         if (this.fxFlex === '') {
@@ -32,9 +32,9 @@ export class FxFlexDirective implements OnChanges {
     selector: '[fxLayout]',
 })
 export class FxLayoutDirective implements OnChanges {
-    @Input() fxLayout: 'row' | 'row wrap' | 'column' | 'row-reverse' = 'row';
+    private el = inject(ElementRef);
 
-    constructor(private el: ElementRef) {}
+    @Input() fxLayout: 'row' | 'row wrap' | 'column' | 'row-reverse' = 'row';
 
     ngOnChanges(): void {
         this.el.nativeElement.style.display = 'flex';
@@ -61,9 +61,9 @@ export class FxLayoutDirective implements OnChanges {
     selector: '[fxLayoutGap]',
 })
 export class FxLayoutGapDirective implements OnChanges {
-    @Input() fxLayoutGap: '0.5rem' | '1rem' = '1rem';
+    private el = inject(ElementRef);
 
-    constructor(private el: ElementRef) {}
+    @Input() fxLayoutGap: '0.5rem' | '1rem' = '1rem';
 
     ngOnChanges(): void {
         switch (this.fxLayoutGap) {
@@ -81,6 +81,8 @@ export class FxLayoutGapDirective implements OnChanges {
     selector: '[fxLayoutAlign]',
 })
 export class FxLayoutAlignDirective implements OnChanges {
+    private el = inject(ElementRef);
+
     @Input() fxLayoutAlign:
         | 'start center'
         | 'center center'
@@ -93,8 +95,6 @@ export class FxLayoutAlignDirective implements OnChanges {
         | 'space-around'
         | 'end'
         | 'start stretch' = 'start center';
-
-    constructor(private el: ElementRef) {}
 
     ngOnChanges(): void {
         switch (this.fxLayoutAlign) {

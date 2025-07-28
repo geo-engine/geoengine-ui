@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, Output, signal, SimpleChanges, WritableSignal} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, Output, signal, SimpleChanges, WritableSignal, inject} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -41,6 +41,11 @@ export interface CollectionForm {
     ],
 })
 export class LayerCollectionEditorComponent implements OnChanges {
+    private readonly layersService = inject(LayersService);
+    private readonly dialog = inject(MatDialog);
+    private readonly snackBar = inject(MatSnackBar);
+    private readonly config = inject(AppConfig);
+
     readonly CollectionNavigation = CollectionNavigation;
 
     @Input({required: true}) collectionListing!: LayerCollectionListing;
@@ -58,13 +63,6 @@ export class LayerCollectionEditorComponent implements OnChanges {
 
     selectedLayer?: LayerListing;
     selectedCollection?: LayerCollectionListing;
-
-    constructor(
-        private readonly layersService: LayersService,
-        private readonly dialog: MatDialog,
-        private readonly snackBar: MatSnackBar,
-        private readonly config: AppConfig,
-    ) {}
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     async ngOnChanges(changes: SimpleChanges): Promise<void> {

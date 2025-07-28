@@ -1,4 +1,4 @@
-import {Directive, TemplateRef, Component, ViewContainerRef, OnDestroy} from '@angular/core';
+import {Directive, TemplateRef, Component, ViewContainerRef, OnDestroy, inject} from '@angular/core';
 import {UserService} from '@geoengine/common';
 import {Subscription} from 'rxjs';
 
@@ -6,13 +6,13 @@ import {Subscription} from 'rxjs';
     selector: '[geoengineIfGuest]',
 })
 export class IfGuestDirective implements OnDestroy {
+    private userService = inject(UserService);
+    private templateRef = inject<TemplateRef<Component>>(TemplateRef);
+    private viewContainer = inject(ViewContainerRef);
+
     private subscription: Subscription;
 
-    constructor(
-        private userService: UserService,
-        private templateRef: TemplateRef<Component>,
-        private viewContainer: ViewContainerRef,
-    ) {
+    constructor() {
         this.subscription = this.userService.isGuestUserStream().subscribe((isGuest) => {
             this.viewContainer.clear();
             if (isGuest) {

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, inject} from '@angular/core';
 import {ProjectService} from '../../project/project.service';
 import {MapService} from '../map.service';
 import {BehaviorSubject, combineLatestWith, Observable} from 'rxjs';
@@ -17,18 +17,16 @@ import {AsyncPipe} from '@angular/common';
     imports: [AsyncPipe],
 })
 export class MapResolutionExtentOverlayComponent {
+    private mapService = inject(MapService);
+    private spatialReferenceService = inject(SpatialReferenceService);
+    private projectService = inject(ProjectService);
+
     @Input()
     public bottom!: number;
 
     highPrecision = new BehaviorSubject<boolean>(false);
     private static readonly lowNumFractions = 2;
     private static readonly highNumFractions = 12;
-
-    constructor(
-        private mapService: MapService,
-        private spatialReferenceService: SpatialReferenceService,
-        private projectService: ProjectService,
-    ) {}
 
     togglePrecision(): void {
         this.highPrecision.next(!this.highPrecision.getValue());

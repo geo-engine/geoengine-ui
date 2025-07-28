@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, inject} from '@angular/core';
 import {ProjectService} from '../project.service';
 import {SpatialReferenceService} from '../../spatial-references/spatial-reference.service';
 import {Subscription} from 'rxjs/internal/Subscription';
@@ -17,17 +17,17 @@ import {MatOption} from '@angular/material/autocomplete';
     imports: [SidenavHeaderComponent, MatFormField, MatSelect, FormsModule, MatOption],
 })
 export class ChangeSpatialReferenceComponent implements OnDestroy {
+    projectService = inject(ProjectService);
+    protected spatialReferenceService = inject(SpatialReferenceService);
+    protected changeDetectorRef = inject(ChangeDetectorRef);
+
     readonly SpatialReferences: Array<NamedSpatialReference>;
 
     spatialReference?: NamedSpatialReference;
 
     private subscription: Subscription;
 
-    constructor(
-        public projectService: ProjectService,
-        protected spatialReferenceService: SpatialReferenceService,
-        protected changeDetectorRef: ChangeDetectorRef,
-    ) {
+    constructor() {
         this.SpatialReferences = this.spatialReferenceService.getSpatialReferences();
         this.subscription = this.projectService.getSpatialReferenceStream().subscribe((sref: SpatialReference) => {
             const index = this.SpatialReferences.findIndex((v) => v.spatialReference.srsString === sref.srsString);

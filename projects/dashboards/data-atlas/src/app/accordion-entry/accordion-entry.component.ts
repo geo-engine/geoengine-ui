@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef, inject} from '@angular/core';
 import {mergeMap, BehaviorSubject, combineLatest, of, forkJoin, Observable, map, from} from 'rxjs';
 import {LayerCollectionListingDict, ProjectService, ProviderLayerCollectionIdDict} from '@geoengine/core';
 import {DataRange, DataSelectionService} from '../data-selection.service';
@@ -29,19 +29,17 @@ import {AsyncPipe} from '@angular/common';
     ],
 })
 export class AccordionEntryComponent implements OnInit {
+    private readonly layersService = inject(LayersService);
+    readonly projectService = inject(ProjectService);
+    readonly dataSelectionService = inject(DataSelectionService);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+
     @Input() collection!: ProviderLayerCollectionIdDict;
     @Input() otherCollection?: ProviderLayerCollectionIdDict;
     @Input() icon = 'class';
 
     readonly selectedLayers$ = new BehaviorSubject<Array<ProviderLayerId | undefined>>([]);
     readonly collections$ = new BehaviorSubject<Array<LayerCollection>>([]);
-
-    constructor(
-        private readonly layersService: LayersService,
-        readonly projectService: ProjectService,
-        readonly dataSelectionService: DataSelectionService,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-    ) {}
 
     ngOnInit(): void {
         let otherCollectionItems$: Observable<Array<CollectionItem>> = of([]);

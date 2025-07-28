@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject} from '@angular/core';
 import OlFormatGeoJson from 'ol/format/GeoJSON';
 import {Type as OlGeometryType} from 'ol/geom/Geometry';
 import {BehaviorSubject, of, Subject, Subscription} from 'rxjs';
@@ -52,6 +52,11 @@ enum State {
     ],
 })
 export class DrawFeaturesComponent implements OnDestroy, OnInit {
+    private projectService = inject(ProjectService);
+    private mapService = inject(MapService);
+    private datasetService = inject(DatasetService);
+    private notificationService = inject(NotificationService);
+
     readonly State = State;
 
     indicateLoading$ = new Subject<boolean>();
@@ -77,12 +82,7 @@ export class DrawFeaturesComponent implements OnDestroy, OnInit {
     // a subscription providing the map projection and updates if it changes
     mapProjectionSubscription: Subscription;
 
-    constructor(
-        private projectService: ProjectService,
-        private mapService: MapService,
-        private datasetService: DatasetService,
-        private notificationService: NotificationService,
-    ) {
+    constructor() {
         this.mapProjectionSubscription = this.projectService.getSpatialReferenceStream().subscribe((p) => (this.mapSpatialRef = p));
     }
     ngOnInit(): void {

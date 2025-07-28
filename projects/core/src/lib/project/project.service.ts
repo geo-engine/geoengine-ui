@@ -13,7 +13,7 @@ import {
 } from 'rxjs';
 import {debounceTime, distinctUntilChanged, filter, first, map, mergeMap, skip, switchMap, take, tap} from 'rxjs/operators';
 
-import {Injectable, OnDestroy} from '@angular/core';
+import {Injectable, OnDestroy, inject} from '@angular/core';
 
 import {Project} from './project.model';
 import {CoreConfig} from '../config.service';
@@ -86,6 +86,14 @@ export interface FeatureSelection {
  */
 @Injectable()
 export class ProjectService implements OnDestroy {
+    protected config = inject(CoreConfig);
+    protected notificationService = inject(NotificationService);
+    protected mapService = inject(MapService);
+    protected backend = inject(BackendService);
+    protected userService = inject(UserService);
+    protected spatialReferenceService = inject(SpatialReferenceService);
+    protected layersService = inject(LayersService);
+
     private project$ = new ReplaySubject<Project | undefined>(1);
 
     private readonly layers = new Map<number, ReplaySubject<Layer>>();
@@ -109,15 +117,9 @@ export class ProjectService implements OnDestroy {
 
     private readonly selectedFeature$ = new BehaviorSubject<FeatureSelection>({feature: undefined});
 
-    constructor(
-        protected config: CoreConfig,
-        protected notificationService: NotificationService,
-        protected mapService: MapService,
-        protected backend: BackendService,
-        protected userService: UserService,
-        protected spatialReferenceService: SpatialReferenceService,
-        protected layersService: LayersService,
-    ) {
+    constructor() {
+        const config = this.config;
+
         // TODO: currently the ProjectService also handles layer data.
         //       The temporary projects are a workaround to make dashboards work.
         //       Instead, the ProjectService should be refactored to only handle

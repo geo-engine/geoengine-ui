@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 
@@ -60,6 +60,10 @@ interface TimePositionOption {
     ],
 })
 export class MeanRasterPixelValuesOverTimeDialogComponent implements AfterViewInit {
+    private readonly projectService = inject(ProjectService);
+    private readonly notificationService = inject(NotificationService);
+    private readonly formBuilder = inject(UntypedFormBuilder);
+
     readonly inputTypes = [ResultTypes.RASTER];
 
     readonly timePositionOptions: Array<TimePositionOption> = [
@@ -83,11 +87,7 @@ export class MeanRasterPixelValuesOverTimeDialogComponent implements AfterViewIn
     /**
      * DI for services
      */
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly notificationService: NotificationService,
-        private readonly formBuilder: UntypedFormBuilder,
-    ) {
+    constructor() {
         this.form = this.formBuilder.group({
             name: ['', [Validators.required, geoengineValidators.notOnlyWhitespace]],
             layer: [undefined, Validators.required],

@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
+import {Component, ChangeDetectionStrategy, Input, inject} from '@angular/core';
 import {concatMap, first, from, Observable, range, reduce, takeWhile} from 'rxjs';
 import {LayoutService, SidenavConfig} from '../../layout.service';
 import {AddWorkflowComponent} from '../add-workflow/add-workflow.component';
@@ -27,12 +27,12 @@ export interface AddDataButton {
     imports: [SidenavHeaderComponent, MatNavList, MatListItem, MatListItemIcon, MatIcon, MatListItemTitle, MatListItemLine],
 })
 export class AddDataComponent {
+    protected readonly layoutService = inject(LayoutService);
+
     /**
      * A list of data source dialogs to display
      */
     @Input() buttons!: Array<AddDataButton>;
-
-    constructor(protected readonly layoutService: LayoutService) {}
 
     /**
      * Load a selected component into the sidenav

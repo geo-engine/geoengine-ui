@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef, inject} from '@angular/core';
 import {mergeMap, BehaviorSubject, of, forkJoin, from} from 'rxjs';
 import {LayerCollectionLayerDict, ProjectService, ProviderLayerCollectionIdDict, UUID, VectorResultDescriptorDict} from '@geoengine/core';
 import {DataSelectionService} from '../data-selection.service';
@@ -38,18 +38,16 @@ import {AsyncPipe} from '@angular/common';
     ],
 })
 export class AccordionVectorEntryComponent implements OnInit {
+    private readonly layersService = inject(LayersService);
+    readonly projectService = inject(ProjectService);
+    readonly dataSelectionService = inject(DataSelectionService);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly randomColorService = inject(RandomColorService);
+
     @Input() collection!: ProviderLayerCollectionIdDict;
     @Input() icon = 'class';
 
     readonly layers$ = new BehaviorSubject<Array<LayerCollectionLayerDict>>([]);
-
-    constructor(
-        private readonly layersService: LayersService,
-        readonly projectService: ProjectService,
-        readonly dataSelectionService: DataSelectionService,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly randomColorService: RandomColorService,
-    ) {}
 
     ngOnInit(): void {
         from(this.layersService.getLayerCollectionItems(this.collection.providerId, this.collection.collectionId)).subscribe((c) => {

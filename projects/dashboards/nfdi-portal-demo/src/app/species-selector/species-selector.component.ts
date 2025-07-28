@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject} from '@angular/core';
 import {
     BackendService,
     DatasetService,
@@ -399,6 +399,15 @@ interface SpeciesInfo {
     ],
 })
 export class SpeciesSelectorComponent implements OnInit, OnDestroy {
+    readonly dataSelectionService = inject(DataSelectionService);
+    private readonly projectService = inject(ProjectService);
+    private readonly datasetService = inject(DatasetService);
+    private readonly userService = inject(UserService);
+    private readonly backend = inject(BackendService);
+    private readonly mapService = inject(MapService);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly spatialReferenceService = inject(SpatialReferenceService);
+
     readonly dragonflySpecies: string[] = DRAGONFLY_SPECIES;
     readonly fishSpecies: string[] = FISH_SPECIES;
 
@@ -466,17 +475,6 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     private selectedEnvironmentDataset?: Dataset = undefined;
 
     private readonly subscriptions: Array<Subscription> = [];
-
-    constructor(
-        public readonly dataSelectionService: DataSelectionService,
-        private readonly projectService: ProjectService,
-        private readonly datasetService: DatasetService,
-        private readonly userService: UserService,
-        private readonly backend: BackendService,
-        private readonly mapService: MapService,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly spatialReferenceService: SpatialReferenceService,
-    ) {}
 
     ngOnInit(): void {
         const species1LayerSubscription = this.dataSelectionService.speciesLayer1.subscribe((speciesLayer) => {

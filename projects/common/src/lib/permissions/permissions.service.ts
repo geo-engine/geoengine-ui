@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Permission, PermissionListing, PermissionsApi} from '@geoengine/openapi-client';
 import {ReplaySubject, firstValueFrom} from 'rxjs';
 import {UserService, apiConfigurationWithAccessKey} from '../user/user.service';
@@ -9,9 +9,11 @@ export type ResourceType = 'dataset' | 'layer' | 'layerCollection' | 'project' |
     providedIn: 'root',
 })
 export class PermissionsService {
+    private sessionService = inject(UserService);
+
     permissionsApi = new ReplaySubject<PermissionsApi>(1);
 
-    constructor(private sessionService: UserService) {
+    constructor() {
         this.sessionService.getSessionStream().subscribe({
             next: (session) => this.permissionsApi.next(new PermissionsApi(apiConfigurationWithAccessKey(session.sessionToken))),
         });

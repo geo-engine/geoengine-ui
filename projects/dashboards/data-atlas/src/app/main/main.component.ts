@@ -1,5 +1,5 @@
 import {Observable, BehaviorSubject, first, filter, map, forkJoin} from 'rxjs';
-import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, OnInit, ViewChild, ViewContainerRef, inject} from '@angular/core';
 import {MatIconRegistry, MatIcon} from '@angular/material/icon';
 import {
     LayoutService,
@@ -82,6 +82,18 @@ interface LayerCollectionBiListing {
     ],
 })
 export class MainComponent implements OnInit, AfterViewInit {
+    readonly config = inject<AppConfig>(AppConfig);
+    readonly layoutService = inject(LayoutService);
+    readonly projectService = inject(ProjectService);
+    readonly userService = inject(UserService);
+    readonly dataSelectionService = inject(DataSelectionService);
+    readonly _vcRef = inject(ViewContainerRef);
+    readonly datasetService = inject<AppDatasetService>(DatasetService);
+    private iconRegistry = inject(MatIconRegistry);
+    private mapService = inject(MapService);
+    private sanitizer = inject(DomSanitizer);
+    private readonly layersService = inject(LayersService);
+
     @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
 
     @ViewChild(MatSidenav, {static: true}) leftSidenav!: MatSidenav;
@@ -97,19 +109,7 @@ export class MainComponent implements OnInit, AfterViewInit {
         map((rasterLayer) => !!rasterLayer),
     );
 
-    constructor(
-        @Inject(AppConfig) readonly config: AppConfig,
-        readonly layoutService: LayoutService,
-        readonly projectService: ProjectService,
-        readonly userService: UserService,
-        readonly dataSelectionService: DataSelectionService,
-        readonly _vcRef: ViewContainerRef, // reference used by color picker
-        @Inject(DatasetService) readonly datasetService: AppDatasetService,
-        private iconRegistry: MatIconRegistry,
-        private mapService: MapService,
-        private sanitizer: DomSanitizer,
-        private readonly layersService: LayersService,
-    ) {
+    constructor() {
         this.registerIcons();
 
         this.layersReverse$ = this.dataSelectionService.layers;

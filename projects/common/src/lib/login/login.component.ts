@@ -1,6 +1,6 @@
 import {BehaviorSubject, Subscription} from 'rxjs';
 
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, input, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, input, OnDestroy, OnInit, inject} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {first} from 'rxjs/operators';
@@ -61,6 +61,12 @@ enum FormStatus {
     ],
 })
 export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
+    readonly config = inject(CommonConfig);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly userService = inject(UserService);
+    private readonly notificationService = inject(NotificationService);
+    private readonly router = inject(Router);
+
     readonly FormStatus = FormStatus;
 
     loginRedirect = input('/map');
@@ -77,13 +83,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private formStatusSubscription?: Subscription;
 
-    constructor(
-        readonly config: CommonConfig,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly userService: UserService,
-        private readonly notificationService: NotificationService,
-        private readonly router: Router,
-    ) {
+    constructor() {
         this.loginForm = new UntypedFormGroup({
             email: new UntypedFormControl(
                 '',
