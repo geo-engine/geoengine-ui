@@ -1,5 +1,14 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
-import {FormControl, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors} from '@angular/forms';
+import {
+    FormControl,
+    FormGroup,
+    Validators,
+    ValidatorFn,
+    AbstractControl,
+    ValidationErrors,
+    FormsModule,
+    ReactiveFormsModule,
+} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 
 import {map, mergeMap} from 'rxjs/operators';
@@ -15,8 +24,24 @@ import {
     RasterUnScalingDict,
     ResultTypes,
     geoengineValidators,
+    FxLayoutDirective,
+    FxLayoutAlignDirective,
+    FxLayoutGapDirective,
+    FxFlexDirective,
+    AsyncValueDefault,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {MatFormField, MatLabel, MatInput, MatHint} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatDivider} from '@angular/material/list';
+import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
+import {AsyncPipe} from '@angular/common';
 
 interface RasterScalingForm {
     name: FormControl<string>;
@@ -38,7 +63,31 @@ interface SlopeOffsetForm {
     templateUrl: './raster-scaling.component.html',
     styleUrls: ['./raster-scaling.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        OperatorDialogContainerComponent,
+        MatIconButton,
+        MatIcon,
+        LayerSelectionComponent,
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        FxLayoutDirective,
+        FxLayoutAlignDirective,
+        FxLayoutGapDirective,
+        FxFlexDirective,
+        MatInput,
+        MatDivider,
+        OperatorOutputNameComponent,
+        MatHint,
+        SymbologyCreatorComponent,
+        MatButton,
+        AsyncPipe,
+        AsyncValueDefault,
+    ],
 })
 export class RasterScalingComponent implements AfterViewInit {
     readonly inputTypes = [ResultTypes.RASTER];

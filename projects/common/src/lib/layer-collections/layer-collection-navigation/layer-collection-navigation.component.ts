@@ -13,7 +13,7 @@ import {
     Output,
     EventEmitter,
 } from '@angular/core';
-import {MatInput} from '@angular/material/input';
+import {MatInput, MatFormField, MatPrefix, MatLabel} from '@angular/material/input';
 import {
     LayerCollectionListing,
     LayerListing,
@@ -28,13 +28,40 @@ import {CommonConfig} from '../../config.service';
 import {LayersService} from '../layers.service';
 import {UUID} from '../../datasets/dataset.model';
 import {CollectionNavigation, LayerCollectionListComponent} from '../layer-collection-list/layer-collection-list.component';
+import {MatIcon} from '@angular/material/icon';
+import {FormsModule} from '@angular/forms';
+import {MatAutocompleteTrigger, MatAutocomplete, MatOption} from '@angular/material/autocomplete';
+import {MatButton} from '@angular/material/button';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatMenuTrigger, MatMenu} from '@angular/material/menu';
+import {MatToolbar} from '@angular/material/toolbar';
+import {MatSelect} from '@angular/material/select';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-layer-collection-navigation',
     templateUrl: './layer-collection-navigation.component.html',
     styleUrls: ['./layer-collection-navigation.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatFormField,
+        MatIcon,
+        MatPrefix,
+        MatInput,
+        FormsModule,
+        MatAutocompleteTrigger,
+        MatAutocomplete,
+        MatOption,
+        MatButton,
+        MatTooltip,
+        MatMenuTrigger,
+        MatMenu,
+        MatToolbar,
+        MatLabel,
+        MatSelect,
+        LayerCollectionListComponent,
+        AsyncPipe,
+    ],
 })
 export class LayerCollectionNavigationComponent implements OnInit, OnChanges, OnDestroy {
     @Input({required: false}) showLayerToggle = true;

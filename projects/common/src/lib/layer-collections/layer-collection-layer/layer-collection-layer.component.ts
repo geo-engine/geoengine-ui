@@ -13,13 +13,17 @@ import {LayerListing as LayerCollectionLayerDict, ProviderLayerId as ProviderLay
 import {LayersService} from '../layers.service';
 import {VectorDataTypes} from '../../operators/datatype.model';
 import {RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metadata.model';
+import {MatIcon} from '@angular/material/icon';
+import {MatIconButton} from '@angular/material/button';
+import {MatProgressBar} from '@angular/material/progress-bar';
+import {LayerCollectionLayerDetailsComponent} from '../layer-collection-layer-details/layer-collection-layer-details.component';
 
 @Component({
     selector: 'geoengine-layer-collection-layer',
     templateUrl: './layer-collection-layer.component.html',
     styleUrls: ['./layer-collection-layer.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [MatIcon, MatIconButton, MatProgressBar, LayerCollectionLayerDetailsComponent],
 })
 export class LayerCollectionLayerComponent implements OnChanges {
     @Input({required: false}) showLayerToggle = true;

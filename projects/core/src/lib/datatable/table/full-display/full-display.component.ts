@@ -1,9 +1,12 @@
 import {Component, OnInit, ChangeDetectionStrategy, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogContent, MatDialogActions, MatDialogClose} from '@angular/material/dialog';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {Geometry} from 'ol/geom';
 import OlFormatGeoJson from 'ol/format/GeoJSON';
 import OlFormatWKT from 'ol/format/WKT';
+import {DialogHeaderComponent} from '../../../dialogs/dialog-header/dialog-header.component';
+import {CdkScrollable, CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf} from '@angular/cdk/scrolling';
+import {MatButton} from '@angular/material/button';
 
 /**
  * Opened as modal dialog to display a full set of coordinates and allow copying to clipboard
@@ -13,7 +16,17 @@ import OlFormatWKT from 'ol/format/WKT';
     templateUrl: './full-display.component.html',
     styleUrls: ['./full-display.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        DialogHeaderComponent,
+        CdkScrollable,
+        MatDialogContent,
+        CdkVirtualScrollViewport,
+        CdkFixedSizeVirtualScroll,
+        CdkVirtualForOf,
+        MatDialogActions,
+        MatButton,
+        MatDialogClose,
+    ],
 })
 export class FullDisplayComponent implements OnInit {
     xCoords: string[] = [];

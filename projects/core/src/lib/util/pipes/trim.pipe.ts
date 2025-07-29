@@ -1,9 +1,6 @@
 import {Pipe, PipeTransform} from '@angular/core';
 
-@Pipe({
-    name: 'geoengineTrimPipe',
-    standalone: false,
-})
+@Pipe({name: 'geoengineTrimPipe'})
 export class TrimPipe implements PipeTransform {
     transform(value: string): string {
         if (!value) {

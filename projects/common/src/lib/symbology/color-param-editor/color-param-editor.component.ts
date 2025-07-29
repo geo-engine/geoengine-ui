@@ -1,10 +1,17 @@
 import {Component, ChangeDetectionStrategy, forwardRef, HostListener, Input} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule} from '@angular/forms';
 import {BLACK, Color} from '../../colors/color';
-import {ColorAttributeInput} from '../../colors/color-attribute-input/color-attribute-input.component';
+import {ColorAttributeInput, ColorAttributeInputComponent} from '../../colors/color-attribute-input/color-attribute-input.component';
 import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
 import {Colorizer, LinearGradient, PaletteColorizer} from '../../colors/colorizer.model';
 import {ColorParam, DerivedColor, StaticColor} from '../symbology.model';
+import {MatFormField, MatLabel} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {ColorBreakpointInputComponent} from '../../colors/color-breakpoint-input/color-breakpoint-input.component';
+import {FxFlexDirective} from '../../util/directives/flexbox-legacy.directive';
+import {MatIconButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
 
 /**
  * An edit component for `ColorParam`
@@ -15,7 +22,18 @@ import {ColorParam, DerivedColor, StaticColor} from '../symbology.model';
     styleUrls: ['color-param-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorParamEditorComponent), multi: true}],
-    standalone: false,
+    imports: [
+        ColorAttributeInputComponent,
+        FormsModule,
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        ColorBreakpointInputComponent,
+        FxFlexDirective,
+        MatIconButton,
+        MatIcon,
+    ],
 })
 export class ColorParamEditorComponent implements ControlValueAccessor {
     @Input() attributes = new Array<string>();

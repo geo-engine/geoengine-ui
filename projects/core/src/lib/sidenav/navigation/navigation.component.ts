@@ -6,7 +6,12 @@ import {distinctUntilChanged, map, mergeScan} from 'rxjs/operators';
 import {CoreConfig} from '../../config.service';
 import {SidenavRef} from '../sidenav-ref.service';
 import {OidcComponent} from '../../users/oidc/oidc.component';
-import {UserService} from '@geoengine/common';
+import {UserService, AsyncStringSanitizer} from '@geoengine/common';
+import {MatIconButton} from '@angular/material/button';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatIcon} from '@angular/material/icon';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {AsyncPipe} from '@angular/common';
 
 /**
  * Button config for the sidenav navigation
@@ -54,7 +59,7 @@ export interface NavigationButtonIconLoading extends NavigationButtonIcon {
     templateUrl: './navigation.component.html',
     styleUrls: ['./navigation.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [MatIconButton, MatTooltip, MatIcon, MatProgressSpinner, AsyncPipe, AsyncStringSanitizer],
 })
 export class NavigationComponent implements OnInit, OnDestroy {
     /**

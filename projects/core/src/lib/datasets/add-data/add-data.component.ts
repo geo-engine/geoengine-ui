@@ -6,6 +6,9 @@ import {DrawFeaturesComponent} from '../draw-features/draw-features.component';
 import {UploadComponent} from '../upload/upload.component';
 import {LayersService} from '@geoengine/common';
 import {LayerCollectionSelectionComponent} from '../../layer-collections/layer-collection-selection.component';
+import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
+import {MatNavList, MatListItem, MatListItemIcon, MatListItemTitle, MatListItemLine} from '@angular/material/list';
+import {MatIcon} from '@angular/material/icon';
 
 export interface AddDataButton {
     name: string;
@@ -21,7 +24,7 @@ export interface AddDataButton {
     templateUrl: './add-data.component.html',
     styleUrls: ['./add-data.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [SidenavHeaderComponent, MatNavList, MatListItem, MatListItemIcon, MatIcon, MatListItemTitle, MatListItemLine],
 })
 export class AddDataComponent {
     /**

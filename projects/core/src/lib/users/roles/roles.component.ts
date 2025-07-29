@@ -1,15 +1,16 @@
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, ViewChild} from '@angular/core';
 import {BehaviorSubject, Subscription} from 'rxjs';
 import {MatPaginator} from '@angular/material/paginator';
-import {MatTableDataSource} from '@angular/material/table';
+import {MatTableDataSource, MatTable, MatColumnDef, MatCellDef, MatCell, MatRowDef, MatRow} from '@angular/material/table';
 import {UserService} from '@geoengine/common';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-roles',
     templateUrl: './roles.component.html',
     styleUrls: ['./roles.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [MatTable, MatColumnDef, MatCellDef, MatCell, MatRowDef, MatRow, MatPaginator, AsyncPipe],
 })
 export class RolesComponent implements AfterViewInit, OnDestroy {
     roleNames: Array<string> | undefined;

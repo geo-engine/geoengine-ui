@@ -2,14 +2,17 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges,
 import {Observable, combineLatest, BehaviorSubject} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ProjectService} from '../../project/project.service';
-import {Time} from '@geoengine/common';
+import {Time, FxLayoutDirective, FxLayoutAlignDirective} from '@geoengine/common';
+import {MatSlider, MatSliderThumb} from '@angular/material/slider';
+import {FormsModule} from '@angular/forms';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-time-step-selector',
     templateUrl: './time-step-selector.component.html',
     styleUrls: ['./time-step-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [FxLayoutDirective, FxLayoutAlignDirective, MatSlider, MatSliderThumb, FormsModule, AsyncPipe],
 })
 export class TimeStepSelectorComponent implements OnChanges {
     @Input() timeSteps?: Array<Time>;

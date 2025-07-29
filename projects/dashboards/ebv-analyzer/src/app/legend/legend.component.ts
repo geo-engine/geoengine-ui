@@ -1,12 +1,13 @@
 import {Component, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges, ChangeDetectorRef} from '@angular/core';
 import {RasterLayer} from '@geoengine/common';
+import {RasterLegendComponent} from '@geoengine/core';
 
 @Component({
     selector: 'geoengine-legend',
     templateUrl: './legend.component.html',
     styleUrls: ['./legend.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [RasterLegendComponent],
 })
 export class LegendComponent implements OnChanges {
     @Input() layer?: RasterLayer = undefined;

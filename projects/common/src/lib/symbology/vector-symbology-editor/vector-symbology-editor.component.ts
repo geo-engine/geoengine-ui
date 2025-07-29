@@ -18,6 +18,17 @@ import {ReplaySubject} from 'rxjs';
 import {BLACK, WHITE} from '../../colors/color';
 import {FeatureDataType} from '@geoengine/openapi-client';
 import {WorkflowsService} from '../../workflows/workflows.service';
+import {MatCard, MatCardHeader, MatCardAvatar, MatCardTitle, MatCardContent} from '@angular/material/card';
+import {MatIcon} from '@angular/material/icon';
+import {MatSlideToggle} from '@angular/material/slide-toggle';
+import {ColorParamEditorComponent} from '../color-param-editor/color-param-editor.component';
+import {FormsModule} from '@angular/forms';
+import {NumberParamEditorComponent} from '../number-param-editor/number-param-editor.component';
+import {MatFormField, MatLabel} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {AsyncPipe} from '@angular/common';
+import {AsyncValueDefault} from '../../util/pipes/async-converters.pipe';
 
 /**
  * An editor for generating raster symbologies.
@@ -27,7 +38,24 @@ import {WorkflowsService} from '../../workflows/workflows.service';
     templateUrl: 'vector-symbology-editor.component.html',
     styleUrls: ['vector-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatCard,
+        MatCardHeader,
+        MatCardAvatar,
+        MatIcon,
+        MatCardTitle,
+        MatCardContent,
+        MatSlideToggle,
+        ColorParamEditorComponent,
+        FormsModule,
+        NumberParamEditorComponent,
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        AsyncPipe,
+        AsyncValueDefault,
+    ],
 })
 export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
     @Input({required: true}) symbologyWorkflow!: SymbologyWorkflow<VectorSymbology>;

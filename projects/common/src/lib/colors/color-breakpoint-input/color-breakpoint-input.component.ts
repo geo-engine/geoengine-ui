@@ -1,11 +1,19 @@
 import {Component, ChangeDetectionStrategy, ChangeDetectorRef, Input, forwardRef, OnChanges, SimpleChanges, OnDestroy} from '@angular/core';
 
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule} from '@angular/forms';
 import {ColorBreakpoint} from '../color-breakpoint.model';
 import {Color, stringToRgbaStruct, TRANSPARENT} from '../color';
 import {Subject, Subscription} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 import {CommonConfig} from '../../config.service';
+import {
+    FxLayoutDirective,
+    FxLayoutAlignDirective,
+    FxLayoutGapDirective,
+    FxFlexDirective,
+} from '../../util/directives/flexbox-legacy.directive';
+import {MatFormField, MatInput} from '@angular/material/input';
+import {ColorPickerDirective} from 'ngx-color-picker';
 
 @Component({
     selector: 'geoengine-color-breakpoint',
@@ -13,7 +21,16 @@ import {CommonConfig} from '../../config.service';
     styleUrls: ['./color-breakpoint-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorBreakpointInputComponent), multi: true}],
-    standalone: false,
+    imports: [
+        FxLayoutDirective,
+        FxLayoutAlignDirective,
+        FxLayoutGapDirective,
+        MatFormField,
+        FxFlexDirective,
+        MatInput,
+        FormsModule,
+        ColorPickerDirective,
+    ],
 })
 export class ColorBreakpointInputComponent implements ControlValueAccessor, OnChanges, OnDestroy {
     @Input() readonlyAttribute = false;

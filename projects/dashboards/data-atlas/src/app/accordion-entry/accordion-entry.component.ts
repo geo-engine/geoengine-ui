@@ -2,15 +2,31 @@ import {Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef} fr
 import {mergeMap, BehaviorSubject, combineLatest, of, forkJoin, Observable, map, from} from 'rxjs';
 import {LayerCollectionListingDict, ProjectService, ProviderLayerCollectionIdDict} from '@geoengine/core';
 import {DataRange, DataSelectionService} from '../data-selection.service';
-import {LayersService, RasterLayer, RasterSymbology, Time} from '@geoengine/common';
+import {LayersService, RasterLayer, RasterSymbology, Time, CommonModule, AsyncValueDefault} from '@geoengine/common';
 import {CollectionItem, LayerCollection, LayerListing, ProviderLayerId} from '@geoengine/openapi-client';
+import {MatCard, MatCardHeader, MatCardAvatar, MatCardTitle, MatCardSubtitle, MatCardContent} from '@angular/material/card';
+import {MatIcon} from '@angular/material/icon';
+import {MatButton} from '@angular/material/button';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-accordion-entry',
     templateUrl: './accordion-entry.component.html',
     styleUrls: ['./accordion-entry.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatCard,
+        MatCardHeader,
+        MatIcon,
+        MatCardAvatar,
+        MatCardTitle,
+        MatCardSubtitle,
+        MatCardContent,
+        CommonModule,
+        MatButton,
+        AsyncPipe,
+        AsyncValueDefault,
+    ],
 })
 export class AccordionEntryComponent implements OnInit {
     @Input() collection!: ProviderLayerCollectionIdDict;

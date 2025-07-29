@@ -63,7 +63,6 @@ export default defineConfig([
                     style: 'camelCase',
                 },
             ],
-            '@angular-eslint/prefer-standalone': 'warn', // TODO: make all components standalone
 
             '@typescript-eslint/array-type': ['off', {default: 'generic'}],
             '@typescript-eslint/consistent-type-definitions': 'error',

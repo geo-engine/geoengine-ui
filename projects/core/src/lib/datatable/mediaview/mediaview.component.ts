@@ -2,13 +2,15 @@ import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {MediaviewDialogComponent} from './dialog/mediaview.dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {VectorColumnDataType, VectorColumnDataTypes} from '@geoengine/common';
+import {MatIconButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
     selector: 'geoengine-datatable-mediaview',
     templateUrl: './mediaview.component.html',
     styleUrls: ['./mediaview.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [MatIconButton, MatIcon],
 })
 
 /**

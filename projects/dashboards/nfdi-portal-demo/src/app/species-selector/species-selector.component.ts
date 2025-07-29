@@ -8,6 +8,7 @@ import {
     WGS_84,
     SpatialReferenceService,
     NamedDataDict,
+    CoreModule,
 } from '@geoengine/core';
 import {BehaviorSubject, combineLatest, combineLatestWith, first, mergeMap, Observable, of, Subscription, tap} from 'rxjs';
 import {DataSelectionService} from '../data-selection.service';
@@ -34,8 +35,28 @@ import {
     UserService,
     VectorLayer,
     extentToBboxDict,
+    CommonModule,
+    FxLayoutDirective,
+    FxFlexDirective,
+    FxLayoutGapDirective,
+    FxLayoutAlignDirective,
+    AsyncValueDefault,
 } from '@geoengine/common';
 import {TypedOperatorOperator, Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {MatFormField, MatLabel} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatSelectSearchComponent} from 'ngx-mat-select-search';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatProgressBar} from '@angular/material/progress-bar';
+import {MatExpansionPanel, MatExpansionPanelHeader} from '@angular/material/expansion';
+import {MatDivider} from '@angular/material/list';
+import {MatSlideToggle} from '@angular/material/slide-toggle';
+import {MatSlider, MatSliderThumb} from '@angular/material/slider';
+import {MatButton} from '@angular/material/button';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {AttributionsComponent} from '../attributions/attributions.component';
+import {AsyncPipe} from '@angular/common';
 
 interface EnvironmentLayer {
     name: string;
@@ -349,7 +370,33 @@ interface SpeciesInfo {
     templateUrl: './species-selector.component.html',
     styleUrls: ['./species-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        MatSelectSearchComponent,
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatProgressBar,
+        CoreModule,
+        MatExpansionPanel,
+        MatExpansionPanelHeader,
+        MatDivider,
+        FxLayoutDirective,
+        FxFlexDirective,
+        FxLayoutGapDirective,
+        FxLayoutAlignDirective,
+        MatSlideToggle,
+        MatSlider,
+        MatSliderThumb,
+        MatButton,
+        MatProgressSpinner,
+        AttributionsComponent,
+        AsyncPipe,
+        AsyncValueDefault,
+    ],
 })
 export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     readonly dragonflySpecies: string[] = DRAGONFLY_SPECIES;

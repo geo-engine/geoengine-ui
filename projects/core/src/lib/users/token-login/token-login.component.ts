@@ -1,12 +1,17 @@
 import {BehaviorSubject, Subscription} from 'rxjs';
 
 import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {UntypedFormControl, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {first} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {UUID} from '../../backend/backend.model';
-import {UserService} from '@geoengine/common';
+import {UserService, FxLayoutDirective, FxLayoutAlignDirective, FxLayoutGapDirective, FxFlexDirective} from '@geoengine/common';
+import {NgClass, NgSwitch, NgSwitchCase, NgIf, AsyncPipe} from '@angular/common';
+import {MatCard, MatCardContent, MatCardActions} from '@angular/material/card';
+import {MatFormField, MatInput} from '@angular/material/input';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {MatButton} from '@angular/material/button';
 
 enum FormStatus {
     LoggedOut,
@@ -19,7 +24,26 @@ enum FormStatus {
     templateUrl: './token-login.component.html',
     styleUrls: ['./token-login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        FxLayoutDirective,
+        FxLayoutAlignDirective,
+        NgClass,
+        MatCard,
+        MatCardContent,
+        NgSwitch,
+        NgSwitchCase,
+        MatFormField,
+        MatInput,
+        NgIf,
+        MatProgressSpinner,
+        MatCardActions,
+        FxLayoutGapDirective,
+        MatButton,
+        FxFlexDirective,
+        AsyncPipe,
+    ],
 })
 export class TokenLoginComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() routeTo?: Array<string>;

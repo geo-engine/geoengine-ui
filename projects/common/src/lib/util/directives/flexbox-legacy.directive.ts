@@ -5,7 +5,6 @@ import {Directive, ElementRef, Input, OnChanges} from '@angular/core';
 
 @Directive({
     selector: '[fxFlex]',
-    standalone: true,
 })
 export class FxFlexDirective implements OnChanges {
     @Input() fxFlex: '0.5rem' | '1rem' | '4rem' | 'grow' | '' = '';
@@ -31,7 +30,6 @@ export class FxFlexDirective implements OnChanges {
 
 @Directive({
     selector: '[fxLayout]',
-    standalone: true,
 })
 export class FxLayoutDirective implements OnChanges {
     @Input() fxLayout: 'row' | 'row wrap' | 'column' | 'row-reverse' = 'row';
@@ -61,7 +59,6 @@ export class FxLayoutDirective implements OnChanges {
 
 @Directive({
     selector: '[fxLayoutGap]',
-    standalone: true,
 })
 export class FxLayoutGapDirective implements OnChanges {
     @Input() fxLayoutGap: '0.5rem' | '1rem' = '1rem';
@@ -82,7 +79,6 @@ export class FxLayoutGapDirective implements OnChanges {
 
 @Directive({
     selector: '[fxLayoutAlign]',
-    standalone: true,
 })
 export class FxLayoutAlignDirective implements OnChanges {
     @Input() fxLayoutAlign:

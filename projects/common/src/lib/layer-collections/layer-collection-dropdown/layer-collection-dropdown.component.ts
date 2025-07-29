@@ -19,6 +19,12 @@ import {
 } from '@geoengine/openapi-client';
 import {BehaviorSubject, Observable, Subject, map} from 'rxjs';
 import {LayersService} from '../layers.service';
+import {MatFormField, MatLabel} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {AutocompleteSelectDirective} from '../../util/directives/autocomplete-select.directive';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {AsyncPipe} from '@angular/common';
 
 interface CollectionAndSelected {
     collection: LayerCollectionDict;
@@ -43,7 +49,7 @@ export enum PathChangeSource {
     templateUrl: './layer-collection-dropdown.component.html',
     styleUrls: ['./layer-collection-dropdown.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [MatFormField, MatLabel, MatSelect, MatOption, AutocompleteSelectDirective, FormsModule, ReactiveFormsModule, AsyncPipe],
 })
 export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDestroy {
     @Input() root?: ProviderLayerCollectionIdDict = undefined;

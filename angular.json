@@ -747,14 +747,14 @@
             "projectType": "application",
             "schematics": {
                 "@schematics/angular:component": {
-                    "style": "scss",
-                    "standalone": false
+                    "changeDetection": "OnPush",
+                    "inlineStyle": false,
+                    "inlineTemplate": false,
+                    "prefix": "geoengine",
+                    "style": "scss"
                 },
                 "@schematics/angular:directive": {
-                    "standalone": false
-                },
-                "@schematics/angular:pipe": {
-                    "standalone": false
+                    "prefix": "geoengine"
                 }
             },
             "root": "projects/manager",

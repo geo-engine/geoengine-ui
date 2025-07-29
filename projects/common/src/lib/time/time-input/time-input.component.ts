@@ -9,8 +9,15 @@ import {
     SimpleChange,
 } from '@angular/core';
 
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule} from '@angular/forms';
 import moment, {Moment, unitOfTime} from 'moment';
+import {
+    FxLayoutDirective,
+    FxLayoutGapDirective,
+    FxLayoutAlignDirective,
+    FxFlexDirective,
+} from '../../util/directives/flexbox-legacy.directive';
+import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
 
 @Component({
     selector: 'geoengine-time-input',
@@ -18,7 +25,16 @@ import moment, {Moment, unitOfTime} from 'moment';
     styleUrls: ['./time-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => TimeInputComponent), multi: true}],
-    standalone: false,
+    imports: [
+        FxLayoutDirective,
+        FxLayoutGapDirective,
+        FxLayoutAlignDirective,
+        MatFormField,
+        FxFlexDirective,
+        MatLabel,
+        MatInput,
+        FormsModule,
+    ],
 })
 export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, OnChanges {
     // TODO: also react on disabled state in `ControlValueAccessor`

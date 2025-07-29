@@ -8,8 +8,15 @@ import {OperatorParams, OperatorSourcesDict} from '../../backend/backend.model';
 import {LayoutService} from '../../layout.service';
 import {ProjectService} from '../../project/project.service';
 
-import {createIconDataUrl, Layer} from '@geoengine/common';
+import {createIconDataUrl, Layer, FxLayoutDirective, FxFlexDirective} from '@geoengine/common';
 import {TypedOperatorOperator} from '@geoengine/openapi-client';
+import {DialogHeaderComponent} from '../../dialogs/dialog-header/dialog-header.component';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {DialogSectionHeadingComponent} from '../../dialogs/dialog-section-heading/dialog-section-heading.component';
+import {MatList, MatListItem, MatListSubheaderCssMatStyler, MatDivider} from '@angular/material/list';
+import {MatLine} from '@angular/material/grid-list';
+import {MatTooltip} from '@angular/material/tooltip';
+import {AsyncPipe} from '@angular/common';
 
 const GRAPH_STYLE = {
     general: {
@@ -32,7 +39,20 @@ const GRAPH_STYLE = {
     templateUrl: './lineage-graph.component.html',
     styleUrls: ['./lineage-graph.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        DialogHeaderComponent,
+        FxLayoutDirective,
+        MatProgressSpinner,
+        FxFlexDirective,
+        DialogSectionHeadingComponent,
+        MatList,
+        MatListItem,
+        MatLine,
+        MatListSubheaderCssMatStyler,
+        MatTooltip,
+        MatDivider,
+        AsyncPipe,
+    ],
 })
 export class LineageGraphComponent implements AfterViewInit {
     @ViewChild('svg', {static: true}) svg!: ElementRef;

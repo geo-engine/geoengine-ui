@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, EMPTY, from, Observable, range, Subject} from 'rxjs';
-import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
+import {CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf} from '@angular/cdk/scrolling';
 import {concatMap, scan, startWith, tap} from 'rxjs/operators';
 import {LayerCollectionSearch} from '../layer-collection.model';
 import {
@@ -25,6 +25,12 @@ import {
 import {LayersService} from '../layers.service';
 import {createIconDataUrl} from '../../util/icons';
 import {LayoutService} from '../../layout.service';
+import {MatNavList, MatListItem, MatListItemIcon, MatListItemTitle, MatListItemLine} from '@angular/material/list';
+import {MatIcon} from '@angular/material/icon';
+import {MatIconButton} from '@angular/material/button';
+import {LayerCollectionLayerComponent} from '../layer-collection-layer/layer-collection-layer.component';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {AsyncPipe} from '@angular/common';
 
 /**
  * Enum representing the different modes of collection navigation.
@@ -51,7 +57,21 @@ export enum CollectionNavigation {
     templateUrl: './layer-collection-list.component.html',
     styleUrls: ['./layer-collection-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        CdkVirtualScrollViewport,
+        CdkFixedSizeVirtualScroll,
+        MatNavList,
+        CdkVirtualForOf,
+        MatListItem,
+        MatIcon,
+        MatListItemIcon,
+        MatListItemTitle,
+        MatListItemLine,
+        MatIconButton,
+        LayerCollectionLayerComponent,
+        MatProgressSpinner,
+        AsyncPipe,
+    ],
 })
 export class LayerCollectionListComponent implements OnChanges {
     readonly CollectionNavigation = CollectionNavigation;

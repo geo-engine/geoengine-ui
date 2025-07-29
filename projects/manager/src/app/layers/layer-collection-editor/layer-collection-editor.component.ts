@@ -1,11 +1,17 @@
 import {Component, EventEmitter, Input, OnChanges, Output, signal, SimpleChanges, WritableSignal} from '@angular/core';
-import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {CollectionNavigation, ConfirmationComponent, errorToText, LayersService} from '@geoengine/common';
 import {LayerCollection, LayerCollectionListing, LayerListing, ProviderLayerCollectionId} from '@geoengine/openapi-client';
 import {firstValueFrom} from 'rxjs';
 import {AppConfig} from '../../app-config.service';
+import {MatCard, MatCardHeader, MatCardTitle, MatCardContent} from '@angular/material/card';
+import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerCollectionChildListComponent} from '../layer-collection-child-list/layer-collection-child-list.component';
+import {PermissionsComponent} from '../../permissions/permissions.component';
 
 export interface CollectionForm {
     name: FormControl<string>;
@@ -17,7 +23,22 @@ export interface CollectionForm {
     selector: 'geoengine-manager-layer-collection-editor',
     templateUrl: './layer-collection-editor.component.html',
     styleUrl: './layer-collection-editor.component.scss',
-    standalone: false,
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatCard,
+        MatCardHeader,
+        MatCardTitle,
+        MatCardContent,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatIconButton,
+        MatIcon,
+        MatButton,
+        LayerCollectionChildListComponent,
+        PermissionsComponent,
+    ],
 })
 export class LayerCollectionEditorComponent implements OnChanges {
     readonly CollectionNavigation = CollectionNavigation;

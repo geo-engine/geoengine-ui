@@ -4,13 +4,30 @@ import {first, skipWhile, Subscription} from 'rxjs';
 import {BackendInfoDict} from '../../../backend/backend.model';
 import {BackendService} from '../../../backend/backend.service';
 import {BackendStatus} from '../../../users/user.model';
-import {UserService} from '@geoengine/common';
+import {UserService, FxLayoutDirective, FxLayoutAlignDirective} from '@geoengine/common';
+import {MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatCardActions} from '@angular/material/card';
+import {MatIcon} from '@angular/material/icon';
+import {MatListItem} from '@angular/material/list';
+import {MatLine} from '@angular/material/grid-list';
+import {MatButton} from '@angular/material/button';
 
 @Component({
     selector: 'geoengine-backend-status-page',
     templateUrl: './backend-status-page.component.html',
     styleUrls: ['./backend-status-page.component.scss'],
-    standalone: false,
+    imports: [
+        FxLayoutDirective,
+        FxLayoutAlignDirective,
+        MatCard,
+        MatCardHeader,
+        MatIcon,
+        MatCardTitle,
+        MatCardContent,
+        MatListItem,
+        MatLine,
+        MatCardActions,
+        MatButton,
+    ],
 })
 export class BackendStatusPageComponent {
     public backendStatus: BackendStatus | undefined = undefined;

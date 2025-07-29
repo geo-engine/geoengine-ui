@@ -1,6 +1,6 @@
 import {Observable, BehaviorSubject, mergeMap} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
-import {MatIconRegistry} from '@angular/material/icon';
+import {MatIconRegistry, MatIcon} from '@angular/material/icon';
 import {
     LayoutService,
     ProjectService,
@@ -8,22 +8,49 @@ import {
     MapContainerComponent,
     SpatialReferenceService,
     SidenavContainerComponent,
+    TimeStepSelectorComponent,
+    ZoomHandlesComponent,
+    OlVectorLayerComponent,
+    OlRasterLayerComponent,
 } from '@geoengine/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AppConfig} from './app-config.service';
-import {ComponentPortal} from '@angular/cdk/portal';
+import {ComponentPortal, CdkPortalOutlet} from '@angular/cdk/portal';
 import moment from 'moment';
 import {DataSelectionService} from './data-selection.service';
 import {EbvSelectorComponent} from './ebv-selector/ebv-selector.component';
-import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
-import {Layer, RandomColorService, Time, UserService} from '@geoengine/common';
+import {MatDrawerToggleResult, MatSidenav, MatSidenavContainer} from '@angular/material/sidenav';
+import {Layer, RandomColorService, Time, UserService, AsyncStringSanitizer, AsyncValueDefault} from '@geoengine/common';
+import {MatToolbar} from '@angular/material/toolbar';
+import {MatButton} from '@angular/material/button';
+import {LegendComponent} from './legend/legend.component';
+import {MatProgressBar} from '@angular/material/progress-bar';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatSidenavContainer,
+        MatToolbar,
+        CdkPortalOutlet,
+        MatButton,
+        MatIcon,
+        TimeStepSelectorComponent,
+        ZoomHandlesComponent,
+        LegendComponent,
+        MapContainerComponent,
+        OlVectorLayerComponent,
+        OlRasterLayerComponent,
+        MatSidenav,
+        SidenavContainerComponent,
+        MatProgressBar,
+        AsyncPipe,
+        AsyncStringSanitizer,
+        AsyncValueDefault,
+    ],
 })
 export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;

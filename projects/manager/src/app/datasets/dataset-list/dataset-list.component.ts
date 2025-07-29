@@ -1,5 +1,5 @@
 import {DataSource} from '@angular/cdk/collections';
-import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
+import {CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf} from '@angular/cdk/scrolling';
 import {AfterContentInit, Component, EventEmitter, Output, ViewChild} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {DatasetsService} from '@geoengine/common';
@@ -18,12 +18,35 @@ import {
     startWith,
 } from 'rxjs';
 import {AddDatasetComponent} from '../add-dataset/add-dataset.component';
+import {MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {MatNavList, MatListItem, MatListItemTitle, MatListItemLine} from '@angular/material/list';
+import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
+import {FormsModule} from '@angular/forms';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-manager-dataset-list',
     templateUrl: './dataset-list.component.html',
     styleUrl: './dataset-list.component.scss',
-    standalone: false,
+    imports: [
+        MatButton,
+        MatIcon,
+        MatNavList,
+        MatListItem,
+        MatListItemTitle,
+        MatListItemLine,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        FormsModule,
+        CdkVirtualScrollViewport,
+        CdkFixedSizeVirtualScroll,
+        CdkVirtualForOf,
+        MatProgressSpinner,
+        AsyncPipe,
+    ],
 })
 export class DatasetListComponent implements AfterContentInit {
     @ViewChild(CdkVirtualScrollViewport)

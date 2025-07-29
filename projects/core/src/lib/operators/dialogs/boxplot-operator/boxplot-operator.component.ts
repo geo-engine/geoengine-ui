@@ -1,5 +1,13 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, Validators, UntypedFormControl} from '@angular/forms';
+import {
+    UntypedFormBuilder,
+    UntypedFormGroup,
+    UntypedFormArray,
+    Validators,
+    UntypedFormControl,
+    FormsModule,
+    ReactiveFormsModule,
+} from '@angular/forms';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 
@@ -16,8 +24,23 @@ import {
     VectorLayer,
     VectorLayerMetadata,
     geoengineValidators,
+    FxLayoutDirective,
+    FxFlexDirective,
+    FxLayoutAlignDirective,
 } from '@geoengine/common';
 import {TypedOperatorOperator} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {MultiLayerSelectionComponent} from '../helpers/multi-layer-selection/multi-layer-selection.component';
+import {DialogSectionHeadingComponent} from '../../../dialogs/dialog-section-heading/dialog-section-heading.component';
+import {MatFormField, MatHint} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
+import {AsyncPipe} from '@angular/common';
 
 /**
  * Checks whether the layer is a vector layer (points, lines, polygons).
@@ -47,7 +70,27 @@ const isRasterLayer = (layer: Layer): boolean => {
     templateUrl: './boxplot-operator.component.html',
     styleUrls: ['./boxplot-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        OperatorDialogContainerComponent,
+        MatIconButton,
+        MatIcon,
+        LayerSelectionComponent,
+        MultiLayerSelectionComponent,
+        FxLayoutDirective,
+        DialogSectionHeadingComponent,
+        FxFlexDirective,
+        FxLayoutAlignDirective,
+        MatButton,
+        MatFormField,
+        MatSelect,
+        MatOption,
+        OperatorOutputNameComponent,
+        MatHint,
+        AsyncPipe,
+    ],
 })
 export class BoxPlotOperatorComponent implements AfterViewInit, OnDestroy {
     readonly inputTypes = ResultTypes.INPUT_TYPES;

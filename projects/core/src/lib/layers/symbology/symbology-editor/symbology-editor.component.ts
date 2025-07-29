@@ -9,18 +9,24 @@ import {
     VectorLayer,
     VectorSymbology,
     extentToBboxDict,
+    CommonModule,
+    AsyncValueDefault,
 } from '@geoengine/common';
 import {BehaviorSubject, Subscription, combineLatest} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {MapService} from '../../../map/map.service';
 import {SpatialResolution} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {DialogHelpComponent} from '../../../dialogs/dialog-help/dialog-help.component';
+import {MatButton} from '@angular/material/button';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-symbology-editor',
     templateUrl: './symbology-editor.component.html',
     styleUrl: './symbology-editor.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [SidenavHeaderComponent, DialogHelpComponent, CommonModule, MatButton, AsyncPipe, AsyncValueDefault],
 })
 export class SymbologyEditorComponent implements OnInit, OnDestroy {
     @Input({required: true}) layer!: Layer;

@@ -13,8 +13,13 @@ import {
     ValidationErrors,
     Validator,
     Validators,
+    FormsModule,
+    ReactiveFormsModule,
 } from '@angular/forms';
 import {Time, TimeStepDuration} from '../time.model';
+import {TimeInputComponent} from '../time-input/time-input.component';
+import {FxLayoutDirective, FxLayoutAlignDirective} from '../../util/directives/flexbox-legacy.directive';
+import {MatSlideToggle} from '@angular/material/slide-toggle';
 
 const startBeforeEndValidator = (control: AbstractControl): ValidationErrors | null => {
     if (!(control instanceof UntypedFormGroup)) {
@@ -57,7 +62,7 @@ export interface TimeInterval {
             useExisting: TimeIntervalInputComponent,
         },
     ],
-    standalone: false,
+    imports: [FormsModule, ReactiveFormsModule, TimeInputComponent, FxLayoutDirective, FxLayoutAlignDirective, MatSlideToggle],
 })
 export class TimeIntervalInputComponent implements ControlValueAccessor, Validator, AfterViewInit {
     @Input() allowRanges = true;

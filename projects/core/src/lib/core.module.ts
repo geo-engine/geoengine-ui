@@ -273,7 +273,6 @@ const CORE_COMPONENT_IMPORTS = [
 ];
 
 @NgModule({
-    declarations: [...CORE_PIPES, ...CORE_COMPONENTS],
     exports: [
         /* re-exports */
         ...MATERIAL_MODULES,
@@ -295,6 +294,8 @@ const CORE_COMPONENT_IMPORTS = [
         ReactiveFormsModule,
         ScrollingModule,
         ...CORE_COMPONENT_IMPORTS,
+        ...CORE_PIPES,
+        ...CORE_COMPONENTS,
     ],
     providers: [
         {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}},

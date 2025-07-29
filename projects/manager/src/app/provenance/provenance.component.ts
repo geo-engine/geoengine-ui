@@ -1,7 +1,11 @@
 import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
-import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {geoengineValidators} from '@geoengine/common';
 import {Provenance} from '@geoengine/openapi-client';
+import {MatDivider} from '@angular/material/list';
+import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
 
 interface ProvenanceListForm {
     provenance: FormArray<FormGroup<ProvenanceForm>>;
@@ -22,7 +26,7 @@ export interface ProvenanceChange {
     selector: 'geoengine-manager-provenance',
     templateUrl: './provenance.component.html',
     styleUrl: './provenance.component.scss',
-    standalone: false,
+    imports: [FormsModule, ReactiveFormsModule, MatDivider, MatFormField, MatLabel, MatInput, MatIconButton, MatIcon, MatButton],
 })
 export class ProvenanceComponent implements OnChanges {
     @Input() provenance?: Array<Provenance>;

@@ -1,6 +1,6 @@
 import {Subscription} from 'rxjs';
 import {ChangeDetectionStrategy, Component, computed, effect, inject, input, OnDestroy, output, signal} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {geoengineValidators} from '../../util/form.validators';
 import {SymbologyQueryParams, MultiBandRasterColorizer} from '../symbology.model';
 import {Color, TRANSPARENT} from '../../colors/color';
@@ -8,6 +8,12 @@ import {WorkflowsService} from '../../workflows/workflows.service';
 import {ExpressionDict, StatisticsDict, StatisticsParams} from '../../operators/operator.model';
 import {PlotsService} from '../../plots/plots.service';
 import {UUID} from '../../datasets/dataset.model';
+import {MatCard, MatCardHeader, MatCardTitleGroup, MatCardTitle, MatCardSubtitle, MatCardContent} from '@angular/material/card';
+import {MatIcon} from '@angular/material/icon';
+import {MatFormField, MatLabel, MatInput, MatError} from '@angular/material/input';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {MatButton} from '@angular/material/button';
+import {TitleCasePipe} from '@angular/common';
 
 interface RgbSettingsForm {
     red: FormGroup<{
@@ -38,7 +44,24 @@ type RgbColorName = 'red' | 'green' | 'blue';
     templateUrl: './raster-multiband-symbology-editor.component.html',
     styleUrls: ['./raster-multiband-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatCard,
+        MatCardHeader,
+        MatCardTitleGroup,
+        MatCardTitle,
+        MatCardSubtitle,
+        MatIcon,
+        MatCardContent,
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatError,
+        MatProgressSpinner,
+        MatButton,
+        TitleCasePipe,
+    ],
 })
 export class RasterMultibandSymbologyEditorComponent implements OnDestroy {
     private readonly formBuilder = inject(FormBuilder);

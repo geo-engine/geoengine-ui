@@ -15,15 +15,36 @@ import {
     ReprojectionDict,
     UserService,
     VectorLayer,
+    CommonModule,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {MatFormField, MatLabel} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatSelectSearchComponent} from 'ngx-mat-select-search';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatButton} from '@angular/material/button';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-analysis',
     templateUrl: './analysis.component.html',
     styleUrls: ['./analysis.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        MatSelectSearchComponent,
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatButton,
+        MatProgressSpinner,
+        AsyncPipe,
+    ],
 })
 export class AnalysisComponent {
     countries = new Array<string>();

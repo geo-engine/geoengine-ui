@@ -1,12 +1,28 @@
 import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {NotificationService, Notification} from '@geoengine/common';
+import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
+import {MatCard} from '@angular/material/card';
+import {MatList, MatListItem, MatListItemIcon, MatListItemMeta, MatDivider} from '@angular/material/list';
+import {MatIcon} from '@angular/material/icon';
+import {MatIconButton, MatButton} from '@angular/material/button';
 
 @Component({
     selector: 'geoengine-notifications',
     templateUrl: './notifications.component.html',
     styleUrls: ['./notifications.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        MatCard,
+        MatList,
+        MatListItem,
+        MatIcon,
+        MatListItemIcon,
+        MatIconButton,
+        MatListItemMeta,
+        MatDivider,
+        MatButton,
+    ],
 })
 export class NotificationsComponent implements OnInit {
     notifications: Array<Notification>;

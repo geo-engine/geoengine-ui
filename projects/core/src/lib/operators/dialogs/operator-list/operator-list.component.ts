@@ -28,6 +28,19 @@ import {VectorExpressionComponent} from '../vector-expression/vector-expression.
 import {BandwiseExpressionOperatorComponent} from '../bandwise-expression-operator/bandwise-expression-operator.component';
 import {BandNeighborhoodAggregateComponent} from '../band-neighborhood-aggregate/band-neighborhood-aggregate.component';
 import {createIconDataUrl} from '@geoengine/common';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {SidenavSearchComponent} from '../../../sidenav/sidenav-search/sidenav-search.component';
+import {
+    MatNavList,
+    MatListSubheaderCssMatStyler,
+    MatListItem,
+    MatListItemIcon,
+    MatListItemTitle,
+    MatListItemLine,
+} from '@angular/material/list';
+import {AsyncPipe} from '@angular/common';
+import {HighlightPipe} from '../../../util/pipes/highlight.pipe';
+import {SafeHtmlPipe} from '../../../util/pipes/safe-html.pipe';
 
 /**
  * This type encapsulates…
@@ -62,7 +75,19 @@ export type OperatorListButtonGroups = Array<{
     templateUrl: './operator-list.component.html',
     styleUrls: ['./operator-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        SidenavSearchComponent,
+        MatNavList,
+        MatListSubheaderCssMatStyler,
+        MatListItem,
+        MatListItemIcon,
+        MatListItemTitle,
+        MatListItemLine,
+        AsyncPipe,
+        HighlightPipe,
+        SafeHtmlPipe,
+    ],
 })
 export class OperatorListComponent implements OnInit, OnChanges {
     static readonly DEFAULT_MIXED_OPERATOR_DIALOGS: Array<OperatorListType> = [

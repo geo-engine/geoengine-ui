@@ -1,11 +1,13 @@
 import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {FormArray, FormControl} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {CollectionNavigation, ConfirmationComponent, LayerCollectionListComponent, LayersService} from '@geoengine/common';
+import {CollectionNavigation, ConfirmationComponent, LayerCollectionListComponent, LayersService, CommonModule} from '@geoengine/common';
 import {LayerCollectionListing, LayerListing, ProviderLayerCollectionId} from '@geoengine/openapi-client';
 import {firstValueFrom} from 'rxjs';
 import {AddLayerItemComponent} from '../add-layer-item/add-layer-item.component';
 import {ItemId} from '../layers.component';
+import {MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
 
 export interface CollectionForm {
     name: FormControl<string>;
@@ -17,7 +19,7 @@ export interface CollectionForm {
     selector: 'geoengine-manager-layer-collection-child-list',
     templateUrl: './layer-collection-child-list.component.html',
     styleUrl: './layer-collection-child-list.component.scss',
-    standalone: false,
+    imports: [CommonModule, MatButton, MatIcon],
 })
 export class LayerCollectionChildListComponent {
     readonly CollectionNavigation = CollectionNavigation;

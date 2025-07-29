@@ -30,17 +30,35 @@ import {
     PlotListComponent,
     SidenavConfig,
     TaskListComponent,
+    CoreModule,
 } from '@geoengine/core';
 import {AppConfig} from '../app-config.service';
 import {ReplaySubject} from 'rxjs';
-import {Layer, LayersService, UserService} from '@geoengine/common';
+import {Layer, LayersService, UserService, AsyncNumberSanitizer, AsyncValueDefault} from '@geoengine/common';
+import {MatToolbar} from '@angular/material/toolbar';
+import {MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {MatTooltip} from '@angular/material/tooltip';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-main',
     templateUrl: './main.component.html',
     styleUrls: ['./main.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatToolbar,
+        CoreModule,
+        MatButton,
+        MatIcon,
+        MatTooltip,
+        MatSidenavContainer,
+        MatSidenav,
+        MapContainerComponent,
+        AsyncPipe,
+        AsyncNumberSanitizer,
+        AsyncValueDefault,
+    ],
 })
 export class MainComponent implements OnInit, AfterViewInit {
     @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;

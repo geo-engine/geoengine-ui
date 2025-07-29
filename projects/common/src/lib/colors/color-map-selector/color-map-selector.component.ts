@@ -10,12 +10,20 @@ import {
     Output,
     SimpleChanges,
 } from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Subscription} from 'rxjs';
 import {Color, RgbaTuple} from '../color';
 import {ColorBreakpoint} from '../color-breakpoint.model';
 import {geoengineValidators} from '../../util/form.validators';
 import {ALL_COLORMAPS} from '../colormaps/colormaps';
+import {FxLayoutDirective, FxLayoutAlignDirective, FxFlexDirective} from '../../util/directives/flexbox-legacy.directive';
+import {MatFormField, MatLabel, MatInput, MatHint} from '@angular/material/input';
+import {NgClass, KeyValuePipe} from '@angular/common';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {MatSlider, MatSliderThumb} from '@angular/material/slider';
+import {ColorBreakpointsCssGradientPipe, RgbaArrayCssGradientPipe} from '../../util/pipes/color-gradients.pipe';
 
 /**
  * The ColormapColorizerComponent is a dialog to generate ColorizerData from colormaps.
@@ -25,7 +33,26 @@ import {ALL_COLORMAPS} from '../colormaps/colormaps';
     templateUrl: 'color-map-selector.component.html',
     styleUrls: ['color-map-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        FormsModule,
+        FxLayoutDirective,
+        ReactiveFormsModule,
+        FxLayoutAlignDirective,
+        MatFormField,
+        FxFlexDirective,
+        MatLabel,
+        MatInput,
+        MatHint,
+        NgClass,
+        MatSelect,
+        MatOption,
+        MatCheckbox,
+        MatSlider,
+        MatSliderThumb,
+        KeyValuePipe,
+        ColorBreakpointsCssGradientPipe,
+        RgbaArrayCssGradientPipe,
+    ],
 })
 export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
     /**
