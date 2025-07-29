@@ -1,6 +1,5 @@
 import {
     Component,
-    Input,
     ChangeDetectionStrategy,
     OnChanges,
     SimpleChange,
@@ -8,24 +7,31 @@ import {
     AfterViewInit,
     ElementRef,
     OnDestroy,
+    input,
+    signal,
+    viewChild,
+    computed,
+    effect,
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
-
 import {BehaviorSubject, skip, Subscription} from 'rxjs';
-
-import * as CodeMirror from 'codemirror';
+import {EditorView, ViewUpdate, lineNumbers, drawSelection, Decoration, DecorationSet} from '@codemirror/view';
+import {syntaxHighlighting, defaultHighlightStyle} from '@codemirror/language';
+import {EditorState, Transaction, Compartment, EditorSelection, RangeSet} from '@codemirror/state';
+import {json} from '@codemirror/lang-json';
+import {rust} from '@codemirror/lang-rust';
 
 // import all possible modes
 import 'codemirror/mode/rust/rust';
 
-const LANGUAGES = ['Rust'];
+type Language = 'Rust' | 'JSON';
 
 /**
  * A wrapper for the code editor.
  */
 @Component({
     selector: 'geoengine-code-editor',
-    template: ` <textarea #editor></textarea> `,
+    template: `<div #editor></div>`,
     styles: [
         `
             :host {
@@ -48,18 +54,49 @@ const LANGUAGES = ['Rust'];
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy {
-    @ViewChild('editor', {static: true}) editorRef!: ElementRef;
+    private editorRef = viewChild.required<ElementRef>('editor');
 
-    @Input() language = 'Rust';
-    @Input() prefixLine?: string;
-    @Input() suffixLine?: string;
+    language = input.required<Language>();
+    header = input<string>('');
 
-    private code$ = new BehaviorSubject('');
+    private code = signal<string>('');
 
-    private editor?: CodeMirror.Editor;
+    private editor: EditorView;
+    private languageCompartment = new Compartment();
 
     private onTouched?: () => void;
-    private changeSubscription?: Subscription;
+
+    constructor() {
+        this.editor = new EditorView({
+            extensions: [
+                lineNumbers(),
+                drawSelection(),
+                this.languageCompartment.of(rust()),
+                syntaxHighlighting(defaultHighlightStyle),
+                EditorView.updateListener.of((v: ViewUpdate) => {
+                    if (v.docChanged) {
+                        this.code.set(this.getCode());
+                    }
+                }),
+            ],
+        });
+
+        computed(() => {
+            const lang = this.language();
+            let mode;
+            switch (lang) {
+                case 'Rust':
+                    mode = rust();
+                    break;
+                case 'JSON':
+                    mode = json();
+                    break;
+            }
+            this.editor.dispatch({
+                effects: this.languageCompartment.reconfigure(mode),
+            });
+        });
+    }
 
     ngOnChanges(changes: Record<string, SimpleChange>): void {
         if (!this.editor) {
@@ -183,11 +220,10 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
 
     /** Implemented as part of ControlValueAccessor. */
     registerOnChange(fn: () => void): void {
-        if (this.changeSubscription) {
-            this.changeSubscription.unsubscribe();
-        }
-        // skip the first value, because it is the initial value
-        this.changeSubscription = this.code$.pipe(skip(1)).subscribe(fn);
+        effect(() => {
+            this.code();
+            fn();
+        });
     }
 
     /** Implemented as part of ControlValueAccessor. */

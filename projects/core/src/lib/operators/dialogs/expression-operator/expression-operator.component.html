@@ -16,8 +16,8 @@
                 <p>Use A to reference the existing pixel of the first band, B for the second one, etc.</p>
                 <geoengine-code-editor
                     formControlName="expression"
-                    [prefixLine]="fnSignature | async | stringSanitizer"
-                    suffixLine="}"
+                    language="Rust"
+                    [header]="fnSignature | async | stringSanitizer"
                 ></geoengine-code-editor>
                 @if (lastError$ | async; as lastError) {
                     <p class="error">{{ lastError }}</p>
