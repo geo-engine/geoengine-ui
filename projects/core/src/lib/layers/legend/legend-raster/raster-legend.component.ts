@@ -43,7 +43,6 @@ export function calculateNumberPipeParameters(breakpoints: Array<ColorBreakpoint
 @Pipe({
     name: 'classificationMeasurement',
     pure: true,
-    standalone: true,
 })
 export class CastMeasurementToClassificationPipe implements PipeTransform {
     transform(value: Measurement, _args?: unknown): ClassificationMeasurement | null {
@@ -58,7 +57,6 @@ export class CastMeasurementToClassificationPipe implements PipeTransform {
 @Pipe({
     name: 'continuousMeasurement',
     pure: true,
-    standalone: true,
 })
 export class CastMeasurementToContinuousPipe implements PipeTransform {
     transform(value: Measurement, _args?: unknown): ContinuousMeasurement | null {
@@ -73,7 +71,6 @@ export class CastMeasurementToContinuousPipe implements PipeTransform {
 @Pipe({
     name: 'unitlessMeasurement',
     pure: true,
-    standalone: true,
 })
 export class CastMeasurementToUnitlessPipe implements PipeTransform {
     transform(value: Measurement, _args?: unknown): UnitlessMeasurement | null {
