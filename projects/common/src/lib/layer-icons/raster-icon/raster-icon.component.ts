@@ -3,7 +3,6 @@ import {Color, TRANSPARENT} from '../../colors/color';
 import {Colorizer, LinearGradient} from '../../colors/colorizer.model';
 import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
 import {RasterColorizer, SingleBandRasterColorizer} from '../../symbology/symbology.model';
-import {NgFor} from '@angular/common';
 
 /**
  * a simple interface to model a cell in the raster icon
@@ -24,7 +23,6 @@ interface Cell {
     templateUrl: './raster-icon.component.svg',
     styleUrls: ['./raster-icon.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [NgFor],
 })
 export class RasterIconComponent {
     /** number of cells in x direction */

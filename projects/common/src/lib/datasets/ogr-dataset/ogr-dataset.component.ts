@@ -22,12 +22,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {timeStepGranularityOptions} from '../../time/time.model';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
-import {
-    FxFlexDirective,
-    FxLayoutAlignDirective,
-    FxLayoutDirective,
-    FxLayoutGapDirective,
-} from '../../util/directives/flexbox-legacy.directive';
+import {FxLayoutDirective} from '../../util/directives/flexbox-legacy.directive';
 
 @Component({
     selector: 'geoengine-ogr-dataset',
@@ -41,10 +36,7 @@ import {
         MatChipsModule,
         MatButtonModule,
         MatIconModule,
-        FxFlexDirective,
         FxLayoutDirective,
-        FxLayoutGapDirective,
-        FxLayoutAlignDirective,
     ],
     templateUrl: './ogr-dataset.component.html',
     styleUrl: './ogr-dataset.component.css',
