@@ -39,21 +39,28 @@ For instance, here is what you need to do to run the default app with a locally 
 
 For the first time:
 
-```
+```sh
 rm -rf node_modules
-npm install
+npm ci
 ```
 
 Then:
 
-```
-npm install
-npm run build-watch:common
-npm run build-watch:core
+```sh
 npm run serve:gis:local
 ```
 
 When the server is started, you can visit `http://localhost:4200/`.
+
+#### `dist` folder
+
+If the `dist` folder contains a `common` or `core` folder, they will be used during compilation.
+Thus, during development, make sure that this folder is empty or does not exist.
+
+```sh
+rm -r dist
+rm -r .angular/cache
+```
 
 ### Apps
 
