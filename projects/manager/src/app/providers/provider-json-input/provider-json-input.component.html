@@ -1,1 +1,4 @@
 <textarea #editor></textarea>
+@if (inputInvalid) {
+    <mat-error>The JSON is not a valid provider definition</mat-error>
+}

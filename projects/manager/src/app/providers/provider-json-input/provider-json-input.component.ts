@@ -1,11 +1,13 @@
 import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {TypedDataProviderDefinition, TypedDataProviderDefinitionFromJSON} from '@geoengine/openapi-client';
 import CodeMirror from 'codemirror';
+import {MatError} from '@angular/material/form-field';
 
 @Component({
     selector: 'geoengine-manager-provider-json-input',
     templateUrl: './provider-json-input.component.html',
     styleUrl: './provider-json-input.component.scss',
+    imports: [MatError],
 })
 export class ProviderJsonInputComponent implements OnChanges, AfterViewInit {
     @ViewChild('editor') editorRef!: ElementRef;
@@ -14,6 +16,7 @@ export class ProviderJsonInputComponent implements OnChanges, AfterViewInit {
     @Input() visible: boolean = false;
     @Input() readonly: boolean = false;
     editor?: CodeMirror.Editor;
+    inputInvalid: boolean = false;
 
     ngAfterViewInit(): void {
         this.setupEditor();
@@ -28,6 +31,7 @@ export class ProviderJsonInputComponent implements OnChanges, AfterViewInit {
         } else {
             if (this.provider) {
                 this.editor?.setValue(JSON.stringify(this.provider, undefined, 4));
+                this.inputInvalid = false;
             }
         }
     }
@@ -62,8 +66,9 @@ export class ProviderJsonInputComponent implements OnChanges, AfterViewInit {
                     this.provider = undefined;
                     try {
                         this.setChangedDefinition(TypedDataProviderDefinitionFromJSON(JSON.parse(e.getValue())));
+                        this.inputInvalid = false;
                     } catch (_) {
-                        // Do nothing, the JSON is not a valid provider definition.
+                        this.inputInvalid = true;
                     }
                 }
             });
