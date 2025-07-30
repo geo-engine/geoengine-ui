@@ -1,4 +1,4 @@
-import {Component, inject, OnChanges, OnInit, SimpleChanges, output, input, effect, signal} from '@angular/core';
+import {Component, inject, output, input, effect, signal} from '@angular/core';
 import {
     AbstractControl,
     FormBuilder,
@@ -37,7 +37,7 @@ import {ErrorStateMatcher} from '@angular/material/core';
         MatTooltip,
     ],
 })
-export class ArunaComponent implements OnInit, OnChanges {
+export class ArunaComponent {
     readonly provider = input<TypedDataProviderDefinition>();
     _provider = signal<TypedDataProviderDefinition | undefined>(undefined);
     readonly createNew = input<boolean>(false);
@@ -87,34 +87,32 @@ export class ArunaComponent implements OnInit, OnChanges {
 
         effect(() => {
             this._provider.set(this.provider());
+
+            let definition = this.provider() as ArunaDataProviderDefinition;
+
+            if (!definition) {
+                definition = {
+                    apiToken: '',
+                    apiUrl: '',
+                    description: '',
+                    filterLabel: '',
+                    id: '',
+                    name: '',
+                    projectId: '',
+                    cacheTtl: 0,
+                    priority: 0,
+                    type: 'Aruna',
+                };
+            }
+
+            this.setFormValue(definition);
+
+            if (this.readonly()) {
+                this.form.disable({emitEvent: false});
+            } else {
+                this.form.enable({emitEvent: false});
+            }
         });
-    }
-
-    ngOnInit(): void {
-        let definition = this._provider() as ArunaDataProviderDefinition;
-
-        if (!definition) {
-            definition = {
-                apiToken: '',
-                apiUrl: '',
-                description: '',
-                filterLabel: '',
-                id: '',
-                name: '',
-                projectId: '',
-                cacheTtl: 0,
-                priority: 0,
-                type: 'Aruna',
-            };
-        }
-
-        this.setFormValue(definition);
-
-        if (this.readonly()) {
-            this.form.disable();
-        } else {
-            this.form.enable();
-        }
 
         this.form.valueChanges.subscribe((_) => {
             if (!this.form.valid) {
@@ -135,21 +133,6 @@ export class ArunaComponent implements OnInit, OnChanges {
                 this.changed.emit(this._provider());
             }
         });
-    }
-
-    ngOnChanges(_: SimpleChanges): void {
-        if (this._provider()) {
-            setTimeout(() => {
-                const provider = this._provider() as ArunaDataProviderDefinition;
-                this.setFormValue(provider);
-
-                if (this.readonly()) {
-                    this.form.disable({emitEvent: false});
-                } else {
-                    this.form.enable({emitEvent: false});
-                }
-            }, 50);
-        }
     }
 
     get priority(): FormControl<number | null | undefined> {
