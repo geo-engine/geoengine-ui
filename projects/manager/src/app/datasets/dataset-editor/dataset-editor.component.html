@@ -117,7 +117,12 @@
                 } @else if (ogrMetaData) {
                     <geoengine-ogr-dataset [metaData]="ogrMetaData"></geoengine-ogr-dataset>
                 } @else {
-                    <textarea [(ngModel)]="rawLoadingInfo" [ngModelOptions]="{standalone: true}" (change)="touchLoadingInfo()"></textarea>
+                    <geoengine-code-editor
+                        [ngModel]="rawLoadingInfo"
+                        (ngModelChange)="updateLoadingInfo($event)"
+                        [ngModelOptions]="{standalone: true}"
+                        language="JSON"
+                    ></geoengine-code-editor>
                 }
                 <div class="actions">
                     <button mat-raised-button color="primary" [disabled]="isSaveLoadingInfoDisabled()" (click)="saveLoadingInfo()">

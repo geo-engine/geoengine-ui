@@ -36,13 +36,13 @@ type Language = 'Rust' | 'JSON';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit {
-    private editorRef = viewChild.required<ElementRef<HTMLDivElement>>('editor');
+    private readonly editorRef = viewChild.required<ElementRef<HTMLDivElement>>('editor');
 
-    language = input.required<Language>();
-    header = input<string>();
+    readonly language = input.required<Language>();
+    readonly header = input<string>();
 
-    private code = signal<string>('');
-    private languageMode = computed(() => {
+    private readonly code = signal<string>('');
+    private readonly languageMode = computed(() => {
         switch (this.language()) {
             case 'Rust':
                 return rust();
@@ -52,9 +52,9 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
     });
 
     private editor?: EditorView;
-    private languageCompartment = new Compartment();
-    private headerCompartment = new Compartment();
-    private headerPanel: Panel = createHeaderPanel();
+    private readonly languageCompartment = new Compartment();
+    private readonly headerCompartment = new Compartment();
+    private readonly headerPanel: Panel = createHeaderPanel();
 
     private onChanged?: (code: string) => void;
     private onTouched?: () => void;
@@ -115,8 +115,14 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
     }
 
     /** Implemented as part of ControlValueAccessor. */
-    writeValue(value: string): void {
-        this.code.set(value);
+    writeValue(code: string): void {
+        if (this.editor) {
+            this.editor?.dispatch({
+                changes: {from: 0, to: this.editor.state.doc.length, insert: code},
+            });
+        } else {
+            this.code.set(code);
+        }
     }
 
     /** Implemented as part of ControlValueAccessor. */
