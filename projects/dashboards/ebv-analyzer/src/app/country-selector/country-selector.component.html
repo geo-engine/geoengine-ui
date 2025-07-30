@@ -6,9 +6,11 @@
                     <ngx-mat-select-search [formControl]="countryFilterCtrl"></ngx-mat-select-search>
                 </mat-option>
 
-                <mat-option *ngFor="let country of filteredCountries | async" [value]="country">
-                    {{ country.name }}
-                </mat-option>
+                @for (country of filteredCountries | async; track country) {
+                    <mat-option [value]="country">
+                        {{ country.name }}
+                    </mat-option>
+                }
             </mat-select>
         </mat-form-field>
     </p>

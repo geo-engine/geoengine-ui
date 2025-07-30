@@ -1,11 +1,25 @@
 import {Component} from '@angular/core';
 import {Router} from '@angular/router';
+import {FxLayoutDirective, FxLayoutAlignDirective} from '@geoengine/common';
+import {MatCard, MatCardTitle, MatCardMdImage, MatCardContent, MatCardActions} from '@angular/material/card';
+import {MatIcon} from '@angular/material/icon';
+import {MatButton} from '@angular/material/button';
 
 @Component({
     selector: 'geoengine-not-found-page',
     templateUrl: './not-found-page.component.html',
     styleUrls: ['./not-found-page.component.scss'],
-    standalone: false,
+    imports: [
+        FxLayoutDirective,
+        FxLayoutAlignDirective,
+        MatCard,
+        MatCardTitle,
+        MatIcon,
+        MatCardMdImage,
+        MatCardContent,
+        MatCardActions,
+        MatButton,
+    ],
 })
 export class NotFoundPageComponent {
     constructor(private router: Router) {}

@@ -1,6 +1,15 @@
 import {ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
-import {AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
-import {MatChipInput} from '@angular/material/chips';
+import {
+    AbstractControl,
+    FormControl,
+    FormGroup,
+    ValidationErrors,
+    ValidatorFn,
+    Validators,
+    FormsModule,
+    ReactiveFormsModule,
+} from '@angular/forms';
+import {MatChipInput, MatChipGrid, MatChipRow, MatChipRemove} from '@angular/material/chips';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {
@@ -16,6 +25,7 @@ import {
     createVectorSymbology as createDefaultVectorSymbology,
     errorToText,
     geoengineValidators,
+    AsyncValueDefault,
 } from '@geoengine/common';
 import {
     Dataset,
@@ -31,6 +41,15 @@ import {BehaviorSubject, firstValueFrom} from 'rxjs';
 import {ProvenanceComponent} from '../../provenance/provenance.component';
 import {AppConfig} from '../../app-config.service';
 import {GdalMetadataListComponent} from '../loading-info/gdal-metadata-list/gdal-metadata-list.component';
+import {MatCard, MatCardHeader, MatCardTitle, MatCardContent} from '@angular/material/card';
+import {MatFormField, MatLabel, MatInput, MatError} from '@angular/material/input';
+import {MatIcon} from '@angular/material/icon';
+import {MatButton} from '@angular/material/button';
+import {SymbologyEditorComponent} from '../../symbology/symbology-editor/symbology-editor.component';
+import {RasterResultDescriptorComponent} from '../../result-descriptors/raster-result-descriptor/raster-result-descriptor.component';
+import {VectorResultDescriptorComponent} from '../../result-descriptors/vector-result-descriptor/vector-result-descriptor.component';
+import {PermissionsComponent} from '../../permissions/permissions.component';
+import {AsyncPipe} from '@angular/common';
 
 export interface DatasetForm {
     layerType: FormControl<'plot' | 'raster' | 'vector'>;
@@ -46,7 +65,33 @@ export interface DatasetForm {
     selector: 'geoengine-manager-dataset-editor',
     templateUrl: './dataset-editor.component.html',
     styleUrl: './dataset-editor.component.scss',
-    standalone: false,
+    imports: [
+        MatCard,
+        MatCardHeader,
+        MatCardTitle,
+        MatCardContent,
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatChipGrid,
+        MatChipRow,
+        MatIcon,
+        MatChipRemove,
+        MatChipInput,
+        MatError,
+        MatButton,
+        ProvenanceComponent,
+        SymbologyEditorComponent,
+        GdalMetadataListComponent,
+        OgrDatasetComponent,
+        RasterResultDescriptorComponent,
+        VectorResultDescriptorComponent,
+        PermissionsComponent,
+        AsyncPipe,
+        AsyncValueDefault,
+    ],
 })
 export class DatasetEditorComponent implements OnChanges {
     @Input({required: true}) datasetListing!: DatasetListing;

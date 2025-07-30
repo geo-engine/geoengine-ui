@@ -1,5 +1,5 @@
 import {Component, ChangeDetectionStrategy, OnDestroy} from '@angular/core';
-import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap} from 'rxjs/operators';
@@ -25,8 +25,24 @@ import {
     createVectorSymbology,
     extentToBboxDict,
     geoengineValidators,
+    FxLayoutDirective,
+    FxFlexDirective,
+    FxLayoutAlignDirective,
+    CommonModule,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {DialogSectionHeadingComponent} from '../../../dialogs/dialog-section-heading/dialog-section-heading.component';
+import {MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle} from '@angular/material/expansion';
+import {MatFormField, MatInput, MatHint} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
+import {AsyncPipe} from '@angular/common';
 interface ColumnRangeFilterForm {
     layer: FormControl<Layer | null>;
     name: FormControl<string>;
@@ -49,7 +65,32 @@ interface RangeForm {
     templateUrl: './column-range-filter.component.html',
     styleUrls: ['./column-range-filter.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        OperatorDialogContainerComponent,
+        MatIconButton,
+        MatIcon,
+        LayerSelectionComponent,
+        FxLayoutDirective,
+        DialogSectionHeadingComponent,
+        FxFlexDirective,
+        FxLayoutAlignDirective,
+        MatButton,
+        MatAccordion,
+        MatExpansionPanel,
+        MatExpansionPanelHeader,
+        MatExpansionPanelTitle,
+        MatFormField,
+        MatSelect,
+        MatOption,
+        MatInput,
+        MatHint,
+        CommonModule,
+        OperatorOutputNameComponent,
+        AsyncPipe,
+    ],
 })
 export class ColumnRangeFilterComponent implements OnDestroy {
     readonly inputTypes = ResultTypes.VECTOR_TYPES;

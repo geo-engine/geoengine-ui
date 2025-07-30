@@ -1,5 +1,5 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 
 import {map, mergeMap} from 'rxjs/operators';
@@ -18,8 +18,21 @@ import {
     TemporalRasterAggregationDictAgregationType,
     geoengineValidators,
     timeStepGranularityOptions,
+    CommonModule,
+    AsyncValueDefault,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {MatFormField, MatLabel, MatInput, MatHint} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
+import {AsyncPipe, KeyValuePipe} from '@angular/common';
 
 interface TemporalRasterAggregationForm {
     name: FormControl<string>;
@@ -39,7 +52,29 @@ interface TemporalRasterAggregationForm {
     templateUrl: './temporal-raster-aggregation.component.html',
     styleUrls: ['./temporal-raster-aggregation.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        OperatorDialogContainerComponent,
+        MatIconButton,
+        MatIcon,
+        LayerSelectionComponent,
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        MatInput,
+        MatHint,
+        MatCheckbox,
+        CommonModule,
+        OperatorOutputNameComponent,
+        SymbologyCreatorComponent,
+        MatButton,
+        AsyncPipe,
+        KeyValuePipe,
+        AsyncValueDefault,
+    ],
 })
 export class TemporalRasterAggregationComponent implements AfterViewInit {
     readonly inputTypes = [ResultTypes.RASTER];

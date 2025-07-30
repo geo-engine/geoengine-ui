@@ -1,41 +1,51 @@
 <div fxLayout="row">
     <h4>Select input {{ title }}</h4>
     <div fxFlex fxLayout="row" fxLayoutAlign="end">
-        <button mat-icon-button color="primary" type="button" (click)="add()" *ngIf="max - min > 0" [disabled]="layersAtMax | async">
-            <mat-icon>add_circle_outline</mat-icon>
-        </button>
-        <button mat-icon-button color="primary" type="button" (click)="remove()" *ngIf="max - min > 0" [disabled]="layersAtMin | async">
-            <mat-icon>remove_circle_outline</mat-icon>
-        </button>
+        @if (max - min > 0) {
+            <button mat-icon-button color="primary" type="button" (click)="add()" [disabled]="layersAtMax | async">
+                <mat-icon>add_circle_outline</mat-icon>
+            </button>
+        }
+        @if (max - min > 0) {
+            <button mat-icon-button color="primary" type="button" (click)="remove()" [disabled]="layersAtMin | async">
+                <mat-icon>remove_circle_outline</mat-icon>
+            </button>
+        }
     </div>
 </div>
-<div *ngIf="hasLayers | async; else noInputAvailable" fxLayout="column">
-    <ng-container *ngFor="let number of [].constructor(this.selectedLayers.value.length); let i = index">
-        <div fxLayout="row">
-            <mat-form-field fxFlex>
-                <mat-label>{{ inputNaming(i) }}</mat-label>
-                <mat-select
-                    class="mat-select-{{ i }}"
-                    [(value)]="selectedLayers.value[i]"
-                    (selectionChange)="updateLayer(i, $event.value)"
-                    (onBlur)="onBlur()"
-                >
-                    <mat-option class="mat-option-{{ i }}" *ngFor="let layer of filteredLayers | async" [value]="layer">{{
-                        layer.name
-                    }}</mat-option>
-                </mat-select>
-            </mat-form-field>
-            <button type="button" mat-icon-button class="info" (click)="toggleExpand(i)">
-                <mat-icon *ngIf="!layerDetails[i].expanded">expand_more</mat-icon>
-                <mat-icon *ngIf="layerDetails[i].expanded">expand_less</mat-icon>
-            </button>
-        </div>
-        <geoengine-layer-collection-layer-details
-            [layerMetadata]="layerDetails[i].metadata"
-            *ngIf="layerDetails[i].expanded"
-        ></geoengine-layer-collection-layer-details>
-    </ng-container>
-</div>
-<ng-template #noInputAvailable>
+@if (hasLayers | async) {
+    <div fxLayout="column">
+        @for (number of [].constructor(this.selectedLayers.value.length); track number; let i = $index) {
+            <div fxLayout="row">
+                <mat-form-field fxFlex>
+                    <mat-label>{{ inputNaming(i) }}</mat-label>
+                    <mat-select
+                        class="mat-select-{{ i }}"
+                        [(value)]="selectedLayers.value[i]"
+                        (selectionChange)="updateLayer(i, $event.value)"
+                        (onBlur)="onBlur()"
+                    >
+                        @for (layer of filteredLayers | async; track layer) {
+                            <mat-option class="mat-option-{{ i }}" [value]="layer">{{ layer.name }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+                <button type="button" mat-icon-button class="info" (click)="toggleExpand(i)">
+                    @if (!layerDetails[i].expanded) {
+                        <mat-icon>expand_more</mat-icon>
+                    }
+                    @if (layerDetails[i].expanded) {
+                        <mat-icon>expand_less</mat-icon>
+                    }
+                </button>
+            </div>
+            @if (layerDetails[i].expanded) {
+                <geoengine-layer-collection-layer-details
+                    [layerMetadata]="layerDetails[i].metadata"
+                ></geoengine-layer-collection-layer-details>
+            }
+        }
+    </div>
+} @else {
     <p>No Input Available</p>
-</ng-template>
+}

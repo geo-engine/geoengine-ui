@@ -21,9 +21,11 @@
             <mat-form-field>
                 <mat-label>Select Indicator</mat-label>
                 <mat-select (selectionChange)="changeIndicator($event)">
-                    <mat-option *ngFor="let indicator of indicators" [value]="indicator">
-                        <b>{{ indicator.name }}:</b> {{ indicator.description }}
-                    </mat-option>
+                    @for (indicator of indicators; track indicator) {
+                        <mat-option [value]="indicator">
+                            <b>{{ indicator.name }}:</b> {{ indicator.description }}
+                        </mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
         </mat-card-content>
@@ -61,12 +63,12 @@
                     }
                 </geoengine-map-container>
             </div>
-            <geoengine-legend *ngIf="dataSelectionService.rasterLayer | async as rasterLayer" [layer]="rasterLayer"></geoengine-legend>
-            <mat-progress-bar
-                class="loading-indicator"
-                mode="query"
-                *ngIf="dataSelectionService.rasterLayerLoading | async"
-            ></mat-progress-bar>
+            @if (dataSelectionService.rasterLayer | async; as rasterLayer) {
+                <geoengine-legend [layer]="rasterLayer"></geoengine-legend>
+            }
+            @if (dataSelectionService.rasterLayerLoading | async) {
+                <mat-progress-bar class="loading-indicator" mode="query"></mat-progress-bar>
+            }
         </mat-card-content>
     </mat-card>
 
@@ -110,7 +112,9 @@
                 </div>
             } @else {
                 @if (plotLoading()) {
-                    <mat-spinner color="accent" *ngIf="plotLoading()"></mat-spinner>
+                    @if (plotLoading()) {
+                        <mat-spinner color="accent"></mat-spinner>
+                    }
                 } @else {
                     <p class="center">Please select an indicator and a region of interest.</p>
                 }

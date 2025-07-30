@@ -1,6 +1,6 @@
 import {Observable, Subscription} from 'rxjs';
 import {Component, OnDestroy, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnChanges} from '@angular/core';
-import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import {CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragPlaceholder} from '@angular/cdk/drag-drop';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {MatDialog} from '@angular/material/dialog';
 import {LayoutService, SidenavConfig} from '../../layout.service';
@@ -11,6 +11,12 @@ import {AddDataComponent} from '../../datasets/add-data/add-data.component';
 import {TabsService} from '../../tabs/tabs.service';
 import {SimpleChanges} from '@angular/core';
 import {Layer, NotificationService} from '@geoengine/common';
+import {MatButton} from '@angular/material/button';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatIcon} from '@angular/material/icon';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {LayerListElementComponent} from './layer-list-element/layer-list-element.component';
+import {AsyncPipe} from '@angular/common';
 
 /**
  * The layer list component displays active layers, legends and other controlls.
@@ -20,7 +26,17 @@ import {Layer, NotificationService} from '@geoengine/common';
     templateUrl: './layer-list.component.html',
     styleUrls: ['./layer-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        CdkDropList,
+        MatButton,
+        MatTooltip,
+        MatIcon,
+        MatProgressSpinner,
+        CdkDrag,
+        CdkDragPlaceholder,
+        LayerListElementComponent,
+        AsyncPipe,
+    ],
 })
 export class LayerListComponent implements OnDestroy, OnChanges {
     /**

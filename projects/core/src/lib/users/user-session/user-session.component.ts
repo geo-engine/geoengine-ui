@@ -3,12 +3,14 @@ import {Subscription} from 'rxjs';
 import {Session} from '../session.model';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {NotificationService, UserService} from '@geoengine/common';
+import {MatIconButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
     selector: 'geoengine-user-session',
     templateUrl: './user-session.component.html',
     styleUrls: ['./user-session.component.scss'],
-    standalone: false,
+    imports: [MatIconButton, MatIcon],
 })
 export class UserSessionComponent implements OnDestroy {
     protected session: Session | undefined;

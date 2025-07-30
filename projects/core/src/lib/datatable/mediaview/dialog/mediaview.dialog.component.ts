@@ -1,11 +1,17 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogContent} from '@angular/material/dialog';
+import {DialogHeaderComponent} from '../../../dialogs/dialog-header/dialog-header.component';
+import {CdkScrollable} from '@angular/cdk/scrolling';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatMiniFabButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {MediaviewPlaylistComponent} from '../playlist/mediaview.playlist.component';
 
 @Component({
     selector: 'geoengine-mediaview-dialog',
     templateUrl: './mediaview.dialog.component.html',
     styleUrls: ['./mediaview.dialog.component.scss'],
-    standalone: false,
+    imports: [DialogHeaderComponent, CdkScrollable, MatDialogContent, MatTooltip, MatMiniFabButton, MatIcon, MediaviewPlaylistComponent],
 })
 
 /**

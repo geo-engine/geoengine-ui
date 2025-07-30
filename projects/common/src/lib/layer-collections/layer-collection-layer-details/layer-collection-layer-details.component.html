@@ -1,13 +1,15 @@
 <span class="details-content" fxLayout="column" fxLayoutAlign="center start">
-    <span *ngIf="description" class="details-row" fxLayout="row" fxLayoutAlign="start center">
-        <mat-icon class="details-row-icon">info</mat-icon>
-        <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
-            <p class="details-row-text-line">Description</p>
-            <p class="details-row-text-multi-line">{{ description() }}</p>
+    @if (description()) {
+        <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
+            <mat-icon class="details-row-icon">info</mat-icon>
+            <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
+                <p class="details-row-text-line">Description</p>
+                <p class="details-row-text-multi-line">{{ description() }}</p>
+            </span>
         </span>
-    </span>
+    }
 
-    <ng-template [ngIf]="layerMetadata()">
+    @if (layerMetadata()) {
         <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
             <mat-icon class="details-row-icon">language</mat-icon>
             <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
@@ -19,13 +21,13 @@
             <mat-icon class="details-row-icon">fullscreen</mat-icon>
             <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
                 <p class="details-row-text-line">Spatial bounds</p>
-                <ng-template [ngIf]="bboxLowerLeftString">
+                @if (bboxLowerLeftString) {
                     <p class="details-row-text-line">{{ bboxLowerLeftString }}</p>
                     <p class="details-row-text-line">{{ bboxUpperRightString }}</p>
-                </ng-template>
-                <ng-template [ngIf]="!bboxLowerLeftString">
+                }
+                @if (!bboxLowerLeftString) {
                     <p class="details-row-text-line">undefined</p>
-                </ng-template>
+                }
             </span>
         </span>
         <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
@@ -35,9 +37,9 @@
                 <p class="details-row-text-line">{{ timeString }}</p>
             </span>
         </span>
-    </ng-template>
+    }
 
-    <ng-template [ngIf]="rasterLayerMetadata">
+    @if (rasterLayerMetadata) {
         <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
             <mat-icon class="details-row-icon"
                 ><geoengine-raster-icon [xCells]="4" [yCells]="4" [colorizer]="rasterColorizer"></geoengine-raster-icon
@@ -54,24 +56,24 @@
                 <p class="details-row-text-line">{{ rasterLayerMetadata.bands.length }}</p>
             </span>
         </span>
-    </ng-template>
-    <ng-template [ngIf]="vectorLayerMetadata">
+    }
+    @if (vectorLayerMetadata) {
         <span class="details-row" fxLayout="row" fxLayoutAlign="start center">
-            <ng-container [ngSwitch]="vectorLayerMetadata.dataType">
-                <mat-icon *ngSwitchCase="VectorDataTypes.MultiPoint" class="details-row-icon"
-                    ><geoengine-point-icon></geoengine-point-icon
-                ></mat-icon>
-                <mat-icon *ngSwitchCase="VectorDataTypes.MultiLineString" class="details-row-icon"
-                    ><geoengine-line-icon></geoengine-line-icon
-                ></mat-icon>
-                <mat-icon *ngSwitchCase="VectorDataTypes.MultiPolygon" class="details-row-icon"
-                    ><geoengine-polygon-icon></geoengine-polygon-icon
-                ></mat-icon>
-            </ng-container>
+            @switch (vectorLayerMetadata.dataType) {
+                @case (VectorDataTypes.MultiPoint) {
+                    <mat-icon class="details-row-icon"><geoengine-point-icon></geoengine-point-icon></mat-icon>
+                }
+                @case (VectorDataTypes.MultiLineString) {
+                    <mat-icon class="details-row-icon"><geoengine-line-icon></geoengine-line-icon></mat-icon>
+                }
+                @case (VectorDataTypes.MultiPolygon) {
+                    <mat-icon class="details-row-icon"><geoengine-polygon-icon></geoengine-polygon-icon></mat-icon>
+                }
+            }
             <span class="details-row-text" fxLayout="column" fxLayoutAlign="center start">
                 <p class="details-row-text-line">Vector type</p>
                 <p class="details-row-text-line">{{ vectorLayerMetadata.dataType.toString() }}</p>
             </span>
         </span>
-    </ng-template>
+    }
 </span>

@@ -42,9 +42,9 @@
 
     <div class="mid-container" [style.height.px]="middleContainerHeight$ | async">
         <geoengine-map-container #map [grid]="mapIsGrid$ | async | valueDefault: false">
-            <ng-container *ngIf="userService.getSessionTokenStream() | async as sessionToken">
-                <ng-template ngFor let-layer [ngForOf]="layersReverse$ | async" [ngForTrackBy]="idFromLayer">
-                    <ng-template [ngIf]="layer.layerType === 'vector'">
+            @if (userService.getSessionTokenStream() | async; as sessionToken) {
+                @for (layer of layersReverse$ | async; track idFromLayer($index, layer)) {
+                    @if (layer.layerType === 'vector') {
                         <geoengine-ol-vector-layer
                             [layerId]="layer.id"
                             [workflow]="layer.workflowId"
@@ -52,8 +52,8 @@
                             [isVisible]="layer.isVisible"
                             (mapRedraw)="map.layerForcesRedraw()"
                         ></geoengine-ol-vector-layer>
-                    </ng-template>
-                    <ng-template [ngIf]="layer.layerType === 'raster'">
+                    }
+                    @if (layer.layerType === 'raster') {
                         <geoengine-ol-raster-layer
                             [layerId]="layer.id"
                             [workflow]="layer.workflowId"
@@ -62,15 +62,16 @@
                             [sessionToken]="sessionToken"
                             (mapRedraw)="map.layerForcesRedraw()"
                         ></geoengine-ol-raster-layer>
-                    </ng-template>
-                </ng-template>
-            </ng-container>
+                    }
+                }
+            }
         </geoengine-map-container>
     </div>
-    <geoengine-map-resolution-extent-overlay
-        *ngIf="config.COMPONENTS.MAP_RESOLUTION_EXTENT_OVERLAY.AVAILABLE"
-        [bottom]="bottomContainerHeight$ | async | numberSanitizer"
-    ></geoengine-map-resolution-extent-overlay>
+    @if (config.COMPONENTS.MAP_RESOLUTION_EXTENT_OVERLAY.AVAILABLE) {
+        <geoengine-map-resolution-extent-overlay
+            [bottom]="bottomContainerHeight$ | async | numberSanitizer"
+        ></geoengine-map-resolution-extent-overlay>
+    }
     <geoengine-tab-panel
         [visible]="layerDetailViewVisible$ | async | valueDefault: false"
         [maxHeight]="bottomContainerHeight$ | async | numberSanitizer"

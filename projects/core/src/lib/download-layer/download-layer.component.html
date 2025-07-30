@@ -60,54 +60,55 @@
             </mat-card-header>
 
             <mat-card-content>
-                <mat-form-field *ngIf="layer().layerType === 'raster'" appearance="fill">
-                    <mat-label>Input resolution</mat-label>
-                    <mat-select formControlName="inputResolution">
-                        <mat-option value="source"> Source resolution </mat-option>
-                        <mat-option value="value"> Value </mat-option>
-                    </mat-select>
-                </mat-form-field>
-
-                <div fxLayout="row" *ngIf="form.get('inputResolution')?.value === 'value'">
-                    <mat-form-field *ngIf="layer().layerType === 'vector'" appearance="fill">
+                @if (layer().layerType === 'raster') {
+                    <mat-form-field appearance="fill">
                         <mat-label>Input resolution</mat-label>
-                        <input matInput type="number" formControlName="inputResolutionX" (input)="setEditedResolution()" />
-                        <mat-hint
-                            class="error"
-                            *ngIf="form.controls.inputResolutionX.errors?.required || form.controls.inputResolutionX.errors?.valueNotLarger"
-                        >
-                            The resolution must be a positive number.
-                        </mat-hint>
+                        <mat-select formControlName="inputResolution">
+                            <mat-option value="source"> Source resolution </mat-option>
+                            <mat-option value="value"> Value </mat-option>
+                        </mat-select>
                     </mat-form-field>
+                }
 
-                    <div *ngIf="layer().layerType === 'raster'">
-                        <mat-form-field appearance="fill">
-                            <mat-label>Input resolution (x)</mat-label>
-                            <input matInput type="number" formControlName="inputResolutionX" (input)="setEditedResolution()" />
-                            <mat-hint
-                                class="error"
-                                *ngIf="
+                @if (form.get('inputResolution')?.value === 'value') {
+                    <div fxLayout="row">
+                        @if (layer().layerType === 'vector') {
+                            <mat-form-field appearance="fill">
+                                <mat-label>Input resolution</mat-label>
+                                <input matInput type="number" formControlName="inputResolutionX" (input)="setEditedResolution()" />
+                                @if (
                                     form.controls.inputResolutionX.errors?.required || form.controls.inputResolutionX.errors?.valueNotLarger
-                                "
-                            >
-                                The x resolution must be a positive number.
-                            </mat-hint>
-                        </mat-form-field>
-
-                        <mat-form-field appearance="fill">
-                            <mat-label>Input resolution (y)</mat-label>
-                            <input matInput type="number" formControlName="inputResolutionY" (input)="setEditedResolution()" />
-                            <mat-hint
-                                class="error"
-                                *ngIf="
-                                    form.controls.inputResolutionY.errors?.required || form.controls.inputResolutionY.errors?.valueNotLarger
-                                "
-                            >
-                                The y resolution must be a positive number.
-                            </mat-hint>
-                        </mat-form-field>
+                                ) {
+                                    <mat-hint class="error"> The resolution must be a positive number. </mat-hint>
+                                }
+                            </mat-form-field>
+                        }
+                        @if (layer().layerType === 'raster') {
+                            <div>
+                                <mat-form-field appearance="fill">
+                                    <mat-label>Input resolution (x)</mat-label>
+                                    <input matInput type="number" formControlName="inputResolutionX" (input)="setEditedResolution()" />
+                                    @if (
+                                        form.controls.inputResolutionX.errors?.required ||
+                                        form.controls.inputResolutionX.errors?.valueNotLarger
+                                    ) {
+                                        <mat-hint class="error"> The x resolution must be a positive number. </mat-hint>
+                                    }
+                                </mat-form-field>
+                                <mat-form-field appearance="fill">
+                                    <mat-label>Input resolution (y)</mat-label>
+                                    <input matInput type="number" formControlName="inputResolutionY" (input)="setEditedResolution()" />
+                                    @if (
+                                        form.controls.inputResolutionY.errors?.required ||
+                                        form.controls.inputResolutionY.errors?.valueNotLarger
+                                    ) {
+                                        <mat-hint class="error"> The y resolution must be a positive number. </mat-hint>
+                                    }
+                                </mat-form-field>
+                            </div>
+                        }
                     </div>
-                </div>
+                }
             </mat-card-content>
         </mat-card>
     </div>

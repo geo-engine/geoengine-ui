@@ -22,10 +22,16 @@
         </mat-nav-list>
     </mat-sidenav>
     <mat-sidenav-content>
-        <ng-container [ngSwitch]="selectedType">
-            <geoengine-manager-datasets *ngSwitchCase="NavigationType.Datasets"></geoengine-manager-datasets>
-            <geoengine-manager-layers *ngSwitchCase="NavigationType.Layers"></geoengine-manager-layers>
-            <geoengine-manager-providers *ngSwitchCase="NavigationType.Providers"></geoengine-manager-providers>
-        </ng-container>
+        @switch (selectedType) {
+            @case (NavigationType.Datasets) {
+                <geoengine-manager-datasets></geoengine-manager-datasets>
+            }
+            @case (NavigationType.Layers) {
+                <geoengine-manager-layers></geoengine-manager-layers>
+            }
+            @case (NavigationType.Providers) {
+                <geoengine-manager-providers></geoengine-manager-providers>
+            }
+        }
     </mat-sidenav-content>
 </mat-sidenav-container>

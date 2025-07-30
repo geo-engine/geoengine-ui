@@ -1,7 +1,14 @@
 import {ChangeDetectionStrategy, Component, computed, effect, inject, input, Pipe, PipeTransform, signal, untracked} from '@angular/core';
 import {ProjectService} from '../../../project/project.service';
 import {firstValueFrom} from 'rxjs';
-import {ColorBreakpoint, CommonModule, MultiBandRasterColorizer, RasterLayer, SingleBandRasterColorizer} from '@geoengine/common';
+import {
+    BreakpointToCssStringPipe,
+    ColorBreakpoint,
+    MultiBandRasterColorizer,
+    RasterColorizerCssGradientPipe,
+    RasterLayer,
+    SingleBandRasterColorizer,
+} from '@geoengine/common';
 import {
     RasterBandDescriptor,
     Measurement,
@@ -36,7 +43,6 @@ export function calculateNumberPipeParameters(breakpoints: Array<ColorBreakpoint
 @Pipe({
     name: 'classificationMeasurement',
     pure: true,
-    standalone: true,
 })
 export class CastMeasurementToClassificationPipe implements PipeTransform {
     transform(value: Measurement, _args?: unknown): ClassificationMeasurement | null {
@@ -51,7 +57,6 @@ export class CastMeasurementToClassificationPipe implements PipeTransform {
 @Pipe({
     name: 'continuousMeasurement',
     pure: true,
-    standalone: true,
 })
 export class CastMeasurementToContinuousPipe implements PipeTransform {
     transform(value: Measurement, _args?: unknown): ContinuousMeasurement | null {
@@ -66,7 +71,6 @@ export class CastMeasurementToContinuousPipe implements PipeTransform {
 @Pipe({
     name: 'unitlessMeasurement',
     pure: true,
-    standalone: true,
 })
 export class CastMeasurementToUnitlessPipe implements PipeTransform {
     transform(value: Measurement, _args?: unknown): UnitlessMeasurement | null {
@@ -137,11 +141,12 @@ export function oneApart(values: number[]): boolean {
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         AngularCommonModule,
-        CastMeasurementToUnitlessPipe,
+        BreakpointToCssStringPipe,
         CastMeasurementToClassificationPipe,
         CastMeasurementToContinuousPipe,
+        CastMeasurementToUnitlessPipe,
         MatProgressSpinner,
-        CommonModule,
+        RasterColorizerCssGradientPipe,
     ],
 })
 export class RasterLegendComponent {

@@ -36,8 +36,21 @@ import {
     Time,
     UserService,
     extentToBboxDict,
+    CommonModule,
+    FxFlexDirective,
+    FxLayoutDirective,
+    FxLayoutAlignDirective,
 } from '@geoengine/common';
 import {LayerListing} from '@geoengine/openapi-client';
+import {MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {MatSlideToggle} from '@angular/material/slide-toggle';
+import {FormsModule} from '@angular/forms';
+import {MatDivider} from '@angular/material/list';
+import {CountrySelectorComponent} from '../country-selector/country-selector.component';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {AttributionsComponent} from '../attributions/attributions.component';
+import {AsyncPipe} from '@angular/common';
 
 interface Path {
     collectionId?: string;
@@ -49,7 +62,21 @@ interface Path {
     templateUrl: './ebv-selector.component.html',
     styleUrls: ['./ebv-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        CommonModule,
+        MatButton,
+        FxFlexDirective,
+        MatIcon,
+        MatSlideToggle,
+        FormsModule,
+        MatDivider,
+        FxLayoutDirective,
+        FxLayoutAlignDirective,
+        CountrySelectorComponent,
+        MatProgressSpinner,
+        AttributionsComponent,
+        AsyncPipe,
+    ],
 })
 export class EbvSelectorComponent implements OnInit, OnDestroy {
     readonly SUBGROUP_SEARCH_THRESHOLD = 5;

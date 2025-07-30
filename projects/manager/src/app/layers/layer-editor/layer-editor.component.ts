@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnChanges, Output, signal, SimpleChanges, WritableSignal} from '@angular/core';
-import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {
@@ -14,10 +14,18 @@ import {
     createVectorSymbology as createDefaultVectorSymbology,
     WHITE,
     UUID,
+    CommonModule,
 } from '@geoengine/common';
 import {Layer, LayerListing, TypedResultDescriptor, Symbology as SymbologyDict, ProviderLayerCollectionId} from '@geoengine/openapi-client';
 import {AppConfig} from '../../app-config.service';
 import {firstValueFrom} from 'rxjs';
+import {MatCard, MatCardHeader, MatCardTitle, MatCardContent} from '@angular/material/card';
+import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {RasterResultDescriptorComponent} from '../../result-descriptors/raster-result-descriptor/raster-result-descriptor.component';
+import {VectorResultDescriptorComponent} from '../../result-descriptors/vector-result-descriptor/vector-result-descriptor.component';
+import {PermissionsComponent} from '../../permissions/permissions.component';
 
 export interface LayerForm {
     name: FormControl<string>;
@@ -32,7 +40,24 @@ export interface LayerForm {
     selector: 'geoengine-manager-layer-editor',
     templateUrl: './layer-editor.component.html',
     styleUrl: './layer-editor.component.scss',
-    standalone: false,
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatCard,
+        MatCardHeader,
+        MatCardTitle,
+        MatCardContent,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        CommonModule,
+        MatIconButton,
+        MatIcon,
+        MatButton,
+        RasterResultDescriptorComponent,
+        VectorResultDescriptorComponent,
+        PermissionsComponent,
+    ],
 })
 export class LayerEditorComponent implements OnChanges {
     @Input({required: true}) layerListing!: LayerListing;

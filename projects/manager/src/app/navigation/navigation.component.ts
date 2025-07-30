@@ -5,6 +5,13 @@ import {map, shareReplay} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {AppConfig} from '../app-config.service';
 import {UserService} from '@geoengine/common';
+import {MatSidenavContainer, MatSidenav, MatSidenavContent} from '@angular/material/sidenav';
+import {MatToolbar} from '@angular/material/toolbar';
+import {MatNavList, MatListItem} from '@angular/material/list';
+import {DatasetsComponent} from '../datasets/datasets.component';
+import {LayersComponent} from '../layers/layers.component';
+import {AsyncPipe} from '@angular/common';
+import {ProvidersComponent} from '../providers/providers.component';
 
 export enum NavigationType {
     Datasets = 'datasets',
@@ -16,7 +23,18 @@ export enum NavigationType {
     selector: 'geoengine-manager-navigation',
     templateUrl: './navigation.component.html',
     styleUrls: ['./navigation.component.scss'],
-    standalone: false,
+    imports: [
+        MatSidenavContainer,
+        MatSidenav,
+        MatToolbar,
+        MatNavList,
+        MatListItem,
+        MatSidenavContent,
+        DatasetsComponent,
+        LayersComponent,
+        AsyncPipe,
+        ProvidersComponent,
+    ],
 })
 export class NavigationComponent {
     isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset).pipe(

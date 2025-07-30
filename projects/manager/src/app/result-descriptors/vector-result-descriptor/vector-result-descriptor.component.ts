@@ -1,5 +1,19 @@
 import {Component, Input} from '@angular/core';
 import {Measurement, TypedVectorResultDescriptor} from '@geoengine/openapi-client';
+import {FormsModule} from '@angular/forms';
+import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
+import {
+    MatTable,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatCellDef,
+    MatCell,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+} from '@angular/material/table';
 
 interface Column {
     name: string;
@@ -11,7 +25,22 @@ interface Column {
     selector: 'geoengine-manager-vector-result-descriptor',
     templateUrl: './vector-result-descriptor.component.html',
     styleUrl: './vector-result-descriptor.component.scss',
-    standalone: false,
+    imports: [
+        FormsModule,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatTable,
+        MatColumnDef,
+        MatHeaderCellDef,
+        MatHeaderCell,
+        MatCellDef,
+        MatCell,
+        MatHeaderRowDef,
+        MatHeaderRow,
+        MatRowDef,
+        MatRow,
+    ],
 })
 export class VectorResultDescriptorComponent {
     @Input() resultDescriptor!: TypedVectorResultDescriptor;

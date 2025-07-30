@@ -3,7 +3,7 @@ import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../../lay
 import {VectorDataTypes} from '../../operators/datatype.model';
 import {Colorizer} from '../../colors/colorizer.model';
 import {SingleBandRasterColorizer} from '../../symbology/symbology.model';
-import {CommonModule} from '@angular/common';
+
 import {MatIconModule} from '@angular/material/icon';
 import {FxLayoutDirective} from '../../util/directives/flexbox-legacy.directive';
 import {PolygonIconComponent} from '../../layer-icons/polygon-icon/polygon-icon.component';
@@ -16,15 +16,7 @@ import {RasterIconComponent} from '../../layer-icons/raster-icon/raster-icon.com
     templateUrl: './layer-collection-layer-details.component.html',
     styleUrls: ['./layer-collection-layer-details.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        CommonModule,
-        MatIconModule,
-        FxLayoutDirective,
-        PolygonIconComponent,
-        LineIconComponent,
-        PointIconComponent,
-        RasterIconComponent,
-    ],
+    imports: [MatIconModule, FxLayoutDirective, PolygonIconComponent, LineIconComponent, PointIconComponent, RasterIconComponent],
 })
 export class LayerCollectionLayerDetailsComponent {
     description = input<string | undefined>();

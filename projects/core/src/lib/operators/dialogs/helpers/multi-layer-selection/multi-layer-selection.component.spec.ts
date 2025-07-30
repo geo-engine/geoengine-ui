@@ -109,9 +109,8 @@ describe('MultiLayerSelectionComponent', () => {
         );
 
         await TestBed.configureTestingModule({
-            declarations: [MultiLayerSelectionComponent, DialogSectionHeadingComponent],
             providers: [{provide: ProjectService, useValue: projectServiceSpy}],
-            imports: [...MATERIAL_MODULES, NoopAnimationsModule],
+            imports: [...MATERIAL_MODULES, NoopAnimationsModule, MultiLayerSelectionComponent, DialogSectionHeadingComponent],
         }).compileComponents();
 
         fixture = TestBed.createComponent(MultiLayerSelectionComponent);

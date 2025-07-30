@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
-import {FormArray, UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {FormArray, UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BehaviorSubject} from 'rxjs';
 import {Color, RgbaTuple} from '../color';
 import {ColorBreakpoint} from '../color-breakpoint.model';
@@ -11,6 +11,13 @@ import {Workflow} from '@geoengine/openapi-client';
 import {SymbologyQueryParams} from '../../symbology/symbology.model';
 import {PlotsService} from '../../plots/plots.service';
 import {ALL_COLORMAPS} from '../colormaps/colormaps';
+import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {MatProgressBar} from '@angular/material/progress-bar';
+import {AsyncPipe, KeyValuePipe} from '@angular/common';
+import {RgbaArrayCssGradientPipe} from '../../util/pipes/color-gradients.pipe';
 
 /**
  * The ColormapColorizerComponent is a dialog to generate ColorizerData from colormaps.
@@ -20,7 +27,20 @@ import {ALL_COLORMAPS} from '../colormaps/colormaps';
     templateUrl: 'percentile-breakpoint-selector.component.html',
     styleUrls: ['percentile-breakpoint-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatSelect,
+        MatOption,
+        MatCheckbox,
+        MatProgressBar,
+        AsyncPipe,
+        KeyValuePipe,
+        RgbaArrayCssGradientPipe,
+    ],
 })
 export class PercentileBreakpointSelectorComponent {
     @Input({required: true}) band!: string;

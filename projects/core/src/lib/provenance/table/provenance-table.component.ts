@@ -14,13 +14,38 @@ import {ProjectService} from '../../project/project.service';
 import {ProvenanceDict} from '../../backend/backend.model';
 import {Layer} from '@geoengine/common';
 import {LayoutService} from '../../layout.service';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {
+    MatTable,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatCellDef,
+    MatCell,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+} from '@angular/material/table';
 
 @Component({
     selector: 'geoengine-provenance-table',
     templateUrl: './provenance-table.component.html',
     styleUrls: ['./provenance-table.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatProgressSpinner,
+        MatTable,
+        MatColumnDef,
+        MatHeaderCellDef,
+        MatHeaderCell,
+        MatCellDef,
+        MatCell,
+        MatHeaderRowDef,
+        MatHeaderRow,
+        MatRowDef,
+        MatRow,
+    ],
 })
 export class ProvenanceTableComponent implements OnInit, OnChanges {
     @ViewChild(MatPaginator) paginator!: MatPaginator;

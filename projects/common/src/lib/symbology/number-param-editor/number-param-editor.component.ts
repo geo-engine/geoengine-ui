@@ -1,6 +1,9 @@
 import {Component, ChangeDetectionStrategy, forwardRef, HostListener, Input} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule} from '@angular/forms';
 import {NumberParam, StaticNumber, DerivedNumber} from '../symbology.model';
+import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
 
 /**
  * An edit component for `NumberParam`
@@ -11,7 +14,7 @@ import {NumberParam, StaticNumber, DerivedNumber} from '../symbology.model';
     styleUrls: ['number-param-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => NumberParamEditorComponent), multi: true}],
-    standalone: false,
+    imports: [MatFormField, MatLabel, MatInput, FormsModule, MatSelect, MatOption],
 })
 export class NumberParamEditorComponent implements ControlValueAccessor {
     @Input() attributes = new Array<string>();

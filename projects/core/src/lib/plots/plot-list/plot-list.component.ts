@@ -7,7 +7,11 @@ import {OperatorListComponent} from '../../operators/dialogs/operator-list/opera
 import {ProjectService} from '../../project/project.service';
 import {LayoutService} from '../../layout.service';
 import {LoadingState} from '../../project/loading-state.model';
-import {Plot} from '@geoengine/common';
+import {Plot, AsyncNumberSanitizer, AsyncValueDefault} from '@geoengine/common';
+import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
+import {MatButton} from '@angular/material/button';
+import {PlotListEntryComponent} from '../plot-list-entry/plot-list-entry.component';
+import {AsyncPipe} from '@angular/common';
 
 /**
  * This component lists all current plots.
@@ -17,7 +21,7 @@ import {Plot} from '@geoengine/common';
     templateUrl: './plot-list.component.html',
     styleUrls: ['./plot-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [SidenavHeaderComponent, MatButton, PlotListEntryComponent, AsyncPipe, AsyncNumberSanitizer, AsyncValueDefault],
 })
 export class PlotListComponent implements AfterViewInit, OnDestroy {
     /**

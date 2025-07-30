@@ -14,7 +14,7 @@ import {
     ViewContainerRef,
 } from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {MatIconRegistry} from '@angular/material/icon';
+import {MatIconRegistry, MatIcon} from '@angular/material/icon';
 import {MatDrawerToggleResult, MatSidenav, MatSidenavContainer} from '@angular/material/sidenav';
 import {MatTabGroup} from '@angular/material/tabs';
 import {
@@ -35,6 +35,14 @@ import {
     SpatialReferenceService,
     TimeConfigComponent,
     WorkspaceSettingsComponent,
+    LayerListMenuComponent,
+    ZoomHandlesComponent,
+    SmallTimeInteractionComponent,
+    LayerListComponent,
+    OlVectorLayerComponent,
+    OlRasterLayerComponent,
+    MapResolutionExtentOverlayComponent,
+    TabsComponent,
 } from '@geoengine/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute, ParamMap} from '@angular/router';
@@ -42,14 +50,47 @@ import {AppConfig} from './app-config.service';
 import {HelpComponent} from './help/help.component';
 import {SplashDialogComponent} from './splash-dialog/splash-dialog.component';
 import {GfBioCollectionDialogComponent as GfBioCollectionDialogComponent} from './gfbio-collection/gfbio-collection-dialog.component';
-import {Layer, LayersService, NotificationService, RandomColorService, UserService} from '@geoengine/common';
+import {
+    Layer,
+    LayersService,
+    NotificationService,
+    RandomColorService,
+    UserService,
+    AsyncNumberSanitizer,
+    AsyncValueDefault,
+} from '@geoengine/common';
+import {MatToolbar} from '@angular/material/toolbar';
+import {MatButton} from '@angular/material/button';
+import {MatTooltip} from '@angular/material/tooltip';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatToolbar,
+        MatIcon,
+        LayerListMenuComponent,
+        MatButton,
+        MatTooltip,
+        ZoomHandlesComponent,
+        SmallTimeInteractionComponent,
+        NavigationComponent,
+        MatSidenavContainer,
+        MatSidenav,
+        SidenavContainerComponent,
+        LayerListComponent,
+        MapContainerComponent,
+        OlVectorLayerComponent,
+        OlRasterLayerComponent,
+        MapResolutionExtentOverlayComponent,
+        TabsComponent,
+        AsyncPipe,
+        AsyncNumberSanitizer,
+        AsyncValueDefault,
+    ],
 })
 export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;

@@ -1,5 +1,13 @@
 import {ChangeDetectionStrategy, Component, forwardRef, HostListener, Input, OnDestroy, OnInit} from '@angular/core';
-import {ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, Validators} from '@angular/forms';
+import {
+    ControlValueAccessor,
+    FormControl,
+    FormGroup,
+    NG_VALUE_ACCESSOR,
+    Validators,
+    FormsModule,
+    ReactiveFormsModule,
+} from '@angular/forms';
 import {combineLatest, first, map, mergeMap, Observable, of, Subject, takeUntil} from 'rxjs';
 import {BBoxDict, RasterResultDescriptorDict, SrsString, TimeIntervalDict, UUID} from '../../../backend/backend.model';
 import {BackendService} from '../../../backend/backend.service';
@@ -20,7 +28,12 @@ import {
     Time,
     TRANSPARENT,
     UserService,
+    FxFlexDirective,
 } from '@geoengine/common';
+import {MatFormField, MatLabel, MatHint, MatInput} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {NgClass} from '@angular/common';
 
 const COLORMAPS = ALL_COLORMAPS;
 
@@ -42,7 +55,7 @@ export enum SymbologyCreationType {
             multi: true,
         },
     ],
-    standalone: false,
+    imports: [MatFormField, MatLabel, MatSelect, FormsModule, ReactiveFormsModule, MatOption, MatHint, FxFlexDirective, MatInput, NgClass],
 })
 export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValueAccessor {
     AS_INPUT = SymbologyCreationType.AS_INPUT;

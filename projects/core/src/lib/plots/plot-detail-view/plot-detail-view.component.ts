@@ -1,17 +1,21 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogContent} from '@angular/material/dialog';
 import {BehaviorSubject, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../project/project.service';
 import {PlotDataDict} from '../../backend/backend.model';
 import {LayoutService} from '../../layout.service';
-import {Plot} from '@geoengine/common';
+import {Plot, CommonModule} from '@geoengine/common';
+import {DialogHeaderComponent} from '../../dialogs/dialog-header/dialog-header.component';
+import {CdkScrollable} from '@angular/cdk/scrolling';
+import {MatProgressBar} from '@angular/material/progress-bar';
+import {AsyncPipe, JsonPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-plot-detail-view',
     templateUrl: './plot-detail-view.component.html',
     styleUrls: ['./plot-detail-view.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [DialogHeaderComponent, CdkScrollable, MatDialogContent, MatProgressBar, CommonModule, AsyncPipe, JsonPipe],
 })
 export class PlotDetailViewComponent implements OnInit, AfterViewInit, OnDestroy {
     // TODO: implement strategy for PNGs

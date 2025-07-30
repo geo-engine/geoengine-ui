@@ -1,7 +1,17 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
-import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
+import {
+    AbstractControl,
+    FormArray,
+    FormControl,
+    FormGroup,
+    ValidationErrors,
+    ValidatorFn,
+    Validators,
+    FormsModule,
+    ReactiveFormsModule,
+} from '@angular/forms';
 import {GdalDatasetParametersComponent, GdalDatasetParametersForm} from '../gdal-dataset-parameters/gdal-dataset-parameters.component';
-import {DatasetsService, TimeInterval, errorToText} from '@geoengine/common';
+import {DatasetsService, TimeInterval, errorToText, CommonModule} from '@geoengine/common';
 import moment from 'moment';
 import {
     DataPath,
@@ -12,6 +22,11 @@ import {
     RasterResultDescriptor,
 } from '@geoengine/openapi-client';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {MatFormField, MatLabel, MatInput, MatError} from '@angular/material/input';
+import {MatButton} from '@angular/material/button';
+import {MatDivider, MatNavList, MatListItem, MatListItemTitle, MatListItemLine} from '@angular/material/list';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
 
 export interface GdalMetadataListForm {
     timeSlices: FormArray<FormGroup<TimeSliceForm>>;
@@ -35,7 +50,24 @@ export interface RasterResultDescriptorForm {
     templateUrl: './gdal-metadata-list.component.html',
     styleUrl: './gdal-metadata-list.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatButton,
+        MatDivider,
+        MatSelect,
+        MatOption,
+        MatNavList,
+        MatListItem,
+        MatListItemTitle,
+        MatListItemLine,
+        MatError,
+        CommonModule,
+        GdalDatasetParametersComponent,
+    ],
 })
 export class GdalMetadataListComponent implements OnChanges {
     RasterDataTypes = Object.values(RasterDataType);

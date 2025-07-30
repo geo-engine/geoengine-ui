@@ -1,11 +1,18 @@
 import {Component, ViewChild} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ConfirmationComponent, DatasetsService, errorToText, OgrDatasetComponent} from '@geoengine/common';
 import {DataPath, MetaDataDefinition, Volume as VolumeDict} from '@geoengine/openapi-client';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {MatDialog, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
 import {BehaviorSubject, filter, firstValueFrom, merge} from 'rxjs';
 import {GdalMetadataListComponent} from '../loading-info/gdal-metadata-list/gdal-metadata-list.component';
+import {MatCard, MatCardHeader, MatCardTitle, MatCardContent} from '@angular/material/card';
+import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
+import {MatButtonToggleGroup, MatButtonToggle} from '@angular/material/button-toggle';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatButton} from '@angular/material/button';
+import {AsyncPipe} from '@angular/common';
 
 enum DataPaths {
     Upload,
@@ -31,7 +38,26 @@ export interface AddDatasetForm {
     selector: 'geoengine-manager-add-dataset',
     templateUrl: './add-dataset.component.html',
     styleUrl: './add-dataset.component.scss',
-    standalone: false,
+    imports: [
+        MatDialogTitle,
+        FormsModule,
+        ReactiveFormsModule,
+        MatCard,
+        MatCardHeader,
+        MatCardTitle,
+        MatCardContent,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatButtonToggleGroup,
+        MatButtonToggle,
+        MatSelect,
+        MatOption,
+        GdalMetadataListComponent,
+        OgrDatasetComponent,
+        MatButton,
+        AsyncPipe,
+    ],
 })
 export class AddDatasetComponent {
     DataPaths = DataPaths;

@@ -8,15 +8,17 @@ import {
     UUID,
     VectorSymbology,
     VectorSymbologyEditorComponent,
+    CommonModule,
 } from '@geoengine/common';
 import {ResponseError} from '@geoengine/openapi-client';
 import {AppConfig} from '../../app-config.service';
+import {MatButton} from '@angular/material/button';
 
 @Component({
     selector: 'geoengine-manager-symbology-editor',
     templateUrl: './symbology-editor.component.html',
     styleUrl: './symbology-editor.component.scss',
-    standalone: false,
+    imports: [CommonModule, MatButton],
 })
 export class SymbologyEditorComponent implements OnChanges {
     @Input({required: true}) workflowId!: UUID;

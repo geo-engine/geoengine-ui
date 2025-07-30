@@ -10,7 +10,6 @@ import {Colorizer} from '../../colors/colorizer.model';
  */
 @Pipe({
     name: 'geoengineColorizerCssGradient',
-    standalone: false,
 })
 export class ColorizerCssGradientPipe implements PipeTransform {
     constructor(protected sanitizer: DomSanitizer) {}
@@ -27,7 +26,6 @@ export class ColorizerCssGradientPipe implements PipeTransform {
  */
 @Pipe({
     name: 'geoengineRasterColorizerCssGradient',
-    standalone: false,
 })
 export class RasterColorizerCssGradientPipe implements PipeTransform {
     constructor(protected sanitizer: DomSanitizer) {}
@@ -44,7 +42,6 @@ export class RasterColorizerCssGradientPipe implements PipeTransform {
  */
 @Pipe({
     name: 'geoengineColorBreakpointsCssGradient',
-    standalone: false,
 })
 export class ColorBreakpointsCssGradientPipe implements PipeTransform {
     constructor(protected sanitizer: DomSanitizer) {}
@@ -61,7 +58,6 @@ export class ColorBreakpointsCssGradientPipe implements PipeTransform {
  */
 @Pipe({
     name: 'geoengineRgbaTuplesCssGradient',
-    standalone: false,
 })
 export class RgbaArrayCssGradientPipe implements PipeTransform {
     constructor(protected sanitizer: DomSanitizer) {}

@@ -23,6 +23,20 @@ import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
 import {BehaviorSubject} from 'rxjs';
 import {RasterBandDescriptor, TypedRasterResultDescriptor as RasterResultDescriptorDict} from '@geoengine/openapi-client';
 import {WorkflowsService} from '../../workflows/workflows.service';
+import {FxLayoutDirective, FxFlexDirective} from '../../util/directives/flexbox-legacy.directive';
+import {MatCard, MatCardHeader, MatCardTitleGroup, MatCardTitle, MatCardSubtitle, MatCardContent} from '@angular/material/card';
+import {MatIcon} from '@angular/material/icon';
+import {MatSlider, MatSliderThumb} from '@angular/material/slider';
+import {FormsModule} from '@angular/forms';
+import {MatButtonToggleGroup, MatButtonToggle} from '@angular/material/button-toggle';
+import {MatDivider} from '@angular/material/list';
+import {MatFormField, MatLabel} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {RasterGradientSymbologyEditorComponent} from '../raster-gradient-symbology-editor/raster-gradient-symbology-editor.component';
+import {RasterPaletteSymbologyEditorComponent} from '../raster-palette-symbology-editor/raster-palette-symbology-editor.component';
+import {RasterMultibandSymbologyEditorComponent} from '../raster-multiband-symbology-editor/raster-multiband-symbology-editor.component';
+import {AsyncValueDefault} from '../../util/pipes/async-converters.pipe';
 
 type RasterSymbologyType = 'singleBand' | 'multiBand';
 
@@ -42,7 +56,31 @@ const FAUX_RASTER_SYMBOLOGY = new RasterSymbology(
     templateUrl: 'raster-symbology-editor.component.html',
     styleUrls: ['raster-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        FxLayoutDirective,
+        FxFlexDirective,
+        MatCard,
+        MatCardHeader,
+        MatCardTitleGroup,
+        MatCardTitle,
+        MatCardSubtitle,
+        MatIcon,
+        MatCardContent,
+        MatSlider,
+        MatSliderThumb,
+        FormsModule,
+        MatButtonToggleGroup,
+        MatButtonToggle,
+        MatDivider,
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        RasterGradientSymbologyEditorComponent,
+        RasterPaletteSymbologyEditorComponent,
+        RasterMultibandSymbologyEditorComponent,
+        AsyncValueDefault,
+    ],
 })
 export class RasterSymbologyEditorComponent {
     private readonly workflowsService = inject(WorkflowsService);

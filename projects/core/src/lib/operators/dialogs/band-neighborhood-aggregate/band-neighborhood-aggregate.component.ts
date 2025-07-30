@@ -1,5 +1,14 @@
 import {ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
-import {FormControl, FormGroup, Validators, AbstractControl, ValidatorFn, ValidationErrors} from '@angular/forms';
+import {
+    FormControl,
+    FormGroup,
+    Validators,
+    AbstractControl,
+    ValidatorFn,
+    ValidationErrors,
+    FormsModule,
+    ReactiveFormsModule,
+} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {mergeMap} from 'rxjs/operators';
 import {BehaviorSubject, Observable, combineLatest, of} from 'rxjs';
@@ -17,6 +26,15 @@ import {
 } from '@geoengine/common';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {MatButtonToggleGroup, MatButtonToggle} from '@angular/material/button-toggle';
+import {MatFormField, MatLabel, MatInput, MatError, MatHint} from '@angular/material/input';
+import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
+import {AsyncPipe} from '@angular/common';
 
 interface RasterStackerForm {
     rasterLayer: FormControl<RasterLayer | undefined>;
@@ -36,7 +54,26 @@ enum NeighborhoodAggregate {
     templateUrl: './band-neighborhood-aggregate.component.html',
     styleUrls: ['./band-neighborhood-aggregate.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        OperatorDialogContainerComponent,
+        MatIconButton,
+        MatIcon,
+        LayerSelectionComponent,
+        MatButtonToggleGroup,
+        MatButtonToggle,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatError,
+        OperatorOutputNameComponent,
+        MatHint,
+        SymbologyCreatorComponent,
+        MatButton,
+        AsyncPipe,
+    ],
 })
 export class BandNeighborhoodAggregateComponent {
     readonly RASTER_TYPE = [ResultTypes.RASTER];

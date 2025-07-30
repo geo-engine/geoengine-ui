@@ -21,35 +21,35 @@
                 <mat-form-field appearance="fill">
                     <mat-label>Slope value from </mat-label>
                     <mat-select formControlName="slopeOffsetSelection">
-                        <mat-option *ngFor="let mk of slopeOffsetSelectionTypes" [value]="mk">
-                            {{ mk }}
-                        </mat-option>
+                        @for (mk of slopeOffsetSelectionTypes; track mk) {
+                            <mat-option [value]="mk">
+                                {{ mk }}
+                            </mat-option>
+                        }
                     </mat-select>
                 </mat-form-field>
-                <ng-container [ngSwitch]="form.controls.slope.controls.slopeOffsetSelection.value">
-                    <div
-                        *ngSwitchCase="'metadataKey'"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between center"
-                        fxLayoutGap="0.5rem"
-                        class="keyOrConstant"
-                    >
-                        <mat-form-field appearance="fill" fxFlex>
-                            <mat-label>Slope metadata <i>domain</i></mat-label>
-                            <input matInput type="text" formControlName="domain" />
-                        </mat-form-field>
-                        <mat-form-field appearance="fill" fxFlex>
-                            <mat-label>Slope metadata <i>key</i></mat-label>
-                            <input matInput type="text" formControlName="key" />
-                        </mat-form-field>
-                    </div>
-                    <div *ngSwitchCase="'constant'" class="keyOrConstant">
-                        <mat-form-field appearance="fill" fxFlex>
-                            <mat-label>Slope <i>Constant</i></mat-label>
-                            <input matInput type="number" step="any" formControlName="constant" />
-                        </mat-form-field>
-                    </div>
-                </ng-container>
+                @switch (form.controls.slope.controls.slopeOffsetSelection.value) {
+                    @case ('metadataKey') {
+                        <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="0.5rem" class="keyOrConstant">
+                            <mat-form-field appearance="fill" fxFlex>
+                                <mat-label>Slope metadata <i>domain</i></mat-label>
+                                <input matInput type="text" formControlName="domain" />
+                            </mat-form-field>
+                            <mat-form-field appearance="fill" fxFlex>
+                                <mat-label>Slope metadata <i>key</i></mat-label>
+                                <input matInput type="text" formControlName="key" />
+                            </mat-form-field>
+                        </div>
+                    }
+                    @case ('constant') {
+                        <div class="keyOrConstant">
+                            <mat-form-field appearance="fill" fxFlex>
+                                <mat-label>Slope <i>Constant</i></mat-label>
+                                <input matInput type="number" step="any" formControlName="constant" />
+                            </mat-form-field>
+                        </div>
+                    }
+                }
             </div>
 
             <mat-divider></mat-divider>
@@ -59,35 +59,35 @@
                 <mat-form-field appearance="fill">
                     <mat-label>Offset value from </mat-label>
                     <mat-select formControlName="slopeOffsetSelection">
-                        <mat-option *ngFor="let mk of slopeOffsetSelectionTypes" [value]="mk">
-                            {{ mk }}
-                        </mat-option>
+                        @for (mk of slopeOffsetSelectionTypes; track mk) {
+                            <mat-option [value]="mk">
+                                {{ mk }}
+                            </mat-option>
+                        }
                     </mat-select>
                 </mat-form-field>
-                <ng-container [ngSwitch]="form.controls.offset.controls.slopeOffsetSelection.value">
-                    <div
-                        *ngSwitchCase="'metadataKey'"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between center"
-                        fxLayoutGap="0.5rem"
-                        class="keyOrConstant"
-                    >
-                        <mat-form-field appearance="fill" fxFlex>
-                            <mat-label>Offset metadata <i>domain</i></mat-label>
-                            <input matInput type="text" formControlName="domain" />
-                        </mat-form-field>
-                        <mat-form-field appearance="fill" fxFlex>
-                            <mat-label>Offset metadata <i>key</i></mat-label>
-                            <input matInput type="text" formControlName="key" />
-                        </mat-form-field>
-                    </div>
-                    <div *ngSwitchCase="'constant'" class="keyOrConstant">
-                        <mat-form-field appearance="fill" fxFlex>
-                            <mat-label>Offset <i>Constant</i></mat-label>
-                            <input matInput type="number" step="any" formControlName="constant" />
-                        </mat-form-field>
-                    </div>
-                </ng-container>
+                @switch (form.controls.offset.controls.slopeOffsetSelection.value) {
+                    @case ('metadataKey') {
+                        <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="0.5rem" class="keyOrConstant">
+                            <mat-form-field appearance="fill" fxFlex>
+                                <mat-label>Offset metadata <i>domain</i></mat-label>
+                                <input matInput type="text" formControlName="domain" />
+                            </mat-form-field>
+                            <mat-form-field appearance="fill" fxFlex>
+                                <mat-label>Offset metadata <i>key</i></mat-label>
+                                <input matInput type="text" formControlName="key" />
+                            </mat-form-field>
+                        </div>
+                    }
+                    @case ('constant') {
+                        <div class="keyOrConstant">
+                            <mat-form-field appearance="fill" fxFlex>
+                                <mat-label>Offset <i>Constant</i></mat-label>
+                                <input matInput type="number" step="any" formControlName="constant" />
+                            </mat-form-field>
+                        </div>
+                    }
+                }
             </div>
 
             <mat-divider></mat-divider>
@@ -96,9 +96,11 @@
                 <mat-form-field appearance="fill">
                     <mat-label>Scale Type</mat-label>
                     <mat-select formControlName="scaleType">
-                        <mat-option *ngFor="let scaleType of scaleTypes" [value]="scaleType">
-                            <span class="scaleType">{{ scaleType.type }}</span>
-                        </mat-option>
+                        @for (scaleType of scaleTypes; track scaleType) {
+                            <mat-option [value]="scaleType">
+                                <span class="scaleType">{{ scaleType.type }}</span>
+                            </mat-option>
+                        }
                     </mat-select>
                 </mat-form-field>
                 <div class="scaleModeHint">
@@ -118,13 +120,9 @@
                     ']'
                 "
             >
-                <mat-hint
-                    align="end"
-                    class="error"
-                    *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
-                >
-                    The name must be non-empty.
-                </mat-hint>
+                @if (form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace) {
+                    <mat-hint align="end" class="error"> The name must be non-empty. </mat-hint>
+                }
             </geoengine-operator-output-name>
 
             <geoengine-symbology-creator #symbologyCreator></geoengine-symbology-creator>

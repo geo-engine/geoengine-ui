@@ -1,5 +1,5 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 
@@ -17,8 +17,21 @@ import {
     VectorLayer,
     VectorLayerMetadata,
     geoengineValidators,
+    FxLayoutDirective,
+    FxFlexDirective,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {MatFormField, MatInput, MatHint} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
+import {AsyncPipe} from '@angular/common';
 
 /**
  * Checks whether the layer is a vector layer (points, lines, polygons).
@@ -38,7 +51,26 @@ const isVectorLayer = (layer: Layer): boolean => {
     templateUrl: './histogram-operator.component.html',
     styleUrls: ['./histogram-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        FxLayoutDirective,
+        ReactiveFormsModule,
+        OperatorDialogContainerComponent,
+        MatIconButton,
+        MatIcon,
+        LayerSelectionComponent,
+        MatFormField,
+        MatSelect,
+        MatOption,
+        FxFlexDirective,
+        MatInput,
+        MatHint,
+        MatCheckbox,
+        OperatorOutputNameComponent,
+        MatButton,
+        AsyncPipe,
+    ],
 })
 export class HistogramOperatorComponent implements AfterViewInit, OnDestroy {
     minNumberOfBuckets = 1;

@@ -24,10 +24,26 @@ import {
     Symbology,
     SymbologyType,
     UserService,
+    FxLayoutDirective,
+    FxLayoutAlignDirective,
+    PointIconComponent,
+    LineIconComponent,
+    PolygonIconComponent,
+    RasterIconComponent,
+    FxFlexDirective,
 } from '@geoengine/common';
 import {RasterBandDescriptor} from '@geoengine/openapi-client';
 import {SymbologyEditorComponent} from '../../symbology/symbology-editor/symbology-editor.component';
 import {DownloadLayerComponent} from '../../../download-layer/download-layer.component';
+import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
+import {NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault, AsyncPipe} from '@angular/common';
+import {MatIcon} from '@angular/material/icon';
+import {MatIconButton} from '@angular/material/button';
+import {MatTooltip} from '@angular/material/tooltip';
+import {CdkDragHandle} from '@angular/cdk/drag-drop';
+import {VectorLegendComponent} from '../../legend/legend-vector/vector-legend.component';
+import {RasterLegendComponent} from '../../legend/legend-raster/raster-legend.component';
+import {MatProgressBar} from '@angular/material/progress-bar';
 /**
  * The layer list component displays active layers, legends and other controlls.
  */
@@ -36,7 +52,30 @@ import {DownloadLayerComponent} from '../../../download-layer/download-layer.com
     templateUrl: './layer-list-element.component.html',
     styleUrls: ['./layer-list-element.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatMenu,
+        NgIf,
+        MatMenuItem,
+        MatIcon,
+        FxLayoutDirective,
+        FxLayoutAlignDirective,
+        MatIconButton,
+        MatTooltip,
+        NgSwitch,
+        NgSwitchCase,
+        PointIconComponent,
+        LineIconComponent,
+        PolygonIconComponent,
+        NgSwitchDefault,
+        RasterIconComponent,
+        CdkDragHandle,
+        FxFlexDirective,
+        MatMenuTrigger,
+        VectorLegendComponent,
+        RasterLegendComponent,
+        MatProgressBar,
+        AsyncPipe,
+    ],
 })
 export class LayerListElementComponent {
     @Input()

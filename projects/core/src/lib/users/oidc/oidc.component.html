@@ -6,7 +6,9 @@
 
     <mat-card-content>
         <ng-container *geoengineIfLoggedIn>
-            <p *ngIf="user">Welcome {{ user.realName }}!</p>
+            @if (user) {
+                <p>Welcome {{ user.realName }}!</p>
+            }
             <button mat-raised-button color="primary" (click)="logout()">Logout</button>
         </ng-container>
         <ng-container *geoengineIfGuest>

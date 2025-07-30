@@ -19,9 +19,11 @@
                 ></ngx-mat-select-search>
             </mat-option>
             <mat-option>– Keine Auswahl –</mat-option>
-            <mat-option *ngFor="let species of geoengineAutocompleteSelect.filteredValues | async" [value]="species">
-                {{ species }}
-            </mat-option>
+            @for (species of geoengineAutocompleteSelect.filteredValues | async; track species) {
+                <mat-option [value]="species">
+                    {{ species }}
+                </mat-option>
+            }
         </mat-select>
     </mat-form-field>
 
@@ -31,22 +33,26 @@
         color="accent"
     ></mat-progress-bar>
 
-    <div *ngIf="dragonflySpeciesLayer">
-        <div class="spacer"></div>
-        <geoengine-layer-list-element [layer]="dragonflySpeciesLayer" [menu]="false"></geoengine-layer-list-element>
-        <p class="mat-caption">AK Libellen NRW (Datenstand 2020)</p>
-    </div>
+    @if (dragonflySpeciesLayer) {
+        <div>
+            <div class="spacer"></div>
+            <geoengine-layer-list-element [layer]="dragonflySpeciesLayer" [menu]="false"></geoengine-layer-list-element>
+            <p class="mat-caption">AK Libellen NRW (Datenstand 2020)</p>
+        </div>
+    }
 
     <div class="spacer"></div>
 
-    <mat-expansion-panel class="species-info" *ngIf="getSpeciesInfo(selectedDragonflySpecies) as speciesInfo">
-        <mat-expansion-panel-header>Spezies-Info</mat-expansion-panel-header>
-
-        <img [src]="speciesInfo.imageSrc" [alt]="selectedDragonflySpecies" />
-        <p class="mat-caption" *ngIf="speciesInfo.imageRef">({{ speciesInfo.imageRef }})</p>
-
-        <p class="info-text" [innerHtml]="speciesInfo.text"></p>
-    </mat-expansion-panel>
+    @if (getSpeciesInfo(selectedDragonflySpecies); as speciesInfo) {
+        <mat-expansion-panel class="species-info">
+            <mat-expansion-panel-header>Spezies-Info</mat-expansion-panel-header>
+            <img [src]="speciesInfo.imageSrc" [alt]="selectedDragonflySpecies" />
+            @if (speciesInfo.imageRef) {
+                <p class="mat-caption">({{ speciesInfo.imageRef }})</p>
+            }
+            <p class="info-text" [innerHtml]="speciesInfo.text"></p>
+        </mat-expansion-panel>
+    }
 
     <div class="spacer"></div>
 
@@ -64,9 +70,11 @@
                 ></ngx-mat-select-search>
             </mat-option>
             <mat-option>– Keine Auswahl –</mat-option>
-            <mat-option *ngFor="let species of geoengineAutocompleteSelect2.filteredValues | async" [value]="species">
-                {{ species }}
-            </mat-option>
+            @for (species of geoengineAutocompleteSelect2.filteredValues | async; track species) {
+                <mat-option [value]="species">
+                    {{ species }}
+                </mat-option>
+            }
         </mat-select>
     </mat-form-field>
 
@@ -76,27 +84,31 @@
         color="accent"
     ></mat-progress-bar>
 
-    <div *ngIf="fishSpeciesLayer">
-        <div class="spacer"></div>
-        <geoengine-layer-list-element [layer]="fishSpeciesLayer" [menu]="false"></geoengine-layer-list-element>
-        <p class="mat-caption">
-            Die hier zu Demonstrationszwecken gezeigten Daten stammen aus "Brunken, H. & Vatterrott, H.-R. (2020): Fischartenatlas von
-            Deutschland und Österreich" und Monitoringdaten, die im Rahmen der Befischungen für die Wasserrahmenrichtlinie und der
-            Flora-Fauna-Habitatrichtlinie von 12 Bundesländern (ohne Bayern, Baden-Württemberg, Rheinland-Pfalz und Hamburg) veröffentlicht
-            wurden.
-        </p>
-    </div>
+    @if (fishSpeciesLayer) {
+        <div>
+            <div class="spacer"></div>
+            <geoengine-layer-list-element [layer]="fishSpeciesLayer" [menu]="false"></geoengine-layer-list-element>
+            <p class="mat-caption">
+                Die hier zu Demonstrationszwecken gezeigten Daten stammen aus "Brunken, H. & Vatterrott, H.-R. (2020): Fischartenatlas von
+                Deutschland und Österreich" und Monitoringdaten, die im Rahmen der Befischungen für die Wasserrahmenrichtlinie und der
+                Flora-Fauna-Habitatrichtlinie von 12 Bundesländern (ohne Bayern, Baden-Württemberg, Rheinland-Pfalz und Hamburg)
+                veröffentlicht wurden.
+            </p>
+        </div>
+    }
 
     <div class="spacer"></div>
 
-    <mat-expansion-panel class="species-info" *ngIf="getSpeciesInfo(selectedFishSpecies) as speciesInfo">
-        <mat-expansion-panel-header>Spezies-Info</mat-expansion-panel-header>
-
-        <img [src]="speciesInfo.imageSrc" [alt]="selectedDragonflySpecies" />
-        <p class="mat-caption" *ngIf="speciesInfo.imageRef">({{ speciesInfo.imageRef }})</p>
-
-        <p class="info-text" [innerHtml]="speciesInfo.text"></p>
-    </mat-expansion-panel>
+    @if (getSpeciesInfo(selectedFishSpecies); as speciesInfo) {
+        <mat-expansion-panel class="species-info">
+            <mat-expansion-panel-header>Spezies-Info</mat-expansion-panel-header>
+            <img [src]="speciesInfo.imageSrc" [alt]="selectedDragonflySpecies" />
+            @if (speciesInfo.imageRef) {
+                <p class="mat-caption">({{ speciesInfo.imageRef }})</p>
+            }
+            <p class="info-text" [innerHtml]="speciesInfo.text"></p>
+        </mat-expansion-panel>
+    }
 
     <div class="spacer"></div>
 
@@ -127,8 +139,12 @@
 
     <div fxLayout="row" fxLayoutGap="1rem" fxLayoutAlign="space-between start">
         <div fxFlex>
-            <p class="intensityLabel" *ngIf="!intensityLayer">Beprobungshäufigkeit</p>
-            <geoengine-layer-list-element *ngIf="intensityLayer" [layer]="intensityLayer" [menu]="false"></geoengine-layer-list-element>
+            @if (!intensityLayer) {
+                <p class="intensityLabel">Beprobungshäufigkeit</p>
+            }
+            @if (intensityLayer) {
+                <geoengine-layer-list-element [layer]="intensityLayer" [menu]="false"></geoengine-layer-list-element>
+            }
         </div>
         <mat-slide-toggle class="intensityToggle" (change)="showIntensities($event.checked)"></mat-slide-toggle>
     </div>
@@ -149,15 +165,19 @@
         <mat-label>Klima-/Wasser-Datenauswahl</mat-label>
         <mat-select (valueChange)="selectEnvironmentLayer($event)">
             <mat-option>– Keine Auswahl –</mat-option>
-            <mat-option *ngFor="let layer of environmentLayers" [value]="layer">
-                {{ layer.displayName }}
-            </mat-option>
+            @for (layer of environmentLayers; track layer) {
+                <mat-option [value]="layer">
+                    {{ layer.displayName }}
+                </mat-option>
+            }
         </mat-select>
     </mat-form-field>
 
-    <div *ngIf="environmentLayer">
-        <geoengine-layer-list-element [layer]="environmentLayer" [menu]="false"></geoengine-layer-list-element>
-    </div>
+    @if (environmentLayer) {
+        <div>
+            <geoengine-layer-list-element [layer]="environmentLayer" [menu]="false"></geoengine-layer-list-element>
+        </div>
+    }
 
     <p [innerText]="selectedEnvironmentCitation | async" class="mat-caption"></p>
 
@@ -173,22 +193,22 @@
 
     <div class="spacer"></div>
 
-    <ng-container *ngIf="selectedEnvironmentLayer?.plotType === 'pieChart'">
+    @if (selectedEnvironmentLayer?.plotType === 'pieChart') {
         <p>
             Im Folgenden kann ein Kuchendiagramm berechnet werden, welches den Umweltlayer mit den Beobachtungsdaten räumlich und zeitlich
             verknüpft und die Werteverteilung darstellt. Maßgeblich ist der ausgewählte Monat und das Jahr. Hierbei werden Gebiete mit mehr
             als 50% Anteil "Natur- und Artenschutz" als "Naturschutzbereich" gewertet. Die anderen Bereiche werden als
             "Nicht-Naturschutzbereich" gewertet.
         </p>
-
-        <mat-form-field *ngIf="dragonflySpeciesLayer && fishSpeciesLayer">
-            <mat-label>Welcher Beobachtungslayer?</mat-label>
-            <mat-select [(value)]="plotLayerSelection">
-                <mat-option [value]="'dragonfly'">Libellen</mat-option>
-                <mat-option [value]="'fish'">Fische</mat-option>
-            </mat-select>
-        </mat-form-field>
-
+        @if (dragonflySpeciesLayer && fishSpeciesLayer) {
+            <mat-form-field>
+                <mat-label>Welcher Beobachtungslayer?</mat-label>
+                <mat-select [(value)]="plotLayerSelection">
+                    <mat-option [value]="'dragonfly'">Libellen</mat-option>
+                    <mat-option [value]="'fish'">Fische</mat-option>
+                </mat-select>
+            </mat-form-field>
+        }
         <button
             [disabled]="(!selectedDragonflySpecies && !selectedFishSpecies) || !selectedEnvironmentLayer"
             mat-stroked-button
@@ -197,17 +217,18 @@
         >
             Berechne Plot
         </button>
-
         <div class="spacer"></div>
-
-        <h3 *ngIf="(plotData | async) !== undefined">Plot von {{ plotSpecies }} und {{ plotEnvironmentLayer }}</h3>
-
-        <geoengine-vega-viewer *ngIf="(plotData | async) !== undefined" [chartData]="plotData | async"></geoengine-vega-viewer>
-
-        <mat-spinner color="accent" *ngIf="plotLoading | async"></mat-spinner>
-
+        @if ((plotData | async) !== undefined) {
+            <h3>Plot von {{ plotSpecies }} und {{ plotEnvironmentLayer }}</h3>
+        }
+        @if ((plotData | async) !== undefined) {
+            <geoengine-vega-viewer [chartData]="plotData | async"></geoengine-vega-viewer>
+        }
+        @if (plotLoading | async) {
+            <mat-spinner color="accent"></mat-spinner>
+        }
         <div class="spacer"></div>
-    </ng-container>
+    }
 
     <mat-divider></mat-divider>
 

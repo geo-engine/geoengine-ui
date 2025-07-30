@@ -1,10 +1,21 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
-import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
+import {
+    AbstractControl,
+    FormArray,
+    FormBuilder,
+    FormControl,
+    FormGroup,
+    ValidationErrors,
+    ValidatorFn,
+    Validators,
+    FormsModule,
+    ReactiveFormsModule,
+} from '@angular/forms';
 import {EMPTY, Subscription, combineLatest} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 
 import {filter, map, mergeMap} from 'rxjs/operators';
-import {LetterNumberConverter} from '../helpers/multi-layer-selection/multi-layer-selection.component';
+import {LetterNumberConverter, MultiLayerSelectionComponent} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {
     ColumnNamesDict,
     NotificationService,
@@ -19,7 +30,18 @@ import {
     VectorLayer,
     VectorLayerMetadata,
     geoengineValidators,
+    FxLayoutDirective,
 } from '@geoengine/common';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {MatButtonToggleGroup, MatButtonToggle} from '@angular/material/button-toggle';
+import {MatFormField, MatLabel, MatInput, MatError, MatHint} from '@angular/material/input';
+import {MatRadioGroup, MatRadioButton} from '@angular/material/radio';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
 
 type TemporalAggregation = 'none' | 'first' | 'mean';
 type FeatureAggregation = 'first' | 'mean';
@@ -47,7 +69,29 @@ enum ColumnNames {
     templateUrl: './raster-vector-join.component.html',
     styleUrls: ['./raster-vector-join.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        OperatorDialogContainerComponent,
+        MatIconButton,
+        MatIcon,
+        LayerSelectionComponent,
+        MultiLayerSelectionComponent,
+        MatButtonToggleGroup,
+        MatButtonToggle,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatError,
+        MatRadioGroup,
+        FxLayoutDirective,
+        MatRadioButton,
+        MatCheckbox,
+        OperatorOutputNameComponent,
+        MatHint,
+        MatButton,
+    ],
 })
 export class RasterVectorJoinComponent implements OnDestroy {
     minNumberOfRasterInputs = 1;

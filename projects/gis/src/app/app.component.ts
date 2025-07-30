@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Inject, OnInit, ViewContainerRef} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer, Title} from '@angular/platform-browser';
-import {Router} from '@angular/router';
+import {Router, RouterOutlet} from '@angular/router';
 import {AppConfig} from './app-config.service';
 import {Location} from '@angular/common';
 import {UserService} from '@geoengine/common';
@@ -11,7 +11,7 @@ import {UserService} from '@geoengine/common';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [RouterOutlet],
 })
 export class AppComponent implements OnInit {
     constructor(

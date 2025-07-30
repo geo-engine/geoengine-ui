@@ -1,4 +1,4 @@
-import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
+import {CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf} from '@angular/cdk/scrolling';
 import {
     ChangeDetectionStrategy,
     Component,
@@ -12,17 +12,32 @@ import {
     SimpleChanges,
 } from '@angular/core';
 import {WHITE} from '../color';
-import {ColorAttributeInput, ColorAttributeInputHinter} from '../color-attribute-input/color-attribute-input.component';
+import {
+    ColorAttributeInput,
+    ColorAttributeInputHinter,
+    ColorAttributeInputComponent,
+} from '../color-attribute-input/color-attribute-input.component';
 import {ColorBreakpoint} from '../color-breakpoint.model';
 import {Measurement} from '@geoengine/openapi-client';
 import {ClassificationMeasurement} from '../../layers/measurement';
+import {FormsModule} from '@angular/forms';
+import {MatIconButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
     selector: 'geoengine-color-table-editor',
     templateUrl: './color-table-editor.component.html',
     styleUrls: ['./color-table-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        CdkVirtualScrollViewport,
+        CdkFixedSizeVirtualScroll,
+        CdkVirtualForOf,
+        ColorAttributeInputComponent,
+        FormsModule,
+        MatIconButton,
+        MatIcon,
+    ],
 })
 export class ColorTableEditorComponent implements OnInit, OnChanges {
     // Symbology to use for creating color tabs

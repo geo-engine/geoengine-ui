@@ -4,14 +4,34 @@ import {LoadingState} from '../../project/loading-state.model';
 import {ProjectService} from '../../project/project.service';
 import {PlotDetailViewComponent} from '../plot-detail-view/plot-detail-view.component';
 import {MatDialog} from '@angular/material/dialog';
-import {createIconDataUrl, GeoEngineError, Plot} from '@geoengine/common';
+import {createIconDataUrl, GeoEngineError, Plot, CommonModule, FxLayoutDirective, FxFlexDirective} from '@geoengine/common';
+import {MatCard, MatCardHeader, MatCardAvatar, MatCardTitle, MatCardSubtitle, MatCardContent, MatCardActions} from '@angular/material/card';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {MatIconButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {JsonPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-plot-list-entry',
     templateUrl: './plot-list-entry.component.html',
     styleUrls: ['./plot-list-entry.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatCard,
+        MatCardHeader,
+        MatCardAvatar,
+        MatCardTitle,
+        MatCardSubtitle,
+        MatCardContent,
+        MatProgressSpinner,
+        CommonModule,
+        MatCardActions,
+        FxLayoutDirective,
+        MatIconButton,
+        MatIcon,
+        FxFlexDirective,
+        JsonPipe,
+    ],
 })
 export class PlotListEntryComponent implements OnChanges {
     @Input()

@@ -2,18 +2,32 @@ import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, ViewChild, In
 import {DatasetService} from '../dataset.service';
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, EMPTY, Observable, range, Subject} from 'rxjs';
-import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
+import {CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf} from '@angular/cdk/scrolling';
 import {concatMap, filter, first, scan, tap} from 'rxjs/operators';
 import {LayoutService} from '../../layout.service';
 import {UUID} from '../../backend/backend.model';
 import {Dataset} from '@geoengine/common';
+import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
+import {MatNavList} from '@angular/material/list';
+import {DatasetComponent} from '../dataset/dataset.component';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-dataset-list',
     templateUrl: './dataset-list.component.html',
     styleUrls: ['./dataset-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        CdkVirtualScrollViewport,
+        CdkFixedSizeVirtualScroll,
+        MatNavList,
+        CdkVirtualForOf,
+        DatasetComponent,
+        MatProgressSpinner,
+        AsyncPipe,
+    ],
 })
 export class DatasetListComponent implements OnInit, AfterViewInit {
     @ViewChild(CdkVirtualScrollViewport)

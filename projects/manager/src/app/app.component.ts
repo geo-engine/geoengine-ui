@@ -1,6 +1,6 @@
 import {OnInit, ViewContainerRef} from '@angular/core';
 import {Component} from '@angular/core';
-import {Router} from '@angular/router';
+import {Router, RouterOutlet} from '@angular/router';
 import {Location} from '@angular/common';
 import {UserService} from '@geoengine/common';
 import {firstValueFrom} from 'rxjs';
@@ -9,7 +9,7 @@ import {firstValueFrom} from 'rxjs';
     selector: 'geoengine-root',
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss',
-    standalone: false,
+    imports: [RouterOutlet],
 })
 export class AppComponent implements OnInit {
     constructor(

@@ -34,9 +34,9 @@ a {
 
 .mat-mdc-snack-bar-container {
     &.error-snackbar {
-        --mdc-snackbar-container-color: red;
+        --mat-snackbar-container-color: red;
         --mat-mdc-snack-bar-button-color: #fff;
-        --mdc-snackbar-supporting-text-color: #fff;
+        --mat-snackbar-supporting-text-color: #fff;
         --mat-snack-bar-button-color: #fff;
     }
 }

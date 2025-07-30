@@ -17,9 +17,9 @@
         <ng-container operatorParameters>
             <mat-form-field>
                 <mat-select placeholder="Time Tick Position" formControlName="timePosition">
-                    <mat-option *ngFor="let timePosition of timePositionOptions" [value]="timePosition.value">{{
-                        timePosition.label
-                    }}</mat-option>
+                    @for (timePosition of timePositionOptions; track timePosition) {
+                        <mat-option [value]="timePosition.value">{{ timePosition.label }}</mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
             <mat-checkbox color="primary" formControlName="area">Fill area under curve</mat-checkbox>
@@ -30,13 +30,9 @@
                 formControlName="name"
                 [suggestion]="'Temporal Raster Mean Plot of ' + (form.controls.layer.valueChanges | async)?.name"
             >
-                <mat-hint
-                    align="end"
-                    class="error"
-                    *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
-                >
-                    The name must be non-empty.
-                </mat-hint>
+                @if (form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace) {
+                    <mat-hint align="end" class="error"> The name must be non-empty. </mat-hint>
+                }
             </geoengine-operator-output-name>
         </ng-container>
 

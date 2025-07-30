@@ -12,14 +12,30 @@ import {
     VectorSymbology,
     VectorSymbologyDict,
     createVectorSymbology,
+    AsyncValueDefault,
 } from '@geoengine/common';
+import {MatCard, MatCardHeader, MatCardAvatar, MatCardTitle, MatCardSubtitle, MatCardContent} from '@angular/material/card';
+import {MatIcon} from '@angular/material/icon';
+import {MatButton} from '@angular/material/button';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-accordion-vector-entry',
     templateUrl: './accordion-vector-entry.component.html',
     styleUrls: ['./accordion-vector-entry.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatCard,
+        MatCardHeader,
+        MatIcon,
+        MatCardAvatar,
+        MatCardTitle,
+        MatCardSubtitle,
+        MatCardContent,
+        MatButton,
+        AsyncPipe,
+        AsyncValueDefault,
+    ],
 })
 export class AccordionVectorEntryComponent implements OnInit {
     @Input() collection!: ProviderLayerCollectionIdDict;

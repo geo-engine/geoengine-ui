@@ -1,6 +1,6 @@
 import {Observable, BehaviorSubject, first, filter, map, forkJoin} from 'rxjs';
 import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
-import {MatIconRegistry} from '@angular/material/icon';
+import {MatIconRegistry, MatIcon} from '@angular/material/icon';
 import {
     LayoutService,
     ProjectService,
@@ -10,14 +10,35 @@ import {
     SidenavContainerComponent,
     LayerCollectionListingDict,
     SymbologyEditorComponent,
+    CoreModule,
 } from '@geoengine/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AppConfig} from '../app-config.service';
 import moment from 'moment';
 import {DataSelectionService} from '../data-selection.service';
 import {AppDatasetService} from '../app-dataset.service';
-import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
-import {Layer, LayersService, Time, UserService} from '@geoengine/common';
+import {MatDrawerToggleResult, MatSidenav, MatSidenavContainer} from '@angular/material/sidenav';
+import {Layer, LayersService, Time, UserService, AsyncStringSanitizer, AsyncValueDefault} from '@geoengine/common';
+import {MatToolbar} from '@angular/material/toolbar';
+import {
+    MatAccordion,
+    MatExpansionPanel,
+    MatExpansionPanelHeader,
+    MatExpansionPanelTitle,
+    MatExpansionPanelDescription,
+    MatExpansionPanelContent,
+} from '@angular/material/expansion';
+import {MatTabGroup, MatTab} from '@angular/material/tabs';
+import {AccordionEntryComponent} from '../accordion-entry/accordion-entry.component';
+import {AccordionVectorEntryComponent} from '../accordion-vector-entry/accordion-vector-entry.component';
+import {AboutComponent} from '../about/about.component';
+import {MatButton} from '@angular/material/button';
+import {MatCard} from '@angular/material/card';
+import {AnalysisComponent} from '../analysis/analysis.component';
+import {DataPointComponent} from '../data-point/data-point.component';
+import {LegendComponent} from '../legend/legend.component';
+import {MatProgressBar} from '@angular/material/progress-bar';
+import {AsyncPipe} from '@angular/common';
 
 interface LayerCollectionBiListing {
     name: string;
@@ -31,7 +52,34 @@ interface LayerCollectionBiListing {
     templateUrl: './main.component.html',
     styleUrls: ['./main.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatSidenavContainer,
+        MatToolbar,
+        MatAccordion,
+        MatExpansionPanel,
+        MatExpansionPanelHeader,
+        MatExpansionPanelTitle,
+        MatExpansionPanelDescription,
+        MatIcon,
+        MatTabGroup,
+        MatTab,
+        AccordionEntryComponent,
+        AccordionVectorEntryComponent,
+        MatExpansionPanelContent,
+        AboutComponent,
+        MatButton,
+        CoreModule,
+        MatCard,
+        AnalysisComponent,
+        DataPointComponent,
+        LegendComponent,
+        MapContainerComponent,
+        MatSidenav,
+        MatProgressBar,
+        AsyncPipe,
+        AsyncStringSanitizer,
+        AsyncValueDefault,
+    ],
 })
 export class MainComponent implements OnInit, AfterViewInit {
     @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
