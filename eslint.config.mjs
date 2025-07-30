@@ -63,6 +63,7 @@ export default defineConfig([
                     style: 'camelCase',
                 },
             ],
+            '@angular-eslint/prefer-signals': 'warn',
 
             '@typescript-eslint/array-type': ['off', {default: 'generic'}],
             '@typescript-eslint/consistent-type-definitions': 'error',
@@ -149,7 +150,6 @@ export default defineConfig([
             '@typescript-eslint/unbound-method': ['error', {ignoreStatic: true}],
             '@typescript-eslint/no-floating-promises': 'warn', // TODO: fix promises
             '@typescript-eslint/no-inferrable-types': ['error', {ignoreParameters: true, ignoreProperties: true}],
-            '@angular-eslint/prefer-inject': 'warn', // TODO: use @inject()
 
             'prefer-arrow/prefer-arrow-functions': [
                 'error',

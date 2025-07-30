@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router} from '@angular/router';
 
 import {Observable, map, skipWhile} from 'rxjs';
@@ -8,10 +8,8 @@ import {UserService} from '../../user/user.service';
     providedIn: 'root',
 })
 export class BackendAvailableGuard {
-    constructor(
-        private readonly userService: UserService,
-        private router: Router,
-    ) {}
+    private readonly userService = inject(UserService);
+    private router = inject(Router);
 
     canActivate(
         _route: ActivatedRouteSnapshot,

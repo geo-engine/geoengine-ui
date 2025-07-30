@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, inject} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
@@ -73,6 +73,10 @@ const isVectorLayer = (layer: Layer): boolean => {
     ],
 })
 export class HistogramOperatorComponent implements AfterViewInit, OnDestroy {
+    private readonly projectService = inject(ProjectService);
+    private readonly notificationService = inject(NotificationService);
+    private readonly formBuilder = inject(UntypedFormBuilder);
+
     minNumberOfBuckets = 1;
     maxNumberOfBuckets = 100;
 
@@ -89,11 +93,7 @@ export class HistogramOperatorComponent implements AfterViewInit, OnDestroy {
     /**
      * DI for services
      */
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly notificationService: NotificationService,
-        private readonly formBuilder: UntypedFormBuilder,
-    ) {
+    constructor() {
         const layerControl = this.formBuilder.control(undefined, Validators.required);
         const rangeTypeControl = this.formBuilder.control('data', Validators.required);
         this.form = this.formBuilder.group({

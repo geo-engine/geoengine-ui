@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, ViewContainerRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ViewContainerRef, inject} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {Router, RouterOutlet} from '@angular/router';
@@ -12,13 +12,13 @@ import {UserService} from '@geoengine/common';
     imports: [RouterOutlet],
 })
 export class AppComponent {
-    constructor(
-        private readonly iconRegistry: MatIconRegistry,
-        private readonly sanitizer: DomSanitizer,
-        private readonly userService: UserService,
-        private readonly router: Router,
-        private readonly vcRef: ViewContainerRef,
-    ) {
+    private readonly iconRegistry = inject(MatIconRegistry);
+    private readonly sanitizer = inject(DomSanitizer);
+    private readonly userService = inject(UserService);
+    private readonly router = inject(Router);
+    private readonly vcRef = inject(ViewContainerRef);
+
+    constructor() {
         this.registerIcons();
 
         this.setupLogoutCallback();

@@ -13,7 +13,7 @@ import {
     AfterViewInit,
     Renderer2,
     Injector,
-    SkipSelf,
+    inject,
 } from '@angular/core';
 import {SidenavRef} from '../sidenav-ref.service';
 import {LayoutService, SidenavConfig} from '../../layout.service';
@@ -56,6 +56,10 @@ import {AsyncPipe} from '@angular/common';
     ],
 })
 export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestroy {
+    readonly sidenavRef = inject(SidenavRef);
+    readonly layoutService = inject(LayoutService);
+    private readonly renderer = inject(Renderer2);
+
     @ViewChild('target', {read: ViewContainerRef, static: true})
     target!: ViewContainerRef;
 
@@ -76,12 +80,9 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
     /**
      * DI for services
      */
-    constructor(
-        public readonly sidenavRef: SidenavRef,
-        public readonly layoutService: LayoutService,
-        private readonly renderer: Renderer2,
-        @SkipSelf() parentInjector: Injector,
-    ) {
+    constructor() {
+        const parentInjector = inject(Injector, {skipSelf: true});
+
         const sidenav: MatSidenav = parentInjector.get<MatSidenav>(MatSidenav);
 
         this.sidenavPosition = sidenav.position;

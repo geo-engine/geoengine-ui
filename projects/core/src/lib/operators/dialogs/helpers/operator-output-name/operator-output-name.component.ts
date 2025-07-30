@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, ChangeDetectorRef, AfterViewInit, input, linkedSignal} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ChangeDetectorRef, AfterViewInit, input, linkedSignal, inject} from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor, FormsModule} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
@@ -12,6 +12,8 @@ import {MatInputModule} from '@angular/material/input';
     imports: [MatFormFieldModule, FormsModule, MatInputModule],
 })
 export class OperatorOutputNameComponent implements ControlValueAccessor, AfterViewInit {
+    private changeDetectorRef = inject(ChangeDetectorRef);
+
     type = input<'Layer' | 'Plot'>('Layer');
     suggestion = input<string>('');
 
@@ -19,8 +21,6 @@ export class OperatorOutputNameComponent implements ControlValueAccessor, AfterV
 
     private onTouched?: () => void;
     private onChange?: (_: string) => void = undefined;
-
-    constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
     ngAfterViewInit(): void {
         // once for rendering the input properly

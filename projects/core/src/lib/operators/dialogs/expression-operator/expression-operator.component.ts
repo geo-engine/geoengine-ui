@@ -1,6 +1,6 @@
 import {map, mergeMap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {AfterViewInit, ChangeDetectionStrategy, Component, Input, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, Input, ViewChild, inject} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {ProjectService} from '../../../project/project.service';
@@ -82,6 +82,9 @@ interface ExpressionForm {
     ],
 })
 export class ExpressionOperatorComponent implements AfterViewInit {
+    protected readonly projectService = inject(ProjectService);
+    protected readonly layoutService = inject(LayoutService);
+
     /**
      * If the list is empty, show the following button.
      */
@@ -109,10 +112,7 @@ export class ExpressionOperatorComponent implements AfterViewInit {
     /**
      * DI of services and setup of observables for the template
      */
-    constructor(
-        protected readonly projectService: ProjectService,
-        protected readonly layoutService: LayoutService,
-    ) {
+    constructor() {
         this.form = new FormGroup<ExpressionForm>({
             rasterLayer: new FormControl<RasterLayer | undefined>(undefined, {
                 nonNullable: true,

@@ -1,4 +1,13 @@
-import {Component, ChangeDetectionStrategy, ViewChild, AfterViewInit, OnDestroy, ChangeDetectorRef, Injectable} from '@angular/core';
+import {
+    Component,
+    ChangeDetectionStrategy,
+    ViewChild,
+    AfterViewInit,
+    OnDestroy,
+    ChangeDetectorRef,
+    Injectable,
+    inject,
+} from '@angular/core';
 import {MatPaginator, MatPaginatorIntl, PageEvent} from '@angular/material/paginator';
 import {combineLatest, forkJoin, map, mergeMap, of, startWith, Subject, Subscription, switchMap} from 'rxjs';
 import {TaskStatusDict, TaskStatusType, UUID} from '../../backend/backend.model';
@@ -84,6 +93,11 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     ],
 })
 export class TaskListComponent implements AfterViewInit, OnDestroy {
+    protected readonly userService = inject(UserService);
+    protected readonly backend = inject(BackendService);
+    protected readonly changeDetectorRef = inject(ChangeDetectorRef);
+    protected readonly notificationService = inject(NotificationService);
+
     taskStatusOptions: Array<TaskStatusType> = ['running', 'completed', 'aborted', 'failed'];
     pageSize = 15; // current backend does not allow > 20 and we need one more for the next page check
 
@@ -96,13 +110,6 @@ export class TaskListComponent implements AfterViewInit, OnDestroy {
     @ViewChild(MatPaginator) paginator!: MatPaginator;
 
     protected taskSubscription?: Subscription;
-
-    constructor(
-        protected readonly userService: UserService,
-        protected readonly backend: BackendService,
-        protected readonly changeDetectorRef: ChangeDetectorRef,
-        protected readonly notificationService: NotificationService,
-    ) {}
 
     ngOnDestroy(): void {
         this.taskSubscription?.unsubscribe();

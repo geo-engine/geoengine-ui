@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, inject} from '@angular/core';
 import {PlotDataDict} from '../../backend/backend.model';
 import {LoadingState} from '../../project/loading-state.model';
 import {ProjectService} from '../../project/project.service';
@@ -34,6 +34,9 @@ import {JsonPipe} from '@angular/common';
     ],
 })
 export class PlotListEntryComponent implements OnChanges {
+    private readonly projectService = inject(ProjectService);
+    private readonly dialog = inject(MatDialog);
+
     @Input()
     plot!: Plot;
 
@@ -54,11 +57,6 @@ export class PlotListEntryComponent implements OnChanges {
     isLoading = true;
     isOk = false;
     isError = false;
-
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly dialog: MatDialog,
-    ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.plotData && this.plotData) {

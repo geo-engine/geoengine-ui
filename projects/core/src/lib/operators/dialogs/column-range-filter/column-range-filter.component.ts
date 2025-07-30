@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, OnDestroy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnDestroy, inject} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
@@ -93,6 +93,13 @@ interface RangeForm {
     ],
 })
 export class ColumnRangeFilterComponent implements OnDestroy {
+    private readonly projectService = inject(ProjectService);
+    private readonly formBuilder = inject(FormBuilder);
+    private randomColorService = inject(RandomColorService);
+    protected readonly backend = inject(BackendService);
+    protected readonly userService = inject(UserService);
+    protected readonly mapService = inject(MapService);
+
     readonly inputTypes = ResultTypes.VECTOR_TYPES;
 
     attributes$ = new ReplaySubject<Array<string>>(1);
@@ -104,14 +111,7 @@ export class ColumnRangeFilterComponent implements OnDestroy {
     private currentLayerid = -1;
     private dataType: VectorDataType = VectorDataTypes.MultiPoint;
 
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly formBuilder: FormBuilder,
-        private randomColorService: RandomColorService,
-        protected readonly backend: BackendService,
-        protected readonly userService: UserService,
-        protected readonly mapService: MapService,
-    ) {
+    constructor() {
         const layerControl = this.formBuilder.control<Layer | null>(null, Validators.required);
         this.form = this.formBuilder.group({
             layer: layerControl,

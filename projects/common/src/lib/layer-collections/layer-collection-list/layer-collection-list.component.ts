@@ -8,6 +8,7 @@ import {
     OnChanges,
     SimpleChanges,
     ChangeDetectorRef,
+    inject,
 } from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, EMPTY, from, Observable, range, Subject} from 'rxjs';
@@ -74,6 +75,9 @@ export enum CollectionNavigation {
     ],
 })
 export class LayerCollectionListComponent implements OnChanges {
+    private readonly layersService = inject(LayersService);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+
     readonly CollectionNavigation = CollectionNavigation;
 
     @ViewChild(CdkVirtualScrollViewport)
@@ -107,11 +111,6 @@ export class LayerCollectionListComponent implements OnChanges {
 
     selectedCollection?: LayerCollectionListing;
     selectedLayer?: LayerListing;
-
-    constructor(
-        private readonly layersService: LayersService,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-    ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.collection) {

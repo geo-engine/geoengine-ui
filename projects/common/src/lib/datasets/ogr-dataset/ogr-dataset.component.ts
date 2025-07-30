@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges, inject} from '@angular/core';
 import {FormsModule, ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {DatasetsService} from '../datasets.service';
 import {UploadsService} from '../../uploads/uploads.service';
@@ -22,12 +22,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {timeStepGranularityOptions} from '../../time/time.model';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
-import {
-    FxFlexDirective,
-    FxLayoutAlignDirective,
-    FxLayoutDirective,
-    FxLayoutGapDirective,
-} from '../../util/directives/flexbox-legacy.directive';
+import {FxLayoutDirective} from '../../util/directives/flexbox-legacy.directive';
 
 @Component({
     selector: 'geoengine-ogr-dataset',
@@ -41,15 +36,17 @@ import {
         MatChipsModule,
         MatButtonModule,
         MatIconModule,
-        FxFlexDirective,
         FxLayoutDirective,
-        FxLayoutGapDirective,
-        FxLayoutAlignDirective,
     ],
     templateUrl: './ogr-dataset.component.html',
     styleUrl: './ogr-dataset.component.css',
 })
 export class OgrDatasetComponent implements OnChanges {
+    protected datasetsService = inject(DatasetsService);
+    protected uploadsService = inject(UploadsService);
+    protected userService = inject(UserService);
+    protected changeDetectorRef = inject(ChangeDetectorRef);
+
     vectorDataTypes = ['Data', 'MultiPoint', 'MultiLineString', 'MultiPolygon'];
     timeDurationValueTypes = ['infinite', 'value', 'zero'];
     timeTypes = ['None', 'Start', 'Start/End', 'Start/Duration'];
@@ -69,12 +66,7 @@ export class OgrDatasetComponent implements OnChanges {
 
     readonly defaultTimeGranularity: TimeGranularity = 'seconds';
 
-    constructor(
-        protected datasetsService: DatasetsService,
-        protected uploadsService: UploadsService,
-        protected userService: UserService,
-        protected changeDetectorRef: ChangeDetectorRef,
-    ) {
+    constructor() {
         this.formMetaData = new UntypedFormGroup({
             mainFile: new UntypedFormControl('', Validators.required),
             layerName: new UntypedFormControl('', Validators.required),

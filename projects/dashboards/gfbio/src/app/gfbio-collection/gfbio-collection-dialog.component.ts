@@ -1,4 +1,4 @@
-import {Component, Inject} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef, MatDialogContent} from '@angular/material/dialog';
 import {LayerCollectionItemDict, LayerCollectionLayerDict, ProjectService, CoreModule} from '@geoengine/core';
 import {map, mergeMap} from 'rxjs/operators';
@@ -55,6 +55,14 @@ enum LayerStatus {
     ],
 })
 export class GfBioCollectionDialogComponent {
+    private readonly projectService = inject(ProjectService);
+    private readonly layerService = inject(LayersService);
+    private readonly dialogRef = inject<MatDialogRef<GfBioCollectionDialogComponent>>(MatDialogRef);
+    private readonly notificationService = inject(NotificationService);
+    private config = inject<{
+        result: LayerCollection;
+    }>(MAT_DIALOG_DATA);
+
     collection: LayerCollection;
     projectHasLayers$: Observable<boolean>;
 
@@ -63,13 +71,9 @@ export class GfBioCollectionDialogComponent {
 
     selection = new SelectionModel<CollectionItem>(true);
 
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly layerService: LayersService,
-        private readonly dialogRef: MatDialogRef<GfBioCollectionDialogComponent>,
-        private readonly notificationService: NotificationService,
-        @Inject(MAT_DIALOG_DATA) private config: {result: LayerCollection},
-    ) {
+    constructor() {
+        const config = this.config;
+
         this.collection = config.result;
         this.projectHasLayers$ = this.projectService.getLayerStream().pipe(map((layers) => layers.length > 0));
         this.okLayersInCollection$.next(this.getFilteredLayers().length > 0);

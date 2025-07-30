@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, Inject} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogContent, MatDialogActions, MatDialogClose} from '@angular/material/dialog';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {Geometry} from 'ol/geom';
@@ -29,13 +29,15 @@ import {MatButton} from '@angular/material/button';
     ],
 })
 export class FullDisplayComponent implements OnInit {
+    data = inject<{
+        xStrings: string[];
+        yStrings: string[];
+        geometry: Geometry;
+    }>(MAT_DIALOG_DATA);
+    private clipboard = inject(Clipboard);
+
     xCoords: string[] = [];
     yCoords: string[] = [];
-
-    constructor(
-        @Inject(MAT_DIALOG_DATA) public data: {xStrings: string[]; yStrings: string[]; geometry: Geometry},
-        private clipboard: Clipboard,
-    ) {}
 
     ngOnInit(): void {
         this.xCoords = this.data.xStrings;

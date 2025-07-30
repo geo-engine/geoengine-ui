@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, inject} from '@angular/core';
 import {FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
@@ -64,6 +64,9 @@ interface PieChartForm {
     ],
 })
 export class PieChartComponent implements AfterViewInit, OnDestroy {
+    private readonly projectService = inject(ProjectService);
+    private readonly notificationService = inject(NotificationService);
+
     minNumberOfBuckets = 1;
     maxNumberOfBuckets = 100;
 
@@ -78,10 +81,7 @@ export class PieChartComponent implements AfterViewInit, OnDestroy {
     /**
      * DI for services
      */
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly notificationService: NotificationService,
-    ) {
+    constructor() {
         this.form = new FormGroup({
             name: new FormControl('Filtered Values', {
                 validators: [Validators.required, geoengineValidators.notOnlyWhitespace],

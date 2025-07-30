@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap} from 'rxjs/operators';
@@ -76,6 +76,9 @@ interface TimeShiftForm {
     ],
 })
 export class TimeShiftComponent implements AfterViewInit {
+    private readonly projectService = inject(ProjectService);
+    private readonly notificationService = inject(NotificationService);
+
     readonly inputTypes = [ResultTypes.RASTER, ...ResultTypes.VECTOR_TYPES];
 
     readonly timeGranularityOptions: Array<TimeStepGranularityDict> = timeStepGranularityOptions;
@@ -88,10 +91,7 @@ export class TimeShiftComponent implements AfterViewInit {
     form: FormGroup<TimeShiftForm>;
     disallowSubmit: Observable<boolean>;
 
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly notificationService: NotificationService,
-    ) {
+    constructor() {
         const form = new FormGroup<TimeShiftForm>({
             name: new FormControl('Time Shift', {
                 validators: [Validators.required, geoengineValidators.notOnlyWhitespace],

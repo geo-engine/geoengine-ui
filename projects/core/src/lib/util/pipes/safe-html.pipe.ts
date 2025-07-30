@@ -1,5 +1,5 @@
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
-import {Pipe, PipeTransform} from '@angular/core';
+import {Pipe, PipeTransform, inject} from '@angular/core';
 
 /**
  * This pipe is a workaround for to strict html sanitazion:
@@ -7,7 +7,7 @@ import {Pipe, PipeTransform} from '@angular/core';
  */
 @Pipe({name: 'geoengineSafeHtml'})
 export class SafeHtmlPipe implements PipeTransform {
-    constructor(private sanitizer: DomSanitizer) {}
+    private sanitizer = inject(DomSanitizer);
 
     transform(value: string): SafeHtml {
         return this.sanitizer.bypassSecurityTrustHtml(value);

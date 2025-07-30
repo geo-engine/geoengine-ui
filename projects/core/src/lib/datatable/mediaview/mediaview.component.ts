@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy, inject} from '@angular/core';
 import {MediaviewDialogComponent} from './dialog/mediaview.dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {VectorColumnDataType, VectorColumnDataTypes} from '@geoengine/common';
@@ -19,6 +19,8 @@ import {MatIcon} from '@angular/material/icon';
  * The dialog will show the images or play the audios or videos.
  */
 export class MediaviewComponent implements OnInit {
+    private readonly mediadialog = inject(MatDialog);
+
     mediaType: Array<string> = [];
     mediaUrls: Array<string> = [];
 
@@ -27,8 +29,6 @@ export class MediaviewComponent implements OnInit {
     @Input() type!: VectorColumnDataType;
 
     private urls: Array<string> = [];
-
-    constructor(private readonly mediadialog: MatDialog) {}
 
     /**
      * Extracts the type (image, audio, video) of a given file-url string.

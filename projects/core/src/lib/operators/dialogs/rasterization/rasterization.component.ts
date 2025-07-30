@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy, ViewChild, inject} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {mergeMap} from 'rxjs/operators';
@@ -85,6 +85,10 @@ interface DensityForm {
     ],
 })
 export class RasterizationComponent implements OnDestroy {
+    private projectService = inject(ProjectService);
+    private readonly notificationService = inject(NotificationService);
+    private formBuilder = inject(FormBuilder);
+
     selected = new FormControl(0, {validators: [Validators.required], nonNullable: true});
 
     readonly inputTypes = [ResultTypes.POINTS];
@@ -97,11 +101,7 @@ export class RasterizationComponent implements OnDestroy {
     @ViewChild(SymbologyCreatorComponent)
     readonly symbologyCreator!: SymbologyCreatorComponent;
 
-    constructor(
-        private projectService: ProjectService,
-        private readonly notificationService: NotificationService,
-        private formBuilder: FormBuilder,
-    ) {
+    constructor() {
         const layerControl = new FormControl<Layer | undefined>(undefined, {
             nonNullable: true,
             validators: [Validators.required],

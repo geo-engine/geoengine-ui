@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogContent} from '@angular/material/dialog';
 import {BehaviorSubject, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../project/project.service';
@@ -18,6 +18,9 @@ import {AsyncPipe, JsonPipe} from '@angular/common';
     imports: [DialogHeaderComponent, CdkScrollable, MatDialogContent, MatProgressBar, CommonModule, AsyncPipe, JsonPipe],
 })
 export class PlotDetailViewComponent implements OnInit, AfterViewInit, OnDestroy {
+    projectService = inject(ProjectService);
+    plot = inject<Plot>(MAT_DIALOG_DATA);
+
     // TODO: implement strategy for PNGs
 
     maxWidth$ = new ReplaySubject<number>(1);
@@ -30,11 +33,6 @@ export class PlotDetailViewComponent implements OnInit, AfterViewInit, OnDestroy
     plotData?: PlotDataDict;
 
     private dataSubscription?: Subscription;
-
-    constructor(
-        public projectService: ProjectService,
-        @Inject(MAT_DIALOG_DATA) public plot: Plot,
-    ) {}
 
     ngOnInit(): void {
         this.dataSubscription = this.projectService.getPlotDataStream(this.plot).subscribe((plotData) => {

@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy, inject} from '@angular/core';
 import {Validators, FormBuilder, FormControl, FormArray, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {ProjectService} from '../../../project/project.service';
@@ -89,6 +89,9 @@ const isRasterLayer = (layer: Layer | null): boolean => {
     ],
 })
 export class StatisticsPlotComponent implements AfterViewInit, OnDestroy {
+    private formBuilder = inject(FormBuilder);
+    private projectService = inject(ProjectService);
+
     readonly allowedLayerTypes = ResultTypes.LAYER_TYPES;
 
     readonly RASTER_TYPE = [ResultTypes.RASTER];
@@ -103,10 +106,7 @@ export class StatisticsPlotComponent implements AfterViewInit, OnDestroy {
 
     private subscriptions: Array<Subscription> = [];
 
-    constructor(
-        private formBuilder: FormBuilder,
-        private projectService: ProjectService,
-    ) {
+    constructor() {
         const layerControl = this.formBuilder.control<Layer | null>(null, Validators.required);
         this.form = this.formBuilder.group({
             layer: layerControl,

@@ -8,6 +8,7 @@ import {
     SimpleChanges,
     Output,
     EventEmitter,
+    inject,
 } from '@angular/core';
 import vegaEmbed from 'vega-embed';
 import {View} from 'vega';
@@ -23,6 +24,9 @@ import {CommonConfig} from '../../config.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VegaViewerComponent implements OnChanges {
+    protected element = inject(ElementRef);
+    protected readonly config = inject(CommonConfig);
+
     @Input()
     chartData?: VegaChartData;
 
@@ -43,11 +47,6 @@ export class VegaViewerComponent implements OnChanges {
         vgSpec: VgSpec;
         finalize: () => void;
     } = undefined;
-
-    constructor(
-        protected element: ElementRef,
-        protected readonly config: CommonConfig,
-    ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.chartData || changes.width || changes.height) {

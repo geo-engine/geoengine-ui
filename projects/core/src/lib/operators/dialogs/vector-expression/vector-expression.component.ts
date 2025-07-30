@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy, inject} from '@angular/core';
 import {
     Validators,
     FormBuilder,
@@ -109,6 +109,10 @@ interface VectorColumn {
     ],
 })
 export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
+    private readonly formBuilder = inject(FormBuilder);
+    private readonly projectService = inject(ProjectService);
+    private readonly randomColorService = inject(RandomColorService);
+
     readonly allowedLayerTypes = ResultTypes.VECTOR_TYPES;
 
     readonly inputGeometryType = new BehaviorSubject<GeometryType | undefined>(undefined);
@@ -132,11 +136,7 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
 
     protected readonly subscriptions: Array<Subscription> = [];
 
-    constructor(
-        private readonly formBuilder: FormBuilder,
-        private readonly projectService: ProjectService,
-        private readonly randomColorService: RandomColorService,
-    ) {
+    constructor() {
         const layerControl = this.formBuilder.control<VectorLayer | null>(null, Validators.required);
         this.columnNames = this.formBuilder.nonNullable.array<string | null>([], [Validators.maxLength(MAX_NUMBER_OF_COLUMNS)]);
         this.outputColumnType = this.formBuilder.nonNullable.control<OutputColumnType>('column', Validators.required);

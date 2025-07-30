@@ -1,4 +1,4 @@
-import {Component, signal, ViewChild, WritableSignal} from '@angular/core';
+import {Component, signal, ViewChild, WritableSignal, inject} from '@angular/core';
 import {
     CollectionNavigation,
     LAYER_DB_PROVIDER_ID,
@@ -43,6 +43,9 @@ export type ItemId = {type: ItemType.Layer; layer: UUID} | {type: ItemType.Colle
     ],
 })
 export class LayersComponent {
+    protected readonly layersService = inject(LayersService);
+    protected readonly dialog = inject(MatDialog);
+
     readonly CollectionNavigation = CollectionNavigation;
     readonly ItemType = ItemType;
 
@@ -54,11 +57,6 @@ export class LayersComponent {
     readonly addedItem = signal<LayerListing | LayerCollectionListing | undefined>(undefined);
 
     @ViewChild(LayerCollectionNavigationComponent) layerCollectionNavigationComponent!: LayerCollectionNavigationComponent;
-
-    constructor(
-        protected readonly layersService: LayersService,
-        protected readonly dialog: MatDialog,
-    ) {}
 
     selectLayer(layer: LayerListing): void {
         this.selectedItem.set({layer, type: ItemType.Layer});

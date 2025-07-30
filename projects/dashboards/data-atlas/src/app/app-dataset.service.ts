@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import moment from 'moment';
 import {mergeMap, Observable} from 'rxjs';
 import {DatasetService, BackendService, ProjectService} from '@geoengine/core';
@@ -7,14 +7,20 @@ import {Dataset, RandomColorService, RasterLayer, RasterSymbology, Time, UserSer
 
 @Injectable()
 export class AppDatasetService extends DatasetService {
-    constructor(
-        protected override readonly backend: BackendService,
-        protected override readonly userService: UserService,
-        protected override readonly projectService: ProjectService,
-        protected override readonly randomColorService: RandomColorService,
-        protected readonly dataSelectionService: DataSelectionService,
-    ) {
-        super(backend, userService, projectService, randomColorService);
+    protected readonly dataSelectionService = inject(DataSelectionService);
+
+    constructor() {
+        const backend = inject(BackendService);
+        const userService = inject(UserService);
+        const projectService = inject(ProjectService);
+        const randomColorService = inject(RandomColorService);
+
+        super();
+
+        this.backend = backend;
+        this.userService = userService;
+        this.projectService = projectService;
+        this.randomColorService = randomColorService;
     }
 
     override addDatasetToMap(dataset: Dataset): Observable<void> {

@@ -1,6 +1,6 @@
 import {BehaviorSubject, zip} from 'rxjs';
 import {first, mergeMap} from 'rxjs/operators';
-import {Component, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
+import {Component, ChangeDetectionStrategy, AfterViewInit, inject} from '@angular/core';
 import {UntypedFormGroup, UntypedFormBuilder, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../project.service';
 import {SpatialReferenceService, WEB_MERCATOR} from '../../spatial-references/spatial-reference.service';
@@ -41,18 +41,18 @@ import {AsyncPipe} from '@angular/common';
     ],
 })
 export class NewProjectComponent implements AfterViewInit {
+    protected formBuilder = inject(UntypedFormBuilder);
+    protected projectService = inject(ProjectService);
+    protected notificationService = inject(NotificationService);
+    protected spatialReferenceService = inject(SpatialReferenceService);
+
     spatialReferenceOptions: Array<NamedSpatialReference>;
 
     form: UntypedFormGroup;
 
     created$ = new BehaviorSubject(false);
 
-    constructor(
-        protected formBuilder: UntypedFormBuilder,
-        protected projectService: ProjectService,
-        protected notificationService: NotificationService,
-        protected spatialReferenceService: SpatialReferenceService,
-    ) {
+    constructor() {
         this.spatialReferenceOptions = this.spatialReferenceService.getSpatialReferences();
         this.form = this.formBuilder.group({
             name: [

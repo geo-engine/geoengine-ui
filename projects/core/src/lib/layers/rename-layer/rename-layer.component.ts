@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, Inject} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, inject} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../../project/project.service';
 import {MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogActions} from '@angular/material/dialog';
@@ -26,16 +26,18 @@ import {MatButton} from '@angular/material/button';
     ],
 })
 export class RenameLayerComponent implements OnInit {
+    private projectService = inject(ProjectService);
+    private formBuilder = inject(UntypedFormBuilder);
+    private dialogRef = inject<MatDialogRef<RenameLayerComponent>>(MatDialogRef);
+    private config = inject<{
+        layer?: Layer;
+    }>(MAT_DIALOG_DATA);
+
     form: UntypedFormGroup;
 
     private layer?: Layer;
 
-    constructor(
-        private projectService: ProjectService,
-        private formBuilder: UntypedFormBuilder,
-        private dialogRef: MatDialogRef<RenameLayerComponent>,
-        @Inject(MAT_DIALOG_DATA) private config: {layer?: Layer},
-    ) {
+    constructor() {
         this.form = this.formBuilder.group({
             layerName: [undefined, Validators.required],
         });

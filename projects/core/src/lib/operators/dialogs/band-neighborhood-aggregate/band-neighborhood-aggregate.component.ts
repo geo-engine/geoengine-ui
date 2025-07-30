@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ViewChild, inject} from '@angular/core';
 import {
     FormControl,
     FormGroup,
@@ -76,6 +76,8 @@ enum NeighborhoodAggregate {
     ],
 })
 export class BandNeighborhoodAggregateComponent {
+    private readonly projectService = inject(ProjectService);
+
     readonly RASTER_TYPE = [ResultTypes.RASTER];
     readonly rasterDataTypes = RasterDataTypes.ALL_DATATYPES;
 
@@ -89,7 +91,7 @@ export class BandNeighborhoodAggregateComponent {
     @ViewChild(SymbologyCreatorComponent)
     readonly symbologyCreator!: SymbologyCreatorComponent;
 
-    constructor(private readonly projectService: ProjectService) {
+    constructor() {
         this.form = new FormGroup<RasterStackerForm>({
             rasterLayer: new FormControl<RasterLayer | undefined>(undefined, {
                 nonNullable: true,

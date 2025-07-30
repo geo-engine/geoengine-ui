@@ -12,6 +12,7 @@ import {SpatialReferenceService, WGS_84} from '../spatial-references/spatial-ref
 import {first, mergeMap, tap} from 'rxjs/operators';
 import {Configuration, DefaultConfig} from '@geoengine/openapi-client';
 import {LayersService, NotificationService, SpatialReferenceSpecification, Time, UserService} from '@geoengine/common';
+import {TestBed} from '@angular/core/testing';
 
 describe('test project methods in projectService', () => {
     let notificationServiceSpy: {get: jasmine.Spy};
@@ -94,15 +95,20 @@ describe('test project methods in projectService', () => {
             }),
         );
 
-        projectService = new ProjectService(
-            DEFAULT_CORE_CONFIG as CoreConfig,
-            notificationServiceSpy as unknown as NotificationService,
-            mapServiceSpy as unknown as MapService,
-            backendSpy as unknown as BackendService,
-            userServiceSpy as unknown as UserService,
-            spatialReferenceSpy as unknown as SpatialReferenceService,
-            layersServiceSpy as unknown as LayersService,
-        );
+        TestBed.configureTestingModule({
+            providers: [
+                ProjectService,
+                {provide: CoreConfig, useValue: DEFAULT_CORE_CONFIG},
+                {provide: NotificationService, useValue: notificationServiceSpy},
+                {provide: MapService, useValue: mapServiceSpy},
+                {provide: BackendService, useValue: backendSpy},
+                {provide: UserService, useValue: userServiceSpy},
+                {provide: SpatialReferenceService, useValue: spatialReferenceSpy},
+                {provide: LayersService, useValue: layersServiceSpy},
+            ],
+        });
+
+        projectService = TestBed.inject(ProjectService);
     });
 
     it('#createDefaultProject should create a default project', (done) => {

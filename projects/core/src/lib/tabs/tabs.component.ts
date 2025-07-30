@@ -11,6 +11,7 @@ import {
     ComponentFactoryResolver,
     Injector,
     ChangeDetectorRef,
+    inject,
 } from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -36,6 +37,13 @@ const TAB_WIDTH_PCT_MAX = 20;
     imports: [MatButton, MatTooltip, MatIcon, MatTabNav, MatTabLink, FxFlexDirective, MatTabNavPanel, CdkPortalOutlet, AsyncPipe],
 })
 export class TabsComponent implements OnChanges, OnDestroy {
+    readonly tabsService = inject(TabsService);
+    protected readonly layoutService = inject(LayoutService);
+    protected readonly config = inject(CoreConfig);
+    protected readonly componentFactoryResolver = inject(ComponentFactoryResolver);
+    protected readonly injector = inject(Injector);
+    protected readonly changeDetectorRef = inject(ChangeDetectorRef);
+
     @HostBinding('class.mat-elevation-z4') elevationStyle = true;
     @ViewChild(CdkPortalOutlet) portalOutlet!: CdkPortalOutlet;
 
@@ -51,14 +59,7 @@ export class TabsComponent implements OnChanges, OnDestroy {
 
     protected activeTabSubscription: Subscription;
 
-    constructor(
-        public readonly tabsService: TabsService,
-        protected readonly layoutService: LayoutService,
-        protected readonly config: CoreConfig,
-        protected readonly componentFactoryResolver: ComponentFactoryResolver,
-        protected readonly injector: Injector,
-        protected readonly changeDetectorRef: ChangeDetectorRef,
-    ) {
+    constructor() {
         this.toggleTooltipDelay = this.config.DELAYS.TOOLTIP;
 
         this.activeTabSubscription = this.tabsService.getActiveTabChanges().subscribe((tabContent) => {

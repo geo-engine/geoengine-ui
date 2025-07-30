@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, ElementRef, AfterViewInit, AfterViewChecked} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ElementRef, AfterViewInit, AfterViewChecked, inject} from '@angular/core';
 import {SidenavRef} from '../sidenav-ref.service';
 
 @Component({
@@ -9,10 +9,8 @@ import {SidenavRef} from '../sidenav-ref.service';
     imports: [],
 })
 export class SidenavHeaderComponent implements AfterViewInit, AfterViewChecked {
-    constructor(
-        private elementRef: ElementRef<HTMLElement>,
-        private sidenavRef: SidenavRef,
-    ) {}
+    private elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    private sidenavRef = inject(SidenavRef);
 
     ngAfterViewInit(): void {
         this.sidenavRef.setTitle(this.elementRef.nativeElement.textContent ?? undefined);

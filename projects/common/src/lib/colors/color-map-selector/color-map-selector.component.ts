@@ -9,6 +9,7 @@ import {
     OnInit,
     Output,
     SimpleChanges,
+    inject,
 } from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Subscription} from 'rxjs';
@@ -55,6 +56,9 @@ import {ColorBreakpointsCssGradientPipe, RgbaArrayCssGradientPipe} from '../../u
     ],
 })
 export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
+    protected readonly changeDetectorRef = inject(ChangeDetectorRef);
+    protected readonly formBuilder = inject(UntypedFormBuilder);
+
     /**
      * Emmits colorizer breakpoint arrays
      */
@@ -113,10 +117,9 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
 
     protected readonly largerThanZeroValidator = geoengineValidators.largerThan(0);
 
-    constructor(
-        protected readonly changeDetectorRef: ChangeDetectorRef,
-        protected readonly formBuilder: UntypedFormBuilder,
-    ) {
+    constructor() {
+        const formBuilder = this.formBuilder;
+
         const initialColorMapName = Object.keys(this.colorMaps)[0];
 
         this.form = formBuilder.group({
