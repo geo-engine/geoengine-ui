@@ -1,6 +1,6 @@
 import {DataSource} from '@angular/cdk/collections';
 import {CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
-import {AfterContentInit, Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {AfterContentInit, Component, EventEmitter, inject, Input, Output, ViewChild} from '@angular/core';
 import {LayerProviderListing} from '@geoengine/openapi-client';
 import {BehaviorSubject, concatMap, firstValueFrom, Observable, range, scan, startWith, Subject} from 'rxjs';
 import {LayersService} from '@geoengine/common';
@@ -46,10 +46,8 @@ export class ProviderListComponent implements AfterContentInit {
 
     @Input() selectedProvider$: LayerProviderListing | undefined = undefined;
 
-    constructor(
-        private readonly layersService: LayersService,
-        private readonly dialog: MatDialog,
-    ) {}
+    private readonly layersService = inject(LayersService);
+    private readonly dialog = inject(MatDialog);
 
     ngAfterContentInit(): void {
         this.setUpSource();

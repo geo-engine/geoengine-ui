@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {LayerProviderListing, Permission, TypedDataProviderDefinition} from '@geoengine/openapi-client';
 import {ConfirmationComponent, errorToText, LayersService, PermissionsService} from '@geoengine/common';
 import {firstValueFrom} from 'rxjs';
@@ -49,13 +49,11 @@ export class ProviderEditorComponent implements OnChanges, OnInit {
 
     readonly = false;
 
-    constructor(
-        private readonly layersService: LayersService,
-        private readonly permissionsService: PermissionsService,
-        private readonly dialog: MatDialog,
-        private readonly snackBar: MatSnackBar,
-        private readonly config: AppConfig,
-    ) {}
+    private readonly layersService = inject(LayersService);
+    private readonly permissionsService = inject(PermissionsService);
+    private readonly dialog = inject(MatDialog);
+    private readonly snackBar = inject(MatSnackBar);
+    private readonly config = inject(AppConfig);
 
     ngOnInit(): void {
         this.layersService.getProviderDefinition(this.providerListing.id).then((provider) => {

@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {LayersService} from '@geoengine/common';
 import {ProviderType} from '../provider-editor/provider-editor.component';
 import {TypedDataProviderDefinition} from '@geoengine/openapi-client';
@@ -37,11 +37,9 @@ export class AddProviderComponent {
     protected readonly ProviderType = ProviderType;
     protected readonly Object = Object;
 
-    constructor(
-        private readonly layersService: LayersService,
-        private readonly dialogRef: MatDialogRef<AddProviderComponent>,
-        private readonly matSnackBar: MatSnackBar,
-    ) {}
+    private readonly layersService = inject(LayersService);
+    private readonly dialogRef = inject(MatDialogRef<AddProviderComponent>);
+    private readonly matSnackBar = inject(MatSnackBar);
 
     async createProvider(): Promise<void> {
         try {

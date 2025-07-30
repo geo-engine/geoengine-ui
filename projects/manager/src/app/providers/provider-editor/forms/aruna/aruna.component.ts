@@ -1,5 +1,14 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {AbstractControl, FormBuilder, FormControl, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
+import {Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {
+    AbstractControl,
+    FormBuilder,
+    FormControl,
+    FormGroup,
+    ReactiveFormsModule,
+    ValidationErrors,
+    ValidatorFn,
+    Validators,
+} from '@angular/forms';
 import {ArunaDataProviderDefinition, TypedDataProviderDefinition} from '@geoengine/openapi-client';
 import {isValidUuid} from '@geoengine/common';
 import {IdInputComponent} from '../util/id-input/id-input.component';
@@ -37,31 +46,45 @@ export class ArunaComponent implements OnInit, OnChanges {
 
     @Output() changed = new EventEmitter<TypedDataProviderDefinition>();
 
-    form = this.fb.group({
-        apiToken: this.fb.nonNullable.control('', Validators.required),
-        apiUrl: this.fb.nonNullable.control('', Validators.required),
-        description: this.fb.nonNullable.control(''),
-        filterLabel: this.fb.nonNullable.control(''),
-        id: this.fb.nonNullable.control('', [isValidUuid, Validators.required]),
-        name: this.fb.nonNullable.control('', Validators.required),
-        projectId: this.fb.nonNullable.control('', Validators.required),
-        cacheTtl: this.fb.nonNullable.control<number | undefined>(0, [
-            Validators.min(0),
-            Validators.max(31536000),
-            this.integerValidator(),
-        ]),
-        priority: this.fb.nonNullable.control<number | null | undefined>(0, [
-            Validators.min(-32768),
-            Validators.max(32767),
-            this.integerValidator(),
-        ]),
-    });
+    form!: FormGroup<{
+        apiToken: FormControl<string>;
+        apiUrl: FormControl<string>;
+        description: FormControl<string>;
+        filterLabel: FormControl<string>;
+        id: FormControl<string>;
+        name: FormControl<string>;
+        projectId: FormControl<string>;
+        cacheTtl: FormControl<number | undefined>;
+        priority: FormControl<number | null | undefined>;
+    }>;
 
     errorStateMatcher: ErrorStateMatcher = {
         isErrorState: (control: FormControl | null): boolean => !!control && control.invalid,
     };
 
-    constructor(private fb: FormBuilder) {}
+    private fb = inject(FormBuilder);
+
+    constructor() {
+        this.form = this.fb.group({
+            apiToken: this.fb.nonNullable.control('', Validators.required),
+            apiUrl: this.fb.nonNullable.control('', Validators.required),
+            description: this.fb.nonNullable.control(''),
+            filterLabel: this.fb.nonNullable.control(''),
+            id: this.fb.nonNullable.control('', [isValidUuid, Validators.required]),
+            name: this.fb.nonNullable.control('', Validators.required),
+            projectId: this.fb.nonNullable.control('', Validators.required),
+            cacheTtl: this.fb.nonNullable.control<number | undefined>(0, [
+                Validators.min(0),
+                Validators.max(31536000),
+                this.integerValidator(),
+            ]),
+            priority: this.fb.nonNullable.control<number | null | undefined>(0, [
+                Validators.min(-32768),
+                Validators.max(32767),
+                this.integerValidator(),
+            ]),
+        });
+    }
 
     ngOnInit(): void {
         let definition = this.provider as ArunaDataProviderDefinition;
