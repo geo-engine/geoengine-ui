@@ -73,7 +73,6 @@
                     "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
-                            "codemirror",
                             "dagre-d3",
                             "json-stringify-pretty-compact",
                             "fast-json-stable-stringify",
@@ -101,7 +100,6 @@
                             "projects/common/assets/fonts/poppins/poppins.css",
                             "projects/common/assets/fonts/pacifico/pacifico.css",
                             "projects/common/assets/fonts/material-design-icons/material-icons.css",
-                            "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css",
                             "./node_modules/vis-timeline/dist/vis-timeline-graph2d.min.css"
                         ],
@@ -211,7 +209,6 @@
                     "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
-                            "codemirror",
                             "dagre-d3",
                             "json-stringify-pretty-compact",
                             "fast-json-stable-stringify",
@@ -239,7 +236,6 @@
                             "projects/common/assets/fonts/poppins/poppins.css",
                             "projects/common/assets/fonts/pacifico/pacifico.css",
                             "projects/common/assets/fonts/material-design-icons/material-icons.css",
-                            "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
@@ -348,7 +344,6 @@
                     "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
-                            "codemirror",
                             "dagre-d3",
                             "json-stringify-pretty-compact",
                             "fast-json-stable-stringify",
@@ -376,7 +371,6 @@
                             "projects/common/assets/fonts/poppins/poppins.css",
                             "projects/common/assets/fonts/pacifico/pacifico.css",
                             "projects/common/assets/fonts/material-design-icons/material-icons.css",
-                            "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
@@ -485,7 +479,6 @@
                     "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
-                            "codemirror",
                             "dagre-d3",
                             "json-stringify-pretty-compact",
                             "fast-json-stable-stringify",
@@ -513,7 +506,6 @@
                             "projects/common/assets/fonts/poppins/poppins.css",
                             "projects/common/assets/fonts/pacifico/pacifico.css",
                             "projects/common/assets/fonts/material-design-icons/material-icons.css",
-                            "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
@@ -628,7 +620,6 @@
                     "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
-                            "codemirror",
                             "dagre-d3",
                             "json-stringify-pretty-compact",
                             "fast-json-stable-stringify",
@@ -656,7 +647,6 @@
                             "projects/common/assets/fonts/poppins/poppins.css",
                             "projects/common/assets/fonts/pacifico/pacifico.css",
                             "projects/common/assets/fonts/material-design-icons/material-icons.css",
-                            "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
@@ -784,8 +774,7 @@
                             "projects/manager/src/styles.scss",
                             "projects/common/assets/fonts/poppins/poppins.css",
                             "projects/common/assets/fonts/pacifico/pacifico.css",
-                            "projects/common/assets/fonts/material-design-icons/material-icons.css",
-                            "node_modules/codemirror/lib/codemirror.css"
+                            "projects/common/assets/fonts/material-design-icons/material-icons.css"
                         ],
                         "scripts": ["node_modules/codemirror/lib/codemirror.js"],
                         "browser": "projects/manager/src/main.ts"
@@ -906,7 +895,6 @@
                     "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
-                            "codemirror",
                             "dagre-d3",
                             "json-stringify-pretty-compact",
                             "fast-json-stable-stringify",
@@ -934,7 +922,6 @@
                             "projects/dashboards/ecometrics/src/styles.scss",
                             "projects/common/assets/fonts/material-design-icons/material-icons.css",
                             "projects/common/assets/fonts/poppins/poppins.css",
-                            "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
@@ -1020,7 +1007,6 @@
                     "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
-                            "codemirror",
                             "dagre-d3",
                             "json-stringify-pretty-compact",
                             "fast-json-stable-stringify",
@@ -1048,7 +1034,6 @@
                             "projects/dashboards/esg-indicator-service/src/styles.scss",
                             "projects/common/assets/fonts/material-design-icons/material-icons.css",
                             "projects/common/assets/fonts/poppins/poppins.css",
-                            "node_modules/codemirror/lib/codemirror.css",
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
