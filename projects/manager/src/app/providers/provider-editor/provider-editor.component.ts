@@ -6,7 +6,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {AppConfig} from '../../app-config.service';
 import {ProviderInputComponent} from '../provider-input/provider-input.component';
-import {NgIf} from '@angular/common';
+
 import {MatCard, MatCardContent, MatCardHeader, MatCardSubtitle, MatCardTitle} from '@angular/material/card';
 import {MatHint} from '@angular/material/form-field';
 import {PermissionsComponent} from '../../permissions/permissions.component';
@@ -22,17 +22,16 @@ export enum ProviderType {
     templateUrl: './provider-editor.component.html',
     styleUrl: './provider-editor.component.scss',
     imports: [
-        ProviderInputComponent,
-        NgIf,
-        MatCard,
-        MatCardHeader,
-        MatCardSubtitle,
-        MatCardTitle,
-        MatCardContent,
-        MatHint,
-        PermissionsComponent,
-        MatButton,
-    ],
+    ProviderInputComponent,
+    MatCard,
+    MatCardHeader,
+    MatCardSubtitle,
+    MatCardTitle,
+    MatCardContent,
+    MatHint,
+    PermissionsComponent,
+    MatButton
+],
 })
 export class ProviderEditorComponent implements OnChanges, OnInit {
     @Input({required: true}) providerListing!: LayerProviderListing;

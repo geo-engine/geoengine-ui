@@ -6,7 +6,7 @@ import {BehaviorSubject, concatMap, firstValueFrom, Observable, range, scan, sta
 import {LayersService} from '@geoengine/common';
 import {MatDialog} from '@angular/material/dialog';
 import {AddProviderComponent} from '../add-provider/add-provider.component';
-import {AsyncPipe, NgIf} from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import {MatListItem, MatNavList} from '@angular/material/list';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatIcon} from '@angular/material/icon';
@@ -17,17 +17,16 @@ import {MatButton} from '@angular/material/button';
     templateUrl: './provider-list.component.html',
     styleUrl: './provider-list.component.scss',
     imports: [
-        CdkVirtualScrollViewport,
-        NgIf,
-        AsyncPipe,
-        MatNavList,
-        MatListItem,
-        MatProgressSpinner,
-        CdkVirtualForOf,
-        MatIcon,
-        CdkFixedSizeVirtualScroll,
-        MatButton,
-    ],
+    CdkVirtualScrollViewport,
+    AsyncPipe,
+    MatNavList,
+    MatListItem,
+    MatProgressSpinner,
+    CdkVirtualForOf,
+    MatIcon,
+    CdkFixedSizeVirtualScroll,
+    MatButton
+],
 })
 export class ProviderListComponent implements AfterContentInit {
     @ViewChild(CdkVirtualScrollViewport)

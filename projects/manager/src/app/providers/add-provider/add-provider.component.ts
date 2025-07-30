@@ -10,7 +10,7 @@ import {ProviderInputComponent} from '../provider-input/provider-input.component
 import {MatCard, MatCardContent} from '@angular/material/card';
 import {MatLabel} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
-import {NgForOf} from '@angular/common';
+
 import {MatButton} from '@angular/material/button';
 
 @Component({
@@ -18,17 +18,16 @@ import {MatButton} from '@angular/material/button';
     templateUrl: './add-provider.component.html',
     styleUrl: './add-provider.component.scss',
     imports: [
-        FormsModule,
-        ProviderInputComponent,
-        MatDialogTitle,
-        MatCard,
-        MatCardContent,
-        MatLabel,
-        MatSelect,
-        MatOption,
-        NgForOf,
-        MatButton,
-    ],
+    FormsModule,
+    ProviderInputComponent,
+    MatDialogTitle,
+    MatCard,
+    MatCardContent,
+    MatLabel,
+    MatSelect,
+    MatOption,
+    MatButton
+],
 })
 export class AddProviderComponent {
     providerType: ProviderType = ProviderType.OTHER;

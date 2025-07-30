@@ -15,7 +15,7 @@ import {IdInputComponent} from '../util/id-input/id-input.component';
 import {MatCard, MatCardContent} from '@angular/material/card';
 import {MatError, MatFormField} from '@angular/material/form-field';
 import {MatInput, MatLabel} from '@angular/material/input';
-import {NgIf} from '@angular/common';
+
 import {CdkTextareaAutosize} from '@angular/cdk/text-field';
 import {MatTooltip} from '@angular/material/tooltip';
 import {ErrorStateMatcher} from '@angular/material/core';
@@ -25,18 +25,17 @@ import {ErrorStateMatcher} from '@angular/material/core';
     templateUrl: './aruna.component.html',
     styleUrl: './aruna.component.scss',
     imports: [
-        IdInputComponent,
-        ReactiveFormsModule,
-        MatCard,
-        MatCardContent,
-        MatFormField,
-        MatLabel,
-        MatInput,
-        MatError,
-        NgIf,
-        CdkTextareaAutosize,
-        MatTooltip,
-    ],
+    IdInputComponent,
+    ReactiveFormsModule,
+    MatCard,
+    MatCardContent,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatError,
+    CdkTextareaAutosize,
+    MatTooltip
+],
 })
 export class ArunaComponent implements OnInit, OnChanges {
     @Input() provider?: TypedDataProviderDefinition;

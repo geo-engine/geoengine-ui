@@ -4,13 +4,13 @@ import {TypedDataProviderDefinition} from '@geoengine/openapi-client';
 import {MatTab, MatTabChangeEvent, MatTabGroup} from '@angular/material/tabs';
 import {ProviderJsonInputComponent} from '../provider-json-input/provider-json-input.component';
 import {ArunaComponent} from '../provider-editor/forms/aruna/aruna.component';
-import {NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
+
 
 @Component({
     selector: 'geoengine-manager-provider-input',
     templateUrl: './provider-input.component.html',
     styleUrl: './provider-input.component.scss',
-    imports: [ProviderJsonInputComponent, NgSwitch, ArunaComponent, MatTabGroup, MatTab, NgIf, NgSwitchCase],
+    imports: [ProviderJsonInputComponent, ArunaComponent, MatTabGroup, MatTab],
 })
 export class ProviderInputComponent implements OnInit, OnChanges {
     @Input() providerType: ProviderType = ProviderType.OTHER;

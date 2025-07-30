@@ -1,43 +1,57 @@
 <mat-card>
-    <mat-card-content [formGroup]="form">
-        <geoengine-manager-id-input *ngIf="createNew" formControlName="id"></geoengine-manager-id-input>
-        <mat-form-field>
-            <mat-label>Name</mat-label>
-            <input matInput formControlName="name" [errorStateMatcher]="errorStateMatcher" />
-        </mat-form-field>
-        <mat-form-field>
-            <mat-label>Description</mat-label>
-            <textarea matInput cdkTextareaAutosize formControlName="description"></textarea>
-        </mat-form-field>
-        <mat-form-field>
-            <mat-label>API URL</mat-label>
-            <input matInput formControlName="apiUrl" [errorStateMatcher]="errorStateMatcher" />
-        </mat-form-field>
-        <mat-form-field>
-            <mat-label>API Token</mat-label>
-            <textarea matInput cdkTextareaAutosize formControlName="apiToken" [errorStateMatcher]="errorStateMatcher"></textarea>
-        </mat-form-field>
-        <mat-form-field>
-            <mat-label>Project ID</mat-label>
-            <input matInput formControlName="projectId" [errorStateMatcher]="errorStateMatcher" />
-        </mat-form-field>
-        <mat-form-field>
-            <mat-label matTooltip="The label for filtering">Filter label</mat-label>
-            <input matInput formControlName="filterLabel" />
-        </mat-form-field>
-        <mat-form-field>
-            <mat-label>Cache TTL</mat-label>
-            <input matInput formControlName="cacheTtl" [errorStateMatcher]="errorStateMatcher" />
-            <mat-error *ngIf="cacheTtl.hasError('min')"> Cache TTL must be at least 0 </mat-error>
-            <mat-error *ngIf="cacheTtl.hasError('max')"> Cache TTL must not exceed 31536000 (1 year) </mat-error>
-            <mat-error *ngIf="cacheTtl.hasError('notInteger')"> Cache TTL must be a number </mat-error>
-        </mat-form-field>
-        <mat-form-field>
-            <mat-label>Listing priority</mat-label>
-            <input matInput formControlName="priority" [errorStateMatcher]="errorStateMatcher" />
-            <mat-error *ngIf="priority.hasError('min')"> Priority must be at least -32768 </mat-error>
-            <mat-error *ngIf="priority.hasError('max')"> Priority must not exceed 32767 </mat-error>
-            <mat-error *ngIf="priority.hasError('notInteger')"> Priority must be a number </mat-error>
-        </mat-form-field>
-    </mat-card-content>
+  <mat-card-content [formGroup]="form">
+    @if (createNew) {
+      <geoengine-manager-id-input formControlName="id"></geoengine-manager-id-input>
+    }
+    <mat-form-field>
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" [errorStateMatcher]="errorStateMatcher" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Description</mat-label>
+      <textarea matInput cdkTextareaAutosize formControlName="description"></textarea>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>API URL</mat-label>
+      <input matInput formControlName="apiUrl" [errorStateMatcher]="errorStateMatcher" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>API Token</mat-label>
+      <textarea matInput cdkTextareaAutosize formControlName="apiToken" [errorStateMatcher]="errorStateMatcher"></textarea>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Project ID</mat-label>
+      <input matInput formControlName="projectId" [errorStateMatcher]="errorStateMatcher" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label matTooltip="The label for filtering">Filter label</mat-label>
+      <input matInput formControlName="filterLabel" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Cache TTL</mat-label>
+      <input matInput formControlName="cacheTtl" [errorStateMatcher]="errorStateMatcher" />
+      @if (cacheTtl.hasError('min')) {
+        <mat-error> Cache TTL must be at least 0 </mat-error>
+      }
+      @if (cacheTtl.hasError('max')) {
+        <mat-error> Cache TTL must not exceed 31536000 (1 year) </mat-error>
+      }
+      @if (cacheTtl.hasError('notInteger')) {
+        <mat-error> Cache TTL must be a number </mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Listing priority</mat-label>
+      <input matInput formControlName="priority" [errorStateMatcher]="errorStateMatcher" />
+      @if (priority.hasError('min')) {
+        <mat-error> Priority must be at least -32768 </mat-error>
+      }
+      @if (priority.hasError('max')) {
+        <mat-error> Priority must not exceed 32767 </mat-error>
+      }
+      @if (priority.hasError('notInteger')) {
+        <mat-error> Priority must be a number </mat-error>
+      }
+    </mat-form-field>
+  </mat-card-content>
 </mat-card>
