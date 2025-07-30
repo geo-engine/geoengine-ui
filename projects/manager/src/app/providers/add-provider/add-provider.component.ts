@@ -17,17 +17,7 @@ import {MatButton} from '@angular/material/button';
     selector: 'geoengine-manager-add-provider',
     templateUrl: './add-provider.component.html',
     styleUrl: './add-provider.component.scss',
-    imports: [
-    FormsModule,
-    ProviderInputComponent,
-    MatDialogTitle,
-    MatCard,
-    MatCardContent,
-    MatLabel,
-    MatSelect,
-    MatOption,
-    MatButton
-],
+    imports: [FormsModule, ProviderInputComponent, MatDialogTitle, MatCard, MatCardContent, MatLabel, MatSelect, MatOption, MatButton],
 })
 export class AddProviderComponent {
     providerType: ProviderType = ProviderType.OTHER;

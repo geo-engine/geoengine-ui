@@ -22,16 +22,16 @@ export enum ProviderType {
     templateUrl: './provider-editor.component.html',
     styleUrl: './provider-editor.component.scss',
     imports: [
-    ProviderInputComponent,
-    MatCard,
-    MatCardHeader,
-    MatCardSubtitle,
-    MatCardTitle,
-    MatCardContent,
-    MatHint,
-    PermissionsComponent,
-    MatButton
-],
+        ProviderInputComponent,
+        MatCard,
+        MatCardHeader,
+        MatCardSubtitle,
+        MatCardTitle,
+        MatCardContent,
+        MatHint,
+        PermissionsComponent,
+        MatButton,
+    ],
 })
 export class ProviderEditorComponent implements OnChanges, OnInit {
     readonly providerListing = input.required<LayerProviderListing>();
