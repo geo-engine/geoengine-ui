@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, ViewChild, inject} from '@angular/core';
 import {
     Layer,
     RasterLayer,
@@ -29,6 +29,9 @@ import {AsyncPipe} from '@angular/common';
     imports: [SidenavHeaderComponent, DialogHelpComponent, CommonModule, MatButton, AsyncPipe, AsyncValueDefault],
 })
 export class SymbologyEditorComponent implements OnInit, OnDestroy {
+    private readonly projectService = inject(ProjectService);
+    private readonly mapService = inject(MapService);
+
     @Input({required: true}) layer!: Layer;
 
     @ViewChild(RasterSymbologyEditorComponent) rasterSymbologyEditorComponent?: RasterSymbologyEditorComponent;
@@ -43,11 +46,6 @@ export class SymbologyEditorComponent implements OnInit, OnDestroy {
     unappliedRasterChanges = false;
 
     rasterSymbology?: RasterSymbology = undefined;
-
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly mapService: MapService,
-    ) {}
 
     ngOnInit(): void {
         this.setUp();

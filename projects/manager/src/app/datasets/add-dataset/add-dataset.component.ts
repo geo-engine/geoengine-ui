@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, ViewChild, inject} from '@angular/core';
 import {FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ConfirmationComponent, DatasetsService, errorToText, OgrDatasetComponent} from '@geoengine/common';
 import {DataPath, MetaDataDefinition, Volume as VolumeDict} from '@geoengine/openapi-client';
@@ -60,6 +60,11 @@ export interface AddDatasetForm {
     ],
 })
 export class AddDatasetComponent {
+    private readonly datasetsService = inject(DatasetsService);
+    private readonly snackBar = inject(MatSnackBar);
+    private readonly dialogRef = inject<MatDialogRef<AddDatasetComponent>>(MatDialogRef);
+    private readonly dialog = inject(MatDialog);
+
     DataPaths = DataPaths;
     DataTypes = DataTypes;
 
@@ -98,12 +103,7 @@ export class AddDatasetComponent {
         }),
     });
 
-    constructor(
-        private readonly datasetsService: DatasetsService,
-        private readonly snackBar: MatSnackBar,
-        private readonly dialogRef: MatDialogRef<AddDatasetComponent>,
-        private readonly dialog: MatDialog,
-    ) {
+    constructor() {
         merge(this.dialogRef.backdropClick(), this.dialogRef.keydownEvents().pipe(filter((event) => event.key === 'Escape'))).subscribe(
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             async (event) => {

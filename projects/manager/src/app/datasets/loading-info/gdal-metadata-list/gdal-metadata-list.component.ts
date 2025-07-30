@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges, inject} from '@angular/core';
 import {
     AbstractControl,
     FormArray,
@@ -70,6 +70,10 @@ export interface RasterResultDescriptorForm {
     ],
 })
 export class GdalMetadataListComponent implements OnChanges {
+    private readonly datasetsService = inject(DatasetsService);
+    private readonly snackBar = inject(MatSnackBar);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+
     RasterDataTypes = Object.values(RasterDataType);
 
     form: FormGroup<GdalMetadataListForm> = this.setUpForm();
@@ -81,12 +85,6 @@ export class GdalMetadataListComponent implements OnChanges {
     @Input() metaData?: GdalMetaDataList;
 
     selectedTimeSlice = 0;
-
-    constructor(
-        private readonly datasetsService: DatasetsService,
-        private readonly snackBar: MatSnackBar,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-    ) {}
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/require-await
     async ngOnChanges(changes: SimpleChanges): Promise<void> {

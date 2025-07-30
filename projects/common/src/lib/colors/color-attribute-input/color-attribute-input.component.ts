@@ -7,6 +7,7 @@ import {
     OnChanges,
     SimpleChanges,
     ViewEncapsulation,
+    inject,
 } from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule} from '@angular/forms';
@@ -49,6 +50,8 @@ export interface ColorAttributeInputHinter {
     ],
 })
 export class ColorAttributeInputComponent implements ControlValueAccessor, OnChanges {
+    private changeDetectorRef = inject(ChangeDetectorRef);
+
     @Input() readonlyAttribute = false;
     @Input() readonlyColor = false;
     @Input() attributePlaceholder = 'attribute';
@@ -60,8 +63,6 @@ export class ColorAttributeInputComponent implements ControlValueAccessor, OnCha
 
     input?: ColorAttributeInput;
     cssString = '';
-
-    constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
     hasColorHint(): boolean {
         return this.colorAttributeHinter !== undefined;

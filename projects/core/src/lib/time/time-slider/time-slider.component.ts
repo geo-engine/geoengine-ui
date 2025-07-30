@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef, OnDestroy, Input} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef, OnDestroy, Input, inject} from '@angular/core';
 import {DataSet} from 'vis-data/peer';
 import {DateType, Timeline} from 'vis-timeline/peer';
 import {ElementRef} from '@angular/core';
@@ -20,6 +20,10 @@ import {MatOption} from '@angular/material/autocomplete';
     imports: [FxLayoutDirective, FxLayoutGapDirective, FxLayoutAlignDirective, MatButton, MatSelect, FormsModule, MatOption],
 })
 export class TimeSliderComponent implements OnInit, OnDestroy {
+    protected readonly projectService = inject(ProjectService);
+    protected readonly layoutService = inject(LayoutService);
+    private changeDetectorRef = inject(ChangeDetectorRef);
+
     //Timeline Data for vis-timeline
     timeline: Timeline | undefined;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -53,11 +57,7 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
     // inventory of used subscriptions
     private subscriptions: Array<Subscription> = [];
 
-    constructor(
-        protected readonly projectService: ProjectService,
-        protected readonly layoutService: LayoutService,
-        private changeDetectorRef: ChangeDetectorRef,
-    ) {
+    constructor() {
         this.subscriptions.push(
             this.projectService.getLayerStream().subscribe((layerList) => {
                 if (layerList !== this.layerList) {

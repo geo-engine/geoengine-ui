@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, inject} from '@angular/core';
 import {NotificationService, Notification} from '@geoengine/common';
 import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
 import {MatCard} from '@angular/material/card';
@@ -25,9 +25,11 @@ import {MatIconButton, MatButton} from '@angular/material/button';
     ],
 })
 export class NotificationsComponent implements OnInit {
+    private notificationService = inject(NotificationService);
+
     notifications: Array<Notification>;
 
-    constructor(private notificationService: NotificationService) {
+    constructor() {
         this.notifications = [];
     }
 

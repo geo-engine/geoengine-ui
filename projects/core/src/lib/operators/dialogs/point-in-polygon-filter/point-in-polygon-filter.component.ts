@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, inject} from '@angular/core';
 import {UntypedFormGroup, UntypedFormBuilder, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {ProjectService} from '../../../project/project.service';
@@ -47,15 +47,17 @@ import {MatHint} from '@angular/material/input';
     ],
 })
 export class PointInPolygonFilterOperatorComponent {
+    private randomColorService = inject(RandomColorService);
+    private projectService = inject(ProjectService);
+    private formBuilder = inject(UntypedFormBuilder);
+
     ResultTypes = ResultTypes;
 
     form: UntypedFormGroup;
 
-    constructor(
-        private randomColorService: RandomColorService,
-        private projectService: ProjectService,
-        private formBuilder: UntypedFormBuilder,
-    ) {
+    constructor() {
+        const formBuilder = this.formBuilder;
+
         this.form = formBuilder.group({
             name: ['Filtered Values', [Validators.required, geoengineValidators.notOnlyWhitespace]],
             pointLayer: [undefined, Validators.required],

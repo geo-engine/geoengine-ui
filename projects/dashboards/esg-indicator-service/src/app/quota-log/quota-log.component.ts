@@ -1,5 +1,5 @@
 import {DataSource} from '@angular/cdk/collections';
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, signal, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, signal, ViewChild, inject} from '@angular/core';
 import {Observable, Subject, tap} from 'rxjs';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {UserService} from '@geoengine/common';
@@ -17,6 +17,9 @@ import {MatIconModule} from '@angular/material/icon';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuotaLogComponent implements AfterViewInit {
+    private readonly userService = inject(UserService);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+
     @ViewChild(MatPaginator) paginator!: MatPaginator;
 
     readonly loadingSpinnerDiameterPx: number = 3 * parseFloat(getComputedStyle(document.documentElement).fontSize);
@@ -31,10 +34,7 @@ export class QuotaLogComponent implements AfterViewInit {
 
     private refreshInterval: ReturnType<typeof setInterval> | undefined;
 
-    constructor(
-        private readonly userService: UserService,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-    ) {
+    constructor() {
         this.setUpSource();
     }
 

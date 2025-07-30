@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild, inject} from '@angular/core';
 import {
     AbstractControl,
     FormControl,
@@ -94,6 +94,13 @@ export interface DatasetForm {
     ],
 })
 export class DatasetEditorComponent implements OnChanges {
+    private readonly datasetsService = inject(DatasetsService);
+    private readonly workflowsService = inject(WorkflowsService);
+    private readonly snackBar = inject(MatSnackBar);
+    private readonly dialog = inject(MatDialog);
+    private readonly config = inject(AppConfig);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+
     @Input({required: true}) datasetListing!: DatasetListing;
 
     @Output() datasetDeleted = new EventEmitter<void>();
@@ -115,15 +122,6 @@ export class DatasetEditorComponent implements OnChanges {
     rawLoadingInfoPristine = true;
     gdalMetaDataList?: GdalMetaDataList;
     ogrMetaData?: OgrMetaData;
-
-    constructor(
-        private readonly datasetsService: DatasetsService,
-        private readonly workflowsService: WorkflowsService,
-        private readonly snackBar: MatSnackBar,
-        private readonly dialog: MatDialog,
-        private readonly config: AppConfig,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-    ) {}
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     async ngOnChanges(changes: SimpleChanges): Promise<void> {

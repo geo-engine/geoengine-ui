@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, inject} from '@angular/core';
 import {MatCheckboxChange, MatCheckbox} from '@angular/material/checkbox';
 import {UserService} from '@geoengine/common';
 import {MatDialogActions} from '@angular/material/dialog';
@@ -10,12 +10,12 @@ import {MatDialogActions} from '@angular/material/dialog';
     imports: [MatDialogActions, MatCheckbox],
 })
 export class DialogSplashCheckboxComponent {
+    private readonly userService = inject(UserService);
+
     /**
      * The name is used as the key in LocalStorage.
      */
     @Input() splashScreenName!: string;
-
-    constructor(private readonly userService: UserService) {}
 
     changeCheckbox(event: MatCheckboxChange): void {
         this.userService.saveSettingInLocalStorage(this.splashScreenName, JSON.stringify(!event.checked));

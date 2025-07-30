@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, inject} from '@angular/core';
 import {
     UntypedFormBuilder,
     UntypedFormGroup,
@@ -93,6 +93,10 @@ const isRasterLayer = (layer: Layer): boolean => {
     ],
 })
 export class BoxPlotOperatorComponent implements AfterViewInit, OnDestroy {
+    private readonly projectService = inject(ProjectService);
+    private readonly notificationService = inject(NotificationService);
+    private readonly formBuilder = inject(UntypedFormBuilder);
+
     readonly inputTypes = ResultTypes.INPUT_TYPES;
 
     readonly RASTER_TYPE = [ResultTypes.RASTER];
@@ -110,11 +114,7 @@ export class BoxPlotOperatorComponent implements AfterViewInit, OnDestroy {
     /**
      * DI for services
      */
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly notificationService: NotificationService,
-        private readonly formBuilder: UntypedFormBuilder,
-    ) {
+    constructor() {
         const layerControl = this.formBuilder.control(undefined, Validators.required);
         this.form = this.formBuilder.group({
             name: ['Filtered Values', [Validators.required, geoengineValidators.notOnlyWhitespace]],

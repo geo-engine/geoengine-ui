@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, ViewChild, inject} from '@angular/core';
 import {BehaviorSubject, Subscription} from 'rxjs';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatTableDataSource, MatTable, MatColumnDef, MatCellDef, MatCell, MatRowDef, MatRow} from '@angular/material/table';
@@ -13,6 +13,9 @@ import {AsyncPipe} from '@angular/common';
     imports: [MatTable, MatColumnDef, MatCellDef, MatCell, MatRowDef, MatRow, MatPaginator, AsyncPipe],
 })
 export class RolesComponent implements AfterViewInit, OnDestroy {
+    protected readonly userService = inject(UserService);
+    protected readonly changeDetectorRef = inject(ChangeDetectorRef);
+
     roleNames: Array<string> | undefined;
     displayedColumns: string[] = ['roleName'];
     roleTable: MatTableDataSource<string> | undefined;
@@ -21,11 +24,6 @@ export class RolesComponent implements AfterViewInit, OnDestroy {
     @ViewChild(MatPaginator) paginator!: MatPaginator;
 
     private roleNamesSubscription: Subscription | undefined;
-
-    constructor(
-        protected readonly userService: UserService,
-        protected readonly changeDetectorRef: ChangeDetectorRef,
-    ) {}
 
     ngAfterViewInit(): void {
         this.roleNamesSubscription = this.userService.getRoleDescriptions().subscribe((roleNames) => {

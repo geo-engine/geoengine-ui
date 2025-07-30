@@ -10,6 +10,7 @@ import {
     ChangeDetectorRef,
     OnChanges,
     SimpleChanges,
+    inject,
 } from '@angular/core';
 import {BehaviorSubject, ReplaySubject, Subscription} from 'rxjs';
 import {LinearGradient, LogarithmicGradient} from '../../colors/colorizer.model';
@@ -69,6 +70,10 @@ import {ColorizerCssGradientPipe} from '../../util/pipes/color-gradients.pipe';
     ],
 })
 export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit, OnChanges {
+    private readonly workflowsService = inject(WorkflowsService);
+    private readonly plotsService = inject(PlotsService);
+    private changeDetectorRef = inject(ChangeDetectorRef);
+
     @ViewChild(ColorMapSelectorComponent)
     colorMapSelector!: ColorMapSelectorComponent;
 
@@ -104,12 +109,6 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     protected underColor?: ColorAttributeInput;
     protected overColor?: ColorAttributeInput;
     protected noDataColor?: ColorAttributeInput;
-
-    constructor(
-        private readonly workflowsService: WorkflowsService,
-        private readonly plotsService: PlotsService,
-        private changeDetectorRef: ChangeDetectorRef,
-    ) {}
 
     ngOnInit(): void {
         this.updateNodataAndDefaultColor();

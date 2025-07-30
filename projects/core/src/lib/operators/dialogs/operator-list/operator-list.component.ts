@@ -1,7 +1,7 @@
 import {BehaviorSubject, combineLatest, Observable, ReplaySubject} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges, Type} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges, Type, inject} from '@angular/core';
 import {LayoutService} from '../../../layout.service';
 import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
 import {HistogramOperatorComponent} from '../histogram-operator/histogram-operator.component';
@@ -90,6 +90,8 @@ export type OperatorListButtonGroups = Array<{
     ],
 })
 export class OperatorListComponent implements OnInit, OnChanges {
+    private layoutService = inject(LayoutService);
+
     static readonly DEFAULT_MIXED_OPERATOR_DIALOGS: Array<OperatorListType> = [
         {
             component: RasterVectorJoinComponent,
@@ -328,7 +330,7 @@ export class OperatorListComponent implements OnInit, OnChanges {
     /**
      * DI of services
      */
-    constructor(private layoutService: LayoutService) {
+    constructor() {
         this.operatorGroups$ = combineLatest([this.operators$, this.searchString$.pipe(map((s) => s.toLowerCase()))]).pipe(
             map(([operatorGroups, searchString]) => {
                 const nameComparator = (a: string, b: string): number => {

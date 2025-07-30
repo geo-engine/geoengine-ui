@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, ViewChild, Input} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, ViewChild, Input, inject} from '@angular/core';
 import {DatasetService} from '../dataset.service';
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, EMPTY, Observable, range, Subject} from 'rxjs';
@@ -30,6 +30,8 @@ import {AsyncPipe} from '@angular/common';
     ],
 })
 export class DatasetListComponent implements OnInit, AfterViewInit {
+    datasetService = inject(DatasetService);
+
     @ViewChild(CdkVirtualScrollViewport)
     viewport!: CdkVirtualScrollViewport;
 
@@ -44,8 +46,6 @@ export class DatasetListComponent implements OnInit, AfterViewInit {
     readonly loadingSpinnerDiameterPx: number = 3 * LayoutService.remInPx;
 
     datasetSource?: DatasetDataSource;
-
-    constructor(public datasetService: DatasetService) {}
 
     ngOnInit(): void {
         this.datasetSource = new DatasetDataSource(this.datasetService);

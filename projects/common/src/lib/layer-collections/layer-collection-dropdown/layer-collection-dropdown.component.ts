@@ -9,6 +9,7 @@ import {
     OnChanges,
     OnDestroy,
     SimpleChanges,
+    inject,
 } from '@angular/core';
 import {
     LayerCollection as LayerCollectionDict,
@@ -52,6 +53,9 @@ export enum PathChangeSource {
     imports: [MatFormField, MatLabel, MatSelect, MatOption, AutocompleteSelectDirective, FormsModule, ReactiveFormsModule, AsyncPipe],
 })
 export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDestroy {
+    protected readonly layersService = inject(LayersService);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+
     @Input() root?: ProviderLayerCollectionIdDict = undefined;
     @Input() preselectedPath: Array<string | number> = []; // preselect entries in hierarchy either by name or index
 
@@ -67,10 +71,7 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
 
     private onDestroy$ = new Subject<boolean>();
 
-    constructor(
-        protected readonly layersService: LayersService,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-    ) {
+    constructor() {
         this.collectionsAndSelected = this.collections.pipe(
             map((collections) => {
                 const result: Array<CollectionAndSelected> = [];

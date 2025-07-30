@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {BoundingBox2D, PlotsApi, SpatialResolution, WrappedPlotOutput} from '@geoengine/openapi-client';
 import {ReplaySubject, firstValueFrom} from 'rxjs';
 import {UserService, apiConfigurationWithAccessKey} from '../user/user.service';
@@ -11,9 +11,11 @@ import {SpatialReference} from '../spatial-references/spatial-reference.model';
     providedIn: 'root',
 })
 export class PlotsService {
+    private sessionService = inject(UserService);
+
     plotApi = new ReplaySubject<PlotsApi>(1);
 
-    constructor(private sessionService: UserService) {
+    constructor() {
         this.sessionService.getSessionStream().subscribe({
             next: (session) => this.plotApi.next(new PlotsApi(apiConfigurationWithAccessKey(session.sessionToken))),
         });

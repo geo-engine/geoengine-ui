@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormControl, FormBuilder, FormGroup, Validators, FormArray, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap, tap} from 'rxjs/operators';
@@ -70,6 +70,10 @@ enum RenameBands {
     ],
 })
 export class RasterStackerComponent implements AfterViewInit {
+    private readonly projectService = inject(ProjectService);
+    private readonly notificationService = inject(NotificationService);
+    private readonly formBuilder = inject(FormBuilder);
+
     readonly inputTypes = [ResultTypes.RASTER];
     readonly rasterDataTypes = RasterDataTypes.ALL_DATATYPES;
 
@@ -84,11 +88,7 @@ export class RasterStackerComponent implements AfterViewInit {
     private inputDataTypes: Array<RasterDataType> = [];
     private layerMetadata: Array<RasterLayerMetadata> = [];
 
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly notificationService: NotificationService,
-        private readonly formBuilder: FormBuilder,
-    ) {
+    constructor() {
         this.form = new FormGroup<RasterStackerForm>({
             rasterLayers: new FormControl<Array<RasterLayer> | undefined>(undefined, {
                 nonNullable: true,

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild, inject} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {
     ProjectService,
@@ -79,6 +79,20 @@ interface Path {
     ],
 })
 export class EbvSelectorComponent implements OnInit, OnDestroy {
+    private readonly userService = inject(UserService);
+    private readonly config = inject<AppConfig>(AppConfig);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly http = inject(HttpClient);
+    private readonly projectService = inject(ProjectService);
+    private readonly countryProviderService = inject(CountryProviderService);
+    private readonly dataSelectionService = inject(DataSelectionService);
+    private readonly route = inject(ActivatedRoute);
+    private readonly mapService = inject(MapService);
+    private readonly backend = inject(BackendService);
+    private readonly layoutService = inject(LayoutService);
+    private readonly layersService = inject(LayersService);
+    private readonly notificationService = inject(NotificationService);
+
     readonly SUBGROUP_SEARCH_THRESHOLD = 5;
 
     @ViewChild('container', {static: true})
@@ -114,21 +128,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
     protected previousLayer?: LayerListing;
     // TODO: previous selection as {id, name} because we need both
 
-    constructor(
-        private readonly userService: UserService,
-        @Inject(AppConfig) private readonly config: AppConfig,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly http: HttpClient,
-        private readonly projectService: ProjectService,
-        private readonly countryProviderService: CountryProviderService,
-        private readonly dataSelectionService: DataSelectionService,
-        private readonly route: ActivatedRoute,
-        private readonly mapService: MapService,
-        private readonly backend: BackendService,
-        private readonly layoutService: LayoutService,
-        private readonly layersService: LayersService,
-        private readonly notificationService: NotificationService,
-    ) {
+    constructor() {
         this.isPlotButtonDisabled$ = this.countryProviderService.getSelectedCountryStream().pipe(map((country) => !country));
         this.dataSelectionService.rasterLayer.subscribe((layer) => {
             if (layer) {

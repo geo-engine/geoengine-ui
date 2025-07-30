@@ -8,10 +8,10 @@ import {
     Component,
     ElementRef,
     HostListener,
-    Inject,
     OnInit,
     ViewChild,
     ViewContainerRef,
+    inject,
 } from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatIconRegistry, MatIcon} from '@angular/material/icon';
@@ -93,6 +93,22 @@ import {AsyncPipe} from '@angular/common';
     ],
 })
 export class AppComponent implements OnInit, AfterViewInit {
+    readonly config = inject<AppConfig>(AppConfig);
+    readonly layoutService = inject(LayoutService);
+    readonly projectService = inject(ProjectService);
+    readonly vcRef = inject(ViewContainerRef);
+    readonly userService = inject(UserService);
+    private readonly layersService = inject(LayersService);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly dialog = inject(MatDialog);
+    private readonly iconRegistry = inject(MatIconRegistry);
+    private readonly randomColorService = inject(RandomColorService);
+    private readonly activatedRoute = inject(ActivatedRoute);
+    private readonly notificationService = inject(NotificationService);
+    private readonly mapService = inject(MapService);
+    private readonly spatialReferenceService = inject(SpatialReferenceService);
+    private readonly sanitizer = inject(DomSanitizer);
+
     @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
     @ViewChild(MatTabGroup, {static: true}) bottomTabs!: MatTabGroup;
 
@@ -117,23 +133,10 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     private GFBIO_COLLECTIONS_DATA_PROVIDER_ID = 'f64e2d5b-3b80-476a-83f5-c330956b2909';
 
-    constructor(
-        @Inject(AppConfig) readonly config: AppConfig,
-        readonly layoutService: LayoutService,
-        readonly projectService: ProjectService,
-        readonly vcRef: ViewContainerRef, // reference used by color picker
-        readonly userService: UserService,
-        private readonly layersService: LayersService,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly dialog: MatDialog,
-        private readonly iconRegistry: MatIconRegistry,
-        private readonly randomColorService: RandomColorService,
-        private readonly activatedRoute: ActivatedRoute,
-        private readonly notificationService: NotificationService,
-        private readonly mapService: MapService,
-        private readonly spatialReferenceService: SpatialReferenceService,
-        private readonly sanitizer: DomSanitizer,
-    ) {
+    constructor() {
+        const config = this.config;
+        const vcRef = this.vcRef;
+
         this.registerIcons();
 
         vcRef.length; // eslint-disable-line @typescript-eslint/no-unused-expressions

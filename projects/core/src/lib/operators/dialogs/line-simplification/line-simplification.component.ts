@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, inject} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {mergeMap} from 'rxjs/operators';
@@ -62,6 +62,10 @@ interface LineSimplificationForm {
     ],
 })
 export class LineSimplificationComponent implements OnInit {
+    private readonly projectService = inject(ProjectService);
+    private readonly notificationService = inject(NotificationService);
+    private readonly formBuilder = inject(FormBuilder);
+
     selected = new FormControl(0, {validators: [Validators.required], nonNullable: true});
 
     readonly inputTypes = [ResultTypes.LINES, ResultTypes.POLYGONS];
@@ -70,11 +74,7 @@ export class LineSimplificationComponent implements OnInit {
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
 
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly notificationService: NotificationService,
-        private readonly formBuilder: FormBuilder,
-    ) {
+    constructor() {
         this.form = new FormGroup<LineSimplificationForm>({
             name: this.formBuilder.nonNullable.control<string>('', [Validators.required, geoengineValidators.notOnlyWhitespace]),
             layer: this.formBuilder.nonNullable.control<Layer | undefined>(undefined, [Validators.required]),

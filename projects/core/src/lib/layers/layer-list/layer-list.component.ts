@@ -1,5 +1,5 @@
 import {Observable, Subscription} from 'rxjs';
-import {Component, OnDestroy, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnChanges} from '@angular/core';
+import {Component, OnDestroy, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnChanges, inject} from '@angular/core';
 import {CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragPlaceholder} from '@angular/cdk/drag-drop';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {MatDialog} from '@angular/material/dialog';
@@ -39,6 +39,16 @@ import {AsyncPipe} from '@angular/common';
     ],
 })
 export class LayerListComponent implements OnDestroy, OnChanges {
+    dialog = inject(MatDialog);
+    layoutService = inject(LayoutService);
+    projectService = inject(ProjectService);
+    mapService = inject(MapService);
+    config = inject(CoreConfig);
+    changeDetectorRef = inject(ChangeDetectorRef);
+    protected readonly tabsService = inject(TabsService);
+    protected readonly clipboard = inject(Clipboard);
+    protected readonly notificationService = inject(NotificationService);
+
     /**
      * The desired height of the list
      */
@@ -73,17 +83,7 @@ export class LayerListComponent implements OnDestroy, OnChanges {
     /**
      * The component constructor. It injects angular and geoengine services.
      */
-    constructor(
-        public dialog: MatDialog,
-        public layoutService: LayoutService,
-        public projectService: ProjectService,
-        public mapService: MapService,
-        public config: CoreConfig,
-        public changeDetectorRef: ChangeDetectorRef,
-        protected readonly tabsService: TabsService,
-        protected readonly clipboard: Clipboard,
-        protected readonly notificationService: NotificationService,
-    ) {
+    constructor() {
         this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
 
         this.subscriptions.push(

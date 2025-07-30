@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {Router} from '@angular/router';
 import {FxLayoutDirective, FxLayoutAlignDirective} from '@geoengine/common';
 import {MatCard, MatCardTitle, MatCardMdImage, MatCardContent, MatCardActions} from '@angular/material/card';
@@ -22,7 +22,7 @@ import {MatButton} from '@angular/material/button';
     ],
 })
 export class NotFoundPageComponent {
-    constructor(private router: Router) {}
+    private router = inject(Router);
 
     goBack(): void {
         this.router.navigate(['/']);

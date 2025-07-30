@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, inject} from '@angular/core';
 import {
     AbstractControl,
     AsyncValidatorFn,
@@ -69,6 +69,10 @@ interface ClassHistogramForm {
     ],
 })
 export class ClassHistogramOperatorComponent implements AfterViewInit, OnDestroy {
+    private readonly projectService = inject(ProjectService);
+    private readonly notificationService = inject(NotificationService);
+    private readonly formBuilder = inject(NonNullableFormBuilder);
+
     inputTypes = ResultTypes.INPUT_TYPES;
 
     form: FormGroup<ClassHistogramForm>;
@@ -82,11 +86,9 @@ export class ClassHistogramOperatorComponent implements AfterViewInit, OnDestroy
     /**
      * DI for services
      */
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly notificationService: NotificationService,
-        private readonly formBuilder: NonNullableFormBuilder,
-    ) {
+    constructor() {
+        const projectService = this.projectService;
+
         const layerControl = this.formBuilder.control<Layer | undefined>(undefined, Validators.required);
         this.form = this.formBuilder.group<ClassHistogramForm>({
             name: this.formBuilder.control<string>('Filtered Values', [Validators.required, geoengineValidators.notOnlyWhitespace]),

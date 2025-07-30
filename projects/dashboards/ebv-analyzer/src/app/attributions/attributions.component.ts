@@ -1,5 +1,5 @@
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
-import {Component, ChangeDetectionStrategy, HostBinding} from '@angular/core';
+import {Component, ChangeDetectionStrategy, HostBinding, inject} from '@angular/core';
 import {Observable, map} from 'rxjs';
 import {MatGridList, MatGridTile} from '@angular/material/grid-list';
 import {AsyncPipe} from '@angular/common';
@@ -13,12 +13,14 @@ import {AsyncStringSanitizer} from '@geoengine/common';
     imports: [MatGridList, MatGridTile, AsyncPipe, AsyncStringSanitizer],
 })
 export class AttributionsComponent {
+    protected breakpointObserver = inject(BreakpointObserver);
+
     @HostBinding('className') componentClass = 'mat-typography';
 
     colSpan: Observable<number>;
     rowHeight: Observable<string>;
 
-    constructor(protected breakpointObserver: BreakpointObserver) {
+    constructor() {
         this.colSpan = this.breakpointObserver.observe(Breakpoints.XLarge).pipe(
             map(({matches}) => {
                 return matches ? 1 : 2;

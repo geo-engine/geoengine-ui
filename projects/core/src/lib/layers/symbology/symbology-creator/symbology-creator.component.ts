@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, forwardRef, HostListener, Input, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, forwardRef, HostListener, Input, OnDestroy, OnInit, inject} from '@angular/core';
 import {
     ControlValueAccessor,
     FormControl,
@@ -58,6 +58,11 @@ export enum SymbologyCreationType {
     imports: [MatFormField, MatLabel, MatSelect, FormsModule, ReactiveFormsModule, MatOption, MatHint, FxFlexDirective, MatInput, NgClass],
 })
 export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValueAccessor {
+    protected readonly projectService = inject(ProjectService);
+    protected readonly userService = inject(UserService);
+    protected readonly backend = inject(BackendService);
+    protected readonly spatialReferenceService = inject(SpatialReferenceService);
+
     AS_INPUT = SymbologyCreationType.AS_INPUT;
     COMPUTE_LINEAR_GRADIENT = SymbologyCreationType.COMPUTE_LINEAR_GRADIENT;
     LINEAR_GRADIENT_FROM_MIN_MAX = SymbologyCreationType.LINEAR_GRADIENT_FROM_MIN_MAX;
@@ -91,12 +96,7 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
     // Can be used to complete subscriptions `OnDestroy` – need to call `next` and `complete` once.
     private unsubscribe$ = new Subject<void>();
 
-    constructor(
-        protected readonly projectService: ProjectService,
-        protected readonly userService: UserService,
-        protected readonly backend: BackendService,
-        protected readonly spatialReferenceService: SpatialReferenceService,
-    ) {
+    constructor() {
         this.value.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe((value) => {
             if (!this._onChange) {
                 return;

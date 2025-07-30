@@ -12,6 +12,7 @@ import {
     HostListener,
     Output,
     EventEmitter,
+    inject,
 } from '@angular/core';
 import {MatInput, MatFormField, MatPrefix, MatLabel} from '@angular/material/input';
 import {
@@ -64,6 +65,10 @@ import {AsyncPipe} from '@angular/common';
     ],
 })
 export class LayerCollectionNavigationComponent implements OnInit, OnChanges, OnDestroy {
+    protected readonly config = inject(CommonConfig);
+    protected readonly layerCollectionService = inject(LayersService);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+
     @Input({required: false}) showLayerToggle = true;
     @Input({required: false}) collectionNavigation = CollectionNavigation.Element;
     @Input({required: false}) highlightSelection = false;
@@ -82,12 +87,6 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
     @Output() selectLayer = new EventEmitter<LayerListing>();
     @Output() selectCollection = new EventEmitter<LayerCollectionListing>();
     @Output() navigateCollection = new EventEmitter<LayerCollectionListing>();
-
-    constructor(
-        protected readonly config: CommonConfig,
-        protected readonly layerCollectionService: LayersService,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-    ) {}
 
     ngOnInit(): void {
         this.updateListView(undefined);

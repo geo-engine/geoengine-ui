@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {
     ComputationQuota,
     AuthCodeRequestURL,
@@ -46,6 +46,11 @@ const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '
     providedIn: 'root',
 })
 export class UserService {
+    protected readonly config = inject(CommonConfig);
+    protected readonly notificationService = inject(NotificationService);
+    protected readonly router = inject(Router);
+    protected readonly activatedRoute = inject(ActivatedRoute);
+
     protected readonly session$ = new ReplaySubject<Session | undefined>(1);
     protected readonly backendStatus$ = new BehaviorSubject<BackendStatus>({available: false, initial: true});
     protected readonly backendInfo$ = new BehaviorSubject<ServerInfo | undefined>(undefined);
@@ -59,12 +64,7 @@ export class UserService {
     protected logoutCallback?: () => void;
     protected sessionInitialized = false;
 
-    constructor(
-        protected readonly config: CommonConfig,
-        protected readonly notificationService: NotificationService,
-        protected readonly router: Router,
-        protected readonly activatedRoute: ActivatedRoute,
-    ) {
+    constructor() {
         // get oidc paramters from url before routing is enabled
         const oidcParams = this.getOidcParametersFromUrl();
 

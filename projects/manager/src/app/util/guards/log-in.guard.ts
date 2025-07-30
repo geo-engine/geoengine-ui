@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree} from '@angular/router';
 import {UserService} from '@geoengine/common';
 import {Observable, map} from 'rxjs';
@@ -7,10 +7,8 @@ import {Observable, map} from 'rxjs';
     providedIn: 'root',
 })
 export class LogInGuard implements CanActivate {
-    constructor(
-        private router: Router,
-        private userService: UserService,
-    ) {}
+    private router = inject(Router);
+    private userService = inject(UserService);
 
     canActivate(
         _route: ActivatedRouteSnapshot,

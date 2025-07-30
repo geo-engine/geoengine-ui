@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewChild, inject} from '@angular/core';
 import {FormArray, FormControl} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {CollectionNavigation, ConfirmationComponent, LayerCollectionListComponent, LayersService, CommonModule} from '@geoengine/common';
@@ -22,6 +22,9 @@ export interface CollectionForm {
     imports: [CommonModule, MatButton, MatIcon],
 })
 export class LayerCollectionChildListComponent {
+    private readonly layersService = inject(LayersService);
+    private readonly dialog = inject(MatDialog);
+
     readonly CollectionNavigation = CollectionNavigation;
 
     @Input({required: true}) collectionId!: ProviderLayerCollectionId;
@@ -31,11 +34,6 @@ export class LayerCollectionChildListComponent {
 
     selectedLayer?: LayerListing;
     selectedCollection?: LayerCollectionListing;
-
-    constructor(
-        private readonly layersService: LayersService,
-        private readonly dialog: MatDialog,
-    ) {}
 
     async removeChild(): Promise<void> {
         const dialogRef = this.dialog.open(ConfirmationComponent, {

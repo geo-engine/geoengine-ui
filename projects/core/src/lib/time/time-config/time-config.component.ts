@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject} from '@angular/core';
 import {ProjectService} from '../../project/project.service';
 import {Observable, Subscription} from 'rxjs';
 import {FormControl, FormGroup, NonNullableFormBuilder, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -41,6 +41,11 @@ export interface TimeConfigForm {
     ],
 })
 export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
+    private projectService = inject(ProjectService);
+    private changeDetectorRef = inject(ChangeDetectorRef);
+    private formBuilder = inject(NonNullableFormBuilder);
+    config = inject(CoreConfig);
+
     form: FormGroup<TimeConfigForm>;
 
     timeStepDuration$: Observable<TimeStepDuration>;
@@ -58,12 +63,7 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
 
     private projectTimeSubscription?: Subscription;
 
-    constructor(
-        private projectService: ProjectService,
-        private changeDetectorRef: ChangeDetectorRef,
-        private formBuilder: NonNullableFormBuilder,
-        public config: CoreConfig,
-    ) {
+    constructor() {
         // initialize with the current time to have a defined value
         this.time = new Time(moment.utc(), moment.utc());
 

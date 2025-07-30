@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, Input, inject} from '@angular/core';
 import {DatasetService} from '../dataset.service';
 import {createIconDataUrl, Dataset} from '@geoengine/common';
 import {MatListItem, MatListItemIcon, MatListItemTitle, MatListItemLine} from '@angular/material/list';
@@ -12,12 +12,12 @@ import {MatTooltip} from '@angular/material/tooltip';
     imports: [MatListItem, MatListItemIcon, MatListItemTitle, MatTooltip, MatListItemLine],
 })
 export class DatasetComponent implements OnInit {
+    private datasetService = inject(DatasetService);
+
     @Input() dataset!: Dataset;
 
     datasetType: 'Raster' | 'Vector' = 'Raster';
     datasetImg = '';
-
-    constructor(private datasetService: DatasetService) {}
 
     ngOnInit(): void {
         this.datasetType = this.dataset.resultDescriptor.getTypeString();

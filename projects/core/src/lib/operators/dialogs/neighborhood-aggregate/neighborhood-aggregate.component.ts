@@ -1,6 +1,6 @@
 import {map, mergeMap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
-import {AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy, ViewChild, inject} from '@angular/core';
 import {
     AbstractControl,
     FormArray,
@@ -101,6 +101,10 @@ interface RectangleNeighborhoodForm extends NeighborhoodForm {
     ],
 })
 export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy {
+    protected readonly projectService = inject(ProjectService);
+    protected readonly layoutService = inject(LayoutService);
+    protected readonly formBuilder = inject(FormBuilder);
+
     /**
      * If the inputs are empty, show the following button.
      */
@@ -123,11 +127,7 @@ export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy 
     /**
      * DI of services and setup of observables for the template
      */
-    constructor(
-        protected readonly projectService: ProjectService,
-        protected readonly layoutService: LayoutService,
-        protected readonly formBuilder: FormBuilder,
-    ) {
+    constructor() {
         this.form = new FormGroup<NeighborhoodAggregateForm>({
             rasterLayer: new FormControl<RasterLayer | undefined>(undefined, {
                 nonNullable: true,
