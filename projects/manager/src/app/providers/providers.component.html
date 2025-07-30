@@ -1,16 +1,14 @@
 <div class="container">
-    <geoengine-manager-provider-list
-        class="left"
+    <geoengine-manager-provider-list class="left"
         (selectProvider)="selectProvider($event)"
         [selectedProvider$]="selectedProvider$"
-    ></geoengine-manager-provider-list>
+     />
 
     @if (selectedProvider$) {
-        <geoengine-manager-provider-editor
-            [providerListing]="selectedProvider$"
+        <geoengine-manager-provider-editor [providerListing]="selectedProvider$"
             (providerUpdated)="providerUpdated()"
             (providerDeleted)="providerDeleted()"
-        ></geoengine-manager-provider-editor>
+         />
     } @else {
         <div class="no-dataset">Please select a provider</div>
     }

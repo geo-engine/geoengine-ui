@@ -19,7 +19,7 @@
         </mat-nav-list>
 
         @if (source?.loading$ | async) {
-          <mat-spinner [diameter]="loadingSpinnerDiameterPx"></mat-spinner>
+          <mat-spinner [diameter]="loadingSpinnerDiameterPx" />
         }
       </cdk-virtual-scroll-viewport>
     }

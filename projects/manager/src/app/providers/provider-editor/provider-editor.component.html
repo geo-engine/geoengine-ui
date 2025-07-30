@@ -10,13 +10,11 @@
           <mat-hint>You do not have permission to edit this provider</mat-hint>
         }
         @if (provider) {
-          <geoengine-manager-provider-input
-            (updated)="setUpdatedDefinition($event)"
+          <geoengine-manager-provider-input (updated)="setUpdatedDefinition($event)"
             [providerType]="providerType"
             [provider]="provider"
             [readonly]="readonly"
-            >
-          </geoengine-manager-provider-input>
+             />
         }
       </mat-card-content>
       <div class="actions">
@@ -26,7 +24,7 @@
     </mat-card>
     <mat-card>
       <mat-card-content>
-        <geoengine-manager-permissions resourceType="provider" [resourceId]="providerListing().id"></geoengine-manager-permissions>
+        <geoengine-manager-permissions resourceType="provider" [resourceId]="providerListing().id" />
       </mat-card-content>
     </mat-card>
   </div>

@@ -9,11 +9,10 @@
           <mat-option [value]="type">{{ type }}</mat-option>
         }
       </mat-select>
-      <geoengine-manager-provider-input
-        [providerType]="providerType"
+      <geoengine-manager-provider-input [providerType]="providerType"
         [createNew]="true"
         (updated)="setChangedDefinition($event)"
-      ></geoengine-manager-provider-input>
+       />
     </mat-card-content>
   </mat-card>
 
