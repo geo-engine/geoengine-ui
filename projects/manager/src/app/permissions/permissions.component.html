@@ -29,33 +29,35 @@
 
 <mat-paginator [pageSize]="5" [pageSizeOptions]="[5, 10, 20]"></mat-paginator>
 
-<form [formGroup]="form" *ngIf="source.isOwner$ | async">
-    <div class="flex-container">
-        <mat-form-field appearance="fill">
-            <mat-label>Role Name</mat-label>
-            <input matInput type="text" formControlName="role" />
-        </mat-form-field>
-        <mat-form-field>
-            <mat-label>Permission</mat-label>
-            <mat-select formControlName="permission">
-                @for (permission of PERMISSIONS; track permission) {
-                    <mat-option class="options" [value]="permission">
-                        {{ permission }}
-                    </mat-option>
-                }
-            </mat-select>
-        </mat-form-field>
-        <button
-            mat-raised-button
-            class="add-permission"
-            color="primary"
-            [disabled]="form.pristine || !form.valid"
-            (click)="addPermission()"
-        >
-            Add permission
-        </button>
-    </div>
-</form>
+@if (source.isOwner$ | async) {
+    <form [formGroup]="form">
+        <div class="flex-container">
+            <mat-form-field appearance="fill">
+                <mat-label>Role Name</mat-label>
+                <input matInput type="text" formControlName="role" />
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Permission</mat-label>
+                <mat-select formControlName="permission">
+                    @for (permission of PERMISSIONS; track permission) {
+                        <mat-option class="options" [value]="permission">
+                            {{ permission }}
+                        </mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+            <button
+                mat-raised-button
+                class="add-permission"
+                color="primary"
+                [disabled]="form.pristine || !form.valid"
+                (click)="addPermission()"
+            >
+                Add permission
+            </button>
+        </div>
+    </form>
+}
 
 @if (source.loading$ | async) {
     <mat-spinner [diameter]="loadingSpinnerDiameterPx"></mat-spinner>
