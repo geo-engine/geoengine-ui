@@ -1,6 +1,6 @@
 import {DataSource} from '@angular/cdk/collections';
 import {CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
-import {AfterContentInit, Component, EventEmitter, inject, Input, Output, ViewChild} from '@angular/core';
+import {AfterContentInit, Component, EventEmitter, inject, Input, Output, viewChild} from '@angular/core';
 import {LayerProviderListing} from '@geoengine/openapi-client';
 import {BehaviorSubject, concatMap, firstValueFrom, Observable, range, scan, startWith, Subject} from 'rxjs';
 import {LayersService} from '@geoengine/common';
@@ -29,8 +29,7 @@ import {MatButton} from '@angular/material/button';
 ],
 })
 export class ProviderListComponent implements AfterContentInit {
-    @ViewChild(CdkVirtualScrollViewport)
-    viewport!: CdkVirtualScrollViewport;
+    readonly viewport = viewChild.required(CdkVirtualScrollViewport);
 
     @Output()
     selectProvider = new EventEmitter<LayerProviderListing>();
@@ -56,8 +55,8 @@ export class ProviderListComponent implements AfterContentInit {
      * Fetch new data when scrolled to the end of the list.
      */
     onScrolledIndexChange(_scrolledIndex: number): void {
-        const end = this.viewport.getRenderedRange().end;
-        const total = this.viewport.getDataLength();
+        const end = this.viewport().getRenderedRange().end;
+        const total = this.viewport().getDataLength();
 
         // only fetch when scrolled to the end
         if (end >= total) {
@@ -87,7 +86,7 @@ export class ProviderListComponent implements AfterContentInit {
     }
 
     protected calculateInitialNumberOfElements(): number {
-        const element = this.viewport.elementRef.nativeElement;
+        const element = this.viewport().elementRef.nativeElement;
         const numberOfElements = Math.ceil(element.clientHeight / this.itemSizePx);
         // add one such that scrolling happens
         return numberOfElements + 1;

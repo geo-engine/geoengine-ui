@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, viewChild} from '@angular/core';
 import {TypedDataProviderDefinition, TypedDataProviderDefinitionFromJSON} from '@geoengine/openapi-client';
 import CodeMirror from 'codemirror';
 import {MatError} from '@angular/material/form-field';
@@ -10,7 +10,7 @@ import {MatError} from '@angular/material/form-field';
     imports: [MatError],
 })
 export class ProviderJsonInputComponent implements OnChanges, AfterViewInit {
-    @ViewChild('editor') editorRef!: ElementRef;
+    readonly editorRef = viewChild.required<ElementRef>('editor');
     @Output() changed = new EventEmitter<TypedDataProviderDefinition>();
     @Input() provider: TypedDataProviderDefinition | undefined;
     @Input() visible: boolean = false;
@@ -43,7 +43,7 @@ export class ProviderJsonInputComponent implements OnChanges, AfterViewInit {
 
     private setupEditor(): void {
         if (!this.editor) {
-            this.editor = CodeMirror.fromTextArea(this.editorRef.nativeElement, {
+            this.editor = CodeMirror.fromTextArea(this.editorRef().nativeElement, {
                 lineNumbers: true,
                 tabSize: 4,
                 indentWithTabs: false,

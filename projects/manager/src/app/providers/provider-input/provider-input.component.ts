@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, viewChild} from '@angular/core';
 import {ProviderType} from '../provider-editor/provider-editor.component';
 import {TypedDataProviderDefinition} from '@geoengine/openapi-client';
 import {MatTab, MatTabChangeEvent, MatTabGroup} from '@angular/material/tabs';
@@ -18,7 +18,7 @@ export class ProviderInputComponent implements OnInit, OnChanges {
     @Input() provider: TypedDataProviderDefinition | undefined;
     @Input() createNew: boolean = false;
     @Input() readonly: boolean = false;
-    @ViewChild('tabs') tabs?: MatTabGroup;
+    readonly tabs = viewChild<MatTabGroup>('tabs');
     jsonInputVisible: boolean = false;
     jsonDefinition: TypedDataProviderDefinition | undefined;
     formDefinition: TypedDataProviderDefinition | undefined;
@@ -31,7 +31,7 @@ export class ProviderInputComponent implements OnInit, OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['providerType']) {
-            setTimeout(() => (this.tabs!.selectedIndex = 0));
+            setTimeout(() => (this.tabs()!.selectedIndex = 0));
         }
         this.jsonDefinition = undefined;
         this.formDefinition = undefined;

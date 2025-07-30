@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, viewChild} from '@angular/core';
 import {ProviderListComponent} from './provider-list/provider-list.component';
 import {LayerProviderListing} from '@geoengine/openapi-client';
 import {ProviderEditorComponent} from './provider-editor/provider-editor.component';
@@ -10,7 +10,7 @@ import {ProviderEditorComponent} from './provider-editor/provider-editor.compone
     imports: [ProviderEditorComponent, ProviderListComponent],
 })
 export class ProvidersComponent {
-    @ViewChild(ProviderListComponent) providerList!: ProviderListComponent;
+    readonly providerList = viewChild.required(ProviderListComponent);
 
     selectedProvider$: LayerProviderListing | undefined = undefined;
 
@@ -19,11 +19,11 @@ export class ProvidersComponent {
     }
 
     providerUpdated(): void {
-        this.providerList.reload();
+        this.providerList().reload();
     }
 
     providerDeleted(): void {
-        this.providerList.reload();
+        this.providerList().reload();
         this.selectedProvider$ = undefined;
     }
 }
