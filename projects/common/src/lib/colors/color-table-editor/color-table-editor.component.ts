@@ -10,6 +10,7 @@ import {
     ViewChild,
     OnChanges,
     SimpleChanges,
+    inject,
 } from '@angular/core';
 import {WHITE} from '../color';
 import {
@@ -40,6 +41,8 @@ import {MatIcon} from '@angular/material/icon';
     ],
 })
 export class ColorTableEditorComponent implements OnInit, OnChanges {
+    private ref = inject(ChangeDetectorRef);
+
     // Symbology to use for creating color tabs
     @Input() colorTable!: Array<ColorBreakpoint>;
 
@@ -53,8 +56,6 @@ export class ColorTableEditorComponent implements OnInit, OnChanges {
 
     colorAttributes: Array<ColorAttributeInput> = [];
     colorHints?: ColorAttributeInputHinter;
-
-    constructor(private ref: ChangeDetectorRef) {}
 
     ngOnInit(): void {
         this.updateColorAttributes();

@@ -1,5 +1,5 @@
 import {Observable, BehaviorSubject, first} from 'rxjs';
-import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, OnInit, ViewChild, ViewContainerRef, inject} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {
     LayoutService,
@@ -39,6 +39,18 @@ import {AsyncPipe} from '@angular/common';
     ],
 })
 export class MainComponent implements OnInit, AfterViewInit {
+    readonly config = inject<AppConfig>(AppConfig);
+    readonly layoutService = inject(LayoutService);
+    readonly projectService = inject(ProjectService);
+    readonly dataSelectionService = inject(DataSelectionService);
+    readonly _vcRef = inject(ViewContainerRef);
+    readonly userService = inject(UserService);
+    private iconRegistry = inject(MatIconRegistry);
+    private _randomColorService = inject(RandomColorService);
+    private mapService = inject(MapService);
+    private _spatialReferenceService = inject(SpatialReferenceService);
+    private sanitizer = inject(DomSanitizer);
+
     @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
 
     readonly layersReverse$: Observable<Array<Layer>>;
@@ -46,19 +58,7 @@ export class MainComponent implements OnInit, AfterViewInit {
 
     datasetPortal = new ComponentPortal(SpeciesSelectorComponent);
 
-    constructor(
-        @Inject(AppConfig) readonly config: AppConfig,
-        readonly layoutService: LayoutService,
-        readonly projectService: ProjectService,
-        readonly dataSelectionService: DataSelectionService,
-        readonly _vcRef: ViewContainerRef, // reference used by color picker
-        readonly userService: UserService,
-        private iconRegistry: MatIconRegistry,
-        private _randomColorService: RandomColorService,
-        private mapService: MapService,
-        private _spatialReferenceService: SpatialReferenceService,
-        private sanitizer: DomSanitizer,
-    ) {
+    constructor() {
         this.layersReverse$ = this.dataSelectionService.layers;
     }
 

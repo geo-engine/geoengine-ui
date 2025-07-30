@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild, inject} from '@angular/core';
 import {
     FormControl,
     FormGroup,
@@ -90,6 +90,9 @@ interface SlopeOffsetForm {
     ],
 })
 export class RasterScalingComponent implements AfterViewInit {
+    private readonly projectService = inject(ProjectService);
+    private readonly notificationService = inject(NotificationService);
+
     readonly inputTypes = [ResultTypes.RASTER];
     readonly rasterDataTypes = RasterDataTypes.ALL_DATATYPES;
 
@@ -111,10 +114,7 @@ export class RasterScalingComponent implements AfterViewInit {
     form: FormGroup<RasterScalingForm>;
     disallowSubmit: Observable<boolean>;
 
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly notificationService: NotificationService,
-    ) {
+    constructor() {
         this.form = new FormGroup<RasterScalingForm>({
             name: new FormControl<string>('', {
                 nonNullable: true,

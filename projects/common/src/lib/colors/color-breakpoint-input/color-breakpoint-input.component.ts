@@ -1,4 +1,14 @@
-import {Component, ChangeDetectionStrategy, ChangeDetectorRef, Input, forwardRef, OnChanges, SimpleChanges, OnDestroy} from '@angular/core';
+import {
+    Component,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Input,
+    forwardRef,
+    OnChanges,
+    SimpleChanges,
+    OnDestroy,
+    inject,
+} from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule} from '@angular/forms';
 import {ColorBreakpoint} from '../color-breakpoint.model';
@@ -33,6 +43,9 @@ import {ColorPickerDirective} from 'ngx-color-picker';
     ],
 })
 export class ColorBreakpointInputComponent implements ControlValueAccessor, OnChanges, OnDestroy {
+    private changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly config = inject(CommonConfig);
+
     @Input() readonlyAttribute = false;
     @Input() readonlyColor = false;
     @Input() attributePlaceholder = 'attribute';
@@ -42,10 +55,7 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, OnCh
     private changedValue = new Subject<ColorBreakpoint>();
     private onChangePropagationSubscription: Subscription;
 
-    constructor(
-        private changeDetectorRef: ChangeDetectorRef,
-        private readonly config: CommonConfig,
-    ) {
+    constructor() {
         this.onChangePropagationSubscription = this.changedValue
             .pipe(debounceTime(this.config.DELAYS.DEBOUNCE)) // defer emitting values while the user is typing
             .subscribe((colorBreakpoint) => this.onChange(colorBreakpoint.clone()));

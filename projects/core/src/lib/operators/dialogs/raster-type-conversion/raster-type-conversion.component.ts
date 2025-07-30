@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormControl, FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 
@@ -50,17 +50,17 @@ import {AsyncPipe} from '@angular/common';
     ],
 })
 export class RasterTypeConversionComponent implements AfterViewInit {
+    private readonly projectService = inject(ProjectService);
+    private readonly notificationService = inject(NotificationService);
+    private readonly formBuilder = inject(FormBuilder);
+
     readonly inputTypes = [ResultTypes.RASTER];
     readonly rasterDataTypes = RasterDataTypes.ALL_DATATYPES;
 
     form: FormGroup;
     disallowSubmit: Observable<boolean>;
 
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly notificationService: NotificationService,
-        private readonly formBuilder: FormBuilder,
-    ) {
+    constructor() {
         this.form = this.formBuilder.group({
             name: ['', [Validators.required, geoengineValidators.notOnlyWhitespace]],
             layer: new FormControl<Layer | null>(null, {validators: Validators.required}),

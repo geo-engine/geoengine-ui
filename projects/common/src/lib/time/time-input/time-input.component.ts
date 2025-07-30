@@ -7,6 +7,7 @@ import {
     forwardRef,
     OnChanges,
     SimpleChange,
+    inject,
 } from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule} from '@angular/forms';
@@ -37,6 +38,8 @@ import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
     ],
 })
 export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, OnChanges {
+    private changeDetectorRef = inject(ChangeDetectorRef);
+
     // TODO: also react on disabled state in `ControlValueAccessor`
     @Input() isDisabled = false;
 
@@ -44,8 +47,6 @@ export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, 
     onChange?: (_: Moment) => void = undefined;
 
     private _time: Moment = moment.utc();
-
-    constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
     get time(): Moment {
         return this._time;

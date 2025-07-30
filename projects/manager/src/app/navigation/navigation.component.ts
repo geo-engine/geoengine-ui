@@ -1,4 +1,4 @@
-import {Component, Inject} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {Observable} from 'rxjs';
 import {map, shareReplay} from 'rxjs/operators';
@@ -34,6 +34,11 @@ export enum NavigationType {
     ],
 })
 export class NavigationComponent {
+    private breakpointObserver = inject(BreakpointObserver);
+    private userService = inject(UserService);
+    private router = inject(Router);
+    readonly config = inject<AppConfig>(AppConfig);
+
     isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
         map((result) => result.matches),
         shareReplay(),
@@ -42,13 +47,6 @@ export class NavigationComponent {
     NavigationType = NavigationType;
 
     selectedType: NavigationType = NavigationType.Datasets;
-
-    constructor(
-        private breakpointObserver: BreakpointObserver,
-        private userService: UserService,
-        private router: Router,
-        @Inject(AppConfig) readonly config: AppConfig,
-    ) {}
 
     logout(): void {
         this.userService.logout();

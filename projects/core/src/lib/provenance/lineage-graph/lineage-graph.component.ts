@@ -1,6 +1,6 @@
 import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {Component, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit, Inject} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit, inject} from '@angular/core';
 import * as dagreD3 from 'dagre-d3';
 import * as d3 from 'd3';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
@@ -55,6 +55,14 @@ const GRAPH_STYLE = {
     ],
 })
 export class LineageGraphComponent implements AfterViewInit {
+    private elementRef = inject(ElementRef);
+    private projectService = inject(ProjectService);
+    private layoutService = inject(LayoutService);
+    private dialogRef = inject<MatDialogRef<LineageGraphComponent>>(MatDialogRef);
+    private config = inject<{
+        layer: Layer;
+    }>(MAT_DIALOG_DATA);
+
     @ViewChild('svg', {static: true}) svg!: ElementRef;
     @ViewChild('g', {static: true}) g!: ElementRef;
 
@@ -78,13 +86,7 @@ export class LineageGraphComponent implements AfterViewInit {
 
     private svgRatio = 0.7;
 
-    constructor(
-        private elementRef: ElementRef,
-        private projectService: ProjectService,
-        private layoutService: LayoutService,
-        private dialogRef: MatDialogRef<LineageGraphComponent>,
-        @Inject(MAT_DIALOG_DATA) private config: {layer: Layer},
-    ) {
+    constructor() {
         this.svgWidth$ = this.maxWidth$.pipe(map((width) => Math.ceil(this.svgRatio * width)));
         this.svgHeight$ = this.maxHeight$;
 

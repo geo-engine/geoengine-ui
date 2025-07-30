@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output, inject} from '@angular/core';
 import {FormArray, UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BehaviorSubject} from 'rxjs';
 import {Color, RgbaTuple} from '../color';
@@ -43,6 +43,11 @@ import {RgbaArrayCssGradientPipe} from '../../util/pipes/color-gradients.pipe';
     ],
 })
 export class PercentileBreakpointSelectorComponent {
+    protected readonly changeDetectorRef = inject(ChangeDetectorRef);
+    protected readonly formBuilder = inject(UntypedFormBuilder);
+    protected readonly workflowsService = inject(WorkflowsService);
+    protected readonly plotsService = inject(PlotsService);
+
     @Input({required: true}) band!: string;
 
     @Input({required: true}) workflowId!: UUID;
@@ -77,12 +82,9 @@ export class PercentileBreakpointSelectorComponent {
 
     protected readonly largerThanZeroValidator = geoengineValidators.largerThan(0);
 
-    constructor(
-        protected readonly changeDetectorRef: ChangeDetectorRef,
-        protected readonly formBuilder: UntypedFormBuilder,
-        protected readonly workflowsService: WorkflowsService,
-        protected readonly plotsService: PlotsService,
-    ) {
+    constructor() {
+        const formBuilder = this.formBuilder;
+
         const initialColorMapName = Object.keys(this.colorMaps)[0];
 
         this.form = formBuilder.group({

@@ -1,5 +1,5 @@
 import {HttpEventType} from '@angular/common/http';
-import {Component, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef, OnDestroy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef, OnDestroy, inject} from '@angular/core';
 import {FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatStepper, MatStep, MatStepLabel} from '@angular/material/stepper';
 import {Subject, Subscription} from 'rxjs';
@@ -53,6 +53,14 @@ interface NameDescription {
     ],
 })
 export class UploadComponent implements OnDestroy {
+    protected datasetsService = inject(DatasetsService);
+    protected uploadsService = inject(UploadsService);
+    protected notificationService = inject(NotificationService);
+    protected projectService = inject(ProjectService);
+    protected userService = inject(UserService);
+    protected changeDetectorRef = inject(ChangeDetectorRef);
+    protected datasetService = inject(DatasetService);
+
     vectorDataTypes = ['Data', 'MultiPoint', 'MultiLineString', 'MultiPolygon'];
     timeDurationValueTypes = ['infinite', 'value', 'zero'];
     timeTypes = ['None', 'Start', 'Start/End', 'Start/Duration'];
@@ -82,15 +90,7 @@ export class UploadComponent implements OnDestroy {
 
     private displayNameChangeSubscription: Subscription;
 
-    constructor(
-        protected datasetsService: DatasetsService,
-        protected uploadsService: UploadsService,
-        protected notificationService: NotificationService,
-        protected projectService: ProjectService,
-        protected userService: UserService,
-        protected changeDetectorRef: ChangeDetectorRef,
-        protected datasetService: DatasetService,
-    ) {
+    constructor() {
         this.formNameDescription = new FormGroup<NameDescription>({
             name: new FormControl('', {
                 nonNullable: true,

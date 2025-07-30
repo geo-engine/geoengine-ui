@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, OnDestroy, inject} from '@angular/core';
 import {BehaviorSubject, finalize, first, SubscriptionLike} from 'rxjs';
 
 import {User} from '../user.model';
@@ -34,6 +34,9 @@ import {AsyncPipe} from '@angular/common';
     ],
 })
 export class OidcComponent implements OnInit, OnDestroy {
+    private readonly userService = inject(UserService);
+    private readonly router = inject(Router);
+
     user?: User;
     loginDisabled: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
@@ -42,11 +45,6 @@ export class OidcComponent implements OnInit, OnDestroy {
     private logoutSubscription?: SubscriptionLike;
 
     private pendingLoginRequest = false;
-
-    constructor(
-        private readonly userService: UserService,
-        private readonly router: Router,
-    ) {}
 
     ngOnInit(): void {
         this.userSubscription = this.userService

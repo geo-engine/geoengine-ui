@@ -1,5 +1,5 @@
 import {BehaviorSubject} from 'rxjs';
-import {Component, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
+import {Component, ChangeDetectionStrategy, AfterViewInit, inject} from '@angular/core';
 import {UntypedFormGroup, UntypedFormBuilder, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../project.service';
 import {geoengineValidators, NotificationService, FxLayoutDirective, FxFlexDirective} from '@geoengine/common';
@@ -27,15 +27,15 @@ import {AsyncPipe} from '@angular/common';
     ],
 })
 export class SaveProjectAsComponent implements AfterViewInit {
+    private formBuilder = inject(UntypedFormBuilder);
+    private projectService = inject(ProjectService);
+    private notificationService = inject(NotificationService);
+
     form: UntypedFormGroup;
 
     created$ = new BehaviorSubject(false);
 
-    constructor(
-        private formBuilder: UntypedFormBuilder,
-        private projectService: ProjectService,
-        private notificationService: NotificationService,
-    ) {
+    constructor() {
         this.form = this.formBuilder.group({
             name: [
                 '',

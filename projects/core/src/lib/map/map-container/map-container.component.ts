@@ -83,6 +83,12 @@ const MAX_ZOOM_LEVEL = 28;
     imports: [MatGridListModule],
 })
 export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestroy {
+    private config = inject(CoreConfig);
+    private changeDetectorRef = inject(ChangeDetectorRef);
+    private mapService = inject(MapService);
+    private projectService = inject(ProjectService);
+    private spatialReferenceService = inject(SpatialReferenceService);
+
     /**
      * display a grid of maps or all layers on a single map
      */
@@ -133,13 +139,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     /**
      * Create the component and inject several dependencies via DI.
      */
-    constructor(
-        private config: CoreConfig,
-        private changeDetectorRef: ChangeDetectorRef,
-        private mapService: MapService,
-        private projectService: ProjectService,
-        private spatialReferenceService: SpatialReferenceService,
-    ) {
+    constructor() {
         // set dummy maps so that they are not uninitialized
         this.view = new OlView({
             zoom: DEFAULT_ZOOM_LEVEL,

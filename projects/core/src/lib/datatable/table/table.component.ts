@@ -10,6 +10,7 @@ import {
     OnChanges,
     SimpleChanges,
     ChangeDetectorRef,
+    inject,
 } from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
 import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
@@ -88,6 +89,11 @@ import {MatOption} from '@angular/material/autocomplete';
     ],
 })
 export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
+    protected readonly dialog = inject(MatDialog);
+    protected readonly projectService = inject(ProjectService);
+    protected readonly hostElement = inject<ElementRef<HTMLElement>>(ElementRef);
+    protected readonly changeDetectorRef = inject(ChangeDetectorRef);
+
     @ViewChild(MatPaginator) paginator!: MatPaginator;
 
     @Input() layer?: Layer;
@@ -106,13 +112,6 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
 
     protected layerDataSubscription?: Subscription = undefined;
     protected selectedFeatureSubscription?: Subscription = undefined;
-
-    constructor(
-        protected readonly dialog: MatDialog,
-        protected readonly projectService: ProjectService,
-        protected readonly hostElement: ElementRef<HTMLElement>,
-        protected readonly changeDetectorRef: ChangeDetectorRef,
-    ) {}
 
     ngOnInit(): void {
         if (this.layer) {

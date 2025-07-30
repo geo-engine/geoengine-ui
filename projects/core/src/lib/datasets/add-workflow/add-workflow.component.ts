@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, inject} from '@angular/core';
 import {UntypedFormGroup, UntypedFormControl, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {GeoEngineErrorDict, RasterResultDescriptorDict, UUID, VectorResultDescriptorDict} from '../../backend/backend.model';
 import {ProjectService} from '../../project/project.service';
@@ -36,13 +36,13 @@ import {AsyncPipe} from '@angular/common';
     ],
 })
 export class AddWorkflowComponent {
+    protected readonly projectService = inject(ProjectService);
+    protected readonly notificationService = inject(NotificationService);
+    protected readonly randomColorService = inject(RandomColorService);
+
     readonly form: UntypedFormGroup;
 
-    constructor(
-        protected readonly projectService: ProjectService,
-        protected readonly notificationService: NotificationService,
-        protected readonly randomColorService: RandomColorService,
-    ) {
+    constructor() {
         this.form = new UntypedFormGroup({
             layerName: new UntypedFormControl('New Layer', Validators.required),
             workflowId: new UntypedFormControl('', [Validators.required, isValidUuid]),

@@ -1,7 +1,7 @@
 import {BehaviorSubject, Subscription} from 'rxjs';
 import {filter, first} from 'rxjs/operators';
 
-import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy, inject} from '@angular/core';
 
 import {OperatorListComponent} from '../../operators/dialogs/operator-list/operator-list.component';
 import {ProjectService} from '../../project/project.service';
@@ -24,6 +24,10 @@ import {AsyncPipe} from '@angular/common';
     imports: [SidenavHeaderComponent, MatButton, PlotListEntryComponent, AsyncPipe, AsyncNumberSanitizer, AsyncValueDefault],
 })
 export class PlotListComponent implements AfterViewInit, OnDestroy {
+    readonly projectService = inject(ProjectService);
+    private readonly layoutService = inject(LayoutService);
+    private readonly elementRef = inject(ElementRef);
+
     /**
      * If the list is empty, show the following button.
      */
@@ -34,15 +38,6 @@ export class PlotListComponent implements AfterViewInit, OnDestroy {
     readonly defaultLoadingState = LoadingState.LOADING;
 
     private subscriptions: Array<Subscription> = [];
-
-    /**
-     * DI for services
-     */
-    constructor(
-        public readonly projectService: ProjectService,
-        private readonly layoutService: LayoutService,
-        private readonly elementRef: ElementRef,
-    ) {}
 
     ngAfterViewInit(): void {
         this.subscriptions.push(

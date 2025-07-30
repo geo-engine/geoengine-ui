@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component} from '@angular/core';
+import {ChangeDetectorRef, Component, inject} from '@angular/core';
 import {Router} from '@angular/router';
 import {first, skipWhile, Subscription} from 'rxjs';
 import {BackendInfoDict} from '../../../backend/backend.model';
@@ -30,16 +30,16 @@ import {MatButton} from '@angular/material/button';
     ],
 })
 export class BackendStatusPageComponent {
+    private userService = inject(UserService);
+    private backendService = inject(BackendService);
+    private changeDetectorRef = inject(ChangeDetectorRef);
+    private router = inject(Router);
+
     public backendStatus: BackendStatus | undefined = undefined;
     public backendInfo: BackendInfoDict | undefined = undefined;
     public goToMapSubscription: Subscription | undefined = undefined;
 
-    constructor(
-        private userService: UserService,
-        private backendService: BackendService,
-        private changeDetectorRef: ChangeDetectorRef,
-        private router: Router,
-    ) {
+    constructor() {
         this.fetchBackendState();
     }
 

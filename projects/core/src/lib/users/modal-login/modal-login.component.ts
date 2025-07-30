@@ -1,6 +1,6 @@
 import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 
-import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy, inject} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {CoreConfig} from '../../config.service';
@@ -31,6 +31,9 @@ export interface UserLogin {
     imports: [FormsModule, ReactiveFormsModule, MatFormField, MatInput, MatButton, AsyncPipe],
 })
 export class ModalLoginComponent implements OnDestroy {
+    private readonly config = inject(CoreConfig);
+    private dialogRef = inject<MatDialogRef<ModalLoginComponent>>(MatDialogRef);
+
     readonly FormStatus = FormStatus;
 
     formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.LoggedOut);
@@ -44,10 +47,7 @@ export class ModalLoginComponent implements OnDestroy {
 
     private formStatusSubscription?: Subscription;
 
-    constructor(
-        private readonly config: CoreConfig,
-        private dialogRef: MatDialogRef<ModalLoginComponent>,
-    ) {
+    constructor() {
         this.loginForm = new UntypedFormGroup({
             email: new UntypedFormControl(
                 '',

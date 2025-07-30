@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, inject} from '@angular/core';
 import {
     AbstractControl,
     FormArray,
@@ -94,6 +94,12 @@ enum ColumnNames {
     ],
 })
 export class RasterVectorJoinComponent implements OnDestroy {
+    private readonly projectService = inject(ProjectService);
+    private readonly randomColorService = inject(RandomColorService);
+    private readonly notificationService = inject(NotificationService);
+    private readonly formBuilder = inject(FormBuilder);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+
     minNumberOfRasterInputs = 1;
     maxNumberOfRasterInputs = 8;
     allowedVectorTypes = [ResultTypes.POINTS, ResultTypes.POLYGONS];
@@ -108,13 +114,7 @@ export class RasterVectorJoinComponent implements OnDestroy {
 
     private subscriptions: Array<Subscription> = [];
 
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly randomColorService: RandomColorService,
-        private readonly notificationService: NotificationService,
-        private readonly formBuilder: FormBuilder,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-    ) {
+    constructor() {
         this.form = this.formBuilder.nonNullable.group({
             vectorLayer: new FormControl<VectorLayer | undefined>(undefined, {
                 nonNullable: true,

@@ -8,6 +8,7 @@ import {
     OnChanges,
     Output,
     SimpleChanges,
+    inject,
 } from '@angular/core';
 import {LayerListing as LayerCollectionLayerDict, ProviderLayerId as ProviderLayerIdDict} from '@geoengine/openapi-client';
 import {LayersService} from '../layers.service';
@@ -26,6 +27,9 @@ import {LayerCollectionLayerDetailsComponent} from '../layer-collection-layer-de
     imports: [MatIcon, MatIconButton, MatProgressBar, LayerCollectionLayerDetailsComponent],
 })
 export class LayerCollectionLayerComponent implements OnChanges {
+    private layerService = inject(LayersService);
+    private changeDetectorRef = inject(ChangeDetectorRef);
+
     @Input({required: false}) showLayerToggle = true;
     @Input() layer: LayerCollectionLayerDict | undefined = undefined;
 
@@ -43,11 +47,6 @@ export class LayerCollectionLayerComponent implements OnChanges {
     protected description: string = '';
 
     protected loading = false;
-
-    constructor(
-        private layerService: LayersService,
-        private changeDetectorRef: ChangeDetectorRef,
-    ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.layer) {

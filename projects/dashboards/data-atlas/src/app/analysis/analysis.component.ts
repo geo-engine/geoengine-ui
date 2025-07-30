@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, inject} from '@angular/core';
 import {BackendService, BBoxDict, ProjectService, SourceOperatorDict, RasterResultDescriptorDict} from '@geoengine/core';
 import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {DataSelectionService} from '../data-selection.service';
@@ -47,6 +47,11 @@ import {AsyncPipe} from '@angular/common';
     ],
 })
 export class AnalysisComponent {
+    private readonly projectService = inject(ProjectService);
+    private readonly dataSelectionService = inject(DataSelectionService);
+    private readonly backend = inject(BackendService);
+    private readonly userService = inject(UserService);
+
     countries = new Array<string>();
 
     cannotComputePlot$: Observable<boolean>;
@@ -56,12 +61,7 @@ export class AnalysisComponent {
 
     private selectedCountryName?: string = undefined;
 
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly dataSelectionService: DataSelectionService,
-        private readonly backend: BackendService,
-        private readonly userService: UserService,
-    ) {
+    constructor() {
         this.cannotComputePlot$ = combineLatest([this.dataSelectionService.rasterLayer, this.dataSelectionService.polygonLayer]).pipe(
             map(([rasterLayer, polygonLayer]) => !rasterLayer || !polygonLayer),
         );

@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy, inject} from '@angular/core';
 import {UntypedFormGroup, UntypedFormBuilder, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {ProjectService} from '../../../project/project.service';
@@ -56,6 +56,10 @@ interface AttributeCandidates {
     ],
 })
 export class FeatureAttributeOvertimeComponent implements AfterViewInit, OnDestroy {
+    private formBuilder = inject(UntypedFormBuilder);
+    private projectService = inject(ProjectService);
+    private notificationService = inject(NotificationService);
+
     inputTypes = ResultTypes.VECTOR_TYPES;
 
     attributes$ = new ReplaySubject<AttributeCandidates>(1);
@@ -64,11 +68,7 @@ export class FeatureAttributeOvertimeComponent implements AfterViewInit, OnDestr
 
     form: UntypedFormGroup;
 
-    constructor(
-        private formBuilder: UntypedFormBuilder,
-        private projectService: ProjectService,
-        private notificationService: NotificationService,
-    ) {
+    constructor() {
         this.form = this.formBuilder.group({
             name: ['', [Validators.required, geoengineValidators.notOnlyWhitespace]],
             layer: [undefined, Validators.required],

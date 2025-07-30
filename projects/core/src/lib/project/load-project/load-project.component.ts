@@ -1,6 +1,6 @@
 import {BehaviorSubject, ReplaySubject} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
-import {Component, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
+import {Component, ChangeDetectionStrategy, AfterViewInit, inject} from '@angular/core';
 import {ProjectService} from '../project.service';
 import {
     UntypedFormBuilder,
@@ -60,6 +60,12 @@ interface ProjectListing {
     ],
 })
 export class LoadProjectComponent implements AfterViewInit {
+    protected projectService = inject(ProjectService);
+    protected backend = inject(BackendService);
+    protected userService = inject(UserService);
+    protected notificationService = inject(NotificationService);
+    protected formBuilder = inject(UntypedFormBuilder);
+
     form: UntypedFormGroup;
 
     projects$ = new ReplaySubject<Array<ProjectListing>>(1);
@@ -67,13 +73,7 @@ export class LoadProjectComponent implements AfterViewInit {
 
     currentProjectId: UUID = '';
 
-    constructor(
-        protected projectService: ProjectService,
-        protected backend: BackendService,
-        protected userService: UserService,
-        protected notificationService: NotificationService,
-        protected formBuilder: UntypedFormBuilder,
-    ) {
+    constructor() {
         this.projectService.getProjectOnce().subscribe((project) => {
             this.currentProjectId = project.id;
         });

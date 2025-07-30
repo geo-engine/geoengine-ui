@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, ViewChild, AfterViewInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ViewChild, AfterViewInit, OnDestroy, inject} from '@angular/core';
 import {UntypedFormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ReplaySubject, Subject} from 'rxjs';
 import {MatSelect} from '@angular/material/select';
@@ -17,6 +17,8 @@ import {AsyncPipe} from '@angular/common';
     imports: [MatFormField, MatSelect, FormsModule, ReactiveFormsModule, MatOption, MatSelectSearchComponent, AsyncPipe],
 })
 export class CountrySelectorComponent implements OnInit, AfterViewInit, OnDestroy {
+    private readonly countryProviderService = inject(CountryProviderService);
+
     public readonly countryDataList: Array<Country>;
 
     public countryCtrl: UntypedFormControl = new UntypedFormControl();
@@ -29,7 +31,7 @@ export class CountrySelectorComponent implements OnInit, AfterViewInit, OnDestro
 
     protected _onDestroy = new Subject<void>();
 
-    constructor(private readonly countryProviderService: CountryProviderService) {
+    constructor() {
         this.countryDataList = this.countryProviderService.availabeCountries;
     }
 

@@ -1,5 +1,5 @@
 import {Observable, BehaviorSubject, mergeMap} from 'rxjs';
-import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, OnInit, ViewChild, ViewContainerRef, inject} from '@angular/core';
 import {MatIconRegistry, MatIcon} from '@angular/material/icon';
 import {
     LayoutService,
@@ -53,6 +53,18 @@ import {AsyncPipe} from '@angular/common';
     ],
 })
 export class AppComponent implements OnInit, AfterViewInit {
+    readonly config = inject<AppConfig>(AppConfig);
+    readonly layoutService = inject(LayoutService);
+    readonly projectService = inject(ProjectService);
+    readonly dataSelectionService = inject(DataSelectionService);
+    readonly vcRef = inject(ViewContainerRef);
+    readonly userService = inject(UserService);
+    private iconRegistry = inject(MatIconRegistry);
+    private _randomColorService = inject(RandomColorService);
+    private mapService = inject(MapService);
+    private _spatialReferenceService = inject(SpatialReferenceService);
+    private sanitizer = inject(DomSanitizer);
+
     @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
 
     @ViewChild(MatSidenav, {static: true}) rightSidenav!: MatSidenav;
@@ -64,19 +76,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     datasetPortal = new ComponentPortal(EbvSelectorComponent);
 
-    constructor(
-        @Inject(AppConfig) readonly config: AppConfig,
-        readonly layoutService: LayoutService,
-        readonly projectService: ProjectService,
-        readonly dataSelectionService: DataSelectionService,
-        readonly vcRef: ViewContainerRef, // reference used by color picker, MUST BE EXACTLY THIS NAME
-        readonly userService: UserService,
-        private iconRegistry: MatIconRegistry,
-        private _randomColorService: RandomColorService,
-        private mapService: MapService,
-        private _spatialReferenceService: SpatialReferenceService,
-        private sanitizer: DomSanitizer,
-    ) {
+    constructor() {
         this.registerIcons();
 
         this.layersReverse$ = this.dataSelectionService.layers;

@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, inject} from '@angular/core';
 import {ProjectService, FeatureSelection} from '@geoengine/core';
 import {map, mergeMap} from 'rxjs/operators';
 import {DataSelectionService} from '../data-selection.service';
@@ -14,13 +14,13 @@ import {AsyncPipe} from '@angular/common';
     imports: [AsyncPipe],
 })
 export class DataPointComponent {
+    private readonly projectService = inject(ProjectService);
+    private readonly dataSelectionService = inject(DataSelectionService);
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     readonly tableData$: Observable<Array<{key: string; value: any}>>;
 
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly dataSelectionService: DataSelectionService,
-    ) {
+    constructor() {
         this.tableData$ = this.dataSelectionService.vectorLayer.pipe(
             mergeMap((layer) => {
                 if (!layer) {

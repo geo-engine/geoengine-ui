@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges, inject} from '@angular/core';
 import {Observable, combineLatest, BehaviorSubject} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ProjectService} from '../../project/project.service';
@@ -15,6 +15,9 @@ import {AsyncPipe} from '@angular/common';
     imports: [FxLayoutDirective, FxLayoutAlignDirective, MatSlider, MatSliderThumb, FormsModule, AsyncPipe],
 })
 export class TimeStepSelectorComponent implements OnChanges {
+    private readonly projectService = inject(ProjectService);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+
     @Input() timeSteps?: Array<Time>;
     @Input() timeFormat = 'YYYY';
 
@@ -32,10 +35,7 @@ export class TimeStepSelectorComponent implements OnChanges {
     /**
      * Require services by using DI
      */
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-    ) {
+    constructor() {
         this.currentTimeFormatted = combineLatest([this.projectService.getTimeStream(), this.timeFormat$]).pipe(
             map(([time, format]) => {
                 if (this.timeSteps) {

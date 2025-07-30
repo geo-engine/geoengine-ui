@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, ChangeDetectorRef, Input} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ChangeDetectorRef, Input, inject} from '@angular/core';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {MatDialog} from '@angular/material/dialog';
 import {TabsService} from '../../../tabs/tabs.service';
@@ -78,6 +78,18 @@ import {MatProgressBar} from '@angular/material/progress-bar';
     ],
 })
 export class LayerListElementComponent {
+    readonly dialog = inject(MatDialog);
+    readonly layoutService = inject(LayoutService);
+    readonly projectService = inject(ProjectService);
+    readonly mapService = inject(MapService);
+    readonly config = inject(CoreConfig);
+    readonly changeDetectorRef = inject(ChangeDetectorRef);
+    protected readonly backend = inject(BackendService);
+    protected readonly userService = inject(UserService);
+    protected readonly tabsService = inject(TabsService);
+    protected readonly clipboard = inject(Clipboard);
+    protected readonly notificationService = inject(NotificationService);
+
     @Input()
     layer!: Layer;
 
@@ -89,23 +101,6 @@ export class LayerListElementComponent {
     readonly LoadingState = LoadingState;
     readonly RenameLayerComponent = RenameLayerComponent;
     readonly LineageGraphComponent = LineageGraphComponent;
-
-    /**
-     * The component constructor. It injects angular and geoengine services.
-     */
-    constructor(
-        public readonly dialog: MatDialog,
-        public readonly layoutService: LayoutService,
-        public readonly projectService: ProjectService,
-        public readonly mapService: MapService,
-        public readonly config: CoreConfig,
-        public readonly changeDetectorRef: ChangeDetectorRef,
-        protected readonly backend: BackendService,
-        protected readonly userService: UserService,
-        protected readonly tabsService: TabsService,
-        protected readonly clipboard: Clipboard,
-        protected readonly notificationService: NotificationService,
-    ) {}
 
     /**
      * select a layer

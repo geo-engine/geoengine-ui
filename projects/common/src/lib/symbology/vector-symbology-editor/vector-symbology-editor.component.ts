@@ -1,4 +1,4 @@
-import {Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChanges, OnInit, Output, EventEmitter} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChanges, OnInit, Output, EventEmitter, inject} from '@angular/core';
 import {
     ClusteredPointSymbology,
     ColorParam,
@@ -58,6 +58,8 @@ import {AsyncValueDefault} from '../../util/pipes/async-converters.pipe';
     ],
 })
 export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
+    private readonly workflowsService = inject(WorkflowsService);
+
     @Input({required: true}) symbologyWorkflow!: SymbologyWorkflow<VectorSymbology>;
 
     @Output() changedSymbology = new EventEmitter<VectorSymbology>();
@@ -69,8 +71,6 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
 
     numericAttributes = new ReplaySubject<Array<string>>(1);
     allAttributes = new ReplaySubject<Array<string>>(1);
-
-    constructor(private readonly workflowsService: WorkflowsService) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.symbologyWorkflow && this.symbologyWorkflow) {

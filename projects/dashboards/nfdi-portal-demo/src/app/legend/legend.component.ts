@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges, ChangeDetectorRef} from '@angular/core';
+import {Component, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges, ChangeDetectorRef, inject} from '@angular/core';
 import {RasterLayer, FxLayoutDirective, FxLayoutAlignDirective, FxLayoutGapDirective} from '@geoengine/common';
 import {RasterLegendComponent} from '@geoengine/core';
 
@@ -10,9 +10,9 @@ import {RasterLegendComponent} from '@geoengine/core';
     imports: [FxLayoutDirective, FxLayoutAlignDirective, FxLayoutGapDirective, RasterLegendComponent],
 })
 export class LegendComponent implements OnChanges {
-    @Input() layer?: RasterLayer = undefined;
+    readonly changeDetectorRef = inject(ChangeDetectorRef);
 
-    constructor(readonly changeDetectorRef: ChangeDetectorRef) {}
+    @Input() layer?: RasterLayer = undefined;
 
     ngOnChanges(_changes: SimpleChanges): void {
         this.changeDetectorRef.markForCheck();

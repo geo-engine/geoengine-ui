@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, inject} from '@angular/core';
 import {LayoutService} from '../../../layout.service';
 import {MapService} from '../../../map/map.service';
 import {ProjectService} from '../../../project/project.service';
@@ -18,6 +18,11 @@ import {NgSwitch, NgSwitchCase, NgIf, AsyncPipe} from '@angular/common';
     imports: [MatIconButton, MatTooltip, MatMenuTrigger, MatIcon, MatMenu, MatMenuItem, NgSwitch, NgSwitchCase, NgIf, AsyncPipe],
 })
 export class LayerListMenuComponent {
+    layoutService = inject(LayoutService);
+    mapService = inject(MapService);
+    projectService = inject(ProjectService);
+    config = inject(CoreConfig);
+
     /**
      * sends if the layerlist should be visible
      */
@@ -28,12 +33,7 @@ export class LayerListMenuComponent {
      */
     readonly mapIsGrid$: Observable<boolean>;
 
-    constructor(
-        public layoutService: LayoutService,
-        public mapService: MapService,
-        public projectService: ProjectService,
-        public config: CoreConfig,
-    ) {
+    constructor() {
         this.layerListVisibility$ = this.layoutService.getLayerListVisibilityStream();
 
         this.mapIsGrid$ = this.mapService.isGrid$;

@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges, inject} from '@angular/core';
 import {FormsModule, ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {DatasetsService} from '../datasets.service';
 import {UploadsService} from '../../uploads/uploads.service';
@@ -42,6 +42,11 @@ import {FxLayoutDirective} from '../../util/directives/flexbox-legacy.directive'
     styleUrl: './ogr-dataset.component.css',
 })
 export class OgrDatasetComponent implements OnChanges {
+    protected datasetsService = inject(DatasetsService);
+    protected uploadsService = inject(UploadsService);
+    protected userService = inject(UserService);
+    protected changeDetectorRef = inject(ChangeDetectorRef);
+
     vectorDataTypes = ['Data', 'MultiPoint', 'MultiLineString', 'MultiPolygon'];
     timeDurationValueTypes = ['infinite', 'value', 'zero'];
     timeTypes = ['None', 'Start', 'Start/End', 'Start/Duration'];
@@ -61,12 +66,7 @@ export class OgrDatasetComponent implements OnChanges {
 
     readonly defaultTimeGranularity: TimeGranularity = 'seconds';
 
-    constructor(
-        protected datasetsService: DatasetsService,
-        protected uploadsService: UploadsService,
-        protected userService: UserService,
-        protected changeDetectorRef: ChangeDetectorRef,
-    ) {
+    constructor() {
         this.formMetaData = new UntypedFormGroup({
             mainFile: new UntypedFormControl('', Validators.required),
             layerName: new UntypedFormControl('', Validators.required),

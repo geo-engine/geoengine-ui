@@ -1,5 +1,5 @@
 import {Subscription, Observable, combineLatest, of as observableOf} from 'rxjs';
-import {Component, OnInit, ChangeDetectionStrategy, OnDestroy, Input, ChangeDetectorRef} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, OnDestroy, Input, ChangeDetectorRef, inject} from '@angular/core';
 import {LayoutService, SidenavConfig} from '../../layout.service';
 import {ThemePalette} from '@angular/material/core';
 import {distinctUntilChanged, map, mergeScan} from 'rxjs/operators';
@@ -62,6 +62,10 @@ export interface NavigationButtonIconLoading extends NavigationButtonIcon {
     imports: [MatIconButton, MatTooltip, MatIcon, MatProgressSpinner, AsyncPipe, AsyncStringSanitizer],
 })
 export class NavigationComponent implements OnInit, OnDestroy {
+    private layoutService = inject(LayoutService);
+    private sidenavRef = inject(SidenavRef);
+    private changeDetectorRef = inject(ChangeDetectorRef);
+
     /**
      * The navigation shows this array of buttons.
      */
@@ -69,15 +73,6 @@ export class NavigationComponent implements OnInit, OnDestroy {
 
     private sidenavConfig?: SidenavConfig;
     private sidenavConfigSubscription?: Subscription;
-
-    /**
-     * DI for services
-     */
-    constructor(
-        private layoutService: LayoutService,
-        private sidenavRef: SidenavRef,
-        private changeDetectorRef: ChangeDetectorRef,
-    ) {}
 
     ngOnInit(): void {
         this.sidenavConfigSubscription = this.layoutService.getSidenavContentComponentStream().subscribe((sidenavConfig) => {
