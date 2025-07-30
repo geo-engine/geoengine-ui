@@ -1,6 +1,6 @@
 <mat-card>
   <mat-card-content [formGroup]="form">
-    @if (createNew) {
+    @if (createNew()) {
       <geoengine-manager-id-input formControlName="id"></geoengine-manager-id-input>
     }
     <mat-form-field>

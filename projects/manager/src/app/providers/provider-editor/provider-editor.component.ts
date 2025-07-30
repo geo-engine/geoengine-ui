@@ -1,4 +1,4 @@
-import {Component, inject, Input, OnChanges, OnInit, SimpleChanges, output} from '@angular/core';
+import {Component, inject, OnChanges, OnInit, SimpleChanges, output, input} from '@angular/core';
 import {LayerProviderListing, Permission, TypedDataProviderDefinition} from '@geoengine/openapi-client';
 import {ConfirmationComponent, errorToText, LayersService, PermissionsService} from '@geoengine/common';
 import {firstValueFrom} from 'rxjs';
@@ -34,7 +34,7 @@ export enum ProviderType {
 ],
 })
 export class ProviderEditorComponent implements OnChanges, OnInit {
-    @Input({required: true}) providerListing!: LayerProviderListing;
+    readonly providerListing = input.required<LayerProviderListing>();
 
     readonly providerUpdated = output<void>();
 
@@ -55,11 +55,11 @@ export class ProviderEditorComponent implements OnChanges, OnInit {
     private readonly config = inject(AppConfig);
 
     ngOnInit(): void {
-        this.layersService.getProviderDefinition(this.providerListing.id).then((provider) => {
+        this.layersService.getProviderDefinition(this.providerListing().id).then((provider) => {
             this.provider = provider;
             this.setProviderType();
 
-            this.permissionsService.getPermissions('provider', this.providerListing.id, 0, 1).then(
+            this.permissionsService.getPermissions('provider', this.providerListing().id, 0, 1).then(
                 (permissions) => {
                     this.readonly = permissions.length < 1 || permissions[0].permission != Permission.Owner;
                 },
@@ -73,11 +73,11 @@ export class ProviderEditorComponent implements OnChanges, OnInit {
     ngOnChanges(_: SimpleChanges): void {
         this.provider = undefined;
         this.updatedDefinition = undefined;
-        this.layersService.getProviderDefinition(this.providerListing.id).then((provider) => {
+        this.layersService.getProviderDefinition(this.providerListing().id).then((provider) => {
             this.provider = provider;
             this.setProviderType();
 
-            this.permissionsService.getPermissions('provider', this.providerListing.id).then(
+            this.permissionsService.getPermissions('provider', this.providerListing().id).then(
                 (permissions) => {
                     this.readonly = !permissions.find((permission) => permission.permission === Permission.Owner);
                 },
@@ -96,7 +96,7 @@ export class ProviderEditorComponent implements OnChanges, OnInit {
         const provider = this.updatedDefinition!;
 
         try {
-            await this.layersService.updateProviderDefinition(this.providerListing.id, provider);
+            await this.layersService.updateProviderDefinition(this.providerListing().id, provider);
 
             this.providerUpdated.emit();
             this.provider = provider;
@@ -129,7 +129,7 @@ export class ProviderEditorComponent implements OnChanges, OnInit {
         }
 
         try {
-            await this.layersService.deleteProvider(this.providerListing.id);
+            await this.layersService.deleteProvider(this.providerListing().id);
             this.snackBar.open('Provider successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             // TODO: The 'emit' function requires a mandatory void argument
             this.providerDeleted.emit();

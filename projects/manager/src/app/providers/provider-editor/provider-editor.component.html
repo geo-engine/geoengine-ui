@@ -2,8 +2,8 @@
   <div class="container">
     <mat-card class="top">
       <mat-card-header>
-        <mat-card-title>{{ providerListing.name }}</mat-card-title>
-        <mat-card-subtitle>Type: {{ provider.type }}, ID: {{ providerListing.id }}</mat-card-subtitle>
+        <mat-card-title>{{ providerListing().name }}</mat-card-title>
+        <mat-card-subtitle>Type: {{ provider.type }}, ID: {{ providerListing().id }}</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content style="white-space: pre-wrap">
         @if (readonly) {
@@ -26,7 +26,7 @@
     </mat-card>
     <mat-card>
       <mat-card-content>
-        <geoengine-manager-permissions resourceType="provider" [resourceId]="providerListing.id"></geoengine-manager-permissions>
+        <geoengine-manager-permissions resourceType="provider" [resourceId]="providerListing().id"></geoengine-manager-permissions>
       </mat-card-content>
     </mat-card>
   </div>

@@ -1,13 +1,13 @@
 <mat-tab-group #tabs (selectedTabChange)="onTabChange($event)">
-  @if (providerType !== ProviderType.OTHER) {
+  @if (providerType() !== ProviderType.OTHER) {
     <mat-tab label="Form">
-      @switch (providerType) {
+      @switch (providerType()) {
         @case (ProviderType.ARUNA) {
           <geoengine-manager-aruna-editor-form
-            [createNew]="createNew"
-            [provider]="provider"
+            [createNew]="createNew()"
+            [provider]="provider()"
             [visible]="!jsonInputVisible"
-            [readonly]="readonly"
+            [readonly]="readonly()"
             (changed)="setChangedFormDefinition($event)"
           ></geoengine-manager-aruna-editor-form>
         }
@@ -16,8 +16,8 @@
   }
   <mat-tab label="JSON">
     <geoengine-manager-provider-json-input
-      [provider]="provider"
-      [readonly]="readonly"
+      [provider]="provider()"
+      [readonly]="readonly()"
       (changed)="setChangedJSONDefinition($event)"
       [visible]="jsonInputVisible"
     ></geoengine-manager-provider-json-input>
