@@ -1,4 +1,4 @@
-import {Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, inject, Input, OnChanges, OnInit, SimpleChanges, output} from '@angular/core';
 import {
     AbstractControl,
     FormBuilder,
@@ -25,17 +25,17 @@ import {ErrorStateMatcher} from '@angular/material/core';
     templateUrl: './aruna.component.html',
     styleUrl: './aruna.component.scss',
     imports: [
-    IdInputComponent,
-    ReactiveFormsModule,
-    MatCard,
-    MatCardContent,
-    MatFormField,
-    MatLabel,
-    MatInput,
-    MatError,
-    CdkTextareaAutosize,
-    MatTooltip
-],
+        IdInputComponent,
+        ReactiveFormsModule,
+        MatCard,
+        MatCardContent,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatError,
+        CdkTextareaAutosize,
+        MatTooltip,
+    ],
 })
 export class ArunaComponent implements OnInit, OnChanges {
     @Input() provider?: TypedDataProviderDefinition;
@@ -43,7 +43,7 @@ export class ArunaComponent implements OnInit, OnChanges {
     @Input() readonly: boolean = false;
     @Input() visible: boolean = false;
 
-    @Output() changed = new EventEmitter<TypedDataProviderDefinition>();
+    readonly changed = output<TypedDataProviderDefinition | undefined>();
 
     form!: FormGroup<{
         apiToken: FormControl<string>;

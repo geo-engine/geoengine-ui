@@ -161,6 +161,7 @@ export class LayerCollectionEditorComponent implements OnChanges {
             this.collectionListing.description = description;
             this.form.markAsPristine();
 
+            // TODO: The 'emit' function requires a mandatory void argument
             this.collectionUpdated.emit();
         } catch (error) {
             const errorMessage = await errorToText(error, 'Updating collection failed.');
@@ -182,6 +183,7 @@ export class LayerCollectionEditorComponent implements OnChanges {
         try {
             await this.layersService.removeLayerCollection(this.collectionListing.id.collectionId);
             this.snackBar.open('Collection successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
+            // TODO: The 'emit' function requires a mandatory void argument
             this.collectionDeleted.emit();
         } catch (error) {
             const errorMessage = await errorToText(error, 'Deleting collection failed.');
@@ -206,6 +208,7 @@ export class LayerCollectionEditorComponent implements OnChanges {
                 this.parentCollection.collectionId,
             );
             this.snackBar.open('Collection successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
+            // TODO: The 'emit' function requires a mandatory void argument
             this.collectionDeleted.emit();
         } catch (error) {
             const errorMessage = await errorToText(error, 'Removing collection failed.');

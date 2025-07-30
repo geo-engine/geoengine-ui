@@ -92,7 +92,7 @@ export class VegaViewerComponent implements OnChanges {
 
                 if (this.chartData?.metadata?.selectionName) {
                     this.vegaHandle.view.addSignalListener(this.chartData.metadata.selectionName, (_name, value) => {
-                        this.interactionChange.next(value);
+                        this.interactionChange.emit(value);
                     });
                 }
             })

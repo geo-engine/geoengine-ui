@@ -251,6 +251,7 @@ export class DatasetEditorComponent implements OnChanges {
         try {
             await this.datasetsService.deleteDataset(this.datasetListing.name);
             this.snackBar.open('Dataset successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
+            // TODO: The 'emit' function requires a mandatory void argument
             this.datasetDeleted.emit();
         } catch (error) {
             const errorMessage = await errorToText(error, 'Deleting dataset failed.');

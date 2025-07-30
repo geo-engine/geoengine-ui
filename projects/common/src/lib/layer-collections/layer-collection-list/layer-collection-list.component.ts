@@ -161,16 +161,16 @@ export class LayerCollectionListComponent implements OnChanges {
         this.selectedCollection = undefined;
         this.selectedLayer = undefined;
         if (item.type === 'collection') {
-            this.selectCollection.next(item);
+            this.selectCollection.emit(item);
             this.selectedCollection = item;
         } else if (item.type === 'layer') {
-            this.selectLayer.next(item);
+            this.selectLayer.emit(item);
             this.selectedLayer = item;
         }
     }
 
     navigateToCollection(item: LayerCollectionListing): void {
-        this.navigateCollection.next(item);
+        this.navigateCollection.emit(item);
     }
 
     protected setUpSource(): void {

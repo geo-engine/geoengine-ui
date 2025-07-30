@@ -1,12 +1,12 @@
 import {DataSource} from '@angular/cdk/collections';
 import {CdkFixedSizeVirtualScroll, CdkVirtualForOf, CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
-import {AfterContentInit, Component, EventEmitter, inject, Input, Output, viewChild} from '@angular/core';
+import {AfterContentInit, Component, inject, Input, viewChild, output} from '@angular/core';
 import {LayerProviderListing} from '@geoengine/openapi-client';
 import {BehaviorSubject, concatMap, firstValueFrom, Observable, range, scan, startWith, Subject} from 'rxjs';
 import {LayersService} from '@geoengine/common';
 import {MatDialog} from '@angular/material/dialog';
 import {AddProviderComponent} from '../add-provider/add-provider.component';
-import { AsyncPipe } from '@angular/common';
+import {AsyncPipe} from '@angular/common';
 import {MatListItem, MatNavList} from '@angular/material/list';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatIcon} from '@angular/material/icon';
@@ -17,22 +17,21 @@ import {MatButton} from '@angular/material/button';
     templateUrl: './provider-list.component.html',
     styleUrl: './provider-list.component.scss',
     imports: [
-    CdkVirtualScrollViewport,
-    AsyncPipe,
-    MatNavList,
-    MatListItem,
-    MatProgressSpinner,
-    CdkVirtualForOf,
-    MatIcon,
-    CdkFixedSizeVirtualScroll,
-    MatButton
-],
+        CdkVirtualScrollViewport,
+        AsyncPipe,
+        MatNavList,
+        MatListItem,
+        MatProgressSpinner,
+        CdkVirtualForOf,
+        MatIcon,
+        CdkFixedSizeVirtualScroll,
+        MatButton,
+    ],
 })
 export class ProviderListComponent implements AfterContentInit {
     readonly viewport = viewChild.required(CdkVirtualScrollViewport);
 
-    @Output()
-    selectProvider = new EventEmitter<LayerProviderListing>();
+    readonly selectProvider = output<LayerProviderListing | undefined>();
 
     addedProvider?: LayerProviderListing;
 

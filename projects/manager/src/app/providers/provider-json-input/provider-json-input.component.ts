@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, viewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, OnChanges, SimpleChanges, viewChild, output} from '@angular/core';
 import {TypedDataProviderDefinition, TypedDataProviderDefinitionFromJSON} from '@geoengine/openapi-client';
 import CodeMirror from 'codemirror';
 import {MatError} from '@angular/material/form-field';
@@ -11,7 +11,7 @@ import {MatError} from '@angular/material/form-field';
 })
 export class ProviderJsonInputComponent implements OnChanges, AfterViewInit {
     readonly editorRef = viewChild.required<ElementRef>('editor');
-    @Output() changed = new EventEmitter<TypedDataProviderDefinition>();
+    readonly changed = output<TypedDataProviderDefinition>();
     @Input() provider: TypedDataProviderDefinition | undefined;
     @Input() visible: boolean = false;
     @Input() readonly: boolean = false;

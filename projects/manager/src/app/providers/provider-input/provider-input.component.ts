@@ -1,10 +1,9 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, viewChild} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges, viewChild, output} from '@angular/core';
 import {ProviderType} from '../provider-editor/provider-editor.component';
 import {TypedDataProviderDefinition} from '@geoengine/openapi-client';
 import {MatTab, MatTabChangeEvent, MatTabGroup} from '@angular/material/tabs';
 import {ProviderJsonInputComponent} from '../provider-json-input/provider-json-input.component';
 import {ArunaComponent} from '../provider-editor/forms/aruna/aruna.component';
-
 
 @Component({
     selector: 'geoengine-manager-provider-input',
@@ -14,7 +13,7 @@ import {ArunaComponent} from '../provider-editor/forms/aruna/aruna.component';
 })
 export class ProviderInputComponent implements OnInit, OnChanges {
     @Input() providerType: ProviderType = ProviderType.OTHER;
-    @Output() updated = new EventEmitter<TypedDataProviderDefinition>();
+    readonly updated = output<TypedDataProviderDefinition | undefined>();
     @Input() provider: TypedDataProviderDefinition | undefined;
     @Input() createNew: boolean = false;
     @Input() readonly: boolean = false;

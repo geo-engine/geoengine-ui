@@ -1,4 +1,4 @@
-import {Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, inject, Input, OnChanges, OnInit, SimpleChanges, output} from '@angular/core';
 import {LayerProviderListing, Permission, TypedDataProviderDefinition} from '@geoengine/openapi-client';
 import {ConfirmationComponent, errorToText, LayersService, PermissionsService} from '@geoengine/common';
 import {firstValueFrom} from 'rxjs';
@@ -36,9 +36,9 @@ export enum ProviderType {
 export class ProviderEditorComponent implements OnChanges, OnInit {
     @Input({required: true}) providerListing!: LayerProviderListing;
 
-    @Output() providerUpdated = new EventEmitter<void>();
+    readonly providerUpdated = output<void>();
 
-    @Output() providerDeleted = new EventEmitter<void>();
+    readonly providerDeleted = output<void>();
 
     provider?: TypedDataProviderDefinition;
 
@@ -98,7 +98,7 @@ export class ProviderEditorComponent implements OnChanges, OnInit {
         try {
             await this.layersService.updateProviderDefinition(this.providerListing.id, provider);
 
-            this.providerUpdated.next();
+            this.providerUpdated.emit();
             this.provider = provider;
             this.updatedDefinition = undefined;
         } catch (e) {
@@ -131,6 +131,7 @@ export class ProviderEditorComponent implements OnChanges, OnInit {
         try {
             await this.layersService.deleteProvider(this.providerListing.id);
             this.snackBar.open('Provider successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
+            // TODO: The 'emit' function requires a mandatory void argument
             this.providerDeleted.emit();
         } catch (error) {
             const errorMessage = await errorToText(error, 'Deleting provider failed.');
