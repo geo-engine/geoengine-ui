@@ -14,7 +14,7 @@ export class ProvidersComponent {
 
     selectedProvider$: LayerProviderListing | undefined = undefined;
 
-    selectProvider(provider: LayerProviderListing): void {
+    selectProvider(provider?: LayerProviderListing): void {
         this.selectedProvider$ = provider;
     }
 

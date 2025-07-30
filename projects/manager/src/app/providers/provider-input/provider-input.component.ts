@@ -41,7 +41,7 @@ export class ProviderInputComponent implements OnInit, OnChanges {
         this.updated.emit(provider);
     }
 
-    setChangedFormDefinition(provider: TypedDataProviderDefinition): void {
+    setChangedFormDefinition(provider?: TypedDataProviderDefinition): void {
         this.formDefinition = provider;
         this.updated.emit(provider);
     }

@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, OnChanges, SimpleChanges, viewChild, output, input} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnChanges, SimpleChanges, viewChild, output, input, signal, effect} from '@angular/core';
 import {TypedDataProviderDefinition, TypedDataProviderDefinitionFromJSON} from '@geoengine/openapi-client';
 import CodeMirror from 'codemirror';
 import {MatError} from '@angular/material/form-field';
@@ -13,10 +13,17 @@ export class ProviderJsonInputComponent implements OnChanges, AfterViewInit {
     readonly editorRef = viewChild.required<ElementRef>('editor');
     readonly changed = output<TypedDataProviderDefinition>();
     readonly provider = input<TypedDataProviderDefinition>();
+    _provider = signal<TypedDataProviderDefinition | undefined>(undefined);
     readonly visible = input<boolean>(false);
     readonly readonly = input<boolean>(false);
     editor?: CodeMirror.Editor;
     inputInvalid: boolean = false;
+
+    constructor() {
+        effect(() => {
+            this._provider.set(this.provider());
+        });
+    }
 
     ngAfterViewInit(): void {
         this.setupEditor();
@@ -29,7 +36,7 @@ export class ProviderJsonInputComponent implements OnChanges, AfterViewInit {
                 this.editor?.setOption('readOnly', this.readonly());
             }, 50);
         } else {
-            const provider = this.provider();
+            const provider = this._provider();
             if (provider) {
                 this.editor?.setValue(JSON.stringify(provider, undefined, 4));
                 this.inputInvalid = false;
@@ -38,7 +45,7 @@ export class ProviderJsonInputComponent implements OnChanges, AfterViewInit {
     }
 
     setChangedDefinition(provider: TypedDataProviderDefinition): void {
-        this.provider = provider;
+        this._provider.set(provider);
         this.changed.emit(provider);
     }
 
@@ -55,7 +62,7 @@ export class ProviderJsonInputComponent implements OnChanges, AfterViewInit {
                 readOnly: this.readonly(),
             });
 
-            const provider = this.provider();
+            const provider = this._provider();
             if (provider) {
                 this.editor?.setValue(JSON.stringify(provider, undefined, 4));
             }
@@ -65,7 +72,6 @@ export class ProviderJsonInputComponent implements OnChanges, AfterViewInit {
             // add value observer
             CodeMirror.on(this.editor, 'change', (e) => {
                 if (this.visible()) {
-                    this.provider = undefined;
                     try {
                         this.setChangedDefinition(TypedDataProviderDefinitionFromJSON(JSON.parse(e.getValue())));
                         this.inputInvalid = false;

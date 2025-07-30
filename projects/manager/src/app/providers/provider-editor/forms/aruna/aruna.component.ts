@@ -1,4 +1,4 @@
-import {Component, inject, OnChanges, OnInit, SimpleChanges, output, input} from '@angular/core';
+import {Component, inject, OnChanges, OnInit, SimpleChanges, output, input, effect, signal} from '@angular/core';
 import {
     AbstractControl,
     FormBuilder,
@@ -39,6 +39,7 @@ import {ErrorStateMatcher} from '@angular/material/core';
 })
 export class ArunaComponent implements OnInit, OnChanges {
     readonly provider = input<TypedDataProviderDefinition>();
+    _provider = signal<TypedDataProviderDefinition | undefined>(undefined);
     readonly createNew = input<boolean>(false);
     readonly readonly = input<boolean>(false);
     readonly visible = input<boolean>(false);
@@ -83,10 +84,14 @@ export class ArunaComponent implements OnInit, OnChanges {
                 this.integerValidator(),
             ]),
         });
+
+        effect(() => {
+            this._provider.set(this.provider());
+        });
     }
 
     ngOnInit(): void {
-        let definition = this.provider() as ArunaDataProviderDefinition;
+        let definition = this._provider() as ArunaDataProviderDefinition;
 
         if (!definition) {
             definition = {
@@ -115,7 +120,7 @@ export class ArunaComponent implements OnInit, OnChanges {
             if (!this.form.valid) {
                 this.changed.emit(undefined);
             } else {
-                this.changed.emit({
+                this._provider.set({
                     type: 'Aruna',
                     apiToken: this.form.controls['apiToken'].value,
                     apiUrl: this.form.controls['apiUrl'].value,
@@ -127,14 +132,15 @@ export class ArunaComponent implements OnInit, OnChanges {
                     priority: this.convertToNumber(this.form.controls['priority'].value) ?? 0,
                     projectId: this.form.controls['projectId'].value,
                 });
+                this.changed.emit(this._provider());
             }
         });
     }
 
     ngOnChanges(_: SimpleChanges): void {
-        if (this.provider()) {
+        if (this._provider()) {
             setTimeout(() => {
-                const provider = this.provider() as ArunaDataProviderDefinition;
+                const provider = this._provider() as ArunaDataProviderDefinition;
                 this.setFormValue(provider);
 
                 if (this.readonly()) {
