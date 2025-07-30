@@ -718,7 +718,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     url = url.replace('{epsg}', projection.srsString.split(':')[1]);
                 }
                 return new OlSourceVectorTile({
-                    format: new OlFormatMVT(),
+                    format: new OlFormatMVT({layerName: 'mvt:layer'}),
                     url,
                     extent: vectorTilesBasemap.LAYER_EXTENTS[projection.srsString],
                     maxZoom: vectorTilesBasemap.MAX_ZOOM,
