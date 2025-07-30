@@ -108,7 +108,7 @@ export class BandwiseExpressionOperatorComponent implements AfterViewInit {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
-            expression: new FormControl<string>('    1 * x', {
+            expression: new FormControl<string>('1 * x', {
                 nonNullable: true,
                 validators: [Validators.required],
             }),

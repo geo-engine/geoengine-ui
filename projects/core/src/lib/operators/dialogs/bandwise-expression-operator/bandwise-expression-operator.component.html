@@ -14,7 +14,7 @@
             </a>
             <ng-container operatorParameters>
                 <p>Use <i>x</i> to refer to the current value of the pixel.</p>
-                <geoengine-code-editor formControlName="expression" language="Rust" header="fn(x) {"></geoengine-code-editor>
+                <geoengine-code-editor formControlName="expression" language="Rust" header="fn(x):"></geoengine-code-editor>
                 @if (lastError$ | async; as lastError) {
                     <p class="error">{{ lastError }}</p>
                 }
