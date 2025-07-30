@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, OnChanges, SimpleChanges, viewChild, output, input, signal, effect} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, viewChild, output, input, signal, effect} from '@angular/core';
 import {TypedDataProviderDefinition, TypedDataProviderDefinitionFromJSON} from '@geoengine/openapi-client';
 import CodeMirror from 'codemirror';
 import {MatError} from '@angular/material/form-field';
@@ -9,7 +9,7 @@ import {MatError} from '@angular/material/form-field';
     styleUrl: './provider-json-input.component.scss',
     imports: [MatError],
 })
-export class ProviderJsonInputComponent implements OnChanges, AfterViewInit {
+export class ProviderJsonInputComponent implements AfterViewInit {
     readonly editorRef = viewChild.required<ElementRef>('editor');
     readonly changed = output<TypedDataProviderDefinition>();
     readonly provider = input<TypedDataProviderDefinition>();
@@ -22,26 +22,24 @@ export class ProviderJsonInputComponent implements OnChanges, AfterViewInit {
     constructor() {
         effect(() => {
             this._provider.set(this.provider());
+
+            if (this.visible()) {
+                setTimeout(() => {
+                    this.editor?.refresh();
+                    this.editor?.setOption('readOnly', this.readonly());
+                }, 50);
+            } else {
+                const provider = this._provider();
+                if (provider) {
+                    this.editor?.setValue(JSON.stringify(provider, undefined, 4));
+                    this.inputInvalid = false;
+                }
+            }
         });
     }
 
     ngAfterViewInit(): void {
         this.setupEditor();
-    }
-
-    ngOnChanges(_: SimpleChanges): void {
-        if (this.visible()) {
-            setTimeout(() => {
-                this.editor?.refresh();
-                this.editor?.setOption('readOnly', this.readonly());
-            }, 50);
-        } else {
-            const provider = this._provider();
-            if (provider) {
-                this.editor?.setValue(JSON.stringify(provider, undefined, 4));
-                this.inputInvalid = false;
-            }
-        }
     }
 
     setChangedDefinition(provider: TypedDataProviderDefinition): void {

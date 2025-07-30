@@ -1,4 +1,4 @@
-import {Component, OnChanges, OnInit, SimpleChanges, viewChild, output, input} from '@angular/core';
+import {Component, viewChild, output, input, effect} from '@angular/core';
 import {ProviderType} from '../provider-editor/provider-editor.component';
 import {TypedDataProviderDefinition} from '@geoengine/openapi-client';
 import {MatTab, MatTabChangeEvent, MatTabGroup} from '@angular/material/tabs';
@@ -11,7 +11,7 @@ import {ArunaComponent} from '../provider-editor/forms/aruna/aruna.component';
     styleUrl: './provider-input.component.scss',
     imports: [ProviderJsonInputComponent, ArunaComponent, MatTabGroup, MatTab],
 })
-export class ProviderInputComponent implements OnInit, OnChanges {
+export class ProviderInputComponent {
     readonly providerType = input<ProviderType>(ProviderType.OTHER);
     readonly updated = output<TypedDataProviderDefinition | undefined>();
     readonly provider = input<TypedDataProviderDefinition>();
@@ -24,16 +24,21 @@ export class ProviderInputComponent implements OnInit, OnChanges {
 
     protected readonly ProviderType = ProviderType;
 
-    ngOnInit(): void {
-        this.jsonInputVisible = this.providerType() === ProviderType.OTHER;
-    }
-
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes['providerType']) {
+    constructor() {
+        effect(() => {
+            this.jsonInputVisible = this.providerType() === ProviderType.OTHER;
             setTimeout(() => (this.tabs()!.selectedIndex = 0));
-        }
-        this.jsonDefinition = undefined;
-        this.formDefinition = undefined;
+        });
+
+        effect(() => {
+            this.provider();
+            this.providerType();
+            this.createNew();
+            this.readonly();
+
+            this.jsonDefinition = undefined;
+            this.formDefinition = undefined;
+        });
     }
 
     setChangedJSONDefinition(provider: TypedDataProviderDefinition): void {
