@@ -41,7 +41,9 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
     readonly language = input.required<Language>();
     readonly header = input<string>();
 
-    private readonly code = signal<string>('');
+    private writtenCode = '';
+    private readonly code = signal<string>(this.writtenCode);
+
     private readonly languageMode = computed(() => {
         switch (this.language()) {
             case 'Rust':
@@ -68,9 +70,11 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
 
         effect(() => {
             const code = this.code();
-            if (this.onChanged) {
-                this.onChanged(code);
-            }
+
+            if (!this.onChanged) return;
+            if (this.writtenCode === code) return; // don't call onChanged if the code has not changed
+
+            this.onChanged(code);
         });
 
         effect(() => {
@@ -115,7 +119,11 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
     }
 
     /** Implemented as part of ControlValueAccessor. */
-    writeValue(code: string): void {
+    writeValue(code: unknown): void {
+        if (typeof code !== 'string') return;
+
+        this.writtenCode = code;
+
         if (this.editor) {
             this.editor?.dispatch({
                 changes: {from: 0, to: this.editor.state.doc.length, insert: code},
@@ -126,7 +134,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
     }
 
     /** Implemented as part of ControlValueAccessor. */
-    registerOnChange(fn: () => void): void {
+    registerOnChange(fn: (_: unknown) => unknown): void {
         this.onChanged = fn;
     }
 
