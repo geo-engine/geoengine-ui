@@ -776,7 +776,6 @@
                             "projects/common/assets/fonts/pacifico/pacifico.css",
                             "projects/common/assets/fonts/material-design-icons/material-icons.css"
                         ],
-                        "scripts": ["node_modules/codemirror/lib/codemirror.js"],
                         "browser": "projects/manager/src/main.ts"
                     },
                     "configurations": {
