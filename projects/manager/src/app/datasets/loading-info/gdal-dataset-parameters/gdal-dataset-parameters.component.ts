@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 import {FormArray, FormControl, FormGroup, NG_VALUE_ACCESSOR, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {DataPath, FileNotFoundHandling, GdalDatasetParameters, RasterPropertiesEntryType} from '@geoengine/openapi-client';
 import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
@@ -82,22 +82,20 @@ export interface RasterPropertiesKeyForm {
     ],
 })
 export class GdalDatasetParametersComponent {
-    @Input()
-    form: FormGroup<GdalDatasetParametersForm> = GdalDatasetParametersComponent.setUpPlaceholderForm();
+    readonly form = input<FormGroup<GdalDatasetParametersForm>>(GdalDatasetParametersComponent.setUpPlaceholderForm());
 
-    @Input()
-    dataPath?: DataPath;
+    readonly dataPath = input<DataPath>();
 
     FileNotFoundHandling = Object.values(FileNotFoundHandling);
     RasterPropertiesEntryType = Object.values(RasterPropertiesEntryType);
 
     removePropertyMapping(i: number): void {
-        this.form.controls.propertiesMapping.removeAt(i);
-        this.form.markAsDirty();
+        this.form().controls.propertiesMapping.removeAt(i);
+        this.form().markAsDirty();
     }
 
     addPropertyMapping(): void {
-        this.form.controls.propertiesMapping.push(
+        this.form().controls.propertiesMapping.push(
             new FormGroup<GdalMetadataMappingForm>({
                 sourceKey: new FormGroup<RasterPropertiesKeyForm>({
                     domain: new FormControl('newSourceDomain', {
@@ -128,12 +126,12 @@ export class GdalDatasetParametersComponent {
     }
 
     removeOpenOption(i: number): void {
-        this.form.controls.gdalOpenOptions.removeAt(i);
-        this.form.markAsDirty();
+        this.form().controls.gdalOpenOptions.removeAt(i);
+        this.form().markAsDirty();
     }
 
     addOpenOption(): void {
-        this.form.controls.gdalOpenOptions.push(
+        this.form().controls.gdalOpenOptions.push(
             new FormControl('newOption', {
                 nonNullable: true,
                 validators: [Validators.required],
@@ -142,12 +140,12 @@ export class GdalDatasetParametersComponent {
     }
 
     removeConfigOption(i: number): void {
-        this.form.controls.gdalConfigOptions.removeAt(i);
-        this.form.markAsDirty();
+        this.form().controls.gdalConfigOptions.removeAt(i);
+        this.form().markAsDirty();
     }
 
     addConfigOption(): void {
-        this.form.controls.gdalConfigOptions.push(
+        this.form().controls.gdalConfigOptions.push(
             new FormArray<FormControl<string>>([
                 new FormControl('newKey', {
                     nonNullable: true,

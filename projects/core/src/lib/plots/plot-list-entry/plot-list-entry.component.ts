@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, inject, input} from '@angular/core';
 import {PlotDataDict} from '../../backend/backend.model';
 import {LoadingState} from '../../project/loading-state.model';
 import {ProjectService} from '../../project/project.service';
@@ -37,20 +37,16 @@ export class PlotListEntryComponent implements OnChanges {
     private readonly projectService = inject(ProjectService);
     private readonly dialog = inject(MatDialog);
 
-    @Input()
-    plot!: Plot;
+    readonly plot = input.required<Plot>();
 
-    @Input()
-    plotStatus?: LoadingState;
+    readonly plotStatus = input<LoadingState>();
 
     @Input()
     plotData?: PlotDataDict;
 
-    @Input()
-    plotError?: GeoEngineError;
+    readonly plotError = input<GeoEngineError>();
 
-    @Input()
-    width?: number;
+    readonly width = input<number>();
 
     plotIcon?: string;
 
@@ -64,9 +60,9 @@ export class PlotListEntryComponent implements OnChanges {
         }
 
         if (changes.plotStatus) {
-            this.isLoading = this.plotStatus === LoadingState.LOADING;
-            this.isOk = this.plotStatus === LoadingState.OK;
-            this.isError = this.plotStatus === LoadingState.ERROR;
+            this.isLoading = this.plotStatus() === LoadingState.LOADING;
+            this.isOk = this.plotStatus() === LoadingState.OK;
+            this.isError = this.plotStatus() === LoadingState.ERROR;
         }
     }
 
@@ -75,17 +71,17 @@ export class PlotListEntryComponent implements OnChanges {
      */
     showFullscreen(): void {
         this.dialog.open(PlotDetailViewComponent, {
-            data: this.plot,
+            data: this.plot(),
             maxHeight: '100vh',
             maxWidth: '100vw',
         });
     }
 
     removePlot(): void {
-        this.projectService.removePlot(this.plot);
+        this.projectService.removePlot(this.plot());
     }
 
     reloadPlot(): void {
-        this.projectService.reloadPlot(this.plot);
+        this.projectService.reloadPlot(this.plot());
     }
 }

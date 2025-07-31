@@ -1,6 +1,5 @@
 import {
     Component,
-    Input,
     ChangeDetectionStrategy,
     OnChanges,
     SimpleChange,
@@ -8,6 +7,7 @@ import {
     AfterViewInit,
     ElementRef,
     OnDestroy,
+    input,
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 
@@ -50,9 +50,9 @@ const LANGUAGES = ['Rust'];
 export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy {
     @ViewChild('editor', {static: true}) editorRef!: ElementRef;
 
-    @Input() language = 'Rust';
-    @Input() prefixLine?: string;
-    @Input() suffixLine?: string;
+    readonly language = input('Rust');
+    readonly prefixLine = input<string>();
+    readonly suffixLine = input<string>();
 
     private code$ = new BehaviorSubject('');
 
@@ -76,8 +76,9 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
     }
 
     ngAfterViewInit(): void {
-        if (LANGUAGES.indexOf(this.language)) {
-            throw new Error(`Language ${this.language} is not (yet) supported.`);
+        const language = this.language();
+        if (LANGUAGES.indexOf(language)) {
+            throw new Error(`Language ${language} is not (yet) supported.`);
         }
 
         this.editor = CodeMirror.fromTextArea(this.editorRef.nativeElement, {
@@ -86,7 +87,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
             indentWithTabs: false,
             lineWrapping: true,
             lineSeparator: '\n',
-            mode: this.language,
+            mode: language,
             smartIndent: true,
         });
 
@@ -115,8 +116,9 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
         }
 
         // set prefix and suffix lines
-        if (this.prefixLine) {
-            this.writeValue(this.getCode(this.prefixLine, this.suffixLine));
+        const prefixLine = this.prefixLine();
+        if (prefixLine) {
+            this.writeValue(this.getCode(prefixLine, this.suffixLine()));
         }
     }
 
@@ -129,7 +131,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
     /**
      * @return the current editor content
      */
-    getCode(prefixLine = this.prefixLine, suffixLine = this.suffixLine): string {
+    getCode(prefixLine = this.prefixLine(), suffixLine = this.suffixLine()): string {
         if (!this.editor) {
             return '';
         }
@@ -153,8 +155,10 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
 
     /** Implemented as part of ControlValueAccessor. */
     writeValue(value: string): void {
-        const prefix = this.prefixLine ? `${this.prefixLine}\n` : '';
-        const suffix = this.suffixLine ? ` \n${this.suffixLine}` : '';
+        const prefixLine = this.prefixLine();
+        const prefix = prefixLine ? `${prefixLine}\n` : '';
+        const suffixLine = this.suffixLine();
+        const suffix = suffixLine ? ` \n${suffixLine}` : '';
 
         const code = prefix + value + suffix;
 
@@ -166,11 +170,11 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
         this.editor.setValue(code);
         this.editor.scrollIntoView({line: 0, ch: 0});
 
-        if (this.prefixLine) {
+        if (this.prefixLine()) {
             this.editor.markText({line: 0, ch: 0}, {line: 1, ch: 0}, {readOnly: true, inclusiveLeft: true, inclusiveRight: false});
         }
 
-        if (this.suffixLine) {
+        if (this.suffixLine()) {
             const lastLine = this.editor.lineCount() - 1;
             const secondLastLine = lastLine - 1;
             this.editor.markText(

@@ -3,7 +3,7 @@
         @if (plotIcon) {
             <img mat-card-avatar [src]="plotIcon" [alt]="plotData?.outputFormat" />
         }
-        <mat-card-title>{{ plot.name }}</mat-card-title>
+        <mat-card-title>{{ plot().name }}</mat-card-title>
         <mat-card-subtitle>{{ plotData?.plotType }}</mat-card-subtitle>
     </mat-card-header>
     @if (isLoading) {
@@ -15,13 +15,13 @@
         <mat-card-content>
             @switch (plotData?.outputFormat) {
                 @case ('ImagePng') {
-                    <img [src]="plotData?.data" [alt]="plot.name" />
+                    <img [src]="plotData?.data" [alt]="plot().name" />
                 }
                 @case ('JsonPlain') {
                     <pre>{{ plotData?.data | json }}</pre>
                 }
                 @case ('JsonVega') {
-                    <geoengine-vega-viewer [chartData]="plotData?.data" [width]="width"></geoengine-vega-viewer>
+                    <geoengine-vega-viewer [chartData]="plotData?.data" [width]="width()"></geoengine-vega-viewer>
                 }
                 @default {
                     <pre>{{ plotData?.data }}</pre>
@@ -42,7 +42,7 @@
     }
     @if (isError) {
         <mat-card-content>
-            <em>{{ plotError?.message }}</em>
+            <em>{{ plotError()?.message }}</em>
         </mat-card-content>
     }
     @if (isError) {

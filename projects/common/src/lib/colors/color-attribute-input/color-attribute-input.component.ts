@@ -2,12 +2,12 @@ import {
     Component,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
-    Input,
     forwardRef,
     OnChanges,
     SimpleChanges,
     ViewEncapsulation,
     inject,
+    input,
 } from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule} from '@angular/forms';
@@ -52,52 +52,53 @@ export interface ColorAttributeInputHinter {
 export class ColorAttributeInputComponent implements ControlValueAccessor, OnChanges {
     private changeDetectorRef = inject(ChangeDetectorRef);
 
-    @Input() readonlyAttribute = false;
-    @Input() readonlyColor = false;
-    @Input() attributePlaceholder = 'attribute';
-    @Input() colorPlaceholder = 'color';
-    @Input() colorAttributeHinter?: ColorAttributeInputHinter;
+    readonly readonlyAttribute = input(false);
+    readonly readonlyColor = input(false);
+    readonly attributePlaceholder = input('attribute');
+    readonly colorPlaceholder = input('color');
+    readonly colorAttributeHinter = input<ColorAttributeInputHinter>();
 
     onTouched?: () => void;
     onChange?: (_: ColorAttributeInput) => void = undefined;
 
-    input?: ColorAttributeInput;
+    colorAttributeInput?: ColorAttributeInput;
     cssString = '';
 
     hasColorHint(): boolean {
-        return this.colorAttributeHinter !== undefined;
+        return this.colorAttributeHinter() !== undefined;
     }
 
     colorHint(key: string | undefined): string | undefined {
         if (!key) {
             return undefined;
         }
-        if (this.colorAttributeHinter) {
-            return this.colorAttributeHinter.colorHint(key);
+        const colorAttributeHinter = this.colorAttributeHinter();
+        if (colorAttributeHinter) {
+            return colorAttributeHinter.colorHint(key);
         }
         return undefined;
     }
 
     updateKey(key?: string): void {
-        if (!key || !this.input || key === this.input.key) {
+        if (!key || !this.colorAttributeInput || key === this.colorAttributeInput.key) {
             return;
         }
 
-        this.input = {
+        this.colorAttributeInput = {
             key,
-            value: this.input.value,
+            value: this.colorAttributeInput.value,
         };
     }
 
     updateColor(value: string): void {
-        if (!value || !this.input) {
+        if (!value || !this.colorAttributeInput) {
             return;
         }
 
         const color = Color.fromRgbaLike(stringToRgbaStruct(value));
 
-        this.input = {
-            key: this.input.key,
+        this.colorAttributeInput = {
+            key: this.colorAttributeInput.key,
             value: color,
         };
         this.cssString = color.rgbaCssString();
@@ -118,14 +119,14 @@ export class ColorAttributeInputComponent implements ControlValueAccessor, OnCha
         }
     }
 
-    writeValue(input?: ColorAttributeInput): void {
-        this.input = input;
+    writeValue(colorAttributeInput?: ColorAttributeInput): void {
+        this.colorAttributeInput = colorAttributeInput;
 
-        if (!input) {
+        if (!colorAttributeInput) {
             return;
         }
 
-        this.cssString = input.value.rgbaCssString();
+        this.cssString = colorAttributeInput.value.rgbaCssString();
     }
 
     registerOnChange(fn: (_: ColorAttributeInput) => void): void {
@@ -138,8 +139,8 @@ export class ColorAttributeInputComponent implements ControlValueAccessor, OnCha
     }
 
     propagateChange(): void {
-        if (this.onChange && this.input) {
-            this.onChange(this.input);
+        if (this.onChange && this.colorAttributeInput) {
+            this.onChange(this.colorAttributeInput);
         }
     }
 }

@@ -3,8 +3,8 @@
         <input
             matInput
             type="text"
-            [readonly]="readonlyAttribute"
-            [placeholder]="attributePlaceholder"
+            [readonly]="readonlyAttribute()"
+            [placeholder]="attributePlaceholder()"
             [ngModel]="input?.key"
             (ngModelChange)="updateKey($event)"
             (blur)="propagateChange()"
@@ -19,10 +19,10 @@
         <input
             matInput
             class="color_cell"
-            [readonly]="readonlyColor"
+            [readonly]="readonlyColor()"
             [ngModel]="cssString"
             (ngModelChange)="updateColor($event)"
-            [placeholder]="colorPlaceholder"
+            [placeholder]="colorPlaceholder()"
             [colorPicker]="cssString"
             (colorPickerChange)="updateColor($event)"
             [cpUseRootViewContainer]="true"

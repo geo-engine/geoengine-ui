@@ -1,5 +1,5 @@
 import {Observable, Subscription} from 'rxjs';
-import {Component, OnDestroy, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnChanges, inject} from '@angular/core';
+import {Component, OnDestroy, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnChanges, inject, input} from '@angular/core';
 import {CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragPlaceholder} from '@angular/cdk/drag-drop';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {MatDialog} from '@angular/material/dialog';
@@ -52,7 +52,7 @@ export class LayerListComponent implements OnDestroy, OnChanges {
     /**
      * The desired height of the list
      */
-    @Input() height?: number;
+    readonly height = input<number>();
 
     /**
      * The empty list shows a button to trigger the generation of a first layer.
@@ -99,8 +99,9 @@ export class LayerListComponent implements OnDestroy, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.height && this.height) {
-            this.maxHeight = this.height - LayoutService.getToolbarHeightPx();
+        const height = this.height();
+        if (changes.height && height) {
+            this.maxHeight = height - LayoutService.getToolbarHeightPx();
         }
     }
 

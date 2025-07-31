@@ -3,12 +3,12 @@ import {
     ChangeDetectionStrategy,
     ViewChild,
     ElementRef,
-    Input,
     OnChanges,
     SimpleChanges,
     Output,
     EventEmitter,
     inject,
+    input,
 } from '@angular/core';
 import vegaEmbed from 'vega-embed';
 import {View} from 'vega';
@@ -27,14 +27,11 @@ export class VegaViewerComponent implements OnChanges {
     protected element = inject(ElementRef);
     protected readonly config = inject(CommonConfig);
 
-    @Input()
-    chartData?: VegaChartData;
+    readonly chartData = input<VegaChartData>();
 
-    @Input()
-    width?: number;
+    readonly width = input<number>();
 
-    @Input()
-    height?: number;
+    readonly height = input<number>();
 
     @Output()
     interactionChange = new EventEmitter<Record<string, unknown>>();
@@ -56,16 +53,17 @@ export class VegaViewerComponent implements OnChanges {
     }
 
     private displayPlot(): void {
-        if (!this.chartData) {
+        const chartData = this.chartData();
+        if (!chartData) {
             return;
         }
 
         const div = this.chartContainer.nativeElement;
 
-        const width = this.width ?? div.clientWidth ?? this.element.nativeElement.offsetWidth;
-        const height = this.height ?? width / 2;
+        const width = this.width() ?? div.clientWidth ?? this.element.nativeElement.offsetWidth;
+        const height = this.height() ?? width / 2;
 
-        const spec = JSON.parse(this.chartData.vegaString);
+        const spec = JSON.parse(chartData.vegaString);
 
         vegaEmbed(div, spec, {
             actions: false,
@@ -89,8 +87,9 @@ export class VegaViewerComponent implements OnChanges {
             .then((result) => {
                 this.vegaHandle = result;
 
-                if (this.chartData?.metadata?.selectionName) {
-                    this.vegaHandle.view.addSignalListener(this.chartData.metadata.selectionName, (_name, value) => {
+                const chartDataValue = this.chartData();
+                if (chartDataValue?.metadata?.selectionName) {
+                    this.vegaHandle.view.addSignalListener(chartDataValue.metadata.selectionName, (_name, value) => {
                         this.interactionChange.next(value);
                     });
                 }

@@ -5,12 +5,13 @@ import {
     ChangeDetectionStrategy,
     forwardRef,
     SimpleChange,
-    Input,
     OnChanges,
     OnDestroy,
     OnInit,
     ChangeDetectorRef,
     inject,
+    input,
+    computed,
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {ProjectService} from '../../../../project/project.service';
@@ -96,27 +97,44 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
     /**
      * An array of possible layers.
      */
-    @Input() layers: Array<Layer> | Observable<Array<Layer>> = this.projectService.getLayerStream();
+    readonly layers = input<Array<Layer> | Observable<Array<Layer>>>(this.projectService.getLayerStream());
 
     /**
      * The minimum number of elements to select.
      */
-    @Input() min = 1;
+    readonly min = input(1);
 
     /**
      * The maximum number of elements to select.
      */
-    @Input() max = 1;
+    readonly max = input(1);
 
     /**
      * The type is used as a filter for the layers to choose from.
      */
-    @Input() types: Array<ResultType> = ResultTypes.ALL_TYPES;
+    readonly types = input<Array<ResultType>>(ResultTypes.ALL_TYPES);
+
+    /**
+     * A function for naming the individual raster selections
+     */
+    readonly inputNaming = input<(index: number) => string>((idx) => 'Input ' + this.toLetters(idx));
 
     /**
      * The title of the component (optional).
      */
-    @Input() title?: string = undefined;
+    readonly _title = input<string>(undefined, {
+        // eslint-disable-next-line @angular-eslint/no-input-rename
+        alias: 'title',
+    });
+
+    readonly title = computed<string>(() => {
+        return (
+            this._title() ??
+            this.types()
+                .map((type) => type.toString())
+                .join(', ')
+        );
+    });
 
     onTouched?: () => void;
     onChange?: (_: Array<Layer>) => void = undefined;
@@ -142,17 +160,12 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
 
         this.hasLayers = this.filteredLayers.pipe(map((layers) => layers.length > 0));
         this.layersAtMin = combineLatest([this.selectedLayers, this.hasLayers]).pipe(
-            map(([selectedLayers, hasLayers]) => !hasLayers || selectedLayers.length <= this.min),
+            map(([selectedLayers, hasLayers]) => !hasLayers || selectedLayers.length <= this.min()),
         );
         this.layersAtMax = combineLatest([this.selectedLayers, this.hasLayers]).pipe(
-            map(([selectedLayers, hasLayers]) => !hasLayers || selectedLayers.length >= this.max),
+            map(([selectedLayers, hasLayers]) => !hasLayers || selectedLayers.length >= this.max()),
         );
     }
-
-    /**
-     * A function for naming the individual raster selections
-     */
-    @Input() inputNaming: (index: number) => string = (idx) => 'Input ' + this.toLetters(idx);
 
     ngOnInit(): void {
         this.updateLayersForSelection();
@@ -171,10 +184,11 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
                 case 'layers':
                 case 'types': {
                     let layers$: Observable<Array<Layer>>;
-                    if (this.layers instanceof Array) {
-                        layers$ = of(this.layers);
+                    const layersValue = this.layers();
+                    if (layersValue instanceof Array) {
+                        layers$ = of(layersValue);
                     } else {
-                        layers$ = this.layers;
+                        layers$ = layersValue;
                     }
 
                     if (this.layerChangesSubscription) {
@@ -188,12 +202,10 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
                                 return forkJoin(layersAndMetadata);
                             }),
                             map((layers: Array<[Layer, LayerMetadata]>) =>
-                                layers.filter(([_layer, meta]) => this.types.includes(meta.resultType)).map(([layer, _]) => layer),
+                                layers.filter(([_layer, meta]) => this.types().includes(meta.resultType)).map(([layer, _]) => layer),
                             ),
                         )
                         .subscribe((l) => this.filteredLayers.next(l));
-
-                    this.title ??= this.types.map((type) => type.toString()).join(', ');
 
                     break;
                 }
@@ -221,14 +233,14 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
             .subscribe(([filteredLayers, selectedLayers]) => {
                 const amountOfLayers = selectedLayers.length;
 
-                if (this.max < amountOfLayers) {
+                if (this.max() < amountOfLayers) {
                     // remove selected layers
-                    const difference = amountOfLayers - this.max;
+                    const difference = amountOfLayers - this.max();
                     this.selectedLayers.next(selectedLayers.slice(0, amountOfLayers - difference));
                     this.layerDetails = this.layerDetails.slice(0, amountOfLayers - difference);
-                } else if (this.min > amountOfLayers) {
+                } else if (this.min() > amountOfLayers) {
                     // add selected layers
-                    const difference = this.min - amountOfLayers;
+                    const difference = this.min() - amountOfLayers;
                     this.selectedLayers.next(selectedLayers.concat(this.layersForInitialSelection(filteredLayers, [], difference)));
                     this.layerDetails = this.layerDetails.concat(
                         Array(difference)

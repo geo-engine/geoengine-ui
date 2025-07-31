@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, ViewChild, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild, inject, input} from '@angular/core';
 import {
     Layer,
     RasterLayer,
@@ -32,7 +32,7 @@ export class SymbologyEditorComponent implements OnInit, OnDestroy {
     private readonly projectService = inject(ProjectService);
     private readonly mapService = inject(MapService);
 
-    @Input({required: true}) layer!: Layer;
+    readonly layer = input.required<Layer>();
 
     @ViewChild(RasterSymbologyEditorComponent) rasterSymbologyEditorComponent?: RasterSymbologyEditorComponent;
 
@@ -62,8 +62,9 @@ export class SymbologyEditorComponent implements OnInit, OnDestroy {
         if (!this.rasterSymbology) {
             return;
         }
-        this.projectService.changeLayer(this.layer, {symbology: this.rasterSymbology});
-        this.rasterSymbologyWorkflow$.next({workflowId: this.layer.workflowId, symbology: this.rasterSymbology});
+        const layer = this.layer();
+        this.projectService.changeLayer(layer, {symbology: this.rasterSymbology});
+        this.rasterSymbologyWorkflow$.next({workflowId: layer.workflowId, symbology: this.rasterSymbology});
         this.unappliedRasterChanges = false;
     }
 
@@ -80,7 +81,7 @@ export class SymbologyEditorComponent implements OnInit, OnDestroy {
     }
 
     changeVectorSymbology(vectorSymbology: VectorSymbology): void {
-        this.projectService.changeLayer(this.layer, {symbology: vectorSymbology});
+        this.projectService.changeLayer(this.layer(), {symbology: vectorSymbology});
     }
 
     private createHistogramParamsSubscription(): void {
@@ -99,17 +100,18 @@ export class SymbologyEditorComponent implements OnInit, OnDestroy {
     }
 
     private setUp(): void {
-        if (this.layer instanceof RasterLayer) {
+        const layer = this.layer();
+        if (layer instanceof RasterLayer) {
             this.rasterSymbologyWorkflow$.next({
-                symbology: this.layer.symbology,
-                workflowId: this.layer.workflowId,
+                symbology: layer.symbology,
+                workflowId: layer.workflowId,
             });
         }
 
-        if (this.layer instanceof VectorLayer) {
+        if (layer instanceof VectorLayer) {
             this.vectorSymbologyWorkflow$.next({
-                symbology: this.layer.symbology,
-                workflowId: this.layer.workflowId,
+                symbology: layer.symbology,
+                workflowId: layer.workflowId,
             });
         }
     }

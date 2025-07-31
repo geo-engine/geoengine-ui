@@ -1,6 +1,6 @@
 import {map, mergeMap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
-import {AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy, ViewChild, inject} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, ViewChild, inject, input} from '@angular/core';
 import {
     AbstractControl,
     FormArray,
@@ -108,7 +108,7 @@ export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy 
     /**
      * If the inputs are empty, show the following button.
      */
-    @Input() dataListConfig?: SidenavConfig;
+    readonly dataListConfig = input<SidenavConfig>();
 
     readonly RASTER_TYPE = [ResultTypes.RASTER];
     readonly form: FormGroup<NeighborhoodAggregateForm>;
@@ -290,11 +290,12 @@ export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy 
     }
 
     goToAddDataTab(): void {
-        if (!this.dataListConfig) {
+        const dataListConfig = this.dataListConfig();
+        if (!dataListConfig) {
             return;
         }
 
-        this.layoutService.setSidenavContentComponent(this.dataListConfig);
+        this.layoutService.setSidenavContentComponent(dataListConfig);
     }
 
     protected setMatrix(matrix: number[][]): void {

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, Output, signal, SimpleChanges, WritableSignal, inject} from '@angular/core';
+import {Component, EventEmitter, OnChanges, Output, signal, SimpleChanges, WritableSignal, inject, input} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -48,8 +48,8 @@ export class LayerCollectionEditorComponent implements OnChanges {
 
     readonly CollectionNavigation = CollectionNavigation;
 
-    @Input({required: true}) collectionListing!: LayerCollectionListing;
-    @Input({required: true}) parentCollection!: ProviderLayerCollectionId;
+    readonly collectionListing = input.required<LayerCollectionListing>();
+    readonly parentCollection = input.required<ProviderLayerCollectionId>();
 
     @Output() readonly collectionSelected = new EventEmitter<LayerCollectionListing>();
     @Output() readonly layerSelected = new EventEmitter<LayerListing>();
@@ -68,8 +68,8 @@ export class LayerCollectionEditorComponent implements OnChanges {
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
         if (changes.collectionListing) {
             const collection = await this.layersService.getLayerCollectionItems(
-                this.collectionListing.id.providerId,
-                this.collectionListing.id.collectionId,
+                this.collectionListing().id.providerId,
+                this.collectionListing().id.collectionId,
                 0,
                 0,
             );
@@ -148,15 +148,16 @@ export class LayerCollectionEditorComponent implements OnChanges {
         const properties = this.form.controls.properties.value;
 
         try {
-            this.layersService.updateLayerCollection(this.collectionListing.id.collectionId, {
+            const collectionListing = this.collectionListing();
+            this.layersService.updateLayerCollection(collectionListing.id.collectionId, {
                 name,
                 description,
                 properties,
             });
 
             this.snackBar.open('Collection successfully updated.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
-            this.collectionListing.name = name;
-            this.collectionListing.description = description;
+            collectionListing.name = name;
+            collectionListing.description = description;
             this.form.markAsPristine();
 
             this.collectionUpdated.emit();
@@ -178,7 +179,7 @@ export class LayerCollectionEditorComponent implements OnChanges {
         }
 
         try {
-            await this.layersService.removeLayerCollection(this.collectionListing.id.collectionId);
+            await this.layersService.removeLayerCollection(this.collectionListing().id.collectionId);
             this.snackBar.open('Collection successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             this.collectionDeleted.emit();
         } catch (error) {
@@ -200,8 +201,8 @@ export class LayerCollectionEditorComponent implements OnChanges {
 
         try {
             await this.layersService.removeCollectionFromCollection(
-                this.collectionListing.id.collectionId,
-                this.parentCollection.collectionId,
+                this.collectionListing().id.collectionId,
+                this.parentCollection().collectionId,
             );
             this.snackBar.open('Collection successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             this.collectionDeleted.emit();

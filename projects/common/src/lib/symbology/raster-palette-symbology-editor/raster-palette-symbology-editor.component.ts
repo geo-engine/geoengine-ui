@@ -1,4 +1,4 @@
-import {Component, Input, ChangeDetectionStrategy, ViewChild, Output, EventEmitter, OnChanges, SimpleChanges} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy, ViewChild, Output, EventEmitter, OnChanges, SimpleChanges, input} from '@angular/core';
 import {PaletteColorizer} from '../../colors/colorizer.model';
 import {ColorAttributeInput, ColorAttributeInputComponent} from '../../colors/color-attribute-input/color-attribute-input.component';
 import {Color} from '../../colors/color';
@@ -39,7 +39,7 @@ export class RasterPaletteSymbologyEditorComponent implements OnChanges {
     colorPaletteEditor!: ColorTableEditorComponent;
 
     @Input() colorizer!: PaletteColorizer;
-    @Input() measurement!: Measurement;
+    readonly measurement = input<Measurement>();
 
     @Output() colorizerChange = new EventEmitter<PaletteColorizer>();
 

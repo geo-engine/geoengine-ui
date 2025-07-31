@@ -1,5 +1,5 @@
 @if (info() | async; as info) {
-    <div class="map-info mat-elevation-z3" [style.bottom.px]="bottom" (click)="togglePrecision()">
+    <div class="map-info mat-elevation-z3" [style.bottom.px]="bottom()" (click)="togglePrecision()">
         <table>
             <tr>
                 <td colspan="3">Resolution: {{ info[0] }} {{ info[1] }}/px</td>

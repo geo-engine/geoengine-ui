@@ -1,7 +1,7 @@
 @for (collection of collections$ | async; track collection; let i = $index) {
     <mat-card class="dataset">
         <mat-card-header>
-            <mat-icon mat-card-avatar>{{ icon }}</mat-icon>
+            <mat-icon mat-card-avatar>{{ icon() }}</mat-icon>
             <mat-card-title>{{ collection.name }}</mat-card-title>
             <mat-card-subtitle>{{
                 collection.properties[0] ? collection.properties[0][1] : 'no author information available'

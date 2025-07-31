@@ -1,5 +1,5 @@
 import {DataSource} from '@angular/cdk/collections';
-import {AfterViewInit, Component, Input, OnChanges, SimpleChanges, ViewChild, inject} from '@angular/core';
+import {AfterViewInit, Component, OnChanges, SimpleChanges, ViewChild, inject, input} from '@angular/core';
 import {Permission, PermissionListing} from '@geoengine/openapi-client';
 import {BehaviorSubject, Observable, Subject, firstValueFrom, tap} from 'rxjs';
 import {MatPaginator} from '@angular/material/paginator';
@@ -70,10 +70,8 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
     private readonly dialog = inject(MatDialog);
     private readonly config = inject(AppConfig);
 
-    @Input({required: true})
-    resourceType!: ResourceType;
-    @Input({required: true})
-    resourceId!: string;
+    readonly resourceType = input.required<ResourceType>();
+    readonly resourceId = input.required<string>();
 
     @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -110,7 +108,12 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
         }
 
         try {
-            await this.permissionsService.removePermission(this.resourceType, this.resourceId, permission.role.id, permission.permission);
+            await this.permissionsService.removePermission(
+                this.resourceType(),
+                this.resourceId(),
+                permission.role.id,
+                permission.permission,
+            );
             this.snackBar.open('Permission successfully deleted', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             this.source.refresh();
         } catch (error) {
@@ -133,7 +136,7 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
         }
 
         try {
-            await this.permissionsService.addPermission(this.resourceType, this.resourceId, roleId, permission);
+            await this.permissionsService.addPermission(this.resourceType(), this.resourceId(), roleId, permission);
             this.snackBar.open('Permission successfully added', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             this.source.refresh();
         } catch (error) {
@@ -147,7 +150,7 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
     }
 
     protected setUpSource(): void {
-        this.source = new PermissionDataSource(this.permissionsService, this.paginator, this.resourceType, this.resourceId);
+        this.source = new PermissionDataSource(this.permissionsService, this.paginator, this.resourceType(), this.resourceId());
         this.source.loadPermissions(0, 5);
     }
 

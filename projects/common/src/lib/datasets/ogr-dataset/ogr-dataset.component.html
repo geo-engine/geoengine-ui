@@ -1,5 +1,5 @@
 <form [formGroup]="formMetaData">
-    @if (uploadId) {
+    @if (uploadId()) {
         <mat-form-field appearance="fill">
             <mat-label>Choose the main file</mat-label>
             <mat-select id="mainFile" formControlName="mainFile" (selectionChange)="changeMainFile()">
@@ -17,7 +17,7 @@
         </mat-form-field>
     }
 
-    @if (uploadId || volumeName) {
+    @if (uploadId() || volumeName()) {
         <div class="actions">
             <button type="submit" mat-raised-button (click)="loadLayers()">Load File Layers</button>
         </div>

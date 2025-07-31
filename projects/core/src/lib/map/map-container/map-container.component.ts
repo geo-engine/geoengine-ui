@@ -10,13 +10,13 @@ import {
     effect,
     ElementRef,
     inject,
-    Input,
     OnChanges,
     OnDestroy,
     QueryList,
     SimpleChange,
     ViewChild,
     ViewChildren,
+    input,
 } from '@angular/core';
 
 import OlMap from 'ol/Map';
@@ -92,7 +92,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     /**
      * display a grid of maps or all layers on a single map
      */
-    @Input() grid = true; // TODO: false;
+    readonly grid = input(true); // TODO: false;
 
     @ViewChild(MatGridList, {read: ElementRef, static: true}) gridListElement!: ElementRef;
     @ViewChildren(MatGridTile, {read: ElementRef}) mapContainers!: QueryList<ElementRef>;
@@ -463,12 +463,12 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         if (!this.mapLayersRaw) {
             return;
         }
-        this.mapLayers = this.mapLayersRaw.filter((mapLayer) => mapLayer.isVisible);
+        this.mapLayers = this.mapLayersRaw.filter((mapLayer) => mapLayer.isVisible());
 
         this.calculateGrid();
         this.changeDetectorRef.detectChanges();
 
-        if (this.grid && this.mapLayers.length && this.mapContainers.length !== this.mapLayers.length) {
+        if (this.grid() && this.mapLayers.length && this.mapContainers.length !== this.mapLayers.length) {
             console.error('race condition!');
         }
 
@@ -518,7 +518,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             map.getLayers().clear();
             map.getLayers().push(this.backgroundLayers[index]);
 
-            if (this.grid) {
+            if (this.grid()) {
                 if (this.mapLayers.length) {
                     const inverseIndex = this.mapLayers.length - index - 1;
                     map.getLayers().push(this.mapLayers[inverseIndex].mapLayer);
@@ -534,7 +534,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     }
 
     private desiredNumberOfMaps(): number {
-        return this.grid ? Math.max(this.mapLayers.length, 1) : 1;
+        return this.grid() ? Math.max(this.mapLayers.length, 1) : 1;
     }
 
     private createAndSetView(projection: SpatialReference): void {

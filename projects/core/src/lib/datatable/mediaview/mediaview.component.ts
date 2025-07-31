@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ChangeDetectionStrategy, inject} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, inject, input} from '@angular/core';
 import {MediaviewDialogComponent} from './dialog/mediaview.dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {VectorColumnDataType, VectorColumnDataTypes} from '@geoengine/common';
@@ -24,9 +24,9 @@ export class MediaviewComponent implements OnInit {
     mediaType: Array<string> = [];
     mediaUrls: Array<string> = [];
 
-    @Input() url?: string;
+    readonly url = input<string>();
 
-    @Input() type!: VectorColumnDataType;
+    readonly type = input.required<VectorColumnDataType>();
 
     private urls: Array<string> = [];
 
@@ -58,15 +58,16 @@ export class MediaviewComponent implements OnInit {
      * Gets the urls and file-types of the comma-separated urls given as input-argument.
      */
     ngOnInit(): void {
-        if (!this.url) {
+        const url = this.url();
+        if (!url) {
             this.urls = [];
             this.mediaType = [];
             this.mediaUrls = [];
             return;
         }
 
-        if (this.type === VectorColumnDataTypes.Media) {
-            this.urls = this.url.split(',');
+        if (this.type() === VectorColumnDataTypes.Media) {
+            this.urls = url.split(',');
             this.mediaType = [];
             this.mediaUrls = [];
 
@@ -82,9 +83,9 @@ export class MediaviewComponent implements OnInit {
                 }
             }
         } else {
-            this.urls = [this.url.toString()];
+            this.urls = [url.toString()];
             this.mediaType = [''];
-            this.mediaUrls = [this.url.toString()];
+            this.mediaUrls = [url.toString()];
         }
     }
 

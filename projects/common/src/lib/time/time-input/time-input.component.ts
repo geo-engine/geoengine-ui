@@ -3,11 +3,11 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     AfterViewInit,
-    Input,
     forwardRef,
     OnChanges,
     SimpleChange,
     inject,
+    input,
 } from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule} from '@angular/forms';
@@ -41,7 +41,7 @@ export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, 
     private changeDetectorRef = inject(ChangeDetectorRef);
 
     // TODO: also react on disabled state in `ControlValueAccessor`
-    @Input() isDisabled = false;
+    readonly isDisabled = input(false);
 
     onTouched?: () => void;
     onChange?: (_: Moment) => void = undefined;

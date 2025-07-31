@@ -3,7 +3,6 @@ import {
     Component,
     ChangeDetectionStrategy,
     HostBinding,
-    Input,
     OnChanges,
     SimpleChanges,
     OnDestroy,
@@ -12,6 +11,7 @@ import {
     Injector,
     ChangeDetectorRef,
     inject,
+    input,
 } from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -47,10 +47,10 @@ export class TabsComponent implements OnChanges, OnDestroy {
     @HostBinding('class.mat-elevation-z4') elevationStyle = true;
     @ViewChild(CdkPortalOutlet) portalOutlet!: CdkPortalOutlet;
 
-    @Input() maxHeight = 0;
-    @Input() visible = true;
+    readonly maxHeight = input(0);
+    readonly visible = input(true);
 
-    toggleTooltip: 'Show' | 'Hide' = this.visible ? 'Hide' : 'Show';
+    toggleTooltip: 'Show' | 'Hide' = this.visible() ? 'Hide' : 'Show';
     readonly toggleTooltipDelay: number;
 
     readonly tabWidthPct: Observable<number>;
@@ -74,16 +74,17 @@ export class TabsComponent implements OnChanges, OnDestroy {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        const visible = this.visible();
         if (changes.maxHeight || changes.visible) {
-            this.setContentHeight(this.maxHeight, this.visible);
+            this.setContentHeight(this.maxHeight(), visible);
         }
 
         if (changes.visible) {
-            this.toggleTooltip = this.visible ? 'Hide' : 'Show';
+            this.toggleTooltip = visible ? 'Hide' : 'Show';
 
-            if (this.visible && this.tabsService.activeTab) {
+            if (visible && this.tabsService.activeTab) {
                 this.renderTabContent(this.tabsService.activeTab);
-            } else if (!this.visible) {
+            } else if (!visible) {
                 this.removeRenderedTabContent();
             }
         }

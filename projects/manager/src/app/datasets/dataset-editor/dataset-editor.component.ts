@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild, inject} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, Output, ViewChild, effect, inject, input, linkedSignal} from '@angular/core';
 import {
     AbstractControl,
     FormControl,
@@ -93,7 +93,7 @@ export interface DatasetForm {
         AsyncValueDefault,
     ],
 })
-export class DatasetEditorComponent implements OnChanges {
+export class DatasetEditorComponent {
     private readonly datasetsService = inject(DatasetsService);
     private readonly workflowsService = inject(WorkflowsService);
     private readonly snackBar = inject(MatSnackBar);
@@ -101,7 +101,12 @@ export class DatasetEditorComponent implements OnChanges {
     private readonly config = inject(AppConfig);
     private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
-    @Input({required: true}) datasetListing!: DatasetListing;
+    readonly _datasetListing = input.required<DatasetListing>({
+        // eslint-disable-next-line @angular-eslint/no-input-rename
+        alias: 'datasetListing',
+    });
+
+    readonly datasetListing = linkedSignal(this._datasetListing);
 
     @Output() datasetDeleted = new EventEmitter<void>();
 
@@ -123,32 +128,35 @@ export class DatasetEditorComponent implements OnChanges {
     gdalMetaDataList?: GdalMetaDataList;
     ogrMetaData?: OgrMetaData;
 
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    async ngOnChanges(changes: SimpleChanges): Promise<void> {
-        if (changes.datasetListing) {
-            this.dataset = await this.datasetsService.getDataset(this.datasetListing.name);
-            this.setUpForm(this.dataset);
-            const workflowId = await this.getWorkflowId(this.dataset);
-            this.datasetWorkflowId$.next(workflowId);
-            this.setUpColorizer(this.dataset);
+    constructor() {
+        effect(() => {
+            void this.loadDataset(this._datasetListing());
+        });
+    }
 
-            const loadingInfo = await this.datasetsService.getLoadingInfo(this.dataset.name);
-            if (loadingInfo.type === 'GdalMetaDataList') {
-                this.gdalMetaDataList = loadingInfo;
-                this.ogrMetaData = undefined;
-                this.rawLoadingInfo = '';
-            } else if (loadingInfo.type === 'OgrMetaData') {
-                this.ogrMetaData = loadingInfo;
-                this.gdalMetaDataList = undefined;
-                this.rawLoadingInfo = '';
-            } else {
-                this.gdalMetaDataList = undefined;
-                this.ogrMetaData = undefined;
-                this.rawLoadingInfo = JSON.stringify(loadingInfo, null, 2);
-                this.rawLoadingInfoPristine = true;
-            }
-            this.changeDetectorRef.detectChanges();
+    private async loadDataset(datasetListing: DatasetListing): Promise<void> {
+        this.dataset = await this.datasetsService.getDataset(datasetListing.name);
+        this.setUpForm(this.dataset);
+        const workflowId = await this.getWorkflowId(this.dataset);
+        this.datasetWorkflowId$.next(workflowId);
+        this.setUpColorizer(this.dataset);
+
+        const loadingInfo = await this.datasetsService.getLoadingInfo(this.dataset.name);
+        if (loadingInfo.type === 'GdalMetaDataList') {
+            this.gdalMetaDataList = loadingInfo;
+            this.ogrMetaData = undefined;
+            this.rawLoadingInfo = '';
+        } else if (loadingInfo.type === 'OgrMetaData') {
+            this.ogrMetaData = loadingInfo;
+            this.gdalMetaDataList = undefined;
+            this.rawLoadingInfo = '';
+        } else {
+            this.gdalMetaDataList = undefined;
+            this.ogrMetaData = undefined;
+            this.rawLoadingInfo = JSON.stringify(loadingInfo, null, 2);
+            this.rawLoadingInfoPristine = true;
         }
+        this.changeDetectorRef.detectChanges();
     }
 
     async applyChanges(): Promise<void> {
@@ -162,10 +170,12 @@ export class DatasetEditorComponent implements OnChanges {
         const tags = this.form.controls.tags.value;
 
         try {
-            await this.datasetsService.updateDataset(this.datasetListing.name, {name, displayName, description, tags});
-            this.datasetListing.name = name;
-            this.datasetListing.displayName = displayName;
-            this.datasetListing.description = description;
+            const datasetListing = this.datasetListing();
+            await this.datasetsService.updateDataset(datasetListing.name, {name, displayName, description, tags});
+            datasetListing.name = name;
+            datasetListing.displayName = displayName;
+            datasetListing.description = description;
+            this.datasetListing.set(datasetListing);
             this.snackBar.open('Dataset successfully updated.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             this.form.markAsPristine();
         } catch (error) {
@@ -209,7 +219,7 @@ export class DatasetEditorComponent implements OnChanges {
         const provenance = this.provenanceComponent.getProvenance();
 
         try {
-            await this.datasetsService.updateProvenance(this.datasetListing.name, provenance);
+            await this.datasetsService.updateProvenance(this.datasetListing().name, provenance);
             this.snackBar.open('Dataset provenance successfully updated.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             this.provenanceComponent.form.markAsPristine();
         } catch (error) {
@@ -247,7 +257,7 @@ export class DatasetEditorComponent implements OnChanges {
         }
 
         try {
-            await this.datasetsService.deleteDataset(this.datasetListing.name);
+            await this.datasetsService.deleteDataset(this.datasetListing().name);
             this.snackBar.open('Dataset successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             this.datasetDeleted.emit();
         } catch (error) {
@@ -289,7 +299,7 @@ export class DatasetEditorComponent implements OnChanges {
         }
 
         try {
-            await this.datasetsService.updateLoadingInfo(this.datasetListing.name, metaData);
+            await this.datasetsService.updateLoadingInfo(this.datasetListing().name, metaData);
             this.snackBar.open('Dataset loading information successfully updated.', 'Close', {
                 duration: this.config.DEFAULTS.SNACKBAR_DURATION,
             });

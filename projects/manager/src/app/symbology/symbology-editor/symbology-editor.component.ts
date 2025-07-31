@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, SimpleChanges, ViewChild, inject} from '@angular/core';
+import {Component, Input, OnChanges, SimpleChanges, ViewChild, inject, input} from '@angular/core';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {
     DatasetsService,
@@ -25,8 +25,8 @@ export class SymbologyEditorComponent implements OnChanges {
     private readonly snackBar = inject(MatSnackBar);
     private readonly config = inject(AppConfig);
 
-    @Input({required: true}) workflowId!: UUID;
-    @Input() datasetName: string | undefined;
+    readonly workflowId = input.required<UUID>();
+    readonly datasetName = input<string>();
     @Input() rasterSymbology: RasterSymbology | undefined;
     @Input() vectorSymbology: VectorSymbology | undefined;
 
@@ -46,13 +46,13 @@ export class SymbologyEditorComponent implements OnChanges {
 
     setUp(): void {
         if (this.rasterSymbology) {
-            this.rasterSymbologyWorkflow = {symbology: this.rasterSymbology, workflowId: this.workflowId};
+            this.rasterSymbologyWorkflow = {symbology: this.rasterSymbology, workflowId: this.workflowId()};
         } else {
             this.rasterSymbologyWorkflow = undefined;
         }
 
         if (this.vectorSymbology) {
-            this.vectorSymbologyWorkflow = {symbology: this.vectorSymbology, workflowId: this.workflowId};
+            this.vectorSymbologyWorkflow = {symbology: this.vectorSymbology, workflowId: this.workflowId()};
         } else {
             this.vectorSymbologyWorkflow = undefined;
         }
@@ -87,11 +87,12 @@ export class SymbologyEditorComponent implements OnChanges {
     }
 
     async updateRasterSymbology(): Promise<void> {
-        if (this.datasetName && this.rasterSymbology) {
+        const datasetName = this.datasetName();
+        if (datasetName && this.rasterSymbology) {
             try {
-                await this.datasetsService.updateSymbology(this.datasetName, this.rasterSymbology.toDict());
+                await this.datasetsService.updateSymbology(datasetName, this.rasterSymbology.toDict());
 
-                this.rasterSymbologyWorkflow = {symbology: this.rasterSymbology, workflowId: this.workflowId};
+                this.rasterSymbologyWorkflow = {symbology: this.rasterSymbology, workflowId: this.workflowId()};
 
                 this.unappliedChanges = false;
                 this.snackBar.open('Symbology successfully updated.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
@@ -105,11 +106,12 @@ export class SymbologyEditorComponent implements OnChanges {
     }
 
     async updateVectorSymbology(): Promise<void> {
-        if (this.datasetName && this.vectorSymbology) {
+        const datasetName = this.datasetName();
+        if (datasetName && this.vectorSymbology) {
             try {
-                await this.datasetsService.updateSymbology(this.datasetName, this.vectorSymbology.toDict());
+                await this.datasetsService.updateSymbology(datasetName, this.vectorSymbology.toDict());
 
-                this.vectorSymbologyWorkflow = {symbology: this.vectorSymbology, workflowId: this.workflowId};
+                this.vectorSymbologyWorkflow = {symbology: this.vectorSymbology, workflowId: this.workflowId()};
 
                 this.unappliedChanges = false;
                 this.snackBar.open('Symbology successfully updated.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});

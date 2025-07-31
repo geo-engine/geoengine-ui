@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
+import {Component, ChangeDetectionStrategy, input} from '@angular/core';
 import {IconStyle} from '../../symbology/symbology.model';
 import {BLACK, Color} from '../../colors/color';
 
@@ -22,10 +22,9 @@ export interface LineIconStyle extends IconStyle {
 })
 export class LineIconComponent {
     // the style to use for the icon
-    @Input()
-    iconStyle: LineIconStyle = {
+    readonly iconStyle = input<LineIconStyle>({
         strokeWidth: 2,
         // strokeDashArray: Array<number> = [];
         strokeRGBA: BLACK,
-    };
+    });
 }

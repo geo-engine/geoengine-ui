@@ -3,14 +3,14 @@
         <div matRipple class="header-click" (click)="onAdd()">
             <mat-icon class="header-icon">map</mat-icon>
             <div class="header-text">
-                <h4 class="header-text-line">{{ layer?.name }}</h4>
+                <h4 class="header-text-line">{{ layer()?.name }}</h4>
                 @if (!expanded) {
-                    <p class="header-text-line secondary-text">{{ layer?.description }}</p>
+                    <p class="header-text-line secondary-text">{{ layer()?.description }}</p>
                 }
             </div>
         </div>
 
-        @if (showLayerToggle) {
+        @if (showLayerToggle()) {
             <button class="header-button" mat-icon-button (click)="toggleExpand()">
                 @if (!expanded) {
                     <mat-icon>expand_more</mat-icon>

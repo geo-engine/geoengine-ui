@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output, ViewChild, inject} from '@angular/core';
+import {Component, EventEmitter, Output, ViewChild, inject, input} from '@angular/core';
 import {FormArray, FormControl} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {CollectionNavigation, ConfirmationComponent, LayerCollectionListComponent, LayersService, CommonModule} from '@geoengine/common';
@@ -27,7 +27,7 @@ export class LayerCollectionChildListComponent {
 
     readonly CollectionNavigation = CollectionNavigation;
 
-    @Input({required: true}) collectionId!: ProviderLayerCollectionId;
+    readonly collectionId = input.required<ProviderLayerCollectionId>();
     @Output() readonly modifiedChildren = new EventEmitter<LayerListing>();
 
     @ViewChild(LayerCollectionListComponent) layerCollectionListComponent!: LayerCollectionListComponent;
@@ -47,12 +47,12 @@ export class LayerCollectionChildListComponent {
         }
 
         if (this.selectedLayer) {
-            await this.layersService.removeLayerFromCollection(this.selectedLayer.id.layerId, this.collectionId.collectionId);
+            await this.layersService.removeLayerFromCollection(this.selectedLayer.id.layerId, this.collectionId().collectionId);
             this.selectedLayer = undefined;
         } else if (this.selectedCollection) {
             await this.layersService.removeCollectionFromCollection(
                 this.selectedCollection.id.collectionId,
-                this.collectionId.collectionId,
+                this.collectionId().collectionId,
             );
             this.selectedCollection = undefined;
         }
@@ -76,7 +76,7 @@ export class LayerCollectionChildListComponent {
             autoFocus: false,
             disableClose: true,
             data: {
-                parent: this.collectionId,
+                parent: this.collectionId(),
             },
         });
 

@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, forwardRef, HostListener, Input} from '@angular/core';
+import {Component, ChangeDetectionStrategy, forwardRef, HostListener, input} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule} from '@angular/forms';
 import {BLACK, Color} from '../../colors/color';
 import {ColorAttributeInput, ColorAttributeInputComponent} from '../../colors/color-attribute-input/color-attribute-input.component';
@@ -36,7 +36,7 @@ import {MatIcon} from '@angular/material/icon';
     ],
 })
 export class ColorParamEditorComponent implements ControlValueAccessor {
-    @Input() attributes = new Array<string>();
+    readonly attributes = input(new Array<string>());
 
     colorParam: ColorParam;
 

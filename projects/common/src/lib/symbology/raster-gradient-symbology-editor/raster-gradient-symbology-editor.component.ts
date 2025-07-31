@@ -11,6 +11,7 @@ import {
     OnChanges,
     SimpleChanges,
     inject,
+    input,
 } from '@angular/core';
 import {BehaviorSubject, ReplaySubject, Subscription} from 'rxjs';
 import {LinearGradient, LogarithmicGradient} from '../../colors/colorizer.model';
@@ -83,9 +84,9 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     @ViewChild(ColorTableEditorComponent)
     colorTableEditor!: ColorTableEditorComponent;
 
-    @Input({required: true}) band!: string;
+    readonly band = input.required<string>();
 
-    @Input({required: true}) workflowId!: UUID;
+    readonly workflowId = input.required<UUID>();
 
     @Input({required: true}) colorizer!: LinearGradient | LogarithmicGradient;
 
@@ -314,13 +315,13 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     }
 
     private createHistogramWorkflowId(): Promise<UUID> {
-        return this.workflowsService.getWorkflow(this.workflowId).then((workflow) =>
+        return this.workflowsService.getWorkflow(this.workflowId()).then((workflow) =>
             this.workflowsService.registerWorkflow({
                 type: 'Plot',
                 operator: {
                     type: 'Histogram',
                     params: {
-                        attributeName: this.band,
+                        attributeName: this.band(),
                         buckets: {
                             type: 'number',
                             value: 20,

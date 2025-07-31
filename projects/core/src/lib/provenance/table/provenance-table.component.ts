@@ -4,11 +4,11 @@ import {
     ChangeDetectionStrategy,
     ViewChild,
     ElementRef,
-    Input,
     OnChanges,
     SimpleChanges,
     ChangeDetectorRef,
     inject,
+    input,
 } from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
 import {ProjectService} from '../../project/project.service';
@@ -55,7 +55,7 @@ export class ProvenanceTableComponent implements OnInit, OnChanges {
 
     @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-    @Input() layer?: Layer;
+    readonly layer = input<Layer>();
 
     displayedColumns: Array<string> = ['citation', 'license', 'uri'];
 
@@ -66,8 +66,9 @@ export class ProvenanceTableComponent implements OnInit, OnChanges {
     readonly loadingSpinnerDiameterPx: number = 3 * LayoutService.remInPx;
 
     ngOnInit(): void {
-        if (this.layer) {
-            this.selectLayer(this.layer);
+        const layer = this.layer();
+        if (layer) {
+            this.selectLayer(layer);
         } else {
             this.dataSource = [];
         }
@@ -75,8 +76,9 @@ export class ProvenanceTableComponent implements OnInit, OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.layer) {
-            if (this.layer) {
-                this.selectLayer(this.layer);
+            const layer = this.layer();
+            if (layer) {
+                this.selectLayer(layer);
             } else {
                 this.dataSource = [];
             }

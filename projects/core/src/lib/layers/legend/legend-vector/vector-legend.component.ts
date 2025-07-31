@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit, input} from '@angular/core';
 
 import {
     BLACK,
@@ -47,8 +47,7 @@ import {MatDivider} from '@angular/material/list';
 })
 export class VectorLegendComponent implements OnInit {
     readonly ST = SymbologyType;
-    @Input()
-    showDefaultStyle = true;
+    readonly showDefaultStyle = input(true);
 
     @Input() layer!: VectorLayer;
 

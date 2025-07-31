@@ -6,7 +6,7 @@
     [matTooltip]="toggleTooltip"
     [matTooltipShowDelay]="toggleTooltipDelay"
 >
-    @switch (visible) {
+    @switch (visible()) {
         @case (false) {
             <mat-icon>expand_less</mat-icon>
         }

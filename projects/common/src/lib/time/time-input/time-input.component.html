@@ -7,7 +7,7 @@
             maxLength="4"
             [ngModel]="time.year()"
             (ngModelChange)="update('year', $event)"
-            [disabled]="isDisabled"
+            [disabled]="isDisabled()"
         />
     </mat-form-field>
     <div>-</div>
@@ -19,13 +19,20 @@
             maxLength="2"
             [ngModel]="time.month() + 1"
             (ngModelChange)="update('month', $event - 1)"
-            [disabled]="isDisabled"
+            [disabled]="isDisabled()"
         />
     </mat-form-field>
     <div>-</div>
     <mat-form-field fxFlex appearance="fill">
         <mat-label>Day</mat-label>
-        <input matInput type="number" maxLength="2" [ngModel]="time.date()" (ngModelChange)="updateDate($event)" [disabled]="isDisabled" />
+        <input
+            matInput
+            type="number"
+            maxLength="2"
+            [ngModel]="time.date()"
+            (ngModelChange)="updateDate($event)"
+            [disabled]="isDisabled()"
+        />
     </mat-form-field>
     <span fxFlex="0.5rem"></span>
     <mat-form-field fxFlex appearance="fill">
@@ -36,7 +43,7 @@
             maxLength="2"
             [ngModel]="time.hour()"
             (ngModelChange)="update('hour', $event)"
-            [disabled]="isDisabled"
+            [disabled]="isDisabled()"
         />
     </mat-form-field>
     <span>:</span>
@@ -48,7 +55,7 @@
             maxLength="2"
             [ngModel]="time.minute()"
             (ngModelChange)="update('minute', $event)"
-            [disabled]="isDisabled"
+            [disabled]="isDisabled()"
         />
     </mat-form-field>
     <span>:</span>
@@ -60,7 +67,7 @@
             maxLength="2"
             [ngModel]="time.second()"
             (ngModelChange)="update('second', $event)"
-            [disabled]="isDisabled"
+            [disabled]="isDisabled()"
         />
     </mat-form-field>
 </div>

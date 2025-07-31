@@ -6,11 +6,11 @@ import {
     AfterViewInit,
     OnDestroy,
     ElementRef,
-    Input,
     OnChanges,
     SimpleChanges,
     ChangeDetectorRef,
     inject,
+    input,
 } from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
 import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
@@ -96,7 +96,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
 
     @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-    @Input() layer?: Layer;
+    readonly layer = input<Layer>();
 
     readonly layerTypes = ResultTypes.VECTOR_TYPES;
     readonly columnDataTypes = VectorColumnDataTypes;
@@ -114,8 +114,9 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     protected selectedFeatureSubscription?: Subscription = undefined;
 
     ngOnInit(): void {
-        if (this.layer) {
-            this.selectLayer(this.layer);
+        const layer = this.layer();
+        if (layer) {
+            this.selectLayer(layer);
         } else {
             this.emptyTable();
         }
@@ -128,8 +129,9 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.layer) {
-            if (this.layer) {
-                this.selectLayer(this.layer);
+            const layer = this.layer();
+            if (layer) {
+                this.selectLayer(layer);
             } else {
                 this.emptyTable();
             }

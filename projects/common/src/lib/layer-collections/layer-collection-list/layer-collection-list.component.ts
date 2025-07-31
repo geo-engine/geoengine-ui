@@ -2,13 +2,13 @@ import {
     Component,
     ChangeDetectionStrategy,
     ViewChild,
-    Input,
     Output,
     EventEmitter,
     OnChanges,
     SimpleChanges,
     ChangeDetectorRef,
     inject,
+    input,
 } from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, EMPTY, from, Observable, range, Subject} from 'rxjs';
@@ -89,13 +89,12 @@ export class LayerCollectionListComponent implements OnChanges {
      * - a collection if `ProviderLayerCollectionIdDict`
      * - a search result if `LayerCollectionSearch`
      */
-    @Input()
-    collection?: ProviderLayerCollectionIdDict | LayerCollectionSearch = undefined;
+    readonly collection = input<ProviderLayerCollectionIdDict | LayerCollectionSearch>();
 
-    @Input({required: false}) collectionNavigation = CollectionNavigation.Element;
+    readonly collectionNavigation = input(CollectionNavigation.Element);
 
-    @Input({required: false}) showLayerToggle = true;
-    @Input({required: false}) highlightSelection = false;
+    readonly showLayerToggle = input(true);
+    readonly highlightSelection = input(false);
 
     @Output() navigateCollection = new EventEmitter<LayerCollectionListing>();
 
@@ -105,7 +104,7 @@ export class LayerCollectionListComponent implements OnChanges {
 
     readonly itemSizePx = 72;
 
-    @Input() loadingSpinnerDiameterPx: number = 3 * LayoutService.remInPx;
+    readonly loadingSpinnerDiameterPx = input<number>(3 * LayoutService.remInPx);
 
     source?: LayerCollectionItemDataSource;
 
@@ -173,7 +172,7 @@ export class LayerCollectionListComponent implements OnChanges {
     }
 
     protected setUpSource(): void {
-        this.source = new LayerCollectionItemDataSource(this.layersService, this.collection);
+        this.source = new LayerCollectionItemDataSource(this.layersService, this.collection());
 
         setTimeout(() => {
             this.source?.init(this.calculateInitialNumberOfElements());

@@ -1,5 +1,5 @@
 import {Subscription, Observable, combineLatest, of as observableOf} from 'rxjs';
-import {Component, OnInit, ChangeDetectionStrategy, OnDestroy, Input, ChangeDetectorRef, inject} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, inject, input} from '@angular/core';
 import {LayoutService, SidenavConfig} from '../../layout.service';
 import {ThemePalette} from '@angular/material/core';
 import {distinctUntilChanged, map, mergeScan} from 'rxjs/operators';
@@ -69,7 +69,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
     /**
      * The navigation shows this array of buttons.
      */
-    @Input() buttons!: Array<NavigationButton>;
+    readonly buttons = input.required<Array<NavigationButton>>();
 
     private sidenavConfig?: SidenavConfig;
     private sidenavConfigSubscription?: Subscription;

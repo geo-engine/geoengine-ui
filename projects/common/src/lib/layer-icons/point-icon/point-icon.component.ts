@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
+import {Component, ChangeDetectionStrategy, input} from '@angular/core';
 import {IconStyle} from '../../symbology/symbology.model';
 import {BLACK, Color, WHITE} from '../../colors/color';
 
@@ -23,11 +23,10 @@ export interface PointIconStyle extends IconStyle {
 })
 export class PointIconComponent {
     // the style to use for the icon
-    @Input()
-    iconStyle: PointIconStyle = {
+    readonly iconStyle = input<PointIconStyle>({
         strokeWidth: 2,
         // strokeDashArray: Array<number> = [];
         strokeRGBA: BLACK,
         fillRGBA: WHITE,
-    };
+    });
 }

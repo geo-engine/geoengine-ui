@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
+import {Component, ChangeDetectionStrategy, input} from '@angular/core';
 import {BLACK, Color, WHITE} from '../../colors/color';
 import {IconStyle} from '../../symbology/symbology.model';
 
@@ -23,11 +23,10 @@ export interface PolygonIconStyle extends IconStyle {
 })
 export class PolygonIconComponent {
     // the style to use for the icon
-    @Input()
-    iconStyle: PolygonIconStyle = {
+    readonly iconStyle = input<PolygonIconStyle>({
         strokeWidth: 2,
         // strokeDashArray: Array<number> = [];
         strokeRGBA: BLACK,
         fillRGBA: WHITE,
-    };
+    });
 }
