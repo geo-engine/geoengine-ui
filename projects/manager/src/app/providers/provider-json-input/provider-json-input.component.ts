@@ -1,4 +1,4 @@
-import {Component, effect, input, output, signal} from '@angular/core';
+import {Component, effect, input, output} from '@angular/core';
 import {TypedDataProviderDefinition, TypedDataProviderDefinitionFromJSON} from '@geoengine/openapi-client';
 import {MatError} from '@angular/material/form-field';
 import {CodeEditorComponent} from '@geoengine/common';
