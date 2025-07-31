@@ -110,8 +110,8 @@
                 ></geoengine-dialog-section-heading>
                 <geoengine-code-editor
                     formControlName="expression"
-                    [prefixLine]="fnSignature | async | stringSanitizer"
-                    suffixLine="}"
+                    language="Rust"
+                    [header]="fnSignature | async | stringSanitizer"
                 ></geoengine-code-editor>
 
                 @if (lastError$ | async; as lastError) {

@@ -118,7 +118,7 @@ export class ExpressionOperatorComponent implements AfterViewInit {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
-            expression: new FormControl<string>('    1 * A', {
+            expression: new FormControl<string>('1 * A', {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
@@ -196,7 +196,7 @@ export class ExpressionOperatorComponent implements AfterViewInit {
             }),
         );
 
-        this.fnSignature = this.rasterVariables$.pipe(map((vars: string[]) => `fn(${vars.join(', ')}) {`));
+        this.fnSignature = this.rasterVariables$.pipe(map((vars: string[]) => `fn(${vars.join(', ')}):`));
 
         this.projectHasRasterLayers$ = this.projectService
             .getLayerStream()
