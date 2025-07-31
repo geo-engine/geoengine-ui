@@ -12,6 +12,7 @@ import {
     inject,
     input,
     output,
+    viewChild,
 } from '@angular/core';
 import {MatInput, MatFormField, MatPrefix, MatLabel} from '@angular/material/input';
 import {
@@ -74,9 +75,9 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
 
     readonly collectionId = input.required<ProviderLayerCollectionId>();
 
-    @ViewChild('scrollElement', {read: ElementRef}) public scrollElement!: ElementRef<HTMLDivElement>;
+    public readonly scrollElement = viewChild.required('scrollElement', {read: ElementRef});
 
-    @ViewChild(LayerCollectionListComponent) layerCollectionListComponent!: LayerCollectionListComponent;
+    readonly layerCollectionListComponent = viewChild.required(LayerCollectionListComponent);
 
     breadcrumbs: BreadcrumbNavigation = this.createBreadcrumbNavigation();
     search: Search = this.createSearch();
@@ -92,11 +93,11 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
     }
 
     refreshCollection(): void {
-        this.layerCollectionListComponent.refreshCollection();
+        this.layerCollectionListComponent().refreshCollection();
     }
 
     refresh(): void {
-        this.layerCollectionListComponent.refresh();
+        this.layerCollectionListComponent().refresh();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -193,7 +194,7 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
     protected scrollToRight(): void {
         setTimeout(() => {
             // wait until breadcrumbs are re-rendered before scrolling
-            this.scrollElement.nativeElement.scrollLeft += this.scrollElement.nativeElement.scrollWidth;
+            this.scrollElement().nativeElement.scrollLeft += this.scrollElement().nativeElement.scrollWidth;
         }, 0);
     }
 

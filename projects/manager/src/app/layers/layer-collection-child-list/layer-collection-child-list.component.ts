@@ -1,4 +1,4 @@
-import {Component, ViewChild, inject, input, output} from '@angular/core';
+import {Component, inject, input, output, viewChild} from '@angular/core';
 import {FormArray, FormControl} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {CollectionNavigation, ConfirmationComponent, LayerCollectionListComponent, LayersService, CommonModule} from '@geoengine/common';
@@ -30,7 +30,7 @@ export class LayerCollectionChildListComponent {
     readonly collectionId = input.required<ProviderLayerCollectionId>();
     readonly modifiedChildren = output<LayerListing>();
 
-    @ViewChild(LayerCollectionListComponent) layerCollectionListComponent!: LayerCollectionListComponent;
+    readonly layerCollectionListComponent = viewChild.required(LayerCollectionListComponent);
 
     selectedLayer?: LayerListing;
     selectedCollection?: LayerCollectionListing;
@@ -56,7 +56,7 @@ export class LayerCollectionChildListComponent {
             );
             this.selectedCollection = undefined;
         }
-        this.layerCollectionListComponent.refreshCollection();
+        this.layerCollectionListComponent().refreshCollection();
     }
 
     selectCollection(collection: LayerCollectionListing): void {
@@ -86,6 +86,6 @@ export class LayerCollectionChildListComponent {
             return;
         }
 
-        this.layerCollectionListComponent.refreshCollection();
+        this.layerCollectionListComponent().refreshCollection();
     }
 }

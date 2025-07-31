@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef, OnDestroy, inject, input} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, inject, input, viewChild} from '@angular/core';
 import {DataSet} from 'vis-data/peer';
 import {DateType, Timeline} from 'vis-timeline/peer';
 import {ElementRef} from '@angular/core';
@@ -52,7 +52,7 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
     //Layer Data
     layerList: Array<Layer> = [];
 
-    @ViewChild('timeline', {static: true}) timelineContainer!: ElementRef;
+    readonly timelineContainer = viewChild.required<ElementRef>('timeline');
 
     // inventory of used subscriptions
     private subscriptions: Array<Subscription> = [];
@@ -75,7 +75,7 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
         this.getTimelineGroups();
         this.getOptions();
 
-        this.timeline = new Timeline(this.timelineContainer.nativeElement, this.data, this.options);
+        this.timeline = new Timeline(this.timelineContainer().nativeElement, this.data, this.options);
         this.timeline.setGroups(this.groups);
         this.timeline.setItems(this.data);
 

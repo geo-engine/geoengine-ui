@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, ViewChild, effect, inject, input, linkedSignal, output} from '@angular/core';
+import {ChangeDetectorRef, Component, effect, inject, input, linkedSignal, output, viewChild} from '@angular/core';
 import {
     AbstractControl,
     FormControl,
@@ -110,10 +110,10 @@ export class DatasetEditorComponent {
 
     readonly datasetDeleted = output<void>();
 
-    @ViewChild(MatChipInput) tagInput!: MatChipInput;
-    @ViewChild(ProvenanceComponent) provenanceComponent!: ProvenanceComponent;
-    @ViewChild(GdalMetadataListComponent) gdalMetadataListComponent?: GdalMetadataListComponent;
-    @ViewChild(OgrDatasetComponent) ogrDatasetComponent?: OgrDatasetComponent;
+    readonly tagInput = viewChild.required(MatChipInput);
+    readonly provenanceComponent = viewChild.required(ProvenanceComponent);
+    readonly gdalMetadataListComponent = viewChild(GdalMetadataListComponent);
+    readonly ogrDatasetComponent = viewChild(OgrDatasetComponent);
 
     dataset?: Dataset;
     form: FormGroup<DatasetForm> = this.placeholderForm();
@@ -198,13 +198,13 @@ export class DatasetEditorComponent {
     addTag(): void {
         const tags: Array<string> = this.form.controls.tags.value;
 
-        const tag = this.tagInput.inputElement.value;
+        const tag = this.tagInput().inputElement.value;
 
         if (!isValidTag(tag)) {
             return;
         }
 
-        this.tagInput.inputElement.value = '';
+        this.tagInput().inputElement.value = '';
 
         tags.push(tag);
 
@@ -212,16 +212,17 @@ export class DatasetEditorComponent {
     }
 
     async saveProvenance(): Promise<void> {
-        if (!this.provenanceComponent.form.valid) {
+        const provenanceComponent = this.provenanceComponent();
+        if (!provenanceComponent.form.valid) {
             return;
         }
 
-        const provenance = this.provenanceComponent.getProvenance();
+        const provenance = provenanceComponent.getProvenance();
 
         try {
             await this.datasetsService.updateProvenance(this.datasetListing().name, provenance);
             this.snackBar.open('Dataset provenance successfully updated.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
-            this.provenanceComponent.form.markAsPristine();
+            provenanceComponent.form.markAsPristine();
         } catch (error) {
             const errorMessage = await errorToText(error, 'Updating dataset provenance failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
@@ -268,10 +269,12 @@ export class DatasetEditorComponent {
     }
 
     getMetaDataDefinition(): MetaDataDefinition | undefined {
-        if (this.gdalMetadataListComponent) {
-            return this.gdalMetadataListComponent.getMetaData();
-        } else if (this.ogrDatasetComponent) {
-            return this.ogrDatasetComponent.getMetaData();
+        const gdalMetadataListComponent = this.gdalMetadataListComponent();
+        const ogrDatasetComponent = this.ogrDatasetComponent();
+        if (gdalMetadataListComponent) {
+            return gdalMetadataListComponent.getMetaData();
+        } else if (ogrDatasetComponent) {
+            return ogrDatasetComponent.getMetaData();
         } else {
             try {
                 return JSON.parse(this.rawLoadingInfo) as MetaDataDefinition;
@@ -283,10 +286,12 @@ export class DatasetEditorComponent {
     }
 
     isSaveLoadingInfoDisabled(): boolean {
-        if (this.gdalMetadataListComponent) {
-            return this.gdalMetadataListComponent.form.pristine || this.gdalMetadataListComponent.form.invalid;
-        } else if (this.ogrDatasetComponent) {
-            return this.ogrDatasetComponent.formMetaData.pristine || this.ogrDatasetComponent.formMetaData.invalid;
+        const gdalMetadataListComponent = this.gdalMetadataListComponent();
+        const ogrDatasetComponent = this.ogrDatasetComponent();
+        if (gdalMetadataListComponent) {
+            return gdalMetadataListComponent.form.pristine || gdalMetadataListComponent.form.invalid;
+        } else if (ogrDatasetComponent) {
+            return ogrDatasetComponent.formMetaData.pristine || ogrDatasetComponent.formMetaData.invalid;
         } else {
             return this.rawLoadingInfo === '' || this.rawLoadingInfoPristine;
         }
@@ -306,8 +311,9 @@ export class DatasetEditorComponent {
             });
 
             this.rawLoadingInfoPristine = true;
-            if (this.gdalMetadataListComponent) {
-                this.gdalMetadataListComponent.form.markAsPristine();
+            const gdalMetadataListComponent = this.gdalMetadataListComponent();
+            if (gdalMetadataListComponent) {
+                gdalMetadataListComponent.form.markAsPristine();
             }
         } catch (error) {
             const errorMessage = await errorToText(error, 'Updating dataset loading information failed.');

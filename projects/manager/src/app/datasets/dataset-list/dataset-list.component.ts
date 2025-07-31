@@ -1,6 +1,6 @@
 import {DataSource} from '@angular/cdk/collections';
 import {CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf} from '@angular/cdk/scrolling';
-import {AfterContentInit, Component, ViewChild, inject, output} from '@angular/core';
+import {AfterContentInit, Component, inject, output, viewChild} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {DatasetsService} from '@geoengine/common';
 import {DatasetListing} from '@geoengine/openapi-client';
@@ -52,8 +52,7 @@ export class DatasetListComponent implements AfterContentInit {
     private readonly datasetsService = inject(DatasetsService);
     private readonly dialog = inject(MatDialog);
 
-    @ViewChild(CdkVirtualScrollViewport)
-    viewport!: CdkVirtualScrollViewport;
+    readonly viewport = viewChild.required(CdkVirtualScrollViewport);
 
     readonly selectDataset = output<DatasetListing | undefined>();
 
@@ -85,8 +84,8 @@ export class DatasetListComponent implements AfterContentInit {
      * Fetch new data when scrolled to the end of the list.
      */
     onScrolledIndexChange(_scrolledIndex: number): void {
-        const end = this.viewport.getRenderedRange().end;
-        const total = this.viewport.getDataLength();
+        const end = this.viewport().getRenderedRange().end;
+        const total = this.viewport().getDataLength();
 
         // only fetch when scrolled to the end
         if (end >= total) {
@@ -160,7 +159,7 @@ export class DatasetListComponent implements AfterContentInit {
     }
 
     protected calculateInitialNumberOfElements(): number {
-        const element = this.viewport.elementRef.nativeElement;
+        const element = this.viewport().elementRef.nativeElement;
         const numberOfElements = Math.ceil(element.clientHeight / this.itemSizePx);
         // add one such that scrolling happens
         return numberOfElements + 1;

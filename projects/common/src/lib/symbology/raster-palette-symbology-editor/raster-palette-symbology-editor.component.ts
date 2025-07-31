@@ -1,4 +1,4 @@
-import {Component, Input, ChangeDetectionStrategy, ViewChild, OnChanges, SimpleChanges, input, output} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChanges, input, output, viewChild} from '@angular/core';
 import {PaletteColorizer} from '../../colors/colorizer.model';
 import {ColorAttributeInput, ColorAttributeInputComponent} from '../../colors/color-attribute-input/color-attribute-input.component';
 import {Color} from '../../colors/color';
@@ -32,11 +32,9 @@ import {FormsModule} from '@angular/forms';
     ],
 })
 export class RasterPaletteSymbologyEditorComponent implements OnChanges {
-    @ViewChild(ColorMapSelectorComponent)
-    colorMapSelector!: ColorMapSelectorComponent;
+    readonly colorMapSelector = viewChild.required(ColorMapSelectorComponent);
 
-    @ViewChild(ColorTableEditorComponent)
-    colorPaletteEditor!: ColorTableEditorComponent;
+    readonly colorPaletteEditor = viewChild.required(ColorTableEditorComponent);
 
     @Input() colorizer!: PaletteColorizer;
     readonly measurement = input<Measurement>();

@@ -1,13 +1,13 @@
 import {
     Component,
     ChangeDetectionStrategy,
-    ViewChild,
     OnChanges,
     SimpleChanges,
     ChangeDetectorRef,
     inject,
     input,
     output,
+    viewChild,
 } from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, EMPTY, from, Observable, range, Subject} from 'rxjs';
@@ -79,8 +79,7 @@ export class LayerCollectionListComponent implements OnChanges {
 
     readonly CollectionNavigation = CollectionNavigation;
 
-    @ViewChild(CdkVirtualScrollViewport)
-    viewport!: CdkVirtualScrollViewport;
+    readonly viewport = viewChild.required(CdkVirtualScrollViewport);
 
     /**
      * Visualize…
@@ -129,8 +128,8 @@ export class LayerCollectionListComponent implements OnChanges {
      * Fetch new data when scrolled to the end of the list.
      */
     onScrolledIndexChange(_scrolledIndex: number): void {
-        const end = this.viewport.getRenderedRange().end;
-        const total = this.viewport.getDataLength();
+        const end = this.viewport().getRenderedRange().end;
+        const total = this.viewport().getDataLength();
 
         // only fetch when scrolled to the end
         if (end >= total) {
@@ -179,7 +178,7 @@ export class LayerCollectionListComponent implements OnChanges {
     }
 
     protected calculateInitialNumberOfElements(): number {
-        const element = this.viewport.elementRef.nativeElement;
+        const element = this.viewport().elementRef.nativeElement;
         const numberOfElements = Math.ceil(element.clientHeight / this.itemSizePx);
         // add one such that scrolling happens
         return numberOfElements + 1;

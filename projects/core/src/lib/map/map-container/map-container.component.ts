@@ -14,9 +14,9 @@ import {
     OnDestroy,
     QueryList,
     SimpleChange,
-    ViewChild,
-    ViewChildren,
     input,
+    viewChild,
+    viewChildren,
 } from '@angular/core';
 
 import OlMap from 'ol/Map';
@@ -94,8 +94,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
      */
     readonly grid = input(true); // TODO: false;
 
-    @ViewChild(MatGridList, {read: ElementRef, static: true}) gridListElement!: ElementRef;
-    @ViewChildren(MatGridTile, {read: ElementRef}) mapContainers!: QueryList<ElementRef>;
+    readonly gridListElement = viewChild.required(MatGridList, {read: ElementRef});
+    readonly mapContainers = viewChildren(MatGridTile, {read: ElementRef});
 
     /**
      * These are the layers from the layer list (as dom elements in the template)
@@ -349,8 +349,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
     private calculateGrid(): void {
         const numberOfLayers = this.desiredNumberOfMaps();
 
-        const containerWidth = this.gridListElement.nativeElement.clientWidth;
-        const containerHeight = this.gridListElement.nativeElement.clientHeight;
+        const containerWidth = this.gridListElement().nativeElement.clientWidth;
+        const containerHeight = this.gridListElement().nativeElement.clientHeight;
         const ratio = containerWidth / containerHeight;
 
         let rows = 1;
@@ -468,7 +468,8 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
         this.calculateGrid();
         this.changeDetectorRef.detectChanges();
 
-        if (this.grid() && this.mapLayers.length && this.mapContainers.length !== this.mapLayers.length) {
+        const mapContainers = this.mapContainers();
+        if (this.grid() && this.mapLayers.length && mapContainers.length !== this.mapLayers.length) {
             console.error('race condition!');
         }
 
@@ -486,7 +487,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
             );
         }
 
-        this.mapContainers.forEach((mapContainer, i) => {
+        mapContainers.forEach((mapContainer, i) => {
             const mapTarget: HTMLElement = mapContainer.nativeElement.children[0];
             this.maps[i].setTarget(mapTarget);
             this.maps[i].updateSize();

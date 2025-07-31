@@ -4,12 +4,12 @@ import {
     Component,
     OnInit,
     ChangeDetectorRef,
-    ViewChild,
     OnChanges,
     SimpleChanges,
     inject,
     input,
     output,
+    viewChild,
 } from '@angular/core';
 import {WHITE} from '../color';
 import {
@@ -50,8 +50,7 @@ export class ColorTableEditorComponent implements OnInit, OnChanges {
     // Symbology altered through color tab inputs
     readonly colorTableChanged = output<Array<ColorBreakpoint>>();
 
-    @ViewChild(CdkVirtualScrollViewport)
-    virtualScrollViewport!: CdkVirtualScrollViewport;
+    readonly virtualScrollViewport = viewChild.required(CdkVirtualScrollViewport);
 
     colorAttributes: Array<ColorAttributeInput> = [];
     colorHints?: ColorAttributeInputHinter;
@@ -125,7 +124,7 @@ export class ColorTableEditorComponent implements OnInit, OnChanges {
         // TODO: do we need that?
         this.sortColorAttributeInputs();
 
-        setTimeout(() => this.virtualScrollViewport.scrollTo({bottom: 0}), 0); // Delay of 0 to include new tab in scroll
+        setTimeout(() => this.virtualScrollViewport().scrollTo({bottom: 0}), 0); // Delay of 0 to include new tab in scroll
 
         this.emitColorTable();
     }

@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, ViewChild, AfterViewInit, OnDestroy, inject} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, OnDestroy, inject, viewChild} from '@angular/core';
 import {UntypedFormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ReplaySubject, Subject} from 'rxjs';
 import {MatSelect} from '@angular/material/select';
@@ -27,7 +27,7 @@ export class CountrySelectorComponent implements OnInit, AfterViewInit, OnDestro
 
     public filteredCountries: ReplaySubject<Array<Country>> = new ReplaySubject<Array<Country>>(1);
 
-    @ViewChild('countrySelect', {static: true}) countrySelect!: MatSelect;
+    readonly countrySelect = viewChild.required<MatSelect>('countrySelect');
 
     protected _onDestroy = new Subject<void>();
 
@@ -65,7 +65,7 @@ export class CountrySelectorComponent implements OnInit, AfterViewInit, OnDestro
 
     protected setInitialValue(): void {
         this.filteredCountries.pipe(take(1), takeUntil(this._onDestroy)).subscribe(() => {
-            this.countrySelect.compareWith = (a: Country, b: Country): boolean => a && b && a.name === b.name;
+            this.countrySelect().compareWith = (a: Country, b: Country): boolean => a && b && a.name === b.name;
         });
     }
 

@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild, inject} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, inject, viewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 
@@ -102,8 +102,7 @@ export class TemporalRasterAggregationComponent implements AfterViewInit {
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
 
-    @ViewChild(SymbologyCreatorComponent)
-    readonly symbologyCreator!: SymbologyCreatorComponent;
+    readonly symbologyCreator = viewChild.required(SymbologyCreatorComponent);
 
     form: FormGroup<TemporalRasterAggregationForm>;
     disallowSubmit: Observable<boolean>;
@@ -205,7 +204,7 @@ export class TemporalRasterAggregationComponent implements AfterViewInit {
                     }),
                 ),
                 mergeMap((workflowId: UUID) => {
-                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator.symbologyForRasterLayer(workflowId, inputLayer);
+                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator().symbologyForRasterLayer(workflowId, inputLayer);
                     return combineLatest([of(workflowId), symbology$]);
                 }),
                 mergeMap(([workflowId, symbology]: [UUID, RasterSymbology]) =>

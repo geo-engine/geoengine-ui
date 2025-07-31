@@ -3,11 +3,11 @@ import {
     ChangeDetectionStrategy,
     OnChanges,
     SimpleChange,
-    ViewChild,
     AfterViewInit,
     ElementRef,
     OnDestroy,
     input,
+    viewChild,
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 
@@ -48,7 +48,7 @@ const LANGUAGES = ['Rust'];
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy {
-    @ViewChild('editor', {static: true}) editorRef!: ElementRef;
+    readonly editorRef = viewChild.required<ElementRef>('editor');
 
     readonly language = input('Rust');
     readonly prefixLine = input<string>();
@@ -81,7 +81,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit,
             throw new Error(`Language ${language} is not (yet) supported.`);
         }
 
-        this.editor = CodeMirror.fromTextArea(this.editorRef.nativeElement, {
+        this.editor = CodeMirror.fromTextArea(this.editorRef().nativeElement, {
             lineNumbers: true,
             tabSize: 4,
             indentWithTabs: false,

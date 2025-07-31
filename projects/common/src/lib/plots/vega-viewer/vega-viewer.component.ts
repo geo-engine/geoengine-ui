@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, ViewChild, ElementRef, OnChanges, SimpleChanges, inject, input, output} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ElementRef, OnChanges, SimpleChanges, inject, input, output, viewChild} from '@angular/core';
 import vegaEmbed from 'vega-embed';
 import {View} from 'vega';
 import {TopLevelSpec as VlSpec} from 'vega-lite';
@@ -24,7 +24,7 @@ export class VegaViewerComponent implements OnChanges {
 
     readonly interactionChange = output<Record<string, unknown>>();
 
-    @ViewChild('chart', {static: true}) protected chartContainer!: ElementRef;
+    protected readonly chartContainer = viewChild.required<ElementRef>('chart');
 
     private vegaHandle?: {
         view: View;
@@ -46,7 +46,7 @@ export class VegaViewerComponent implements OnChanges {
             return;
         }
 
-        const div = this.chartContainer.nativeElement;
+        const div = this.chartContainer().nativeElement;
 
         const width = this.width() ?? div.clientWidth ?? this.element.nativeElement.offsetWidth;
         const height = this.height() ?? width / 2;
@@ -88,7 +88,7 @@ export class VegaViewerComponent implements OnChanges {
     }
 
     private clearContents(): void {
-        const div = this.chartContainer.nativeElement;
+        const div = this.chartContainer().nativeElement;
 
         if (this.vegaHandle) {
             this.vegaHandle.finalize();

@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, SimpleChanges, ViewChild, inject, input} from '@angular/core';
+import {Component, Input, OnChanges, SimpleChanges, inject, input, viewChild} from '@angular/core';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {
     DatasetsService,
@@ -30,8 +30,8 @@ export class SymbologyEditorComponent implements OnChanges {
     @Input() rasterSymbology: RasterSymbology | undefined;
     @Input() vectorSymbology: VectorSymbology | undefined;
 
-    @ViewChild(RasterSymbologyEditorComponent) rasterSymbologyEditorComponent?: RasterSymbologyEditorComponent;
-    @ViewChild(VectorSymbologyEditorComponent) vectorSymbologyEditorComponent?: VectorSymbologyEditorComponent;
+    readonly rasterSymbologyEditorComponent = viewChild(RasterSymbologyEditorComponent);
+    readonly vectorSymbologyEditorComponent = viewChild(VectorSymbologyEditorComponent);
 
     rasterSymbologyWorkflow?: SymbologyWorkflow<RasterSymbology> = undefined;
     vectorSymbologyWorkflow?: SymbologyWorkflow<VectorSymbology> = undefined;
@@ -70,8 +70,9 @@ export class SymbologyEditorComponent implements OnChanges {
     }
 
     resetChanges(): void {
-        if (this.rasterSymbologyEditorComponent) {
-            this.rasterSymbologyEditorComponent.resetChanges();
+        const rasterSymbologyEditorComponent = this.rasterSymbologyEditorComponent();
+        if (rasterSymbologyEditorComponent) {
+            rasterSymbologyEditorComponent.resetChanges();
             this.unappliedChanges = false;
         }
     }

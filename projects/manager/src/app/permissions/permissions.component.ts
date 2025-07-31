@@ -1,5 +1,5 @@
 import {DataSource} from '@angular/cdk/collections';
-import {AfterViewInit, Component, OnChanges, SimpleChanges, ViewChild, inject, input} from '@angular/core';
+import {AfterViewInit, Component, OnChanges, SimpleChanges, inject, input, viewChild} from '@angular/core';
 import {Permission, PermissionListing} from '@geoengine/openapi-client';
 import {BehaviorSubject, Observable, Subject, firstValueFrom, tap} from 'rxjs';
 import {MatPaginator} from '@angular/material/paginator';
@@ -73,7 +73,7 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
     readonly resourceType = input.required<ResourceType>();
     readonly resourceId = input.required<string>();
 
-    @ViewChild(MatPaginator) paginator!: MatPaginator;
+    readonly paginator = viewChild.required(MatPaginator);
 
     readonly loadingSpinnerDiameterPx: number = 3 * parseFloat(getComputedStyle(document.documentElement).fontSize);
 
@@ -86,7 +86,9 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
     displayedColumns: string[] = ['roleName', 'roleId', 'permission', 'remove'];
 
     ngAfterViewInit(): void {
-        this.paginator.page.pipe(tap(() => this.loadPermissionsPage())).subscribe();
+        this.paginator()
+            .page.pipe(tap(() => this.loadPermissionsPage()))
+            .subscribe();
         this.setUpSource();
     }
 
@@ -146,11 +148,11 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
     }
 
     protected loadPermissionsPage(): void {
-        this.source.loadPermissions(this.paginator.pageIndex, this.paginator.pageSize);
+        this.source.loadPermissions(this.paginator().pageIndex, this.paginator().pageSize);
     }
 
     protected setUpSource(): void {
-        this.source = new PermissionDataSource(this.permissionsService, this.paginator, this.resourceType(), this.resourceId());
+        this.source = new PermissionDataSource(this.permissionsService, this.paginator(), this.resourceType(), this.resourceId());
         this.source.loadPermissions(0, 5);
     }
 

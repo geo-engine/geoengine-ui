@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, ViewChild, inject} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, inject, viewChild} from '@angular/core';
 import {FormControl, FormBuilder, FormGroup, Validators, ValidatorFn, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 
@@ -72,8 +72,7 @@ export class InterpolationComponent implements AfterViewInit, OnDestroy {
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
 
-    @ViewChild(SymbologyCreatorComponent)
-    readonly symbologyCreator!: SymbologyCreatorComponent;
+    readonly symbologyCreator = viewChild.required(SymbologyCreatorComponent);
 
     form: FormGroup;
 
@@ -155,7 +154,7 @@ export class InterpolationComponent implements AfterViewInit, OnDestroy {
                     }),
                 ),
                 mergeMap((workflowId: UUID) => {
-                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator.symbologyForRasterLayer(workflowId, inputLayer);
+                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator().symbologyForRasterLayer(workflowId, inputLayer);
                     return combineLatest([of(workflowId), symbology$]);
                 }),
                 mergeMap(([workflowId, symbology]: [UUID, RasterSymbology]) =>

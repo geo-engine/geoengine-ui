@@ -1,5 +1,5 @@
 import {HttpEventType} from '@angular/common/http';
-import {Component, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef, OnDestroy, inject} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, inject, viewChild} from '@angular/core';
 import {FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatStepper, MatStep, MatStepLabel} from '@angular/material/stepper';
 import {Subject, Subscription} from 'rxjs';
@@ -69,8 +69,8 @@ export class UploadComponent implements OnDestroy {
     errorHandlings = ['ignore', 'abort'];
     readonly timeGranularityOptions: Array<TimeGranularity> = timeStepGranularityOptions;
 
-    @ViewChild(MatStepper) stepper!: MatStepper;
-    @ViewChild(OgrDatasetComponent) ogrDatasetComponent!: OgrDatasetComponent;
+    readonly stepper = viewChild.required(MatStepper);
+    readonly ogrDatasetComponent = viewChild.required(OgrDatasetComponent);
 
     progress$ = new Subject<number>();
     metaDataSuggestion$ = new Subject<MetaDataSuggestion>();
@@ -153,11 +153,12 @@ export class UploadComponent implements OnDestroy {
                 } else if (event.type === HttpEventType.Response) {
                     const uploadId = event.body?.id;
                     this.uploadId = uploadId;
-                    if (this.stepper.selected) {
-                        this.stepper.selected.completed = true;
-                        this.stepper.selected.editable = false;
+                    const stepper = this.stepper();
+                    if (stepper.selected) {
+                        stepper.selected.completed = true;
+                        stepper.selected.editable = false;
                     }
-                    this.stepper.next();
+                    stepper.next();
                 }
             },
             (err) => {
@@ -184,7 +185,7 @@ export class UploadComponent implements OnDestroy {
 
         const formDataset = this.formNameDescription.controls;
 
-        const metaData: MetaDataDefinition = this.ogrDatasetComponent.getMetaData();
+        const metaData: MetaDataDefinition = this.ogrDatasetComponent().getMetaData();
 
         const addData: AddDataset = {
             name: this.userNamePrefix + ':' + formDataset.name.value,
@@ -207,17 +208,18 @@ export class UploadComponent implements OnDestroy {
             );
 
             this.datasetName = datasetName;
-            if (this.stepper.selected) {
-                this.stepper.selected.completed = true;
-                this.stepper.selected.editable = false;
+            const stepper = this.stepper();
+            if (stepper.selected) {
+                stepper.selected.completed = true;
+                stepper.selected.editable = false;
             }
-            const prevStep = this.stepper.steps.get(this.stepper.selectedIndex - 1);
+            const prevStep = stepper.steps.get(stepper.selectedIndex - 1);
             if (prevStep) {
                 prevStep.completed = true;
                 prevStep.editable = false;
             }
 
-            this.stepper.next();
+            stepper.next();
         } catch (err) {
             let errorMessage;
             if (err instanceof Error) {
@@ -236,9 +238,10 @@ export class UploadComponent implements OnDestroy {
     }
 
     get formMetaData(): FormGroup {
-        if (!this.ogrDatasetComponent) {
+        const ogrDatasetComponent = this.ogrDatasetComponent();
+        if (!ogrDatasetComponent) {
             return new FormGroup({});
         }
-        return this.ogrDatasetComponent.formMetaData;
+        return ogrDatasetComponent.formMetaData;
     }
 }

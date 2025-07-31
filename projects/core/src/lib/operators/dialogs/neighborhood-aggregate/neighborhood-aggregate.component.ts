@@ -1,6 +1,6 @@
 import {map, mergeMap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, ViewChild, inject, input} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, inject, input, viewChild} from '@angular/core';
 import {
     AbstractControl,
     FormArray,
@@ -119,8 +119,7 @@ export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy 
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
 
-    @ViewChild(SymbologyCreatorComponent)
-    readonly symbologyCreator!: SymbologyCreatorComponent;
+    readonly symbologyCreator = viewChild.required(SymbologyCreatorComponent);
 
     readonly subscriptions: Array<Subscription> = [];
 
@@ -256,7 +255,10 @@ export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy 
                     return this.projectService.registerWorkflow(workflow);
                 }),
                 mergeMap((workflowId: UUID) => {
-                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator.symbologyForRasterLayer(workflowId, rasterLayer);
+                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator().symbologyForRasterLayer(
+                        workflowId,
+                        rasterLayer,
+                    );
                     return combineLatest([of(workflowId), symbology$]);
                 }),
                 mergeMap(([workflowId, symbology]: [UUID, RasterSymbology]) =>

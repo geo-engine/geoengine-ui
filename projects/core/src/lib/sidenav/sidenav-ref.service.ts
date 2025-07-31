@@ -1,6 +1,6 @@
 import {BehaviorSubject, Observable, Subject, Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {Injectable, ElementRef, QueryList, OutputEmitterRef} from '@angular/core';
+import {Injectable, ElementRef, OutputEmitterRef} from '@angular/core';
 import {SidenavConfig} from '../layout.service';
 
 /**
@@ -11,7 +11,7 @@ export class SidenavRef {
     private title$ = new BehaviorSubject<string | undefined>(undefined);
     private backButtonComponent$ = new BehaviorSubject<SidenavConfig | undefined>(undefined);
 
-    private searchElements$ = new BehaviorSubject<Array<ElementRef> | undefined>(undefined);
+    private searchElements$ = new BehaviorSubject<readonly ElementRef[] | undefined>(undefined);
     private searchElementsSubscription?: Subscription;
     private searchString$?: OutputEmitterRef<string>;
 
@@ -58,11 +58,10 @@ export class SidenavRef {
      * @param contentChildren provides a reference to a `QueryList`
      * @param searchString$ this emits search inputs to upon changes to the query list
      */
-    setSearch(contentChildren: QueryList<ElementRef>, searchString$: OutputEmitterRef<string>): void {
+    setSearch(contentChildren: readonly ElementRef[], searchString$: OutputEmitterRef<string>): void {
         this.removeSearch();
 
-        this.searchElements$.next(contentChildren.toArray());
-        this.searchElementsSubscription = contentChildren.changes.subscribe((elements) => this.searchElements$.next(elements));
+        this.searchElements$.next(contentChildren);
         this.searchString$ = searchString$;
     }
 
@@ -83,7 +82,7 @@ export class SidenavRef {
     /**
      * Retrieve the current `SidenavSearchComponent` as a stream
      */
-    getSearchComponentStream(): Observable<Array<ElementRef> | undefined> {
+    getSearchComponentStream(): Observable<readonly ElementRef[] | undefined> {
         return this.searchElements$;
     }
 

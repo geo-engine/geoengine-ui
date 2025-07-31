@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild, inject} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, inject, viewChild} from '@angular/core';
 import {
     FormControl,
     FormGroup,
@@ -108,8 +108,7 @@ export class RasterScalingComponent implements AfterViewInit {
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
 
-    @ViewChild(SymbologyCreatorComponent)
-    readonly symbologyCreator!: SymbologyCreatorComponent;
+    readonly symbologyCreator = viewChild.required(SymbologyCreatorComponent);
 
     form: FormGroup<RasterScalingForm>;
     disallowSubmit: Observable<boolean>;
@@ -244,7 +243,7 @@ export class RasterScalingComponent implements AfterViewInit {
                     }),
                 ),
                 mergeMap((workflowId: UUID) => {
-                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator.symbologyForRasterLayer(workflowId, inputLayer);
+                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator().symbologyForRasterLayer(workflowId, inputLayer);
 
                     return combineLatest([of(workflowId), symbology$]);
                 }),

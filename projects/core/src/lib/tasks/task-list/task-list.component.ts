@@ -1,12 +1,12 @@
 import {
     Component,
     ChangeDetectionStrategy,
-    ViewChild,
     AfterViewInit,
     OnDestroy,
     ChangeDetectorRef,
     Injectable,
     inject,
+    viewChild,
 } from '@angular/core';
 import {MatPaginator, MatPaginatorIntl, PageEvent} from '@angular/material/paginator';
 import {combineLatest, forkJoin, map, mergeMap, of, startWith, Subject, Subscription, switchMap} from 'rxjs';
@@ -107,7 +107,7 @@ export class TaskListComponent implements AfterViewInit, OnDestroy {
 
     isLoading = true;
 
-    @ViewChild(MatPaginator) paginator!: MatPaginator;
+    readonly paginator = viewChild.required(MatPaginator);
 
     protected taskSubscription?: Subscription;
 
@@ -118,11 +118,11 @@ export class TaskListComponent implements AfterViewInit, OnDestroy {
     ngAfterViewInit(): void {
         this.taskSubscription = combineLatest({
             sessionToken: this.userService.getSessionTokenStream(),
-            pageEvent: this.paginator.page.pipe(
+            pageEvent: this.paginator().page.pipe(
                 startWith({
-                    pageIndex: this.paginator.pageIndex,
-                    pageSize: this.paginator.pageSize,
-                    length: this.paginator.length,
+                    pageIndex: this.paginator().pageIndex,
+                    pageSize: this.paginator().pageSize,
+                    length: this.paginator().length,
                 } as PageEvent),
             ),
         })
@@ -150,7 +150,7 @@ export class TaskListComponent implements AfterViewInit, OnDestroy {
                         // indicate that there is a next page
                         newTotalResults -= 0.5;
                     }
-                    this.paginator.length = Math.max(this.paginator.length, newTotalResults);
+                    this.paginator().length = Math.max(this.paginator().length, newTotalResults);
 
                     // shrink to page since, since we queried one more
                     return tasks.slice(0, pageEvent.pageSize);
@@ -168,21 +168,23 @@ export class TaskListComponent implements AfterViewInit, OnDestroy {
         this.filter = taskStatus;
 
         // reset paginator and trigger reload
-        this.paginator.pageIndex = 0;
-        this.paginator.length = 0;
+        const paginator = this.paginator();
 
-        this.paginator.page.emit({
-            pageIndex: this.paginator.pageIndex,
-            pageSize: this.paginator.pageSize,
-            length: this.paginator.length,
+        paginator.pageIndex = 0;
+        paginator.length = 0;
+
+        paginator.page.emit({
+            pageIndex: paginator.pageIndex,
+            pageSize: paginator.pageSize,
+            length: paginator.length,
         } as PageEvent);
     }
 
     refreshPage(): void {
-        this.paginator.page.emit({
-            pageIndex: this.paginator.pageIndex,
-            pageSize: this.paginator.pageSize,
-            length: this.paginator.length,
+        this.paginator().page.emit({
+            pageIndex: this.paginator().pageIndex,
+            pageSize: this.paginator().pageSize,
+            length: this.paginator().length,
         } as PageEvent);
     }
 

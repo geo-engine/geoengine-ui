@@ -1,5 +1,5 @@
 import {DataSource} from '@angular/cdk/collections';
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, signal, ViewChild, inject} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, signal, inject, viewChild} from '@angular/core';
 import {Observable, Subject, tap} from 'rxjs';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {UserService} from '@geoengine/common';
@@ -20,7 +20,7 @@ export class QuotaLogComponent implements AfterViewInit {
     private readonly userService = inject(UserService);
     private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
-    @ViewChild(MatPaginator) paginator!: MatPaginator;
+    readonly paginator = viewChild.required(MatPaginator);
 
     readonly loadingSpinnerDiameterPx: number = 3 * parseFloat(getComputedStyle(document.documentElement).fontSize);
 
@@ -39,7 +39,9 @@ export class QuotaLogComponent implements AfterViewInit {
     }
 
     ngAfterViewInit(): void {
-        this.paginator.page.pipe(tap(() => this.loadQuotaLogsPage())).subscribe();
+        this.paginator()
+            .page.pipe(tap(() => this.loadQuotaLogsPage()))
+            .subscribe();
     }
 
     async showDetails(element: ComputationQuota): Promise<void> {
@@ -59,11 +61,11 @@ export class QuotaLogComponent implements AfterViewInit {
     }
 
     protected loadQuotaLogsPage(): void {
-        this.source.loadQuotaLogs(this.paginator.pageIndex, this.paginator.pageSize);
+        this.source.loadQuotaLogs(this.paginator().pageIndex, this.paginator().pageSize);
     }
 
     protected setUpSource(): void {
-        this.source = new QuotaLogDataSource(this.userService, this.paginator);
+        this.source = new QuotaLogDataSource(this.userService, this.paginator());
         this.source.loadQuotaLogs(0, 5);
     }
 }

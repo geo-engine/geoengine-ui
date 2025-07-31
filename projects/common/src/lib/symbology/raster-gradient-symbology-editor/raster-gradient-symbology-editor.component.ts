@@ -4,13 +4,13 @@ import {
     ChangeDetectionStrategy,
     OnDestroy,
     OnInit,
-    ViewChild,
     ChangeDetectorRef,
     OnChanges,
     SimpleChanges,
     inject,
     input,
     output,
+    viewChild,
 } from '@angular/core';
 import {BehaviorSubject, ReplaySubject, Subscription} from 'rxjs';
 import {LinearGradient, LogarithmicGradient} from '../../colors/colorizer.model';
@@ -74,14 +74,11 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     private readonly plotsService = inject(PlotsService);
     private changeDetectorRef = inject(ChangeDetectorRef);
 
-    @ViewChild(ColorMapSelectorComponent)
-    colorMapSelector!: ColorMapSelectorComponent;
+    readonly colorMapSelector = viewChild.required(ColorMapSelectorComponent);
 
-    @ViewChild(PercentileBreakpointSelectorComponent)
-    percentileBreakpointSelector!: PercentileBreakpointSelectorComponent;
+    readonly percentileBreakpointSelector = viewChild.required(PercentileBreakpointSelectorComponent);
 
-    @ViewChild(ColorTableEditorComponent)
-    colorTableEditor!: ColorTableEditorComponent;
+    readonly colorTableEditor = viewChild.required(ColorTableEditorComponent);
 
     readonly band = input.required<string>();
 
@@ -272,13 +269,13 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     }
 
     createColorTable(): void {
-        this.colorMapSelector?.applyChanges();
+        this.colorMapSelector()?.applyChanges();
         this.changeDetectorRef.detectChanges();
-        this.colorTableEditor?.updateColorAttributes();
+        this.colorTableEditor()?.updateColorAttributes();
     }
 
     createPercentilesColorTable(): void {
-        this.percentileBreakpointSelector?.createColorTable();
+        this.percentileBreakpointSelector()?.createColorTable();
     }
 
     private updateNodataAndDefaultColor(): void {

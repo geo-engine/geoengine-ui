@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, viewChild} from '@angular/core';
 import {DatasetListing} from '@geoengine/openapi-client';
 import {BehaviorSubject} from 'rxjs';
 import {DatasetListComponent} from './dataset-list/dataset-list.component';
@@ -12,7 +12,7 @@ import {AsyncPipe} from '@angular/common';
     imports: [DatasetListComponent, DatasetEditorComponent, AsyncPipe],
 })
 export class DatasetsComponent {
-    @ViewChild(DatasetListComponent) datasetList!: DatasetListComponent;
+    readonly datasetList = viewChild.required(DatasetListComponent);
 
     selectedDataset$: BehaviorSubject<DatasetListing | undefined> = new BehaviorSubject<DatasetListing | undefined>(undefined);
 
@@ -21,7 +21,7 @@ export class DatasetsComponent {
     }
 
     datasetDeleted(): void {
-        this.datasetList.backToAllDatasets();
+        this.datasetList().backToAllDatasets();
         this.selectedDataset$.next(undefined);
     }
 }

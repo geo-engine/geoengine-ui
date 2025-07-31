@@ -2,13 +2,13 @@ import {
     Component,
     OnInit,
     ChangeDetectionStrategy,
-    ViewChild,
     ElementRef,
     OnChanges,
     SimpleChanges,
     ChangeDetectorRef,
     inject,
     input,
+    viewChild,
 } from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
 import {ProjectService} from '../../project/project.service';
@@ -53,7 +53,7 @@ export class ProvenanceTableComponent implements OnInit, OnChanges {
     protected readonly hostElement = inject<ElementRef<HTMLElement>>(ElementRef);
     protected readonly changeDetectorRef = inject(ChangeDetectorRef);
 
-    @ViewChild(MatPaginator) paginator!: MatPaginator;
+    readonly paginator = viewChild.required(MatPaginator);
 
     readonly layer = input<Layer>();
 

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild, inject, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, input, viewChild} from '@angular/core';
 import {
     Layer,
     RasterLayer,
@@ -34,7 +34,7 @@ export class SymbologyEditorComponent implements OnInit, OnDestroy {
 
     readonly layer = input.required<Layer>();
 
-    @ViewChild(RasterSymbologyEditorComponent) rasterSymbologyEditorComponent?: RasterSymbologyEditorComponent;
+    readonly rasterSymbologyEditorComponent = viewChild(RasterSymbologyEditorComponent);
 
     rasterSymbologyWorkflow$ = new BehaviorSubject<SymbologyWorkflow<RasterSymbology> | undefined>(undefined);
     vectorSymbologyWorkflow$ = new BehaviorSubject<SymbologyWorkflow<VectorSymbology> | undefined>(undefined);
@@ -69,8 +69,9 @@ export class SymbologyEditorComponent implements OnInit, OnDestroy {
     }
 
     resetRasterChanges(): void {
-        if (this.rasterSymbologyEditorComponent) {
-            this.rasterSymbologyEditorComponent.resetChanges();
+        const rasterSymbologyEditorComponent = this.rasterSymbologyEditorComponent();
+        if (rasterSymbologyEditorComponent) {
+            rasterSymbologyEditorComponent.resetChanges();
             this.unappliedRasterChanges = false;
         }
     }
