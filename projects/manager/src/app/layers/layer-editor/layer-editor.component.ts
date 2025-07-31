@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Output, signal, WritableSignal, inject, input, linkedSignal, effect} from '@angular/core';
+import {Component, signal, WritableSignal, inject, input, linkedSignal, effect, output} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -73,8 +73,8 @@ export class LayerEditorComponent {
     readonly layerListing = linkedSignal(this._layerListing);
     readonly parentCollection = input.required<ProviderLayerCollectionId>();
 
-    @Output() readonly layerUpdated = new EventEmitter<void>();
-    @Output() readonly layerDeleted = new EventEmitter<void>();
+    readonly layerUpdated = output<void>();
+    readonly layerDeleted = output<void>();
 
     readonly layer: WritableSignal<Layer | undefined> = signal(undefined);
 
@@ -366,6 +366,7 @@ export class LayerEditorComponent {
             this.form.markAsPristine();
 
             // TODO: make changes properly appear in the layer navigation, like for collection.
+            // TODO: The 'emit' function requires a mandatory void argument
             this.layerUpdated.emit();
         } catch (error) {
             const errorMessage = await errorToText(error, 'Updating layer failed.');
@@ -387,6 +388,7 @@ export class LayerEditorComponent {
         try {
             await this.layersService.removeLayer(this.layerListing().id.layerId);
             this.snackBar.open('Layer successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
+            // TODO: The 'emit' function requires a mandatory void argument
             this.layerDeleted.emit();
         } catch (error) {
             const errorMessage = await errorToText(error, 'Deleting layer failed.');
@@ -408,6 +410,7 @@ export class LayerEditorComponent {
         try {
             await this.layersService.removeLayerFromCollection(this.layerListing().id.layerId, this.parentCollection().collectionId);
             this.snackBar.open('Layer successfully removed.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
+            // TODO: The 'emit' function requires a mandatory void argument
             this.layerDeleted.emit();
         } catch (error) {
             const errorMessage = await errorToText(error, 'Removing layer failed.');

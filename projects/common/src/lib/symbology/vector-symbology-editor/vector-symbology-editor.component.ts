@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, OnChanges, SimpleChanges, OnInit, Output, EventEmitter, inject, input} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnChanges, SimpleChanges, OnInit, inject, input, output} from '@angular/core';
 import {
     ClusteredPointSymbology,
     ColorParam,
@@ -62,7 +62,7 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
 
     readonly symbologyWorkflow = input.required<SymbologyWorkflow<VectorSymbology>>();
 
-    @Output() changedSymbology = new EventEmitter<VectorSymbology>();
+    readonly changedSymbology = output<VectorSymbology>();
 
     currentSymbology!: VectorSymbology;
 

@@ -3,14 +3,13 @@ import {
     ChangeDetectionStrategy,
     Component,
     OnInit,
-    Output,
-    EventEmitter,
     ChangeDetectorRef,
     ViewChild,
     OnChanges,
     SimpleChanges,
     inject,
     input,
+    output,
 } from '@angular/core';
 import {WHITE} from '../color';
 import {
@@ -49,7 +48,7 @@ export class ColorTableEditorComponent implements OnInit, OnChanges {
     readonly measurement = input<Measurement>();
 
     // Symbology altered through color tab inputs
-    @Output() colorTableChanged = new EventEmitter<Array<ColorBreakpoint>>();
+    readonly colorTableChanged = output<Array<ColorBreakpoint>>();
 
     @ViewChild(CdkVirtualScrollViewport)
     virtualScrollViewport!: CdkVirtualScrollViewport;

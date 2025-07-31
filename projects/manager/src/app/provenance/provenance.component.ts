@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnChanges, Output, SimpleChanges, input} from '@angular/core';
+import {Component, OnChanges, SimpleChanges, input, output} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {geoengineValidators} from '@geoengine/common';
 import {Provenance} from '@geoengine/openapi-client';
@@ -31,7 +31,7 @@ export interface ProvenanceChange {
 export class ProvenanceComponent implements OnChanges {
     readonly provenance = input<Array<Provenance>>();
 
-    @Output() provenanceChange = new EventEmitter<ProvenanceChange>();
+    readonly provenanceChange = output<ProvenanceChange>();
 
     form: FormGroup<ProvenanceListForm> = this.setUpForm();
 

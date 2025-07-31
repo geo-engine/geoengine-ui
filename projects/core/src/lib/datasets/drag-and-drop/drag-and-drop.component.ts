@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, ViewChild, Output, EventEmitter, ElementRef} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ViewChild, ElementRef, output} from '@angular/core';
 import {MatCard} from '@angular/material/card';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatList, MatListItem, MatListItemMeta, MatListItemTitle, MatListItemLine, MatDivider} from '@angular/material/list';
@@ -26,7 +26,7 @@ export class DragAndDropComponent {
     selectedFiles?: Array<File>;
     @ViewChild('fileInput') fileInput?: ElementRef<HTMLInputElement>;
 
-    @Output() public selectFilesEvent = new EventEmitter();
+    public readonly selectFilesEvent = output<File[]>();
 
     selectFiles(target: HTMLInputElement | null): void {
         const fileList = target?.files;

@@ -1,6 +1,6 @@
 import {DataSource} from '@angular/cdk/collections';
 import {CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf} from '@angular/cdk/scrolling';
-import {AfterContentInit, Component, EventEmitter, Output, ViewChild, inject} from '@angular/core';
+import {AfterContentInit, Component, ViewChild, inject, output} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {DatasetsService} from '@geoengine/common';
 import {DatasetListing} from '@geoengine/openapi-client';
@@ -55,8 +55,7 @@ export class DatasetListComponent implements AfterContentInit {
     @ViewChild(CdkVirtualScrollViewport)
     viewport!: CdkVirtualScrollViewport;
 
-    @Output()
-    selectDataset = new EventEmitter<DatasetListing>();
+    readonly selectDataset = output<DatasetListing | undefined>();
 
     searchName = '';
 

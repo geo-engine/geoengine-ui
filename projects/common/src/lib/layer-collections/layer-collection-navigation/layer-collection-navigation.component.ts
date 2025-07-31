@@ -9,10 +9,9 @@ import {
     SimpleChanges,
     OnDestroy,
     HostListener,
-    Output,
-    EventEmitter,
     inject,
     input,
+    output,
 } from '@angular/core';
 import {MatInput, MatFormField, MatPrefix, MatLabel} from '@angular/material/input';
 import {
@@ -84,9 +83,9 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
 
     selectedCollection?: LayerCollectionItemOrSearch;
 
-    @Output() selectLayer = new EventEmitter<LayerListing>();
-    @Output() selectCollection = new EventEmitter<LayerCollectionListing>();
-    @Output() navigateCollection = new EventEmitter<LayerCollectionListing>();
+    readonly selectLayer = output<LayerListing>();
+    readonly selectCollection = output<LayerCollectionListing>();
+    readonly navigateCollection = output<LayerCollectionListing>();
 
     ngOnInit(): void {
         this.updateListView(undefined);

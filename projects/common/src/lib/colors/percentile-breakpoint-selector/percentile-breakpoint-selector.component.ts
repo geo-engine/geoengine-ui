@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Output, inject, input} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input, output} from '@angular/core';
 import {FormArray, UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BehaviorSubject} from 'rxjs';
 import {Color, RgbaTuple} from '../color';
@@ -57,12 +57,12 @@ export class PercentileBreakpointSelectorComponent {
     /**
      * Emmits colorizer breakpoint arrays
      */
-    @Output() breakpointsChange = new EventEmitter<Array<ColorBreakpoint>>();
+    readonly breakpointsChange = output<Array<ColorBreakpoint>>();
 
     /**
      * Informs parent to enable "Apply Changes" button
      */
-    @Output() changesToForm = new EventEmitter<void>();
+    readonly changesToForm = output<void>();
 
     readonly colorMaps = ALL_COLORMAPS;
 

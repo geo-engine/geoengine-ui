@@ -1,6 +1,6 @@
 import {BehaviorSubject, Observable, Subject, Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {Injectable, EventEmitter, ElementRef, QueryList} from '@angular/core';
+import {Injectable, ElementRef, QueryList, OutputEmitterRef} from '@angular/core';
 import {SidenavConfig} from '../layout.service';
 
 /**
@@ -13,7 +13,7 @@ export class SidenavRef {
 
     private searchElements$ = new BehaviorSubject<Array<ElementRef> | undefined>(undefined);
     private searchElementsSubscription?: Subscription;
-    private searchString$?: EventEmitter<string>;
+    private searchString$?: OutputEmitterRef<string>;
 
     private close$ = new Subject<void>();
 
@@ -58,7 +58,7 @@ export class SidenavRef {
      * @param contentChildren provides a reference to a `QueryList`
      * @param searchString$ this emits search inputs to upon changes to the query list
      */
-    setSearch(contentChildren: QueryList<ElementRef>, searchString$: EventEmitter<string>): void {
+    setSearch(contentChildren: QueryList<ElementRef>, searchString$: OutputEmitterRef<string>): void {
         this.removeSearch();
 
         this.searchElements$.next(contentChildren.toArray());
@@ -98,9 +98,7 @@ export class SidenavRef {
      * Function that safely emits the search term via `searchString$` if it is specified
      */
     searchTerm(term: string): void {
-        if (this.searchString$) {
-            this.searchString$.next(term);
-        }
+        this.searchString$?.emit(term);
     }
 
     /**

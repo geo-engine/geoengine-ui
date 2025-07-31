@@ -16,7 +16,7 @@ export class DatasetsComponent {
 
     selectedDataset$: BehaviorSubject<DatasetListing | undefined> = new BehaviorSubject<DatasetListing | undefined>(undefined);
 
-    selectDataset(dataset: DatasetListing): void {
+    selectDataset(dataset: DatasetListing | undefined): void {
         this.selectedDataset$.next(dataset);
     }
 

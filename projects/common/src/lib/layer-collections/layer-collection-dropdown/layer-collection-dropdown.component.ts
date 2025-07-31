@@ -3,13 +3,12 @@ import {
     OnInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
-    EventEmitter,
-    Output,
     OnChanges,
     OnDestroy,
     SimpleChanges,
     inject,
     input,
+    output,
 } from '@angular/core';
 import {
     LayerCollection as LayerCollectionDict,
@@ -59,8 +58,8 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
     readonly root = input<ProviderLayerCollectionIdDict>();
     readonly preselectedPath = input<Array<string | number>>([]); // preselect entries in hierarchy either by name or index
 
-    @Output() layerSelected = new EventEmitter<LayerCollectionLayerDict>();
-    @Output() pathChange = new EventEmitter<PathChange>();
+    readonly layerSelected = output<LayerCollectionLayerDict | undefined>();
+    readonly pathChange = output<PathChange>();
 
     preselecting$ = new BehaviorSubject<boolean>(false);
 

@@ -4,11 +4,10 @@ import {
     ElementRef,
     ContentChildren,
     QueryList,
-    Output,
-    EventEmitter,
     AfterViewInit,
     Directive,
     inject,
+    output,
 } from '@angular/core';
 import {SidenavRef} from '../sidenav-ref.service';
 
@@ -26,7 +25,7 @@ export class SidenavSearchComponent implements AfterViewInit {
 
     @ContentChildren(SidenavSearchRightDirective, {read: ElementRef}) contentChildren!: QueryList<ElementRef>;
 
-    @Output() searchString = new EventEmitter<string>();
+    readonly searchString = output<string>();
 
     ngAfterViewInit(): void {
         this.sidenavRef.setSearch(this.contentChildren, this.searchString);

@@ -5,13 +5,12 @@ import {
     OnDestroy,
     OnInit,
     ViewChild,
-    EventEmitter,
-    Output,
     ChangeDetectorRef,
     OnChanges,
     SimpleChanges,
     inject,
     input,
+    output,
 } from '@angular/core';
 import {BehaviorSubject, ReplaySubject, Subscription} from 'rxjs';
 import {LinearGradient, LogarithmicGradient} from '../../colors/colorizer.model';
@@ -92,7 +91,7 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
 
     @Input() queryParams?: SymbologyQueryParams;
 
-    @Output() colorizerChange = new EventEmitter<LinearGradient | LogarithmicGradient>();
+    readonly colorizerChange = output<LinearGradient | LogarithmicGradient>();
 
     // The min value used for color table generation
     layerMinValue: number | undefined = undefined;

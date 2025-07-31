@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Output, ViewChild, inject, input} from '@angular/core';
+import {Component, ViewChild, inject, input, output} from '@angular/core';
 import {FormArray, FormControl} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {CollectionNavigation, ConfirmationComponent, LayerCollectionListComponent, LayersService, CommonModule} from '@geoengine/common';
@@ -28,7 +28,7 @@ export class LayerCollectionChildListComponent {
     readonly CollectionNavigation = CollectionNavigation;
 
     readonly collectionId = input.required<ProviderLayerCollectionId>();
-    @Output() readonly modifiedChildren = new EventEmitter<LayerListing>();
+    readonly modifiedChildren = output<LayerListing>();
 
     @ViewChild(LayerCollectionListComponent) layerCollectionListComponent!: LayerCollectionListComponent;
 

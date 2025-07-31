@@ -1,14 +1,4 @@
-import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    EventEmitter,
-    input,
-    OnChanges,
-    Output,
-    SimpleChanges,
-    inject,
-} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, input, OnChanges, SimpleChanges, inject, output} from '@angular/core';
 import {LayerListing as LayerCollectionLayerDict, ProviderLayerId as ProviderLayerIdDict} from '@geoengine/openapi-client';
 import {LayersService} from '../layers.service';
 import {VectorDataTypes} from '../../operators/datatype.model';
@@ -35,8 +25,8 @@ export class LayerCollectionLayerComponent implements OnChanges {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     trackBy = input<any>(undefined);
 
-    @Output() addClick = new EventEmitter<ProviderLayerIdDict>();
-    @Output() isExpanded = new EventEmitter<boolean>();
+    readonly addClick = output<ProviderLayerIdDict>();
+    readonly isExpanded = output<boolean>();
 
     expanded = false;
 

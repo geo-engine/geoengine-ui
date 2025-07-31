@@ -1,4 +1,4 @@
-import {Component, Output, EventEmitter, input} from '@angular/core';
+import {Component, input, output} from '@angular/core';
 import {MatNavList, MatListItem} from '@angular/material/list';
 import {MatIcon} from '@angular/material/icon';
 import {MatLine} from '@angular/material/grid-list';
@@ -24,7 +24,7 @@ export class MediaviewPlaylistComponent {
     /**
      * Output: Emitted when a link in the playlist is clicked to change the track. The track-id of the track to play is emitted
      */
-    @Output() gotoMediaP = new EventEmitter<number>();
+    readonly gotoMediaP = output<number>();
 
     public goToMedia(trackID: number): void {
         this.gotoMediaP.emit(trackID);

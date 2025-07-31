@@ -2,14 +2,13 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    EventEmitter,
     OnChanges,
     OnDestroy,
     OnInit,
-    Output,
     SimpleChanges,
     inject,
     input,
+    output,
 } from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Subscription} from 'rxjs';
@@ -62,12 +61,12 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
     /**
      * Emmits colorizer breakpoint arrays
      */
-    @Output() breakpointsChange = new EventEmitter<Array<ColorBreakpoint>>();
+    readonly breakpointsChange = output<Array<ColorBreakpoint>>();
 
     /**
      * Informs parent to enable "Apply Changes" button
      */
-    @Output() changesToForm = new EventEmitter<void>();
+    readonly changesToForm = output<void>();
 
     /**
      * Number of breakpoints used in the ColorizerData.
@@ -94,12 +93,12 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
     /**
      * Sends the min value selected in the ui.
      */
-    @Output() minValueChange = new EventEmitter<number>();
+    readonly minValueChange = output<number>();
 
     /**
      * Sends the max value selected in the ui.
      */
-    @Output() maxValueChange = new EventEmitter<number>();
+    readonly maxValueChange = output<number>();
 
     readonly colorMaps = ALL_COLORMAPS;
 
@@ -168,6 +167,7 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
         this.subscriptions.push(subMinMax);
 
         this.form.valueChanges.subscribe(() => {
+            // TODO: The 'emit' function requires a mandatory void argument
             this.changesToForm.emit();
         });
     }

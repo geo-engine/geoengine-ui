@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, EventEmitter, Output, ViewChild, effect, inject, input, linkedSignal} from '@angular/core';
+import {ChangeDetectorRef, Component, ViewChild, effect, inject, input, linkedSignal, output} from '@angular/core';
 import {
     AbstractControl,
     FormControl,
@@ -108,7 +108,7 @@ export class DatasetEditorComponent {
 
     readonly datasetListing = linkedSignal(this._datasetListing);
 
-    @Output() datasetDeleted = new EventEmitter<void>();
+    readonly datasetDeleted = output<void>();
 
     @ViewChild(MatChipInput) tagInput!: MatChipInput;
     @ViewChild(ProvenanceComponent) provenanceComponent!: ProvenanceComponent;
@@ -259,6 +259,7 @@ export class DatasetEditorComponent {
         try {
             await this.datasetsService.deleteDataset(this.datasetListing().name);
             this.snackBar.open('Dataset successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
+            // TODO: The 'emit' function requires a mandatory void argument
             this.datasetDeleted.emit();
         } catch (error) {
             const errorMessage = await errorToText(error, 'Deleting dataset failed.');

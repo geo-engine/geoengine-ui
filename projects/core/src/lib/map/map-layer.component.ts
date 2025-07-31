@@ -2,16 +2,15 @@ import {
     ChangeDetectionStrategy,
     Component,
     Directive,
-    EventEmitter,
     Input,
     OnChanges,
     OnDestroy,
     OnInit,
-    Output,
     SimpleChange,
     SimpleChanges,
     inject,
     input,
+    output,
 } from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 
@@ -59,7 +58,7 @@ export abstract class MapLayerComponent<OL extends OlLayer<OS, any>, OS extends 
      * Event emitter that forces a redraw of the map.
      * Must be connected to the map component.
      */
-    @Output() mapRedraw = new EventEmitter();
+    readonly mapRedraw = output();
 
     loadedData$ = new Subject<void>();
 

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnChanges, Output, signal, SimpleChanges, WritableSignal, inject, input} from '@angular/core';
+import {Component, OnChanges, signal, SimpleChanges, WritableSignal, inject, input, output} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -51,11 +51,11 @@ export class LayerCollectionEditorComponent implements OnChanges {
     readonly collectionListing = input.required<LayerCollectionListing>();
     readonly parentCollection = input.required<ProviderLayerCollectionId>();
 
-    @Output() readonly collectionSelected = new EventEmitter<LayerCollectionListing>();
-    @Output() readonly layerSelected = new EventEmitter<LayerListing>();
-    @Output() readonly collectionDeleted = new EventEmitter<void>();
+    readonly collectionSelected = output<LayerCollectionListing>();
+    readonly layerSelected = output<LayerListing>();
+    readonly collectionDeleted = output<void>();
 
-    @Output() readonly collectionUpdated = new EventEmitter<void>();
+    readonly collectionUpdated = output<void>();
 
     readonly collection: WritableSignal<LayerCollection | undefined> = signal(undefined);
 
@@ -160,6 +160,7 @@ export class LayerCollectionEditorComponent implements OnChanges {
             collectionListing.description = description;
             this.form.markAsPristine();
 
+            // TODO: The 'emit' function requires a mandatory void argument
             this.collectionUpdated.emit();
         } catch (error) {
             const errorMessage = await errorToText(error, 'Updating collection failed.');
@@ -181,6 +182,7 @@ export class LayerCollectionEditorComponent implements OnChanges {
         try {
             await this.layersService.removeLayerCollection(this.collectionListing().id.collectionId);
             this.snackBar.open('Collection successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
+            // TODO: The 'emit' function requires a mandatory void argument
             this.collectionDeleted.emit();
         } catch (error) {
             const errorMessage = await errorToText(error, 'Deleting collection failed.');
@@ -205,6 +207,7 @@ export class LayerCollectionEditorComponent implements OnChanges {
                 this.parentCollection().collectionId,
             );
             this.snackBar.open('Collection successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
+            // TODO: The 'emit' function requires a mandatory void argument
             this.collectionDeleted.emit();
         } catch (error) {
             const errorMessage = await errorToText(error, 'Removing collection failed.');

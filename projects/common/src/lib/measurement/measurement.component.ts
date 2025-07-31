@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, Input, output} from '@angular/core';
 import {FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ClassificationMeasurement, ContinuousMeasurement, Measurement, UnitlessMeasurement} from '@geoengine/openapi-client';
 import {MatButtonToggleGroup, MatButtonToggle} from '@angular/material/button-toggle';
@@ -38,7 +38,7 @@ interface AddClassForm {
 export class MeasurementComponent {
     @Input() measurement!: Measurement;
 
-    @Output() measurementChange = new EventEmitter<Measurement>();
+    readonly measurementChange = output<Measurement>();
 
     MeasurementType = MeasurementType;
 

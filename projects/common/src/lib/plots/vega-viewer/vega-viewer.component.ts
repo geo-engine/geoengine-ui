@@ -1,15 +1,4 @@
-import {
-    Component,
-    ChangeDetectionStrategy,
-    ViewChild,
-    ElementRef,
-    OnChanges,
-    SimpleChanges,
-    Output,
-    EventEmitter,
-    inject,
-    input,
-} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ViewChild, ElementRef, OnChanges, SimpleChanges, inject, input, output} from '@angular/core';
 import vegaEmbed from 'vega-embed';
 import {View} from 'vega';
 import {TopLevelSpec as VlSpec} from 'vega-lite';
@@ -33,8 +22,7 @@ export class VegaViewerComponent implements OnChanges {
 
     readonly height = input<number>();
 
-    @Output()
-    interactionChange = new EventEmitter<Record<string, unknown>>();
+    readonly interactionChange = output<Record<string, unknown>>();
 
     @ViewChild('chart', {static: true}) protected chartContainer!: ElementRef;
 
@@ -90,7 +78,7 @@ export class VegaViewerComponent implements OnChanges {
                 const chartDataValue = this.chartData();
                 if (chartDataValue?.metadata?.selectionName) {
                     this.vegaHandle.view.addSignalListener(chartDataValue.metadata.selectionName, (_name, value) => {
-                        this.interactionChange.next(value);
+                        this.interactionChange.emit(value);
                     });
                 }
             })
