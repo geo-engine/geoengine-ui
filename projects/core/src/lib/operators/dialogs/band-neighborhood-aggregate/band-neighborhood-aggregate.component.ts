@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, ViewChild, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, viewChild} from '@angular/core';
 import {
     FormControl,
     FormGroup,
@@ -88,8 +88,7 @@ export class BandNeighborhoodAggregateComponent {
 
     readonly form: FormGroup<RasterStackerForm>;
 
-    @ViewChild(SymbologyCreatorComponent)
-    readonly symbologyCreator!: SymbologyCreatorComponent;
+    readonly symbologyCreator = viewChild.required(SymbologyCreatorComponent);
 
     constructor() {
         this.form = new FormGroup<RasterStackerForm>({
@@ -171,7 +170,10 @@ export class BandNeighborhoodAggregateComponent {
                     return this.projectService.registerWorkflow(workflow);
                 }),
                 mergeMap((workflowId: UUID) => {
-                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator.symbologyForRasterLayer(workflowId, rasterLayer);
+                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator().symbologyForRasterLayer(
+                        workflowId,
+                        rasterLayer,
+                    );
                     return combineLatest([of(workflowId), symbology$]);
                 }),
                 mergeMap(([workflowId, symbology]: [UUID, RasterSymbology]) => {

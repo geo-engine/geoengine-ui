@@ -61,7 +61,7 @@
     <p class="no-rasters">
         no raster input available
         <br />
-        @if (dataListConfig) {
+        @if (dataListConfig()) {
             <button mat-button (click)="goToAddDataTab()">⇢ add some data ⇢</button>
         }
     </p>

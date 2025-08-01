@@ -1,15 +1,4 @@
-import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    EventEmitter,
-    input,
-    Input,
-    OnChanges,
-    Output,
-    SimpleChanges,
-    inject,
-} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, input, OnChanges, SimpleChanges, inject, output} from '@angular/core';
 import {LayerListing as LayerCollectionLayerDict, ProviderLayerId as ProviderLayerIdDict} from '@geoengine/openapi-client';
 import {LayersService} from '../layers.service';
 import {VectorDataTypes} from '../../operators/datatype.model';
@@ -30,14 +19,14 @@ export class LayerCollectionLayerComponent implements OnChanges {
     private layerService = inject(LayersService);
     private changeDetectorRef = inject(ChangeDetectorRef);
 
-    @Input({required: false}) showLayerToggle = true;
-    @Input() layer: LayerCollectionLayerDict | undefined = undefined;
+    readonly showLayerToggle = input(true);
+    readonly layer = input<LayerCollectionLayerDict>();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     trackBy = input<any>(undefined);
 
-    @Output() addClick = new EventEmitter<ProviderLayerIdDict>();
-    @Output() isExpanded = new EventEmitter<boolean>();
+    readonly addClick = output<ProviderLayerIdDict>();
+    readonly isExpanded = output<boolean>();
 
     expanded = false;
 
@@ -55,12 +44,13 @@ export class LayerCollectionLayerComponent implements OnChanges {
     }
 
     async toggleExpand(): Promise<void> {
-        if (this.layer) {
+        const layer = this.layer();
+        if (layer) {
             this.expanded = !this.expanded;
-            this.description = this.layer.description;
+            this.description = layer.description;
             if (!this.layerMetadata) {
                 this.loading = true;
-                const workflowId = await this.layerService.registerAndGetLayerWorkflowId(this.layer.id.providerId, this.layer.id.layerId);
+                const workflowId = await this.layerService.registerAndGetLayerWorkflowId(layer.id.providerId, layer.id.layerId);
                 const resultDescriptor = await this.layerService.getWorkflowIdMetadata(workflowId);
 
                 this.layerMetadata = resultDescriptor;
@@ -75,8 +65,9 @@ export class LayerCollectionLayerComponent implements OnChanges {
     }
 
     onAdd(): void {
-        if (this.layer) {
-            this.addClick.emit(this.layer.id);
+        const layer = this.layer();
+        if (layer) {
+            this.addClick.emit(layer.id);
         }
     }
 }

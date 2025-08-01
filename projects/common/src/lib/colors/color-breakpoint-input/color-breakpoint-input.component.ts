@@ -2,12 +2,12 @@ import {
     Component,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
-    Input,
     forwardRef,
     OnChanges,
     SimpleChanges,
     OnDestroy,
     inject,
+    input,
 } from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule} from '@angular/forms';
@@ -46,10 +46,10 @@ export class ColorBreakpointInputComponent implements ControlValueAccessor, OnCh
     private changeDetectorRef = inject(ChangeDetectorRef);
     private readonly config = inject(CommonConfig);
 
-    @Input() readonlyAttribute = false;
-    @Input() readonlyColor = false;
-    @Input() attributePlaceholder = 'attribute';
-    @Input() colorPlaceholder = 'color';
+    readonly readonlyAttribute = input(false);
+    readonly readonlyColor = input(false);
+    readonly attributePlaceholder = input('attribute');
+    readonly colorPlaceholder = input('color');
 
     private input: ColorBreakpoint = new ColorBreakpoint(0, TRANSPARENT);
     private changedValue = new Subject<ColorBreakpoint>();

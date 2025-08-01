@@ -1,7 +1,7 @@
 <div class="container">
     <div class="layer-list-element" [class.list-item-extended]="layer.isLegendVisible">
         <!-- TODO: use default font size for layer menu -->
-        <mat-menu #layerMenu="matMenu" [hidden]="menu">
+        <mat-menu #layerMenu="matMenu" [hidden]="menu()">
             <button mat-menu-item *ngIf="layer.isVisible" (click)="projectService.changeLayer(layer, {isVisible: false})">
                 <mat-icon>visibility_off</mat-icon>
                 <span class="mat-body-2">Hide Layer</span>
@@ -132,7 +132,7 @@
                 </div>
 
                 <button
-                    *ngIf="menu"
+                    *ngIf="menu()"
                     mat-icon-button
                     class="secondary_action"
                     [matMenuTriggerFor]="layerMenu"

@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, ViewChild, inject} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, inject, viewChild} from '@angular/core';
 import {BehaviorSubject, Subscription} from 'rxjs';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatTableDataSource, MatTable, MatColumnDef, MatCellDef, MatCell, MatRowDef, MatRow} from '@angular/material/table';
@@ -21,7 +21,7 @@ export class RolesComponent implements AfterViewInit, OnDestroy {
     roleTable: MatTableDataSource<string> | undefined;
     numberOfRoles = new BehaviorSubject<number>(0);
 
-    @ViewChild(MatPaginator) paginator!: MatPaginator;
+    readonly paginator = viewChild.required(MatPaginator);
 
     private roleNamesSubscription: Subscription | undefined;
 
@@ -31,7 +31,7 @@ export class RolesComponent implements AfterViewInit, OnDestroy {
                 this.roleNames = roleNames.filter((x) => !x.individual).map((x) => x.role.name);
                 this.numberOfRoles.next(this.roleNames.length);
                 this.roleTable = new MatTableDataSource(this.roleNames);
-                this.roleTable.paginator = this.paginator;
+                this.roleTable.paginator = this.paginator();
             } else {
                 this.roleNames = undefined;
                 this.numberOfRoles.next(0);

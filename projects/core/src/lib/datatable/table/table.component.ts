@@ -2,15 +2,14 @@ import {
     Component,
     OnInit,
     ChangeDetectionStrategy,
-    ViewChild,
     AfterViewInit,
     OnDestroy,
     ElementRef,
-    Input,
-    OnChanges,
-    SimpleChanges,
     ChangeDetectorRef,
     inject,
+    input,
+    viewChild,
+    effect,
 } from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
 import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
@@ -88,15 +87,15 @@ import {MatOption} from '@angular/material/autocomplete';
         MatPaginator,
     ],
 })
-export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
+export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy {
     protected readonly dialog = inject(MatDialog);
     protected readonly projectService = inject(ProjectService);
     protected readonly hostElement = inject<ElementRef<HTMLElement>>(ElementRef);
     protected readonly changeDetectorRef = inject(ChangeDetectorRef);
 
-    @ViewChild(MatPaginator) paginator!: MatPaginator;
+    readonly paginator = viewChild.required(MatPaginator);
 
-    @Input() layer?: Layer;
+    readonly layer = input<Layer>();
 
     readonly layerTypes = ResultTypes.VECTOR_TYPES;
     readonly columnDataTypes = VectorColumnDataTypes;
@@ -113,31 +112,26 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     protected layerDataSubscription?: Subscription = undefined;
     protected selectedFeatureSubscription?: Subscription = undefined;
 
-    ngOnInit(): void {
-        if (this.layer) {
-            this.selectLayer(this.layer);
-        } else {
-            this.emptyTable();
-        }
+    constructor() {
+        effect(() => {
+            const layer = this.layer();
+            if (layer) {
+                this.selectLayer(layer);
+            } else {
+                this.emptyTable();
+            }
+        });
+    }
 
+    ngOnInit(): void {
         this.selectedFeatureSubscription = this.projectService.getSelectedFeatureStream().subscribe((selection) => {
             this.changeDetectorRef.markForCheck();
             this.navigatePage(selection);
         });
     }
 
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes.layer) {
-            if (this.layer) {
-                this.selectLayer(this.layer);
-            } else {
-                this.emptyTable();
-            }
-        }
-    }
-
     ngAfterViewInit(): void {
-        this.dataSource.paginator = this.paginator;
+        this.dataSource.paginator = this.paginator();
     }
 
     ngOnDestroy(): void {
@@ -346,19 +340,20 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     }
 
     protected navigatePage(selection: FeatureSelection): void {
-        if (!this.paginator) {
+        const paginator = this.paginator();
+        if (!paginator) {
             return;
         }
 
         for (let i = 0; i < this.dataSource.data.length; i++) {
             const feature = this.dataSource.data[i];
             if (feature.getId() === selection.feature) {
-                const page = Math.floor(i / this.paginator.pageSize);
-                this.paginator.pageIndex = page;
-                this.paginator.page.next({
+                const page = Math.floor(i / paginator.pageSize);
+                paginator.pageIndex = page;
+                paginator.page.next({
                     pageIndex: page,
-                    pageSize: this.paginator.pageSize,
-                    length: this.paginator.length,
+                    pageSize: paginator.pageSize,
+                    length: paginator.length,
                 });
                 break;
             }

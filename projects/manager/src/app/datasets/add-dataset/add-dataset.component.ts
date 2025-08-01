@@ -1,4 +1,4 @@
-import {Component, ViewChild, inject} from '@angular/core';
+import {Component, inject, viewChild} from '@angular/core';
 import {FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ConfirmationComponent, DatasetsService, errorToText, OgrDatasetComponent} from '@geoengine/common';
 import {DataPath, MetaDataDefinition, Volume as VolumeDict} from '@geoengine/openapi-client';
@@ -68,8 +68,8 @@ export class AddDatasetComponent {
     DataPaths = DataPaths;
     DataTypes = DataTypes;
 
-    @ViewChild(GdalMetadataListComponent) gdalMetaDataList?: GdalMetadataListComponent;
-    @ViewChild(OgrDatasetComponent) ogrDatasetComponent?: OgrDatasetComponent;
+    readonly gdalMetaDataList = viewChild(GdalMetadataListComponent);
+    readonly ogrDatasetComponent = viewChild(OgrDatasetComponent);
 
     volumes$ = new BehaviorSubject<VolumeDict[]>([]);
 
@@ -168,9 +168,10 @@ export class AddDatasetComponent {
     isCreateDisabled(): boolean {
         const general = this.form.pristine || this.form.invalid;
 
-        const raster = this.form.controls.dataType.value === DataTypes.Raster && (this.gdalMetaDataList?.form?.invalid ?? false);
+        const raster = this.form.controls.dataType.value === DataTypes.Raster && (this.gdalMetaDataList()?.form?.invalid ?? false);
 
-        const vector = this.form.controls.dataType.value === DataTypes.Vector && (this.ogrDatasetComponent?.formMetaData?.invalid ?? false);
+        const vector =
+            this.form.controls.dataType.value === DataTypes.Vector && (this.ogrDatasetComponent()?.formMetaData?.invalid ?? false);
 
         return general || raster || vector;
     }
@@ -184,19 +185,21 @@ export class AddDatasetComponent {
         let metaData: MetaDataDefinition | undefined = undefined;
 
         if (this.form.controls.dataType.value === DataTypes.Raster) {
-            if (!this.gdalMetaDataList) {
+            const gdalMetaDataList = this.gdalMetaDataList();
+            if (!gdalMetaDataList) {
                 return;
             }
 
-            metaData = this.gdalMetaDataList.getMetaData();
+            metaData = gdalMetaDataList.getMetaData();
 
             sourceOperator = 'GdalSource';
         } else if (this.form.controls.dataType.value === DataTypes.Vector) {
-            if (!this.ogrDatasetComponent) {
+            const ogrDatasetComponent = this.ogrDatasetComponent();
+            if (!ogrDatasetComponent) {
                 return;
             }
 
-            metaData = this.ogrDatasetComponent.getMetaData();
+            metaData = ogrDatasetComponent.getMetaData();
 
             sourceOperator = 'OgrSource';
         } else {

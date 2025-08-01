@@ -9,9 +9,9 @@ import {
     ElementRef,
     HostListener,
     OnInit,
-    ViewChild,
     ViewContainerRef,
     inject,
+    viewChild,
 } from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {MatIconRegistry, MatIcon} from '@angular/material/icon';
@@ -109,12 +109,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     private readonly spatialReferenceService = inject(SpatialReferenceService);
     private readonly sanitizer = inject(DomSanitizer);
 
-    @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
-    @ViewChild(MatTabGroup, {static: true}) bottomTabs!: MatTabGroup;
+    readonly mapComponent = viewChild.required(MapContainerComponent);
+    readonly bottomTabs = viewChild.required(MatTabGroup);
 
-    @ViewChild(MatSidenav, {static: true}) rightSidenav!: MatSidenav;
-    @ViewChild(MatSidenavContainer, {static: true, read: ElementRef}) sidenavContainerElement!: ElementRef;
-    @ViewChild(SidenavContainerComponent, {static: true}) rightSidenavContainer!: SidenavContainerComponent;
+    readonly rightSidenav = viewChild.required(MatSidenav);
+    readonly sidenavContainerElement = viewChild.required(MatSidenavContainer, {read: ElementRef});
+    readonly rightSidenavContainer = viewChild.required(SidenavContainerComponent);
 
     readonly layersReverse$: Observable<Array<Layer>>;
     readonly layerListVisible$: Observable<boolean>;
@@ -148,9 +148,9 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         this.mapIsGrid$ = this.mapService.isGrid$;
 
-        const totalHeight$ = this.windowHeight$.pipe(map((_height) => this.sidenavContainerElement.nativeElement.offsetHeight));
+        const totalHeight$ = this.windowHeight$.pipe(map((_height) => this.sidenavContainerElement().nativeElement.offsetHeight));
 
-        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(totalHeight$).pipe(tap(() => this.mapComponent.resize()));
+        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(totalHeight$).pipe(tap(() => this.mapComponent().resize()));
         this.layerListHeight$ = config.COMPONENTS.MAP_RESOLUTION_EXTENT_OVERLAY.AVAILABLE
             ? this.middleContainerHeight$.pipe(map((height) => height - 62))
             : this.middleContainerHeight$;
@@ -165,7 +165,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit(): void {
-        this.mapService.registerMapComponent(this.mapComponent);
+        this.mapService.registerMapComponent(this.mapComponent());
 
         // TODO: remove if table is back
         this.layoutService.setLayerDetailViewVisibility(false);
@@ -173,16 +173,16 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit(): void {
         this.layoutService.getSidenavContentComponentStream().subscribe((sidenavConfig) => {
-            this.rightSidenavContainer.load(sidenavConfig);
+            this.rightSidenavContainer().load(sidenavConfig);
 
             let openClosePromise: Promise<MatDrawerToggleResult>;
             if (sidenavConfig) {
-                openClosePromise = this.rightSidenav.open();
+                openClosePromise = this.rightSidenav().open();
             } else {
-                openClosePromise = this.rightSidenav.close();
+                openClosePromise = this.rightSidenav().close();
             }
 
-            openClosePromise.then(() => this.mapComponent.resize());
+            openClosePromise.then(() => this.mapComponent().resize());
         });
         this.projectService
             .getNewPlotStream()

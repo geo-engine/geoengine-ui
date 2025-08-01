@@ -2,7 +2,7 @@
     <mat-form-field appearance="fill">
         <mat-label>Symbology</mat-label>
         <mat-select [formControl]="value">
-            @if (enableCopyInputSymbology) {
+            @if (enableCopyInputSymbology()) {
                 <mat-option [value]="AS_INPUT">Same as input</mat-option>
             }
             <mat-option [value]="COMPUTE_LINEAR_GRADIENT">Compute linear gradient</mat-option>

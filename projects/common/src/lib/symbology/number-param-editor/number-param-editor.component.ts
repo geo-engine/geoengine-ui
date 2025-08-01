@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, forwardRef, HostListener, Input} from '@angular/core';
+import {Component, ChangeDetectionStrategy, forwardRef, HostListener, input} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule} from '@angular/forms';
 import {NumberParam, StaticNumber, DerivedNumber} from '../symbology.model';
 import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
@@ -17,8 +17,8 @@ import {MatOption} from '@angular/material/autocomplete';
     imports: [MatFormField, MatLabel, MatInput, FormsModule, MatSelect, MatOption],
 })
 export class NumberParamEditorComponent implements ControlValueAccessor {
-    @Input() attributes = new Array<string>();
-    @Input() min = Number.MIN_VALUE;
+    readonly attributes = input(new Array<string>());
+    readonly min = input(Number.MIN_VALUE);
 
     numberParam: NumberParam;
 
@@ -80,7 +80,7 @@ export class NumberParamEditorComponent implements ControlValueAccessor {
     }
 
     set defaultNumber(defaultNumber: number) {
-        if (defaultNumber === undefined || defaultNumber === null || defaultNumber < this.min) {
+        if (defaultNumber === undefined || defaultNumber === null || defaultNumber < this.min()) {
             return;
         }
 

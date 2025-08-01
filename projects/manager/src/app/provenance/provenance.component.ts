@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {Component, OnChanges, SimpleChanges, input, output} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {geoengineValidators} from '@geoengine/common';
 import {Provenance} from '@geoengine/openapi-client';
@@ -29,9 +29,9 @@ export interface ProvenanceChange {
     imports: [FormsModule, ReactiveFormsModule, MatDivider, MatFormField, MatLabel, MatInput, MatIconButton, MatIcon, MatButton],
 })
 export class ProvenanceComponent implements OnChanges {
-    @Input() provenance?: Array<Provenance>;
+    readonly provenance = input<Array<Provenance>>();
 
-    @Output() provenanceChange = new EventEmitter<ProvenanceChange>();
+    readonly provenanceChange = output<ProvenanceChange>();
 
     form: FormGroup<ProvenanceListForm> = this.setUpForm();
 
@@ -60,7 +60,8 @@ export class ProvenanceComponent implements OnChanges {
     }
 
     private setUpForm(): FormGroup<ProvenanceListForm> {
-        if (!this.provenance) {
+        const provenance = this.provenance();
+        if (!provenance) {
             return new FormGroup<ProvenanceListForm>({
                 provenance: new FormArray<FormGroup<ProvenanceForm>>([]),
             });
@@ -71,7 +72,7 @@ export class ProvenanceComponent implements OnChanges {
         });
 
         return new FormGroup<ProvenanceListForm>({
-            provenance: new FormArray<FormGroup<ProvenanceForm>>(this.provenance.map((p) => this.createProvenanceForm(p))),
+            provenance: new FormArray<FormGroup<ProvenanceForm>>(provenance.map((p) => this.createProvenanceForm(p))),
         });
     }
 

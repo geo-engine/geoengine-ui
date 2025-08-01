@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, ViewChild, Output, EventEmitter, ElementRef} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ElementRef, output, viewChild} from '@angular/core';
 import {MatCard} from '@angular/material/card';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatList, MatListItem, MatListItemMeta, MatListItemTitle, MatListItemLine, MatDivider} from '@angular/material/list';
@@ -24,9 +24,9 @@ import {MatIcon} from '@angular/material/icon';
 })
 export class DragAndDropComponent {
     selectedFiles?: Array<File>;
-    @ViewChild('fileInput') fileInput?: ElementRef<HTMLInputElement>;
+    readonly fileInput = viewChild<ElementRef<HTMLInputElement>>('fileInput');
 
-    @Output() public selectFilesEvent = new EventEmitter();
+    public readonly selectFilesEvent = output<File[]>();
 
     selectFiles(target: HTMLInputElement | null): void {
         const fileList = target?.files;
@@ -36,8 +36,9 @@ export class DragAndDropComponent {
         }
         if (!this.selectedFiles) {
             this.selectedFiles = Array.from(fileList);
-            if (this.fileInput) {
-                this.fileInput.nativeElement.value = '';
+            const fileInput = this.fileInput();
+            if (fileInput) {
+                fileInput.nativeElement.value = '';
             }
             this.selectFilesEvent.emit(this.selectedFiles);
             return;
@@ -45,8 +46,9 @@ export class DragAndDropComponent {
 
         for (const file of Array.from(fileList)) {
             this.selectedFiles.unshift(file);
-            if (this.fileInput) {
-                this.fileInput.nativeElement.value = '';
+            const fileInput = this.fileInput();
+            if (fileInput) {
+                fileInput.nativeElement.value = '';
             }
         }
         this.selectFilesEvent.emit(this.selectedFiles);

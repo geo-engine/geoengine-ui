@@ -2,15 +2,15 @@ import {
     ChangeDetectionStrategy,
     Component,
     Directive,
-    EventEmitter,
     Input,
     OnChanges,
     OnDestroy,
     OnInit,
-    Output,
     SimpleChange,
     SimpleChanges,
     inject,
+    input,
+    output,
 } from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 
@@ -49,16 +49,16 @@ type VectorData = any; // TODO: use correct type
 export abstract class MapLayerComponent<OL extends OlLayer<OS, any>, OS extends OlSource> {
     protected projectService = inject(ProjectService);
 
-    @Input() layerId!: number;
-    @Input() isVisible = true;
-    @Input() workflow?: UUID;
+    readonly layerId = input.required<number>();
+    readonly isVisible = input(true);
+    readonly workflow = input<UUID>();
     @Input() symbology?: Symbology;
 
     /**
      * Event emitter that forces a redraw of the map.
      * Must be connected to the map component.
      */
-    @Output() mapRedraw = new EventEmitter();
+    readonly mapRedraw = output();
 
     loadedData$ = new Subject<void>();
 
@@ -128,7 +128,7 @@ export class OlVectorLayerComponent
     }
 
     ngOnInit(): void {
-        this.dataSubscription = this.projectService.getLayerDataStream({id: this.layerId}).subscribe((x: VectorData) => {
+        this.dataSubscription = this.projectService.getLayerDataStream({id: this.layerId()}).subscribe((x: VectorData) => {
             this.source.clear(); // TODO: check if this is needed always...
             if (!(x === null || x === undefined)) {
                 this.source.addFeatures(x.data);
@@ -160,7 +160,7 @@ export class OlVectorLayerComponent
 
     private updateOlLayer(changes: {isVisible?: boolean; symbology?: VectorSymbology; workflow?: UUID}): void {
         if (changes.isVisible !== undefined) {
-            this.mapLayer.setVisible(this.isVisible);
+            this.mapLayer.setVisible(this.isVisible());
             this.mapRedraw.emit();
         }
 
@@ -189,7 +189,7 @@ export class OlRasterLayerComponent
 
     override symbology?: RasterSymbology;
 
-    @Input() sessionToken?: UUID;
+    readonly sessionToken = input<UUID>();
 
     protected dataSubscription?: Subscription;
     protected layerChangesSubscription?: Subscription;
@@ -213,7 +213,7 @@ export class OlRasterLayerComponent
     }
 
     ngOnInit(): void {
-        this.dataSubscription = this.projectService.getLayerDataStream({id: this.layerId}).subscribe((rasterData: RasterData) => {
+        this.dataSubscription = this.projectService.getLayerDataStream({id: this.layerId()}).subscribe((rasterData: RasterData) => {
             if (!rasterData) {
                 return;
             }
@@ -263,7 +263,7 @@ export class OlRasterLayerComponent
         }
 
         if (changes.isVisible !== undefined) {
-            this._mapLayer.setVisible(this.isVisible);
+            this._mapLayer.setVisible(this.isVisible());
             this.mapRedraw.emit();
         }
         if (changes.symbology && this.symbology) {
@@ -315,9 +315,9 @@ export class OlRasterLayerComponent
         }
 
         this.source = new OlTileWmsSource({
-            url: `${this.backend.wmsBaseUrl}/${this.workflow}`,
+            url: `${this.backend.wmsBaseUrl}/${this.workflow()}`,
             params: {
-                layers: this.workflow,
+                layers: this.workflow(),
                 time: this.time.asRequestString(),
                 STYLES: this.stylesFromColorizer(this.symbology.rasterColorizer),
                 EXCEPTIONS: 'application/json',
@@ -338,12 +338,12 @@ export class OlRasterLayerComponent
             const client = new XMLHttpRequest();
 
             const cancelSub = this.projectService
-                .createQueryAbortStream(this.layerId, tileZoomLevel, tileExtent)
+                .createQueryAbortStream(this.layerId(), tileZoomLevel, tileExtent)
                 .subscribe(() => client.abort());
 
             client.open('GET', src);
             client.responseType = 'blob';
-            client.setRequestHeader('Authorization', `Bearer ${this.sessionToken}`);
+            client.setRequestHeader('Authorization', `Bearer ${this.sessionToken()}`);
             client.addEventListener('loadend', (_event) => {
                 cancelSub.unsubscribe();
                 const data = client.response;
@@ -390,17 +390,17 @@ export class OlRasterLayerComponent
 
         this.source.on('tileloadstart', () => {
             tilesPending++;
-            this.projectService.changeRasterLayerDataStatus({id: this.layerId, layerType: 'raster'}, LoadingState.LOADING);
+            this.projectService.changeRasterLayerDataStatus({id: this.layerId(), layerType: 'raster'}, LoadingState.LOADING);
         });
         this.source.on('tileloadend', () => {
             tilesPending--;
             if (tilesPending <= 0) {
-                this.projectService.changeRasterLayerDataStatus({id: this.layerId, layerType: 'raster'}, LoadingState.OK);
+                this.projectService.changeRasterLayerDataStatus({id: this.layerId(), layerType: 'raster'}, LoadingState.OK);
             }
         });
         this.source.on('tileloaderror', () => {
             tilesPending--;
-            this.projectService.changeRasterLayerDataStatus({id: this.layerId, layerType: 'raster'}, LoadingState.ERROR);
+            this.projectService.changeRasterLayerDataStatus({id: this.layerId(), layerType: 'raster'}, LoadingState.ERROR);
         });
     }
 }

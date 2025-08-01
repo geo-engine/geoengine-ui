@@ -1,6 +1,6 @@
 import {map, mergeMap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {AfterViewInit, ChangeDetectionStrategy, Component, Input, ViewChild, inject} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, inject, input, viewChild} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {ProjectService} from '../../../project/project.service';
@@ -88,9 +88,9 @@ export class ExpressionOperatorComponent implements AfterViewInit {
     /**
      * If the list is empty, show the following button.
      */
-    @Input() dataListConfig?: SidenavConfig;
+    readonly dataListConfig = input<SidenavConfig>();
 
-    @ViewChild(MeasurementComponent) measurementComponent?: MeasurementComponent;
+    readonly measurementComponent = viewChild(MeasurementComponent);
 
     readonly RASTER_TYPE = [ResultTypes.RASTER];
     readonly form: FormGroup<ExpressionForm>;
@@ -106,8 +106,7 @@ export class ExpressionOperatorComponent implements AfterViewInit {
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
 
-    @ViewChild(SymbologyCreatorComponent)
-    readonly symbologyCreator!: SymbologyCreatorComponent;
+    readonly symbologyCreator = viewChild.required(SymbologyCreatorComponent);
 
     /**
      * DI of services and setup of observables for the template
@@ -246,8 +245,9 @@ export class ExpressionOperatorComponent implements AfterViewInit {
 
         let outputMeasurement: Measurement | undefined = undefined;
 
-        if (this.measurementComponent?.measurement) {
-            outputMeasurement = this.measurementComponent.measurement;
+        const measurementComponent = this.measurementComponent();
+        if (measurementComponent?.measurement) {
+            outputMeasurement = measurementComponent.measurement;
         }
 
         const outputBand = {
@@ -282,7 +282,10 @@ export class ExpressionOperatorComponent implements AfterViewInit {
                     return this.projectService.registerWorkflow(workflow);
                 }),
                 mergeMap((workflowId: UUID) => {
-                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator.symbologyForRasterLayer(workflowId, rasterLayer);
+                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator().symbologyForRasterLayer(
+                        workflowId,
+                        rasterLayer,
+                    );
                     return combineLatest([of(workflowId), symbology$]);
                 }),
                 mergeMap(([workflowId, symbology]: [UUID, RasterSymbology]) => {
@@ -317,10 +320,11 @@ export class ExpressionOperatorComponent implements AfterViewInit {
     }
 
     goToAddDataTab(): void {
-        if (!this.dataListConfig) {
+        const dataListConfig = this.dataListConfig();
+        if (!dataListConfig) {
             return;
         }
 
-        this.layoutService.setSidenavContentComponent(this.dataListConfig);
+        this.layoutService.setSidenavContentComponent(dataListConfig);
     }
 }

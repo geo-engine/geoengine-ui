@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, input} from '@angular/core';
 import {RasterBandDescriptor, TypedRasterResultDescriptor} from '@geoengine/openapi-client';
 import {FormsModule} from '@angular/forms';
 import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
@@ -37,7 +37,7 @@ import {
     ],
 })
 export class RasterResultDescriptorComponent {
-    @Input() resultDescriptor!: TypedRasterResultDescriptor;
+    readonly resultDescriptor = input.required<TypedRasterResultDescriptor>();
 
     displayedColumns: string[] = ['index', 'name', 'measurement'];
 
@@ -47,6 +47,6 @@ export class RasterResultDescriptorComponent {
     }
 
     get bandDataSource(): RasterBandDescriptor[] {
-        return this.resultDescriptor.bands;
+        return this.resultDescriptor().bands;
     }
 }

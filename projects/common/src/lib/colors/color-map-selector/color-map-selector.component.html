@@ -51,7 +51,7 @@
                 <tr>
                     <td><span>Color steps</span></td>
                     <td class="fill_width">
-                        <mat-slider [min]="2" [max]="maxColormapSteps" [step]="1" [discrete]="true">
+                        <mat-slider [min]="2" [max]="maxColormapSteps()" [step]="1" [discrete]="true">
                             <input matSliderThumb formControlName="colorMapSteps" />
                         </mat-slider>
                     </td>

@@ -1,5 +1,5 @@
 import {Observable, BehaviorSubject, mergeMap} from 'rxjs';
-import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, OnInit, ViewChild, ViewContainerRef, inject} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, OnInit, ViewContainerRef, inject, viewChild} from '@angular/core';
 import {MatIconRegistry, MatIcon} from '@angular/material/icon';
 import {
     LayoutService,
@@ -65,10 +65,10 @@ export class AppComponent implements OnInit, AfterViewInit {
     private _spatialReferenceService = inject(SpatialReferenceService);
     private sanitizer = inject(DomSanitizer);
 
-    @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
+    readonly mapComponent = viewChild.required(MapContainerComponent);
 
-    @ViewChild(MatSidenav, {static: true}) rightSidenav!: MatSidenav;
-    @ViewChild(SidenavContainerComponent, {static: true}) rightSidenavContainer!: SidenavContainerComponent;
+    readonly rightSidenav = viewChild.required(MatSidenav);
+    readonly rightSidenavContainer = viewChild.required(SidenavContainerComponent);
 
     readonly layersReverse$: Observable<Array<Layer>>;
     readonly analysisVisible$ = new BehaviorSubject(false);
@@ -83,25 +83,25 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit(): void {
-        this.mapService.registerMapComponent(this.mapComponent);
+        this.mapService.registerMapComponent(this.mapComponent());
 
         this.layoutService.getSidenavContentComponentStream().subscribe((sidenavConfig) => {
-            this.rightSidenavContainer.load(sidenavConfig);
+            this.rightSidenavContainer().load(sidenavConfig);
 
             let openClosePromise: Promise<MatDrawerToggleResult>;
             if (sidenavConfig) {
-                openClosePromise = this.rightSidenav.open();
+                openClosePromise = this.rightSidenav().open();
             } else {
-                openClosePromise = this.rightSidenav.close();
+                openClosePromise = this.rightSidenav().close();
             }
 
-            openClosePromise.then(() => this.mapComponent.resize());
+            openClosePromise.then(() => this.mapComponent().resize());
         });
     }
 
     ngAfterViewInit(): void {
         this.reset();
-        this.mapComponent.resize();
+        this.mapComponent().resize();
     }
 
     idFromLayer(index: number, layer: Layer): number {

@@ -1,12 +1,12 @@
 <div fxLayout="row">
-    <h4>Select input {{ title }}</h4>
+    <h4>Select input {{ title() }}</h4>
     <div fxFlex fxLayout="row" fxLayoutAlign="end">
-        @if (max - min > 0) {
+        @if (max() - min() > 0) {
             <button mat-icon-button color="primary" type="button" (click)="add()" [disabled]="layersAtMax | async">
                 <mat-icon>add_circle_outline</mat-icon>
             </button>
         }
-        @if (max - min > 0) {
+        @if (max() - min() > 0) {
             <button mat-icon-button color="primary" type="button" (click)="remove()" [disabled]="layersAtMin | async">
                 <mat-icon>remove_circle_outline</mat-icon>
             </button>
@@ -18,7 +18,7 @@
         @for (number of [].constructor(this.selectedLayers.value.length); track number; let i = $index) {
             <div fxLayout="row">
                 <mat-form-field fxFlex>
-                    <mat-label>{{ inputNaming(i) }}</mat-label>
+                    <mat-label>{{ inputNaming()(i) }}</mat-label>
                     <mat-select
                         class="mat-select-{{ i }}"
                         [(value)]="selectedLayers.value[i]"

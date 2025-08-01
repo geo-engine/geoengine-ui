@@ -131,8 +131,7 @@ export class ProviderEditorComponent implements OnChanges, OnInit {
         try {
             await this.layersService.deleteProvider(this.providerListing().id);
             this.snackBar.open('Provider successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
-            // TODO: The 'emit' function requires a mandatory void argument
-            this.providerDeleted.emit();
+            this.providerDeleted.emit(undefined);
         } catch (error) {
             const errorMessage = await errorToText(error, 'Deleting provider failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});

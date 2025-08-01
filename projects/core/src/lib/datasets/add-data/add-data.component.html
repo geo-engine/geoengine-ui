@@ -1,7 +1,7 @@
 <geoengine-sidenav-header>Add Data</geoengine-sidenav-header>
 
 <mat-nav-list>
-    @for (button of buttons; track button) {
+    @for (button of buttons(); track button) {
         <mat-list-item (click)="setComponent(button.sidenavConfig)" [disabled]="!button.sidenavConfig">
             @if (button.iconSrc) {
                 <img matListItemIcon [src]="button.iconSrc" [alt]="button.name" />

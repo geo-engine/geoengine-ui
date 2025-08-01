@@ -1,4 +1,4 @@
-import {Directive, Input, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
+import {Directive, OnChanges, OnDestroy, SimpleChanges, input} from '@angular/core';
 import {UntypedFormControl} from '@angular/forms';
 import {Observable, ReplaySubject, Subscription} from 'rxjs';
 
@@ -7,8 +7,10 @@ import {Observable, ReplaySubject, Subscription} from 'rxjs';
     exportAs: 'geoengineAutocompleteSelect',
 })
 export class AutocompleteSelectDirective<T> implements OnChanges, OnDestroy {
-    @Input('geoengineAutocompleteSelectAllValues') allValues: Array<T> = [];
-    @Input('geoengineAutocompleteSelectSearchPredicate') searchPredicate: AutocompleteSelectPredicateFunction<T> = DEFAULT_PREDICATE_FN;
+    readonly allValues = input<Array<T>>([], {alias: 'geoengineAutocompleteSelectAllValues'});
+    readonly searchPredicate = input<AutocompleteSelectPredicateFunction<T>>(DEFAULT_PREDICATE_FN, {
+        alias: 'geoengineAutocompleteSelectSearchPredicate',
+    });
 
     readonly filterFormControl = new UntypedFormControl();
     readonly _filteredValues = new ReplaySubject<Array<T>>();
@@ -38,11 +40,11 @@ export class AutocompleteSelectDirective<T> implements OnChanges, OnDestroy {
     protected applyFilter(): void {
         let searchTerm: string = this.filterFormControl.value;
 
-        let filteredValues = this.allValues;
+        let filteredValues = this.allValues();
 
         if (searchTerm) {
             searchTerm = searchTerm.toLowerCase();
-            filteredValues = filteredValues.filter((value: T) => this.searchPredicate(searchTerm, value));
+            filteredValues = filteredValues.filter((value: T) => this.searchPredicate()(searchTerm, value));
         }
 
         this._filteredValues.next(filteredValues);

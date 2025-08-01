@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, input} from '@angular/core';
 import {Measurement, TypedVectorResultDescriptor} from '@geoengine/openapi-client';
 import {FormsModule} from '@angular/forms';
 import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
@@ -43,7 +43,7 @@ interface Column {
     ],
 })
 export class VectorResultDescriptorComponent {
-    @Input() resultDescriptor!: TypedVectorResultDescriptor;
+    readonly resultDescriptor = input.required<TypedVectorResultDescriptor>();
 
     displayedColumns: string[] = ['name', 'dataType', 'measurement'];
 
@@ -53,12 +53,12 @@ export class VectorResultDescriptorComponent {
     }
 
     get columnsDataSource(): Column[] {
-        const keys = Object.keys(this.resultDescriptor.columns).sort();
+        const keys = Object.keys(this.resultDescriptor().columns).sort();
 
         const columns: Column[] = [];
 
         for (const key of keys) {
-            const column = this.resultDescriptor.columns[key];
+            const column = this.resultDescriptor().columns[key];
 
             columns.push({
                 name: key,

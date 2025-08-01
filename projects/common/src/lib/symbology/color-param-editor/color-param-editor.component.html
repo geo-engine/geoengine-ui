@@ -8,7 +8,7 @@
     <mat-label>Derive color from attribute</mat-label>
     <mat-select placeholder="Attribute" [(ngModel)]="colorAttributeName">
         <mat-option [value]="undefined"><em>None</em></mat-option>
-        @for (attribute of attributes; track attribute) {
+        @for (attribute of attributes(); track attribute) {
             <mat-option [value]="attribute">{{ attribute }}</mat-option>
         }
     </mat-select>

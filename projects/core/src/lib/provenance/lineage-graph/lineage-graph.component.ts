@@ -1,6 +1,6 @@
 import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {Component, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit, inject} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ElementRef, AfterViewInit, inject, viewChild} from '@angular/core';
 import * as dagreD3 from 'dagre-d3';
 import * as d3 from 'd3';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
@@ -63,8 +63,8 @@ export class LineageGraphComponent implements AfterViewInit {
         layer: Layer;
     }>(MAT_DIALOG_DATA);
 
-    @ViewChild('svg', {static: true}) svg!: ElementRef;
-    @ViewChild('g', {static: true}) g!: ElementRef;
+    readonly svg = viewChild.required<ElementRef>('svg');
+    readonly g = viewChild.required<ElementRef>('g');
 
     svgWidth$: Observable<number>;
     svgHeight$: Observable<number>;
@@ -135,8 +135,8 @@ export class LineageGraphComponent implements AfterViewInit {
 
             // Set up an SVG group so that we can translate the final graph.
             // console.log(this.graphContainer.nativeElement);
-            const svg = d3.select(this.svg.nativeElement);
-            const svgGroup = d3.select(this.g.nativeElement);
+            const svg = d3.select(this.svg().nativeElement);
+            const svgGroup = d3.select(this.g().nativeElement);
 
             // Run the renderer. This is what draws the final graph.
 

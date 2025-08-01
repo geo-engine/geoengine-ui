@@ -4,13 +4,13 @@ import {
     ChangeDetectionStrategy,
     OnDestroy,
     OnInit,
-    ViewChild,
-    EventEmitter,
-    Output,
     ChangeDetectorRef,
     OnChanges,
     SimpleChanges,
     inject,
+    input,
+    output,
+    viewChild,
 } from '@angular/core';
 import {BehaviorSubject, ReplaySubject, Subscription} from 'rxjs';
 import {LinearGradient, LogarithmicGradient} from '../../colors/colorizer.model';
@@ -74,24 +74,21 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     private readonly plotsService = inject(PlotsService);
     private changeDetectorRef = inject(ChangeDetectorRef);
 
-    @ViewChild(ColorMapSelectorComponent)
-    colorMapSelector!: ColorMapSelectorComponent;
+    readonly colorMapSelector = viewChild.required(ColorMapSelectorComponent);
 
-    @ViewChild(PercentileBreakpointSelectorComponent)
-    percentileBreakpointSelector!: PercentileBreakpointSelectorComponent;
+    readonly percentileBreakpointSelector = viewChild.required(PercentileBreakpointSelectorComponent);
 
-    @ViewChild(ColorTableEditorComponent)
-    colorTableEditor!: ColorTableEditorComponent;
+    readonly colorTableEditor = viewChild.required(ColorTableEditorComponent);
 
-    @Input({required: true}) band!: string;
+    readonly band = input.required<string>();
 
-    @Input({required: true}) workflowId!: UUID;
+    readonly workflowId = input.required<UUID>();
 
     @Input({required: true}) colorizer!: LinearGradient | LogarithmicGradient;
 
     @Input() queryParams?: SymbologyQueryParams;
 
-    @Output() colorizerChange = new EventEmitter<LinearGradient | LogarithmicGradient>();
+    readonly colorizerChange = output<LinearGradient | LogarithmicGradient>();
 
     // The min value used for color table generation
     layerMinValue: number | undefined = undefined;
@@ -272,13 +269,13 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     }
 
     createColorTable(): void {
-        this.colorMapSelector?.applyChanges();
+        this.colorMapSelector()?.applyChanges();
         this.changeDetectorRef.detectChanges();
-        this.colorTableEditor?.updateColorAttributes();
+        this.colorTableEditor()?.updateColorAttributes();
     }
 
     createPercentilesColorTable(): void {
-        this.percentileBreakpointSelector?.createColorTable();
+        this.percentileBreakpointSelector()?.createColorTable();
     }
 
     private updateNodataAndDefaultColor(): void {
@@ -314,13 +311,13 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     }
 
     private createHistogramWorkflowId(): Promise<UUID> {
-        return this.workflowsService.getWorkflow(this.workflowId).then((workflow) =>
+        return this.workflowsService.getWorkflow(this.workflowId()).then((workflow) =>
             this.workflowsService.registerWorkflow({
                 type: 'Plot',
                 operator: {
                     type: 'Histogram',
                     params: {
-                        attributeName: this.band,
+                        attributeName: this.band(),
                         buckets: {
                             type: 'number',
                             value: 20,

@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, forwardRef, inject} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, inject, input} from '@angular/core';
 import {Subscription} from 'rxjs';
 import moment, {Moment} from 'moment';
 import {
@@ -68,7 +68,7 @@ export class TimeIntervalInputComponent implements ControlValueAccessor, Validat
     private changeDetectorRef = inject(ChangeDetectorRef);
     private formBuilder = inject(UntypedFormBuilder);
 
-    @Input() allowRanges = true;
+    readonly allowRanges = input(true);
 
     onTouched?: () => void;
     onChange?: (_: Moment) => void = undefined;
@@ -83,7 +83,7 @@ export class TimeIntervalInputComponent implements ControlValueAccessor, Validat
 
         this.form = this.formBuilder.group({
             start: [time.start, [Validators.required]],
-            timeAsPoint: [this.allowRanges, Validators.required],
+            timeAsPoint: [this.allowRanges(), Validators.required],
             end: [time.end, [Validators.required]],
         });
         this.form.setValidators(startBeforeEndValidator);

@@ -3,7 +3,6 @@ import {
     Component,
     OnInit,
     ChangeDetectionStrategy,
-    ViewChild,
     ViewContainerRef,
     ComponentRef,
     OnDestroy,
@@ -14,6 +13,7 @@ import {
     Renderer2,
     Injector,
     inject,
+    viewChild,
 } from '@angular/core';
 import {SidenavRef} from '../sidenav-ref.service';
 import {LayoutService, SidenavConfig} from '../../layout.service';
@@ -60,8 +60,7 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
     readonly layoutService = inject(LayoutService);
     private readonly renderer = inject(Renderer2);
 
-    @ViewChild('target', {read: ViewContainerRef, static: true})
-    target!: ViewContainerRef;
+    readonly target = viewChild.required('target', {read: ViewContainerRef});
 
     @ViewChildren('searchElements', {read: ViewContainerRef})
     searchElements!: QueryList<ViewContainerRef>;
@@ -99,12 +98,12 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
                 this.searchElements.changes as Observable<QueryList<ViewContainerRef>>,
             ])
                 .pipe(
-                    map(([elements, searchElementsQuery]): [Array<ElementRef> | undefined, ViewContainerRef] => [
+                    map(([elements, searchElementsQuery]): [readonly ElementRef[] | undefined, ViewContainerRef] => [
                         elements,
                         searchElementsQuery.first,
                     ]),
                 )
-                .subscribe(([elements, searchElements]: [Array<ElementRef> | undefined, ViewContainerRef]) => {
+                .subscribe(([elements, searchElements]: [readonly ElementRef[] | undefined, ViewContainerRef]) => {
                     if (searchElements) {
                         searchElements.clear();
                     }
@@ -131,7 +130,7 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
      */
     load(sidenavConfig?: SidenavConfig): void {
         if (this.componentRef) {
-            this.target.clear();
+            this.target().clear();
             this.componentRef.destroy();
         }
 
@@ -151,11 +150,12 @@ export class SidenavContainerComponent implements OnInit, AfterViewInit, OnDestr
         this.searchTerm = '';
 
         if (this.componentRef) {
-            this.target.clear();
+            this.target().clear();
             this.componentRef.destroy();
         }
-        if (this.target && sidenavConfig?.component) {
-            this.componentRef = this.target.createComponent(sidenavConfig.component);
+        const target = this.target();
+        if (target && sidenavConfig?.component) {
+            this.componentRef = target.createComponent(sidenavConfig.component);
 
             if (sidenavConfig.config) {
                 for (const key in sidenavConfig.config) {

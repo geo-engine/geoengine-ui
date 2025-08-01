@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, ViewChild, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy, inject, viewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {mergeMap} from 'rxjs/operators';
@@ -98,8 +98,7 @@ export class RasterizationComponent implements OnDestroy {
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
 
-    @ViewChild(SymbologyCreatorComponent)
-    readonly symbologyCreator!: SymbologyCreatorComponent;
+    readonly symbologyCreator = viewChild.required(SymbologyCreatorComponent);
 
     constructor() {
         const layerControl = new FormControl<Layer | undefined>(undefined, {
@@ -180,7 +179,7 @@ export class RasterizationComponent implements OnDestroy {
                     return this.projectService.registerWorkflow(workflow);
                 }),
                 mergeMap((workflowId: UUID) => {
-                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator.symbologyForRasterLayer(workflowId);
+                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator().symbologyForRasterLayer(workflowId);
                     return combineLatest([of(workflowId), symbology$]);
                 }),
                 mergeMap(([workflowId, symbology]: [UUID, RasterSymbology]) =>
