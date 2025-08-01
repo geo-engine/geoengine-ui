@@ -157,7 +157,7 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
             Validators.required,
             geoengineValidators.notOnlyWhitespace,
         ]);
-        this.expression = this.formBuilder.nonNullable.control<string>('	1', [Validators.required, geoengineValidators.notOnlyWhitespace]);
+        this.expression = this.formBuilder.nonNullable.control<string>('1', [Validators.required, geoengineValidators.notOnlyWhitespace]);
 
         this.form = this.formBuilder.group({
             source: layerControl,
@@ -257,7 +257,7 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
                 const geometryComma = variables.length > 0 ? ', ' : '';
                 const returnType = this.outputColumnType.value === 'column' ? VectorColumnDataTypes.Float : outputGeometryType;
                 // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                return `fn(${geometryName}${geometryComma}${variables.join(', ')}) -> ${returnType} {`;
+                return `fn(${geometryName}${geometryComma}${variables.join(', ')}) -> ${returnType}:`;
             }),
         );
 

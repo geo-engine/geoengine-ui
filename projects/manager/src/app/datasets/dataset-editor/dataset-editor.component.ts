@@ -26,6 +26,7 @@ import {
     errorToText,
     geoengineValidators,
     AsyncValueDefault,
+    CodeEditorComponent,
 } from '@geoengine/common';
 import {
     Dataset,
@@ -91,6 +92,7 @@ export interface DatasetForm {
         PermissionsComponent,
         AsyncPipe,
         AsyncValueDefault,
+        CodeEditorComponent,
     ],
 })
 export class DatasetEditorComponent {
@@ -320,7 +322,11 @@ export class DatasetEditorComponent {
         }
     }
 
-    touchLoadingInfo(): void {
+    updateLoadingInfo(spec: string): void {
+        if (this.rawLoadingInfo === spec) {
+            return;
+        }
+        this.rawLoadingInfo = spec;
         this.rawLoadingInfoPristine = false;
     }
 
