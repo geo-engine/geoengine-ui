@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, input} from '@angular/core';
 import {ProjectService} from '../../project/project.service';
 import {MapService} from '../map.service';
 import {BehaviorSubject, combineLatestWith, Observable} from 'rxjs';
@@ -21,8 +21,7 @@ export class MapResolutionExtentOverlayComponent {
     private spatialReferenceService = inject(SpatialReferenceService);
     private projectService = inject(ProjectService);
 
-    @Input()
-    public bottom!: number;
+    public readonly bottom = input.required<number>();
 
     highPrecision = new BehaviorSubject<boolean>(false);
     private static readonly lowNumFractions = 2;

@@ -1,7 +1,7 @@
 import {BehaviorSubject, combineLatest, Observable, ReplaySubject} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges, Type, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnChanges, OnInit, SimpleChanges, Type, inject, input} from '@angular/core';
 import {LayoutService} from '../../../layout.service';
 import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
 import {HistogramOperatorComponent} from '../histogram-operator/histogram-operator.component';
@@ -315,13 +315,13 @@ export class OperatorListComponent implements OnInit, OnChanges {
     /**
      * Specify (optionally) a custom set of operator groups and list entries (buttons)
      */
-    @Input() operators: OperatorListButtonGroups = [
+    readonly operators = input<OperatorListButtonGroups>([
         // default operator set
         {name: 'Mixed', list: OperatorListComponent.DEFAULT_MIXED_OPERATOR_DIALOGS},
         {name: 'Plots', list: OperatorListComponent.DEFAULT_PLOT_OPERATOR_DIALOGS},
         {name: 'Raster', list: OperatorListComponent.DEFAULT_RASTER_OPERATOR_DIALOGS},
         {name: 'Vector', list: OperatorListComponent.DEFAULT_VECTOR_OPERATOR_DIALOGS},
-    ];
+    ]);
 
     readonly operators$ = new ReplaySubject<OperatorListButtonGroups>(1);
     readonly operatorGroups$: Observable<Array<{name: string; list: Array<OperatorListType>}>>;
@@ -365,12 +365,12 @@ export class OperatorListComponent implements OnInit, OnChanges {
     }
 
     ngOnInit(): void {
-        this.operators$.next(this.operators);
+        this.operators$.next(this.operators());
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.operators) {
-            this.operators$.next(this.operators);
+            this.operators$.next(this.operators());
         }
     }
 

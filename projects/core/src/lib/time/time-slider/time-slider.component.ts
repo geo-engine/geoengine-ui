@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef, OnDestroy, Input, inject} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, inject, input, viewChild} from '@angular/core';
 import {DataSet} from 'vis-data/peer';
 import {DateType, Timeline} from 'vis-timeline/peer';
 import {ElementRef} from '@angular/core';
@@ -45,14 +45,14 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
     selectedScale: DurationInputArg2 = 'year';
     isRange = true;
 
-    @Input() height = 150;
+    readonly height = input(150);
 
     screenWidth = 0;
 
     //Layer Data
     layerList: Array<Layer> = [];
 
-    @ViewChild('timeline', {static: true}) timelineContainer!: ElementRef;
+    readonly timelineContainer = viewChild.required<ElementRef>('timeline');
 
     // inventory of used subscriptions
     private subscriptions: Array<Subscription> = [];
@@ -75,7 +75,7 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
         this.getTimelineGroups();
         this.getOptions();
 
-        this.timeline = new Timeline(this.timelineContainer.nativeElement, this.data, this.options);
+        this.timeline = new Timeline(this.timelineContainer().nativeElement, this.data, this.options);
         this.timeline.setGroups(this.groups);
         this.timeline.setItems(this.data);
 
@@ -290,7 +290,7 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
             start: '2012-01',
             end: '2020-01',
             orientation: 'top',
-            height: this.height,
+            height: this.height(),
             itemsAlwaysDraggable: false,
             editable: true,
             selectable: false,

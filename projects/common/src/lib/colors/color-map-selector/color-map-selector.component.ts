@@ -2,14 +2,13 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    EventEmitter,
-    Input,
     OnChanges,
     OnDestroy,
     OnInit,
-    Output,
     SimpleChanges,
     inject,
+    input,
+    output,
 } from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Subscription} from 'rxjs';
@@ -62,44 +61,44 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
     /**
      * Emmits colorizer breakpoint arrays
      */
-    @Output() breakpointsChange = new EventEmitter<Array<ColorBreakpoint>>();
+    readonly breakpointsChange = output<Array<ColorBreakpoint>>();
 
     /**
      * Informs parent to enable "Apply Changes" button
      */
-    @Output() changesToForm = new EventEmitter<void>();
+    readonly changesToForm = output<void>();
 
     /**
      * Number of breakpoints used in the ColorizerData.
      */
-    @Input() defaultNumberOfSteps = 16;
+    readonly defaultNumberOfSteps = input(16);
 
     /**
      * Max allowed number of breakpoints in the ColorizerData.
      */
-    @Input() maxColormapSteps = 16;
+    readonly maxColormapSteps = input(16);
 
     /**
      * Sets the min value used for ColorizerData generation.
      */
-    @Input() minValue? = 0;
+    readonly minValue = input<number | undefined>(0);
 
     /**
      * Sets the max value used for ColorizerData generation.
      */
-    @Input() maxValue? = 1;
+    readonly maxValue = input<number | undefined>(1);
 
-    @Input() scale: 'linear' | 'logarithmic' = 'linear';
+    readonly scale = input<'linear' | 'logarithmic'>('linear');
 
     /**
      * Sends the min value selected in the ui.
      */
-    @Output() minValueChange = new EventEmitter<number>();
+    readonly minValueChange = output<number>();
 
     /**
      * Sends the max value selected in the ui.
      */
-    @Output() maxValueChange = new EventEmitter<number>();
+    readonly maxValueChange = output<number>();
 
     readonly colorMaps = ALL_COLORMAPS;
 
@@ -133,7 +132,7 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
                 },
             ),
             colorMap: [this.colorMaps[initialColorMapName], [Validators.required]],
-            colorMapSteps: [this.defaultNumberOfSteps, [Validators.required, Validators.min(2)]],
+            colorMapSteps: [this.defaultNumberOfSteps(), [Validators.required, Validators.min(2)]],
             colorMapReverseColors: [false],
         });
 
@@ -151,8 +150,10 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
         });
         this.subscriptions.push(sub);
 
-        if (this.minValue && this.maxValue) {
-            this.patchMinMaxValues(this.minValue, this.maxValue);
+        const minValue = this.minValue();
+        const maxValue = this.maxValue();
+        if (minValue && maxValue) {
+            this.patchMinMaxValues(minValue, maxValue);
         }
 
         const subMinMax = this.form.controls['bounds'].valueChanges.subscribe((x) => {
@@ -166,7 +167,7 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
         this.subscriptions.push(subMinMax);
 
         this.form.valueChanges.subscribe(() => {
-            this.changesToForm.emit();
+            this.changesToForm.emit(undefined);
         });
     }
 
@@ -176,7 +177,7 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.minValue || changes.maxValue) {
-            this.patchMinMaxValues(this.minValue, this.maxValue);
+            this.patchMinMaxValues(this.minValue(), this.maxValue());
         }
 
         if (changes.scale) {
@@ -210,9 +211,10 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
             return;
         }
 
-        if (this.scale === 'linear') {
+        const scale = this.scale();
+        if (scale === 'linear') {
             minControl.removeValidators(this.largerThanZeroValidator);
-        } else if (this.scale === 'logarithmic') {
+        } else if (scale === 'logarithmic') {
             minControl.setValidators(this.largerThanZeroValidator);
         }
 
@@ -306,14 +308,14 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
         if (!colorMap) {
             return false;
         }
-        if (colorMapSteps > this.maxColormapSteps) {
+        if (colorMapSteps > this.maxColormapSteps()) {
             return false;
         }
         if (boundsMin >= boundsMax) {
             return false;
         }
 
-        if (this.scale === 'logarithmic' && boundsMin <= 0) {
+        if (this.scale() === 'logarithmic' && boundsMin <= 0) {
             return false;
         }
 
@@ -326,7 +328,7 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
         const colorMapReverseColors: boolean = this.form.controls['colorMapReverseColors'].value;
         const bounds: {min: number; max: number} = this.form.controls['bounds'].value;
 
-        if (this.scale === 'logarithmic') {
+        if (this.scale() === 'logarithmic') {
             return this.createLogarithmicBreakpoints(colorMap, colorMapSteps, colorMapReverseColors, bounds);
         } else {
             // `this.scale === 'linear'`

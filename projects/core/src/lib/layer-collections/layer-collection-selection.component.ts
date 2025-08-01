@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, Input, inject} from '@angular/core';
+import {Component, ChangeDetectionStrategy, inject, input} from '@angular/core';
 import {LayerListing, ProviderLayerCollectionId} from '@geoengine/openapi-client';
 import {ProjectService} from '../project/project.service';
 import {SidenavHeaderComponent} from '../sidenav/sidenav-header/sidenav-header.component';
@@ -14,8 +14,8 @@ import {CommonModule} from '@geoengine/common';
 export class LayerCollectionSelectionComponent {
     private readonly projectService = inject(ProjectService);
 
-    @Input({required: true}) collectionId!: ProviderLayerCollectionId;
-    @Input({required: false}) collectionName = 'Layer Collection';
+    readonly collectionId = input.required<ProviderLayerCollectionId>();
+    readonly collectionName = input('Layer Collection');
 
     selectLayer(layer: LayerListing): void {
         this.projectService.addLayerbyId(layer.id);

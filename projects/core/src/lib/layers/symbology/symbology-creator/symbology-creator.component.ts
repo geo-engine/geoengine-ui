@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, forwardRef, HostListener, Input, OnDestroy, OnInit, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, forwardRef, HostListener, OnDestroy, OnInit, inject, input} from '@angular/core';
 import {
     ControlValueAccessor,
     FormControl,
@@ -67,9 +67,9 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
     COMPUTE_LINEAR_GRADIENT = SymbologyCreationType.COMPUTE_LINEAR_GRADIENT;
     LINEAR_GRADIENT_FROM_MIN_MAX = SymbologyCreationType.LINEAR_GRADIENT_FROM_MIN_MAX;
 
-    @Input() enableCopyInputSymbology = true;
-    @Input() colorMapName = 'viridis';
-    @Input() opacity = 1.0;
+    readonly enableCopyInputSymbology = input(true);
+    readonly colorMapName = input('viridis');
+    readonly opacity = input(1.0);
 
     min = new FormControl(0, {validators: [Validators.required], nonNullable: true});
     max = new FormControl(255, {validators: [Validators.required], nonNullable: true});
@@ -107,17 +107,18 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
     }
 
     ngOnInit(): void {
-        if (!this.enableCopyInputSymbology) {
+        if (!this.enableCopyInputSymbology()) {
             this.value.setValue(this.COMPUTE_LINEAR_GRADIENT);
         }
 
-        if (this.colorMapName.toUpperCase() in COLORMAPS) {
-            this.colorMap = COLORMAPS[this.colorMapName.toUpperCase()];
+        const colorMapName = this.colorMapName();
+        if (colorMapName.toUpperCase() in COLORMAPS) {
+            this.colorMap = COLORMAPS[colorMapName.toUpperCase()];
         } else {
-            throw new Error('Unsupported color map name ' + this.colorMapName);
+            throw new Error('Unsupported color map name ' + colorMapName);
         }
 
-        if (this.opacity < 0 || this.opacity > 1) {
+        if (this.opacity() < 0 || this.opacity() > 1) {
             throw new Error('The opacity needs to be in [0, 1]');
         }
     }
@@ -188,7 +189,7 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
             case SymbologyCreationType.LINEAR_GRADIENT_FROM_MIN_MAX: {
                 return of(
                     new RasterSymbology(
-                        this.opacity,
+                        this.opacity(),
                         new SingleBandRasterColorizer(0, this.colorizerForMinMax(this.min.getRawValue(), this.max.getRawValue())),
                     ),
                 );
@@ -284,7 +285,7 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
                     throw new Error('Sample statistics do not have valid min/max values.');
                 }
 
-                return new RasterSymbology(this.opacity, new SingleBandRasterColorizer(0, this.colorizerForMinMax(min, max)));
+                return new RasterSymbology(this.opacity(), new SingleBandRasterColorizer(0, this.colorizerForMinMax(min, max)));
             }),
         );
     }

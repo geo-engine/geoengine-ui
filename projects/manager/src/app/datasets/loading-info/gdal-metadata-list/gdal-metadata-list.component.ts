@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges, inject} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges, inject, input} from '@angular/core';
 import {
     AbstractControl,
     FormArray,
@@ -82,14 +82,15 @@ export class GdalMetadataListComponent implements OnChanges {
 
     @Input() dataPath?: DataPath;
 
-    @Input() metaData?: GdalMetaDataList;
+    readonly metaData = input<GdalMetaDataList>();
 
     selectedTimeSlice = 0;
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/require-await
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
-        if (changes.metaData && this.metaData) {
-            this.setUpFormFromMetaData(this.metaData);
+        const metaData = this.metaData();
+        if (changes.metaData && metaData) {
+            this.setUpFormFromMetaData(metaData);
         }
     }
 

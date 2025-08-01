@@ -1,5 +1,5 @@
 <div fxLayout="column">
-    @if (showDefaultStyle) {
+    @if (showDefaultStyle()) {
         <div fxLayout="row" fxLayoutAlign="start center" class="single-line">
             <mat-icon>
                 @switch (layer.symbology.symbologyType) {

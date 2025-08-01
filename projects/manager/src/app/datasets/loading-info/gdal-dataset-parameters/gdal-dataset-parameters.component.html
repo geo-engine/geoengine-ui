@@ -1,4 +1,4 @@
-<form [formGroup]="form">
+<form [formGroup]="form()">
     <mat-form-field appearance="fill">
         <mat-label>File Path (relative to upload or volume)</mat-label>
         <input matInput type="text" formControlName="filePath" />
@@ -57,7 +57,7 @@
         </mat-form-field>
     </div>
 
-    @for (control of form.controls.propertiesMapping.controls; track control; let i = $index) {
+    @for (control of form().controls.propertiesMapping.controls; track control; let i = $index) {
         <div formArrayName="propertiesMapping">
             <div [formGroupName]="i">
                 <div class="flex-container">
@@ -96,14 +96,14 @@
             </div>
         </div>
     }
-    @if (form.controls.propertiesMapping.controls.length === 0) {
+    @if (form().controls.propertiesMapping.controls.length === 0) {
         <div class="empty-placeholder">
             <i>No property mappings defined.</i>
         </div>
     }
     <button class="add-entry" mat-raised-button (click)="addPropertyMapping()">Add Property Mapping</button>
 
-    @for (control of form.controls.gdalOpenOptions.controls; track control; let i = $index) {
+    @for (control of form().controls.gdalOpenOptions.controls; track control; let i = $index) {
         <div formArrayName="gdalOpenOptions">
             <div class="flex-container">
                 <mat-form-field appearance="fill">
@@ -114,14 +114,14 @@
             </div>
         </div>
     }
-    @if (form.controls.gdalOpenOptions.controls.length === 0) {
+    @if (form().controls.gdalOpenOptions.controls.length === 0) {
         <div class="empty-placeholder">
             <i>No open options defined.</i>
         </div>
     }
     <button class="add-entry" mat-raised-button (click)="addOpenOption()">Add Open Option</button>
 
-    @for (control of form.controls.gdalConfigOptions.controls; track control; let i = $index) {
+    @for (control of form().controls.gdalConfigOptions.controls; track control; let i = $index) {
         <div formArrayName="gdalConfigOptions">
             <div [formGroupName]="i">
                 <div class="flex-container">
@@ -138,7 +138,7 @@
             </div>
         </div>
     }
-    @if (form.controls.gdalConfigOptions.controls.length === 0) {
+    @if (form().controls.gdalConfigOptions.controls.length === 0) {
         <div class="empty-placeholder">
             <i>No config option defined.</i>
         </div>

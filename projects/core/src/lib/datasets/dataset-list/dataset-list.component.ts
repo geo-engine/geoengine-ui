@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, ViewChild, Input, inject} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, inject, input, viewChild} from '@angular/core';
 import {DatasetService} from '../dataset.service';
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, EMPTY, Observable, range, Subject} from 'rxjs';
@@ -32,10 +32,9 @@ import {AsyncPipe} from '@angular/common';
 export class DatasetListComponent implements OnInit, AfterViewInit {
     datasetService = inject(DatasetService);
 
-    @ViewChild(CdkVirtualScrollViewport)
-    viewport!: CdkVirtualScrollViewport;
+    readonly viewport = viewChild.required(CdkVirtualScrollViewport);
 
-    @Input() repositoryName = 'Data Repository';
+    readonly repositoryName = input('Data Repository');
 
     // TODO: dataset search
 
@@ -59,8 +58,8 @@ export class DatasetListComponent implements OnInit, AfterViewInit {
      * Fetch new data when scrolled to the end of the list.
      */
     onScrolledIndexChange(_scrolledIndex: number): void {
-        const end = this.viewport.getRenderedRange().end;
-        const total = this.viewport.getDataLength();
+        const end = this.viewport().getRenderedRange().end;
+        const total = this.viewport().getDataLength();
 
         // only fetch when scrolled to the end
         if (end >= total) {
@@ -73,7 +72,7 @@ export class DatasetListComponent implements OnInit, AfterViewInit {
     }
 
     protected calculateInitialNumberOfElements(): number {
-        const element = this.viewport.elementRef.nativeElement;
+        const element = this.viewport().elementRef.nativeElement;
         const numberOfElements = Math.ceil(element.clientHeight / this.itemSizePx);
         // add one such that scrolling happens
         return numberOfElements + 1;

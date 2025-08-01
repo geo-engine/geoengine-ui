@@ -1,71 +1,82 @@
-import {
-    Component,
-    ChangeDetectionStrategy,
-    ViewChild,
-    ElementRef,
-    Input,
-    OnChanges,
-    SimpleChanges,
-    Output,
-    EventEmitter,
-    inject,
-} from '@angular/core';
-import vegaEmbed from 'vega-embed';
+import {Component, ChangeDetectionStrategy, ElementRef, inject, input, output, viewChild, signal, effect, untracked} from '@angular/core';
+import vegaEmbed, {VisualizationSpec} from 'vega-embed';
 import {View} from 'vega';
 import {TopLevelSpec as VlSpec} from 'vega-lite';
 import {Spec as VgSpec} from 'vega';
 import {VegaChartData} from '../plot.model';
 import {CommonConfig} from '../../config.service';
 
+interface VegaHandle {
+    view: View;
+    spec: VlSpec | VgSpec;
+    vgSpec: VgSpec;
+    finalize: () => void;
+}
+
 @Component({
     selector: 'geoengine-vega-viewer',
-    templateUrl: './vega-viewer.component.html',
+    template: '<div #chart></div>',
     styleUrls: ['./vega-viewer.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class VegaViewerComponent implements OnChanges {
-    protected element = inject(ElementRef);
+export class VegaViewerComponent {
+    protected element = inject<ElementRef<HTMLElement>>(ElementRef);
     protected readonly config = inject(CommonConfig);
 
-    @Input()
-    chartData?: VegaChartData;
+    readonly chartData = input<VegaChartData>();
 
-    @Input()
-    width?: number;
+    readonly width = input<number>();
 
-    @Input()
-    height?: number;
+    readonly height = input<number>();
 
-    @Output()
-    interactionChange = new EventEmitter<Record<string, unknown>>();
+    readonly interactionChange = output<Record<string, unknown>>();
 
-    @ViewChild('chart', {static: true}) protected chartContainer!: ElementRef;
+    protected readonly chartContainer = viewChild.required<ElementRef<HTMLDivElement>>('chart');
 
-    private vegaHandle?: {
-        view: View;
-        spec: VlSpec | VgSpec;
-        vgSpec: VgSpec;
-        finalize: () => void;
-    } = undefined;
+    protected readonly vegaHandle = signal<VegaHandle | undefined>(undefined);
 
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes.chartData || changes.width || changes.height) {
-            this.clearContents();
-            this.displayPlot();
-        }
+    constructor() {
+        effect(() => {
+            this.chartData();
+            this.width();
+            this.height();
+            this.chartContainer();
+
+            untracked(() => {
+                this.clearContents();
+                this.displayPlot();
+            });
+        });
+
+        effect(() => {
+            const vegaHandle = this.vegaHandle();
+            const chartDataValue = this.chartData();
+
+            if (!vegaHandle || !chartDataValue) {
+                return;
+            }
+
+            const selectionName = chartDataValue.metadata?.selectionName;
+            if (!selectionName) return;
+
+            vegaHandle.view.addSignalListener(chartDataValue.metadata.selectionName, (_name, value) => {
+                this.interactionChange.emit(value as /* fingers crossed */ Record<string, unknown>);
+            });
+        });
     }
 
     private displayPlot(): void {
-        if (!this.chartData) {
+        const chartData = this.chartData();
+        if (!chartData) {
             return;
         }
 
-        const div = this.chartContainer.nativeElement;
+        const div = this.chartContainer().nativeElement;
 
-        const width = this.width ?? div.clientWidth ?? this.element.nativeElement.offsetWidth;
-        const height = this.height ?? width / 2;
+        const width = this.width() ?? div.clientWidth ?? this.element.nativeElement.offsetWidth;
+        const height = this.height() ?? width / 2;
 
-        const spec = JSON.parse(this.chartData.vegaString);
+        const spec = JSON.parse(chartData.vegaString) as /* fingers crossed */ VisualizationSpec;
 
         vegaEmbed(div, spec, {
             actions: false,
@@ -86,26 +97,19 @@ export class VegaViewerComponent implements OnChanges {
             width,
             height,
         })
-            .then((result) => {
-                this.vegaHandle = result;
-
-                if (this.chartData?.metadata?.selectionName) {
-                    this.vegaHandle.view.addSignalListener(this.chartData.metadata.selectionName, (_name, value) => {
-                        this.interactionChange.next(value);
-                    });
-                }
-            })
+            .then((result) => this.vegaHandle.set(result))
             .catch((_error) => {
                 // TODO: react on error
             });
     }
 
     private clearContents(): void {
-        const div = this.chartContainer.nativeElement;
+        const div = this.chartContainer().nativeElement;
+        const vegaHandle = this.vegaHandle();
 
-        if (this.vegaHandle) {
-            this.vegaHandle.finalize();
-            this.vegaHandle = undefined;
+        if (vegaHandle) {
+            vegaHandle.finalize();
+            this.vegaHandle.set(undefined);
         }
 
         while (div.firstChild) {

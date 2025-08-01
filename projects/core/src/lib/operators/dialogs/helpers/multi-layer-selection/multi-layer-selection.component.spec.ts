@@ -134,7 +134,7 @@ describe('MultiLayerSelectionComponent', () => {
      * checking the number of possible layers to select from
      * checking the default layer displayed **/
     it('should display the first of selectedLayers per default, min = max = 1', async () => {
-        component.ngOnChanges({layers: new SimpleChange(undefined, component.layers, true)});
+        component.ngOnChanges({layers: new SimpleChange(undefined, component.layers(), true)});
         fixture.detectChanges();
         await fixture.whenStable();
         html = fixture.nativeElement.querySelector('mat-select');
@@ -149,7 +149,7 @@ describe('MultiLayerSelectionComponent', () => {
 
     /** checking the layer displayed after changing the selected layer **/
     it('should update the layer displayed to equal selected layer, min = max = 1', async () => {
-        component.ngOnChanges({layers: new SimpleChange(undefined, component.layers, true)});
+        component.ngOnChanges({layers: new SimpleChange(undefined, component.layers(), true)});
         fixture.detectChanges();
         for (let i = mockLayers.length; i > 0; i--) {
             component.updateLayer(0, mockLayers[i - 1]);
@@ -169,7 +169,10 @@ describe('MultiLayerSelectionComponent', () => {
      * adding two more input fields
      * checking the default layers displayed and the number of possible layers to select **/
     it('should display the selectedLayers per default, max = 3', async () => {
-        component.ngOnChanges({max: new SimpleChange(component.max, 3, true), layers: new SimpleChange(undefined, component.layers, true)});
+        component.ngOnChanges({
+            max: new SimpleChange(component.max(), 3, true),
+            layers: new SimpleChange(undefined, component.layers(), true),
+        });
         fixture.detectChanges();
         component.add();
         component.add();
@@ -204,7 +207,10 @@ describe('MultiLayerSelectionComponent', () => {
             }
         }
 
-        component.ngOnChanges({max: new SimpleChange(component.max, 3, true), layers: new SimpleChange(undefined, component.layers, true)});
+        component.ngOnChanges({
+            max: new SimpleChange(component.max(), 3, true),
+            layers: new SimpleChange(undefined, component.layers(), true),
+        });
         fixture.detectChanges();
         component.add();
         component.add();

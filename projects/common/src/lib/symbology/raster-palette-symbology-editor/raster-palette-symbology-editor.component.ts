@@ -1,4 +1,4 @@
-import {Component, Input, ChangeDetectionStrategy, ViewChild, Output, EventEmitter, OnChanges, SimpleChanges} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChanges, input, output, viewChild} from '@angular/core';
 import {PaletteColorizer} from '../../colors/colorizer.model';
 import {ColorAttributeInput, ColorAttributeInputComponent} from '../../colors/color-attribute-input/color-attribute-input.component';
 import {Color} from '../../colors/color';
@@ -32,16 +32,14 @@ import {FormsModule} from '@angular/forms';
     ],
 })
 export class RasterPaletteSymbologyEditorComponent implements OnChanges {
-    @ViewChild(ColorMapSelectorComponent)
-    colorMapSelector!: ColorMapSelectorComponent;
+    readonly colorMapSelector = viewChild.required(ColorMapSelectorComponent);
 
-    @ViewChild(ColorTableEditorComponent)
-    colorPaletteEditor!: ColorTableEditorComponent;
+    readonly colorPaletteEditor = viewChild.required(ColorTableEditorComponent);
 
     @Input() colorizer!: PaletteColorizer;
-    @Input() measurement!: Measurement;
+    readonly measurement = input<Measurement>();
 
-    @Output() colorizerChange = new EventEmitter<PaletteColorizer>();
+    readonly colorizerChange = output<PaletteColorizer>();
 
     // The min value used for color table generation
     layerMinValue: number | undefined = undefined;

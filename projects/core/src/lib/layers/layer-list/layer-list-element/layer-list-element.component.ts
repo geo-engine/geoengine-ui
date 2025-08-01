@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, ChangeDetectorRef, Input, inject} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ChangeDetectorRef, Input, inject, input} from '@angular/core';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {MatDialog} from '@angular/material/dialog';
 import {TabsService} from '../../../tabs/tabs.service';
@@ -93,8 +93,7 @@ export class LayerListElementComponent {
     @Input()
     layer!: Layer;
 
-    @Input()
-    menu = true;
+    readonly menu = input(true);
 
     readonly LayoutService = LayoutService;
     readonly ST = SymbologyType;

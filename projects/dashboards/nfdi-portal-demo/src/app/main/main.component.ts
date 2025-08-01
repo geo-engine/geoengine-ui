@@ -1,5 +1,5 @@
 import {Observable, BehaviorSubject, first} from 'rxjs';
-import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, OnInit, ViewChild, ViewContainerRef, inject} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, OnInit, ViewContainerRef, inject, viewChild} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {
     LayoutService,
@@ -51,7 +51,7 @@ export class MainComponent implements OnInit, AfterViewInit {
     private _spatialReferenceService = inject(SpatialReferenceService);
     private sanitizer = inject(DomSanitizer);
 
-    @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
+    readonly mapComponent = viewChild.required(MapContainerComponent);
 
     readonly layersReverse$: Observable<Array<Layer>>;
     readonly windowHeight$ = new BehaviorSubject<number>(window.innerHeight);
@@ -63,13 +63,13 @@ export class MainComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit(): void {
-        this.mapService.registerMapComponent(this.mapComponent);
+        this.mapService.registerMapComponent(this.mapComponent());
         this.reset();
     }
 
     ngAfterViewInit(): void {
         // this.reset();
-        this.mapComponent.resize();
+        this.mapComponent().resize();
 
         // change projection to web mercator if for whatever reasons it is a different one
         this.projectService

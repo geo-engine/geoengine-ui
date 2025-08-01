@@ -3,13 +3,12 @@ import {
     OnInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
-    Input,
-    EventEmitter,
-    Output,
     OnChanges,
     OnDestroy,
     SimpleChanges,
     inject,
+    input,
+    output,
 } from '@angular/core';
 import {
     LayerCollection as LayerCollectionDict,
@@ -56,11 +55,11 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
     protected readonly layersService = inject(LayersService);
     private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
-    @Input() root?: ProviderLayerCollectionIdDict = undefined;
-    @Input() preselectedPath: Array<string | number> = []; // preselect entries in hierarchy either by name or index
+    readonly root = input<ProviderLayerCollectionIdDict>();
+    readonly preselectedPath = input<Array<string | number>>([]); // preselect entries in hierarchy either by name or index
 
-    @Output() layerSelected = new EventEmitter<LayerCollectionLayerDict>();
-    @Output() pathChange = new EventEmitter<PathChange>();
+    readonly layerSelected = output<LayerCollectionLayerDict | undefined>();
+    readonly pathChange = output<PathChange>();
 
     preselecting$ = new BehaviorSubject<boolean>(false);
 
@@ -91,21 +90,21 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     async ngOnInit(): Promise<void> {
         await this.setupRoot();
-        await this.preselect(this.preselectedPath);
+        await this.preselect(this.preselectedPath());
     }
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
         if (changes.root && changes.root.currentValue !== changes.root.previousValue) {
             await this.setupRoot();
-            await this.preselect(this.preselectedPath);
+            await this.preselect(this.preselectedPath());
         }
 
         if (
             changes.preselectedPath &&
             this.collections.value.length // we need to wait for the root collection to be loaded
         ) {
-            await this.preselect(this.preselectedPath);
+            await this.preselect(this.preselectedPath());
         }
     }
 
@@ -206,8 +205,9 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
     }
 
     protected async setupRoot(): Promise<void> {
-        const collection = this.root
-            ? await this.layersService.getLayerCollectionItems(this.root.providerId, this.root.collectionId, 0, FETCH_SIZE)
+        const root = this.root();
+        const collection = root
+            ? await this.layersService.getLayerCollectionItems(root.providerId, root.collectionId, 0, FETCH_SIZE)
             : await this.layersService.getRootLayerCollectionItems(0, FETCH_SIZE);
 
         this.collections.next([collection]);

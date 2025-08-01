@@ -1,5 +1,5 @@
 <form [formGroup]="loginForm" (ngSubmit)="login()">
-    <div class="container" [ngClass]="{'accent-color': color === 'accent'}" fxLayout="column" fxLayoutAlign="space-around">
+    <div class="container" [ngClass]="{'accent-color': color() === 'accent'}" fxLayout="column" fxLayoutAlign="space-around">
         <mat-card appearance="outlined" class="login">
             <ng-content select="mat-card-header"></ng-content>
 
@@ -8,7 +8,7 @@
                     <mat-form-field>
                         <input matInput type="password" placeholder="Token" formControlName="sessionToken" />
                     </mat-form-field>
-                    <p class="error" *ngIf="invalidCredentials$ | async">{{ invalidTokenText }}</p>
+                    <p class="error" *ngIf="invalidCredentials$ | async">{{ invalidTokenText() }}</p>
                 </ng-template>
                 <ng-template [ngSwitchCase]="FormStatus.Loading">
                     <mat-spinner></mat-spinner>

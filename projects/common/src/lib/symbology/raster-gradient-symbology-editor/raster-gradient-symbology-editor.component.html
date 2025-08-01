@@ -91,8 +91,8 @@
                 <mat-tab label="Percentiles">
                     <geoengine-percentile-breakpoint-selector
                         (breakpointsChange)="updateBreakpoints($event)"
-                        [band]="band"
-                        [workflowId]="workflowId"
+                        [band]="band()"
+                        [workflowId]="workflowId()"
                         [queryParams]="queryParams"
                     ></geoengine-percentile-breakpoint-selector>
 

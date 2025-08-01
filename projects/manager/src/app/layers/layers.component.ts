@@ -1,4 +1,4 @@
-import {Component, signal, ViewChild, WritableSignal, inject} from '@angular/core';
+import {Component, signal, WritableSignal, inject, viewChild} from '@angular/core';
 import {
     CollectionNavigation,
     LAYER_DB_PROVIDER_ID,
@@ -56,7 +56,7 @@ export class LayersComponent {
 
     readonly addedItem = signal<LayerListing | LayerCollectionListing | undefined>(undefined);
 
-    @ViewChild(LayerCollectionNavigationComponent) layerCollectionNavigationComponent!: LayerCollectionNavigationComponent;
+    readonly layerCollectionNavigationComponent = viewChild.required(LayerCollectionNavigationComponent);
 
     selectLayer(layer: LayerListing): void {
         this.selectedItem.set({layer, type: ItemType.Layer});
@@ -67,24 +67,25 @@ export class LayersComponent {
     }
 
     collectionUpdated(): void {
-        this.layerCollectionNavigationComponent.refresh();
+        this.layerCollectionNavigationComponent().refresh();
     }
 
     itemDeleted(): void {
         if (this.addedItem()) {
             this.addedItem.set(undefined);
         } else {
-            this.layerCollectionNavigationComponent.refreshCollection();
+            this.layerCollectionNavigationComponent().refreshCollection();
         }
         this.selectedItem.set(undefined);
     }
 
     layerUpdated(): void {
-        this.layerCollectionNavigationComponent.refresh();
+        this.layerCollectionNavigationComponent().refresh();
     }
 
     async addItem(): Promise<void> {
-        if (!this.layerCollectionNavigationComponent.selectedCollection) {
+        const layerCollectionNavigationComponent = this.layerCollectionNavigationComponent();
+        if (!layerCollectionNavigationComponent.selectedCollection) {
             return;
         }
         const dialogRef = this.dialog.open(AddLayerItemComponent, {
@@ -93,7 +94,7 @@ export class LayersComponent {
             autoFocus: false,
             disableClose: true,
             data: {
-                parent: this.layerCollectionNavigationComponent.selectedCollection.id,
+                parent: layerCollectionNavigationComponent.selectedCollection.id,
             },
         });
 
@@ -104,7 +105,7 @@ export class LayersComponent {
         }
 
         if (itemId.type === ItemType.Layer) {
-            this.layerCollectionNavigationComponent.refreshCollection();
+            layerCollectionNavigationComponent.refreshCollection();
 
             const layer = await this.layersService.getLayer(LAYER_DB_PROVIDER_ID, itemId.layer);
 
@@ -117,7 +118,7 @@ export class LayersComponent {
             this.selectLayer(listing);
             this.addedItem.set(listing);
         } else {
-            this.layerCollectionNavigationComponent.refreshCollection();
+            layerCollectionNavigationComponent.refreshCollection();
 
             const collection = await this.layersService.getLayerCollectionItems(LAYER_DB_PROVIDER_ID, itemId.collection);
 

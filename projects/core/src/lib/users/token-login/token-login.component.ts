@@ -1,6 +1,6 @@
 import {BehaviorSubject, Subscription} from 'rxjs';
 
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, inject} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject, input} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {first} from 'rxjs/operators';
@@ -50,9 +50,9 @@ export class TokenLoginComponent implements OnInit, AfterViewInit, OnDestroy {
     private readonly userService = inject(UserService);
     private readonly router = inject(Router);
 
-    @Input() routeTo?: Array<string>;
-    @Input() invalidTokenText = 'Invalid token';
-    @Input() color: 'primary' | 'accent' = 'primary';
+    readonly routeTo = input<Array<string>>();
+    readonly invalidTokenText = input('Invalid token');
+    readonly color = input<'primary' | 'accent'>('primary');
 
     readonly FormStatus = FormStatus;
 
@@ -117,9 +117,10 @@ export class TokenLoginComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     redirectRoute(): void {
-        if (!this.routeTo) {
+        const routeTo = this.routeTo();
+        if (!routeTo) {
             return;
         }
-        this.router.navigate(this.routeTo);
+        this.router.navigate(routeTo);
     }
 }

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild, inject} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, inject, viewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {
     ProjectService,
@@ -95,8 +95,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
 
     readonly SUBGROUP_SEARCH_THRESHOLD = 5;
 
-    @ViewChild('container', {static: true})
-    readonly containerDiv!: ElementRef<HTMLDivElement>;
+    readonly containerDiv = viewChild.required<ElementRef<HTMLDivElement>>('container');
 
     readonly isPlotButtonDisabled$: Observable<boolean>;
 

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output, inject} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input, output} from '@angular/core';
 import {FormArray, UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BehaviorSubject} from 'rxjs';
 import {Color, RgbaTuple} from '../color';
@@ -48,21 +48,21 @@ export class PercentileBreakpointSelectorComponent {
     protected readonly workflowsService = inject(WorkflowsService);
     protected readonly plotsService = inject(PlotsService);
 
-    @Input({required: true}) band!: string;
+    readonly band = input.required<string>();
 
-    @Input({required: true}) workflowId!: UUID;
+    readonly workflowId = input.required<UUID>();
 
-    @Input({required: true}) queryParams!: SymbologyQueryParams;
+    readonly queryParams = input.required<SymbologyQueryParams>();
 
     /**
      * Emmits colorizer breakpoint arrays
      */
-    @Output() breakpointsChange = new EventEmitter<Array<ColorBreakpoint>>();
+    readonly breakpointsChange = output<Array<ColorBreakpoint>>();
 
     /**
      * Informs parent to enable "Apply Changes" button
      */
-    @Output() changesToForm = new EventEmitter<void>();
+    readonly changesToForm = output<void>();
 
     readonly colorMaps = ALL_COLORMAPS;
 
@@ -225,7 +225,7 @@ export class PercentileBreakpointSelectorComponent {
         const percentiles: number[] = this.form.controls['percentiles'].value;
 
         const statisticsWorkflowsId = await this.createStatisticsWorkflow(percentiles);
-        const statistics = await this.createStatistics(statisticsWorkflowsId, this.queryParams);
+        const statistics = await this.createStatistics(statisticsWorkflowsId, this.queryParams());
 
         // add min and max to percentiles
         const percentileValues = statistics.percentiles.map((p) => p.value);
@@ -250,22 +250,23 @@ export class PercentileBreakpointSelectorComponent {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const statistics = plotData.data as any;
 
-                if (!(this.band in plotData.data)) {
+                const band = this.band();
+                if (!(band in plotData.data)) {
                     throw new Error('Band not found in statistics');
                 }
 
-                return statistics[this.band] as {min: number; max: number; percentiles: {percentile: number; value: number}[]};
+                return statistics[band] as {min: number; max: number; percentiles: {percentile: number; value: number}[]};
             });
     }
 
     protected createStatisticsWorkflow(percentiles: number[]): Promise<UUID> {
-        return this.workflowsService.getWorkflow(this.workflowId).then((workflow) =>
+        return this.workflowsService.getWorkflow(this.workflowId()).then((workflow) =>
             this.workflowsService.registerWorkflow({
                 type: 'Plot',
                 operator: {
                     type: 'Statistics',
                     params: {
-                        columnNames: [this.band],
+                        columnNames: [this.band()],
                         percentiles,
                     } as StatisticsParams,
                     sources: {

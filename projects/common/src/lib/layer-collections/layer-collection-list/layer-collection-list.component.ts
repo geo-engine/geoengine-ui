@@ -1,14 +1,13 @@
 import {
     Component,
     ChangeDetectionStrategy,
-    ViewChild,
-    Input,
-    Output,
-    EventEmitter,
     OnChanges,
     SimpleChanges,
     ChangeDetectorRef,
     inject,
+    input,
+    output,
+    viewChild,
 } from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, EMPTY, from, Observable, range, Subject} from 'rxjs';
@@ -80,8 +79,7 @@ export class LayerCollectionListComponent implements OnChanges {
 
     readonly CollectionNavigation = CollectionNavigation;
 
-    @ViewChild(CdkVirtualScrollViewport)
-    viewport!: CdkVirtualScrollViewport;
+    readonly viewport = viewChild.required(CdkVirtualScrollViewport);
 
     /**
      * Visualize…
@@ -89,23 +87,22 @@ export class LayerCollectionListComponent implements OnChanges {
      * - a collection if `ProviderLayerCollectionIdDict`
      * - a search result if `LayerCollectionSearch`
      */
-    @Input()
-    collection?: ProviderLayerCollectionIdDict | LayerCollectionSearch = undefined;
+    readonly collection = input<ProviderLayerCollectionIdDict | LayerCollectionSearch>();
 
-    @Input({required: false}) collectionNavigation = CollectionNavigation.Element;
+    readonly collectionNavigation = input(CollectionNavigation.Element);
 
-    @Input({required: false}) showLayerToggle = true;
-    @Input({required: false}) highlightSelection = false;
+    readonly showLayerToggle = input(true);
+    readonly highlightSelection = input(false);
 
-    @Output() navigateCollection = new EventEmitter<LayerCollectionListing>();
+    readonly navigateCollection = output<LayerCollectionListing>();
 
-    @Output() selectCollection = new EventEmitter<LayerCollectionListing>();
+    readonly selectCollection = output<LayerCollectionListing>();
 
-    @Output() selectLayer = new EventEmitter<LayerListing>();
+    readonly selectLayer = output<LayerListing>();
 
     readonly itemSizePx = 72;
 
-    @Input() loadingSpinnerDiameterPx: number = 3 * LayoutService.remInPx;
+    readonly loadingSpinnerDiameterPx = input<number>(3 * LayoutService.remInPx);
 
     source?: LayerCollectionItemDataSource;
 
@@ -131,8 +128,8 @@ export class LayerCollectionListComponent implements OnChanges {
      * Fetch new data when scrolled to the end of the list.
      */
     onScrolledIndexChange(_scrolledIndex: number): void {
-        const end = this.viewport.getRenderedRange().end;
-        const total = this.viewport.getDataLength();
+        const end = this.viewport().getRenderedRange().end;
+        const total = this.viewport().getDataLength();
 
         // only fetch when scrolled to the end
         if (end >= total) {
@@ -160,20 +157,20 @@ export class LayerCollectionListComponent implements OnChanges {
         this.selectedCollection = undefined;
         this.selectedLayer = undefined;
         if (item.type === 'collection') {
-            this.selectCollection.next(item);
+            this.selectCollection.emit(item);
             this.selectedCollection = item;
         } else if (item.type === 'layer') {
-            this.selectLayer.next(item);
+            this.selectLayer.emit(item);
             this.selectedLayer = item;
         }
     }
 
     navigateToCollection(item: LayerCollectionListing): void {
-        this.navigateCollection.next(item);
+        this.navigateCollection.emit(item);
     }
 
     protected setUpSource(): void {
-        this.source = new LayerCollectionItemDataSource(this.layersService, this.collection);
+        this.source = new LayerCollectionItemDataSource(this.layersService, this.collection());
 
         setTimeout(() => {
             this.source?.init(this.calculateInitialNumberOfElements());
@@ -181,7 +178,7 @@ export class LayerCollectionListComponent implements OnChanges {
     }
 
     protected calculateInitialNumberOfElements(): number {
-        const element = this.viewport.elementRef.nativeElement;
+        const element = this.viewport().elementRef.nativeElement;
         const numberOfElements = Math.ceil(element.clientHeight / this.itemSizePx);
         // add one such that scrolling happens
         return numberOfElements + 1;

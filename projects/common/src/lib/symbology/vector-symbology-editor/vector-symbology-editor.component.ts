@@ -1,4 +1,4 @@
-import {Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChanges, OnInit, Output, EventEmitter, inject} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnChanges, SimpleChanges, OnInit, inject, input, output} from '@angular/core';
 import {
     ClusteredPointSymbology,
     ColorParam,
@@ -60,9 +60,9 @@ import {AsyncValueDefault} from '../../util/pipes/async-converters.pipe';
 export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
     private readonly workflowsService = inject(WorkflowsService);
 
-    @Input({required: true}) symbologyWorkflow!: SymbologyWorkflow<VectorSymbology>;
+    readonly symbologyWorkflow = input.required<SymbologyWorkflow<VectorSymbology>>();
 
-    @Output() changedSymbology = new EventEmitter<VectorSymbology>();
+    readonly changedSymbology = output<VectorSymbology>();
 
     currentSymbology!: VectorSymbology;
 
@@ -73,8 +73,9 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
     allAttributes = new ReplaySubject<Array<string>>(1);
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.symbologyWorkflow && this.symbologyWorkflow) {
-            this.currentSymbology = this.symbologyWorkflow.symbology.clone();
+        const symbologyWorkflow = this.symbologyWorkflow();
+        if (changes.symbologyWorkflow && symbologyWorkflow) {
+            this.currentSymbology = symbologyWorkflow.symbology.clone();
             this.showFillColorEditor =
                 this.currentSymbology instanceof PointSymbology ||
                 this.currentSymbology instanceof ClusteredPointSymbology ||
@@ -85,7 +86,7 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
     }
 
     ngOnInit(): void {
-        this.currentSymbology = this.symbologyWorkflow.symbology.clone();
+        this.currentSymbology = this.symbologyWorkflow().symbology.clone();
         this.showFillColorEditor =
             this.currentSymbology instanceof PointSymbology ||
             this.currentSymbology instanceof ClusteredPointSymbology ||
@@ -484,7 +485,7 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
     }
 
     protected initializeAttributes(): void {
-        this.workflowsService.getMetadata(this.symbologyWorkflow.workflowId).then((metadata) => {
+        this.workflowsService.getMetadata(this.symbologyWorkflow().workflowId).then((metadata) => {
             if (!(metadata.type === 'vector')) {
                 return;
             }

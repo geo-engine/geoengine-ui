@@ -3,14 +3,13 @@ import {
     ChangeDetectionStrategy,
     Component,
     OnInit,
-    Input,
-    Output,
-    EventEmitter,
     ChangeDetectorRef,
-    ViewChild,
     OnChanges,
     SimpleChanges,
     inject,
+    input,
+    output,
+    viewChild,
 } from '@angular/core';
 import {WHITE} from '../color';
 import {
@@ -44,23 +43,23 @@ export class ColorTableEditorComponent implements OnInit, OnChanges {
     private ref = inject(ChangeDetectorRef);
 
     // Symbology to use for creating color tabs
-    @Input() colorTable!: Array<ColorBreakpoint>;
+    readonly colorTable = input.required<Array<ColorBreakpoint>>();
 
-    @Input() measurement?: Measurement;
+    readonly measurement = input<Measurement>();
 
     // Symbology altered through color tab inputs
-    @Output() colorTableChanged = new EventEmitter<Array<ColorBreakpoint>>();
+    readonly colorTableChanged = output<Array<ColorBreakpoint>>();
 
-    @ViewChild(CdkVirtualScrollViewport)
-    virtualScrollViewport!: CdkVirtualScrollViewport;
+    readonly virtualScrollViewport = viewChild.required(CdkVirtualScrollViewport);
 
     colorAttributes: Array<ColorAttributeInput> = [];
     colorHints?: ColorAttributeInputHinter;
 
     ngOnInit(): void {
         this.updateColorAttributes();
-        if (this.measurement instanceof ClassificationMeasurement) {
-            this.colorHints = this.measurement as ColorAttributeInputHinter;
+        const measurement = this.measurement();
+        if (measurement instanceof ClassificationMeasurement) {
+            this.colorHints = measurement as ColorAttributeInputHinter;
         }
     }
 
@@ -69,7 +68,7 @@ export class ColorTableEditorComponent implements OnInit, OnChanges {
     }
 
     updateColorAttributes(): void {
-        this.colorAttributes = this.colorTable.map((color: ColorBreakpoint) => {
+        this.colorAttributes = this.colorTable().map((color: ColorBreakpoint) => {
             return {key: color.value.toString(), value: color.color};
         });
         this.ref.detectChanges();
@@ -125,7 +124,7 @@ export class ColorTableEditorComponent implements OnInit, OnChanges {
         // TODO: do we need that?
         this.sortColorAttributeInputs();
 
-        setTimeout(() => this.virtualScrollViewport.scrollTo({bottom: 0}), 0); // Delay of 0 to include new tab in scroll
+        setTimeout(() => this.virtualScrollViewport().scrollTo({bottom: 0}), 0); // Delay of 0 to include new tab in scroll
 
         this.emitColorTable();
     }

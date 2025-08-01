@@ -1,11 +1,11 @@
-@if (allowRanges) {
+@if (allowRanges()) {
     <h3 class="mat-subtitle-1">Start</h3>
 }
 
 <form [formGroup]="form">
     <geoengine-time-input formControlName="start"></geoengine-time-input>
 
-    @if (allowRanges) {
+    @if (allowRanges()) {
         <h3 class="mat-subtitle-1" fxLayout="row" fxLayoutAlign="space-between center">
             End
             <mat-slide-toggle #timeAsPoint formControlName="timeAsPoint" class="mat-body-1">same as start</mat-slide-toggle>

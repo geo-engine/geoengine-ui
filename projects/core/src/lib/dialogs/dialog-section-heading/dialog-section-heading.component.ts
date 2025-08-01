@@ -1,4 +1,4 @@
-import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, input} from '@angular/core';
 
 @Component({
     selector: 'geoengine-dialog-section-heading',
@@ -7,6 +7,6 @@ import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DialogSectionHeadingComponent {
-    @Input() title?: string;
-    @Input() subtitle?: string;
+    readonly title = input<string>();
+    readonly subtitle = input<string>();
 }

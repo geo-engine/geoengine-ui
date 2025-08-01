@@ -3,15 +3,15 @@ import {
     Component,
     ChangeDetectionStrategy,
     HostBinding,
-    Input,
     OnChanges,
     SimpleChanges,
     OnDestroy,
-    ViewChild,
     ComponentFactoryResolver,
     Injector,
     ChangeDetectorRef,
     inject,
+    input,
+    viewChild,
 } from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -45,12 +45,12 @@ export class TabsComponent implements OnChanges, OnDestroy {
     protected readonly changeDetectorRef = inject(ChangeDetectorRef);
 
     @HostBinding('class.mat-elevation-z4') elevationStyle = true;
-    @ViewChild(CdkPortalOutlet) portalOutlet!: CdkPortalOutlet;
+    readonly portalOutlet = viewChild(CdkPortalOutlet);
 
-    @Input() maxHeight = 0;
-    @Input() visible = true;
+    readonly maxHeight = input(0);
+    readonly visible = input(true);
 
-    toggleTooltip: 'Show' | 'Hide' = this.visible ? 'Hide' : 'Show';
+    toggleTooltip: 'Show' | 'Hide' = this.visible() ? 'Hide' : 'Show';
     readonly toggleTooltipDelay: number;
 
     readonly tabWidthPct: Observable<number>;
@@ -74,16 +74,17 @@ export class TabsComponent implements OnChanges, OnDestroy {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        const visible = this.visible();
         if (changes.maxHeight || changes.visible) {
-            this.setContentHeight(this.maxHeight, this.visible);
+            this.setContentHeight(this.maxHeight(), visible);
         }
 
         if (changes.visible) {
-            this.toggleTooltip = this.visible ? 'Hide' : 'Show';
+            this.toggleTooltip = visible ? 'Hide' : 'Show';
 
-            if (this.visible && this.tabsService.activeTab) {
+            if (visible && this.tabsService.activeTab) {
                 this.renderTabContent(this.tabsService.activeTab);
-            } else if (!this.visible) {
+            } else if (!visible) {
                 this.removeRenderedTabContent();
             }
         }
@@ -111,21 +112,20 @@ export class TabsComponent implements OnChanges, OnDestroy {
         this.removeRenderedTabContent();
 
         const portal = new ComponentPortal(tabContent.component);
-        const componentRef = this.portalOutlet.attach(portal);
-
-        const component = componentRef.instance;
+        const componentRef = this.portalOutlet()?.attach(portal);
 
         // inject data
         for (const property of Object.keys(tabContent.inputs)) {
-            component[property] = tabContent.inputs[property];
+            componentRef?.setInput(property, tabContent.inputs[property]);
         }
 
         this.changeDetectorRef.markForCheck();
     }
 
     protected removeRenderedTabContent(): void {
-        if (this.portalOutlet?.hasAttached()) {
-            this.portalOutlet.detach();
+        const portalOutlet = this.portalOutlet();
+        if (portalOutlet?.hasAttached()) {
+            portalOutlet.detach();
         }
     }
 
