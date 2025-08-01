@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, inject, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, input, signal} from '@angular/core';
 import {PlotDataDict} from '../../backend/backend.model';
 import {LoadingState} from '../../project/loading-state.model';
 import {ProjectService} from '../../project/project.service';
@@ -33,7 +33,7 @@ import {JsonPipe} from '@angular/common';
         JsonPipe,
     ],
 })
-export class PlotListEntryComponent implements OnChanges {
+export class PlotListEntryComponent {
     private readonly projectService = inject(ProjectService);
     private readonly dialog = inject(MatDialog);
 
@@ -41,29 +41,33 @@ export class PlotListEntryComponent implements OnChanges {
 
     readonly plotStatus = input<LoadingState>();
 
-    @Input()
-    plotData?: PlotDataDict;
+    readonly plotData = input<PlotDataDict>();
 
     readonly plotError = input<GeoEngineError>();
 
     readonly width = input<number>();
 
-    plotIcon?: string;
+    readonly plotIcon = signal<string | undefined>(undefined);
 
-    isLoading = true;
-    isOk = false;
-    isError = false;
+    readonly isLoading = signal(true);
+    readonly isOk = signal(false);
+    readonly isError = signal(false);
 
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes.plotData && this.plotData) {
-            this.plotIcon = createIconDataUrl(this.plotData.outputFormat);
-        }
+    constructor() {
+        effect(() => {
+            const plotData = this.plotData();
+            if (!plotData) return;
 
-        if (changes.plotStatus) {
-            this.isLoading = this.plotStatus() === LoadingState.LOADING;
-            this.isOk = this.plotStatus() === LoadingState.OK;
-            this.isError = this.plotStatus() === LoadingState.ERROR;
-        }
+            this.plotIcon.set(createIconDataUrl(plotData.outputFormat));
+        });
+
+        effect(() => {
+            const plotStatus = this.plotStatus();
+
+            this.isLoading.set(plotStatus === LoadingState.LOADING);
+            this.isOk.set(plotStatus === LoadingState.OK);
+            this.isError.set(plotStatus === LoadingState.ERROR);
+        });
     }
 
     /**
