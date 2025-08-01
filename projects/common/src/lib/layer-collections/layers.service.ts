@@ -14,6 +14,8 @@ import {
     UpdateLayer,
     AddLayerCollection,
     AddLayer,
+    LayerProviderListing,
+    TypedDataProviderDefinition,
 } from '@geoengine/openapi-client';
 
 import {apiConfigurationWithAccessKey, UserService} from '../user/user.service';
@@ -252,5 +254,35 @@ export class LayersService {
         });
 
         return response.id;
+    }
+
+    async getProviders(offset = 0, limit = 20): Promise<LayerProviderListing[]> {
+        const layersApi = await firstValueFrom(this.layersApi);
+
+        return layersApi.listProviders({limit: limit, offset: offset});
+    }
+
+    async getProviderDefinition(provider: string): Promise<TypedDataProviderDefinition> {
+        const layersApi = await firstValueFrom(this.layersApi);
+
+        return layersApi.getProviderDefinition({provider});
+    }
+
+    async updateProviderDefinition(provider: string, typedDataProviderDefinition: TypedDataProviderDefinition): Promise<void> {
+        const layersApi = await firstValueFrom(this.layersApi);
+
+        await layersApi.updateProviderDefinition({provider, typedDataProviderDefinition});
+    }
+
+    async addProvider(typedDataProviderDefinition: TypedDataProviderDefinition): Promise<string> {
+        const layersApi = await firstValueFrom(this.layersApi);
+
+        return await layersApi.addProvider({typedDataProviderDefinition}).then((response) => response.id);
+    }
+
+    async deleteProvider(provider: string): Promise<void> {
+        const layersApi = await firstValueFrom(this.layersApi);
+
+        await layersApi.deleteProvider({provider});
     }
 }

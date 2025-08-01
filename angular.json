@@ -776,7 +776,6 @@
                             "projects/common/assets/fonts/pacifico/pacifico.css",
                             "projects/common/assets/fonts/material-design-icons/material-icons.css"
                         ],
-                        "scripts": [],
                         "browser": "projects/manager/src/main.ts"
                     },
                     "configurations": {

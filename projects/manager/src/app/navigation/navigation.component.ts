@@ -11,10 +11,12 @@ import {MatNavList, MatListItem} from '@angular/material/list';
 import {DatasetsComponent} from '../datasets/datasets.component';
 import {LayersComponent} from '../layers/layers.component';
 import {AsyncPipe} from '@angular/common';
+import {ProvidersComponent} from '../providers/providers.component';
 
 export enum NavigationType {
     Datasets = 'datasets',
     Layers = 'layers',
+    Providers = 'providers',
 }
 
 @Component({
@@ -31,6 +33,7 @@ export enum NavigationType {
         DatasetsComponent,
         LayersComponent,
         AsyncPipe,
+        ProvidersComponent,
     ],
 })
 export class NavigationComponent {
