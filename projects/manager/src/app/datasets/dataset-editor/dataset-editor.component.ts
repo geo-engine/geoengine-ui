@@ -260,8 +260,7 @@ export class DatasetEditorComponent {
         try {
             await this.datasetsService.deleteDataset(this.datasetListing().name);
             this.snackBar.open('Dataset successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
-            // TODO: The 'emit' function requires a mandatory void argument
-            this.datasetDeleted.emit();
+            this.datasetDeleted.emit(undefined);
         } catch (error) {
             const errorMessage = await errorToText(error, 'Deleting dataset failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});

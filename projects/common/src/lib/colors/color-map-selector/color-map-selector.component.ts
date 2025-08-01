@@ -167,8 +167,7 @@ export class ColorMapSelectorComponent implements OnInit, OnDestroy, OnChanges {
         this.subscriptions.push(subMinMax);
 
         this.form.valueChanges.subscribe(() => {
-            // TODO: The 'emit' function requires a mandatory void argument
-            this.changesToForm.emit();
+            this.changesToForm.emit(undefined);
         });
     }
 

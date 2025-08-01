@@ -366,8 +366,7 @@ export class LayerEditorComponent {
             this.form.markAsPristine();
 
             // TODO: make changes properly appear in the layer navigation, like for collection.
-            // TODO: The 'emit' function requires a mandatory void argument
-            this.layerUpdated.emit();
+            this.layerUpdated.emit(undefined);
         } catch (error) {
             const errorMessage = await errorToText(error, 'Updating layer failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
@@ -388,8 +387,7 @@ export class LayerEditorComponent {
         try {
             await this.layersService.removeLayer(this.layerListing().id.layerId);
             this.snackBar.open('Layer successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
-            // TODO: The 'emit' function requires a mandatory void argument
-            this.layerDeleted.emit();
+            this.layerDeleted.emit(undefined);
         } catch (error) {
             const errorMessage = await errorToText(error, 'Deleting layer failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
@@ -410,8 +408,7 @@ export class LayerEditorComponent {
         try {
             await this.layersService.removeLayerFromCollection(this.layerListing().id.layerId, this.parentCollection().collectionId);
             this.snackBar.open('Layer successfully removed.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
-            // TODO: The 'emit' function requires a mandatory void argument
-            this.layerDeleted.emit();
+            this.layerDeleted.emit(undefined);
         } catch (error) {
             const errorMessage = await errorToText(error, 'Removing layer failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});

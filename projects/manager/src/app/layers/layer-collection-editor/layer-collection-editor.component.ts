@@ -160,8 +160,7 @@ export class LayerCollectionEditorComponent implements OnChanges {
             collectionListing.description = description;
             this.form.markAsPristine();
 
-            // TODO: The 'emit' function requires a mandatory void argument
-            this.collectionUpdated.emit();
+            this.collectionUpdated.emit(undefined);
         } catch (error) {
             const errorMessage = await errorToText(error, 'Updating collection failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
@@ -182,8 +181,7 @@ export class LayerCollectionEditorComponent implements OnChanges {
         try {
             await this.layersService.removeLayerCollection(this.collectionListing().id.collectionId);
             this.snackBar.open('Collection successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
-            // TODO: The 'emit' function requires a mandatory void argument
-            this.collectionDeleted.emit();
+            this.collectionDeleted.emit(undefined);
         } catch (error) {
             const errorMessage = await errorToText(error, 'Deleting collection failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
@@ -207,8 +205,7 @@ export class LayerCollectionEditorComponent implements OnChanges {
                 this.parentCollection().collectionId,
             );
             this.snackBar.open('Collection successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
-            // TODO: The 'emit' function requires a mandatory void argument
-            this.collectionDeleted.emit();
+            this.collectionDeleted.emit(undefined);
         } catch (error) {
             const errorMessage = await errorToText(error, 'Removing collection failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
