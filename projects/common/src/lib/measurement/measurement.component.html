@@ -18,36 +18,31 @@
             </mat-form-field>
         </div>
 
-        <div class="flex-container" *ngFor="let class of classificationMeasurement.classes | keyvalue">
-            <mat-form-field appearance="fill">
-                <mat-label>Class value</mat-label>
-                <input matInput type="number" required="true" [(ngModel)]="class.key" (input)="inputChange($event)" />
-            </mat-form-field>
-            <mat-form-field appearance="fill">
-                <mat-label>Class label</mat-label>
-                <input matInput type="text" required="true" [(ngModel)]="class.value" (input)="inputChange($event)" />
-            </mat-form-field>
-
-            <button mat-icon-button (click)="removeClass(class.key)">
-                <mat-icon aria-label="Delete row">remove_circle_outline</mat-icon>
-            </button>
-        </div>
-
         <form [formGroup]="addClassForm">
-            <div class="flex-container">
-                <mat-form-field appearance="fill">
-                    <mat-label>New class value</mat-label>
-                    <input matInput type="number" formControlName="key" (input)="inputChange($event)" />
-                </mat-form-field>
-                <mat-form-field appearance="fill">
-                    <mat-label>New class label</mat-label>
-                    <input matInput type="text" formControlName="value" (input)="inputChange($event)" />
-                </mat-form-field>
+            <ng-container formArrayName="classes">
+                <ng-container *ngFor="let cl of classes.controls; let i = index">
+                    <div class="flex-container" [formGroup]="cl">
+                        <mat-form-field appearance="fill">
+                            <mat-label>New class value</mat-label>
+                            <input matInput type="number" formControlName="key" (input)="onClassValueChange($event, i)" />
+                        </mat-form-field>
+                        <mat-form-field appearance="fill">
+                            <mat-label>New class label</mat-label>
+                            <input matInput type="text" formControlName="value" (input)="onClassLabelChange($event, i)" />
+                        </mat-form-field>
 
-                <button mat-icon-button [disabled]="!addClassForm.valid" (click)="addClass()">
-                    <mat-icon aria-label="Add class">add_circle_outline</mat-icon>
-                </button>
-            </div>
+                        @if (this.isLast(i)) {
+                            <button mat-icon-button [disabled]="!addClassForm.valid" (click)="addClass(i)">
+                                <mat-icon aria-label="Add class">add_circle_outline</mat-icon>
+                            </button>
+                        } @else {
+                            <button mat-icon-button (click)="removeClass(i)">
+                                <mat-icon aria-label="Delete row">remove_circle_outline</mat-icon>
+                            </button>
+                        }
+                    </div>
+                </ng-container>
+            </ng-container>
         </form>
     }
 

@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnChanges, Output} from '@angular/core';
-import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ClassificationMeasurement, ContinuousMeasurement, Measurement, UnitlessMeasurement} from '@geoengine/openapi-client';
 import {CommonModule as AngularCommonModule} from '@angular/common';
 import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle';
@@ -17,6 +17,10 @@ enum MeasurementType {
 interface AddClassForm {
     key: FormControl<string>;
     value: FormControl<string>;
+}
+
+interface ClassForms {
+    classes: FormArray<FormGroup<AddClassForm>>;
 }
 
 @Component({
@@ -48,15 +52,8 @@ export class MeasurementComponent implements OnChanges {
     continuousMeasurement?: ContinuousMeasurement;
     unitlessMeasurement?: UnitlessMeasurement;
 
-    addClassForm: FormGroup<AddClassForm> = new FormGroup<AddClassForm>({
-        key: new FormControl('', {
-            nonNullable: true,
-            validators: [Validators.required, Validators.minLength(1)],
-        }),
-        value: new FormControl('', {
-            nonNullable: true,
-            validators: [Validators.required, Validators.minLength(1)],
-        }),
+    addClassForm: FormGroup<ClassForms> = new FormGroup({
+        classes: new FormArray<FormGroup<AddClassForm>>([]),
     });
 
     ngOnChanges() {
@@ -72,6 +69,23 @@ export class MeasurementComponent implements OnChanges {
         this.classificationMeasurement = undefined;
         this.continuousMeasurement = undefined;
         this.unitlessMeasurement = undefined;
+    }
+
+    get classes(): FormArray<FormGroup<AddClassForm>> {
+        return this.addClassForm.controls.classes;
+    }
+
+    newClassRow(key: string | null = null, label: string | null = null): FormGroup<AddClassForm> {
+        return new FormGroup<AddClassForm>({
+            key: new FormControl(key ?? '', {
+                nonNullable: true,
+                validators: [Validators.required, Validators.minLength(1)],
+            }),
+            value: new FormControl(label ?? '', {
+                nonNullable: true,
+                validators: [Validators.required, Validators.minLength(1)],
+            }),
+        });
     }
 
     getMeasurementType(): MeasurementType {
@@ -93,6 +107,11 @@ export class MeasurementComponent implements OnChanges {
         switch (measurement.type) {
             case MeasurementType.Classification:
                 this.classificationMeasurement = measurement;
+                this.pushEmptyClassValue();
+                for (let classesKey in this.classificationMeasurement.classes) {
+                    const value = this.classificationMeasurement.classes[classesKey];
+                    this.addClassForm.controls.classes.push(this.newClassRow(classesKey, value));
+                }
                 break;
             case MeasurementType.Continuous:
                 this.continuousMeasurement = measurement;
@@ -102,6 +121,18 @@ export class MeasurementComponent implements OnChanges {
                 break;
         }
         this.measurement = measurement;
+    }
+
+    private pushEmptyClassValue() {
+        if (!this.classificationMeasurement) {
+            return;
+        }
+        if (Object.keys(this.classificationMeasurement.classes).length == 0 && this.addClassForm.controls.classes.length < 1) {
+            // there must always be one of those forms, s.t.
+            // users can always enter some first class.
+            // This is not necessary if there are some classes already in the system
+            this.addClassForm.controls.classes.push(this.newClassRow());
+        }
     }
 
     updateMeasurementType(type: MeasurementType): void {
@@ -116,6 +147,7 @@ export class MeasurementComponent implements OnChanges {
                 }
 
                 this.measurement = this.classificationMeasurement;
+                this.pushEmptyClassValue();
                 break;
             case MeasurementType.Continuous:
                 if (!this.continuousMeasurement) {
@@ -142,29 +174,59 @@ export class MeasurementComponent implements OnChanges {
         this.measurementChange.emit(this.measurement);
     }
 
-    removeClass(key: string) {
+    removeClass(index: number) {
         if (!this.classificationMeasurement) {
             return;
         }
 
+        const key = this.addClassForm.controls.classes.at(index).controls.key.value;
+        this.addClassForm.controls.classes.removeAt(index);
         delete this.classificationMeasurement.classes[key];
+        // notify observers to mark forms as dirty
+        this.onInputChange.emit();
     }
 
-    addClass() {
+    protected isLast(i: number): boolean {
+        return this.addClassForm.controls.classes.length - 1 === i;
+    }
+
+    addClass(i: number) {
         if (!this.classificationMeasurement) {
             return;
         }
 
-        const key = this.addClassForm.controls.key.value;
-        const value = this.addClassForm.controls.value.value;
-
-        this.classificationMeasurement.classes[key] = value;
-
-        this.addClassForm.reset();
-        this.addClassForm.markAsPristine();
+        const key = this.addClassForm.controls.classes.at(i).value.key;
+        const value = this.addClassForm.controls.classes.at(i).value.value;
+        // x == null is sufficient to test for both null and undefined
+        if (!(key == null || value == null)) {
+            this.classificationMeasurement.classes[key] = value;
+        }
+        this.addClassForm.controls.classes.push(this.newClassRow());
     }
 
     inputChange(content: Event) {
+        this.onInputChange.emit(content);
+    }
+
+    onClassValueChange(content: Event, i: number) {
+        // Save the currently edited class to the measurement iff it is valid
+        if (i != undefined && this.addClassForm.controls.classes.at(i).valid && this.classificationMeasurement) {
+            const key = this.addClassForm.controls.classes.at(i).value.key!;
+            const old = this.classificationMeasurement.classes[key];
+            delete this.classificationMeasurement.classes[key];
+            const value = content.target as HTMLInputElement;
+            this.classificationMeasurement.classes[value.value] = old;
+        }
+        this.onInputChange.emit(content);
+    }
+
+    onClassLabelChange(content: Event, i: number) {
+        // Save the currently edited class to the measurement iff it is valid
+        if (i != undefined && this.addClassForm.controls.classes.at(i).valid && this.classificationMeasurement) {
+            const key = this.addClassForm.controls.classes.at(i).value.key!;
+            const value = content.target as HTMLInputElement;
+            this.classificationMeasurement.classes[key] = value.value;
+        }
         this.onInputChange.emit(content);
     }
 }

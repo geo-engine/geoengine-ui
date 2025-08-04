@@ -1,13 +1,12 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/core';
 import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {GdalDatasetParametersComponent, GdalDatasetParametersForm} from '../gdal-dataset-parameters/gdal-dataset-parameters.component';
-import {DatasetsService, MeasurementComponent, TimeInterval, errorToText} from '@geoengine/common';
+import {DatasetsService, errorToText, MeasurementComponent, TimeInterval} from '@geoengine/common';
 import moment from 'moment';
 import {
     DataPath,
     GdalDatasetParameters,
     GdalMetaDataList,
-    Measurement,
     MetaDataDefinition,
     RasterDataType,
     RasterResultDescriptor,
@@ -327,7 +326,7 @@ export class GdalMetadataListComponent implements OnChanges {
         return form;
     }
 
-    onMeasurementChange() {
+    markDirty() {
         this.form.markAsDirty();
     }
 }
