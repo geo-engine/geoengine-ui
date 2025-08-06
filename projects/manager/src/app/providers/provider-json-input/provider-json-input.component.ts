@@ -29,7 +29,6 @@ export class ProviderJsonInputComponent {
         });
 
         this.json.valueChanges.subscribe((value) => {
-            console.log('JSON changed');
             if (value && this.visible()) {
                 try {
                     this.setChangedDefinition(TypedDataProviderDefinitionFromJSON(JSON.parse(value)));
