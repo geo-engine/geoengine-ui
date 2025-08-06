@@ -36,7 +36,7 @@ export class AddProviderComponent {
             this.dialogRef.close(id);
         } catch (e) {
             const error = await errorToText(e, 'Unknown error while creating provider');
-            this.matSnackBar.open(error, 'Error');
+            this.matSnackBar.open(error, 'Close');
         }
     }
 

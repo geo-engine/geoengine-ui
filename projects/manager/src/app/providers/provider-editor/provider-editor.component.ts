@@ -103,7 +103,7 @@ export class ProviderEditorComponent implements OnChanges, OnInit {
             this.updatedDefinition = undefined;
         } catch (e) {
             const error = await errorToText(e, 'Unknown error while updating provider');
-            this.snackBar.open(error, 'Error');
+            this.snackBar.open(error, 'Close');
         }
     }
 
