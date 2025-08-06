@@ -1,4 +1,4 @@
-import {Component, effect, input, output} from '@angular/core';
+import {Component, effect, input, output, signal} from '@angular/core';
 import {TypedDataProviderDefinition, TypedDataProviderDefinitionFromJSON} from '@geoengine/openapi-client';
 import {MatError} from '@angular/material/form-field';
 import {CodeEditorComponent} from '@geoengine/common';
@@ -15,26 +15,27 @@ export class ProviderJsonInputComponent {
     readonly provider = input<TypedDataProviderDefinition>();
     readonly visible = input<boolean>(false);
     readonly readonly = input<boolean>(false);
-    inputInvalid: boolean = false;
+    inputInvalid = signal<boolean>(false);
     json = new FormControl<string | null>('');
 
     constructor() {
         effect(() => {
             if (this.provider()) {
                 this.json.setValue(JSON.stringify(this.provider(), undefined, 4), {emitEvent: false});
-                this.inputInvalid = false;
+                this.inputInvalid.set(false);
             } else {
-                this.inputInvalid = true;
+                this.inputInvalid.set(true);
             }
         });
 
         this.json.valueChanges.subscribe((value) => {
+            console.log('JSON changed');
             if (value && this.visible()) {
                 try {
                     this.setChangedDefinition(TypedDataProviderDefinitionFromJSON(JSON.parse(value)));
-                    this.inputInvalid = false;
+                    this.inputInvalid.set(false);
                 } catch (_) {
-                    this.inputInvalid = true;
+                    this.inputInvalid.set(true);
                 }
             }
         });
