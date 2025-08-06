@@ -1,17 +1,17 @@
 import {
     Component,
     ChangeDetectionStrategy,
-    ViewChild,
-    Input,
-    Output,
-    EventEmitter,
     OnChanges,
     SimpleChanges,
     ChangeDetectorRef,
+    inject,
+    input,
+    output,
+    viewChild,
 } from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, EMPTY, from, Observable, range, Subject} from 'rxjs';
-import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
+import {CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf} from '@angular/cdk/scrolling';
 import {concatMap, scan, startWith, tap} from 'rxjs/operators';
 import {LayerCollectionSearch} from '../layer-collection.model';
 import {
@@ -25,6 +25,12 @@ import {
 import {LayersService} from '../layers.service';
 import {createIconDataUrl} from '../../util/icons';
 import {LayoutService} from '../../layout.service';
+import {MatNavList, MatListItem, MatListItemIcon, MatListItemTitle, MatListItemLine} from '@angular/material/list';
+import {MatIcon} from '@angular/material/icon';
+import {MatIconButton} from '@angular/material/button';
+import {LayerCollectionLayerComponent} from '../layer-collection-layer/layer-collection-layer.component';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {AsyncPipe} from '@angular/common';
 
 /**
  * Enum representing the different modes of collection navigation.
@@ -51,13 +57,29 @@ export enum CollectionNavigation {
     templateUrl: './layer-collection-list.component.html',
     styleUrls: ['./layer-collection-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        CdkVirtualScrollViewport,
+        CdkFixedSizeVirtualScroll,
+        MatNavList,
+        CdkVirtualForOf,
+        MatListItem,
+        MatIcon,
+        MatListItemIcon,
+        MatListItemTitle,
+        MatListItemLine,
+        MatIconButton,
+        LayerCollectionLayerComponent,
+        MatProgressSpinner,
+        AsyncPipe,
+    ],
 })
 export class LayerCollectionListComponent implements OnChanges {
+    private readonly layersService = inject(LayersService);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+
     readonly CollectionNavigation = CollectionNavigation;
 
-    @ViewChild(CdkVirtualScrollViewport)
-    viewport!: CdkVirtualScrollViewport;
+    readonly viewport = viewChild.required(CdkVirtualScrollViewport);
 
     /**
      * Visualize…
@@ -65,33 +87,27 @@ export class LayerCollectionListComponent implements OnChanges {
      * - a collection if `ProviderLayerCollectionIdDict`
      * - a search result if `LayerCollectionSearch`
      */
-    @Input()
-    collection?: ProviderLayerCollectionIdDict | LayerCollectionSearch = undefined;
+    readonly collection = input<ProviderLayerCollectionIdDict | LayerCollectionSearch>();
 
-    @Input({required: false}) collectionNavigation = CollectionNavigation.Element;
+    readonly collectionNavigation = input(CollectionNavigation.Element);
 
-    @Input({required: false}) showLayerToggle = true;
-    @Input({required: false}) highlightSelection = false;
+    readonly showLayerToggle = input(true);
+    readonly highlightSelection = input(false);
 
-    @Output() navigateCollection = new EventEmitter<LayerCollectionListing>();
+    readonly navigateCollection = output<LayerCollectionListing>();
 
-    @Output() selectCollection = new EventEmitter<LayerCollectionListing>();
+    readonly selectCollection = output<LayerCollectionListing>();
 
-    @Output() selectLayer = new EventEmitter<LayerListing>();
+    readonly selectLayer = output<LayerListing>();
 
     readonly itemSizePx = 72;
 
-    @Input() loadingSpinnerDiameterPx: number = 3 * LayoutService.remInPx;
+    readonly loadingSpinnerDiameterPx = input<number>(3 * LayoutService.remInPx);
 
     source?: LayerCollectionItemDataSource;
 
     selectedCollection?: LayerCollectionListing;
     selectedLayer?: LayerListing;
-
-    constructor(
-        private readonly layersService: LayersService,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-    ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.collection) {
@@ -112,8 +128,8 @@ export class LayerCollectionListComponent implements OnChanges {
      * Fetch new data when scrolled to the end of the list.
      */
     onScrolledIndexChange(_scrolledIndex: number): void {
-        const end = this.viewport.getRenderedRange().end;
-        const total = this.viewport.getDataLength();
+        const end = this.viewport().getRenderedRange().end;
+        const total = this.viewport().getDataLength();
 
         // only fetch when scrolled to the end
         if (end >= total) {
@@ -141,20 +157,20 @@ export class LayerCollectionListComponent implements OnChanges {
         this.selectedCollection = undefined;
         this.selectedLayer = undefined;
         if (item.type === 'collection') {
-            this.selectCollection.next(item);
+            this.selectCollection.emit(item);
             this.selectedCollection = item;
         } else if (item.type === 'layer') {
-            this.selectLayer.next(item);
+            this.selectLayer.emit(item);
             this.selectedLayer = item;
         }
     }
 
     navigateToCollection(item: LayerCollectionListing): void {
-        this.navigateCollection.next(item);
+        this.navigateCollection.emit(item);
     }
 
     protected setUpSource(): void {
-        this.source = new LayerCollectionItemDataSource(this.layersService, this.collection);
+        this.source = new LayerCollectionItemDataSource(this.layersService, this.collection());
 
         setTimeout(() => {
             this.source?.init(this.calculateInitialNumberOfElements());
@@ -162,7 +178,7 @@ export class LayerCollectionListComponent implements OnChanges {
     }
 
     protected calculateInitialNumberOfElements(): number {
-        const element = this.viewport.elementRef.nativeElement;
+        const element = this.viewport().elementRef.nativeElement;
         const numberOfElements = Math.ceil(element.clientHeight / this.itemSizePx);
         // add one such that scrolling happens
         return numberOfElements + 1;
@@ -232,8 +248,9 @@ class LayerCollectionItemDataSource extends DataSource<LayerCollectionItemDict> 
     /**
      * Clean up resources
      */
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    disconnect(): void {}
+    disconnect(): void {
+        // do nothing
+    }
 
     fetchMoreData(numberOfTimes: number): void {
         this.nextBatch$.next(numberOfTimes);

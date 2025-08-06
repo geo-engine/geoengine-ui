@@ -1,7 +1,7 @@
 import {map, mergeMap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {AfterViewInit, ChangeDetectionStrategy, Component, Input, ViewChild} from '@angular/core';
-import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
+import {AfterViewInit, ChangeDetectionStrategy, Component, inject, input, viewChild} from '@angular/core';
+import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {ProjectService} from '../../../project/project.service';
 import {UUID} from '../../../backend/backend.model';
@@ -19,9 +19,22 @@ import {
     ResultTypes,
     SingleBandRasterColorizer,
     geoengineValidators,
+    CommonModule,
+    AsyncValueDefault,
 } from '@geoengine/common';
 import {SymbologyCreationType, SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {MatFormField, MatLabel, MatError} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
+import {AsyncPipe} from '@angular/common';
 
 interface ExpressionForm {
     rasterLayer: FormControl<RasterLayer | undefined>;
@@ -40,15 +53,38 @@ interface ExpressionForm {
     templateUrl: './bandwise-expression-operator.component.html',
     styleUrls: ['./bandwise-expression-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        OperatorDialogContainerComponent,
+        MatIconButton,
+        MatIcon,
+        LayerSelectionComponent,
+        CommonModule,
+        MatCheckbox,
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        OperatorOutputNameComponent,
+        MatError,
+        SymbologyCreatorComponent,
+        MatButton,
+        AsyncPipe,
+        AsyncValueDefault,
+    ],
 })
 export class BandwiseExpressionOperatorComponent implements AfterViewInit {
+    protected readonly projectService = inject(ProjectService);
+    protected readonly layoutService = inject(LayoutService);
+
     /**
      * If the list is empty, show the following button.
      */
-    @Input() dataListConfig?: SidenavConfig;
+    readonly dataListConfig = input<SidenavConfig>();
 
-    @ViewChild(MeasurementComponent) measurementComponent?: MeasurementComponent;
+    readonly measurementComponent = viewChild(MeasurementComponent);
 
     readonly RASTER_TYPE = [ResultTypes.RASTER];
     readonly form: FormGroup<ExpressionForm>;
@@ -60,22 +96,18 @@ export class BandwiseExpressionOperatorComponent implements AfterViewInit {
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
 
-    @ViewChild(SymbologyCreatorComponent)
-    readonly symbologyCreator!: SymbologyCreatorComponent;
+    readonly symbologyCreator = viewChild.required(SymbologyCreatorComponent);
 
     /**
      * DI of services and setup of observables for the template
      */
-    constructor(
-        protected readonly projectService: ProjectService,
-        protected readonly layoutService: LayoutService,
-    ) {
+    constructor() {
         this.form = new FormGroup<ExpressionForm>({
             rasterLayer: new FormControl<RasterLayer | undefined>(undefined, {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
-            expression: new FormControl<string>('    1 * x', {
+            expression: new FormControl<string>('1 * x', {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
@@ -198,7 +230,10 @@ export class BandwiseExpressionOperatorComponent implements AfterViewInit {
                     return this.projectService.registerWorkflow(workflow);
                 }),
                 mergeMap((workflowId: UUID) => {
-                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator.symbologyForRasterLayer(workflowId, rasterLayer);
+                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator().symbologyForRasterLayer(
+                        workflowId,
+                        rasterLayer,
+                    );
                     return combineLatest([of(workflowId), symbology$]);
                 }),
                 mergeMap(([workflowId, symbology]: [UUID, RasterSymbology]) => {
@@ -233,10 +268,11 @@ export class BandwiseExpressionOperatorComponent implements AfterViewInit {
     }
 
     goToAddDataTab(): void {
-        if (!this.dataListConfig) {
+        const dataListConfig = this.dataListConfig();
+        if (!dataListConfig) {
             return;
         }
 
-        this.layoutService.setSidenavContentComponent(this.dataListConfig);
+        this.layoutService.setSidenavContentComponent(dataListConfig);
     }
 }

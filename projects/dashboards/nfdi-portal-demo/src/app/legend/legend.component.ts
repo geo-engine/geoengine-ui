@@ -1,17 +1,18 @@
-import {Component, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges, ChangeDetectorRef} from '@angular/core';
-import {RasterLayer} from '@geoengine/common';
+import {Component, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges, ChangeDetectorRef, inject} from '@angular/core';
+import {RasterLayer, FxLayoutDirective, FxLayoutAlignDirective, FxLayoutGapDirective} from '@geoengine/common';
+import {RasterLegendComponent} from '@geoengine/core';
 
 @Component({
-    selector: 'geoengine-legend', // eslint-disable-line @angular-eslint/component-selector
+    selector: 'geoengine-legend',
     templateUrl: './legend.component.html',
     styleUrls: ['./legend.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [FxLayoutDirective, FxLayoutAlignDirective, FxLayoutGapDirective, RasterLegendComponent],
 })
 export class LegendComponent implements OnChanges {
-    @Input() layer?: RasterLayer = undefined;
+    readonly changeDetectorRef = inject(ChangeDetectorRef);
 
-    constructor(readonly changeDetectorRef: ChangeDetectorRef) {}
+    @Input() layer?: RasterLayer = undefined;
 
     ngOnChanges(_changes: SimpleChanges): void {
         this.changeDetectorRef.markForCheck();

@@ -27,7 +27,7 @@ const COLORMAP_BLACKWHITE_DATA: Array<[number, number, number]> = [
     [1, 1, 1],
 ];
 
-export const GENERIC_COLORMAPS: {[name: string]: Array<RgbaTuple>} = {
+export const GENERIC_COLORMAPS: Record<string, Array<RgbaTuple>> = {
     BLACKWHITE: convertFractionsToRgbas(COLORMAP_BLACKWHITE_DATA),
     RAINBOW: convertFractionsToRgbas(COLORMAP_RAINBOW_DATA),
 };

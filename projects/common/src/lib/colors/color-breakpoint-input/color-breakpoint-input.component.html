@@ -3,8 +3,8 @@
         <input
             matInput
             type="number"
-            [readonly]="readonlyAttribute"
-            [placeholder]="attributePlaceholder"
+            [readonly]="readonlyAttribute()"
+            [placeholder]="attributePlaceholder()"
             [ngModel]="colorBreakpoint.value"
             (ngModelChange)="updateValue($event)"
             (blur)="propagateChange()"
@@ -16,10 +16,10 @@
         <input
             matInput
             class="color_cell"
-            [readonly]="readonlyColor"
+            [readonly]="readonlyColor()"
             [ngModel]="colorBreakpoint.color.rgbaCssString()"
             (ngModelChange)="updateColor($event)"
-            [placeholder]="colorPlaceholder"
+            [placeholder]="colorPlaceholder()"
             [colorPicker]="colorBreakpoint.color.rgbaCssString()"
             (colorPickerChange)="updateColor($event)"
             [cpUseRootViewContainer]="true"

@@ -1,12 +1,17 @@
 import {BehaviorSubject, Subscription} from 'rxjs';
 
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject, input} from '@angular/core';
+import {UntypedFormControl, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {first} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {UUID} from '../../backend/backend.model';
-import {UserService} from '@geoengine/common';
+import {UserService, FxLayoutDirective, FxLayoutAlignDirective, FxLayoutGapDirective, FxFlexDirective} from '@geoengine/common';
+import {NgClass, NgSwitch, NgSwitchCase, NgIf, AsyncPipe} from '@angular/common';
+import {MatCard, MatCardContent, MatCardActions} from '@angular/material/card';
+import {MatFormField, MatInput} from '@angular/material/input';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {MatButton} from '@angular/material/button';
 
 enum FormStatus {
     LoggedOut,
@@ -19,12 +24,35 @@ enum FormStatus {
     templateUrl: './token-login.component.html',
     styleUrls: ['./token-login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        FxLayoutDirective,
+        FxLayoutAlignDirective,
+        NgClass,
+        MatCard,
+        MatCardContent,
+        NgSwitch,
+        NgSwitchCase,
+        MatFormField,
+        MatInput,
+        NgIf,
+        MatProgressSpinner,
+        MatCardActions,
+        FxLayoutGapDirective,
+        MatButton,
+        FxFlexDirective,
+        AsyncPipe,
+    ],
 })
 export class TokenLoginComponent implements OnInit, AfterViewInit, OnDestroy {
-    @Input() routeTo?: Array<string>;
-    @Input() invalidTokenText = 'Invalid token';
-    @Input() color: 'primary' | 'accent' = 'primary';
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly userService = inject(UserService);
+    private readonly router = inject(Router);
+
+    readonly routeTo = input<Array<string>>();
+    readonly invalidTokenText = input('Invalid token');
+    readonly color = input<'primary' | 'accent'>('primary');
 
     readonly FormStatus = FormStatus;
 
@@ -36,11 +64,7 @@ export class TokenLoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private formStatusSubscription?: Subscription;
 
-    constructor(
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly userService: UserService,
-        private readonly router: Router,
-    ) {
+    constructor() {
         this.loginForm = new UntypedFormGroup({
             sessionToken: new UntypedFormControl('', Validators.required),
         });
@@ -93,9 +117,10 @@ export class TokenLoginComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     redirectRoute(): void {
-        if (!this.routeTo) {
+        const routeTo = this.routeTo();
+        if (!routeTo) {
             return;
         }
-        this.router.navigate(this.routeTo);
+        this.router.navigate(routeTo);
     }
 }

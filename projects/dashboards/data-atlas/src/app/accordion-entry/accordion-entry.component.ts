@@ -1,42 +1,57 @@
-import {Component, OnInit, ChangeDetectionStrategy, Input, ChangeDetectorRef} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject, input} from '@angular/core';
 import {mergeMap, BehaviorSubject, combineLatest, of, forkJoin, Observable, map, from} from 'rxjs';
 import {LayerCollectionListingDict, ProjectService, ProviderLayerCollectionIdDict} from '@geoengine/core';
 import {DataRange, DataSelectionService} from '../data-selection.service';
-import {LayersService, RasterLayer, RasterSymbology, Time} from '@geoengine/common';
+import {LayersService, RasterLayer, RasterSymbology, Time, CommonModule, AsyncValueDefault} from '@geoengine/common';
 import {CollectionItem, LayerCollection, LayerListing, ProviderLayerId} from '@geoengine/openapi-client';
+import {MatCard, MatCardHeader, MatCardAvatar, MatCardTitle, MatCardSubtitle, MatCardContent} from '@angular/material/card';
+import {MatIcon} from '@angular/material/icon';
+import {MatButton} from '@angular/material/button';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-accordion-entry',
     templateUrl: './accordion-entry.component.html',
     styleUrls: ['./accordion-entry.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatCard,
+        MatCardHeader,
+        MatIcon,
+        MatCardAvatar,
+        MatCardTitle,
+        MatCardSubtitle,
+        MatCardContent,
+        CommonModule,
+        MatButton,
+        AsyncPipe,
+        AsyncValueDefault,
+    ],
 })
 export class AccordionEntryComponent implements OnInit {
-    @Input() collection!: ProviderLayerCollectionIdDict;
-    @Input() otherCollection?: ProviderLayerCollectionIdDict;
-    @Input() icon = 'class';
+    private readonly layersService = inject(LayersService);
+    readonly projectService = inject(ProjectService);
+    readonly dataSelectionService = inject(DataSelectionService);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+
+    readonly collection = input.required<ProviderLayerCollectionIdDict>();
+    readonly otherCollection = input<ProviderLayerCollectionIdDict>();
+    readonly icon = input('class');
 
     readonly selectedLayers$ = new BehaviorSubject<Array<ProviderLayerId | undefined>>([]);
     readonly collections$ = new BehaviorSubject<Array<LayerCollection>>([]);
 
-    constructor(
-        private readonly layersService: LayersService,
-        readonly projectService: ProjectService,
-        readonly dataSelectionService: DataSelectionService,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-    ) {}
-
     ngOnInit(): void {
         let otherCollectionItems$: Observable<Array<CollectionItem>> = of([]);
-        if (this.otherCollection) {
+        const otherCollection = this.otherCollection();
+        if (otherCollection) {
             otherCollectionItems$ = from(
-                this.layersService.getLayerCollectionItems(this.otherCollection.providerId, this.otherCollection.collectionId),
+                this.layersService.getLayerCollectionItems(otherCollection.providerId, otherCollection.collectionId),
             ).pipe(map((c) => c.items));
         }
 
         forkJoin({
-            providerCollections: this.layersService.getLayerCollectionItems(this.collection.providerId, this.collection.collectionId),
+            providerCollections: this.layersService.getLayerCollectionItems(this.collection().providerId, this.collection().collectionId),
             otherCollectionItems: otherCollectionItems$,
         }).subscribe(({providerCollections, otherCollectionItems}) => {
             const collections = [];

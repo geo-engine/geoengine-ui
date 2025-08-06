@@ -1,7 +1,7 @@
-import {ChangeDetectionStrategy, Component, Inject, OnInit, ViewContainerRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, ViewContainerRef, inject} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer, Title} from '@angular/platform-browser';
-import {Router} from '@angular/router';
+import {Router, RouterOutlet} from '@angular/router';
 import {AppConfig} from './app-config.service';
 import {Location} from '@angular/common';
 import {UserService} from '@geoengine/common';
@@ -11,19 +11,19 @@ import {UserService} from '@geoengine/common';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [RouterOutlet],
 })
 export class AppComponent implements OnInit {
-    constructor(
-        private readonly iconRegistry: MatIconRegistry,
-        private readonly sanitizer: DomSanitizer,
-        private readonly userService: UserService,
-        private readonly router: Router,
-        @Inject(AppConfig) readonly config: AppConfig,
-        private readonly titleService: Title,
-        private readonly vcRef: ViewContainerRef,
-        private readonly location: Location,
-    ) {
+    private readonly iconRegistry = inject(MatIconRegistry);
+    private readonly sanitizer = inject(DomSanitizer);
+    private readonly userService = inject(UserService);
+    private readonly router = inject(Router);
+    readonly config = inject<AppConfig>(AppConfig);
+    private readonly titleService = inject(Title);
+    private readonly vcRef = inject(ViewContainerRef);
+    private readonly location = inject(Location);
+
+    constructor() {
         this.registerIcons();
 
         this.setupLogoutCallback();

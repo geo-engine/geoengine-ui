@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {UploadFileLayersResponse, UploadFilesResponse, UploadsApi} from '@geoengine/openapi-client';
 import {ReplaySubject, firstValueFrom} from 'rxjs';
 import {UserService, apiConfigurationWithAccessKey} from '../user/user.service';
@@ -7,9 +7,11 @@ import {UserService, apiConfigurationWithAccessKey} from '../user/user.service';
     providedIn: 'root',
 })
 export class UploadsService {
+    private sessionService = inject(UserService);
+
     uploadsApi = new ReplaySubject<UploadsApi>(1);
 
-    constructor(private sessionService: UserService) {
+    constructor() {
         this.sessionService.getSessionStream().subscribe({
             next: (session) => this.uploadsApi.next(new UploadsApi(apiConfigurationWithAccessKey(session.sessionToken))),
         });

@@ -156,7 +156,6 @@ class Float64 extends RasterDataType {
 export class RasterDataTypeCollection {
     static readonly INSTANCE = new RasterDataTypeCollection();
 
-    /* eslint-disable @typescript-eslint/naming-convention,no-underscore-dangle,id-blacklist,id-match */
     Byte: RasterDataType = new Byte();
     Int16: RasterDataType = new Int16();
     UInt16: RasterDataType = new UInt16();
@@ -164,7 +163,6 @@ export class RasterDataTypeCollection {
     UInt32: RasterDataType = new UInt32();
     Float32: RasterDataType = new Float32();
     Float64: RasterDataType = new Float64();
-    /* eslint-enable */
 
     ALL_DATATYPES: Array<RasterDataType>;
 
@@ -250,7 +248,7 @@ class MultiPolygon extends VectorDataType {
 export class VectorDataTypeCollection {
     static readonly INSTANCE = new VectorDataTypeCollection();
 
-    /* eslint-disable @typescript-eslint/naming-convention,no-underscore-dangle,id-blacklist,id-match */
+    /* eslint-disable @typescript-eslint/naming-convention */
     Data: VectorDataType = new Data();
     MultiPoint: VectorDataType = new MultiPoint();
     MultiLineString: VectorDataType = new MultiLineString();
@@ -320,15 +318,21 @@ class MediaColumn extends VectorColumnDataType {
     readonly isNumeric = false;
 }
 
+class DateTimeColumn extends VectorColumnDataType {
+    readonly code = 'dateTime';
+    readonly isNumeric = false;
+}
+
 export class VectorColumnDataTypeCollection {
     static readonly INSTANCE = new VectorColumnDataTypeCollection();
 
-    /* eslint-disable @typescript-eslint/naming-convention,no-underscore-dangle,id-blacklist,id-match */
+    /* eslint-disable @typescript-eslint/naming-convention */
     readonly Float: VectorColumnDataType = new FloatColumn();
     readonly Int: VectorColumnDataType = new IntColumn();
     readonly Text: VectorColumnDataType = new TextColumn();
     readonly Category: VectorColumnDataType = new CategoryColumn();
     readonly Media: VectorColumnDataType = new MediaColumn();
+    readonly DateTime: VectorColumnDataType = new DateTimeColumn();
 
     fromCode(code: string): VectorColumnDataType {
         switch (code) {
@@ -342,6 +346,8 @@ export class VectorColumnDataTypeCollection {
                 return this.Category;
             case this.Media.code:
                 return this.Media;
+            case this.DateTime.code:
+                return this.DateTime;
             default:
                 throw new Error(`Invalid Column Data Type: ${code}`);
         }

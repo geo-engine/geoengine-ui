@@ -1,6 +1,6 @@
 import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {Component, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit, Inject} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ElementRef, AfterViewInit, inject, viewChild} from '@angular/core';
 import * as dagreD3 from 'dagre-d3';
 import * as d3 from 'd3';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
@@ -8,8 +8,15 @@ import {OperatorParams, OperatorSourcesDict} from '../../backend/backend.model';
 import {LayoutService} from '../../layout.service';
 import {ProjectService} from '../../project/project.service';
 
-import {createIconDataUrl, Layer} from '@geoengine/common';
+import {createIconDataUrl, Layer, FxLayoutDirective, FxFlexDirective} from '@geoengine/common';
 import {TypedOperatorOperator} from '@geoengine/openapi-client';
+import {DialogHeaderComponent} from '../../dialogs/dialog-header/dialog-header.component';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {DialogSectionHeadingComponent} from '../../dialogs/dialog-section-heading/dialog-section-heading.component';
+import {MatList, MatListItem, MatListSubheaderCssMatStyler, MatDivider} from '@angular/material/list';
+import {MatLine} from '@angular/material/grid-list';
+import {MatTooltip} from '@angular/material/tooltip';
+import {AsyncPipe} from '@angular/common';
 
 const GRAPH_STYLE = {
     general: {
@@ -32,11 +39,32 @@ const GRAPH_STYLE = {
     templateUrl: './lineage-graph.component.html',
     styleUrls: ['./lineage-graph.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        DialogHeaderComponent,
+        FxLayoutDirective,
+        MatProgressSpinner,
+        FxFlexDirective,
+        DialogSectionHeadingComponent,
+        MatList,
+        MatListItem,
+        MatLine,
+        MatListSubheaderCssMatStyler,
+        MatTooltip,
+        MatDivider,
+        AsyncPipe,
+    ],
 })
 export class LineageGraphComponent implements AfterViewInit {
-    @ViewChild('svg', {static: true}) svg!: ElementRef;
-    @ViewChild('g', {static: true}) g!: ElementRef;
+    private elementRef = inject(ElementRef);
+    private projectService = inject(ProjectService);
+    private layoutService = inject(LayoutService);
+    private dialogRef = inject<MatDialogRef<LineageGraphComponent>>(MatDialogRef);
+    private config = inject<{
+        layer: Layer;
+    }>(MAT_DIALOG_DATA);
+
+    readonly svg = viewChild.required<ElementRef>('svg');
+    readonly g = viewChild.required<ElementRef>('g');
 
     svgWidth$: Observable<number>;
     svgHeight$: Observable<number>;
@@ -58,13 +86,7 @@ export class LineageGraphComponent implements AfterViewInit {
 
     private svgRatio = 0.7;
 
-    constructor(
-        private elementRef: ElementRef,
-        private projectService: ProjectService,
-        private layoutService: LayoutService,
-        private dialogRef: MatDialogRef<LineageGraphComponent>,
-        @Inject(MAT_DIALOG_DATA) private config: {layer: Layer},
-    ) {
+    constructor() {
         this.svgWidth$ = this.maxWidth$.pipe(map((width) => Math.ceil(this.svgRatio * width)));
         this.svgHeight$ = this.maxHeight$;
 
@@ -113,8 +135,8 @@ export class LineageGraphComponent implements AfterViewInit {
 
             // Set up an SVG group so that we can translate the final graph.
             // console.log(this.graphContainer.nativeElement);
-            const svg = d3.select(this.svg.nativeElement);
-            const svgGroup = d3.select(this.g.nativeElement);
+            const svg = d3.select(this.svg().nativeElement);
+            const svgGroup = d3.select(this.g().nativeElement);
 
             // Run the renderer. This is what draws the final graph.
 
@@ -177,7 +199,7 @@ export class LineageGraphComponent implements AfterViewInit {
             });
 
             // add children
-            const nonSourceOperator = operator as TypedOperatorOperator;
+            const nonSourceOperator = operator;
             if (nonSourceOperator.sources) {
                 const operatorSources = nonSourceOperator.sources as OperatorSourcesDict;
                 for (const sourceKey of Object.keys(operatorSources)) {
@@ -264,7 +286,7 @@ export class LineageGraphComponent implements AfterViewInit {
         svgGroup
             .transition()
             .duration(500)
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/unbound-method
             .call(zoom.transform as any, d3.zoomIdentity.translate(initialX, initialY).scale(scale));
 
         // add zoom handler
@@ -272,6 +294,7 @@ export class LineageGraphComponent implements AfterViewInit {
         zoom.on('zoom', (zoomEvent: d3.D3ZoomEvent<any, any>) => {
             const zoomTranslate = isNaN(zoomEvent.transform.x) ? [0, 0] : [zoomEvent.transform.x, zoomEvent.transform.y];
             const zoomScale = isNaN(zoomEvent.transform.k) ? 0 : zoomEvent.transform.k;
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             svgGroup.attr('transform', `translate(${zoomTranslate})scale(${zoomScale})`);
         });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

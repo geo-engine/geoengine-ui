@@ -1,5 +1,5 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {AfterViewInit, ChangeDetectionStrategy, Component, inject, viewChild} from '@angular/core';
+import {FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 
 import {map, mergeMap} from 'rxjs/operators';
@@ -18,8 +18,21 @@ import {
     TemporalRasterAggregationDictAgregationType,
     geoengineValidators,
     timeStepGranularityOptions,
+    CommonModule,
+    AsyncValueDefault,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {MatFormField, MatLabel, MatInput, MatHint} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
+import {AsyncPipe, KeyValuePipe} from '@angular/common';
 
 interface TemporalRasterAggregationForm {
     name: FormControl<string>;
@@ -39,9 +52,35 @@ interface TemporalRasterAggregationForm {
     templateUrl: './temporal-raster-aggregation.component.html',
     styleUrls: ['./temporal-raster-aggregation.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        OperatorDialogContainerComponent,
+        MatIconButton,
+        MatIcon,
+        LayerSelectionComponent,
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        MatInput,
+        MatHint,
+        MatCheckbox,
+        CommonModule,
+        OperatorOutputNameComponent,
+        SymbologyCreatorComponent,
+        MatButton,
+        AsyncPipe,
+        KeyValuePipe,
+        AsyncValueDefault,
+    ],
 })
 export class TemporalRasterAggregationComponent implements AfterViewInit {
+    private readonly projectService = inject(ProjectService);
+    private readonly notificationService = inject(NotificationService);
+    private readonly formBuilder = inject(FormBuilder);
+
     readonly inputTypes = [ResultTypes.RASTER];
     readonly rasterDataTypes = RasterDataTypes.ALL_DATATYPES;
 
@@ -63,17 +102,12 @@ export class TemporalRasterAggregationComponent implements AfterViewInit {
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
 
-    @ViewChild(SymbologyCreatorComponent)
-    readonly symbologyCreator!: SymbologyCreatorComponent;
+    readonly symbologyCreator = viewChild.required(SymbologyCreatorComponent);
 
     form: FormGroup<TemporalRasterAggregationForm>;
     disallowSubmit: Observable<boolean>;
 
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly notificationService: NotificationService,
-        private readonly formBuilder: FormBuilder,
-    ) {
+    constructor() {
         this.form = this.formBuilder.nonNullable.group({
             name: ['', [Validators.required, geoengineValidators.notOnlyWhitespace]],
             layer: new FormControl<RasterLayer | undefined>(undefined, {nonNullable: true, validators: [Validators.required]}),
@@ -101,6 +135,7 @@ export class TemporalRasterAggregationComponent implements AfterViewInit {
                     return '';
                 }
 
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                 return `(${metadata.dataType})`;
             }),
         );
@@ -169,7 +204,7 @@ export class TemporalRasterAggregationComponent implements AfterViewInit {
                     }),
                 ),
                 mergeMap((workflowId: UUID) => {
-                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator.symbologyForRasterLayer(workflowId, inputLayer);
+                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator().symbologyForRasterLayer(workflowId, inputLayer);
                     return combineLatest([of(workflowId), symbology$]);
                 }),
                 mergeMap(([workflowId, symbology]: [UUID, RasterSymbology]) =>

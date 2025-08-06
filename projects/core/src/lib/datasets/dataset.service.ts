@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {BackendService} from '../backend/backend.service';
 import {Observable} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
@@ -36,12 +36,10 @@ import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
     providedIn: 'root',
 })
 export class DatasetService {
-    constructor(
-        protected backend: BackendService,
-        protected userService: UserService,
-        protected projectService: ProjectService,
-        protected randomColorService: RandomColorService,
-    ) {}
+    protected backend = inject(BackendService);
+    protected userService = inject(UserService);
+    protected projectService = inject(ProjectService);
+    protected randomColorService = inject(RandomColorService);
 
     getDatasets(offset = 0, limit = 20): Observable<Array<Dataset>> {
         return this.userService.getSessionStream().pipe(

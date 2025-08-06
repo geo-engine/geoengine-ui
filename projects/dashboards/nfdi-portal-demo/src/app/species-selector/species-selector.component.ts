@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject} from '@angular/core';
 import {
     BackendService,
     DatasetService,
@@ -8,6 +8,7 @@ import {
     WGS_84,
     SpatialReferenceService,
     NamedDataDict,
+    CoreModule,
 } from '@geoengine/core';
 import {BehaviorSubject, combineLatest, combineLatestWith, first, mergeMap, Observable, of, Subscription, tap} from 'rxjs';
 import {DataSelectionService} from '../data-selection.service';
@@ -34,8 +35,28 @@ import {
     UserService,
     VectorLayer,
     extentToBboxDict,
+    CommonModule,
+    FxLayoutDirective,
+    FxFlexDirective,
+    FxLayoutGapDirective,
+    FxLayoutAlignDirective,
+    AsyncValueDefault,
 } from '@geoengine/common';
 import {TypedOperatorOperator, Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {MatFormField, MatLabel} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatSelectSearchComponent} from 'ngx-mat-select-search';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatProgressBar} from '@angular/material/progress-bar';
+import {MatExpansionPanel, MatExpansionPanelHeader} from '@angular/material/expansion';
+import {MatDivider} from '@angular/material/list';
+import {MatSlideToggle} from '@angular/material/slide-toggle';
+import {MatSlider, MatSliderThumb} from '@angular/material/slider';
+import {MatButton} from '@angular/material/button';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {AttributionsComponent} from '../attributions/attributions.component';
+import {AsyncPipe} from '@angular/common';
 
 interface EnvironmentLayer {
     name: string;
@@ -296,7 +317,7 @@ const FISH_SPECIES = [
     'Zoarces viviparus',
 ];
 /* eslint-disable @typescript-eslint/naming-convention */
-const SPECIES_INFO: {[key: string]: SpeciesInfo} = {
+const SPECIES_INFO: Record<string, SpeciesInfo> = {
     'Anax imperator': {
         text: `Die Große Königslibelle erreicht Flügelspannweiten von 9,5 bis 11 Zentimetern. Der Brustabschnitt (Thorax) der Tiere ist grün gefärbt,
         der Hinterleib (Abdomen) der Männchen ist hellblau mit einem durchgehenden schwarzen Längsband am Rücken, das an jedem Segment eine zahnartige
@@ -349,9 +370,44 @@ interface SpeciesInfo {
     templateUrl: './species-selector.component.html',
     styleUrls: ['./species-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        MatSelectSearchComponent,
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatProgressBar,
+        CoreModule,
+        MatExpansionPanel,
+        MatExpansionPanelHeader,
+        MatDivider,
+        FxLayoutDirective,
+        FxFlexDirective,
+        FxLayoutGapDirective,
+        FxLayoutAlignDirective,
+        MatSlideToggle,
+        MatSlider,
+        MatSliderThumb,
+        MatButton,
+        MatProgressSpinner,
+        AttributionsComponent,
+        AsyncPipe,
+        AsyncValueDefault,
+    ],
 })
 export class SpeciesSelectorComponent implements OnInit, OnDestroy {
+    readonly dataSelectionService = inject(DataSelectionService);
+    private readonly projectService = inject(ProjectService);
+    private readonly datasetService = inject(DatasetService);
+    private readonly userService = inject(UserService);
+    private readonly backend = inject(BackendService);
+    private readonly mapService = inject(MapService);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly spatialReferenceService = inject(SpatialReferenceService);
+
     readonly dragonflySpecies: string[] = DRAGONFLY_SPECIES;
     readonly fishSpecies: string[] = FISH_SPECIES;
 
@@ -419,17 +475,6 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
     private selectedEnvironmentDataset?: Dataset = undefined;
 
     private readonly subscriptions: Array<Subscription> = [];
-
-    constructor(
-        public readonly dataSelectionService: DataSelectionService,
-        private readonly projectService: ProjectService,
-        private readonly datasetService: DatasetService,
-        private readonly userService: UserService,
-        private readonly backend: BackendService,
-        private readonly mapService: MapService,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly spatialReferenceService: SpatialReferenceService,
-    ) {}
 
     ngOnInit(): void {
         const species1LayerSubscription = this.dataSelectionService.speciesLayer1.subscribe((speciesLayer) => {

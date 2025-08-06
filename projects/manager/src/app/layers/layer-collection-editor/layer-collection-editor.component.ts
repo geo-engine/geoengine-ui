@@ -1,11 +1,17 @@
-import {Component, EventEmitter, Input, OnChanges, Output, signal, SimpleChanges, WritableSignal} from '@angular/core';
-import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
+import {Component, OnChanges, signal, SimpleChanges, WritableSignal, inject, input, output} from '@angular/core';
+import {FormArray, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {CollectionNavigation, ConfirmationComponent, errorToText, LayersService} from '@geoengine/common';
 import {LayerCollection, LayerCollectionListing, LayerListing, ProviderLayerCollectionId} from '@geoengine/openapi-client';
 import {firstValueFrom} from 'rxjs';
 import {AppConfig} from '../../app-config.service';
+import {MatCard, MatCardHeader, MatCardTitle, MatCardContent} from '@angular/material/card';
+import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerCollectionChildListComponent} from '../layer-collection-child-list/layer-collection-child-list.component';
+import {PermissionsComponent} from '../../permissions/permissions.component';
 
 export interface CollectionForm {
     name: FormControl<string>;
@@ -17,19 +23,39 @@ export interface CollectionForm {
     selector: 'geoengine-manager-layer-collection-editor',
     templateUrl: './layer-collection-editor.component.html',
     styleUrl: './layer-collection-editor.component.scss',
-    standalone: false,
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatCard,
+        MatCardHeader,
+        MatCardTitle,
+        MatCardContent,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatIconButton,
+        MatIcon,
+        MatButton,
+        LayerCollectionChildListComponent,
+        PermissionsComponent,
+    ],
 })
 export class LayerCollectionEditorComponent implements OnChanges {
+    private readonly layersService = inject(LayersService);
+    private readonly dialog = inject(MatDialog);
+    private readonly snackBar = inject(MatSnackBar);
+    private readonly config = inject(AppConfig);
+
     readonly CollectionNavigation = CollectionNavigation;
 
-    @Input({required: true}) collectionListing!: LayerCollectionListing;
-    @Input({required: true}) parentCollection!: ProviderLayerCollectionId;
+    readonly collectionListing = input.required<LayerCollectionListing>();
+    readonly parentCollection = input.required<ProviderLayerCollectionId>();
 
-    @Output() readonly collectionSelected = new EventEmitter<LayerCollectionListing>();
-    @Output() readonly layerSelected = new EventEmitter<LayerListing>();
-    @Output() readonly collectionDeleted = new EventEmitter<void>();
+    readonly collectionSelected = output<LayerCollectionListing>();
+    readonly layerSelected = output<LayerListing>();
+    readonly collectionDeleted = output<void>();
 
-    @Output() readonly collectionUpdated = new EventEmitter<void>();
+    readonly collectionUpdated = output<void>();
 
     readonly collection: WritableSignal<LayerCollection | undefined> = signal(undefined);
 
@@ -38,18 +64,12 @@ export class LayerCollectionEditorComponent implements OnChanges {
     selectedLayer?: LayerListing;
     selectedCollection?: LayerCollectionListing;
 
-    constructor(
-        private readonly layersService: LayersService,
-        private readonly dialog: MatDialog,
-        private readonly snackBar: MatSnackBar,
-        private readonly config: AppConfig,
-    ) {}
-
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
         if (changes.collectionListing) {
             const collection = await this.layersService.getLayerCollectionItems(
-                this.collectionListing.id.providerId,
-                this.collectionListing.id.collectionId,
+                this.collectionListing().id.providerId,
+                this.collectionListing().id.collectionId,
                 0,
                 0,
             );
@@ -128,18 +148,19 @@ export class LayerCollectionEditorComponent implements OnChanges {
         const properties = this.form.controls.properties.value;
 
         try {
-            this.layersService.updateLayerCollection(this.collectionListing.id.collectionId, {
+            const collectionListing = this.collectionListing();
+            this.layersService.updateLayerCollection(collectionListing.id.collectionId, {
                 name,
                 description,
                 properties,
             });
 
             this.snackBar.open('Collection successfully updated.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
-            this.collectionListing.name = name;
-            this.collectionListing.description = description;
+            collectionListing.name = name;
+            collectionListing.description = description;
             this.form.markAsPristine();
 
-            this.collectionUpdated.emit();
+            this.collectionUpdated.emit(undefined);
         } catch (error) {
             const errorMessage = await errorToText(error, 'Updating collection failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
@@ -158,9 +179,9 @@ export class LayerCollectionEditorComponent implements OnChanges {
         }
 
         try {
-            await this.layersService.removeLayerCollection(this.collectionListing.id.collectionId);
+            await this.layersService.removeLayerCollection(this.collectionListing().id.collectionId);
             this.snackBar.open('Collection successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
-            this.collectionDeleted.emit();
+            this.collectionDeleted.emit(undefined);
         } catch (error) {
             const errorMessage = await errorToText(error, 'Deleting collection failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
@@ -180,11 +201,11 @@ export class LayerCollectionEditorComponent implements OnChanges {
 
         try {
             await this.layersService.removeCollectionFromCollection(
-                this.collectionListing.id.collectionId,
-                this.parentCollection.collectionId,
+                this.collectionListing().id.collectionId,
+                this.parentCollection().collectionId,
             );
             this.snackBar.open('Collection successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
-            this.collectionDeleted.emit();
+            this.collectionDeleted.emit(undefined);
         } catch (error) {
             const errorMessage = await errorToText(error, 'Removing collection failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});

@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {HttpClient, HttpEvent, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable, Subject} from 'rxjs';
 import {CoreConfig} from '../config.service';
@@ -51,10 +51,8 @@ import {bboxDictToExtent, unixTimestampToIsoString} from '@geoengine/common';
     providedIn: 'root',
 })
 export class BackendService {
-    constructor(
-        protected readonly http: HttpClient,
-        protected readonly config: CoreConfig,
-    ) {}
+    protected readonly http = inject(HttpClient);
+    protected readonly config = inject(CoreConfig);
 
     get wmsBaseUrl(): string {
         return `${this.config.API_URL}/wms`;
@@ -216,12 +214,7 @@ export class BackendService {
         return response;
     }
 
-    wfsGetFeature(
-        request: WfsParamsDict,
-        sessionId: UUID,
-    ): Observable<{
-        [key: string]: unknown; // GeoJSON
-    }> {
+    wfsGetFeature(request: WfsParamsDict, sessionId: UUID): Observable<Record<string, unknown>> {
         const params = new NullDiscardingHttpParams();
 
         params.set('service', 'WFS');
@@ -243,9 +236,7 @@ export class BackendService {
         params.set('filter', request.filter);
         params.set('propertyName', request.propertyName);
 
-        return this.http.get<{
-            [key: string]: unknown;
-        }>(`${this.config.API_URL}/wfs/${request.workflowId}`, {
+        return this.http.get<Record<string, unknown>>(`${this.config.API_URL}/wfs/${request.workflowId}`, {
             headers: BackendService.authorizationHeader(sessionId),
             params: params.httpParams,
         });

@@ -1,5 +1,15 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
-import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges, inject, input} from '@angular/core';
+import {
+    AbstractControl,
+    FormArray,
+    FormControl,
+    FormGroup,
+    ValidationErrors,
+    ValidatorFn,
+    Validators,
+    FormsModule,
+    ReactiveFormsModule,
+} from '@angular/forms';
 import {GdalDatasetParametersComponent, GdalDatasetParametersForm} from '../gdal-dataset-parameters/gdal-dataset-parameters.component';
 import {
     DatasetsService,
@@ -22,6 +32,11 @@ import {
     RasterResultDescriptor,
 } from '@geoengine/openapi-client';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {MatFormField, MatLabel, MatInput, MatError} from '@angular/material/input';
+import {MatButton} from '@angular/material/button';
+import {MatDivider, MatNavList, MatListItem, MatListItemTitle, MatListItemLine} from '@angular/material/list';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
 
 export interface GdalMetadataListForm {
     timeSlices: FormArray<FormGroup<TimeSliceForm>>;
@@ -45,9 +60,30 @@ export interface RasterResultDescriptorForm {
     templateUrl: './gdal-metadata-list.component.html',
     styleUrl: './gdal-metadata-list.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatButton,
+        MatDivider,
+        MatSelect,
+        MatOption,
+        MatNavList,
+        MatListItem,
+        MatListItemTitle,
+        MatListItemLine,
+        MatError,
+        CommonModule,
+        GdalDatasetParametersComponent,
+    ],
 })
 export class GdalMetadataListComponent implements OnChanges {
+    private readonly datasetsService = inject(DatasetsService);
+    private readonly snackBar = inject(MatSnackBar);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+
     RasterDataTypes = Object.values(RasterDataType);
 
     form: FormGroup<GdalMetadataListForm> = this.setUpForm();
@@ -56,19 +92,15 @@ export class GdalMetadataListComponent implements OnChanges {
 
     @Input() dataPath?: DataPath;
 
-    @Input() metaData?: GdalMetaDataList;
+    readonly metaData = input<GdalMetaDataList>();
 
     selectedTimeSlice = 0;
 
-    constructor(
-        private readonly datasetsService: DatasetsService,
-        private readonly snackBar: MatSnackBar,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-    ) {}
-
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/require-await
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
-        if (changes.metaData && this.metaData) {
-            this.setUpFormFromMetaData(this.metaData);
+        const metaData = this.metaData();
+        if (changes.metaData && metaData) {
+            this.setUpFormFromMetaData(metaData);
         }
     }
 
@@ -375,7 +407,7 @@ export const overlappingTimeIntervalsValidator =
             return null;
         }
 
-        const formArray = control as FormArray;
+        const formArray = control;
 
         const controls = formArray.controls;
         const values: TimeInterval[] = controls.map((c) => c.value.time);

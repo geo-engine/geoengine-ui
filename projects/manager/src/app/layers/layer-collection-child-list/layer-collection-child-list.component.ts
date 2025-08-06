@@ -1,11 +1,13 @@
-import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {Component, inject, input, output, viewChild} from '@angular/core';
 import {FormArray, FormControl} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {CollectionNavigation, ConfirmationComponent, LayerCollectionListComponent, LayersService} from '@geoengine/common';
+import {CollectionNavigation, ConfirmationComponent, LayerCollectionListComponent, LayersService, CommonModule} from '@geoengine/common';
 import {LayerCollectionListing, LayerListing, ProviderLayerCollectionId} from '@geoengine/openapi-client';
 import {firstValueFrom} from 'rxjs';
 import {AddLayerItemComponent} from '../add-layer-item/add-layer-item.component';
 import {ItemId} from '../layers.component';
+import {MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
 
 export interface CollectionForm {
     name: FormControl<string>;
@@ -17,23 +19,21 @@ export interface CollectionForm {
     selector: 'geoengine-manager-layer-collection-child-list',
     templateUrl: './layer-collection-child-list.component.html',
     styleUrl: './layer-collection-child-list.component.scss',
-    standalone: false,
+    imports: [CommonModule, MatButton, MatIcon],
 })
 export class LayerCollectionChildListComponent {
+    private readonly layersService = inject(LayersService);
+    private readonly dialog = inject(MatDialog);
+
     readonly CollectionNavigation = CollectionNavigation;
 
-    @Input({required: true}) collectionId!: ProviderLayerCollectionId;
-    @Output() readonly modifiedChildren = new EventEmitter<LayerListing>();
+    readonly collectionId = input.required<ProviderLayerCollectionId>();
+    readonly modifiedChildren = output<LayerListing>();
 
-    @ViewChild(LayerCollectionListComponent) layerCollectionListComponent!: LayerCollectionListComponent;
+    readonly layerCollectionListComponent = viewChild.required(LayerCollectionListComponent);
 
     selectedLayer?: LayerListing;
     selectedCollection?: LayerCollectionListing;
-
-    constructor(
-        private readonly layersService: LayersService,
-        private readonly dialog: MatDialog,
-    ) {}
 
     async removeChild(): Promise<void> {
         const dialogRef = this.dialog.open(ConfirmationComponent, {
@@ -47,16 +47,16 @@ export class LayerCollectionChildListComponent {
         }
 
         if (this.selectedLayer) {
-            await this.layersService.removeLayerFromCollection(this.selectedLayer.id.layerId, this.collectionId.collectionId);
+            await this.layersService.removeLayerFromCollection(this.selectedLayer.id.layerId, this.collectionId().collectionId);
             this.selectedLayer = undefined;
         } else if (this.selectedCollection) {
             await this.layersService.removeCollectionFromCollection(
                 this.selectedCollection.id.collectionId,
-                this.collectionId.collectionId,
+                this.collectionId().collectionId,
             );
             this.selectedCollection = undefined;
         }
-        this.layerCollectionListComponent.refreshCollection();
+        this.layerCollectionListComponent().refreshCollection();
     }
 
     selectCollection(collection: LayerCollectionListing): void {
@@ -76,7 +76,7 @@ export class LayerCollectionChildListComponent {
             autoFocus: false,
             disableClose: true,
             data: {
-                parent: this.collectionId,
+                parent: this.collectionId(),
             },
         });
 
@@ -86,6 +86,6 @@ export class LayerCollectionChildListComponent {
             return;
         }
 
-        this.layerCollectionListComponent.refreshCollection();
+        this.layerCollectionListComponent().refreshCollection();
     }
 }

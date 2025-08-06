@@ -1,30 +1,29 @@
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, inject, viewChild} from '@angular/core';
 import {BehaviorSubject, Subscription} from 'rxjs';
 import {MatPaginator} from '@angular/material/paginator';
-import {MatTableDataSource} from '@angular/material/table';
+import {MatTableDataSource, MatTable, MatColumnDef, MatCellDef, MatCell, MatRowDef, MatRow} from '@angular/material/table';
 import {UserService} from '@geoengine/common';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-roles',
     templateUrl: './roles.component.html',
     styleUrls: ['./roles.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [MatTable, MatColumnDef, MatCellDef, MatCell, MatRowDef, MatRow, MatPaginator, AsyncPipe],
 })
 export class RolesComponent implements AfterViewInit, OnDestroy {
+    protected readonly userService = inject(UserService);
+    protected readonly changeDetectorRef = inject(ChangeDetectorRef);
+
     roleNames: Array<string> | undefined;
     displayedColumns: string[] = ['roleName'];
     roleTable: MatTableDataSource<string> | undefined;
-    numberOfRoles: BehaviorSubject<number> = new BehaviorSubject(0);
+    numberOfRoles = new BehaviorSubject<number>(0);
 
-    @ViewChild(MatPaginator) paginator!: MatPaginator;
+    readonly paginator = viewChild.required(MatPaginator);
 
     private roleNamesSubscription: Subscription | undefined;
-
-    constructor(
-        protected readonly userService: UserService,
-        protected readonly changeDetectorRef: ChangeDetectorRef,
-    ) {}
 
     ngAfterViewInit(): void {
         this.roleNamesSubscription = this.userService.getRoleDescriptions().subscribe((roleNames) => {
@@ -32,7 +31,7 @@ export class RolesComponent implements AfterViewInit, OnDestroy {
                 this.roleNames = roleNames.filter((x) => !x.individual).map((x) => x.role.name);
                 this.numberOfRoles.next(this.roleNames.length);
                 this.roleTable = new MatTableDataSource(this.roleNames);
-                this.roleTable.paginator = this.paginator;
+                this.roleTable.paginator = this.paginator();
             } else {
                 this.roleNames = undefined;
                 this.numberOfRoles.next(0);

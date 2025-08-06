@@ -1,11 +1,18 @@
-import {Component, ViewChild} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {Component, inject, viewChild} from '@angular/core';
+import {FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ConfirmationComponent, DatasetsService, errorToText, OgrDatasetComponent} from '@geoengine/common';
 import {DataPath, MetaDataDefinition, Volume as VolumeDict} from '@geoengine/openapi-client';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {MatDialog, MatDialogRef, MatDialogTitle} from '@angular/material/dialog';
 import {BehaviorSubject, filter, firstValueFrom, merge} from 'rxjs';
 import {GdalMetadataListComponent} from '../loading-info/gdal-metadata-list/gdal-metadata-list.component';
+import {MatCard, MatCardHeader, MatCardTitle, MatCardContent} from '@angular/material/card';
+import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
+import {MatButtonToggleGroup, MatButtonToggle} from '@angular/material/button-toggle';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatButton} from '@angular/material/button';
+import {AsyncPipe} from '@angular/common';
 
 enum DataPaths {
     Upload,
@@ -31,14 +38,38 @@ export interface AddDatasetForm {
     selector: 'geoengine-manager-add-dataset',
     templateUrl: './add-dataset.component.html',
     styleUrl: './add-dataset.component.scss',
-    standalone: false,
+    imports: [
+        MatDialogTitle,
+        FormsModule,
+        ReactiveFormsModule,
+        MatCard,
+        MatCardHeader,
+        MatCardTitle,
+        MatCardContent,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatButtonToggleGroup,
+        MatButtonToggle,
+        MatSelect,
+        MatOption,
+        GdalMetadataListComponent,
+        OgrDatasetComponent,
+        MatButton,
+        AsyncPipe,
+    ],
 })
 export class AddDatasetComponent {
+    private readonly datasetsService = inject(DatasetsService);
+    private readonly snackBar = inject(MatSnackBar);
+    private readonly dialogRef = inject<MatDialogRef<AddDatasetComponent>>(MatDialogRef);
+    private readonly dialog = inject(MatDialog);
+
     DataPaths = DataPaths;
     DataTypes = DataTypes;
 
-    @ViewChild(GdalMetadataListComponent) gdalMetaDataList?: GdalMetadataListComponent;
-    @ViewChild(OgrDatasetComponent) ogrDatasetComponent?: OgrDatasetComponent;
+    readonly gdalMetaDataList = viewChild(GdalMetadataListComponent);
+    readonly ogrDatasetComponent = viewChild(OgrDatasetComponent);
 
     volumes$ = new BehaviorSubject<VolumeDict[]>([]);
 
@@ -72,13 +103,9 @@ export class AddDatasetComponent {
         }),
     });
 
-    constructor(
-        private readonly datasetsService: DatasetsService,
-        private readonly snackBar: MatSnackBar,
-        private readonly dialogRef: MatDialogRef<AddDatasetComponent>,
-        private readonly dialog: MatDialog,
-    ) {
+    constructor() {
         merge(this.dialogRef.backdropClick(), this.dialogRef.keydownEvents().pipe(filter((event) => event.key === 'Escape'))).subscribe(
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
             async (event) => {
                 event.stopPropagation();
 
@@ -141,9 +168,10 @@ export class AddDatasetComponent {
     isCreateDisabled(): boolean {
         const general = this.form.pristine || this.form.invalid;
 
-        const raster = this.form.controls.dataType.value === DataTypes.Raster && (this.gdalMetaDataList?.form?.invalid ?? false);
+        const raster = this.form.controls.dataType.value === DataTypes.Raster && (this.gdalMetaDataList()?.form?.invalid ?? false);
 
-        const vector = this.form.controls.dataType.value === DataTypes.Vector && (this.ogrDatasetComponent?.formMetaData?.invalid ?? false);
+        const vector =
+            this.form.controls.dataType.value === DataTypes.Vector && (this.ogrDatasetComponent()?.formMetaData?.invalid ?? false);
 
         return general || raster || vector;
     }
@@ -157,19 +185,21 @@ export class AddDatasetComponent {
         let metaData: MetaDataDefinition | undefined = undefined;
 
         if (this.form.controls.dataType.value === DataTypes.Raster) {
-            if (!this.gdalMetaDataList) {
+            const gdalMetaDataList = this.gdalMetaDataList();
+            if (!gdalMetaDataList) {
                 return;
             }
 
-            metaData = this.gdalMetaDataList.getMetaData();
+            metaData = gdalMetaDataList.getMetaData();
 
             sourceOperator = 'GdalSource';
         } else if (this.form.controls.dataType.value === DataTypes.Vector) {
-            if (!this.ogrDatasetComponent) {
+            const ogrDatasetComponent = this.ogrDatasetComponent();
+            if (!ogrDatasetComponent) {
                 return;
             }
 
-            metaData = this.ogrDatasetComponent.getMetaData();
+            metaData = ogrDatasetComponent.getMetaData();
 
             sourceOperator = 'OgrSource';
         } else {

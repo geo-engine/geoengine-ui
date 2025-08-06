@@ -1,26 +1,41 @@
 import {BehaviorSubject} from 'rxjs';
-import {Component, ChangeDetectionStrategy, AfterViewInit} from '@angular/core';
-import {UntypedFormGroup, UntypedFormBuilder, Validators} from '@angular/forms';
+import {Component, ChangeDetectionStrategy, AfterViewInit, inject} from '@angular/core';
+import {UntypedFormGroup, UntypedFormBuilder, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../project.service';
-import {geoengineValidators, NotificationService} from '@geoengine/common';
+import {geoengineValidators, NotificationService, FxLayoutDirective, FxFlexDirective} from '@geoengine/common';
+import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
+import {MatFormField, MatInput, MatHint} from '@angular/material/input';
+import {MatButton} from '@angular/material/button';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-save-project-as',
     templateUrl: './save-project-as.component.html',
     styleUrls: ['./save-project-as.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        FxLayoutDirective,
+        MatFormField,
+        FxFlexDirective,
+        MatInput,
+        MatHint,
+        MatButton,
+        AsyncPipe,
+    ],
 })
 export class SaveProjectAsComponent implements AfterViewInit {
+    private formBuilder = inject(UntypedFormBuilder);
+    private projectService = inject(ProjectService);
+    private notificationService = inject(NotificationService);
+
     form: UntypedFormGroup;
 
     created$ = new BehaviorSubject(false);
 
-    constructor(
-        private formBuilder: UntypedFormBuilder,
-        private projectService: ProjectService,
-        private notificationService: NotificationService,
-    ) {
+    constructor() {
         this.form = this.formBuilder.group({
             name: [
                 '',

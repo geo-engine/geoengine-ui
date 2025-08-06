@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, Input} from '@angular/core';
+import {Component, ChangeDetectionStrategy, inject, input} from '@angular/core';
 import {concatMap, first, from, Observable, range, reduce, takeWhile} from 'rxjs';
 import {LayoutService, SidenavConfig} from '../../layout.service';
 import {AddWorkflowComponent} from '../add-workflow/add-workflow.component';
@@ -6,6 +6,9 @@ import {DrawFeaturesComponent} from '../draw-features/draw-features.component';
 import {UploadComponent} from '../upload/upload.component';
 import {LayersService} from '@geoengine/common';
 import {LayerCollectionSelectionComponent} from '../../layer-collections/layer-collection-selection.component';
+import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
+import {MatNavList, MatListItem, MatListItemIcon, MatListItemTitle, MatListItemLine} from '@angular/material/list';
+import {MatIcon} from '@angular/material/icon';
 
 export interface AddDataButton {
     name: string;
@@ -21,15 +24,15 @@ export interface AddDataButton {
     templateUrl: './add-data.component.html',
     styleUrls: ['./add-data.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [SidenavHeaderComponent, MatNavList, MatListItem, MatListItemIcon, MatIcon, MatListItemTitle, MatListItemLine],
 })
 export class AddDataComponent {
+    protected readonly layoutService = inject(LayoutService);
+
     /**
      * A list of data source dialogs to display
      */
-    @Input() buttons!: Array<AddDataButton>;
-
-    constructor(protected readonly layoutService: LayoutService) {}
+    readonly buttons = input.required<Array<AddDataButton>>();
 
     /**
      * Load a selected component into the sidenav

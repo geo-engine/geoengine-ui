@@ -1,15 +1,29 @@
 import {BehaviorSubject, Subscription} from 'rxjs';
 
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, input, OnDestroy, OnInit} from '@angular/core';
-import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, input, OnDestroy, OnInit, inject} from '@angular/core';
+import {UntypedFormControl, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {first} from 'rxjs/operators';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {CommonConfig} from '../config.service';
 import {UserService} from '../user/user.service';
 import {geoengineValidators} from '../util/form.validators';
 import {User} from '../user/user.model';
 import {NotificationService} from '../notification.service';
+import {
+    FxLayoutDirective,
+    FxLayoutAlignDirective,
+    FxLayoutGapDirective,
+    FxFlexDirective,
+} from '../util/directives/flexbox-legacy.directive';
+import {MatCard, MatCardHeader, MatCardSubtitle, MatCardContent, MatCardActions} from '@angular/material/card';
+import {MatButton} from '@angular/material/button';
+import {MatFormField, MatInput} from '@angular/material/input';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {MatIcon} from '@angular/material/icon';
+import {MatTooltip} from '@angular/material/tooltip';
+import {AsyncPipe} from '@angular/common';
+import {AsyncValueDefault} from '../util/pipes/async-converters.pipe';
 
 enum FormStatus {
     LoggedOut,
@@ -23,9 +37,36 @@ enum FormStatus {
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        FxLayoutDirective,
+        FxLayoutAlignDirective,
+        MatCard,
+        MatCardHeader,
+        MatCardSubtitle,
+        MatCardContent,
+        MatCardActions,
+        MatButton,
+        MatFormField,
+        MatInput,
+        MatProgressSpinner,
+        FxLayoutGapDirective,
+        FxFlexDirective,
+        RouterLink,
+        MatIcon,
+        MatTooltip,
+        AsyncPipe,
+        AsyncValueDefault,
+    ],
 })
 export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
+    readonly config = inject(CommonConfig);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly userService = inject(UserService);
+    private readonly notificationService = inject(NotificationService);
+    private readonly router = inject(Router);
+
     readonly FormStatus = FormStatus;
 
     loginRedirect = input('/map');
@@ -42,13 +83,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private formStatusSubscription?: Subscription;
 
-    constructor(
-        readonly config: CommonConfig,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly userService: UserService,
-        private readonly notificationService: NotificationService,
-        private readonly router: Router,
-    ) {
+    constructor() {
         this.loginForm = new UntypedFormGroup({
             email: new UntypedFormControl(
                 '',
@@ -73,7 +108,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
                     .getSessionOrUndefinedStream()
                     .pipe(first())
                     .subscribe((session) => {
-                        if (!session || !session.user || session.user.isGuest) {
+                        if (!session?.user || session.user.isGuest) {
                             this.formStatus$.next(FormStatus.LoggedOut);
                         } else {
                             this.user = session.user;

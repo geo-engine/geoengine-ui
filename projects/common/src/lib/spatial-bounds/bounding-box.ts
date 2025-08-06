@@ -6,6 +6,18 @@ import {BoundingBox2D as BBoxDict, SpatialPartition2D as SpatialPartitionDict} f
 export class BoundingBox2D implements ToDict<BBoxDict> {
     private readonly inner: [number, number, number, number];
 
+    /**
+     * Returns an new boundingbox.
+     *
+     * @param param0 The bounds of the new BoundingBox as `[xmin, ymin, xmax, ymax]`.
+     */
+    constructor([xmin, ymin, xmax, ymax]: [number, number, number, number]) {
+        if (xmin > xmax || ymin > ymax) {
+            throw new Error('Invalid bounding box');
+        }
+        this.inner = [xmin, ymin, xmax, ymax];
+    }
+
     public get xmin(): number {
         return this.inner[0];
     }
@@ -36,18 +48,6 @@ export class BoundingBox2D implements ToDict<BBoxDict> {
 
     public get lowerLeftCoordinate(): Coordinate2D {
         return new Coordinate2D([this.xmin, this.ymin]);
-    }
-
-    /**
-     * Returns an new boundingbox.
-     *
-     * @param param0 The bounds of the new BoundingBox as `[xmin, ymin, xmax, ymax]`.
-     */
-    constructor([xmin, ymin, xmax, ymax]: [number, number, number, number]) {
-        if (xmin > xmax || ymin > ymax) {
-            throw new Error('Invalid bounding box');
-        }
-        this.inner = [xmin, ymin, xmax, ymax];
     }
 
     /**

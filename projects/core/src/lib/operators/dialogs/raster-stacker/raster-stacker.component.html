@@ -29,11 +29,15 @@
 
             @if (form.controls.renameBands.value !== RenameBands.Default) {
                 <div formArrayName="renameValues">
-                    <mat-form-field *ngFor="let control of renameValues.controls; let i = index">
-                        <mat-label>{{ renameHint(i) }} </mat-label>
-                        <input matInput type="text" [formControlName]="i" />
-                    </mat-form-field>
-                    <mat-error *ngIf="renameValues.hasError('duplicate')">Duplicate Name</mat-error>
+                    @for (control of renameValues.controls; track control; let i = $index) {
+                        <mat-form-field>
+                            <mat-label>{{ renameHint(i) }} </mat-label>
+                            <input matInput type="text" [formControlName]="i" />
+                        </mat-form-field>
+                    }
+                    @if (renameValues.hasError('duplicate')) {
+                        <mat-error>Duplicate Name</mat-error>
+                    }
                 </div>
             }
 
@@ -44,22 +48,18 @@
             <mat-form-field>
                 <mat-label>Data Type</mat-label>
                 <mat-select formControlName="dataType">
-                    <mat-option *ngFor="let dataType of outputDataTypes$ | async" [value]="dataType[0]">
-                        {{ dataType[0] }} {{ dataType[1] }}
-                    </mat-option>
+                    @for (dataType of outputDataTypes$ | async; track dataType) {
+                        <mat-option [value]="dataType[0]"> {{ dataType[0] }} {{ dataType[1] }} </mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
         </ng-container>
 
         <ng-container layerSpecification>
             <geoengine-operator-output-name formControlName="name">
-                <mat-hint
-                    align="end"
-                    class="error"
-                    *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
-                >
-                    The name must be non-empty.
-                </mat-hint>
+                @if (form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace) {
+                    <mat-hint align="end" class="error"> The name must be non-empty. </mat-hint>
+                }
             </geoengine-operator-output-name>
         </ng-container>
 

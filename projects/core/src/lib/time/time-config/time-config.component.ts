@@ -1,10 +1,17 @@
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject} from '@angular/core';
 import {ProjectService} from '../../project/project.service';
 import {Observable, Subscription} from 'rxjs';
-import {FormControl, FormGroup, NonNullableFormBuilder, Validators} from '@angular/forms';
+import {FormControl, FormGroup, NonNullableFormBuilder, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CoreConfig} from '../../config.service';
 import moment from 'moment';
-import {Time, TimeInterval, TimeStepDuration} from '@geoengine/common';
+import {Time, TimeInterval, TimeStepDuration, CommonModule} from '@geoengine/common';
+import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
+import {MatCard, MatCardHeader, MatCardTitle, MatCardSubtitle, MatCardContent, MatCardActions} from '@angular/material/card';
+import {MatButton} from '@angular/material/button';
+import {MatFormField} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {AsyncPipe} from '@angular/common';
 
 export interface TimeConfigForm {
     timeInterval: FormControl<TimeInterval>;
@@ -15,9 +22,30 @@ export interface TimeConfigForm {
     templateUrl: './time-config.component.html',
     styleUrls: ['./time-config.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        MatCard,
+        MatCardHeader,
+        MatCardTitle,
+        MatCardSubtitle,
+        MatCardContent,
+        FormsModule,
+        ReactiveFormsModule,
+        CommonModule,
+        MatCardActions,
+        MatButton,
+        MatFormField,
+        MatSelect,
+        MatOption,
+        AsyncPipe,
+    ],
 })
 export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
+    private projectService = inject(ProjectService);
+    private changeDetectorRef = inject(ChangeDetectorRef);
+    private formBuilder = inject(NonNullableFormBuilder);
+    config = inject(CoreConfig);
+
     form: FormGroup<TimeConfigForm>;
 
     timeStepDuration$: Observable<TimeStepDuration>;
@@ -35,12 +63,7 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
 
     private projectTimeSubscription?: Subscription;
 
-    constructor(
-        private projectService: ProjectService,
-        private changeDetectorRef: ChangeDetectorRef,
-        private formBuilder: NonNullableFormBuilder,
-        public config: CoreConfig,
-    ) {
+    constructor() {
         // initialize with the current time to have a defined value
         this.time = new Time(moment.utc(), moment.utc());
 
@@ -101,7 +124,7 @@ export class TimeConfigComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     protected formToTime(): Time {
-        const timeInterval = this.form.get('timeInterval')?.value as TimeInterval;
+        const timeInterval = this.form.get('timeInterval')!.value;
 
         const start = timeInterval.start;
         const timeAsPoint = timeInterval.timeAsPoint;

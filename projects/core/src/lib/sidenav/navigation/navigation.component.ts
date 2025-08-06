@@ -1,12 +1,17 @@
 import {Subscription, Observable, combineLatest, of as observableOf} from 'rxjs';
-import {Component, OnInit, ChangeDetectionStrategy, OnDestroy, Input, ChangeDetectorRef} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, inject, input} from '@angular/core';
 import {LayoutService, SidenavConfig} from '../../layout.service';
 import {ThemePalette} from '@angular/material/core';
 import {distinctUntilChanged, map, mergeScan} from 'rxjs/operators';
 import {CoreConfig} from '../../config.service';
 import {SidenavRef} from '../sidenav-ref.service';
 import {OidcComponent} from '../../users/oidc/oidc.component';
-import {UserService} from '@geoengine/common';
+import {UserService, AsyncStringSanitizer} from '@geoengine/common';
+import {MatIconButton} from '@angular/material/button';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatIcon} from '@angular/material/icon';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {AsyncPipe} from '@angular/common';
 
 /**
  * Button config for the sidenav navigation
@@ -54,25 +59,20 @@ export interface NavigationButtonIconLoading extends NavigationButtonIcon {
     templateUrl: './navigation.component.html',
     styleUrls: ['./navigation.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [MatIconButton, MatTooltip, MatIcon, MatProgressSpinner, AsyncPipe, AsyncStringSanitizer],
 })
 export class NavigationComponent implements OnInit, OnDestroy {
+    private layoutService = inject(LayoutService);
+    private sidenavRef = inject(SidenavRef);
+    private changeDetectorRef = inject(ChangeDetectorRef);
+
     /**
      * The navigation shows this array of buttons.
      */
-    @Input() buttons!: Array<NavigationButton>;
+    readonly buttons = input.required<Array<NavigationButton>>();
 
     private sidenavConfig?: SidenavConfig;
     private sidenavConfigSubscription?: Subscription;
-
-    /**
-     * DI for services
-     */
-    constructor(
-        private layoutService: LayoutService,
-        private sidenavRef: SidenavRef,
-        private changeDetectorRef: ChangeDetectorRef,
-    ) {}
 
     ngOnInit(): void {
         this.sidenavConfigSubscription = this.layoutService.getSidenavContentComponentStream().subscribe((sidenavConfig) => {
@@ -120,7 +120,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
         config: CoreConfig,
         loginSidenavConfig?: SidenavConfig,
     ): NavigationButton {
-        loginSidenavConfig = loginSidenavConfig ? loginSidenavConfig : {component: OidcComponent};
+        loginSidenavConfig = loginSidenavConfig ?? {component: OidcComponent};
         return {
             sidenavConfig: loginSidenavConfig,
             icon: {

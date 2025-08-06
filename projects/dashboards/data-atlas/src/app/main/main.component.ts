@@ -1,6 +1,6 @@
 import {Observable, BehaviorSubject, first, filter, map, forkJoin} from 'rxjs';
-import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
-import {MatIconRegistry} from '@angular/material/icon';
+import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, OnInit, ViewContainerRef, inject, viewChild} from '@angular/core';
+import {MatIconRegistry, MatIcon} from '@angular/material/icon';
 import {
     LayoutService,
     ProjectService,
@@ -10,14 +10,35 @@ import {
     SidenavContainerComponent,
     LayerCollectionListingDict,
     SymbologyEditorComponent,
+    CoreModule,
 } from '@geoengine/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AppConfig} from '../app-config.service';
 import moment from 'moment';
 import {DataSelectionService} from '../data-selection.service';
 import {AppDatasetService} from '../app-dataset.service';
-import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
-import {Layer, LayersService, Time, UserService} from '@geoengine/common';
+import {MatDrawerToggleResult, MatSidenav, MatSidenavContainer} from '@angular/material/sidenav';
+import {Layer, LayersService, Time, UserService, AsyncStringSanitizer, AsyncValueDefault} from '@geoengine/common';
+import {MatToolbar} from '@angular/material/toolbar';
+import {
+    MatAccordion,
+    MatExpansionPanel,
+    MatExpansionPanelHeader,
+    MatExpansionPanelTitle,
+    MatExpansionPanelDescription,
+    MatExpansionPanelContent,
+} from '@angular/material/expansion';
+import {MatTabGroup, MatTab} from '@angular/material/tabs';
+import {AccordionEntryComponent} from '../accordion-entry/accordion-entry.component';
+import {AccordionVectorEntryComponent} from '../accordion-vector-entry/accordion-vector-entry.component';
+import {AboutComponent} from '../about/about.component';
+import {MatButton} from '@angular/material/button';
+import {MatCard} from '@angular/material/card';
+import {AnalysisComponent} from '../analysis/analysis.component';
+import {DataPointComponent} from '../data-point/data-point.component';
+import {LegendComponent} from '../legend/legend.component';
+import {MatProgressBar} from '@angular/material/progress-bar';
+import {AsyncPipe} from '@angular/common';
 
 interface LayerCollectionBiListing {
     name: string;
@@ -31,13 +52,52 @@ interface LayerCollectionBiListing {
     templateUrl: './main.component.html',
     styleUrls: ['./main.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatSidenavContainer,
+        MatToolbar,
+        MatAccordion,
+        MatExpansionPanel,
+        MatExpansionPanelHeader,
+        MatExpansionPanelTitle,
+        MatExpansionPanelDescription,
+        MatIcon,
+        MatTabGroup,
+        MatTab,
+        AccordionEntryComponent,
+        AccordionVectorEntryComponent,
+        MatExpansionPanelContent,
+        AboutComponent,
+        MatButton,
+        CoreModule,
+        MatCard,
+        AnalysisComponent,
+        DataPointComponent,
+        LegendComponent,
+        MapContainerComponent,
+        MatSidenav,
+        MatProgressBar,
+        AsyncPipe,
+        AsyncStringSanitizer,
+        AsyncValueDefault,
+    ],
 })
 export class MainComponent implements OnInit, AfterViewInit {
-    @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
+    readonly config = inject<AppConfig>(AppConfig);
+    readonly layoutService = inject(LayoutService);
+    readonly projectService = inject(ProjectService);
+    readonly userService = inject(UserService);
+    readonly dataSelectionService = inject(DataSelectionService);
+    readonly _vcRef = inject(ViewContainerRef);
+    readonly datasetService = inject<DatasetService>(AppDatasetService);
+    private iconRegistry = inject(MatIconRegistry);
+    private mapService = inject(MapService);
+    private sanitizer = inject(DomSanitizer);
+    private readonly layersService = inject(LayersService);
 
-    @ViewChild(MatSidenav, {static: true}) leftSidenav!: MatSidenav;
-    @ViewChild(SidenavContainerComponent, {static: true}) leftSidenavContainer!: SidenavContainerComponent;
+    readonly mapComponent = viewChild.required(MapContainerComponent);
+
+    readonly leftSidenav = viewChild.required(MatSidenav);
+    readonly leftSidenavContainer = viewChild.required(SidenavContainerComponent);
 
     readonly topLevelCollections$ = new BehaviorSubject<Array<LayerCollectionBiListing>>([]);
 
@@ -49,19 +109,7 @@ export class MainComponent implements OnInit, AfterViewInit {
         map((rasterLayer) => !!rasterLayer),
     );
 
-    constructor(
-        @Inject(AppConfig) readonly config: AppConfig,
-        readonly layoutService: LayoutService,
-        readonly projectService: ProjectService,
-        readonly userService: UserService,
-        readonly dataSelectionService: DataSelectionService,
-        readonly _vcRef: ViewContainerRef, // reference used by color picker
-        @Inject(DatasetService) readonly datasetService: AppDatasetService,
-        private iconRegistry: MatIconRegistry,
-        private mapService: MapService,
-        private sanitizer: DomSanitizer,
-        private readonly layersService: LayersService,
-    ) {
+    constructor() {
         this.registerIcons();
 
         this.layersReverse$ = this.dataSelectionService.layers;
@@ -96,7 +144,7 @@ export class MainComponent implements OnInit, AfterViewInit {
 
                 const collection = collections.get(item.name);
 
-                if (collection && collection.raster) {
+                if (collection?.raster) {
                     collection.otherRaster = item as LayerCollectionListingDict;
                 } else {
                     collections.set(item.name, {
@@ -129,25 +177,25 @@ export class MainComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit(): void {
-        this.mapService.registerMapComponent(this.mapComponent);
+        this.mapService.registerMapComponent(this.mapComponent());
 
         this.layoutService.getSidenavContentComponentStream().subscribe((sidenavConfig) => {
-            this.leftSidenavContainer.load(sidenavConfig);
+            this.leftSidenavContainer().load(sidenavConfig);
 
             let openClosePromise: Promise<MatDrawerToggleResult>;
             if (sidenavConfig) {
-                openClosePromise = this.leftSidenav.open();
+                openClosePromise = this.leftSidenav().open();
             } else {
-                openClosePromise = this.leftSidenav.close();
+                openClosePromise = this.leftSidenav().close();
             }
 
-            openClosePromise.then(() => this.mapComponent.resize());
+            openClosePromise.then(() => this.mapComponent().resize());
         });
     }
 
     ngAfterViewInit(): void {
         this.reset();
-        this.mapComponent.resize();
+        this.mapComponent().resize();
     }
 
     icon(name: string): string {

@@ -1,11 +1,29 @@
-import {Component, ChangeDetectionStrategy, ChangeDetectorRef, Input, forwardRef, OnChanges, SimpleChanges, OnDestroy} from '@angular/core';
+import {
+    Component,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    forwardRef,
+    OnChanges,
+    SimpleChanges,
+    OnDestroy,
+    inject,
+    input,
+} from '@angular/core';
 
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule} from '@angular/forms';
 import {ColorBreakpoint} from '../color-breakpoint.model';
 import {Color, stringToRgbaStruct, TRANSPARENT} from '../color';
 import {Subject, Subscription} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 import {CommonConfig} from '../../config.service';
+import {
+    FxLayoutDirective,
+    FxLayoutAlignDirective,
+    FxLayoutGapDirective,
+    FxFlexDirective,
+} from '../../util/directives/flexbox-legacy.directive';
+import {MatFormField, MatInput} from '@angular/material/input';
+import {ColorPickerDirective} from 'ngx-color-picker';
 
 @Component({
     selector: 'geoengine-color-breakpoint',
@@ -13,31 +31,42 @@ import {CommonConfig} from '../../config.service';
     styleUrls: ['./color-breakpoint-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorBreakpointInputComponent), multi: true}],
-    standalone: false,
+    imports: [
+        FxLayoutDirective,
+        FxLayoutAlignDirective,
+        FxLayoutGapDirective,
+        MatFormField,
+        FxFlexDirective,
+        MatInput,
+        FormsModule,
+        ColorPickerDirective,
+    ],
 })
 export class ColorBreakpointInputComponent implements ControlValueAccessor, OnChanges, OnDestroy {
-    @Input() readonlyAttribute = false;
-    @Input() readonlyColor = false;
-    @Input() attributePlaceholder = 'attribute';
-    @Input() colorPlaceholder = 'color';
+    private changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly config = inject(CommonConfig);
+
+    readonly readonlyAttribute = input(false);
+    readonly readonlyColor = input(false);
+    readonly attributePlaceholder = input('attribute');
+    readonly colorPlaceholder = input('color');
 
     private input: ColorBreakpoint = new ColorBreakpoint(0, TRANSPARENT);
     private changedValue = new Subject<ColorBreakpoint>();
     private onChangePropagationSubscription: Subscription;
 
-    constructor(
-        private changeDetectorRef: ChangeDetectorRef,
-        private readonly config: CommonConfig,
-    ) {
+    constructor() {
         this.onChangePropagationSubscription = this.changedValue
             .pipe(debounceTime(this.config.DELAYS.DEBOUNCE)) // defer emitting values while the user is typing
             .subscribe((colorBreakpoint) => this.onChange(colorBreakpoint.clone()));
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    onTouched = (): void => {};
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    onChange = (_: ColorBreakpoint): void => {};
+    onTouched = (): void => {
+        // do nothing
+    };
+    onChange = (_: ColorBreakpoint): void => {
+        // do nothing
+    };
 
     ngOnDestroy(): void {
         this.onChangePropagationSubscription.unsubscribe();

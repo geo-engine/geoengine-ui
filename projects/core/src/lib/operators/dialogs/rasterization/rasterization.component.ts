@@ -1,5 +1,5 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, ViewChild} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {ChangeDetectionStrategy, Component, OnDestroy, inject, viewChild} from '@angular/core';
+import {FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {mergeMap} from 'rxjs/operators';
 import {UUID} from '../../../backend/backend.model';
@@ -14,9 +14,20 @@ import {
     RasterizationDict,
     ResultTypes,
     geoengineValidators,
+    AsyncValueDefault,
 } from '@geoengine/common';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {MatTabGroup, MatTab} from '@angular/material/tabs';
+import {NgTemplateOutlet, AsyncPipe} from '@angular/common';
+import {MatRadioGroup, MatRadioButton} from '@angular/material/radio';
+import {MatFormField, MatLabel, MatInput, MatHint} from '@angular/material/input';
+import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
 
 interface RasterizationForm {
     name: FormControl<string>;
@@ -49,9 +60,35 @@ interface DensityForm {
     templateUrl: './rasterization.component.html',
     styleUrls: ['./rasterization.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        OperatorDialogContainerComponent,
+        MatIconButton,
+        MatIcon,
+        LayerSelectionComponent,
+        MatTabGroup,
+        MatTab,
+        NgTemplateOutlet,
+        MatRadioGroup,
+        MatRadioButton,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatHint,
+        OperatorOutputNameComponent,
+        SymbologyCreatorComponent,
+        MatButton,
+        AsyncPipe,
+        AsyncValueDefault,
+    ],
 })
 export class RasterizationComponent implements OnDestroy {
+    private projectService = inject(ProjectService);
+    private readonly notificationService = inject(NotificationService);
+    private formBuilder = inject(FormBuilder);
+
     selected = new FormControl(0, {validators: [Validators.required], nonNullable: true});
 
     readonly inputTypes = [ResultTypes.POINTS];
@@ -61,14 +98,9 @@ export class RasterizationComponent implements OnDestroy {
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
 
-    @ViewChild(SymbologyCreatorComponent)
-    readonly symbologyCreator!: SymbologyCreatorComponent;
+    readonly symbologyCreator = viewChild.required(SymbologyCreatorComponent);
 
-    constructor(
-        private projectService: ProjectService,
-        private readonly notificationService: NotificationService,
-        private formBuilder: FormBuilder,
-    ) {
+    constructor() {
         const layerControl = new FormControl<Layer | undefined>(undefined, {
             nonNullable: true,
             validators: [Validators.required],
@@ -120,7 +152,7 @@ export class RasterizationComponent implements OnDestroy {
             return; // don't add while loading
         }
 
-        const pointsLayer = this.form.controls['layer'].value as Layer;
+        const pointsLayer = this.form.controls['layer'].value!;
         const layerName: string = this.form.controls['name'].value;
         const params = this.rasterizationParams();
 
@@ -147,7 +179,7 @@ export class RasterizationComponent implements OnDestroy {
                     return this.projectService.registerWorkflow(workflow);
                 }),
                 mergeMap((workflowId: UUID) => {
-                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator.symbologyForRasterLayer(workflowId);
+                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator().symbologyForRasterLayer(workflowId);
                     return combineLatest([of(workflowId), symbology$]);
                 }),
                 mergeMap(([workflowId, symbology]: [UUID, RasterSymbology]) =>

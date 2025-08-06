@@ -46,8 +46,8 @@
                         <div class="attributeRow" fxLayout="row" fxFlex>
                             <mat-form-field>
                                 <mat-select placeholder="Attribute" [formControl]="column">
-                                    <!-- we need to provide the current value because it 
-                                        won't be in `availableAttributes$` anymore -->
+                                    <!-- we need to provide the current value because it
+                  won't be in `availableAttributes$` anymore -->
                                     @if (column.value !== null) {
                                         <mat-option [value]="column.value">{{ column.value }}</mat-option>
                                     }
@@ -110,11 +110,13 @@
                 ></geoengine-dialog-section-heading>
                 <geoengine-code-editor
                     formControlName="expression"
-                    [prefixLine]="fnSignature | async | stringSanitizer"
-                    suffixLine="}"
+                    language="Rust"
+                    [header]="fnSignature | async | stringSanitizer"
                 ></geoengine-code-editor>
 
-                <pre *ngIf="lastError$ | async as lastError" class="error">{{ lastError }}</pre>
+                @if (lastError$ | async; as lastError) {
+                    <pre class="error">{{ lastError }}</pre>
+                }
             </div>
         </ng-container>
 

@@ -1,5 +1,5 @@
-import {Component, ChangeDetectionStrategy, OnDestroy} from '@angular/core';
-import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {Component, ChangeDetectionStrategy, OnDestroy, inject} from '@angular/core';
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {combineLatest, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {map, mergeMap} from 'rxjs/operators';
@@ -25,8 +25,24 @@ import {
     createVectorSymbology,
     extentToBboxDict,
     geoengineValidators,
+    FxLayoutDirective,
+    FxFlexDirective,
+    FxLayoutAlignDirective,
+    CommonModule,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {DialogSectionHeadingComponent} from '../../../dialogs/dialog-section-heading/dialog-section-heading.component';
+import {MatAccordion, MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle} from '@angular/material/expansion';
+import {MatFormField, MatInput, MatHint} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
+import {AsyncPipe} from '@angular/common';
 interface ColumnRangeFilterForm {
     layer: FormControl<Layer | null>;
     name: FormControl<string>;
@@ -49,9 +65,41 @@ interface RangeForm {
     templateUrl: './column-range-filter.component.html',
     styleUrls: ['./column-range-filter.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        OperatorDialogContainerComponent,
+        MatIconButton,
+        MatIcon,
+        LayerSelectionComponent,
+        FxLayoutDirective,
+        DialogSectionHeadingComponent,
+        FxFlexDirective,
+        FxLayoutAlignDirective,
+        MatButton,
+        MatAccordion,
+        MatExpansionPanel,
+        MatExpansionPanelHeader,
+        MatExpansionPanelTitle,
+        MatFormField,
+        MatSelect,
+        MatOption,
+        MatInput,
+        MatHint,
+        CommonModule,
+        OperatorOutputNameComponent,
+        AsyncPipe,
+    ],
 })
 export class ColumnRangeFilterComponent implements OnDestroy {
+    private readonly projectService = inject(ProjectService);
+    private readonly formBuilder = inject(FormBuilder);
+    private randomColorService = inject(RandomColorService);
+    protected readonly backend = inject(BackendService);
+    protected readonly userService = inject(UserService);
+    protected readonly mapService = inject(MapService);
+
     readonly inputTypes = ResultTypes.VECTOR_TYPES;
 
     attributes$ = new ReplaySubject<Array<string>>(1);
@@ -63,14 +111,7 @@ export class ColumnRangeFilterComponent implements OnDestroy {
     private currentLayerid = -1;
     private dataType: VectorDataType = VectorDataTypes.MultiPoint;
 
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly formBuilder: FormBuilder,
-        private randomColorService: RandomColorService,
-        protected readonly backend: BackendService,
-        protected readonly userService: UserService,
-        protected readonly mapService: MapService,
-    ) {
+    constructor() {
         const layerControl = this.formBuilder.control<Layer | null>(null, Validators.required);
         this.form = this.formBuilder.group({
             layer: layerControl,
@@ -205,7 +246,7 @@ export class ColumnRangeFilterComponent implements OnDestroy {
     }
 
     updateBounds(histogramSignal: {binStart: [number, number]} | null, filterIndex: number, rangeIndex: number): void {
-        if (!histogramSignal || !histogramSignal.binStart || histogramSignal.binStart.length !== 2) {
+        if (!histogramSignal?.binStart || histogramSignal.binStart.length !== 2) {
             return;
         }
 
@@ -218,8 +259,8 @@ export class ColumnRangeFilterComponent implements OnDestroy {
      * creates a new layer with the filtered values
      */
     add(): void {
-        const name = (this.form.get('name')?.value as string) || ('Filtered Layer' as string);
-        const inputLayer = this.form.controls['layer'].value as Layer;
+        const name = this.form.get('name')?.value ?? ('Filtered Layer' as string);
+        const inputLayer = this.form.controls['layer'].value!;
         const filterValues = this.filters.value;
 
         this.projectService
@@ -343,7 +384,7 @@ export class ColumnRangeFilterComponent implements OnDestroy {
     }
 
     private createHistogramWorkflowId(attribute: string): Observable<UUID> {
-        const inputLayer = this.form.controls['layer'].value as Layer;
+        const inputLayer = this.form.controls['layer'].value!;
         const attributeName = attribute;
         return this.projectService.getWorkflow(inputLayer.workflowId).pipe(
             mergeMap((workflow) =>

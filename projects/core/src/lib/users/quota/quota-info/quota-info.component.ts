@@ -1,24 +1,24 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit, inject} from '@angular/core';
 import {Quota, UserService} from '@geoengine/common';
 import {Subscription, timer} from 'rxjs';
+import {MatIconButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
     selector: 'geoengine-quota-info',
     templateUrl: './quota-info.component.html',
     styleUrls: ['./quota-info.component.scss'],
-    standalone: false,
+    imports: [MatIconButton, MatIcon],
 })
 export class QuotaInfoComponent implements OnDestroy, OnInit {
+    protected readonly userService = inject(UserService);
+    protected readonly changeDetectorRef = inject(ChangeDetectorRef);
+
     sessionQuota: Quota | undefined;
     sessionQuotaSubscription: Subscription | undefined;
     timerSubscription: Subscription | undefined;
 
     static readonly refreshTime: number = 30000;
-
-    constructor(
-        protected readonly userService: UserService,
-        protected readonly changeDetectorRef: ChangeDetectorRef,
-    ) {}
 
     ngOnInit(): void {
         this.sessionQuotaSubscription = this.userService.getSessionQuotaStream().subscribe((quota) => {

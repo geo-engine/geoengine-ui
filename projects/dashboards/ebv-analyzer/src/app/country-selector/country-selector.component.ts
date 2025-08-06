@@ -1,18 +1,24 @@
-import {Component, OnInit, ChangeDetectionStrategy, ViewChild, AfterViewInit, OnDestroy} from '@angular/core';
-import {UntypedFormControl} from '@angular/forms';
+import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, OnDestroy, inject, viewChild} from '@angular/core';
+import {UntypedFormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ReplaySubject, Subject} from 'rxjs';
 import {MatSelect} from '@angular/material/select';
 import {takeUntil, take} from 'rxjs/operators';
 import {CountryProviderService, Country} from '../country-provider.service';
+import {MatFormField} from '@angular/material/input';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatSelectSearchComponent} from 'ngx-mat-select-search';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-ebv-country-selector',
     templateUrl: './country-selector.component.html',
     styleUrls: ['./country-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [MatFormField, MatSelect, FormsModule, ReactiveFormsModule, MatOption, MatSelectSearchComponent, AsyncPipe],
 })
 export class CountrySelectorComponent implements OnInit, AfterViewInit, OnDestroy {
+    private readonly countryProviderService = inject(CountryProviderService);
+
     public readonly countryDataList: Array<Country>;
 
     public countryCtrl: UntypedFormControl = new UntypedFormControl();
@@ -21,11 +27,11 @@ export class CountrySelectorComponent implements OnInit, AfterViewInit, OnDestro
 
     public filteredCountries: ReplaySubject<Array<Country>> = new ReplaySubject<Array<Country>>(1);
 
-    @ViewChild('countrySelect', {static: true}) countrySelect!: MatSelect;
+    readonly countrySelect = viewChild.required<MatSelect>('countrySelect');
 
     protected _onDestroy = new Subject<void>();
 
-    constructor(private readonly countryProviderService: CountryProviderService) {
+    constructor() {
         this.countryDataList = this.countryProviderService.availabeCountries;
     }
 
@@ -59,7 +65,7 @@ export class CountrySelectorComponent implements OnInit, AfterViewInit, OnDestro
 
     protected setInitialValue(): void {
         this.filteredCountries.pipe(take(1), takeUntil(this._onDestroy)).subscribe(() => {
-            this.countrySelect.compareWith = (a: Country, b: Country): boolean => a && b && a.name === b.name;
+            this.countrySelect().compareWith = (a: Country, b: Country): boolean => a && b && a.name === b.name;
         });
     }
 
@@ -75,6 +81,6 @@ export class CountrySelectorComponent implements OnInit, AfterViewInit, OnDestro
         } else {
             search = search.toLowerCase();
         }
-        this.filteredCountries.next(this.countryDataList.filter((country) => country.name.toLowerCase().indexOf(search) > -1));
+        this.filteredCountries.next(this.countryDataList.filter((country) => country.name.toLowerCase().includes(search)));
     }
 }

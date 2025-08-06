@@ -1,9 +1,10 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, input} from '@angular/core';
 import {ProjectService} from '../../project/project.service';
 import {MapService} from '../map.service';
 import {BehaviorSubject, combineLatestWith, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {SpatialReferenceService} from '../../spatial-references/spatial-reference.service';
+import {AsyncPipe} from '@angular/common';
 
 /**
  * The `geoengine-map-resolution-extent-overlay` displays information about the resolution and extent of the visible map(s).
@@ -13,21 +14,18 @@ import {SpatialReferenceService} from '../../spatial-references/spatial-referenc
     templateUrl: 'map-resolution-extent-overlay.component.html',
     styleUrls: ['map-resolution-extent-overlay.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [AsyncPipe],
 })
 export class MapResolutionExtentOverlayComponent {
-    @Input()
-    public bottom!: number;
+    private mapService = inject(MapService);
+    private spatialReferenceService = inject(SpatialReferenceService);
+    private projectService = inject(ProjectService);
 
-    highPrecision: BehaviorSubject<boolean> = new BehaviorSubject(false);
+    public readonly bottom = input.required<number>();
+
+    highPrecision = new BehaviorSubject<boolean>(false);
     private static readonly lowNumFractions = 2;
     private static readonly highNumFractions = 12;
-
-    constructor(
-        private mapService: MapService,
-        private spatialReferenceService: SpatialReferenceService,
-        private projectService: ProjectService,
-    ) {}
 
     togglePrecision(): void {
         this.highPrecision.next(!this.highPrecision.getValue());
@@ -68,9 +66,7 @@ export class MapResolutionExtentOverlayComponent {
     }
 
     private trimFraction(number: string, trim?: number): string {
-        if (trim === undefined) {
-            trim = this.countTrailingFractionZeros(number);
-        }
+        trim ??= this.countTrailingFractionZeros(number);
         if (trim == this.getFraction(number).length) {
             trim += 1;
         }

@@ -9,7 +9,9 @@
         <div class="actions">
             <button type="button" mat-raised-button color="primary" [disabled]="!selectedFiles?.length" (click)="upload()">Upload</button>
         </div>
-        <mat-progress-bar *ngIf="progress$ | async as progress" mode="determinate" [value]="progress"></mat-progress-bar>
+        @if (progress$ | async; as progress) {
+            <mat-progress-bar mode="determinate" [value]="progress"></mat-progress-bar>
+        }
     </mat-step>
 
     <mat-step [stepControl]="formMetaData">
@@ -30,7 +32,9 @@
                 <mat-form-field appearance="fill">
                     <mat-label>Dataset Name</mat-label>
                     <input matInput type="text" placeholder="data_set_name" formControlName="name" />
-                    <span matTextPrefix *ngIf="userNamePrefix !== '_'">{{ userNamePrefix }}:</span>
+                    @if (userNamePrefix !== '_') {
+                        <span matTextPrefix>{{ userNamePrefix }}:</span>
+                    }
                 </mat-form-field>
             </p>
             <p>

@@ -1,5 +1,5 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, inject} from '@angular/core';
+import {UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ReplaySubject, Subscription} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 
@@ -17,6 +17,16 @@ import {
     geoengineValidators,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {MatFormField, MatHint} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
+import {AsyncPipe} from '@angular/common';
 
 /**
  * This dialog allows creating a box plot of a layer's values.
@@ -26,9 +36,28 @@ import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
     templateUrl: './scatterplot-operator.component.html',
     styleUrls: ['./scatterplot-operator.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        OperatorDialogContainerComponent,
+        MatIconButton,
+        MatIcon,
+        LayerSelectionComponent,
+        MatFormField,
+        MatSelect,
+        MatOption,
+        OperatorOutputNameComponent,
+        MatHint,
+        MatButton,
+        AsyncPipe,
+    ],
 })
 export class ScatterplotOperatorComponent implements AfterViewInit, OnDestroy {
+    private readonly projectService = inject(ProjectService);
+    private readonly notificationService = inject(NotificationService);
+    private readonly formBuilder = inject(UntypedFormBuilder);
+
     inputTypes = ResultTypes.VECTOR_TYPES;
 
     form: UntypedFormGroup;
@@ -40,11 +69,7 @@ export class ScatterplotOperatorComponent implements AfterViewInit, OnDestroy {
     /**
      * DI for services
      */
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly notificationService: NotificationService,
-        private readonly formBuilder: UntypedFormBuilder,
-    ) {
+    constructor() {
         const layerControl = this.formBuilder.control(undefined, Validators.required);
         this.form = this.formBuilder.group({
             name: ['Filtered Values', [Validators.required, geoengineValidators.notOnlyWhitespace]],

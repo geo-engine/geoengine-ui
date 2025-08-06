@@ -1,24 +1,56 @@
 import {BehaviorSubject, Observable} from 'rxjs';
 
-import {AfterViewInit, ChangeDetectionStrategy, Component, input} from '@angular/core';
-import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {AfterViewInit, ChangeDetectionStrategy, Component, input, inject} from '@angular/core';
+import {UntypedFormControl, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
-import {map, mergeMap} from 'rxjs/operators';
-import {Router} from '@angular/router';
+import {map} from 'rxjs/operators';
+import {Router, RouterLink} from '@angular/router';
 import {CommonConfig} from '../config.service';
 import {UserService} from '../user/user.service';
 import {NotificationService} from '../notification.service';
 import {geoengineValidators} from '../util/form.validators';
 import {GeoEngineError} from '../util/errors';
+import {FxLayoutDirective, FxLayoutAlignDirective, FxLayoutGapDirective} from '../util/directives/flexbox-legacy.directive';
+import {MatCard, MatCardHeader, MatCardTitle, MatCardSubtitle, MatCardContent, MatCardActions} from '@angular/material/card';
+import {MatIcon} from '@angular/material/icon';
+import {MatFormField, MatInput, MatHint} from '@angular/material/input';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {MatButton} from '@angular/material/button';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-register',
     templateUrl: './register.component.html',
     styleUrls: ['./register.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        FxLayoutDirective,
+        FxLayoutAlignDirective,
+        MatCard,
+        MatCardHeader,
+        MatIcon,
+        MatCardTitle,
+        MatCardSubtitle,
+        MatCardContent,
+        MatFormField,
+        MatInput,
+        MatHint,
+        MatProgressSpinner,
+        MatCardActions,
+        FxLayoutGapDirective,
+        MatButton,
+        RouterLink,
+        AsyncPipe,
+    ],
 })
 export class RegisterComponent implements AfterViewInit {
+    private readonly config = inject(CommonConfig);
+    private readonly userService = inject(UserService);
+    private readonly notificationService = inject(NotificationService);
+    private readonly router = inject(Router);
+
     PASSWORD_MIN_LENGTH = 8;
 
     loginRedirect = input('/map');
@@ -31,12 +63,7 @@ export class RegisterComponent implements AfterViewInit {
 
     registrationForm: UntypedFormGroup;
 
-    constructor(
-        private readonly config: CommonConfig,
-        private readonly userService: UserService,
-        private readonly notificationService: NotificationService,
-        private readonly router: Router,
-    ) {
+    constructor() {
         this.registrationForm = new UntypedFormGroup({
             name: new UntypedFormControl('', Validators.required),
             email: new UntypedFormControl(

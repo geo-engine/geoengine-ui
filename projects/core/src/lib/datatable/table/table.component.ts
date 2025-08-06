@@ -2,14 +2,14 @@ import {
     Component,
     OnInit,
     ChangeDetectionStrategy,
-    ViewChild,
     AfterViewInit,
     OnDestroy,
     ElementRef,
-    Input,
-    OnChanges,
-    SimpleChanges,
     ChangeDetectorRef,
+    inject,
+    input,
+    viewChild,
+    effect,
 } from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
 import {combineLatest, Observable, Subject, Subscription} from 'rxjs';
@@ -35,18 +35,67 @@ import {
 } from '@geoengine/common';
 import {Measurement, ClassificationMeasurement} from '@geoengine/common';
 import {Map} from 'immutable';
+import {
+    MatTable,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatCellDef,
+    MatCell,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+    MatNoDataRow,
+} from '@angular/material/table';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {MatIconButton} from '@angular/material/button';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatIcon} from '@angular/material/icon';
+import {MatFormField, MatLabel} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {FormsModule} from '@angular/forms';
+import {MatOption} from '@angular/material/autocomplete';
 
 @Component({
     selector: 'geoengine-datatable',
     templateUrl: './table.component.html',
     styleUrls: ['./table.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatTable,
+        MatColumnDef,
+        MatHeaderCellDef,
+        MatHeaderCell,
+        MatCellDef,
+        MatCell,
+        MatCheckbox,
+        MatIconButton,
+        MatTooltip,
+        MatIcon,
+        MediaviewComponent,
+        MatHeaderRowDef,
+        MatHeaderRow,
+        MatRowDef,
+        MatRow,
+        MatNoDataRow,
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        FormsModule,
+        MatOption,
+        MatPaginator,
+    ],
 })
-export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
-    @ViewChild(MatPaginator) paginator!: MatPaginator;
+export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy {
+    protected readonly dialog = inject(MatDialog);
+    protected readonly projectService = inject(ProjectService);
+    protected readonly hostElement = inject<ElementRef<HTMLElement>>(ElementRef);
+    protected readonly changeDetectorRef = inject(ChangeDetectorRef);
 
-    @Input() layer?: Layer;
+    readonly paginator = viewChild.required(MatPaginator);
+
+    readonly layer = input<Layer>();
 
     readonly layerTypes = ResultTypes.VECTOR_TYPES;
     readonly columnDataTypes = VectorColumnDataTypes;
@@ -63,38 +112,26 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     protected layerDataSubscription?: Subscription = undefined;
     protected selectedFeatureSubscription?: Subscription = undefined;
 
-    constructor(
-        protected readonly dialog: MatDialog,
-        protected readonly projectService: ProjectService,
-        protected readonly hostElement: ElementRef<HTMLElement>,
-        protected readonly changeDetectorRef: ChangeDetectorRef,
-    ) {}
+    constructor() {
+        effect(() => {
+            const layer = this.layer();
+            if (layer) {
+                this.selectLayer(layer);
+            } else {
+                this.emptyTable();
+            }
+        });
+    }
 
     ngOnInit(): void {
-        if (this.layer) {
-            this.selectLayer(this.layer);
-        } else {
-            this.emptyTable();
-        }
-
         this.selectedFeatureSubscription = this.projectService.getSelectedFeatureStream().subscribe((selection) => {
             this.changeDetectorRef.markForCheck();
             this.navigatePage(selection);
         });
     }
 
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes.layer) {
-            if (this.layer) {
-                this.selectLayer(this.layer);
-            } else {
-                this.emptyTable();
-            }
-        }
-    }
-
     ngAfterViewInit(): void {
-        this.dataSource.paginator = this.paginator;
+        this.dataSource.paginator = this.paginator();
     }
 
     ngOnDestroy(): void {
@@ -294,7 +331,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     protected resolveClassification(columnName: string, value: number): string {
         const measurement = this.measurements.get(columnName)!;
         if (measurement instanceof ClassificationMeasurement) {
-            const mapping = (measurement as ClassificationMeasurement).classes.get(value);
+            const mapping = measurement.classes.get(value);
             if (mapping) {
                 return mapping;
             }
@@ -303,19 +340,20 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy, OnC
     }
 
     protected navigatePage(selection: FeatureSelection): void {
-        if (!this.paginator) {
+        const paginator = this.paginator();
+        if (!paginator) {
             return;
         }
 
         for (let i = 0; i < this.dataSource.data.length; i++) {
             const feature = this.dataSource.data[i];
             if (feature.getId() === selection.feature) {
-                const page = Math.floor(i / this.paginator.pageSize);
-                this.paginator.pageIndex = page;
-                this.paginator.page.next({
+                const page = Math.floor(i / paginator.pageSize);
+                paginator.pageIndex = page;
+                paginator.page.next({
                     pageIndex: page,
-                    pageSize: this.paginator.pageSize,
-                    length: this.paginator.length,
+                    pageSize: paginator.pageSize,
+                    length: paginator.length,
                 });
                 break;
             }

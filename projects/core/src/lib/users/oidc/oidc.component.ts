@@ -1,17 +1,42 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, OnDestroy, inject} from '@angular/core';
 import {BehaviorSubject, finalize, first, SubscriptionLike} from 'rxjs';
 
 import {User} from '../user.model';
 import {Router} from '@angular/router';
 import {UserService} from '@geoengine/common';
+import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
+import {MatCard, MatCardHeader, MatCardTitle, MatCardContent} from '@angular/material/card';
+import {IfLoggedInDirective} from '../../util/directives/if-logged-in.directive';
+import {MatButton} from '@angular/material/button';
+import {IfGuestDirective} from '../../util/directives/if-guest.directive';
+import {UserSessionComponent} from '../user-session/user-session.component';
+import {QuotaInfoComponent} from '../quota/quota-info/quota-info.component';
+import {RolesComponent} from '../roles/roles.component';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-oidc',
     templateUrl: 'oidc.component.html',
     styleUrls: ['./oidc.component.scss'],
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        MatCard,
+        MatCardHeader,
+        MatCardTitle,
+        MatCardContent,
+        IfLoggedInDirective,
+        MatButton,
+        IfGuestDirective,
+        UserSessionComponent,
+        QuotaInfoComponent,
+        RolesComponent,
+        AsyncPipe,
+    ],
 })
 export class OidcComponent implements OnInit, OnDestroy {
+    private readonly userService = inject(UserService);
+    private readonly router = inject(Router);
+
     user?: User;
     loginDisabled: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
@@ -20,11 +45,6 @@ export class OidcComponent implements OnInit, OnDestroy {
     private logoutSubscription?: SubscriptionLike;
 
     private pendingLoginRequest = false;
-
-    constructor(
-        private readonly userService: UserService,
-        private readonly router: Router,
-    ) {}
 
     ngOnInit(): void {
         this.userSubscription = this.userService

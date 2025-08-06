@@ -1,6 +1,6 @@
 import {Subscription} from 'rxjs';
 import {ChangeDetectionStrategy, Component, computed, effect, inject, input, OnDestroy, output, signal} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {geoengineValidators} from '../../util/form.validators';
 import {SymbologyQueryParams, MultiBandRasterColorizer} from '../symbology.model';
 import {Color, TRANSPARENT} from '../../colors/color';
@@ -8,6 +8,12 @@ import {WorkflowsService} from '../../workflows/workflows.service';
 import {ExpressionDict, StatisticsDict, StatisticsParams} from '../../operators/operator.model';
 import {PlotsService} from '../../plots/plots.service';
 import {UUID} from '../../datasets/dataset.model';
+import {MatCard, MatCardHeader, MatCardTitleGroup, MatCardTitle, MatCardSubtitle, MatCardContent} from '@angular/material/card';
+import {MatIcon} from '@angular/material/icon';
+import {MatFormField, MatLabel, MatInput, MatError} from '@angular/material/input';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {MatButton} from '@angular/material/button';
+import {TitleCasePipe} from '@angular/common';
 
 interface RgbSettingsForm {
     red: FormGroup<{
@@ -28,21 +34,6 @@ interface RgbSettingsForm {
     noDataColor: FormControl<Color>;
 }
 
-interface RgbRasterStats {
-    red: {
-        min: number;
-        max: number;
-    };
-    green: {
-        min: number;
-        max: number;
-    };
-    blue: {
-        min: number;
-        max: number;
-    };
-}
-
 type RgbColorName = 'red' | 'green' | 'blue';
 
 /**
@@ -53,7 +44,24 @@ type RgbColorName = 'red' | 'green' | 'blue';
     templateUrl: './raster-multiband-symbology-editor.component.html',
     styleUrls: ['./raster-multiband-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatCard,
+        MatCardHeader,
+        MatCardTitleGroup,
+        MatCardTitle,
+        MatCardSubtitle,
+        MatIcon,
+        MatCardContent,
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatError,
+        MatProgressSpinner,
+        MatButton,
+        TitleCasePipe,
+    ],
 })
 export class RasterMultibandSymbologyEditorComponent implements OnDestroy {
     private readonly formBuilder = inject(FormBuilder);
@@ -78,9 +86,9 @@ export class RasterMultibandSymbologyEditorComponent implements OnDestroy {
     readonly colorizerChange = output<MultiBandRasterColorizer>();
 
     readonly channels = computed<Array<{color: RgbColorName; label: string}>>(() => {
-        let band1 = this.band1();
-        let band2 = this.band2();
-        let band3 = this.band3();
+        const band1 = this.band1();
+        const band2 = this.band2();
+        const band3 = this.band3();
 
         return [
             {color: 'red', label: band1.name},

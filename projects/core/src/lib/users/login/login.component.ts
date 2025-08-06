@@ -1,12 +1,17 @@
 import {BehaviorSubject, Subscription} from 'rxjs';
 
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject} from '@angular/core';
+import {UntypedFormControl, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {CoreConfig} from '../../config.service';
 import {User} from '../user.model';
 import {first} from 'rxjs/operators';
-import {geoengineValidators, NotificationService, UserService} from '@geoengine/common';
+import {geoengineValidators, NotificationService, UserService, FxLayoutDirective, FxFlexDirective} from '@geoengine/common';
+import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
+import {MatFormField, MatInput} from '@angular/material/input';
+import {MatButton} from '@angular/material/button';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {AsyncPipe} from '@angular/common';
 
 enum FormStatus {
     LoggedOut,
@@ -19,9 +24,25 @@ enum FormStatus {
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormField,
+        MatInput,
+        MatButton,
+        MatProgressSpinner,
+        FxLayoutDirective,
+        FxFlexDirective,
+        AsyncPipe,
+    ],
 })
 export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly config = inject(CoreConfig);
+    private readonly userService = inject(UserService);
+    private readonly notificationService = inject(NotificationService);
+
     readonly FormStatus = FormStatus;
 
     formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.Loading);
@@ -33,12 +54,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private formStatusSubscription?: Subscription;
 
-    constructor(
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly config: CoreConfig,
-        private readonly userService: UserService,
-        private readonly notificationService: NotificationService,
-    ) {
+    constructor() {
         this.loginForm = new UntypedFormGroup({
             email: new UntypedFormControl(
                 '',

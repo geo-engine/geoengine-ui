@@ -15,14 +15,18 @@
         </a>
 
         <ng-container operatorParameters>
-            <mat-form-field *ngIf="isVectorLayer$ | async">
-                <mat-select placeholder="Attribute" formControlName="attribute">
-                    <mat-option *ngFor="let attribute of attributes$ | async" [value]="attribute">{{ attribute }}</mat-option>
-                </mat-select>
-            </mat-form-field>
-            <mat-hint align="end" class="error" *ngIf="form.controls.layer.errors?.nonCategorical">
-                The input must be categorical.
-            </mat-hint>
+            @if (isVectorLayer$ | async) {
+                <mat-form-field>
+                    <mat-select placeholder="Attribute" formControlName="attribute">
+                        @for (attribute of attributes$ | async; track attribute) {
+                            <mat-option [value]="attribute">{{ attribute }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            }
+            @if (form.controls.layer.errors?.nonCategorical) {
+                <mat-hint align="end" class="error"> The input must be categorical. </mat-hint>
+            }
         </ng-container>
 
         <ng-container layerSpecification>
@@ -30,13 +34,9 @@
                 formControlName="name"
                 [suggestion]="'Histogram of ' + (form.controls.layer.valueChanges | async)?.name"
             >
-                <mat-hint
-                    align="end"
-                    class="error"
-                    *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
-                >
-                    The name must be non-empty.
-                </mat-hint>
+                @if (form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace) {
+                    <mat-hint align="end" class="error"> The name must be non-empty. </mat-hint>
+                }
             </geoengine-operator-output-name>
         </ng-container>
 

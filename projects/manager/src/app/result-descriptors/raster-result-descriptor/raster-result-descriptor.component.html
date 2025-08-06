@@ -1,12 +1,12 @@
 <form>
     <mat-form-field appearance="fill">
         <mat-label>Data Type</mat-label>
-        <input matInput type="text" readonly [value]="resultDescriptor.dataType" />
+        <input matInput type="text" readonly [value]="resultDescriptor().dataType" />
     </mat-form-field>
 
     <mat-form-field appearance="fill">
         <mat-label>Spatial Reference</mat-label>
-        <input matInput type="text" readonly [value]="resultDescriptor.spatialReference" />
+        <input matInput type="text" readonly [value]="resultDescriptor().spatialReference" />
     </mat-form-field>
 
     @if (boundingBox; as bbox) {
@@ -46,7 +46,7 @@
         </div>
     }
 
-    @if (resultDescriptor.time; as time) {
+    @if (resultDescriptor().time; as time) {
         <div class="flex-container">
             <mat-form-field>
                 <mat-label>Time Start</mat-label>

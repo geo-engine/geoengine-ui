@@ -1,11 +1,14 @@
-import {Component, Input, ChangeDetectionStrategy, OnInit, ViewChild, Output, EventEmitter, OnChanges, SimpleChanges} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChanges, input, output, viewChild} from '@angular/core';
 import {PaletteColorizer} from '../../colors/colorizer.model';
-import {ColorAttributeInput} from '../../colors/color-attribute-input/color-attribute-input.component';
+import {ColorAttributeInput, ColorAttributeInputComponent} from '../../colors/color-attribute-input/color-attribute-input.component';
 import {Color} from '../../colors/color';
 import {ColorMapSelectorComponent} from '../../colors/color-map-selector/color-map-selector.component';
 import {ColorTableEditorComponent} from '../../colors/color-table-editor/color-table-editor.component';
 import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
 import {Measurement} from '@geoengine/openapi-client';
+import {MatCard, MatCardHeader, MatCardTitleGroup, MatCardTitle, MatCardSubtitle, MatCardContent} from '@angular/material/card';
+import {MatIcon} from '@angular/material/icon';
+import {FormsModule} from '@angular/forms';
 
 /**
  * An editor for generating raster symbologies.
@@ -15,19 +18,28 @@ import {Measurement} from '@geoengine/openapi-client';
     templateUrl: 'raster-palette-symbology-editor.component.html',
     styleUrls: ['raster-palette-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatCard,
+        MatCardHeader,
+        MatCardTitleGroup,
+        MatCardTitle,
+        MatCardSubtitle,
+        MatIcon,
+        MatCardContent,
+        ColorAttributeInputComponent,
+        FormsModule,
+        ColorTableEditorComponent,
+    ],
 })
-export class RasterPaletteSymbologyEditorComponent implements OnInit, OnChanges {
-    @ViewChild(ColorMapSelectorComponent)
-    colorMapSelector!: ColorMapSelectorComponent;
+export class RasterPaletteSymbologyEditorComponent implements OnChanges {
+    readonly colorMapSelector = viewChild.required(ColorMapSelectorComponent);
 
-    @ViewChild(ColorTableEditorComponent)
-    colorPaletteEditor!: ColorTableEditorComponent;
+    readonly colorPaletteEditor = viewChild.required(ColorTableEditorComponent);
 
     @Input() colorizer!: PaletteColorizer;
-    @Input() measurement!: Measurement;
+    readonly measurement = input<Measurement>();
 
-    @Output() colorizerChange = new EventEmitter<PaletteColorizer>();
+    readonly colorizerChange = output<PaletteColorizer>();
 
     // The min value used for color table generation
     layerMinValue: number | undefined = undefined;
@@ -38,10 +50,6 @@ export class RasterPaletteSymbologyEditorComponent implements OnInit, OnChanges 
 
     protected defaultColor?: ColorAttributeInput;
     protected noDataColor?: ColorAttributeInput;
-
-    constructor() {}
-
-    ngOnInit(): void {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.colorizer) {
@@ -84,7 +92,7 @@ export class RasterPaletteSymbologyEditorComponent implements OnInit, OnChanges 
     }
 
     updateBounds(histogramSignal: {binStart: [number, number]}): void {
-        if (!histogramSignal || !histogramSignal.binStart || histogramSignal.binStart.length !== 2) {
+        if (!histogramSignal?.binStart || histogramSignal.binStart.length !== 2) {
             return;
         }
 
@@ -131,7 +139,7 @@ export class RasterPaletteSymbologyEditorComponent implements OnInit, OnChanges 
 
     createColorMap(): Map<number, Color> {
         const colorMap = new Map<number, Color>();
-        const colorizer: PaletteColorizer = this.colorizer as PaletteColorizer;
+        const colorizer: PaletteColorizer = this.colorizer;
         colorizer.getBreakpoints().forEach((bp, index) => {
             colorMap.set(bp.value, colorizer.getColorAtIndex(index));
         });

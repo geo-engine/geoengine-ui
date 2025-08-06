@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, ChangeDetectorRef, Input} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ChangeDetectorRef, Input, inject, input} from '@angular/core';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {MatDialog} from '@angular/material/dialog';
 import {TabsService} from '../../../tabs/tabs.service';
@@ -24,10 +24,26 @@ import {
     Symbology,
     SymbologyType,
     UserService,
+    FxLayoutDirective,
+    FxLayoutAlignDirective,
+    PointIconComponent,
+    LineIconComponent,
+    PolygonIconComponent,
+    RasterIconComponent,
+    FxFlexDirective,
 } from '@geoengine/common';
 import {RasterBandDescriptor} from '@geoengine/openapi-client';
 import {SymbologyEditorComponent} from '../../symbology/symbology-editor/symbology-editor.component';
 import {DownloadLayerComponent} from '../../../download-layer/download-layer.component';
+import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
+import {NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault, AsyncPipe} from '@angular/common';
+import {MatIcon} from '@angular/material/icon';
+import {MatIconButton} from '@angular/material/button';
+import {MatTooltip} from '@angular/material/tooltip';
+import {CdkDragHandle} from '@angular/cdk/drag-drop';
+import {VectorLegendComponent} from '../../legend/legend-vector/vector-legend.component';
+import {RasterLegendComponent} from '../../legend/legend-raster/raster-legend.component';
+import {MatProgressBar} from '@angular/material/progress-bar';
 /**
  * The layer list component displays active layers, legends and other controlls.
  */
@@ -36,37 +52,54 @@ import {DownloadLayerComponent} from '../../../download-layer/download-layer.com
     templateUrl: './layer-list-element.component.html',
     styleUrls: ['./layer-list-element.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatMenu,
+        NgIf,
+        MatMenuItem,
+        MatIcon,
+        FxLayoutDirective,
+        FxLayoutAlignDirective,
+        MatIconButton,
+        MatTooltip,
+        NgSwitch,
+        NgSwitchCase,
+        PointIconComponent,
+        LineIconComponent,
+        PolygonIconComponent,
+        NgSwitchDefault,
+        RasterIconComponent,
+        CdkDragHandle,
+        FxFlexDirective,
+        MatMenuTrigger,
+        VectorLegendComponent,
+        RasterLegendComponent,
+        MatProgressBar,
+        AsyncPipe,
+    ],
 })
 export class LayerListElementComponent {
+    readonly dialog = inject(MatDialog);
+    readonly layoutService = inject(LayoutService);
+    readonly projectService = inject(ProjectService);
+    readonly mapService = inject(MapService);
+    readonly config = inject(CoreConfig);
+    readonly changeDetectorRef = inject(ChangeDetectorRef);
+    protected readonly backend = inject(BackendService);
+    protected readonly userService = inject(UserService);
+    protected readonly tabsService = inject(TabsService);
+    protected readonly clipboard = inject(Clipboard);
+    protected readonly notificationService = inject(NotificationService);
+
     @Input()
     layer!: Layer;
 
-    @Input()
-    menu = true;
+    readonly menu = input(true);
 
     readonly LayoutService = LayoutService;
     readonly ST = SymbologyType;
     readonly LoadingState = LoadingState;
     readonly RenameLayerComponent = RenameLayerComponent;
     readonly LineageGraphComponent = LineageGraphComponent;
-
-    /**
-     * The component constructor. It injects angular and geoengine services.
-     */
-    constructor(
-        public readonly dialog: MatDialog,
-        public readonly layoutService: LayoutService,
-        public readonly projectService: ProjectService,
-        public readonly mapService: MapService,
-        public readonly config: CoreConfig,
-        public readonly changeDetectorRef: ChangeDetectorRef,
-        protected readonly backend: BackendService,
-        protected readonly userService: UserService,
-        protected readonly tabsService: TabsService,
-        protected readonly clipboard: Clipboard,
-        protected readonly notificationService: NotificationService,
-    ) {}
 
     /**
      * select a layer
@@ -93,7 +126,7 @@ export class LayerListElementComponent {
      * helper method to cast AbstractSymbology to VectorSymbology
      */
     vectorLayerCast(layer: Layer): Layer {
-        return layer as Layer;
+        return layer;
     }
 
     showChannelParameterSlider(_layer: Layer): boolean {

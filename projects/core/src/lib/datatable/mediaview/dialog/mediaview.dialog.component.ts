@@ -1,11 +1,17 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {Component, OnInit, inject} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogContent} from '@angular/material/dialog';
+import {DialogHeaderComponent} from '../../../dialogs/dialog-header/dialog-header.component';
+import {CdkScrollable} from '@angular/cdk/scrolling';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatMiniFabButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {MediaviewPlaylistComponent} from '../playlist/mediaview.playlist.component';
 
 @Component({
     selector: 'geoengine-mediaview-dialog',
     templateUrl: './mediaview.dialog.component.html',
     styleUrls: ['./mediaview.dialog.component.scss'],
-    standalone: false,
+    imports: [DialogHeaderComponent, CdkScrollable, MatDialogContent, MatTooltip, MatMiniFabButton, MatIcon, MediaviewPlaylistComponent],
 })
 
 /**
@@ -15,13 +21,17 @@ import {MAT_DIALOG_DATA} from '@angular/material/dialog';
  * The component receives an array of urls to media files, the first media and an array specifying the types of the media files.
  */
 export class MediaviewDialogComponent implements OnInit {
+    data = inject<{
+        mediaURLs: string[];
+        currentMedia: number;
+        mediaTypes: string[];
+    }>(MAT_DIALOG_DATA);
+
     mediaURLs: Array<string> = [];
 
     currentMedia!: number;
 
     mediaTypes: Array<string> = [];
-
-    constructor(@Inject(MAT_DIALOG_DATA) public data: {mediaURLs: string[]; currentMedia: number; mediaTypes: string[]}) {}
 
     ngOnInit(): void {
         this.mediaURLs = this.data.mediaURLs;

@@ -4,70 +4,82 @@
             <mat-card appearance="outlined">
                 <mat-card-header>
                     <img [src]="config.BRANDING.LOGO_URL" class="logo" />
-                    <mat-card-subtitle [ngSwitch]="formStatus$ | async">
-                        <ng-template [ngSwitchCase]="FormStatus.LoggedOut">Login to this Geo Engine instance</ng-template>
-                        <ng-template [ngSwitchCase]="FormStatus.LoggedIn">User Info</ng-template>
+                    <mat-card-subtitle>
+                        @switch (formStatus$ | async) {
+                            @case (FormStatus.LoggedOut) {
+                                Login to this Geo Engine instance
+                            }
+                            @case (FormStatus.LoggedIn) {
+                                User Info
+                            }
+                        }
                     </mat-card-subtitle>
                 </mat-card-header>
 
-                <mat-card-content [ngSwitch]="formStatus$ | async">
-                    <ng-template [ngSwitchCase]="FormStatus.Oidc">
-                        <mat-card-actions class="login-buttons">
-                            <button mat-raised-button (click)="oidcLogin()" color="primary">Sign in using OIDC</button>
-                            @if (config.USER.LOCAL_LOGIN_AVAILABLE) {
-                                <button mat-raised-button (click)="formStatus$.next(FormStatus.LoggedOut)">Use local login</button>
+                <mat-card-content>
+                    @switch (formStatus$ | async) {
+                        @case (FormStatus.Oidc) {
+                            <mat-card-actions class="login-buttons">
+                                <button mat-raised-button (click)="oidcLogin()" color="primary">Sign in using OIDC</button>
+                                @if (config.USER.LOCAL_LOGIN_AVAILABLE) {
+                                    <button mat-raised-button (click)="formStatus$.next(FormStatus.LoggedOut)">Use local login</button>
+                                }
+                            </mat-card-actions>
+                        }
+                        @case (FormStatus.LoggedOut) {
+                            <mat-form-field>
+                                <input matInput type="text" placeholder="E-Mail" formControlName="email" />
+                            </mat-form-field>
+                            <mat-form-field>
+                                <input matInput type="password" placeholder="Password" formControlName="password" />
+                            </mat-form-field>
+                            @if (invalidCredentials$ | async) {
+                                <p class="error">Invalid Credentials</p>
                             }
-                        </mat-card-actions>
-                    </ng-template>
-                    <ng-template [ngSwitchCase]="FormStatus.LoggedOut">
-                        <mat-form-field>
-                            <input matInput type="text" placeholder="E-Mail" formControlName="email" />
-                        </mat-form-field>
-                        <mat-form-field>
-                            <input matInput type="password" placeholder="Password" formControlName="password" />
-                        </mat-form-field>
-                        <p class="error" *ngIf="invalidCredentials$ | async">Invalid Credentials</p>
-                    </ng-template>
-                    <ng-template [ngSwitchCase]="FormStatus.Loading">
-                        <mat-spinner></mat-spinner>
-                    </ng-template>
-                    <ng-template [ngSwitchCase]="FormStatus.LoggedIn">
-                        <table *ngIf="user">
-                            <tr>
-                                <th>E-Mail</th>
-                                <td>{{ user.email }}</td>
-                            </tr>
-                            <tr>
-                                <th>Real Name</th>
-                                <td>{{ user.realName }}</td>
-                            </tr>
-                        </table>
-                    </ng-template>
+                        }
+                        @case (FormStatus.Loading) {
+                            <mat-spinner></mat-spinner>
+                        }
+                        @case (FormStatus.LoggedIn) {
+                            @if (user) {
+                                <table>
+                                    <tr>
+                                        <th>E-Mail</th>
+                                        <td>{{ user.email }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Real Name</th>
+                                        <td>{{ user.realName }}</td>
+                                    </tr>
+                                </table>
+                            }
+                        }
+                    }
                 </mat-card-content>
-                <mat-card-actions
-                    *ngIf="(formStatus$ | async | valueDefault: FormStatus.LoggedOut) !== FormStatus.Oidc"
-                    [ngSwitch]="formStatus$ | async"
-                    fxLayout="row"
-                    fxLayoutGap="1rem"
-                    fxLayoutAlign="space-between center"
-                >
-                    <ng-template [ngSwitchCase]="FormStatus.LoggedOut">
-                        <button
-                            mat-raised-button
-                            type="submit"
-                            [disabled]="(loginForm.statusChanges | async) !== 'VALID'"
-                            color="primary"
-                            fxFlex
-                        >
-                            Login
-                        </button>
-                        <a routerLink="/register" *ngIf="canRegister">Register</a>
-                    </ng-template>
-                    <ng-template [ngSwitchCase]="FormStatus.LoggedIn">
-                        <button mat-raised-button (click)="$event.preventDefault(); redirectToMainView()" fxFlex>To App</button>
-                        <button mat-raised-button (click)="$event.preventDefault(); logout()" fxFlex color="primary">Logout</button>
-                    </ng-template>
-                </mat-card-actions>
+                @if ((formStatus$ | async | valueDefault: FormStatus.LoggedOut) !== FormStatus.Oidc) {
+                    <mat-card-actions fxLayout="row" fxLayoutGap="1rem" fxLayoutAlign="space-between center">
+                        @switch (formStatus$ | async) {
+                            @case (FormStatus.LoggedOut) {
+                                <button
+                                    mat-raised-button
+                                    type="submit"
+                                    [disabled]="(loginForm.statusChanges | async) !== 'VALID'"
+                                    color="primary"
+                                    fxFlex
+                                >
+                                    Login
+                                </button>
+                                @if (canRegister) {
+                                    <a routerLink="/register">Register</a>
+                                }
+                            }
+                            @case (FormStatus.LoggedIn) {
+                                <button mat-raised-button (click)="$event.preventDefault(); redirectToMainView()" fxFlex>To App</button>
+                                <button mat-raised-button (click)="$event.preventDefault(); logout()" fxFlex color="primary">Logout</button>
+                            }
+                        }
+                    </mat-card-actions>
+                }
             </mat-card>
 
             @if (config.BRANDING.HOMEPAGE; as homepage) {

@@ -1,16 +1,5 @@
-import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    EventEmitter,
-    Input,
-    OnChanges,
-    OnDestroy,
-    OnInit,
-    Output,
-    SimpleChanges,
-} from '@angular/core';
-import {FormArray, UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input, output} from '@angular/core';
+import {FormArray, UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BehaviorSubject} from 'rxjs';
 import {Color, RgbaTuple} from '../color';
 import {ColorBreakpoint} from '../color-breakpoint.model';
@@ -22,6 +11,13 @@ import {Workflow} from '@geoengine/openapi-client';
 import {SymbologyQueryParams} from '../../symbology/symbology.model';
 import {PlotsService} from '../../plots/plots.service';
 import {ALL_COLORMAPS} from '../colormaps/colormaps';
+import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {MatProgressBar} from '@angular/material/progress-bar';
+import {AsyncPipe, KeyValuePipe} from '@angular/common';
+import {RgbaArrayCssGradientPipe} from '../../util/pipes/color-gradients.pipe';
 
 /**
  * The ColormapColorizerComponent is a dialog to generate ColorizerData from colormaps.
@@ -31,24 +27,42 @@ import {ALL_COLORMAPS} from '../colormaps/colormaps';
     templateUrl: 'percentile-breakpoint-selector.component.html',
     styleUrls: ['percentile-breakpoint-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatSelect,
+        MatOption,
+        MatCheckbox,
+        MatProgressBar,
+        AsyncPipe,
+        KeyValuePipe,
+        RgbaArrayCssGradientPipe,
+    ],
 })
-export class PercentileBreakpointSelectorComponent implements OnInit, OnDestroy, OnChanges {
-    @Input({required: true}) band!: string;
+export class PercentileBreakpointSelectorComponent {
+    protected readonly changeDetectorRef = inject(ChangeDetectorRef);
+    protected readonly formBuilder = inject(UntypedFormBuilder);
+    protected readonly workflowsService = inject(WorkflowsService);
+    protected readonly plotsService = inject(PlotsService);
 
-    @Input({required: true}) workflowId!: UUID;
+    readonly band = input.required<string>();
 
-    @Input({required: true}) queryParams!: SymbologyQueryParams;
+    readonly workflowId = input.required<UUID>();
+
+    readonly queryParams = input.required<SymbologyQueryParams>();
 
     /**
      * Emmits colorizer breakpoint arrays
      */
-    @Output() breakpointsChange = new EventEmitter<Array<ColorBreakpoint>>();
+    readonly breakpointsChange = output<Array<ColorBreakpoint>>();
 
     /**
      * Informs parent to enable "Apply Changes" button
      */
-    @Output() changesToForm = new EventEmitter<void>();
+    readonly changesToForm = output<void>();
 
     readonly colorMaps = ALL_COLORMAPS;
 
@@ -68,12 +82,9 @@ export class PercentileBreakpointSelectorComponent implements OnInit, OnDestroy,
 
     protected readonly largerThanZeroValidator = geoengineValidators.largerThan(0);
 
-    constructor(
-        protected readonly changeDetectorRef: ChangeDetectorRef,
-        protected readonly formBuilder: UntypedFormBuilder,
-        protected readonly workflowsService: WorkflowsService,
-        protected readonly plotsService: PlotsService,
-    ) {
+    constructor() {
+        const formBuilder = this.formBuilder;
+
         const initialColorMapName = Object.keys(this.colorMaps)[0];
 
         this.form = formBuilder.group({
@@ -86,12 +97,6 @@ export class PercentileBreakpointSelectorComponent implements OnInit, OnDestroy,
             colorMapReverseColors: [false],
         });
     }
-
-    ngOnInit(): void {}
-
-    ngOnDestroy(): void {}
-
-    ngOnChanges(changes: SimpleChanges): void {}
 
     /**
      * Replace the min and max values.
@@ -165,7 +170,7 @@ export class PercentileBreakpointSelectorComponent implements OnInit, OnDestroy,
         const breakpoints = new Array<ColorBreakpoint>();
 
         for (let i = 0; i < percentiles.length; i++) {
-            let value = percentiles[i];
+            const value = percentiles[i];
 
             const frac = i / percentiles.length;
 
@@ -220,7 +225,7 @@ export class PercentileBreakpointSelectorComponent implements OnInit, OnDestroy,
         const percentiles: number[] = this.form.controls['percentiles'].value;
 
         const statisticsWorkflowsId = await this.createStatisticsWorkflow(percentiles);
-        const statistics = await this.createStatistics(statisticsWorkflowsId, this.queryParams);
+        const statistics = await this.createStatistics(statisticsWorkflowsId, this.queryParams());
 
         // add min and max to percentiles
         const percentileValues = statistics.percentiles.map((p) => p.value);
@@ -242,24 +247,26 @@ export class PercentileBreakpointSelectorComponent implements OnInit, OnDestroy,
             .then((plotData) => {
                 this.statisticsLoading$.next(false);
 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const statistics = plotData.data as any;
 
-                if (!(this.band in plotData.data)) {
+                const band = this.band();
+                if (!(band in plotData.data)) {
                     throw new Error('Band not found in statistics');
                 }
 
-                return statistics[this.band] as {min: number; max: number; percentiles: {percentile: number; value: number}[]};
+                return statistics[band] as {min: number; max: number; percentiles: {percentile: number; value: number}[]};
             });
     }
 
     protected createStatisticsWorkflow(percentiles: number[]): Promise<UUID> {
-        return this.workflowsService.getWorkflow(this.workflowId).then((workflow) =>
+        return this.workflowsService.getWorkflow(this.workflowId()).then((workflow) =>
             this.workflowsService.registerWorkflow({
                 type: 'Plot',
                 operator: {
                     type: 'Statistics',
                     params: {
-                        columnNames: [this.band],
+                        columnNames: [this.band()],
                         percentiles,
                     } as StatisticsParams,
                     sources: {

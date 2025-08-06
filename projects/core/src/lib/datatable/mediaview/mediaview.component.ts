@@ -1,14 +1,16 @@
-import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, inject, input} from '@angular/core';
 import {MediaviewDialogComponent} from './dialog/mediaview.dialog.component';
 import {MatDialog} from '@angular/material/dialog';
 import {VectorColumnDataType, VectorColumnDataTypes} from '@geoengine/common';
+import {MatIconButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
     selector: 'geoengine-datatable-mediaview',
     templateUrl: './mediaview.component.html',
     styleUrls: ['./mediaview.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [MatIconButton, MatIcon],
 })
 
 /**
@@ -17,16 +19,16 @@ import {VectorColumnDataType, VectorColumnDataTypes} from '@geoengine/common';
  * The dialog will show the images or play the audios or videos.
  */
 export class MediaviewComponent implements OnInit {
+    private readonly mediadialog = inject(MatDialog);
+
     mediaType: Array<string> = [];
     mediaUrls: Array<string> = [];
 
-    @Input() url?: string;
+    readonly url = input<string>();
 
-    @Input() type!: VectorColumnDataType;
+    readonly type = input.required<VectorColumnDataType>();
 
     private urls: Array<string> = [];
-
-    constructor(private readonly mediadialog: MatDialog) {}
 
     /**
      * Extracts the type (image, audio, video) of a given file-url string.
@@ -56,18 +58,20 @@ export class MediaviewComponent implements OnInit {
      * Gets the urls and file-types of the comma-separated urls given as input-argument.
      */
     ngOnInit(): void {
-        if (!this.url) {
+        const url = this.url();
+        if (!url) {
             this.urls = [];
             this.mediaType = [];
             this.mediaUrls = [];
             return;
         }
 
-        if (this.type === VectorColumnDataTypes.Media) {
-            this.urls = this.url.split(',');
+        if (this.type() === VectorColumnDataTypes.Media) {
+            this.urls = url.split(',');
             this.mediaType = [];
             this.mediaUrls = [];
 
+            // eslint-disable-next-line @typescript-eslint/no-for-in-array
             for (const i in this.urls) {
                 if (Object.hasOwn(this.urls, i)) {
                     const checkMediaType = MediaviewComponent.getType(this.urls[i]);
@@ -79,9 +83,9 @@ export class MediaviewComponent implements OnInit {
                 }
             }
         } else {
-            this.urls = [this.url.toString()];
+            this.urls = [url.toString()];
             this.mediaType = [''];
-            this.mediaUrls = [this.url.toString()];
+            this.mediaUrls = [url.toString()];
         }
     }
 

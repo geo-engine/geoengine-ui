@@ -40,5 +40,8 @@
     <div class="actions">
         <ng-content select="[actions]"></ng-content>
     </div>
-    <mat-progress-bar mode="query" *ngIf="loading"></mat-progress-bar>
+
+    @if (loading()) {
+        <mat-progress-bar mode="query"></mat-progress-bar>
+    }
 </div>

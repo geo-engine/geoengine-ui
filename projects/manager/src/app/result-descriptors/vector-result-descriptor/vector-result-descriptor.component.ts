@@ -1,5 +1,19 @@
-import {Component, Input} from '@angular/core';
-import {Measurement, VectorColumnInfo, TypedVectorResultDescriptor} from '@geoengine/openapi-client';
+import {Component, input} from '@angular/core';
+import {Measurement, TypedVectorResultDescriptor} from '@geoengine/openapi-client';
+import {FormsModule} from '@angular/forms';
+import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
+import {
+    MatTable,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatCellDef,
+    MatCell,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+} from '@angular/material/table';
 
 interface Column {
     name: string;
@@ -11,10 +25,25 @@ interface Column {
     selector: 'geoengine-manager-vector-result-descriptor',
     templateUrl: './vector-result-descriptor.component.html',
     styleUrl: './vector-result-descriptor.component.scss',
-    standalone: false,
+    imports: [
+        FormsModule,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatTable,
+        MatColumnDef,
+        MatHeaderCellDef,
+        MatHeaderCell,
+        MatCellDef,
+        MatCell,
+        MatHeaderRowDef,
+        MatHeaderRow,
+        MatRowDef,
+        MatRow,
+    ],
 })
 export class VectorResultDescriptorComponent {
-    @Input() resultDescriptor!: TypedVectorResultDescriptor;
+    readonly resultDescriptor = input.required<TypedVectorResultDescriptor>();
 
     displayedColumns: string[] = ['name', 'dataType', 'measurement'];
 
@@ -24,12 +53,12 @@ export class VectorResultDescriptorComponent {
     }
 
     get columnsDataSource(): Column[] {
-        const keys = Object.keys(this.resultDescriptor.columns).sort();
+        const keys = Object.keys(this.resultDescriptor().columns).sort();
 
         const columns: Column[] = [];
 
         for (const key of keys) {
-            const column = this.resultDescriptor.columns[key] as VectorColumnInfo;
+            const column = this.resultDescriptor().columns[key];
 
             columns.push({
                 name: key,

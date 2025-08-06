@@ -2,30 +2,60 @@ import {
     Component,
     OnInit,
     ChangeDetectionStrategy,
-    ViewChild,
     ElementRef,
-    Input,
     OnChanges,
     SimpleChanges,
     ChangeDetectorRef,
+    inject,
+    input,
+    viewChild,
 } from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
 import {ProjectService} from '../../project/project.service';
 import {ProvenanceDict} from '../../backend/backend.model';
 import {Layer} from '@geoengine/common';
 import {LayoutService} from '../../layout.service';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {
+    MatTable,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatCellDef,
+    MatCell,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+} from '@angular/material/table';
 
 @Component({
     selector: 'geoengine-provenance-table',
     templateUrl: './provenance-table.component.html',
     styleUrls: ['./provenance-table.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatProgressSpinner,
+        MatTable,
+        MatColumnDef,
+        MatHeaderCellDef,
+        MatHeaderCell,
+        MatCellDef,
+        MatCell,
+        MatHeaderRowDef,
+        MatHeaderRow,
+        MatRowDef,
+        MatRow,
+    ],
 })
 export class ProvenanceTableComponent implements OnInit, OnChanges {
-    @ViewChild(MatPaginator) paginator!: MatPaginator;
+    protected readonly projectService = inject(ProjectService);
+    protected readonly hostElement = inject<ElementRef<HTMLElement>>(ElementRef);
+    protected readonly changeDetectorRef = inject(ChangeDetectorRef);
 
-    @Input() layer?: Layer;
+    readonly paginator = viewChild.required(MatPaginator);
+
+    readonly layer = input<Layer>();
 
     displayedColumns: Array<string> = ['citation', 'license', 'uri'];
 
@@ -35,15 +65,10 @@ export class ProvenanceTableComponent implements OnInit, OnChanges {
 
     readonly loadingSpinnerDiameterPx: number = 3 * LayoutService.remInPx;
 
-    constructor(
-        protected readonly projectService: ProjectService,
-        protected readonly hostElement: ElementRef<HTMLElement>,
-        protected readonly changeDetectorRef: ChangeDetectorRef,
-    ) {}
-
     ngOnInit(): void {
-        if (this.layer) {
-            this.selectLayer(this.layer);
+        const layer = this.layer();
+        if (layer) {
+            this.selectLayer(layer);
         } else {
             this.dataSource = [];
         }
@@ -51,8 +76,9 @@ export class ProvenanceTableComponent implements OnInit, OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.layer) {
-            if (this.layer) {
-                this.selectLayer(this.layer);
+            const layer = this.layer();
+            if (layer) {
+                this.selectLayer(layer);
             } else {
                 this.dataSource = [];
             }

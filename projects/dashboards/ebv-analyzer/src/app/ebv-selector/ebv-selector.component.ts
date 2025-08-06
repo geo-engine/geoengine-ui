@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, inject, viewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {
     ProjectService,
@@ -36,8 +36,21 @@ import {
     Time,
     UserService,
     extentToBboxDict,
+    CommonModule,
+    FxFlexDirective,
+    FxLayoutDirective,
+    FxLayoutAlignDirective,
 } from '@geoengine/common';
 import {LayerListing} from '@geoengine/openapi-client';
+import {MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {MatSlideToggle} from '@angular/material/slide-toggle';
+import {FormsModule} from '@angular/forms';
+import {MatDivider} from '@angular/material/list';
+import {CountrySelectorComponent} from '../country-selector/country-selector.component';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {AttributionsComponent} from '../attributions/attributions.component';
+import {AsyncPipe} from '@angular/common';
 
 interface Path {
     collectionId?: string;
@@ -49,13 +62,40 @@ interface Path {
     templateUrl: './ebv-selector.component.html',
     styleUrls: ['./ebv-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        CommonModule,
+        MatButton,
+        FxFlexDirective,
+        MatIcon,
+        MatSlideToggle,
+        FormsModule,
+        MatDivider,
+        FxLayoutDirective,
+        FxLayoutAlignDirective,
+        CountrySelectorComponent,
+        MatProgressSpinner,
+        AttributionsComponent,
+        AsyncPipe,
+    ],
 })
 export class EbvSelectorComponent implements OnInit, OnDestroy {
+    private readonly userService = inject(UserService);
+    private readonly config = inject<AppConfig>(AppConfig);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly http = inject(HttpClient);
+    private readonly projectService = inject(ProjectService);
+    private readonly countryProviderService = inject(CountryProviderService);
+    private readonly dataSelectionService = inject(DataSelectionService);
+    private readonly route = inject(ActivatedRoute);
+    private readonly mapService = inject(MapService);
+    private readonly backend = inject(BackendService);
+    private readonly layoutService = inject(LayoutService);
+    private readonly layersService = inject(LayersService);
+    private readonly notificationService = inject(NotificationService);
+
     readonly SUBGROUP_SEARCH_THRESHOLD = 5;
 
-    @ViewChild('container', {static: true})
-    readonly containerDiv!: ElementRef<HTMLDivElement>;
+    readonly containerDiv = viewChild.required<ElementRef<HTMLDivElement>>('container');
 
     readonly isPlotButtonDisabled$: Observable<boolean>;
 
@@ -87,21 +127,7 @@ export class EbvSelectorComponent implements OnInit, OnDestroy {
     protected previousLayer?: LayerListing;
     // TODO: previous selection as {id, name} because we need both
 
-    constructor(
-        private readonly userService: UserService,
-        @Inject(AppConfig) private readonly config: AppConfig,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly http: HttpClient,
-        private readonly projectService: ProjectService,
-        private readonly countryProviderService: CountryProviderService,
-        private readonly dataSelectionService: DataSelectionService,
-        private readonly route: ActivatedRoute,
-        private readonly mapService: MapService,
-        private readonly backend: BackendService,
-        private readonly layoutService: LayoutService,
-        private readonly layersService: LayersService,
-        private readonly notificationService: NotificationService,
-    ) {
+    constructor() {
         this.isPlotButtonDisabled$ = this.countryProviderService.getSelectedCountryStream().pipe(map((country) => !country));
         this.dataSelectionService.rasterLayer.subscribe((layer) => {
             if (layer) {

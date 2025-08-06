@@ -6,6 +6,8 @@
     <mat-form-field>
         <input matInput type="password" placeholder="Password" formControlName="password" />
     </mat-form-field>
-    <p class="error" *ngIf="invalidCredentials$ | async">Invalid Credentials</p>
+    @if (invalidCredentials$ | async) {
+        <p class="error">Invalid Credentials</p>
+    }
     <button mat-raised-button type="submit" [disabled]="(loginForm.statusChanges | async) !== 'VALID'" color="primary">Login</button>
 </form>

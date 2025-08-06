@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {firstValueFrom, ReplaySubject} from 'rxjs';
 import {
     AutocompleteHandlerRequest,
@@ -14,6 +14,8 @@ import {
     UpdateLayer,
     AddLayerCollection,
     AddLayer,
+    LayerProviderListing,
+    TypedDataProviderDefinition,
 } from '@geoengine/openapi-client';
 
 import {apiConfigurationWithAccessKey, UserService} from '../user/user.service';
@@ -29,13 +31,13 @@ import {createVectorSymbology} from '../util/symbologies';
     providedIn: 'root',
 })
 export class LayersService {
+    private sessionService = inject(UserService);
+    private workflowsService = inject(WorkflowsService);
+    private randomColorService = inject(RandomColorService);
+
     layersApi = new ReplaySubject<LayersApi>(1);
 
-    constructor(
-        private sessionService: UserService,
-        private workflowsService: WorkflowsService,
-        private randomColorService: RandomColorService,
-    ) {
+    constructor() {
         this.sessionService.getSessionStream().subscribe({
             next: (session) => this.layersApi.next(new LayersApi(apiConfigurationWithAccessKey(session.sessionToken))),
         });
@@ -137,10 +139,7 @@ export class LayersService {
                 isLegendVisible: false,
                 symbology: layer.symbology
                     ? VectorSymbology.fromVectorSymbologyDict(layer.symbology as VectorSymbologyDict)
-                    : createVectorSymbology(
-                          (metadata as VectorLayerMetadata).dataType.getCode(),
-                          this.randomColorService.getRandomColorRgba(),
-                      ),
+                    : createVectorSymbology(metadata.dataType.getCode(), this.randomColorService.getRandomColorRgba()),
             });
         } else if (metadata instanceof RasterLayerMetadata) {
             return new RasterLayer({
@@ -255,5 +254,35 @@ export class LayersService {
         });
 
         return response.id;
+    }
+
+    async getProviders(offset = 0, limit = 20): Promise<LayerProviderListing[]> {
+        const layersApi = await firstValueFrom(this.layersApi);
+
+        return layersApi.listProviders({limit: limit, offset: offset});
+    }
+
+    async getProviderDefinition(provider: string): Promise<TypedDataProviderDefinition> {
+        const layersApi = await firstValueFrom(this.layersApi);
+
+        return layersApi.getProviderDefinition({provider});
+    }
+
+    async updateProviderDefinition(provider: string, typedDataProviderDefinition: TypedDataProviderDefinition): Promise<void> {
+        const layersApi = await firstValueFrom(this.layersApi);
+
+        await layersApi.updateProviderDefinition({provider, typedDataProviderDefinition});
+    }
+
+    async addProvider(typedDataProviderDefinition: TypedDataProviderDefinition): Promise<string> {
+        const layersApi = await firstValueFrom(this.layersApi);
+
+        return await layersApi.addProvider({typedDataProviderDefinition}).then((response) => response.id);
+    }
+
+    async deleteProvider(provider: string): Promise<void> {
+        const layersApi = await firstValueFrom(this.layersApi);
+
+        await layersApi.deleteProvider({provider});
     }
 }

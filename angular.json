@@ -73,7 +73,6 @@
                     "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
-                            "codemirror",
                             "dagre-d3",
                             "json-stringify-pretty-compact",
                             "fast-json-stable-stringify",
@@ -92,16 +91,15 @@
                             "projects/gis/src/assets",
                             {
                                 "glob": "**/*",
-                                "input": "dist/common/assets",
+                                "input": "projects/common/assets",
                                 "output": "assets"
                             }
                         ],
                         "styles": [
                             "projects/gis/src/styles.scss",
-                            "dist/common/assets/fonts/poppins/poppins.css",
-                            "dist/common/assets/fonts/pacifico/pacifico.css",
-                            "dist/common/assets/fonts/material-design-icons/material-icons.css",
-                            "node_modules/codemirror/lib/codemirror.css",
+                            "projects/common/assets/fonts/poppins/poppins.css",
+                            "projects/common/assets/fonts/pacifico/pacifico.css",
+                            "projects/common/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/ol/ol.css",
                             "./node_modules/vis-timeline/dist/vis-timeline-graph2d.min.css"
                         ],
@@ -211,7 +209,6 @@
                     "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
-                            "codemirror",
                             "dagre-d3",
                             "json-stringify-pretty-compact",
                             "fast-json-stable-stringify",
@@ -230,16 +227,15 @@
                             "projects/dashboards/data-atlas/src/assets",
                             {
                                 "glob": "**/*",
-                                "input": "dist/common/assets",
+                                "input": "projects/common/assets",
                                 "output": "assets"
                             }
                         ],
                         "styles": [
                             "projects/dashboards/data-atlas/src/styles.scss",
-                            "dist/common/assets/fonts/poppins/poppins.css",
-                            "dist/common/assets/fonts/pacifico/pacifico.css",
-                            "dist/common/assets/fonts/material-design-icons/material-icons.css",
-                            "node_modules/codemirror/lib/codemirror.css",
+                            "projects/common/assets/fonts/poppins/poppins.css",
+                            "projects/common/assets/fonts/pacifico/pacifico.css",
+                            "projects/common/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
@@ -348,7 +344,6 @@
                     "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
-                            "codemirror",
                             "dagre-d3",
                             "json-stringify-pretty-compact",
                             "fast-json-stable-stringify",
@@ -367,16 +362,15 @@
                             "projects/dashboards/ebv-analyzer/src/assets",
                             {
                                 "glob": "**/*",
-                                "input": "dist/common/assets",
+                                "input": "projects/common/assets",
                                 "output": "assets"
                             }
                         ],
                         "styles": [
                             "projects/dashboards/ebv-analyzer/src/styles.scss",
-                            "dist/common/assets/fonts/poppins/poppins.css",
-                            "dist/common/assets/fonts/pacifico/pacifico.css",
-                            "dist/common/assets/fonts/material-design-icons/material-icons.css",
-                            "node_modules/codemirror/lib/codemirror.css",
+                            "projects/common/assets/fonts/poppins/poppins.css",
+                            "projects/common/assets/fonts/pacifico/pacifico.css",
+                            "projects/common/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
@@ -485,7 +479,6 @@
                     "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
-                            "codemirror",
                             "dagre-d3",
                             "json-stringify-pretty-compact",
                             "fast-json-stable-stringify",
@@ -504,16 +497,15 @@
                             "projects/dashboards/nfdi-portal-demo/src/assets",
                             {
                                 "glob": "**/*",
-                                "input": "dist/common/assets",
+                                "input": "projects/common/assets",
                                 "output": "assets"
                             }
                         ],
                         "styles": [
                             "projects/dashboards/nfdi-portal-demo/src/styles.scss",
-                            "dist/common/assets/fonts/poppins/poppins.css",
-                            "dist/common/assets/fonts/pacifico/pacifico.css",
-                            "dist/common/assets/fonts/material-design-icons/material-icons.css",
-                            "node_modules/codemirror/lib/codemirror.css",
+                            "projects/common/assets/fonts/poppins/poppins.css",
+                            "projects/common/assets/fonts/pacifico/pacifico.css",
+                            "projects/common/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
@@ -628,7 +620,6 @@
                     "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
-                            "codemirror",
                             "dagre-d3",
                             "json-stringify-pretty-compact",
                             "fast-json-stable-stringify",
@@ -647,16 +638,15 @@
                             "projects/dashboards/gfbio/src/assets",
                             {
                                 "glob": "**/*",
-                                "input": "dist/common/assets",
+                                "input": "projects/common/assets",
                                 "output": "assets"
                             }
                         ],
                         "styles": [
                             "projects/dashboards/gfbio/src/styles.scss",
-                            "dist/common/assets/fonts/poppins/poppins.css",
-                            "dist/common/assets/fonts/pacifico/pacifico.css",
-                            "dist/common/assets/fonts/material-design-icons/material-icons.css",
-                            "node_modules/codemirror/lib/codemirror.css",
+                            "projects/common/assets/fonts/poppins/poppins.css",
+                            "projects/common/assets/fonts/pacifico/pacifico.css",
+                            "projects/common/assets/fonts/material-design-icons/material-icons.css",
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
@@ -747,14 +737,14 @@
             "projectType": "application",
             "schematics": {
                 "@schematics/angular:component": {
-                    "style": "scss",
-                    "standalone": false
+                    "changeDetection": "OnPush",
+                    "inlineStyle": false,
+                    "inlineTemplate": false,
+                    "prefix": "geoengine",
+                    "style": "scss"
                 },
                 "@schematics/angular:directive": {
-                    "standalone": false
-                },
-                "@schematics/angular:pipe": {
-                    "standalone": false
+                    "prefix": "geoengine"
                 }
             },
             "root": "projects/manager",
@@ -776,18 +766,16 @@
                             "projects/manager/src/assets",
                             {
                                 "glob": "**/*",
-                                "input": "dist/common/assets",
+                                "input": "projects/common/assets",
                                 "output": "assets"
                             }
                         ],
                         "styles": [
                             "projects/manager/src/styles.scss",
-                            "dist/common/assets/fonts/poppins/poppins.css",
-                            "dist/common/assets/fonts/pacifico/pacifico.css",
-                            "dist/common/assets/fonts/material-design-icons/material-icons.css",
-                            "node_modules/codemirror/lib/codemirror.css"
+                            "projects/common/assets/fonts/poppins/poppins.css",
+                            "projects/common/assets/fonts/pacifico/pacifico.css",
+                            "projects/common/assets/fonts/material-design-icons/material-icons.css"
                         ],
-                        "scripts": [],
                         "browser": "projects/manager/src/main.ts"
                     },
                     "configurations": {
@@ -878,6 +866,12 @@
                         "tsConfig": "projects/common/tsconfig.spec.json",
                         "polyfills": ["zone.js", "zone.js/testing"]
                     }
+                },
+                "lint": {
+                    "builder": "@angular-eslint/builder:lint",
+                    "options": {
+                        "lintFilePatterns": ["projects/common/**/*.ts", "projects/common/**/*.html"]
+                    }
                 }
             }
         },
@@ -900,7 +894,6 @@
                     "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
-                            "codemirror",
                             "dagre-d3",
                             "json-stringify-pretty-compact",
                             "fast-json-stable-stringify",
@@ -920,15 +913,14 @@
                             "projects/dashboards/ecometrics/src/assets",
                             {
                                 "glob": "**/*",
-                                "input": "dist/common/assets",
+                                "input": "projects/common/assets",
                                 "output": "assets"
                             }
                         ],
                         "styles": [
                             "projects/dashboards/ecometrics/src/styles.scss",
-                            "dist/common/assets/fonts/material-design-icons/material-icons.css",
-                            "dist/common/assets/fonts/poppins/poppins.css",
-                            "node_modules/codemirror/lib/codemirror.css",
+                            "projects/common/assets/fonts/material-design-icons/material-icons.css",
+                            "projects/common/assets/fonts/poppins/poppins.css",
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
@@ -1014,7 +1006,6 @@
                     "builder": "@angular-devkit/build-angular:application",
                     "options": {
                         "allowedCommonJsDependencies": [
-                            "codemirror",
                             "dagre-d3",
                             "json-stringify-pretty-compact",
                             "fast-json-stable-stringify",
@@ -1034,15 +1025,14 @@
                             "projects/dashboards/esg-indicator-service/src/assets",
                             {
                                 "glob": "**/*",
-                                "input": "dist/common/assets",
+                                "input": "projects/common/assets",
                                 "output": "assets"
                             }
                         ],
                         "styles": [
                             "projects/dashboards/esg-indicator-service/src/styles.scss",
-                            "dist/common/assets/fonts/material-design-icons/material-icons.css",
-                            "dist/common/assets/fonts/poppins/poppins.css",
-                            "node_modules/codemirror/lib/codemirror.css",
+                            "projects/common/assets/fonts/material-design-icons/material-icons.css",
+                            "projects/common/assets/fonts/poppins/poppins.css",
                             "node_modules/ol/ol.css"
                         ],
                         "scripts": [],
@@ -1118,5 +1108,31 @@
     },
     "cli": {
         "analytics": false
+    },
+    "schematics": {
+        "@schematics/angular:component": {
+            "type": "component"
+        },
+        "@schematics/angular:directive": {
+            "type": "directive"
+        },
+        "@schematics/angular:service": {
+            "type": "service"
+        },
+        "@schematics/angular:guard": {
+            "typeSeparator": "."
+        },
+        "@schematics/angular:interceptor": {
+            "typeSeparator": "."
+        },
+        "@schematics/angular:module": {
+            "typeSeparator": "."
+        },
+        "@schematics/angular:pipe": {
+            "typeSeparator": "."
+        },
+        "@schematics/angular:resolver": {
+            "typeSeparator": "."
+        }
     }
 }

@@ -1,6 +1,6 @@
-import {OnInit, ViewContainerRef} from '@angular/core';
+import {OnInit, ViewContainerRef, inject} from '@angular/core';
 import {Component} from '@angular/core';
-import {Router} from '@angular/router';
+import {Router, RouterOutlet} from '@angular/router';
 import {Location} from '@angular/common';
 import {UserService} from '@geoengine/common';
 import {firstValueFrom} from 'rxjs';
@@ -9,16 +9,15 @@ import {firstValueFrom} from 'rxjs';
     selector: 'geoengine-root',
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss',
-    standalone: false,
+    imports: [RouterOutlet],
 })
 export class AppComponent implements OnInit {
-    constructor(
-        private readonly vcRef: ViewContainerRef,
-        private readonly router: Router,
-        private readonly location: Location,
-        private readonly userService: UserService,
-    ) {}
+    private readonly vcRef = inject(ViewContainerRef);
+    private readonly router = inject(Router);
+    private readonly location = inject(Location);
+    private readonly userService = inject(UserService);
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     async ngOnInit(): Promise<void> {
         // wait for login to be completed before initializing the router
         await firstValueFrom(this.userService.getSessionOrUndefinedStream());

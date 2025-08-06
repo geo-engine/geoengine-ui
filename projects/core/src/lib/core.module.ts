@@ -27,7 +27,6 @@ import {MatTableModule} from '@angular/material/table';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
-import {ColorPickerModule} from 'ngx-color-picker';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
@@ -39,7 +38,6 @@ import {SafeHtmlPipe} from './util/pipes/safe-html.pipe';
 import {TrimPipe} from './util/pipes/trim.pipe';
 import {CssStringToRgbaPipe} from './util/pipes/css-string-to-rgba.pipe';
 import {HighlightPipe} from './util/pipes/highlight.pipe';
-
 import {RgbaToCssStringPipe} from './util/pipes/rgba-to-css-string.pipe';
 import {CommonModule as AngularCommonModule} from '@angular/common';
 import {DialogHelpComponent} from './dialogs/dialog-help/dialog-help.component';
@@ -81,7 +79,6 @@ import {BoxPlotOperatorComponent} from './operators/dialogs/boxplot-operator/box
 import {ScatterplotOperatorComponent} from './operators/dialogs/scatterplot-operator/scatterplot-operator.component';
 import {LayerSelectionComponent} from './operators/dialogs/helpers/layer-selection/layer-selection.component';
 import {LineageGraphComponent} from './provenance/lineage-graph/lineage-graph.component';
-// eslint-disable-next-line max-len
 import {MeanRasterPixelValuesOverTimeDialogComponent} from './operators/dialogs/mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
 import {RasterVectorJoinComponent} from './operators/dialogs/raster-vector-join/raster-vector-join.component';
 import {RasterStackerComponent} from './operators/dialogs/raster-stacker/raster-stacker.component';
@@ -138,6 +135,7 @@ import {BandwiseExpressionOperatorComponent} from './operators/dialogs/bandwise-
 import {BandNeighborhoodAggregateComponent} from './operators/dialogs/band-neighborhood-aggregate/band-neighborhood-aggregate.component';
 import {LayerCollectionSelectionComponent} from './layer-collections/layer-collection-selection.component';
 import {CoreConfig} from './config.service';
+import {BasemapSelectorComponent} from './project/basemap-selector/basemap-selector.component';
 
 export const MATERIAL_MODULES = [
     MatAutocompleteModule,
@@ -179,7 +177,6 @@ const CORE_COMPONENTS = [
     BackendStatusPageComponent,
     BoxPlotOperatorComponent,
     ChangeSpatialReferenceComponent,
-    ClassHistogramOperatorComponent,
     BandNeighborhoodAggregateComponent,
     BandwiseExpressionOperatorComponent,
     ColumnRangeFilterComponent,
@@ -197,21 +194,17 @@ const CORE_COMPONENTS = [
     FeatureAttributeOvertimeComponent,
     FullDisplayComponent,
     HistogramOperatorComponent,
-    IfGuestDirective,
-    IfLoggedInDirective,
     InterpolationComponent,
     DownsamplingComponent,
     LayerCollectionSelectionComponent,
     LayerListComponent,
     LayerListElementComponent,
     LayerListMenuComponent,
-    LayerSelectionComponent,
     LineageGraphComponent,
     LineageGraphComponent,
     LineSimplificationComponent,
     LoadProjectComponent,
     LoginComponent,
-    MapContainerComponent,
     MapResolutionExtentOverlayComponent,
     MeanRasterPixelValuesOverTimeDialogComponent,
     MediaviewComponent,
@@ -227,9 +220,7 @@ const CORE_COMPONENTS = [
     OidcComponent,
     OlRasterLayerComponent,
     OlVectorLayerComponent,
-    OperatorDialogContainerComponent,
     OperatorListComponent,
-    OperatorOutputNameComponent,
     PieChartComponent,
     PlotDetailViewComponent,
     PlotListComponent,
@@ -247,7 +238,6 @@ const CORE_COMPONENTS = [
     SaveProjectAsComponent,
     ScatterplotOperatorComponent,
     SidenavContainerComponent,
-    SidenavHeaderComponent,
     SidenavSearchComponent,
     SidenavSearchRightDirective,
     SmallTimeInteractionComponent,
@@ -267,12 +257,24 @@ const CORE_COMPONENTS = [
     VatLogoComponent,
     VectorExpressionComponent,
     VectorLegendComponent,
-    WorkspaceSettingsComponent,
     ZoomHandlesComponent,
 ];
 
+const CORE_COMPONENT_IMPORTS = [
+    BasemapSelectorComponent,
+    ClassHistogramOperatorComponent,
+    IfGuestDirective,
+    IfLoggedInDirective,
+    LayerSelectionComponent,
+    MapContainerComponent,
+    OperatorDialogContainerComponent,
+    OperatorOutputNameComponent,
+    RasterLegendComponent,
+    SidenavHeaderComponent,
+    WorkspaceSettingsComponent,
+];
+
 @NgModule({
-    declarations: [...CORE_PIPES, ...CORE_COMPONENTS],
     exports: [
         /* re-exports */
         ...MATERIAL_MODULES,
@@ -286,7 +288,6 @@ const CORE_COMPONENTS = [
     ],
     imports: [
         ...MATERIAL_MODULES,
-        ColorPickerModule,
         AngularCommonModule,
         CommonModule,
         DragDropModule,
@@ -294,7 +295,9 @@ const CORE_COMPONENTS = [
         PortalModule,
         ReactiveFormsModule,
         ScrollingModule,
-        RasterLegendComponent,
+        ...CORE_COMPONENT_IMPORTS,
+        ...CORE_PIPES,
+        ...CORE_COMPONENTS,
     ],
     providers: [
         {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}},

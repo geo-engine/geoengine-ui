@@ -5,15 +5,32 @@ import {
     ChangeDetectionStrategy,
     forwardRef,
     SimpleChange,
-    Input,
     OnChanges,
     OnDestroy,
     OnInit,
     ChangeDetectorRef,
+    inject,
+    input,
+    computed,
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {ProjectService} from '../../../../project/project.service';
-import {Layer, LayerMetadata, ResultType, ResultTypes} from '@geoengine/common';
+import {
+    Layer,
+    LayerMetadata,
+    ResultType,
+    ResultTypes,
+    FxLayoutDirective,
+    FxFlexDirective,
+    FxLayoutAlignDirective,
+    LayerCollectionLayerDetailsComponent,
+} from '@geoengine/common';
+import {MatIconButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {MatFormField, MatLabel} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {AsyncPipe} from '@angular/common';
 
 /**
  * Singleton for a letter to number converter for ids.
@@ -59,33 +76,65 @@ export interface LayerDetails {
     styleUrls: ['./multi-layer-selection.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => MultiLayerSelectionComponent), multi: true}],
-    standalone: false,
+    imports: [
+        FxLayoutDirective,
+        FxFlexDirective,
+        FxLayoutAlignDirective,
+        MatIconButton,
+        MatIcon,
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        LayerCollectionLayerDetailsComponent,
+        AsyncPipe,
+    ],
 })
 export class MultiLayerSelectionComponent implements ControlValueAccessor, OnChanges, OnDestroy, OnInit {
+    private projectService = inject(ProjectService);
+    private changeDetectorRef = inject(ChangeDetectorRef);
+
     /**
      * An array of possible layers.
      */
-    @Input() layers: Array<Layer> | Observable<Array<Layer>> = this.projectService.getLayerStream();
+    readonly layers = input<Array<Layer> | Observable<Array<Layer>>>(this.projectService.getLayerStream());
 
     /**
      * The minimum number of elements to select.
      */
-    @Input() min = 1;
+    readonly min = input(1);
 
     /**
      * The maximum number of elements to select.
      */
-    @Input() max = 1;
+    readonly max = input(1);
 
     /**
      * The type is used as a filter for the layers to choose from.
      */
-    @Input() types: Array<ResultType> = ResultTypes.ALL_TYPES;
+    readonly types = input<Array<ResultType>>(ResultTypes.ALL_TYPES);
+
+    /**
+     * A function for naming the individual raster selections
+     */
+    readonly inputNaming = input<(index: number) => string>((idx) => 'Input ' + this.toLetters(idx));
 
     /**
      * The title of the component (optional).
      */
-    @Input() title?: string = undefined;
+    readonly _title = input<string>(undefined, {
+        // eslint-disable-next-line @angular-eslint/no-input-rename
+        alias: 'title',
+    });
+
+    readonly title = computed<string>(() => {
+        return (
+            this._title() ??
+            this.types()
+                .map((type) => type.toString())
+                .join(', ')
+        );
+    });
 
     onTouched?: () => void;
     onChange?: (_: Array<Layer>) => void = undefined;
@@ -102,10 +151,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
     private selectionSubscription: Subscription;
     private layerChangesSubscription?: Subscription;
 
-    constructor(
-        private projectService: ProjectService,
-        private changeDetectorRef: ChangeDetectorRef,
-    ) {
+    constructor() {
         this.selectionSubscription = this.selectedLayers.subscribe((selectedLayers) => {
             if (this.onChange) {
                 this.onChange(selectedLayers);
@@ -114,23 +160,18 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
 
         this.hasLayers = this.filteredLayers.pipe(map((layers) => layers.length > 0));
         this.layersAtMin = combineLatest([this.selectedLayers, this.hasLayers]).pipe(
-            map(([selectedLayers, hasLayers]) => !hasLayers || selectedLayers.length <= this.min),
+            map(([selectedLayers, hasLayers]) => !hasLayers || selectedLayers.length <= this.min()),
         );
         this.layersAtMax = combineLatest([this.selectedLayers, this.hasLayers]).pipe(
-            map(([selectedLayers, hasLayers]) => !hasLayers || selectedLayers.length >= this.max),
+            map(([selectedLayers, hasLayers]) => !hasLayers || selectedLayers.length >= this.max()),
         );
     }
-
-    /**
-     * A function for naming the individual raster selections
-     */
-    @Input() inputNaming: (index: number) => string = (idx) => 'Input ' + this.toLetters(idx);
 
     ngOnInit(): void {
         this.updateLayersForSelection();
     }
 
-    ngOnChanges(changes: {[propertyName: string]: SimpleChange}): void {
+    ngOnChanges(changes: Record<string, SimpleChange>): void {
         let minMaxChanged = false;
 
         // eslint-disable-next-line guard-for-in
@@ -143,10 +184,11 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
                 case 'layers':
                 case 'types': {
                     let layers$: Observable<Array<Layer>>;
-                    if (this.layers instanceof Array) {
-                        layers$ = of(this.layers);
+                    const layersValue = this.layers();
+                    if (layersValue instanceof Array) {
+                        layers$ = of(layersValue);
                     } else {
-                        layers$ = this.layers;
+                        layers$ = layersValue;
                     }
 
                     if (this.layerChangesSubscription) {
@@ -160,14 +202,10 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
                                 return forkJoin(layersAndMetadata);
                             }),
                             map((layers: Array<[Layer, LayerMetadata]>) =>
-                                layers.filter(([_layer, meta]) => this.types.indexOf(meta.resultType) >= 0).map(([layer, _]) => layer),
+                                layers.filter(([_layer, meta]) => this.types().includes(meta.resultType)).map(([layer, _]) => layer),
                             ),
                         )
                         .subscribe((l) => this.filteredLayers.next(l));
-
-                    if (this.title === undefined) {
-                        this.title = this.types.map((type) => type.toString()).join(', ');
-                    }
 
                     break;
                 }
@@ -195,14 +233,14 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
             .subscribe(([filteredLayers, selectedLayers]) => {
                 const amountOfLayers = selectedLayers.length;
 
-                if (this.max < amountOfLayers) {
+                if (this.max() < amountOfLayers) {
                     // remove selected layers
-                    const difference = amountOfLayers - this.max;
+                    const difference = amountOfLayers - this.max();
                     this.selectedLayers.next(selectedLayers.slice(0, amountOfLayers - difference));
                     this.layerDetails = this.layerDetails.slice(0, amountOfLayers - difference);
-                } else if (this.min > amountOfLayers) {
+                } else if (this.min() > amountOfLayers) {
                     // add selected layers
-                    const difference = this.min - amountOfLayers;
+                    const difference = this.min() - amountOfLayers;
                     this.selectedLayers.next(selectedLayers.concat(this.layersForInitialSelection(filteredLayers, [], difference)));
                     this.layerDetails = this.layerDetails.concat(
                         Array(difference)
@@ -287,7 +325,7 @@ export class MultiLayerSelectionComponent implements ControlValueAccessor, OnCha
             return [];
         }
 
-        const layersForSelection = [...layers].filter((layer) => blacklist.indexOf(layer) < 0);
+        const layersForSelection = [...layers].filter((layer) => !blacklist.includes(layer));
 
         while (layersForSelection.length < amount) {
             layersForSelection.push(layers[0]);

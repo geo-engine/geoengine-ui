@@ -1,4 +1,4 @@
-import {Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChanges, OnInit, Output, EventEmitter} from '@angular/core';
+import {Component, ChangeDetectionStrategy, OnChanges, SimpleChanges, OnInit, inject, input, output} from '@angular/core';
 import {
     ClusteredPointSymbology,
     ColorParam,
@@ -18,6 +18,17 @@ import {ReplaySubject} from 'rxjs';
 import {BLACK, WHITE} from '../../colors/color';
 import {FeatureDataType} from '@geoengine/openapi-client';
 import {WorkflowsService} from '../../workflows/workflows.service';
+import {MatCard, MatCardHeader, MatCardAvatar, MatCardTitle, MatCardContent} from '@angular/material/card';
+import {MatIcon} from '@angular/material/icon';
+import {MatSlideToggle} from '@angular/material/slide-toggle';
+import {ColorParamEditorComponent} from '../color-param-editor/color-param-editor.component';
+import {FormsModule} from '@angular/forms';
+import {NumberParamEditorComponent} from '../number-param-editor/number-param-editor.component';
+import {MatFormField, MatLabel} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {AsyncPipe} from '@angular/common';
+import {AsyncValueDefault} from '../../util/pipes/async-converters.pipe';
 
 /**
  * An editor for generating raster symbologies.
@@ -27,12 +38,31 @@ import {WorkflowsService} from '../../workflows/workflows.service';
     templateUrl: 'vector-symbology-editor.component.html',
     styleUrls: ['vector-symbology-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatCard,
+        MatCardHeader,
+        MatCardAvatar,
+        MatIcon,
+        MatCardTitle,
+        MatCardContent,
+        MatSlideToggle,
+        ColorParamEditorComponent,
+        FormsModule,
+        NumberParamEditorComponent,
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        AsyncPipe,
+        AsyncValueDefault,
+    ],
 })
 export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
-    @Input({required: true}) symbologyWorkflow!: SymbologyWorkflow<VectorSymbology>;
+    private readonly workflowsService = inject(WorkflowsService);
 
-    @Output() changedSymbology: EventEmitter<VectorSymbology> = new EventEmitter();
+    readonly symbologyWorkflow = input.required<SymbologyWorkflow<VectorSymbology>>();
+
+    readonly changedSymbology = output<VectorSymbology>();
 
     currentSymbology!: VectorSymbology;
 
@@ -42,11 +72,10 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
     numericAttributes = new ReplaySubject<Array<string>>(1);
     allAttributes = new ReplaySubject<Array<string>>(1);
 
-    constructor(private readonly workflowsService: WorkflowsService) {}
-
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.symbologyWorkflow && this.symbologyWorkflow) {
-            this.currentSymbology = this.symbologyWorkflow.symbology.clone();
+        const symbologyWorkflow = this.symbologyWorkflow();
+        if (changes.symbologyWorkflow && symbologyWorkflow) {
+            this.currentSymbology = symbologyWorkflow.symbology.clone();
             this.showFillColorEditor =
                 this.currentSymbology instanceof PointSymbology ||
                 this.currentSymbology instanceof ClusteredPointSymbology ||
@@ -57,7 +86,7 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
     }
 
     ngOnInit(): void {
-        this.currentSymbology = this.symbologyWorkflow.symbology.clone();
+        this.currentSymbology = this.symbologyWorkflow().symbology.clone();
         this.showFillColorEditor =
             this.currentSymbology instanceof PointSymbology ||
             this.currentSymbology instanceof ClusteredPointSymbology ||
@@ -456,7 +485,7 @@ export class VectorSymbologyEditorComponent implements OnChanges, OnInit {
     }
 
     protected initializeAttributes(): void {
-        this.workflowsService.getMetadata(this.symbologyWorkflow.workflowId).then((metadata) => {
+        this.workflowsService.getMetadata(this.symbologyWorkflow().workflowId).then((metadata) => {
             if (!(metadata.type === 'vector')) {
                 return;
             }

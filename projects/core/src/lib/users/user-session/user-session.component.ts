@@ -1,24 +1,26 @@
-import {Component, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, inject} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {Session} from '../session.model';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {NotificationService, UserService} from '@geoengine/common';
+import {MatIconButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
     selector: 'geoengine-user-session',
     templateUrl: './user-session.component.html',
     styleUrls: ['./user-session.component.scss'],
-    standalone: false,
+    imports: [MatIconButton, MatIcon],
 })
 export class UserSessionComponent implements OnDestroy {
+    protected readonly userService = inject(UserService);
+    protected clipboard = inject(Clipboard);
+    protected readonly notificationService = inject(NotificationService);
+
     protected session: Session | undefined;
     private sessionStreamSubscription: Subscription;
 
-    constructor(
-        protected readonly userService: UserService,
-        protected clipboard: Clipboard,
-        protected readonly notificationService: NotificationService,
-    ) {
+    constructor() {
         const subs = this.userService.getSessionStream().subscribe((session) => {
             this.session = session;
         });

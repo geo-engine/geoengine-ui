@@ -1,27 +1,27 @@
 /* These are legacy directives for angular flex layout */
 /* eslint-disable @angular-eslint/directive-selector */
 
-import {Directive, ElementRef, Input, OnChanges} from '@angular/core';
+import {Directive, ElementRef, OnChanges, inject, input} from '@angular/core';
 
 @Directive({
     selector: '[fxFlex]',
-    standalone: true,
 })
 export class FxFlexDirective implements OnChanges {
-    @Input() fxFlex: '0.5rem' | '1rem' | '4rem' | 'grow' | '' = '';
+    private el = inject(ElementRef);
 
-    constructor(private el: ElementRef) {}
+    readonly fxFlex = input<'0.5rem' | '1rem' | '4rem' | 'grow' | ''>('');
 
     ngOnChanges(): void {
-        if (this.fxFlex === '') {
+        const fxFlex = this.fxFlex();
+        if (fxFlex === '') {
             this.el.nativeElement.style.flex = '1 1 0%';
-        } else if (this.fxFlex === 'grow') {
+        } else if (fxFlex === 'grow') {
             this.el.nativeElement.style.flex = '1 1 100%';
-        } else if (this.fxFlex === '0.5rem') {
+        } else if (fxFlex === '0.5rem') {
             this.el.nativeElement.style.flex = '0.5rem';
             this.el.nativeElement.style.maxWidth = '0.5rem';
             this.el.nativeElement.style.minWidth = '0.5rem';
-        } else if (this.fxFlex === '1rem') {
+        } else if (fxFlex === '1rem') {
             this.el.nativeElement.style.flex = '1rem';
             this.el.nativeElement.style.maxWidth = '1rem';
             this.el.nativeElement.style.minWidth = '1rem';
@@ -31,17 +31,16 @@ export class FxFlexDirective implements OnChanges {
 
 @Directive({
     selector: '[fxLayout]',
-    standalone: true,
 })
 export class FxLayoutDirective implements OnChanges {
-    @Input() fxLayout: 'row' | 'row wrap' | 'column' | 'row-reverse' = 'row';
+    private el = inject(ElementRef);
 
-    constructor(private el: ElementRef) {}
+    readonly fxLayout = input<'row' | 'row wrap' | 'column' | 'row-reverse'>('row');
 
     ngOnChanges(): void {
         this.el.nativeElement.style.display = 'flex';
 
-        switch (this.fxLayout) {
+        switch (this.fxLayout()) {
             case 'row':
                 this.el.nativeElement.style.flexDirection = 'row';
                 break;
@@ -61,15 +60,14 @@ export class FxLayoutDirective implements OnChanges {
 
 @Directive({
     selector: '[fxLayoutGap]',
-    standalone: true,
 })
 export class FxLayoutGapDirective implements OnChanges {
-    @Input() fxLayoutGap: '0.5rem' | '1rem' = '1rem';
+    private el = inject(ElementRef);
 
-    constructor(private el: ElementRef) {}
+    readonly fxLayoutGap = input<'0.5rem' | '1rem'>('1rem');
 
     ngOnChanges(): void {
-        switch (this.fxLayoutGap) {
+        switch (this.fxLayoutGap()) {
             case '0.5rem':
                 this.el.nativeElement.style.columnGap = '0.5rem';
                 break;
@@ -82,10 +80,11 @@ export class FxLayoutGapDirective implements OnChanges {
 
 @Directive({
     selector: '[fxLayoutAlign]',
-    standalone: true,
 })
 export class FxLayoutAlignDirective implements OnChanges {
-    @Input() fxLayoutAlign:
+    private el = inject(ElementRef);
+
+    readonly fxLayoutAlign = input<
         | 'start center'
         | 'center center'
         | 'space-between start'
@@ -96,12 +95,11 @@ export class FxLayoutAlignDirective implements OnChanges {
         | 'center start'
         | 'space-around'
         | 'end'
-        | 'start stretch' = 'start center';
-
-    constructor(private el: ElementRef) {}
+        | 'start stretch'
+    >('start center');
 
     ngOnChanges(): void {
-        switch (this.fxLayoutAlign) {
+        switch (this.fxLayoutAlign()) {
             case 'start center':
                 this.el.nativeElement.style.justifyContent = 'flex-start';
                 this.el.nativeElement.style.alignItems = 'center';

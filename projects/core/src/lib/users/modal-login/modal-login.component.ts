@@ -1,13 +1,16 @@
 import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 
-import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
-import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import {ChangeDetectionStrategy, Component, OnDestroy, inject} from '@angular/core';
+import {UntypedFormControl, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {CoreConfig} from '../../config.service';
 import {User} from '../user.model';
 import {Session} from '../session.model';
 import {MatDialogRef} from '@angular/material/dialog';
 import {geoengineValidators} from '@geoengine/common';
+import {MatFormField, MatInput} from '@angular/material/input';
+import {MatButton} from '@angular/material/button';
+import {AsyncPipe} from '@angular/common';
 
 enum FormStatus {
     LoggedOut,
@@ -25,9 +28,12 @@ export interface UserLogin {
     templateUrl: './modal-login.component.html',
     styleUrls: ['./modal-login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatInput, MatButton, AsyncPipe],
 })
 export class ModalLoginComponent implements OnDestroy {
+    private readonly config = inject(CoreConfig);
+    private dialogRef = inject<MatDialogRef<ModalLoginComponent>>(MatDialogRef);
+
     readonly FormStatus = FormStatus;
 
     formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.LoggedOut);
@@ -41,10 +47,7 @@ export class ModalLoginComponent implements OnDestroy {
 
     private formStatusSubscription?: Subscription;
 
-    constructor(
-        private readonly config: CoreConfig,
-        private dialogRef: MatDialogRef<ModalLoginComponent>,
-    ) {
+    constructor() {
         this.loginForm = new UntypedFormGroup({
             email: new UntypedFormControl(
                 '',

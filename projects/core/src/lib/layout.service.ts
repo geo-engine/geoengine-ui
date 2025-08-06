@@ -1,6 +1,6 @@
 import {fromEvent, combineLatest, BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
-import {Injectable, Type} from '@angular/core';
+import {Injectable, Type, inject} from '@angular/core';
 import {CoreConfig} from './config.service';
 import {LayoutService as CommonLayoutService} from '@geoengine/common';
 
@@ -20,7 +20,7 @@ export interface SidenavConfig {
     keepParent?: boolean;
     parent?: SidenavConfig;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    config?: {[key: string]: any};
+    config?: Record<string, any>;
 }
 
 /**
@@ -28,6 +28,8 @@ export interface SidenavConfig {
  */
 @Injectable()
 export class LayoutService extends CommonLayoutService {
+    protected config = inject(CoreConfig);
+
     private static _scrollbarWidthPx: number;
 
     /**
@@ -43,12 +45,12 @@ export class LayoutService extends CommonLayoutService {
     /**
      * What is the currently visible tab?
      */
-    private layerDetailViewTabIndex$: BehaviorSubject<number> = new BehaviorSubject(0);
+    private layerDetailViewTabIndex$ = new BehaviorSubject<number>(0);
 
     /**
      * What is the height of the layer detail view as a percentage of the available space.
      */
-    private layerDetailViewHeightPercentage$: BehaviorSubject<number> = new BehaviorSubject(2 / 5);
+    private layerDetailViewHeightPercentage$ = new BehaviorSubject<number>(2 / 5);
 
     /**
      *  Sidenav content
@@ -57,7 +59,7 @@ export class LayoutService extends CommonLayoutService {
 
     private sidenavContentMaxWidth$: Subject<number> = new ReplaySubject(1);
 
-    constructor(protected config: CoreConfig) {
+    constructor() {
         super();
         this.setupSidenavWidthStream();
     }

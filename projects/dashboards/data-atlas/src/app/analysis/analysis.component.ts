@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ChangeDetectionStrategy, inject} from '@angular/core';
 import {BackendService, BBoxDict, ProjectService, SourceOperatorDict, RasterResultDescriptorDict} from '@geoengine/core';
 import {first, map, mergeMap, tap} from 'rxjs/operators';
 import {DataSelectionService} from '../data-selection.service';
@@ -15,17 +15,43 @@ import {
     ReprojectionDict,
     UserService,
     VectorLayer,
+    CommonModule,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {MatFormField, MatLabel} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatSelectSearchComponent} from 'ngx-mat-select-search';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatButton} from '@angular/material/button';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-analysis',
     templateUrl: './analysis.component.html',
     styleUrls: ['./analysis.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        MatSelectSearchComponent,
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatButton,
+        MatProgressSpinner,
+        AsyncPipe,
+    ],
 })
 export class AnalysisComponent {
+    private readonly projectService = inject(ProjectService);
+    private readonly dataSelectionService = inject(DataSelectionService);
+    private readonly backend = inject(BackendService);
+    private readonly userService = inject(UserService);
+
     countries = new Array<string>();
 
     cannotComputePlot$: Observable<boolean>;
@@ -35,12 +61,7 @@ export class AnalysisComponent {
 
     private selectedCountryName?: string = undefined;
 
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly dataSelectionService: DataSelectionService,
-        private readonly backend: BackendService,
-        private readonly userService: UserService,
-    ) {
+    constructor() {
         this.cannotComputePlot$ = combineLatest([this.dataSelectionService.rasterLayer, this.dataSelectionService.polygonLayer]).pipe(
             map(([rasterLayer, polygonLayer]) => !rasterLayer || !polygonLayer),
         );

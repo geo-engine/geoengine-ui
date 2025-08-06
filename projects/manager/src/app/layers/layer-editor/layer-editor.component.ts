@@ -1,5 +1,5 @@
-import {Component, EventEmitter, Input, OnChanges, Output, signal, SimpleChanges, WritableSignal} from '@angular/core';
-import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
+import {Component, signal, WritableSignal, inject, input, linkedSignal, effect, output} from '@angular/core';
+import {FormArray, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {
@@ -14,10 +14,18 @@ import {
     createVectorSymbology as createDefaultVectorSymbology,
     WHITE,
     UUID,
+    CommonModule,
 } from '@geoengine/common';
 import {Layer, LayerListing, TypedResultDescriptor, Symbology as SymbologyDict, ProviderLayerCollectionId} from '@geoengine/openapi-client';
 import {AppConfig} from '../../app-config.service';
 import {firstValueFrom} from 'rxjs';
+import {MatCard, MatCardHeader, MatCardTitle, MatCardContent} from '@angular/material/card';
+import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {RasterResultDescriptorComponent} from '../../result-descriptors/raster-result-descriptor/raster-result-descriptor.component';
+import {VectorResultDescriptorComponent} from '../../result-descriptors/vector-result-descriptor/vector-result-descriptor.component';
+import {PermissionsComponent} from '../../permissions/permissions.component';
 
 export interface LayerForm {
     name: FormControl<string>;
@@ -32,14 +40,41 @@ export interface LayerForm {
     selector: 'geoengine-manager-layer-editor',
     templateUrl: './layer-editor.component.html',
     styleUrl: './layer-editor.component.scss',
-    standalone: false,
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatCard,
+        MatCardHeader,
+        MatCardTitle,
+        MatCardContent,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        CommonModule,
+        MatIconButton,
+        MatIcon,
+        MatButton,
+        RasterResultDescriptorComponent,
+        VectorResultDescriptorComponent,
+        PermissionsComponent,
+    ],
 })
-export class LayerEditorComponent implements OnChanges {
-    @Input({required: true}) layerListing!: LayerListing;
-    @Input({required: true}) parentCollection!: ProviderLayerCollectionId;
+export class LayerEditorComponent {
+    private readonly layersService = inject(LayersService);
+    private readonly workflowsService = inject(WorkflowsService);
+    private readonly dialog = inject(MatDialog);
+    private readonly snackBar = inject(MatSnackBar);
+    private readonly config = inject(AppConfig);
 
-    @Output() readonly layerUpdated = new EventEmitter<void>();
-    @Output() readonly layerDeleted = new EventEmitter<void>();
+    readonly _layerListing = input.required<LayerListing>({
+        // eslint-disable-next-line @angular-eslint/no-input-rename
+        alias: 'layerListing',
+    });
+    readonly layerListing = linkedSignal(this._layerListing);
+    readonly parentCollection = input.required<ProviderLayerCollectionId>();
+
+    readonly layerUpdated = output<void>();
+    readonly layerDeleted = output<void>();
 
     readonly layer: WritableSignal<Layer | undefined> = signal(undefined);
 
@@ -48,8 +83,8 @@ export class LayerEditorComponent implements OnChanges {
     rasterSymbology: RasterSymbology | undefined;
     vectorSymbology: VectorSymbology | undefined;
 
-    rasterSymbologyWorkflow: WritableSignal<SymbologyWorkflow<RasterSymbology> | undefined> = signal(undefined);
-    vectorSymbologyWorkflow: WritableSignal<SymbologyWorkflow<VectorSymbology> | undefined> = signal(undefined);
+    readonly rasterSymbologyWorkflow: WritableSignal<SymbologyWorkflow<RasterSymbology> | undefined> = signal(undefined);
+    readonly vectorSymbologyWorkflow: WritableSignal<SymbologyWorkflow<VectorSymbology> | undefined> = signal(undefined);
 
     // workflowId: WritableSignal<UUID | undefined> = signal(undefined);
 
@@ -57,33 +92,28 @@ export class LayerEditorComponent implements OnChanges {
 
     form: FormGroup<LayerForm> = this.placeholderForm();
 
-    constructor(
-        private readonly layersService: LayersService,
-        private readonly workflowsService: WorkflowsService,
-        private readonly dialog: MatDialog,
-        private readonly snackBar: MatSnackBar,
-        private readonly config: AppConfig,
-    ) {}
+    constructor() {
+        effect(() => {
+            void this.loadLayer(this._layerListing());
+        });
+    }
 
-    async ngOnChanges(changes: SimpleChanges): Promise<void> {
-        if (changes.layerListing) {
-            this.resetSymbology();
+    async loadLayer(layerListing: LayerListing): Promise<void> {
+        this.resetSymbology();
 
-            const layer = await this.layersService.getLayer(this.layerListing.id.providerId, this.layerListing.id.layerId);
-            this.layer.set(layer);
+        const layer = await this.layersService.getLayer(layerListing.id.providerId, this.layerListing().id.layerId);
+        this.layer.set(layer);
 
-            this.setUpColorizer(layer);
+        this.setUpColorizer(layer);
 
-            this.workflowsService.registerWorkflow(layer.workflow).then(async (workflowId) => {
-                this.workflowId = workflowId;
-                this.setUpSymbology();
+        const workflowId = await this.workflowsService.registerWorkflow(layer.workflow);
+        this.workflowId = workflowId;
+        this.setUpSymbology();
 
-                const resultDescriptor = await this.workflowsService.getMetadata(workflowId);
-                this.resultDescriptor.set(resultDescriptor);
-            });
+        const resultDescriptor = await this.workflowsService.getMetadata(workflowId);
+        this.resultDescriptor.set(resultDescriptor);
 
-            this.setUpForm(layer);
-        }
+        this.setUpForm(layer);
     }
 
     private resetSymbology(): void {
@@ -313,13 +343,14 @@ export class LayerEditorComponent implements OnChanges {
         const description = this.form.controls.description.value;
         const properties = this.form.controls.properties.value;
         const metadataArray = this.form.controls.metadata.value;
-        const metadata: {[key: string]: string} = {};
+        const metadata: Record<string, string> = {};
         metadataArray.forEach(([key, value]) => {
             metadata[key] = value;
         });
 
         try {
-            await this.layersService.updateLayer(this.layerListing.id.layerId, {
+            const layerListing = this.layerListing();
+            await this.layersService.updateLayer(layerListing.id.layerId, {
                 description,
                 name,
                 properties,
@@ -329,12 +360,13 @@ export class LayerEditorComponent implements OnChanges {
             });
 
             this.snackBar.open('Layer successfully updated.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
-            this.layerListing.name = name;
-            this.layerListing.description = description;
+            layerListing.name = name;
+            layerListing.description = description;
+            this.layerListing.set(layerListing);
             this.form.markAsPristine();
 
             // TODO: make changes properly appear in the layer navigation, like for collection.
-            this.layerUpdated.emit();
+            this.layerUpdated.emit(undefined);
         } catch (error) {
             const errorMessage = await errorToText(error, 'Updating layer failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
@@ -353,9 +385,9 @@ export class LayerEditorComponent implements OnChanges {
         }
 
         try {
-            await this.layersService.removeLayer(this.layerListing.id.layerId);
+            await this.layersService.removeLayer(this.layerListing().id.layerId);
             this.snackBar.open('Layer successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
-            this.layerDeleted.emit();
+            this.layerDeleted.emit(undefined);
         } catch (error) {
             const errorMessage = await errorToText(error, 'Deleting layer failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
@@ -374,9 +406,9 @@ export class LayerEditorComponent implements OnChanges {
         }
 
         try {
-            await this.layersService.removeLayerFromCollection(this.layerListing.id.layerId, this.parentCollection.collectionId);
+            await this.layersService.removeLayerFromCollection(this.layerListing().id.layerId, this.parentCollection().collectionId);
             this.snackBar.open('Layer successfully removed.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
-            this.layerDeleted.emit();
+            this.layerDeleted.emit(undefined);
         } catch (error) {
             const errorMessage = await errorToText(error, 'Removing layer failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});

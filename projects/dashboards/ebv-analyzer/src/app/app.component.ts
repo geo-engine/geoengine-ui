@@ -1,6 +1,6 @@
 import {Observable, BehaviorSubject, mergeMap} from 'rxjs';
-import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
-import {MatIconRegistry} from '@angular/material/icon';
+import {AfterViewInit, ChangeDetectionStrategy, Component, HostListener, OnInit, ViewContainerRef, inject, viewChild} from '@angular/core';
+import {MatIconRegistry, MatIcon} from '@angular/material/icon';
 import {
     LayoutService,
     ProjectService,
@@ -8,28 +8,67 @@ import {
     MapContainerComponent,
     SpatialReferenceService,
     SidenavContainerComponent,
+    TimeStepSelectorComponent,
+    ZoomHandlesComponent,
+    OlVectorLayerComponent,
+    OlRasterLayerComponent,
 } from '@geoengine/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {AppConfig} from './app-config.service';
-import {ComponentPortal} from '@angular/cdk/portal';
+import {ComponentPortal, CdkPortalOutlet} from '@angular/cdk/portal';
 import moment from 'moment';
 import {DataSelectionService} from './data-selection.service';
 import {EbvSelectorComponent} from './ebv-selector/ebv-selector.component';
-import {MatDrawerToggleResult, MatSidenav} from '@angular/material/sidenav';
-import {Layer, RandomColorService, Time, UserService} from '@geoengine/common';
+import {MatDrawerToggleResult, MatSidenav, MatSidenavContainer} from '@angular/material/sidenav';
+import {Layer, RandomColorService, Time, UserService, AsyncStringSanitizer, AsyncValueDefault} from '@geoengine/common';
+import {MatToolbar} from '@angular/material/toolbar';
+import {MatButton} from '@angular/material/button';
+import {LegendComponent} from './legend/legend.component';
+import {MatProgressBar} from '@angular/material/progress-bar';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatSidenavContainer,
+        MatToolbar,
+        CdkPortalOutlet,
+        MatButton,
+        MatIcon,
+        TimeStepSelectorComponent,
+        ZoomHandlesComponent,
+        LegendComponent,
+        MapContainerComponent,
+        OlVectorLayerComponent,
+        OlRasterLayerComponent,
+        MatSidenav,
+        SidenavContainerComponent,
+        MatProgressBar,
+        AsyncPipe,
+        AsyncStringSanitizer,
+        AsyncValueDefault,
+    ],
 })
 export class AppComponent implements OnInit, AfterViewInit {
-    @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
+    readonly config = inject<AppConfig>(AppConfig);
+    readonly layoutService = inject(LayoutService);
+    readonly projectService = inject(ProjectService);
+    readonly dataSelectionService = inject(DataSelectionService);
+    readonly vcRef = inject(ViewContainerRef);
+    readonly userService = inject(UserService);
+    private iconRegistry = inject(MatIconRegistry);
+    private _randomColorService = inject(RandomColorService);
+    private mapService = inject(MapService);
+    private _spatialReferenceService = inject(SpatialReferenceService);
+    private sanitizer = inject(DomSanitizer);
 
-    @ViewChild(MatSidenav, {static: true}) rightSidenav!: MatSidenav;
-    @ViewChild(SidenavContainerComponent, {static: true}) rightSidenavContainer!: SidenavContainerComponent;
+    readonly mapComponent = viewChild.required(MapContainerComponent);
+
+    readonly rightSidenav = viewChild.required(MatSidenav);
+    readonly rightSidenavContainer = viewChild.required(SidenavContainerComponent);
 
     readonly layersReverse$: Observable<Array<Layer>>;
     readonly analysisVisible$ = new BehaviorSubject(false);
@@ -37,44 +76,32 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     datasetPortal = new ComponentPortal(EbvSelectorComponent);
 
-    constructor(
-        @Inject(AppConfig) readonly config: AppConfig,
-        readonly layoutService: LayoutService,
-        readonly projectService: ProjectService,
-        readonly dataSelectionService: DataSelectionService,
-        readonly vcRef: ViewContainerRef, // reference used by color picker, MUST BE EXACTLY THIS NAME
-        readonly userService: UserService,
-        private iconRegistry: MatIconRegistry,
-        private _randomColorService: RandomColorService,
-        private mapService: MapService,
-        private _spatialReferenceService: SpatialReferenceService,
-        private sanitizer: DomSanitizer,
-    ) {
+    constructor() {
         this.registerIcons();
 
         this.layersReverse$ = this.dataSelectionService.layers;
     }
 
     ngOnInit(): void {
-        this.mapService.registerMapComponent(this.mapComponent);
+        this.mapService.registerMapComponent(this.mapComponent());
 
         this.layoutService.getSidenavContentComponentStream().subscribe((sidenavConfig) => {
-            this.rightSidenavContainer.load(sidenavConfig);
+            this.rightSidenavContainer().load(sidenavConfig);
 
             let openClosePromise: Promise<MatDrawerToggleResult>;
             if (sidenavConfig) {
-                openClosePromise = this.rightSidenav.open();
+                openClosePromise = this.rightSidenav().open();
             } else {
-                openClosePromise = this.rightSidenav.close();
+                openClosePromise = this.rightSidenav().close();
             }
 
-            openClosePromise.then(() => this.mapComponent.resize());
+            openClosePromise.then(() => this.mapComponent().resize());
         });
     }
 
     ngAfterViewInit(): void {
         this.reset();
-        this.mapComponent.resize();
+        this.mapComponent().resize();
     }
 
     idFromLayer(index: number, layer: Layer): number {

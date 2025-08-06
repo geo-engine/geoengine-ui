@@ -1,6 +1,11 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {Component, Input, output} from '@angular/core';
+import {FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ClassificationMeasurement, ContinuousMeasurement, Measurement, UnitlessMeasurement} from '@geoengine/openapi-client';
+import {MatButtonToggleGroup, MatButtonToggle} from '@angular/material/button-toggle';
+import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
+import {MatIconButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {KeyValuePipe} from '@angular/common';
 
 enum MeasurementType {
     Classification = 'classification',
@@ -17,12 +22,23 @@ interface AddClassForm {
     selector: 'geoengine-measurement',
     templateUrl: './measurement.component.html',
     styleUrl: './measurement.component.css',
-    standalone: false,
+    imports: [
+        MatButtonToggleGroup,
+        FormsModule,
+        MatButtonToggle,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatIconButton,
+        MatIcon,
+        ReactiveFormsModule,
+        KeyValuePipe,
+    ],
 })
 export class MeasurementComponent {
     @Input() measurement!: Measurement;
 
-    @Output() measurementChange = new EventEmitter<Measurement>();
+    readonly measurementChange = output<Measurement>();
 
     MeasurementType = MeasurementType;
 
@@ -63,32 +79,26 @@ export class MeasurementComponent {
     updateMeasurementType(type: MeasurementType): void {
         switch (type) {
             case MeasurementType.Classification:
-                if (!this.classificationMeasurement) {
-                    this.classificationMeasurement = {
-                        type: 'classification',
-                        measurement: 'classification',
-                        classes: {},
-                    };
-                }
+                this.classificationMeasurement ??= {
+                    type: 'classification',
+                    measurement: 'classification',
+                    classes: {},
+                };
 
                 this.measurement = this.classificationMeasurement;
                 break;
             case MeasurementType.Continuous:
-                if (!this.continousMeasurement) {
-                    this.continousMeasurement = {
-                        type: 'continuous',
-                        measurement: 'continuous',
-                    };
-                }
+                this.continousMeasurement ??= {
+                    type: 'continuous',
+                    measurement: 'continuous',
+                };
 
                 this.measurement = this.continousMeasurement;
                 break;
             case MeasurementType.Unitless:
-                if (!this.unitlessMeasurement) {
-                    this.unitlessMeasurement = {
-                        type: 'unitless',
-                    };
-                }
+                this.unitlessMeasurement ??= {
+                    type: 'unitless',
+                };
 
                 this.measurement = {
                     type: 'unitless',
@@ -97,7 +107,7 @@ export class MeasurementComponent {
         }
     }
 
-    removeClass(key: string) {
+    removeClass(key: string): void {
         if (!this.classificationMeasurement) {
             return;
         }
@@ -105,7 +115,7 @@ export class MeasurementComponent {
         delete this.classificationMeasurement.classes[key];
     }
 
-    addClass() {
+    addClass(): void {
         if (!this.classificationMeasurement) {
             return;
         }

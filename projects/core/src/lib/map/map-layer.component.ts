@@ -2,14 +2,15 @@ import {
     ChangeDetectionStrategy,
     Component,
     Directive,
-    EventEmitter,
     Input,
     OnChanges,
     OnDestroy,
     OnInit,
-    Output,
     SimpleChange,
     SimpleChanges,
+    inject,
+    input,
+    output,
 } from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 
@@ -25,7 +26,6 @@ import {UUID} from '../backend/backend.model';
 import OlFeature from 'ol/Feature';
 import TileState from 'ol/TileState';
 import {Extent} from './map.service';
-import {Projection} from 'ol/proj';
 import {
     NotificationService,
     RasterColorizer,
@@ -45,18 +45,20 @@ type VectorData = any; // TODO: use correct type
  * The `ol-layer` component represents a single layer object of open layers.
  */
 @Directive()
-// eslint-disable-next-line @angular-eslint/directive-class-suffix, @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export abstract class MapLayerComponent<OL extends OlLayer<OS, any>, OS extends OlSource> {
-    @Input() layerId!: number;
-    @Input() isVisible = true;
-    @Input() workflow?: UUID;
+    protected projectService = inject(ProjectService);
+
+    readonly layerId = input.required<number>();
+    readonly isVisible = input(true);
+    readonly workflow = input<UUID>();
     @Input() symbology?: Symbology;
 
     /**
      * Event emitter that forces a redraw of the map.
      * Must be connected to the map component.
      */
-    @Output() mapRedraw = new EventEmitter();
+    readonly mapRedraw = output();
 
     loadedData$ = new Subject<void>();
 
@@ -66,11 +68,8 @@ export abstract class MapLayerComponent<OL extends OlLayer<OS, any>, OS extends 
     /**
      * Setup of DI
      */
-    protected constructor(
-        protected projectService: ProjectService,
-        source: OS,
-        layer: (_: OS) => OL,
-    ) {
+    // eslint-disable-next-line @angular-eslint/prefer-inject
+    protected constructor(source: OS, layer: (_: OS) => OL) {
         this.source = source;
         this._mapLayer = layer(source);
     }
@@ -108,7 +107,6 @@ export abstract class MapLayerComponent<OL extends OlLayer<OS, any>, OS extends 
     template: '',
     providers: [{provide: MapLayerComponent, useExisting: OlVectorLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
 })
 export class OlVectorLayerComponent
     extends MapLayerComponent<OlLayerVector<OlVectorSource<OlFeature>>, OlVectorSource<OlFeature>>
@@ -118,9 +116,8 @@ export class OlVectorLayerComponent
 
     protected dataSubscription?: Subscription;
 
-    constructor(protected override projectService: ProjectService) {
+    constructor() {
         super(
-            projectService,
             new OlVectorSource({wrapX: false}),
             (source) =>
                 new OlLayerVector({
@@ -131,7 +128,7 @@ export class OlVectorLayerComponent
     }
 
     ngOnInit(): void {
-        this.dataSubscription = this.projectService.getLayerDataStream({id: this.layerId}).subscribe((x: VectorData) => {
+        this.dataSubscription = this.projectService.getLayerDataStream({id: this.layerId()}).subscribe((x: VectorData) => {
             this.source.clear(); // TODO: check if this is needed always...
             if (!(x === null || x === undefined)) {
                 this.source.addFeatures(x.data);
@@ -163,7 +160,7 @@ export class OlVectorLayerComponent
 
     private updateOlLayer(changes: {isVisible?: boolean; symbology?: VectorSymbology; workflow?: UUID}): void {
         if (changes.isVisible !== undefined) {
-            this.mapLayer.setVisible(this.isVisible);
+            this.mapLayer.setVisible(this.isVisible());
             this.mapRedraw.emit();
         }
 
@@ -181,15 +178,18 @@ export class OlVectorLayerComponent
     template: '',
     providers: [{provide: MapLayerComponent, useExisting: OlRasterLayerComponent}],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
 })
 export class OlRasterLayerComponent
     extends MapLayerComponent<OlLayerTile<OlTileWmsSource>, OlTileWmsSource>
     implements OnInit, OnDestroy, OnChanges
 {
+    protected backend = inject(BackendService);
+    protected config = inject(CoreConfig);
+    protected notificationService = inject(NotificationService);
+
     override symbology?: RasterSymbology;
 
-    @Input() sessionToken?: UUID;
+    readonly sessionToken = input<UUID>();
 
     protected dataSubscription?: Subscription;
     protected layerChangesSubscription?: Subscription;
@@ -198,14 +198,8 @@ export class OlRasterLayerComponent
     protected spatialReference?: SpatialReference;
     protected time?: Time;
 
-    constructor(
-        protected override projectService: ProjectService,
-        protected backend: BackendService,
-        protected config: CoreConfig,
-        protected notificationService: NotificationService,
-    ) {
+    constructor() {
         super(
-            projectService,
             new OlTileWmsSource({
                 // empty for start
                 params: {},
@@ -219,7 +213,7 @@ export class OlRasterLayerComponent
     }
 
     ngOnInit(): void {
-        this.dataSubscription = this.projectService.getLayerDataStream({id: this.layerId}).subscribe((rasterData: RasterData) => {
+        this.dataSubscription = this.projectService.getLayerDataStream({id: this.layerId()}).subscribe((rasterData: RasterData) => {
             if (!rasterData) {
                 return;
             }
@@ -269,7 +263,7 @@ export class OlRasterLayerComponent
         }
 
         if (changes.isVisible !== undefined) {
-            this._mapLayer.setVisible(this.isVisible);
+            this._mapLayer.setVisible(this.isVisible());
             this.mapRedraw.emit();
         }
         if (changes.symbology && this.symbology) {
@@ -321,9 +315,9 @@ export class OlRasterLayerComponent
         }
 
         this.source = new OlTileWmsSource({
-            url: `${this.backend.wmsBaseUrl}/${this.workflow}`,
+            url: `${this.backend.wmsBaseUrl}/${this.workflow()}`,
             params: {
-                layers: this.workflow,
+                layers: this.workflow(),
                 time: this.time.asRequestString(),
                 STYLES: this.stylesFromColorizer(this.symbology.rasterColorizer),
                 EXCEPTIONS: 'application/json',
@@ -332,7 +326,7 @@ export class OlRasterLayerComponent
             wrapX: false,
         });
 
-        const proj = olGetProj(this.spatialReference.srsString) as Projection;
+        const proj = olGetProj(this.spatialReference.srsString)!;
         const tileGrid = this.source.getTileGridForProjection(proj);
 
         this.source.setTileLoadFunction((olTile, src) => {
@@ -344,12 +338,12 @@ export class OlRasterLayerComponent
             const client = new XMLHttpRequest();
 
             const cancelSub = this.projectService
-                .createQueryAbortStream(this.layerId, tileZoomLevel, tileExtent)
+                .createQueryAbortStream(this.layerId(), tileZoomLevel, tileExtent)
                 .subscribe(() => client.abort());
 
             client.open('GET', src);
             client.responseType = 'blob';
-            client.setRequestHeader('Authorization', `Bearer ${this.sessionToken}`);
+            client.setRequestHeader('Authorization', `Bearer ${this.sessionToken()}`);
             client.addEventListener('loadend', (_event) => {
                 cancelSub.unsubscribe();
                 const data = client.response;
@@ -396,17 +390,17 @@ export class OlRasterLayerComponent
 
         this.source.on('tileloadstart', () => {
             tilesPending++;
-            this.projectService.changeRasterLayerDataStatus({id: this.layerId, layerType: 'raster'}, LoadingState.LOADING);
+            this.projectService.changeRasterLayerDataStatus({id: this.layerId(), layerType: 'raster'}, LoadingState.LOADING);
         });
         this.source.on('tileloadend', () => {
             tilesPending--;
             if (tilesPending <= 0) {
-                this.projectService.changeRasterLayerDataStatus({id: this.layerId, layerType: 'raster'}, LoadingState.OK);
+                this.projectService.changeRasterLayerDataStatus({id: this.layerId(), layerType: 'raster'}, LoadingState.OK);
             }
         });
         this.source.on('tileloaderror', () => {
             tilesPending--;
-            this.projectService.changeRasterLayerDataStatus({id: this.layerId, layerType: 'raster'}, LoadingState.ERROR);
+            this.projectService.changeRasterLayerDataStatus({id: this.layerId(), layerType: 'raster'}, LoadingState.ERROR);
         });
     }
 }

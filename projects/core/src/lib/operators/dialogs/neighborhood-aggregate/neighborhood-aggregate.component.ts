@@ -1,13 +1,45 @@
 import {map, mergeMap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
-import {AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy, ViewChild} from '@angular/core';
-import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, inject, input, viewChild} from '@angular/core';
+import {
+    AbstractControl,
+    FormArray,
+    FormBuilder,
+    FormControl,
+    FormGroup,
+    Validators,
+    FormsModule,
+    ReactiveFormsModule,
+} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {UUID} from '../../../backend/backend.model';
 import {LayoutService, SidenavConfig} from '../../../layout.service';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
-import {Layer, NeighborhoodAggregateDict, RasterLayer, RasterSymbology, ResultTypes, geoengineValidators} from '@geoengine/common';
+import {
+    Layer,
+    NeighborhoodAggregateDict,
+    RasterLayer,
+    RasterSymbology,
+    ResultTypes,
+    geoengineValidators,
+    FxLayoutDirective,
+    FxLayoutAlignDirective,
+    FxLayoutGapDirective,
+    FxFlexDirective,
+    AsyncValueDefault,
+} from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {MatFormField, MatLabel, MatInput, MatError} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatMenuTrigger, MatMenu, MatMenuItem} from '@angular/material/menu';
+import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
+import {AsyncPipe} from '@angular/common';
 
 interface NeighborhoodAggregateForm {
     rasterLayer: FormControl<RasterLayer | undefined>;
@@ -40,13 +72,43 @@ interface RectangleNeighborhoodForm extends NeighborhoodForm {
     templateUrl: './neighborhood-aggregate.component.html',
     styleUrls: ['./neighborhood-aggregate.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        OperatorDialogContainerComponent,
+        MatIconButton,
+        MatIcon,
+        LayerSelectionComponent,
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        MatButton,
+        MatMenuTrigger,
+        MatMenu,
+        MatMenuItem,
+        MatInput,
+        FxLayoutDirective,
+        FxLayoutAlignDirective,
+        FxLayoutGapDirective,
+        FxFlexDirective,
+        OperatorOutputNameComponent,
+        MatError,
+        SymbologyCreatorComponent,
+        AsyncPipe,
+        AsyncValueDefault,
+    ],
 })
 export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy {
+    protected readonly projectService = inject(ProjectService);
+    protected readonly layoutService = inject(LayoutService);
+    protected readonly formBuilder = inject(FormBuilder);
+
     /**
      * If the inputs are empty, show the following button.
      */
-    @Input() dataListConfig?: SidenavConfig;
+    readonly dataListConfig = input<SidenavConfig>();
 
     readonly RASTER_TYPE = [ResultTypes.RASTER];
     readonly form: FormGroup<NeighborhoodAggregateForm>;
@@ -57,19 +119,14 @@ export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy 
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
 
-    @ViewChild(SymbologyCreatorComponent)
-    readonly symbologyCreator!: SymbologyCreatorComponent;
+    readonly symbologyCreator = viewChild.required(SymbologyCreatorComponent);
 
     readonly subscriptions: Array<Subscription> = [];
 
     /**
      * DI of services and setup of observables for the template
      */
-    constructor(
-        protected readonly projectService: ProjectService,
-        protected readonly layoutService: LayoutService,
-        protected readonly formBuilder: FormBuilder,
-    ) {
+    constructor() {
         this.form = new FormGroup<NeighborhoodAggregateForm>({
             rasterLayer: new FormControl<RasterLayer | undefined>(undefined, {
                 nonNullable: true,
@@ -198,7 +255,10 @@ export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy 
                     return this.projectService.registerWorkflow(workflow);
                 }),
                 mergeMap((workflowId: UUID) => {
-                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator.symbologyForRasterLayer(workflowId, rasterLayer);
+                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator().symbologyForRasterLayer(
+                        workflowId,
+                        rasterLayer,
+                    );
                     return combineLatest([of(workflowId), symbology$]);
                 }),
                 mergeMap(([workflowId, symbology]: [UUID, RasterSymbology]) =>
@@ -232,11 +292,12 @@ export class NeighborhoodAggregateComponent implements AfterViewInit, OnDestroy 
     }
 
     goToAddDataTab(): void {
-        if (!this.dataListConfig) {
+        const dataListConfig = this.dataListConfig();
+        if (!dataListConfig) {
             return;
         }
 
-        this.layoutService.setSidenavContentComponent(this.dataListConfig);
+        this.layoutService.setSidenavContentComponent(dataListConfig);
     }
 
     protected setMatrix(matrix: number[][]): void {

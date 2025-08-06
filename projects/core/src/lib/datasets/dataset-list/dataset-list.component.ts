@@ -1,25 +1,40 @@
-import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, ViewChild, Input} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, AfterViewInit, inject, input, viewChild} from '@angular/core';
 import {DatasetService} from '../dataset.service';
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject, EMPTY, Observable, range, Subject} from 'rxjs';
-import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
+import {CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf} from '@angular/cdk/scrolling';
 import {concatMap, filter, first, scan, tap} from 'rxjs/operators';
 import {LayoutService} from '../../layout.service';
 import {UUID} from '../../backend/backend.model';
 import {Dataset} from '@geoengine/common';
+import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
+import {MatNavList} from '@angular/material/list';
+import {DatasetComponent} from '../dataset/dataset.component';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-dataset-list',
     templateUrl: './dataset-list.component.html',
     styleUrls: ['./dataset-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        CdkVirtualScrollViewport,
+        CdkFixedSizeVirtualScroll,
+        MatNavList,
+        CdkVirtualForOf,
+        DatasetComponent,
+        MatProgressSpinner,
+        AsyncPipe,
+    ],
 })
 export class DatasetListComponent implements OnInit, AfterViewInit {
-    @ViewChild(CdkVirtualScrollViewport)
-    viewport!: CdkVirtualScrollViewport;
+    datasetService = inject(DatasetService);
 
-    @Input() repositoryName = 'Data Repository';
+    readonly viewport = viewChild.required(CdkVirtualScrollViewport);
+
+    readonly repositoryName = input('Data Repository');
 
     // TODO: dataset search
 
@@ -30,8 +45,6 @@ export class DatasetListComponent implements OnInit, AfterViewInit {
     readonly loadingSpinnerDiameterPx: number = 3 * LayoutService.remInPx;
 
     datasetSource?: DatasetDataSource;
-
-    constructor(public datasetService: DatasetService) {}
 
     ngOnInit(): void {
         this.datasetSource = new DatasetDataSource(this.datasetService);
@@ -45,8 +58,8 @@ export class DatasetListComponent implements OnInit, AfterViewInit {
      * Fetch new data when scrolled to the end of the list.
      */
     onScrolledIndexChange(_scrolledIndex: number): void {
-        const end = this.viewport.getRenderedRange().end;
-        const total = this.viewport.getDataLength();
+        const end = this.viewport().getRenderedRange().end;
+        const total = this.viewport().getDataLength();
 
         // only fetch when scrolled to the end
         if (end >= total) {
@@ -59,7 +72,7 @@ export class DatasetListComponent implements OnInit, AfterViewInit {
     }
 
     protected calculateInitialNumberOfElements(): number {
-        const element = this.viewport.elementRef.nativeElement;
+        const element = this.viewport().elementRef.nativeElement;
         const numberOfElements = Math.ceil(element.clientHeight / this.itemSizePx);
         // add one such that scrolling happens
         return numberOfElements + 1;
@@ -106,8 +119,9 @@ class DatasetDataSource extends DataSource<Dataset> {
     /**
      * Clean up resources
      */
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    disconnect(): void {}
+    disconnect(): void {
+        // do nothing
+    }
 
     fetchMoreData(numberOfTimes: number): void {
         this.nextBatch$.next(numberOfTimes);

@@ -3,17 +3,18 @@ import {
     ViewChild,
     ElementRef,
     ChangeDetectionStrategy,
-    Input,
     OnInit,
     ChangeDetectorRef,
     OnChanges,
     SimpleChanges,
     OnDestroy,
     HostListener,
-    Output,
-    EventEmitter,
+    inject,
+    input,
+    output,
+    viewChild,
 } from '@angular/core';
-import {MatInput} from '@angular/material/input';
+import {MatInput, MatFormField, MatPrefix, MatLabel} from '@angular/material/input';
 import {
     LayerCollectionListing,
     LayerListing,
@@ -28,50 +29,75 @@ import {CommonConfig} from '../../config.service';
 import {LayersService} from '../layers.service';
 import {UUID} from '../../datasets/dataset.model';
 import {CollectionNavigation, LayerCollectionListComponent} from '../layer-collection-list/layer-collection-list.component';
+import {MatIcon} from '@angular/material/icon';
+import {FormsModule} from '@angular/forms';
+import {MatAutocompleteTrigger, MatAutocomplete, MatOption} from '@angular/material/autocomplete';
+import {MatButton} from '@angular/material/button';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatMenuTrigger, MatMenu} from '@angular/material/menu';
+import {MatToolbar} from '@angular/material/toolbar';
+import {MatSelect} from '@angular/material/select';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-layer-collection-navigation',
     templateUrl: './layer-collection-navigation.component.html',
     styleUrls: ['./layer-collection-navigation.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatFormField,
+        MatIcon,
+        MatPrefix,
+        MatInput,
+        FormsModule,
+        MatAutocompleteTrigger,
+        MatAutocomplete,
+        MatOption,
+        MatButton,
+        MatTooltip,
+        MatMenuTrigger,
+        MatMenu,
+        MatToolbar,
+        MatLabel,
+        MatSelect,
+        LayerCollectionListComponent,
+        AsyncPipe,
+    ],
 })
 export class LayerCollectionNavigationComponent implements OnInit, OnChanges, OnDestroy {
-    @Input({required: false}) showLayerToggle = true;
-    @Input({required: false}) collectionNavigation = CollectionNavigation.Element;
-    @Input({required: false}) highlightSelection = false;
+    protected readonly config = inject(CommonConfig);
+    protected readonly layerCollectionService = inject(LayersService);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
-    @Input({required: true}) collectionId!: ProviderLayerCollectionId;
+    readonly showLayerToggle = input(true);
+    readonly collectionNavigation = input(CollectionNavigation.Element);
+    readonly highlightSelection = input(false);
 
-    @ViewChild('scrollElement', {read: ElementRef}) public scrollElement!: ElementRef<HTMLDivElement>;
+    readonly collectionId = input.required<ProviderLayerCollectionId>();
 
-    @ViewChild(LayerCollectionListComponent) layerCollectionListComponent!: LayerCollectionListComponent;
+    public readonly scrollElement = viewChild.required('scrollElement', {read: ElementRef});
+
+    readonly layerCollectionListComponent = viewChild.required(LayerCollectionListComponent);
 
     breadcrumbs: BreadcrumbNavigation = this.createBreadcrumbNavigation();
     search: Search = this.createSearch();
 
     selectedCollection?: LayerCollectionItemOrSearch;
 
-    @Output() selectLayer = new EventEmitter<LayerListing>();
-    @Output() selectCollection = new EventEmitter<LayerCollectionListing>();
-    @Output() navigateCollection = new EventEmitter<LayerCollectionListing>();
-
-    constructor(
-        protected readonly config: CommonConfig,
-        protected readonly layerCollectionService: LayersService,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-    ) {}
+    readonly selectLayer = output<LayerListing>();
+    readonly selectCollection = output<LayerCollectionListing>();
+    readonly navigateCollection = output<LayerCollectionListing>();
 
     ngOnInit(): void {
         this.updateListView(undefined);
     }
 
     refreshCollection(): void {
-        this.layerCollectionListComponent.refreshCollection();
+        this.layerCollectionListComponent().refreshCollection();
     }
 
-    refresh() {
-        this.layerCollectionListComponent.refresh();
+    refresh(): void {
+        this.layerCollectionListComponent().refresh();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -156,7 +182,7 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
     protected createSearch(): Search {
         return new Search({
             layersService: this.layerCollectionService,
-            selectedCollection: () => this.selectedCollection?.id ?? this.collectionId,
+            selectedCollection: () => this.selectedCollection?.id ?? this.collectionId(),
             searchResult: (searchResult): void => {
                 this.breadcrumbs.selectCollection(searchResult);
             },
@@ -168,12 +194,12 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
     protected scrollToRight(): void {
         setTimeout(() => {
             // wait until breadcrumbs are re-rendered before scrolling
-            this.scrollElement.nativeElement.scrollLeft += this.scrollElement.nativeElement.scrollWidth;
+            this.scrollElement().nativeElement.scrollLeft += this.scrollElement().nativeElement.scrollWidth;
         }, 0);
     }
 
     protected updateListView(id?: LayerCollectionItemOrSearch): void {
-        this.selectedCollection = id ?? {type: 'collection', id: this.collectionId};
+        this.selectedCollection = id ?? {type: 'collection', id: this.collectionId()};
 
         this.search.updateSearchCapabilities(this.selectedCollection.id).then(() => {
             this.changeDetectorRef.markForCheck();
@@ -181,7 +207,7 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
     }
 
     protected selectCollectionInBreadcrumbs(id?: LayerCollectionItemOrSearch): void {
-        this.selectedCollection = id ?? {type: 'collection', id: this.collectionId};
+        this.selectedCollection = id ?? {type: 'collection', id: this.collectionId()};
         this.navigateCollection.emit(this.selectedCollection as LayerCollectionItem);
     }
 }
@@ -297,6 +323,7 @@ class Search {
         );
     }
 
+    // eslint-disable-next-line @typescript-eslint/require-await
     async search(searchString: string): Promise<void> {
         const collection = this.selectedCollection();
 

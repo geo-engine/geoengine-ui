@@ -1,5 +1,5 @@
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, forwardRef} from '@angular/core';
-import {Subscription, distinctUntilChanged} from 'rxjs';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, inject, input} from '@angular/core';
+import {Subscription} from 'rxjs';
 import moment, {Moment} from 'moment';
 import {
     AbstractControl,
@@ -13,8 +13,13 @@ import {
     ValidationErrors,
     Validator,
     Validators,
+    FormsModule,
+    ReactiveFormsModule,
 } from '@angular/forms';
 import {Time, TimeStepDuration} from '../time.model';
+import {TimeInputComponent} from '../time-input/time-input.component';
+import {FxLayoutDirective, FxLayoutAlignDirective} from '../../util/directives/flexbox-legacy.directive';
+import {MatSlideToggle} from '@angular/material/slide-toggle';
 
 const startBeforeEndValidator = (control: AbstractControl): ValidationErrors | null => {
     if (!(control instanceof UntypedFormGroup)) {
@@ -57,10 +62,13 @@ export interface TimeInterval {
             useExisting: TimeIntervalInputComponent,
         },
     ],
-    standalone: false,
+    imports: [FormsModule, ReactiveFormsModule, TimeInputComponent, FxLayoutDirective, FxLayoutAlignDirective, MatSlideToggle],
 })
 export class TimeIntervalInputComponent implements ControlValueAccessor, Validator, AfterViewInit {
-    @Input() allowRanges = true;
+    private changeDetectorRef = inject(ChangeDetectorRef);
+    private formBuilder = inject(UntypedFormBuilder);
+
+    readonly allowRanges = input(true);
 
     onTouched?: () => void;
     onChange?: (_: Moment) => void = undefined;
@@ -69,16 +77,13 @@ export class TimeIntervalInputComponent implements ControlValueAccessor, Validat
 
     onChangeSub?: Subscription = undefined;
 
-    constructor(
-        private changeDetectorRef: ChangeDetectorRef,
-        private formBuilder: UntypedFormBuilder,
-    ) {
+    constructor() {
         // initialize with the current time to have a defined value
         const time = new Time(moment.utc(), moment.utc());
 
         this.form = this.formBuilder.group({
             start: [time.start, [Validators.required]],
-            timeAsPoint: [this.allowRanges, Validators.required],
+            timeAsPoint: [this.allowRanges(), Validators.required],
             end: [time.end, [Validators.required]],
         });
         this.form.setValidators(startBeforeEndValidator);

@@ -1,5 +1,13 @@
-import {ChangeDetectionStrategy, Component, forwardRef, HostListener, Input, OnDestroy, OnInit} from '@angular/core';
-import {ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR, Validators} from '@angular/forms';
+import {ChangeDetectionStrategy, Component, forwardRef, HostListener, OnDestroy, OnInit, inject, input} from '@angular/core';
+import {
+    ControlValueAccessor,
+    FormControl,
+    FormGroup,
+    NG_VALUE_ACCESSOR,
+    Validators,
+    FormsModule,
+    ReactiveFormsModule,
+} from '@angular/forms';
 import {combineLatest, first, map, mergeMap, Observable, of, Subject, takeUntil} from 'rxjs';
 import {BBoxDict, RasterResultDescriptorDict, SrsString, TimeIntervalDict, UUID} from '../../../backend/backend.model';
 import {BackendService} from '../../../backend/backend.service';
@@ -19,7 +27,12 @@ import {
     Time,
     TRANSPARENT,
     UserService,
+    FxFlexDirective,
 } from '@geoengine/common';
+import {MatFormField, MatLabel, MatHint, MatInput} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {NgClass} from '@angular/common';
 
 const COLORMAPS = ALL_COLORMAPS;
 
@@ -41,16 +54,21 @@ export enum SymbologyCreationType {
             multi: true,
         },
     ],
-    standalone: false,
+    imports: [MatFormField, MatLabel, MatSelect, FormsModule, ReactiveFormsModule, MatOption, MatHint, FxFlexDirective, MatInput, NgClass],
 })
 export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValueAccessor {
+    protected readonly projectService = inject(ProjectService);
+    protected readonly userService = inject(UserService);
+    protected readonly backend = inject(BackendService);
+    protected readonly spatialReferenceService = inject(SpatialReferenceService);
+
     AS_INPUT = SymbologyCreationType.AS_INPUT;
     COMPUTE_LINEAR_GRADIENT = SymbologyCreationType.COMPUTE_LINEAR_GRADIENT;
     LINEAR_GRADIENT_FROM_MIN_MAX = SymbologyCreationType.LINEAR_GRADIENT_FROM_MIN_MAX;
 
-    @Input() enableCopyInputSymbology = true;
-    @Input() colorMapName = 'viridis';
-    @Input() opacity = 1.0;
+    readonly enableCopyInputSymbology = input(true);
+    readonly colorMapName = input('viridis');
+    readonly opacity = input(1.0);
 
     min = new FormControl(0, {validators: [Validators.required], nonNullable: true});
     max = new FormControl(255, {validators: [Validators.required], nonNullable: true});
@@ -77,12 +95,7 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
     // Can be used to complete subscriptions `OnDestroy` – need to call `next` and `complete` once.
     private unsubscribe$ = new Subject<void>();
 
-    constructor(
-        protected readonly projectService: ProjectService,
-        protected readonly userService: UserService,
-        protected readonly backend: BackendService,
-        protected readonly spatialReferenceService: SpatialReferenceService,
-    ) {
+    constructor() {
         this.value.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe((value) => {
             if (!this._onChange) {
                 return;
@@ -93,17 +106,18 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
     }
 
     ngOnInit(): void {
-        if (!this.enableCopyInputSymbology) {
+        if (!this.enableCopyInputSymbology()) {
             this.value.setValue(this.COMPUTE_LINEAR_GRADIENT);
         }
 
-        if (this.colorMapName.toUpperCase() in COLORMAPS) {
-            this.colorMap = COLORMAPS[this.colorMapName.toUpperCase()];
+        const colorMapName = this.colorMapName();
+        if (colorMapName.toUpperCase() in COLORMAPS) {
+            this.colorMap = COLORMAPS[colorMapName.toUpperCase()];
         } else {
-            throw new Error('Unsupported color map name ' + this.colorMapName);
+            throw new Error('Unsupported color map name ' + colorMapName);
         }
 
-        if (this.opacity < 0 || this.opacity > 1) {
+        if (this.opacity() < 0 || this.opacity() > 1) {
             throw new Error('The opacity needs to be in [0, 1]');
         }
     }
@@ -174,7 +188,7 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
             case SymbologyCreationType.LINEAR_GRADIENT_FROM_MIN_MAX: {
                 return of(
                     new RasterSymbology(
-                        this.opacity,
+                        this.opacity(),
                         new SingleBandRasterColorizer(0, this.colorizerForMinMax(this.min.getRawValue(), this.max.getRawValue())),
                     ),
                 );
@@ -247,16 +261,17 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
                     throw new Error('Expected `Statistics` plot.');
                 }
 
-                return plot.data as {
-                    [name: string]: {
+                return plot.data as Record<
+                    string,
+                    {
                         valueCount: number;
                         validCount: number;
                         min: number;
                         max: number;
                         mean: number;
                         stddev: number;
-                    };
-                };
+                    }
+                >;
             }),
             map((statistics) => {
                 const min = statistics[rasterName].min;
@@ -266,7 +281,7 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
                     throw new Error('Sample statistics do not have valid min/max values.');
                 }
 
-                return new RasterSymbology(this.opacity, new SingleBandRasterColorizer(0, this.colorizerForMinMax(min, max)));
+                return new RasterSymbology(this.opacity(), new SingleBandRasterColorizer(0, this.colorizerForMinMax(min, max)));
             }),
         );
     }

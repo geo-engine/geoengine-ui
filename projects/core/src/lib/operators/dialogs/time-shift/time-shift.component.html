@@ -23,36 +23,39 @@
                 </mat-select>
             </mat-form-field>
 
-            <ng-container *ngIf="form.controls.type.value === 'relative'">
+            @if (form.controls.type.value === 'relative') {
                 <mat-form-field>
                     <mat-label>Time Granularity</mat-label>
                     <mat-select formControlName="granularity">
-                        <mat-option *ngFor="let granularity of timeGranularityOptions" [value]="granularity">{{ granularity }}</mat-option>
+                        @for (granularity of timeGranularityOptions; track granularity) {
+                            <mat-option [value]="granularity">{{ granularity }}</mat-option>
+                        }
                     </mat-select>
                 </mat-form-field>
-
                 <mat-form-field>
                     <mat-label>Step Size</mat-label>
                     <input matInput type="number" step="1" formControlName="value" />
-                    <mat-hint align="end" class="error" *ngIf="form.controls.value?.errors?.valueIsZero">
-                        The step size must not be zero.
-                    </mat-hint>
-                    <mat-hint align="end" class="error" *ngIf="form.controls.value?.errors?.pattern">
-                        The step size must be an integer.
-                    </mat-hint>
+                    @if (form.controls.value.errors?.valueIsZero) {
+                        <mat-hint align="end" class="error"> The step size must not be zero. </mat-hint>
+                    }
+                    @if (form.controls.value.errors?.pattern) {
+                        <mat-hint align="end" class="error"> The step size must be an integer. </mat-hint>
+                    }
                 </mat-form-field>
-            </ng-container>
+            }
 
-            <ng-container *ngIf="form.controls.type.value === 'absolute'" formGroupName="timeInterval">
-                <h5>Start</h5>
-                <geoengine-time-input formControlName="start"></geoengine-time-input>
-                <h5>End</h5>
-                <mat-slide-toggle #timeAsPoint formControlName="timeAsPoint">same as start</mat-slide-toggle>
-                <geoengine-time-input [isDisabled]="timeAsPoint.checked" formControlName="end"></geoengine-time-input>
-                <mat-hint align="end" class="error" *ngIf="form.controls.timeInterval?.errors?.valid">
-                    The start must be before the end.
-                </mat-hint>
-            </ng-container>
+            @if (form.controls.type.value === 'absolute') {
+                <ng-container formGroupName="timeInterval">
+                    <h5>Start</h5>
+                    <geoengine-time-input formControlName="start"></geoengine-time-input>
+                    <h5>End</h5>
+                    <mat-slide-toggle #timeAsPoint formControlName="timeAsPoint">same as start</mat-slide-toggle>
+                    <geoengine-time-input [isDisabled]="timeAsPoint.checked" formControlName="end"></geoengine-time-input>
+                    @if (form.controls.timeInterval.errors?.valid) {
+                        <mat-hint align="end" class="error"> The start must be before the end. </mat-hint>
+                    }
+                </ng-container>
+            }
         </ng-container>
 
         <ng-container layerSpecification>
@@ -60,13 +63,9 @@
                 formControlName="name"
                 [suggestion]="'Time Shift of ' + (form.controls.source.valueChanges | async)?.name"
             >
-                <mat-hint
-                    align="end"
-                    class="error"
-                    *ngIf="form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace"
-                >
-                    The name must be non-empty.
-                </mat-hint>
+                @if (form.controls.name.errors?.required || form.controls.name.errors?.onlyWhitespace) {
+                    <mat-hint align="end" class="error"> The name must be non-empty. </mat-hint>
+                }
             </geoengine-operator-output-name>
         </ng-container>
 

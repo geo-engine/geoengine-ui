@@ -1,4 +1,4 @@
-import {Pipe, PipeTransform} from '@angular/core';
+import {Pipe, PipeTransform, inject} from '@angular/core';
 import {DomSanitizer, SafeStyle} from '@angular/platform-browser';
 import {Color, RgbaTuple} from '../../colors/color';
 import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
@@ -10,10 +10,9 @@ import {Colorizer} from '../../colors/colorizer.model';
  */
 @Pipe({
     name: 'geoengineColorizerCssGradient',
-    standalone: false,
 })
 export class ColorizerCssGradientPipe implements PipeTransform {
-    constructor(protected sanitizer: DomSanitizer) {}
+    protected sanitizer = inject(DomSanitizer);
 
     transform(colorizer: Colorizer, angle = 180): SafeStyle {
         const colors = colorizer.getBreakpoints().map((breakpoint) => breakpoint.color);
@@ -27,10 +26,9 @@ export class ColorizerCssGradientPipe implements PipeTransform {
  */
 @Pipe({
     name: 'geoengineRasterColorizerCssGradient',
-    standalone: false,
 })
 export class RasterColorizerCssGradientPipe implements PipeTransform {
-    constructor(protected sanitizer: DomSanitizer) {}
+    protected sanitizer = inject(DomSanitizer);
 
     transform(colorizer: RasterColorizer, angle = 180): SafeStyle {
         const colors = colorizer.getBreakpoints().map((breakpoint) => breakpoint.color);
@@ -44,10 +42,9 @@ export class RasterColorizerCssGradientPipe implements PipeTransform {
  */
 @Pipe({
     name: 'geoengineColorBreakpointsCssGradient',
-    standalone: false,
 })
 export class ColorBreakpointsCssGradientPipe implements PipeTransform {
-    constructor(protected sanitizer: DomSanitizer) {}
+    protected sanitizer = inject(DomSanitizer);
 
     transform(breakpoints: Array<ColorBreakpoint>, angle = 180): SafeStyle {
         const colors = breakpoints.map((breakpoint) => breakpoint.color);
@@ -61,10 +58,9 @@ export class ColorBreakpointsCssGradientPipe implements PipeTransform {
  */
 @Pipe({
     name: 'geoengineRgbaTuplesCssGradient',
-    standalone: false,
 })
 export class RgbaArrayCssGradientPipe implements PipeTransform {
-    constructor(protected sanitizer: DomSanitizer) {}
+    protected sanitizer = inject(DomSanitizer);
 
     transform(rgbaColors: Array<RgbaTuple>, angle = 180): SafeStyle {
         const colors = rgbaColors.map((rgba) => Color.fromRgbaLike(rgba));

@@ -3,14 +3,22 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     AfterViewInit,
-    Input,
     forwardRef,
     OnChanges,
     SimpleChange,
+    inject,
+    input,
 } from '@angular/core';
 
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule} from '@angular/forms';
 import moment, {Moment, unitOfTime} from 'moment';
+import {
+    FxLayoutDirective,
+    FxLayoutGapDirective,
+    FxLayoutAlignDirective,
+    FxFlexDirective,
+} from '../../util/directives/flexbox-legacy.directive';
+import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
 
 @Component({
     selector: 'geoengine-time-input',
@@ -18,18 +26,27 @@ import moment, {Moment, unitOfTime} from 'moment';
     styleUrls: ['./time-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => TimeInputComponent), multi: true}],
-    standalone: false,
+    imports: [
+        FxLayoutDirective,
+        FxLayoutGapDirective,
+        FxLayoutAlignDirective,
+        MatFormField,
+        FxFlexDirective,
+        MatLabel,
+        MatInput,
+        FormsModule,
+    ],
 })
 export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, OnChanges {
+    private changeDetectorRef = inject(ChangeDetectorRef);
+
     // TODO: also react on disabled state in `ControlValueAccessor`
-    @Input() isDisabled = false;
+    readonly isDisabled = input(false);
 
     onTouched?: () => void;
     onChange?: (_: Moment) => void = undefined;
 
     private _time: Moment = moment.utc();
-
-    constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
     get time(): Moment {
         return this._time;
@@ -49,7 +66,7 @@ export class TimeInputComponent implements ControlValueAccessor, AfterViewInit, 
         setTimeout(() => this.changeDetectorRef.markForCheck(), 0);
     }
 
-    ngOnChanges(_changes: {[propName: string]: SimpleChange}): void {
+    ngOnChanges(_changes: Record<string, SimpleChange>): void {
         this.changeDetectorRef.markForCheck();
     }
 

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit, input} from '@angular/core';
 
 import {
     BLACK,
@@ -19,19 +19,35 @@ import {
     VectorLayer,
     VectorSymbology,
     WHITE,
+    FxLayoutDirective,
+    FxLayoutAlignDirective,
+    PointIconComponent,
+    LineIconComponent,
+    PolygonIconComponent,
+    FxFlexDirective,
 } from '@geoengine/common';
+import {MatIcon} from '@angular/material/icon';
+import {MatDivider} from '@angular/material/list';
 
 @Component({
     selector: 'geoengine-vector-legend',
     templateUrl: 'vector-legend-component.html',
     styleUrls: ['vector-legend.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        FxLayoutDirective,
+        FxLayoutAlignDirective,
+        MatIcon,
+        PointIconComponent,
+        LineIconComponent,
+        PolygonIconComponent,
+        FxFlexDirective,
+        MatDivider,
+    ],
 })
 export class VectorLegendComponent implements OnInit {
     readonly ST = SymbologyType;
-    @Input()
-    showDefaultStyle = true;
+    readonly showDefaultStyle = input(true);
 
     @Input() layer!: VectorLayer;
 

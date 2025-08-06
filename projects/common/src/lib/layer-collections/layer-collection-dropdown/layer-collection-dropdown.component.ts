@@ -3,12 +3,12 @@ import {
     OnInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
-    Input,
-    EventEmitter,
-    Output,
     OnChanges,
     OnDestroy,
     SimpleChanges,
+    inject,
+    input,
+    output,
 } from '@angular/core';
 import {
     LayerCollection as LayerCollectionDict,
@@ -17,8 +17,14 @@ import {
     LayerListing as LayerCollectionLayerDict,
     LayerCollectionListing as LayerCollectionListingDict,
 } from '@geoengine/openapi-client';
-import {BehaviorSubject, Observable, Subject, firstValueFrom, map} from 'rxjs';
+import {BehaviorSubject, Observable, Subject, map} from 'rxjs';
 import {LayersService} from '../layers.service';
+import {MatFormField, MatLabel} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {AutocompleteSelectDirective} from '../../util/directives/autocomplete-select.directive';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {AsyncPipe} from '@angular/common';
 
 interface CollectionAndSelected {
     collection: LayerCollectionDict;
@@ -43,14 +49,17 @@ export enum PathChangeSource {
     templateUrl: './layer-collection-dropdown.component.html',
     styleUrls: ['./layer-collection-dropdown.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [MatFormField, MatLabel, MatSelect, MatOption, AutocompleteSelectDirective, FormsModule, ReactiveFormsModule, AsyncPipe],
 })
 export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDestroy {
-    @Input() root?: ProviderLayerCollectionIdDict = undefined;
-    @Input() preselectedPath: Array<string | number> = []; // preselect entries in hierarchy either by name or index
+    protected readonly layersService = inject(LayersService);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
-    @Output() layerSelected = new EventEmitter<LayerCollectionLayerDict>();
-    @Output() pathChange = new EventEmitter<PathChange>();
+    readonly root = input<ProviderLayerCollectionIdDict>();
+    readonly preselectedPath = input<Array<string | number>>([]); // preselect entries in hierarchy either by name or index
+
+    readonly layerSelected = output<LayerCollectionLayerDict | undefined>();
+    readonly pathChange = output<PathChange>();
 
     preselecting$ = new BehaviorSubject<boolean>(false);
 
@@ -59,12 +68,9 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
 
     readonly collectionsAndSelected: Observable<Array<CollectionAndSelected>>;
 
-    private onDestroy$: Subject<boolean> = new Subject();
+    private onDestroy$ = new Subject<boolean>();
 
-    constructor(
-        protected readonly layersService: LayersService,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-    ) {
+    constructor() {
         this.collectionsAndSelected = this.collections.pipe(
             map((collections) => {
                 const result: Array<CollectionAndSelected> = [];
@@ -81,22 +87,24 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
         );
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     async ngOnInit(): Promise<void> {
         await this.setupRoot();
-        await this.preselect(this.preselectedPath);
+        await this.preselect(this.preselectedPath());
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
         if (changes.root && changes.root.currentValue !== changes.root.previousValue) {
             await this.setupRoot();
-            await this.preselect(this.preselectedPath);
+            await this.preselect(this.preselectedPath());
         }
 
         if (
             changes.preselectedPath &&
             this.collections.value.length // we need to wait for the root collection to be loaded
         ) {
-            await this.preselect(this.preselectedPath);
+            await this.preselect(this.preselectedPath());
         }
     }
 
@@ -136,7 +144,7 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
                 break; // we cannot continue selecting the next item
             }
 
-            newSelections.push(found as LayerCollectionItemDict);
+            newSelections.push(found);
 
             if (found.type === 'layer') {
                 this.layerSelected.emit(found as LayerCollectionLayerDict);
@@ -197,8 +205,9 @@ export class LayerCollectionDropdownComponent implements OnInit, OnChanges, OnDe
     }
 
     protected async setupRoot(): Promise<void> {
-        const collection = this.root
-            ? await this.layersService.getLayerCollectionItems(this.root.providerId, this.root.collectionId, 0, FETCH_SIZE)
+        const root = this.root();
+        const collection = root
+            ? await this.layersService.getLayerCollectionItems(root.providerId, root.collectionId, 0, FETCH_SIZE)
             : await this.layersService.getRootLayerCollectionItems(0, FETCH_SIZE);
 
         this.collections.next([collection]);

@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {BehaviorSubject, mergeMap, Observable} from 'rxjs';
 import {COUNTRY_LIST} from './country-selector/country-selector-data.model';
 import {ProjectService} from '@geoengine/core';
@@ -20,13 +20,13 @@ export interface Country {
     providedIn: 'root',
 })
 export class CountryProviderService {
+    private readonly projectService = inject(ProjectService);
+    private readonly dataSelectionService = inject(DataSelectionService);
+
     public readonly selectedCountry$ = new BehaviorSubject<Country | undefined>(undefined);
     public readonly availabeCountries: Array<Country>;
 
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly dataSelectionService: DataSelectionService,
-    ) {
+    constructor() {
         this.availabeCountries = COUNTRY_LIST.map((r) => {
             const [name, maxx, maxy, minx, miny, tifChannelId] = r;
             return {

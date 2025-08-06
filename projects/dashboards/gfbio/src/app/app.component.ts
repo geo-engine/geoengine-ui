@@ -8,13 +8,13 @@ import {
     Component,
     ElementRef,
     HostListener,
-    Inject,
     OnInit,
-    ViewChild,
     ViewContainerRef,
+    inject,
+    viewChild,
 } from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {MatIconRegistry} from '@angular/material/icon';
+import {MatIconRegistry, MatIcon} from '@angular/material/icon';
 import {MatDrawerToggleResult, MatSidenav, MatSidenavContainer} from '@angular/material/sidenav';
 import {MatTabGroup} from '@angular/material/tabs';
 import {
@@ -35,6 +35,14 @@ import {
     SpatialReferenceService,
     TimeConfigComponent,
     WorkspaceSettingsComponent,
+    LayerListMenuComponent,
+    ZoomHandlesComponent,
+    SmallTimeInteractionComponent,
+    LayerListComponent,
+    OlVectorLayerComponent,
+    OlRasterLayerComponent,
+    MapResolutionExtentOverlayComponent,
+    TabsComponent,
 } from '@geoengine/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {ActivatedRoute, ParamMap} from '@angular/router';
@@ -42,22 +50,71 @@ import {AppConfig} from './app-config.service';
 import {HelpComponent} from './help/help.component';
 import {SplashDialogComponent} from './splash-dialog/splash-dialog.component';
 import {GfBioCollectionDialogComponent as GfBioCollectionDialogComponent} from './gfbio-collection/gfbio-collection-dialog.component';
-import {Layer, LayersService, NotificationService, RandomColorService, UserService} from '@geoengine/common';
+import {
+    Layer,
+    LayersService,
+    NotificationService,
+    RandomColorService,
+    UserService,
+    AsyncNumberSanitizer,
+    AsyncValueDefault,
+} from '@geoengine/common';
+import {MatToolbar} from '@angular/material/toolbar';
+import {MatButton} from '@angular/material/button';
+import {MatTooltip} from '@angular/material/tooltip';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatToolbar,
+        MatIcon,
+        LayerListMenuComponent,
+        MatButton,
+        MatTooltip,
+        ZoomHandlesComponent,
+        SmallTimeInteractionComponent,
+        NavigationComponent,
+        MatSidenavContainer,
+        MatSidenav,
+        SidenavContainerComponent,
+        LayerListComponent,
+        MapContainerComponent,
+        OlVectorLayerComponent,
+        OlRasterLayerComponent,
+        MapResolutionExtentOverlayComponent,
+        TabsComponent,
+        AsyncPipe,
+        AsyncNumberSanitizer,
+        AsyncValueDefault,
+    ],
 })
 export class AppComponent implements OnInit, AfterViewInit {
-    @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
-    @ViewChild(MatTabGroup, {static: true}) bottomTabs!: MatTabGroup;
+    readonly config = inject<AppConfig>(AppConfig);
+    readonly layoutService = inject(LayoutService);
+    readonly projectService = inject(ProjectService);
+    readonly vcRef = inject(ViewContainerRef);
+    readonly userService = inject(UserService);
+    private readonly layersService = inject(LayersService);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly dialog = inject(MatDialog);
+    private readonly iconRegistry = inject(MatIconRegistry);
+    private readonly randomColorService = inject(RandomColorService);
+    private readonly activatedRoute = inject(ActivatedRoute);
+    private readonly notificationService = inject(NotificationService);
+    private readonly mapService = inject(MapService);
+    private readonly spatialReferenceService = inject(SpatialReferenceService);
+    private readonly sanitizer = inject(DomSanitizer);
 
-    @ViewChild(MatSidenav, {static: true}) rightSidenav!: MatSidenav;
-    @ViewChild(MatSidenavContainer, {static: true, read: ElementRef}) sidenavContainerElement!: ElementRef;
-    @ViewChild(SidenavContainerComponent, {static: true}) rightSidenavContainer!: SidenavContainerComponent;
+    readonly mapComponent = viewChild.required(MapContainerComponent);
+    readonly bottomTabs = viewChild.required(MatTabGroup);
+
+    readonly rightSidenav = viewChild.required(MatSidenav);
+    readonly sidenavContainerElement = viewChild.required(MatSidenavContainer, {read: ElementRef});
+    readonly rightSidenavContainer = viewChild.required(SidenavContainerComponent);
 
     readonly layersReverse$: Observable<Array<Layer>>;
     readonly layerListVisible$: Observable<boolean>;
@@ -76,23 +133,10 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     private GFBIO_COLLECTIONS_DATA_PROVIDER_ID = 'f64e2d5b-3b80-476a-83f5-c330956b2909';
 
-    constructor(
-        @Inject(AppConfig) readonly config: AppConfig,
-        readonly layoutService: LayoutService,
-        readonly projectService: ProjectService,
-        readonly vcRef: ViewContainerRef, // reference used by color picker
-        readonly userService: UserService,
-        private readonly layersService: LayersService,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly dialog: MatDialog,
-        private readonly iconRegistry: MatIconRegistry,
-        private readonly randomColorService: RandomColorService,
-        private readonly activatedRoute: ActivatedRoute,
-        private readonly notificationService: NotificationService,
-        private readonly mapService: MapService,
-        private readonly spatialReferenceService: SpatialReferenceService,
-        private readonly sanitizer: DomSanitizer,
-    ) {
+    constructor() {
+        const config = this.config;
+        const vcRef = this.vcRef;
+
         this.registerIcons();
 
         vcRef.length; // eslint-disable-line @typescript-eslint/no-unused-expressions
@@ -104,9 +148,9 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         this.mapIsGrid$ = this.mapService.isGrid$;
 
-        const totalHeight$ = this.windowHeight$.pipe(map((_height) => this.sidenavContainerElement.nativeElement.offsetHeight));
+        const totalHeight$ = this.windowHeight$.pipe(map((_height) => this.sidenavContainerElement().nativeElement.offsetHeight));
 
-        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(totalHeight$).pipe(tap(() => this.mapComponent.resize()));
+        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(totalHeight$).pipe(tap(() => this.mapComponent().resize()));
         this.layerListHeight$ = config.COMPONENTS.MAP_RESOLUTION_EXTENT_OVERLAY.AVAILABLE
             ? this.middleContainerHeight$.pipe(map((height) => height - 62))
             : this.middleContainerHeight$;
@@ -121,7 +165,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit(): void {
-        this.mapService.registerMapComponent(this.mapComponent);
+        this.mapService.registerMapComponent(this.mapComponent());
 
         // TODO: remove if table is back
         this.layoutService.setLayerDetailViewVisibility(false);
@@ -129,16 +173,16 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit(): void {
         this.layoutService.getSidenavContentComponentStream().subscribe((sidenavConfig) => {
-            this.rightSidenavContainer.load(sidenavConfig);
+            this.rightSidenavContainer().load(sidenavConfig);
 
             let openClosePromise: Promise<MatDrawerToggleResult>;
             if (sidenavConfig) {
-                openClosePromise = this.rightSidenav.open();
+                openClosePromise = this.rightSidenav().open();
             } else {
-                openClosePromise = this.rightSidenav.close();
+                openClosePromise = this.rightSidenav().close();
             }
 
-            openClosePromise.then(() => this.mapComponent.resize());
+            openClosePromise.then(() => this.mapComponent().resize());
         });
         this.projectService
             .getNewPlotStream()

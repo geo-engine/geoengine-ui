@@ -1,11 +1,28 @@
-import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {LayerCollectionItemDict, LayerCollectionLayerDict, ProjectService} from '@geoengine/core';
+import {Component, inject} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogContent} from '@angular/material/dialog';
+import {LayerCollectionItemDict, LayerCollectionLayerDict, ProjectService, CoreModule} from '@geoengine/core';
 import {map, mergeMap} from 'rxjs/operators';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {SelectionModel} from '@angular/cdk/collections';
 import {LayerCollectionItem, LayersService, NotificationService} from '@geoengine/common';
 import {CollectionItem, LayerCollection} from '@geoengine/openapi-client';
+import {CdkScrollable} from '@angular/cdk/scrolling';
+import {
+    MatTable,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatCellDef,
+    MatCell,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+} from '@angular/material/table';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {MatButton} from '@angular/material/button';
+import {MatProgressBar} from '@angular/material/progress-bar';
+import {AsyncPipe} from '@angular/common';
 
 enum LayerStatus {
     Ok = 'ok',
@@ -17,9 +34,35 @@ enum LayerStatus {
     selector: 'geoengine-gfbio-basket-dialog',
     templateUrl: './gfbio-collection-dialog.component.html',
     styleUrls: ['./gfbio-collection-dialog.component.scss'],
-    standalone: false,
+    imports: [
+        CoreModule,
+        CdkScrollable,
+        MatDialogContent,
+        MatTable,
+        MatColumnDef,
+        MatHeaderCellDef,
+        MatHeaderCell,
+        MatCheckbox,
+        MatCellDef,
+        MatCell,
+        MatHeaderRowDef,
+        MatHeaderRow,
+        MatRowDef,
+        MatRow,
+        MatButton,
+        MatProgressBar,
+        AsyncPipe,
+    ],
 })
 export class GfBioCollectionDialogComponent {
+    private readonly projectService = inject(ProjectService);
+    private readonly layerService = inject(LayersService);
+    private readonly dialogRef = inject<MatDialogRef<GfBioCollectionDialogComponent>>(MatDialogRef);
+    private readonly notificationService = inject(NotificationService);
+    private config = inject<{
+        result: LayerCollection;
+    }>(MAT_DIALOG_DATA);
+
     collection: LayerCollection;
     projectHasLayers$: Observable<boolean>;
 
@@ -28,13 +71,9 @@ export class GfBioCollectionDialogComponent {
 
     selection = new SelectionModel<CollectionItem>(true);
 
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly layerService: LayersService,
-        private readonly dialogRef: MatDialogRef<GfBioCollectionDialogComponent>,
-        private readonly notificationService: NotificationService,
-        @Inject(MAT_DIALOG_DATA) private config: {result: LayerCollection},
-    ) {
+    constructor() {
+        const config = this.config;
+
         this.collection = config.result;
         this.projectHasLayers$ = this.projectService.getLayerStream().pipe(map((layers) => layers.length > 0));
         this.okLayersInCollection$.next(this.getFilteredLayers().length > 0);
@@ -108,7 +147,7 @@ export class GfBioCollectionDialogComponent {
             if (abcdIdPos >= 0) {
                 // detect units based on the number of components (seperated by ":") in the id
                 const abcdLayerId = layer.id.layerId.substring(abcdIdPos);
-                const numberOfComponents = (abcdLayerId.match(/:/g) || []).length;
+                const numberOfComponents = (abcdLayerId.match(/:/g) ?? []).length;
 
                 if (numberOfComponents > 3) {
                     return true;

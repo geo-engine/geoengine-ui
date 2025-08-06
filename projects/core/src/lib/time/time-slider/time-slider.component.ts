@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef, OnDestroy, Input} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, inject, input, viewChild} from '@angular/core';
 import {DataSet} from 'vis-data/peer';
 import {DateType, Timeline} from 'vis-timeline/peer';
 import {ElementRef} from '@angular/core';
@@ -6,16 +6,24 @@ import {LayoutService} from '../../layout.service';
 import {ProjectService} from '../../project/project.service';
 import moment, {DurationInputArg2, Moment} from 'moment';
 import {Subscription} from 'rxjs';
-import {Layer, Time} from '@geoengine/common';
+import {Layer, Time, FxLayoutDirective, FxLayoutGapDirective, FxLayoutAlignDirective} from '@geoengine/common';
+import {MatButton} from '@angular/material/button';
+import {MatSelect} from '@angular/material/select';
+import {FormsModule} from '@angular/forms';
+import {MatOption} from '@angular/material/autocomplete';
 
 @Component({
     selector: 'geoengine-time-slider',
     templateUrl: './time-slider.component.html',
     styleUrls: ['./time-slider.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [FxLayoutDirective, FxLayoutGapDirective, FxLayoutAlignDirective, MatButton, MatSelect, FormsModule, MatOption],
 })
 export class TimeSliderComponent implements OnInit, OnDestroy {
+    protected readonly projectService = inject(ProjectService);
+    protected readonly layoutService = inject(LayoutService);
+    private changeDetectorRef = inject(ChangeDetectorRef);
+
     //Timeline Data for vis-timeline
     timeline: Timeline | undefined;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -37,23 +45,19 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
     selectedScale: DurationInputArg2 = 'year';
     isRange = true;
 
-    @Input() height = 150;
+    readonly height = input(150);
 
     screenWidth = 0;
 
     //Layer Data
     layerList: Array<Layer> = [];
 
-    @ViewChild('timeline', {static: true}) timelineContainer!: ElementRef;
+    readonly timelineContainer = viewChild.required<ElementRef>('timeline');
 
     // inventory of used subscriptions
     private subscriptions: Array<Subscription> = [];
 
-    constructor(
-        protected readonly projectService: ProjectService,
-        protected readonly layoutService: LayoutService,
-        private changeDetectorRef: ChangeDetectorRef,
-    ) {
+    constructor() {
         this.subscriptions.push(
             this.projectService.getLayerStream().subscribe((layerList) => {
                 if (layerList !== this.layerList) {
@@ -71,7 +75,7 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
         this.getTimelineGroups();
         this.getOptions();
 
-        this.timeline = new Timeline(this.timelineContainer.nativeElement, this.data, this.options);
+        this.timeline = new Timeline(this.timelineContainer().nativeElement, this.data, this.options);
         this.timeline.setGroups(this.groups);
         this.timeline.setItems(this.data);
 
@@ -81,10 +85,10 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
         //listens to events of the custom timebars
         this.timeline.on('timechanged', (properties) => {
             if (properties.id === 'start') {
-                this.startTime = this.timeline?.getCustomTime(properties.id) as Date;
+                this.startTime = this.timeline!.getCustomTime(properties.id);
             }
             if (properties.id === 'end') {
-                this.endTime = this.timeline?.getCustomTime(properties.id) as Date;
+                this.endTime = this.timeline!.getCustomTime(properties.id);
             }
             if (!this.isRange) {
                 this.endTime = this.startTime;
@@ -286,7 +290,7 @@ export class TimeSliderComponent implements OnInit, OnDestroy {
             start: '2012-01',
             end: '2020-01',
             orientation: 'top',
-            height: this.height,
+            height: this.height(),
             itemsAlwaysDraggable: false,
             editable: true,
             selectable: false,

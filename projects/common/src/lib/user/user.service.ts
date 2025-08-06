@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {
     ComputationQuota,
     AuthCodeRequestURL,
@@ -46,6 +46,11 @@ const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '
     providedIn: 'root',
 })
 export class UserService {
+    protected readonly config = inject(CommonConfig);
+    protected readonly notificationService = inject(NotificationService);
+    protected readonly router = inject(Router);
+    protected readonly activatedRoute = inject(ActivatedRoute);
+
     protected readonly session$ = new ReplaySubject<Session | undefined>(1);
     protected readonly backendStatus$ = new BehaviorSubject<BackendStatus>({available: false, initial: true});
     protected readonly backendInfo$ = new BehaviorSubject<ServerInfo | undefined>(undefined);
@@ -59,12 +64,7 @@ export class UserService {
     protected logoutCallback?: () => void;
     protected sessionInitialized = false;
 
-    constructor(
-        protected readonly config: CommonConfig,
-        protected readonly notificationService: NotificationService,
-        protected readonly router: Router,
-        protected readonly activatedRoute: ActivatedRoute,
-    ) {
+    constructor() {
         // get oidc paramters from url before routing is enabled
         const oidcParams = this.getOidcParametersFromUrl();
 
@@ -78,6 +78,7 @@ export class UserService {
         });
 
         // update backend info when backend is available
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.getBackendStatus().subscribe(async (status) => {
             if (status.available) {
                 const info = await this.backendApi.serverInfoHandler();
@@ -98,6 +99,7 @@ export class UserService {
         this.triggerBackendStatusUpdate();
     }
 
+    // eslint-disable-next-line @typescript-eslint/require-await
     async tryLogin(
         status: BackendStatus,
         oidcParams:
@@ -232,7 +234,7 @@ export class UserService {
     }
 
     isGuestUserStream(): Observable<boolean> {
-        return this.getSessionStream().pipe(map((s) => !s.user || !s.user.email || !s.user.realName));
+        return this.getSessionStream().pipe(map((s) => !s.user?.email || !s.user.realName));
     }
 
     /**
@@ -412,9 +414,7 @@ export class UserService {
     }
 
     async getRoleByName(roleName: string): Promise<UUID> {
-        console.log('role by name', roleName);
         const userApi = await firstValueFrom(this.userApi);
-        console.log('userApi', userApi);
         return userApi
             .getRoleByNameHandler({
                 name: roleName,

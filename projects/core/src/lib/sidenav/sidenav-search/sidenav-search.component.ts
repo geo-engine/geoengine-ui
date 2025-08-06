@@ -1,20 +1,7 @@
-import {
-    Component,
-    ChangeDetectionStrategy,
-    ElementRef,
-    ContentChildren,
-    QueryList,
-    Output,
-    EventEmitter,
-    AfterViewInit,
-    Directive,
-} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ElementRef, Directive, inject, output, contentChildren, effect} from '@angular/core';
 import {SidenavRef} from '../sidenav-ref.service';
 
-@Directive({
-    selector: '[geoengineSidenavSearchRight]',
-    standalone: false,
-})
+@Directive({selector: '[geoengineSidenavSearchRight]'})
 export class SidenavSearchRightDirective {}
 
 @Component({
@@ -22,16 +9,17 @@ export class SidenavSearchRightDirective {}
     templateUrl: './sidenav-search.component.html',
     styleUrls: ['./sidenav-search.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
 })
-export class SidenavSearchComponent implements AfterViewInit {
-    @ContentChildren(SidenavSearchRightDirective, {read: ElementRef}) contentChildren!: QueryList<ElementRef>;
+export class SidenavSearchComponent {
+    private sidenavRef = inject(SidenavRef);
 
-    @Output() searchString = new EventEmitter<string>();
+    readonly children = contentChildren(SidenavSearchRightDirective, {read: ElementRef});
 
-    constructor(private sidenavRef: SidenavRef) {}
+    readonly searchString = output<string>();
 
-    ngAfterViewInit(): void {
-        this.sidenavRef.setSearch(this.contentChildren, this.searchString);
+    constructor() {
+        effect(() => {
+            this.sidenavRef.setSearch(this.children(), this.searchString);
+        });
     }
 }

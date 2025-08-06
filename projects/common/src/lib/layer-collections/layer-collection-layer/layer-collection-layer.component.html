@@ -3,24 +3,35 @@
         <div matRipple class="header-click" (click)="onAdd()">
             <mat-icon class="header-icon">map</mat-icon>
             <div class="header-text">
-                <h4 class="header-text-line">{{ layer?.name }}</h4>
-                <p class="header-text-line secondary-text" *ngIf="!expanded">{{ layer?.description }}</p>
+                <h4 class="header-text-line">{{ layer()?.name }}</h4>
+                @if (!expanded) {
+                    <p class="header-text-line secondary-text">{{ layer()?.description }}</p>
+                }
             </div>
         </div>
 
-        <button class="header-button" *ngIf="showLayerToggle" mat-icon-button (click)="toggleExpand()">
-            <mat-icon *ngIf="!expanded">expand_more</mat-icon>
-            <mat-icon *ngIf="expanded">expand_less</mat-icon>
-        </button>
+        @if (showLayerToggle()) {
+            <button class="header-button" mat-icon-button (click)="toggleExpand()">
+                @if (!expanded) {
+                    <mat-icon>expand_more</mat-icon>
+                }
+                @if (expanded) {
+                    <mat-icon>expand_less</mat-icon>
+                }
+            </button>
+        }
     </div>
 </ng-container>
 
 <ng-container>
-    <mat-progress-bar *ngIf="loading" mode="query"></mat-progress-bar>
+    @if (loading) {
+        <mat-progress-bar mode="query"></mat-progress-bar>
+    }
 </ng-container>
 
-<geoengine-layer-collection-layer-details
-    *ngIf="expanded"
-    [description]="description"
-    [layerMetadata]="layerMetadata"
-></geoengine-layer-collection-layer-details>
+@if (expanded) {
+    <geoengine-layer-collection-layer-details
+        [description]="description"
+        [layerMetadata]="layerMetadata"
+    ></geoengine-layer-collection-layer-details>
+}

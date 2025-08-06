@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject} from '@angular/core';
 import OlFormatGeoJson from 'ol/format/GeoJSON';
 import {Type as OlGeometryType} from 'ol/geom/Geometry';
 import {BehaviorSubject, of, Subject, Subscription} from 'rxjs';
@@ -10,6 +10,16 @@ import {AutoCreateDatasetDict, UploadResponseDict, UUID} from '../../backend/bac
 import {mergeMap} from 'rxjs/operators';
 import {WGS_84} from '../../spatial-references/spatial-reference.service';
 import {NotificationService, ResultType, ResultTypes, SpatialReference} from '@geoengine/common';
+import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
+import {DialogHelpComponent} from '../../dialogs/dialog-help/dialog-help.component';
+import {MatCard, MatCardHeader, MatCardTitle, MatCardContent} from '@angular/material/card';
+import {MatFormField, MatInput} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatButton} from '@angular/material/button';
+import {FormsModule} from '@angular/forms';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {AsyncPipe} from '@angular/common';
 
 enum State {
     Start = 1,
@@ -24,9 +34,29 @@ enum State {
     templateUrl: './draw-features.component.html',
     styleUrls: ['./draw-features.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        DialogHelpComponent,
+        MatCard,
+        MatCardHeader,
+        MatCardTitle,
+        MatCardContent,
+        MatFormField,
+        MatSelect,
+        MatOption,
+        MatButton,
+        FormsModule,
+        MatInput,
+        MatProgressSpinner,
+        AsyncPipe,
+    ],
 })
 export class DrawFeaturesComponent implements OnDestroy, OnInit {
+    private projectService = inject(ProjectService);
+    private mapService = inject(MapService);
+    private datasetService = inject(DatasetService);
+    private notificationService = inject(NotificationService);
+
     readonly State = State;
 
     indicateLoading$ = new Subject<boolean>();
@@ -52,12 +82,7 @@ export class DrawFeaturesComponent implements OnDestroy, OnInit {
     // a subscription providing the map projection and updates if it changes
     mapProjectionSubscription: Subscription;
 
-    constructor(
-        private projectService: ProjectService,
-        private mapService: MapService,
-        private datasetService: DatasetService,
-        private notificationService: NotificationService,
-    ) {
+    constructor() {
         this.mapProjectionSubscription = this.projectService.getSpatialReferenceStream().subscribe((p) => (this.mapSpatialRef = p));
     }
     ngOnInit(): void {

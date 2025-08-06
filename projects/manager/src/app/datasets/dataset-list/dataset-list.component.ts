@@ -1,6 +1,6 @@
 import {DataSource} from '@angular/cdk/collections';
-import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
-import {AfterContentInit, Component, EventEmitter, Output, ViewChild} from '@angular/core';
+import {CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf} from '@angular/cdk/scrolling';
+import {AfterContentInit, Component, inject, output, viewChild} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {DatasetsService} from '@geoengine/common';
 import {DatasetListing} from '@geoengine/openapi-client';
@@ -18,19 +18,43 @@ import {
     startWith,
 } from 'rxjs';
 import {AddDatasetComponent} from '../add-dataset/add-dataset.component';
+import {MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {MatNavList, MatListItem, MatListItemTitle, MatListItemLine} from '@angular/material/list';
+import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
+import {FormsModule} from '@angular/forms';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-manager-dataset-list',
     templateUrl: './dataset-list.component.html',
     styleUrl: './dataset-list.component.scss',
-    standalone: false,
+    imports: [
+        MatButton,
+        MatIcon,
+        MatNavList,
+        MatListItem,
+        MatListItemTitle,
+        MatListItemLine,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        FormsModule,
+        CdkVirtualScrollViewport,
+        CdkFixedSizeVirtualScroll,
+        CdkVirtualForOf,
+        MatProgressSpinner,
+        AsyncPipe,
+    ],
 })
 export class DatasetListComponent implements AfterContentInit {
-    @ViewChild(CdkVirtualScrollViewport)
-    viewport!: CdkVirtualScrollViewport;
+    private readonly datasetsService = inject(DatasetsService);
+    private readonly dialog = inject(MatDialog);
 
-    @Output()
-    selectDataset = new EventEmitter<DatasetListing>();
+    readonly viewport = viewChild.required(CdkVirtualScrollViewport);
+
+    readonly selectDataset = output<DatasetListing | undefined>();
 
     searchName = '';
 
@@ -46,10 +70,7 @@ export class DatasetListComponent implements AfterContentInit {
 
     private searchSubject$ = new BehaviorSubject<string | undefined>(undefined);
 
-    constructor(
-        private readonly datasetsService: DatasetsService,
-        private readonly dialog: MatDialog,
-    ) {
+    constructor() {
         this.searchSubject$.pipe(skip(1), debounceTime(500), distinctUntilChanged()).subscribe((_searchText) => {
             this.setUpSource();
         });
@@ -63,8 +84,8 @@ export class DatasetListComponent implements AfterContentInit {
      * Fetch new data when scrolled to the end of the list.
      */
     onScrolledIndexChange(_scrolledIndex: number): void {
-        const end = this.viewport.getRenderedRange().end;
-        const total = this.viewport.getDataLength();
+        const end = this.viewport().getRenderedRange().end;
+        const total = this.viewport().getDataLength();
 
         // only fetch when scrolled to the end
         if (end >= total) {
@@ -138,7 +159,7 @@ export class DatasetListComponent implements AfterContentInit {
     }
 
     protected calculateInitialNumberOfElements(): number {
-        const element = this.viewport.elementRef.nativeElement;
+        const element = this.viewport().elementRef.nativeElement;
         const numberOfElements = Math.ceil(element.clientHeight / this.itemSizePx);
         // add one such that scrolling happens
         return numberOfElements + 1;
@@ -181,8 +202,9 @@ class DatasetDataSource extends DataSource<DatasetListing> {
     /**
      * Clean up resources
      */
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    disconnect(): void {}
+    disconnect(): void {
+        // do nothing
+    }
 
     fetchMoreData(numberOfTimes: number): void {
         if (this.noMoreData) {

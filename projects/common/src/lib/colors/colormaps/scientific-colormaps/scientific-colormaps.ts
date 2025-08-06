@@ -7262,7 +7262,7 @@ const COLORMAP_VIKO_DATA: Array<[number, number, number]> = [
     [0.31264, 0.098899, 0.23377],
 ];
 
-export const SCIENTIFIC_COLORMAPS: {[name: string]: Array<RgbaTuple>} = {
+export const SCIENTIFIC_COLORMAPS: Record<string, Array<RgbaTuple>> = {
     ARCON: convertFractionsToRgbas(COLORMAP_ARCON_DATA),
     BAMAKO: convertFractionsToRgbas(COLORMAP_BAMAKO_DATA),
     BERLIN: convertFractionsToRgbas(COLORMAP_BERLIN_DATA),
@@ -7274,7 +7274,7 @@ export const SCIENTIFIC_COLORMAPS: {[name: string]: Array<RgbaTuple>} = {
     CORC: convertFractionsToRgbas(COLORMAP_CORC_DATA),
     CORCO: convertFractionsToRgbas(COLORMAP_CORCO_DATA),
     DAVOS: convertFractionsToRgbas(COLORMAP_DAVOS_DATA),
-    DEVON: convertFractionsToRgbas(COLORMAP_DAVOS_DATA),
+    DEVON: convertFractionsToRgbas(COLORMAP_DEVON_DATA),
     GRAYC: convertFractionsToRgbas(COLORMAP_GRAYC_DATA),
     HAWAII: convertFractionsToRgbas(COLORMAP_HAWAII_DATA),
     IMOLA: convertFractionsToRgbas(COLORMAP_IMOLA_DATA),

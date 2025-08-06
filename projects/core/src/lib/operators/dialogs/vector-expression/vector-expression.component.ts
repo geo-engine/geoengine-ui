@@ -1,5 +1,15 @@
-import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy} from '@angular/core';
-import {Validators, FormBuilder, FormControl, FormArray, FormGroup, AsyncValidatorFn, AbstractControl} from '@angular/forms';
+import {Component, ChangeDetectionStrategy, AfterViewInit, OnDestroy, inject} from '@angular/core';
+import {
+    Validators,
+    FormBuilder,
+    FormControl,
+    FormArray,
+    FormGroup,
+    AsyncValidatorFn,
+    AbstractControl,
+    FormsModule,
+    ReactiveFormsModule,
+} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {BehaviorSubject, combineLatest, firstValueFrom, Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {map, mergeMap, startWith} from 'rxjs/operators';
@@ -20,9 +30,27 @@ import {
     VectorSymbology,
     createVectorSymbology,
     geoengineValidators,
+    FxLayoutDirective,
+    FxFlexDirective,
+    FxLayoutAlignDirective,
+    CommonModule,
+    AsyncStringSanitizer,
+    AsyncValueDefault,
 } from '@geoengine/common';
 
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {DialogSectionHeadingComponent} from '../../../dialogs/dialog-section-heading/dialog-section-heading.component';
+import {MatFormField, MatLabel, MatInput, MatHint} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatRadioGroup, MatRadioButton} from '@angular/material/radio';
+import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
+import {AsyncPipe} from '@angular/common';
 
 const MAX_NUMBER_OF_COLUMNS = 8;
 const ALLOWED_EXPRESSION_COLUMN_TYPES = [VectorColumnDataTypes.Float, VectorColumnDataTypes.Int];
@@ -52,9 +80,39 @@ interface VectorColumn {
     templateUrl: './vector-expression.component.html',
     styleUrls: ['./vector-expression.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        OperatorDialogContainerComponent,
+        MatIconButton,
+        MatIcon,
+        LayerSelectionComponent,
+        DialogSectionHeadingComponent,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatHint,
+        FxLayoutDirective,
+        FxFlexDirective,
+        FxLayoutAlignDirective,
+        MatButton,
+        MatSelect,
+        MatOption,
+        MatRadioGroup,
+        MatRadioButton,
+        CommonModule,
+        OperatorOutputNameComponent,
+        AsyncPipe,
+        AsyncStringSanitizer,
+        AsyncValueDefault,
+    ],
 })
 export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
+    private readonly formBuilder = inject(FormBuilder);
+    private readonly projectService = inject(ProjectService);
+    private readonly randomColorService = inject(RandomColorService);
+
     readonly allowedLayerTypes = ResultTypes.VECTOR_TYPES;
 
     readonly inputGeometryType = new BehaviorSubject<GeometryType | undefined>(undefined);
@@ -78,11 +136,7 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
 
     protected readonly subscriptions: Array<Subscription> = [];
 
-    constructor(
-        private readonly formBuilder: FormBuilder,
-        private readonly projectService: ProjectService,
-        private readonly randomColorService: RandomColorService,
-    ) {
+    constructor() {
         const layerControl = this.formBuilder.control<VectorLayer | null>(null, Validators.required);
         this.columnNames = this.formBuilder.nonNullable.array<string | null>([], [Validators.maxLength(MAX_NUMBER_OF_COLUMNS)]);
         this.outputColumnType = this.formBuilder.nonNullable.control<OutputColumnType>('column', Validators.required);
@@ -95,6 +149,7 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
             ],
             geoengineValidators.conditionalAsyncValidator(
                 attributeNameCollision(this.allAttributes$.pipe(map((attributes) => attributes.keySeq().toArray()))),
+                // eslint-disable-next-line @typescript-eslint/require-await
                 async () => this.outputColumnType.value === 'column',
             ),
         );
@@ -102,7 +157,7 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
             Validators.required,
             geoengineValidators.notOnlyWhitespace,
         ]);
-        this.expression = this.formBuilder.nonNullable.control<string>('	1', [Validators.required, geoengineValidators.notOnlyWhitespace]);
+        this.expression = this.formBuilder.nonNullable.control<string>('1', [Validators.required, geoengineValidators.notOnlyWhitespace]);
 
         this.form = this.formBuilder.group({
             source: layerControl,
@@ -169,15 +224,15 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
                             return of([[], []]);
                         }
 
-                        const usedColumns = inputColumns.filter((column) => column !== null) as Array<string>;
+                        const usedColumns = inputColumns.filter((column) => column !== null);
 
                         return this.projectService.getVectorLayerMetadata(source).pipe(
                             map<VectorLayerMetadata, [Array<VectorColumn>, Immutable.Map<string, VectorColumnDataType>]>(
                                 (metadata: VectorLayerMetadata) => [
                                     metadata.dataTypes
-                                        .filter((columnType) => ALLOWED_EXPRESSION_COLUMN_TYPES.indexOf(columnType) >= 0)
+                                        .filter((columnType) => ALLOWED_EXPRESSION_COLUMN_TYPES.includes(columnType))
                                         .entrySeq()
-                                        .filter(([columnName, _columnType]) => usedColumns.indexOf(columnName) < 0)
+                                        .filter(([columnName, _columnType]) => !usedColumns.includes(columnName))
                                         .map(([columnName, columnType]) => ({name: columnName, datatype: columnType}))
                                         .toArray(),
                                     metadata.dataTypes,
@@ -198,10 +253,11 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
             outputGeometryType: this.form.controls.outputGeometryType.valueChanges,
         }).pipe(
             map(({columns, geometryName, outputGeometryType}) => {
-                const variables = columns.filter((c) => c !== null).map((c) => canonicalizeVariableName(c as string));
+                const variables = columns.filter((c) => c !== null).map((c) => canonicalizeVariableName(c));
                 const geometryComma = variables.length > 0 ? ', ' : '';
                 const returnType = this.outputColumnType.value === 'column' ? VectorColumnDataTypes.Float : outputGeometryType;
-                return `fn(${geometryName}${geometryComma}${variables.join(', ')}) -> ${returnType} {`;
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                return `fn(${geometryName}${geometryComma}${variables.join(', ')}) -> ${returnType}:`;
             }),
         );
 
@@ -248,7 +304,7 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
         }
         this.loading$.next(true);
 
-        const sourceLayer = this.form.controls.source.value as VectorLayer;
+        const sourceLayer = this.form.controls.source.value!;
 
         const inputColumns = this.columnNames.controls.map((fc) => (fc ? fc.value?.toString() : ''));
 
@@ -345,7 +401,7 @@ export class VectorExpressionComponent implements AfterViewInit, OnDestroy {
  */
 function canonicalizeVariableName(name: string): string {
     // if starts with number
-    const additionalPrefix = name.match(/^\d/) ? '_' : '';
+    const additionalPrefix = /^\d/.exec(name) ? '_' : '';
 
     // replace all non-alphanumeric characters with _
     const canonicalName = name.replace(/[^a-zA-Z0-9_]/g, '_');
@@ -391,7 +447,7 @@ const attributeNameCollision =
         const attributes = await firstValueFrom(attributes$);
         const attribute = control.value;
 
-        if (attributes.indexOf(attribute) >= 0) {
+        if (attributes.includes(attribute)) {
             return {duplicateName: true};
         }
 

@@ -1,6 +1,5 @@
 import {Observable, BehaviorSubject, of, concat} from 'rxjs';
 import {map, mergeMap, tap} from 'rxjs/operators';
-
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -9,8 +8,9 @@ import {
     ElementRef,
     HostListener,
     OnInit,
-    ViewChild,
     ViewContainerRef,
+    inject,
+    viewChild,
 } from '@angular/core';
 import {MatDrawerToggleResult, MatSidenav, MatSidenavContainer} from '@angular/material/sidenav';
 import {MatTabGroup} from '@angular/material/tabs';
@@ -31,25 +31,52 @@ import {
     PlotListComponent,
     SidenavConfig,
     TaskListComponent,
+    CoreModule,
 } from '@geoengine/core';
 import {AppConfig} from '../app-config.service';
 import {ReplaySubject} from 'rxjs';
-import {Layer, LayersService, UserService} from '@geoengine/common';
+import {Layer, LayersService, UserService, AsyncNumberSanitizer, AsyncValueDefault} from '@geoengine/common';
+import {MatToolbar} from '@angular/material/toolbar';
+import {MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {MatTooltip} from '@angular/material/tooltip';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-main',
     templateUrl: './main.component.html',
     styleUrls: ['./main.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        MatToolbar,
+        CoreModule,
+        MatButton,
+        MatIcon,
+        MatTooltip,
+        MatSidenavContainer,
+        MatSidenav,
+        MapContainerComponent,
+        AsyncPipe,
+        AsyncNumberSanitizer,
+        AsyncValueDefault,
+    ],
 })
 export class MainComponent implements OnInit, AfterViewInit {
-    @ViewChild(MapContainerComponent, {static: true}) mapComponent!: MapContainerComponent;
-    @ViewChild(MatTabGroup, {static: true}) bottomTabs!: MatTabGroup;
+    readonly config = inject(AppConfig);
+    readonly layoutService = inject(LayoutService);
+    readonly projectService = inject(ProjectService);
+    readonly vcRef = inject(ViewContainerRef);
+    readonly userService = inject(UserService);
+    private readonly layerService = inject(LayersService);
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly mapService = inject(MapService);
 
-    @ViewChild(MatSidenav, {static: true}) rightSidenav!: MatSidenav;
-    @ViewChild(MatSidenavContainer, {static: true, read: ElementRef}) sidenavContainerElement!: ElementRef;
-    @ViewChild(SidenavContainerComponent, {static: true}) rightSidenavContainer!: SidenavContainerComponent;
+    readonly mapComponent = viewChild.required(MapContainerComponent);
+    readonly bottomTabs = viewChild.required(MatTabGroup);
+
+    readonly rightSidenav = viewChild.required(MatSidenav);
+    readonly sidenavContainerElement = viewChild.required(MatSidenavContainer, {read: ElementRef});
+    readonly rightSidenavContainer = viewChild.required(SidenavContainerComponent);
 
     readonly layersReverse$: Observable<Array<Layer>>;
     readonly layerListVisible$: Observable<boolean>;
@@ -66,16 +93,10 @@ export class MainComponent implements OnInit, AfterViewInit {
 
     private windowHeight$ = new BehaviorSubject<number>(window.innerHeight);
 
-    constructor(
-        readonly config: AppConfig,
-        readonly layoutService: LayoutService,
-        readonly projectService: ProjectService,
-        readonly vcRef: ViewContainerRef, // reference used by color picker, MUST BE EXACTLY THIS NAME
-        readonly userService: UserService,
-        private readonly layerService: LayersService,
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly mapService: MapService,
-    ) {
+    constructor() {
+        const config = this.config;
+        const vcRef = this.vcRef;
+
         vcRef.length; // eslint-disable-line @typescript-eslint/no-unused-expressions
 
         this.layersReverse$ = this.projectService.getLayerStream().pipe(map((layers) => layers.slice(0).reverse()));
@@ -85,9 +106,9 @@ export class MainComponent implements OnInit, AfterViewInit {
 
         this.mapIsGrid$ = this.mapService.isGrid$;
 
-        const totalHeight$ = this.windowHeight$.pipe(map((_height) => this.sidenavContainerElement.nativeElement.offsetHeight));
+        const totalHeight$ = this.windowHeight$.pipe(map((_height) => this.sidenavContainerElement().nativeElement.offsetHeight));
 
-        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(totalHeight$).pipe(tap(() => this.mapComponent.resize()));
+        this.middleContainerHeight$ = this.layoutService.getMapHeightStream(totalHeight$).pipe(tap(() => this.mapComponent().resize()));
         this.layerListHeight$ = config.COMPONENTS.MAP_RESOLUTION_EXTENT_OVERLAY.AVAILABLE
             ? this.middleContainerHeight$.pipe(map((height) => height - 62))
             : this.middleContainerHeight$;
@@ -102,23 +123,23 @@ export class MainComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit(): void {
-        this.mapService.registerMapComponent(this.mapComponent);
+        this.mapService.registerMapComponent(this.mapComponent());
 
         this.layoutService.setLayerDetailViewVisibility(false);
     }
 
     ngAfterViewInit(): void {
         this.layoutService.getSidenavContentComponentStream().subscribe((sidenavConfig) => {
-            this.rightSidenavContainer.load(sidenavConfig);
+            this.rightSidenavContainer().load(sidenavConfig);
 
             let openClosePromise: Promise<MatDrawerToggleResult>;
             if (sidenavConfig) {
-                openClosePromise = this.rightSidenav.open();
+                openClosePromise = this.rightSidenav().open();
             } else {
-                openClosePromise = this.rightSidenav.close();
+                openClosePromise = this.rightSidenav().close();
             }
 
-            openClosePromise.then(() => this.mapComponent.resize());
+            openClosePromise.then(() => this.mapComponent().resize());
         });
         this.projectService
             .getNewPlotStream()
@@ -134,6 +155,8 @@ export class MainComponent implements OnInit, AfterViewInit {
         //         setTimeout(() => this.changeDetectorRef.markForCheck());
         //     }
         // });
+
+        // this.debugCallDialog();
     }
 
     setTabIndex(index: number): void {
@@ -237,4 +260,12 @@ export class MainComponent implements OnInit, AfterViewInit {
     private windowHeight(): void {
         this.windowHeight$.next(window.innerHeight);
     }
+
+    // private async debugCallDialog(): Promise<void> {
+    //     const core = await import('@geoengine/core');
+
+    //     this.layoutService.setSidenavContentComponent({
+    //         component: core.ClassHistogramOperatorComponent,
+    //     });
+    // }
 }

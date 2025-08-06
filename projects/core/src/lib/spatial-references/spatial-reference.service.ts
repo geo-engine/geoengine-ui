@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {merge, Observable, of} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 import {BBoxDict, SpatialReferenceSpecificationDict, SrsString, UUID} from '../backend/backend.model';
@@ -30,13 +30,13 @@ export const WGS_84 = new NamedSpatialReference('WGS 84', 'EPSG:4326');
     providedIn: 'root',
 })
 export class SpatialReferenceService {
+    protected backend = inject(BackendService);
+    protected userService = inject(UserService);
+    protected readonly config = inject(CoreConfig);
+
     private specs = new Map<string, SpatialReferenceSpecification>();
 
-    constructor(
-        protected backend: BackendService,
-        protected userService: UserService,
-        protected readonly config: CoreConfig,
-    ) {
+    constructor() {
         this.registerDefaults();
     }
 
@@ -159,7 +159,8 @@ export class SpatialReferenceService {
 
                 proj4.defs(spec.spatialReference.srsString, spec.projString);
                 const def = proj4.defs(spec.spatialReference.srsString);
-                olProj4Register(proj4);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                olProj4Register(proj4 as any /* TODO: remove any */);
 
                 olAddProjection(
                     new OlProjection({

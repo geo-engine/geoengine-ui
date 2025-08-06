@@ -3,24 +3,26 @@
         <input
             matInput
             type="text"
-            [readonly]="readonlyAttribute"
-            [placeholder]="attributePlaceholder"
-            [ngModel]="input?.key"
+            [readonly]="readonlyAttribute()"
+            [placeholder]="attributePlaceholder()"
+            [ngModel]="colorAttributeInput?.key"
             (ngModelChange)="updateKey($event)"
             (blur)="propagateChange()"
             (keydown.enter)="propagateChange()"
         />
-        <mat-hint *ngIf="hasColorHint()" align="start">{{ colorHint(input?.key) }}</mat-hint>
+        @if (hasColorHint()) {
+            <mat-hint align="start">{{ colorHint(colorAttributeInput?.key) }}</mat-hint>
+        }
     </mat-form-field>
 
     <mat-form-field fxFlex>
         <input
             matInput
             class="color_cell"
-            [readonly]="readonlyColor"
+            [readonly]="readonlyColor()"
             [ngModel]="cssString"
             (ngModelChange)="updateColor($event)"
-            [placeholder]="colorPlaceholder"
+            [placeholder]="colorPlaceholder()"
             [colorPicker]="cssString"
             (colorPickerChange)="updateColor($event)"
             [cpUseRootViewContainer]="true"

@@ -11,24 +11,19 @@ import {SrsString} from '../spatial-references/spatial-reference.model';
 /**
  * Marker dictionary for types that only use primitive types and sub-types.
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface SerializableDict {}
 
 type ParamTypes = string | number | boolean | Array<ParamTypes> | {[key: string]: ParamTypes} | SerializableDict | undefined;
 
-export interface OperatorParams {
-    [key: string]: ParamTypes;
-}
+export type OperatorParams = Record<string, ParamTypes>;
 
 export interface WorkflowDict {
     type: 'Vector' | 'Raster' | 'Plot';
     operator: OperatorDict | SourceOperatorDict;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface EmptyParams extends OperatorParams {
-    [index: string]: undefined;
-}
+export type EmptyParams = Record<string, undefined>;
 
 export interface OperatorDict {
     type: string;
@@ -36,9 +31,7 @@ export interface OperatorDict {
     sources: OperatorSourcesDict;
 }
 
-export interface OperatorSourcesDict {
-    [name: string]: OperatorDict | SourceOperatorDict | Array<OperatorDict | SourceOperatorDict> | undefined;
-}
+export type OperatorSourcesDict = Record<string, OperatorDict | SourceOperatorDict | Array<OperatorDict | SourceOperatorDict> | undefined>;
 
 export interface SourceOperatorDict {
     type: string;
@@ -357,6 +350,7 @@ export interface VectorExpressionParams extends OperatorParams {
 
 export interface OutputColumn {
     type: 'geometry' | 'column';
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     value: string | ('MultiPoint' | 'MultiLineString' | 'MultiPolygon');
 }
 
@@ -436,12 +430,13 @@ export interface VisualPointClusteringParams extends OperatorParams {
     deltaPx: number;
     radiusColumn: string;
     countColumn: string;
-    columnAggregates: {
-        [columnName: string]: {
+    columnAggregates: Record<
+        string,
+        {
             columnName: string;
             aggregateType: 'meanNumber' | 'stringSample' | 'null';
-        };
-    };
+        }
+    >;
 }
 
 export interface OgrSourceDict extends SourceOperatorDict {

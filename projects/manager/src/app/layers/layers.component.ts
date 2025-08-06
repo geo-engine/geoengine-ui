@@ -1,4 +1,4 @@
-import {Component, signal, ViewChild, WritableSignal} from '@angular/core';
+import {Component, signal, WritableSignal, inject, viewChild} from '@angular/core';
 import {
     CollectionNavigation,
     LAYER_DB_PROVIDER_ID,
@@ -6,11 +6,17 @@ import {
     LayerCollectionNavigationComponent,
     LayersService,
     UUID,
+    CommonModule,
 } from '@geoengine/common';
 import {LayerCollectionListing, LayerListing, ProviderLayerCollectionId} from '@geoengine/openapi-client';
 import {AddLayerItemComponent} from './add-layer-item/add-layer-item.component';
 import {firstValueFrom} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
+import {MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {MatNavList, MatListItem, MatListItemTitle, MatListItemLine} from '@angular/material/list';
+import {LayerCollectionEditorComponent} from './layer-collection-editor/layer-collection-editor.component';
+import {LayerEditorComponent} from './layer-editor/layer-editor.component';
 
 export enum ItemType {
     Layer,
@@ -24,9 +30,22 @@ export type ItemId = {type: ItemType.Layer; layer: UUID} | {type: ItemType.Colle
     selector: 'geoengine-manager-layers',
     templateUrl: './layers.component.html',
     styleUrl: './layers.component.scss',
-    standalone: false,
+    imports: [
+        MatButton,
+        MatIcon,
+        MatNavList,
+        MatListItem,
+        MatListItemTitle,
+        MatListItemLine,
+        CommonModule,
+        LayerCollectionEditorComponent,
+        LayerEditorComponent,
+    ],
 })
 export class LayersComponent {
+    protected readonly layersService = inject(LayersService);
+    protected readonly dialog = inject(MatDialog);
+
     readonly CollectionNavigation = CollectionNavigation;
     readonly ItemType = ItemType;
 
@@ -37,12 +56,7 @@ export class LayersComponent {
 
     readonly addedItem = signal<LayerListing | LayerCollectionListing | undefined>(undefined);
 
-    @ViewChild(LayerCollectionNavigationComponent) layerCollectionNavigationComponent!: LayerCollectionNavigationComponent;
-
-    constructor(
-        protected readonly layersService: LayersService,
-        protected readonly dialog: MatDialog,
-    ) {}
+    readonly layerCollectionNavigationComponent = viewChild.required(LayerCollectionNavigationComponent);
 
     selectLayer(layer: LayerListing): void {
         this.selectedItem.set({layer, type: ItemType.Layer});
@@ -53,24 +67,25 @@ export class LayersComponent {
     }
 
     collectionUpdated(): void {
-        this.layerCollectionNavigationComponent.refresh();
+        this.layerCollectionNavigationComponent().refresh();
     }
 
     itemDeleted(): void {
         if (this.addedItem()) {
             this.addedItem.set(undefined);
         } else {
-            this.layerCollectionNavigationComponent.refreshCollection();
+            this.layerCollectionNavigationComponent().refreshCollection();
         }
         this.selectedItem.set(undefined);
     }
 
     layerUpdated(): void {
-        this.layerCollectionNavigationComponent.refresh();
+        this.layerCollectionNavigationComponent().refresh();
     }
 
     async addItem(): Promise<void> {
-        if (!this.layerCollectionNavigationComponent.selectedCollection) {
+        const layerCollectionNavigationComponent = this.layerCollectionNavigationComponent();
+        if (!layerCollectionNavigationComponent.selectedCollection) {
             return;
         }
         const dialogRef = this.dialog.open(AddLayerItemComponent, {
@@ -79,7 +94,7 @@ export class LayersComponent {
             autoFocus: false,
             disableClose: true,
             data: {
-                parent: this.layerCollectionNavigationComponent.selectedCollection.id,
+                parent: layerCollectionNavigationComponent.selectedCollection.id,
             },
         });
 
@@ -90,7 +105,7 @@ export class LayersComponent {
         }
 
         if (itemId.type === ItemType.Layer) {
-            this.layerCollectionNavigationComponent.refreshCollection();
+            layerCollectionNavigationComponent.refreshCollection();
 
             const layer = await this.layersService.getLayer(LAYER_DB_PROVIDER_ID, itemId.layer);
 
@@ -103,7 +118,7 @@ export class LayersComponent {
             this.selectLayer(listing);
             this.addedItem.set(listing);
         } else {
-            this.layerCollectionNavigationComponent.refreshCollection();
+            layerCollectionNavigationComponent.refreshCollection();
 
             const collection = await this.layersService.getLayerCollectionItems(LAYER_DB_PROVIDER_ID, itemId.collection);
 

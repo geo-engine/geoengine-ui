@@ -1,6 +1,6 @@
 import {BehaviorSubject, Subscription} from 'rxjs';
 
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject} from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 
 import {User, CoreModule, ProjectService} from '@geoengine/core';
@@ -29,6 +29,12 @@ enum FormStatus {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly userService = inject(UserService);
+    private readonly notificationService = inject(NotificationService);
+    private readonly projectService = inject(ProjectService);
+    private readonly router = inject(Router);
+
     readonly FormStatus = FormStatus;
 
     formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.Loading);
@@ -42,13 +48,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private formStatusSubscription?: Subscription;
 
-    constructor(
-        private readonly changeDetectorRef: ChangeDetectorRef,
-        private readonly userService: UserService,
-        private readonly notificationService: NotificationService,
-        private readonly projectService: ProjectService,
-        private readonly router: Router,
-    ) {
+    constructor() {
         this.loginForm = new UntypedFormGroup({
             email: new UntypedFormControl('', Validators.compose([Validators.required])),
             password: new UntypedFormControl('', Validators.required),
@@ -70,7 +70,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
                     .getSessionOrUndefinedStream()
                     .pipe(first())
                     .subscribe((session) => {
-                        if (!session || !session.user || session.user.isGuest) {
+                        if (!session?.user || session.user.isGuest) {
                             this.formStatus$.next(FormStatus.LoggedOut);
                         } else {
                             this.user = session.user;
@@ -109,6 +109,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
                 password: this.loginForm.controls['password'].value,
             })
             .subscribe(
+                // eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/require-await
                 async (session) => {
                     this.user = session.user;
                     this.invalidCredentials$.next(false);

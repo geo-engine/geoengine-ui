@@ -47,9 +47,11 @@
                         <mat-form-field appearance="fill">
                             <mat-label>Volume</mat-label>
                             <mat-select formControlName="volumeName">
-                                <mat-option *ngFor="let volume of volumes$ | async" [value]="volume.name">
-                                    {{ volume.name }}
-                                </mat-option>
+                                @for (volume of volumes$ | async; track volume) {
+                                    <mat-option [value]="volume.name">
+                                        {{ volume.name }}
+                                    </mat-option>
+                                }
                             </mat-select>
                         </mat-form-field>
                     }

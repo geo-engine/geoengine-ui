@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {ChangeDetectorRef, Component, OnChanges, SimpleChanges, inject, input} from '@angular/core';
 import {FormsModule, ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {DatasetsService} from '../datasets.service';
 import {UploadsService} from '../../uploads/uploads.service';
@@ -22,12 +22,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {timeStepGranularityOptions} from '../../time/time.model';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
-import {
-    FxFlexDirective,
-    FxLayoutAlignDirective,
-    FxLayoutDirective,
-    FxLayoutGapDirective,
-} from '../../util/directives/flexbox-legacy.directive';
+import {FxLayoutDirective} from '../../util/directives/flexbox-legacy.directive';
 
 @Component({
     selector: 'geoengine-ogr-dataset',
@@ -41,15 +36,17 @@ import {
         MatChipsModule,
         MatButtonModule,
         MatIconModule,
-        FxFlexDirective,
         FxLayoutDirective,
-        FxLayoutGapDirective,
-        FxLayoutAlignDirective,
     ],
     templateUrl: './ogr-dataset.component.html',
     styleUrl: './ogr-dataset.component.css',
 })
 export class OgrDatasetComponent implements OnChanges {
+    protected datasetsService = inject(DatasetsService);
+    protected uploadsService = inject(UploadsService);
+    protected userService = inject(UserService);
+    protected changeDetectorRef = inject(ChangeDetectorRef);
+
     vectorDataTypes = ['Data', 'MultiPoint', 'MultiLineString', 'MultiPolygon'];
     timeDurationValueTypes = ['infinite', 'value', 'zero'];
     timeTypes = ['None', 'Start', 'Start/End', 'Start/Duration'];
@@ -58,9 +55,9 @@ export class OgrDatasetComponent implements OnChanges {
     errorHandlings = ['ignore', 'abort'];
     readonly timeGranularityOptions: Array<TimeGranularity> = timeStepGranularityOptions;
 
-    @Input() uploadId?: UUID;
-    @Input() volumeName?: string;
-    @Input() metaData?: OgrMetaData;
+    readonly uploadId = input<UUID>();
+    readonly volumeName = input<string>();
+    readonly metaData = input<OgrMetaData>();
 
     formMetaData: UntypedFormGroup;
 
@@ -69,12 +66,7 @@ export class OgrDatasetComponent implements OnChanges {
 
     readonly defaultTimeGranularity: TimeGranularity = 'seconds';
 
-    constructor(
-        protected datasetsService: DatasetsService,
-        protected uploadsService: UploadsService,
-        protected userService: UserService,
-        protected changeDetectorRef: ChangeDetectorRef,
-    ) {
+    constructor() {
         this.formMetaData = new UntypedFormGroup({
             mainFile: new UntypedFormControl('', Validators.required),
             layerName: new UntypedFormControl('', Validators.required),
@@ -102,12 +94,12 @@ export class OgrDatasetComponent implements OnChanges {
         });
     }
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.uploadId && changes.uploadId.currentValue) {
+        if (changes.uploadId?.currentValue) {
             this.setUpMetadataSpecification(changes.uploadId.currentValue);
             return;
         }
 
-        if (changes.metaData && changes.metaData.currentValue) {
+        if (changes.metaData?.currentValue) {
             const metaData = changes.metaData.currentValue as OgrMetaData;
             this.fillMetaDataForm({
                 mainFile: metaData.loadingInfo.fileName,
@@ -214,7 +206,8 @@ export class OgrDatasetComponent implements OnChanges {
     }
 
     async changeMainFile(): Promise<void> {
-        if (!this.uploadId) {
+        const uploadId = this.uploadId();
+        if (!uploadId) {
             return;
         }
 
@@ -222,7 +215,7 @@ export class OgrDatasetComponent implements OnChanges {
         const mainFile = form.mainFile.value;
         const layer = form.layerName.value;
 
-        const layers = await this.uploadsService.getUploadFileLayers(this.uploadId, mainFile);
+        const layers = await this.uploadsService.getUploadFileLayers(uploadId, mainFile);
         this.uploadFileLayers = layers.layers;
 
         if (this.uploadFileLayers.length > 0 && !this.uploadFileLayers.includes(layer)) {
@@ -244,14 +237,14 @@ export class OgrDatasetComponent implements OnChanges {
     addText(event: MatChipInputEvent): void {
         const columns: Array<string> = this.formMetaData.controls.columnsText.value;
         const column = event.value;
-        const input = event.input;
+        const eventInput = event.input;
 
         if (columns.indexOf(column)) {
             columns.push(column);
         }
 
-        if (input) {
-            input.value = '';
+        if (eventInput) {
+            eventInput.value = '';
         }
     }
 
@@ -267,14 +260,14 @@ export class OgrDatasetComponent implements OnChanges {
     addInt(event: MatChipInputEvent): void {
         const columns: Array<string> = this.formMetaData.controls.columnsInt.value;
         const column = event.value;
-        const input = event.input;
+        const eventInput = event.input;
 
         if (columns.indexOf(column)) {
             columns.push(column);
         }
 
-        if (input) {
-            input.value = '';
+        if (eventInput) {
+            eventInput.value = '';
         }
     }
 
@@ -290,14 +283,14 @@ export class OgrDatasetComponent implements OnChanges {
     addFloat(event: MatChipInputEvent): void {
         const columns: Array<string> = this.formMetaData.controls.columnsFloat.value;
         const column = event.value;
-        const input = event.input;
+        const eventInput = event.input;
 
         if (columns.indexOf(column)) {
             columns.push(column);
         }
 
-        if (input) {
-            input.value = '';
+        if (eventInput) {
+            eventInput.value = '';
         }
     }
 
@@ -343,10 +336,12 @@ export class OgrDatasetComponent implements OnChanges {
     async loadLayers(): Promise<void> {
         let layers = undefined;
 
-        if (this.volumeName) {
-            layers = await this.datasetsService.getVolumeFileLayers(this.volumeName, this.formMetaData.controls.mainFile.value);
-        } else if (this.uploadId) {
-            layers = await this.uploadsService.getUploadFileLayers(this.uploadId, this.formMetaData.controls.mainFile.value);
+        const uploadId = this.uploadId();
+        const volumeName = this.volumeName();
+        if (volumeName) {
+            layers = await this.datasetsService.getVolumeFileLayers(volumeName, this.formMetaData.controls.mainFile.value);
+        } else if (uploadId) {
+            layers = await this.uploadsService.getUploadFileLayers(uploadId, this.formMetaData.controls.mainFile.value);
         }
 
         if (!layers) {
@@ -386,10 +381,12 @@ export class OgrDatasetComponent implements OnChanges {
     async suggest(mainFile: string | undefined = undefined, layerName: string | undefined = undefined): Promise<void> {
         let dataPath = undefined;
 
-        if (this.uploadId) {
-            dataPath = {upload: this.uploadId};
-        } else if (this.volumeName) {
-            dataPath = {volume: this.volumeName};
+        const uploadId = this.uploadId();
+        const volumeName = this.volumeName();
+        if (uploadId) {
+            dataPath = {upload: uploadId};
+        } else if (volumeName) {
+            dataPath = {volume: volumeName};
         } else {
             return;
         }
@@ -427,9 +424,9 @@ export class OgrDatasetComponent implements OnChanges {
         return undefined;
     }
 
-    private getColumnsAsMap(): {[key: string]: VectorColumnInfo} {
+    private getColumnsAsMap(): Record<string, VectorColumnInfo> {
         const formMeta = this.formMetaData.controls;
-        const columns: {[key: string]: VectorColumnInfo} = {};
+        const columns: Record<string, VectorColumnInfo> = {};
 
         for (const column of formMeta.columnsText.value as Array<string>) {
             columns[column] = {
@@ -499,10 +496,6 @@ export class OgrDatasetComponent implements OnChanges {
                 duration: this.getDuration(),
             };
         } else if (formMeta.timeType.value === 'Start/End') {
-            const startFormat: OgrSourceTimeFormat = {
-                format: formMeta.timeStartFormat.value,
-            };
-
             time = {
                 type: 'start+end',
                 startField: formMeta.timeStartColumn.value,
@@ -511,10 +504,6 @@ export class OgrDatasetComponent implements OnChanges {
                 endFormat: this.getEndTimeFormat(),
             };
         } else if (formMeta.timeType.value === 'Start/Duration') {
-            const format: OgrSourceTimeFormat = {
-                format: formMeta.timeStartFormat.value,
-            };
-
             time = {
                 type: 'start+duration',
                 startField: formMeta.timeStartColumn.value,

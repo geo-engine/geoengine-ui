@@ -1,10 +1,29 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {ChangeDetectionStrategy, Component, OnInit, inject} from '@angular/core';
+import {FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 import {mergeMap} from 'rxjs/operators';
 import {BehaviorSubject} from 'rxjs';
-import {Layer, LineSimplificationDict, NotificationService, ResultTypes, VectorLayer, geoengineValidators} from '@geoengine/common';
+import {
+    Layer,
+    LineSimplificationDict,
+    NotificationService,
+    ResultTypes,
+    VectorLayer,
+    geoengineValidators,
+    AsyncValueDefault,
+} from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {MatFormField, MatLabel, MatInput, MatHint} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
+import {AsyncPipe} from '@angular/common';
 
 interface LineSimplificationForm {
     name: FormControl<string>;
@@ -21,9 +40,32 @@ interface LineSimplificationForm {
     templateUrl: './line-simplification.component.html',
     styleUrls: ['./line-simplification.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        OperatorDialogContainerComponent,
+        MatIconButton,
+        MatIcon,
+        LayerSelectionComponent,
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        MatCheckbox,
+        MatInput,
+        MatHint,
+        OperatorOutputNameComponent,
+        MatButton,
+        AsyncPipe,
+        AsyncValueDefault,
+    ],
 })
 export class LineSimplificationComponent implements OnInit {
+    private readonly projectService = inject(ProjectService);
+    private readonly notificationService = inject(NotificationService);
+    private readonly formBuilder = inject(FormBuilder);
+
     selected = new FormControl(0, {validators: [Validators.required], nonNullable: true});
 
     readonly inputTypes = [ResultTypes.LINES, ResultTypes.POLYGONS];
@@ -32,11 +74,7 @@ export class LineSimplificationComponent implements OnInit {
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
 
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly notificationService: NotificationService,
-        private readonly formBuilder: FormBuilder,
-    ) {
+    constructor() {
         this.form = new FormGroup<LineSimplificationForm>({
             name: this.formBuilder.nonNullable.control<string>('', [Validators.required, geoengineValidators.notOnlyWhitespace]),
             layer: this.formBuilder.nonNullable.control<Layer | undefined>(undefined, [Validators.required]),

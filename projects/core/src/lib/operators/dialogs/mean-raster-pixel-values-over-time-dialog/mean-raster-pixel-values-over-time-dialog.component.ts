@@ -1,5 +1,5 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
+import {AfterViewInit, ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 
 import {map, mergeMap} from 'rxjs/operators';
@@ -14,6 +14,17 @@ import {
     geoengineValidators,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {MatFormField, MatHint} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
+import {AsyncPipe} from '@angular/common';
 
 type TimePosition = 'start' | 'center' | 'end';
 
@@ -30,9 +41,29 @@ interface TimePositionOption {
     templateUrl: './mean-raster-pixel-values-over-time-dialog.component.html',
     styleUrls: ['./mean-raster-pixel-values-over-time-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        OperatorDialogContainerComponent,
+        MatIconButton,
+        MatIcon,
+        LayerSelectionComponent,
+        MatFormField,
+        MatSelect,
+        MatOption,
+        MatCheckbox,
+        OperatorOutputNameComponent,
+        MatHint,
+        MatButton,
+        AsyncPipe,
+    ],
 })
 export class MeanRasterPixelValuesOverTimeDialogComponent implements AfterViewInit {
+    private readonly projectService = inject(ProjectService);
+    private readonly notificationService = inject(NotificationService);
+    private readonly formBuilder = inject(UntypedFormBuilder);
+
     readonly inputTypes = [ResultTypes.RASTER];
 
     readonly timePositionOptions: Array<TimePositionOption> = [
@@ -56,11 +87,7 @@ export class MeanRasterPixelValuesOverTimeDialogComponent implements AfterViewIn
     /**
      * DI for services
      */
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly notificationService: NotificationService,
-        private readonly formBuilder: UntypedFormBuilder,
-    ) {
+    constructor() {
         this.form = this.formBuilder.group({
             name: ['', [Validators.required, geoengineValidators.notOnlyWhitespace]],
             layer: [undefined, Validators.required],

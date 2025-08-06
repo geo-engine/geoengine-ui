@@ -204,9 +204,9 @@ export const stringToRgbaStruct = (rgbaCssString: string): RgbaStruct => {
     }
 
     const rgba =
-        rgbaCssString.match(/^rgba\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+.*\d*)\s*\)$/i) ||
-        rgbaCssString.match(/^rgba\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i) ||
-        rgbaCssString.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
+        /^rgba\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+.*\d*)\s*\)$/i.exec(rgbaCssString) ??
+        /^rgba\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i.exec(rgbaCssString) ??
+        /^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i.exec(rgbaCssString);
 
     if (rgba) {
         return {
@@ -217,7 +217,7 @@ export const stringToRgbaStruct = (rgbaCssString: string): RgbaStruct => {
         };
     }
 
-    const threeDigitMatch = rgbaCssString.match(/^#([0-9a-f]{3})$/i);
+    const threeDigitMatch = /^#([0-9a-f]{3})$/i.exec(rgbaCssString);
     if (threeDigitMatch) {
         const threeDigit = threeDigitMatch[1];
 
@@ -231,7 +231,7 @@ export const stringToRgbaStruct = (rgbaCssString: string): RgbaStruct => {
         };
     }
 
-    const sixDigitMatch = rgbaCssString.match(/^#([0-9a-f]{6})$/i);
+    const sixDigitMatch = /^#([0-9a-f]{6})$/i.exec(rgbaCssString);
     if (sixDigitMatch) {
         const sixDigit = sixDigitMatch[1];
         return {

@@ -1,19 +1,26 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 import {LayerMetadata, RasterLayerMetadata, VectorLayerMetadata} from '../../layers/layer-metadata.model';
 import {VectorDataTypes} from '../../operators/datatype.model';
 import {Colorizer} from '../../colors/colorizer.model';
 import {SingleBandRasterColorizer} from '../../symbology/symbology.model';
+
+import {MatIconModule} from '@angular/material/icon';
+import {FxLayoutDirective} from '../../util/directives/flexbox-legacy.directive';
+import {PolygonIconComponent} from '../../layer-icons/polygon-icon/polygon-icon.component';
+import {LineIconComponent} from '../../layer-icons/line-icon/line-icon.component';
+import {PointIconComponent} from '../../layer-icons/point-icon/point-icon.component';
+import {RasterIconComponent} from '../../layer-icons/raster-icon/raster-icon.component';
 
 @Component({
     selector: 'geoengine-layer-collection-layer-details',
     templateUrl: './layer-collection-layer-details.component.html',
     styleUrls: ['./layer-collection-layer-details.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [MatIconModule, FxLayoutDirective, PolygonIconComponent, LineIconComponent, PointIconComponent, RasterIconComponent],
 })
 export class LayerCollectionLayerDetailsComponent {
-    @Input() description: string | undefined;
-    @Input() layerMetadata: LayerMetadata | undefined = undefined;
+    description = input<string | undefined>();
+    layerMetadata = input<LayerMetadata | undefined>(undefined);
 
     readonly VectorDataTypes = VectorDataTypes;
 
@@ -31,71 +38,79 @@ export class LayerCollectionLayerDetailsComponent {
         }),
     );
 
-    constructor() {}
-
     get rasterLayerMetadata(): RasterLayerMetadata | undefined {
-        if (this.layerMetadata && this.layerMetadata.layerType === 'raster') {
-            return this.layerMetadata as RasterLayerMetadata;
+        const layerMetadata = this.layerMetadata();
+        if (layerMetadata && layerMetadata.layerType === 'raster') {
+            return layerMetadata as RasterLayerMetadata;
         }
         return undefined;
     }
 
     get vectorLayerMetadata(): VectorLayerMetadata | undefined {
-        if (this.layerMetadata && this.layerMetadata.layerType === 'vector') {
-            return this.layerMetadata as VectorLayerMetadata;
+        const layerMetadata = this.layerMetadata();
+        if (layerMetadata && layerMetadata.layerType === 'vector') {
+            return layerMetadata as VectorLayerMetadata;
         }
         return undefined;
     }
 
     get minTimeString(): string | undefined {
-        if (!this.layerMetadata) {
+        const layerMetadata = this.layerMetadata();
+
+        if (!layerMetadata) {
             return undefined;
         }
 
-        if (!this.layerMetadata.time) {
+        if (!layerMetadata.time) {
             return 'undefined';
         }
 
-        return this.layerMetadata.time.startStringOrNegInf();
+        return layerMetadata.time.startStringOrNegInf();
     }
 
     get maxTimeString(): string | undefined {
-        if (!this.layerMetadata) {
+        const layerMetadata = this.layerMetadata();
+
+        if (!layerMetadata) {
             return undefined;
         }
 
-        if (!this.layerMetadata.time) {
+        if (!layerMetadata.time) {
             return 'undefined';
         }
 
-        return this.layerMetadata.time.endStringOrPosInf();
+        return layerMetadata.time.endStringOrPosInf();
     }
 
     get timeString(): string {
-        if (!this.layerMetadata) {
+        const layerMetadata = this.layerMetadata();
+
+        if (!layerMetadata) {
             return 'undefined';
         }
 
-        if (!this.layerMetadata.time) {
+        if (!layerMetadata.time) {
             return 'undefined';
         }
 
-        const min = this.layerMetadata.time.startStringOrNegInf() || 'undefined';
-        const max = this.layerMetadata.time.endStringOrPosInf() || 'undefined';
+        const min = layerMetadata.time.startStringOrNegInf() || 'undefined';
+        const max = layerMetadata.time.endStringOrPosInf() || 'undefined';
 
         return '[ ' + min + ' ,  ' + max + ' )';
     }
 
     get bboxLowerLeftString(): string | undefined {
-        if (this.layerMetadata && this.layerMetadata.bbox) {
-            return `Min: ${this.layerMetadata.bbox.xmin} : ${this.layerMetadata.bbox.ymin}`;
+        const layerMetadata = this.layerMetadata();
+        if (layerMetadata?.bbox) {
+            return `Min: ${layerMetadata.bbox.xmin} : ${layerMetadata.bbox.ymin}`;
         }
         return undefined;
     }
 
     get bboxUpperRightString(): string | undefined {
-        if (this.layerMetadata && this.layerMetadata.bbox) {
-            return `Max: ${this.layerMetadata.bbox.xmax} : ${this.layerMetadata.bbox.ymax}`;
+        const layerMetadata = this.layerMetadata();
+        if (layerMetadata?.bbox) {
+            return `Max: ${layerMetadata.bbox.xmax} : ${layerMetadata.bbox.ymax}`;
         }
         return undefined;
     }

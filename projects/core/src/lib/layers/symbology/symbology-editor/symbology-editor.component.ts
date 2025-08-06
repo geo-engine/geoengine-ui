@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, input, viewChild} from '@angular/core';
 import {
     Layer,
     RasterLayer,
@@ -9,23 +9,32 @@ import {
     VectorLayer,
     VectorSymbology,
     extentToBboxDict,
+    CommonModule,
+    AsyncValueDefault,
 } from '@geoengine/common';
 import {BehaviorSubject, Subscription, combineLatest} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {MapService} from '../../../map/map.service';
 import {SpatialResolution} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {DialogHelpComponent} from '../../../dialogs/dialog-help/dialog-help.component';
+import {MatButton} from '@angular/material/button';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-symbology-editor',
     templateUrl: './symbology-editor.component.html',
     styleUrl: './symbology-editor.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [SidenavHeaderComponent, DialogHelpComponent, CommonModule, MatButton, AsyncPipe, AsyncValueDefault],
 })
 export class SymbologyEditorComponent implements OnInit, OnDestroy {
-    @Input({required: true}) layer!: Layer;
+    private readonly projectService = inject(ProjectService);
+    private readonly mapService = inject(MapService);
 
-    @ViewChild(RasterSymbologyEditorComponent) rasterSymbologyEditorComponent?: RasterSymbologyEditorComponent;
+    readonly layer = input.required<Layer>();
+
+    readonly rasterSymbologyEditorComponent = viewChild(RasterSymbologyEditorComponent);
 
     rasterSymbologyWorkflow$ = new BehaviorSubject<SymbologyWorkflow<RasterSymbology> | undefined>(undefined);
     vectorSymbologyWorkflow$ = new BehaviorSubject<SymbologyWorkflow<VectorSymbology> | undefined>(undefined);
@@ -37,11 +46,6 @@ export class SymbologyEditorComponent implements OnInit, OnDestroy {
     unappliedRasterChanges = false;
 
     rasterSymbology?: RasterSymbology = undefined;
-
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly mapService: MapService,
-    ) {}
 
     ngOnInit(): void {
         this.setUp();
@@ -58,14 +62,16 @@ export class SymbologyEditorComponent implements OnInit, OnDestroy {
         if (!this.rasterSymbology) {
             return;
         }
-        this.projectService.changeLayer(this.layer, {symbology: this.rasterSymbology});
-        this.rasterSymbologyWorkflow$.next({workflowId: this.layer.workflowId, symbology: this.rasterSymbology});
+        const layer = this.layer();
+        this.projectService.changeLayer(layer, {symbology: this.rasterSymbology});
+        this.rasterSymbologyWorkflow$.next({workflowId: layer.workflowId, symbology: this.rasterSymbology});
         this.unappliedRasterChanges = false;
     }
 
     resetRasterChanges(): void {
-        if (this.rasterSymbologyEditorComponent) {
-            this.rasterSymbologyEditorComponent.resetChanges();
+        const rasterSymbologyEditorComponent = this.rasterSymbologyEditorComponent();
+        if (rasterSymbologyEditorComponent) {
+            rasterSymbologyEditorComponent.resetChanges();
             this.unappliedRasterChanges = false;
         }
     }
@@ -76,7 +82,7 @@ export class SymbologyEditorComponent implements OnInit, OnDestroy {
     }
 
     changeVectorSymbology(vectorSymbology: VectorSymbology): void {
-        this.projectService.changeLayer(this.layer, {symbology: vectorSymbology});
+        this.projectService.changeLayer(this.layer(), {symbology: vectorSymbology});
     }
 
     private createHistogramParamsSubscription(): void {
@@ -95,17 +101,18 @@ export class SymbologyEditorComponent implements OnInit, OnDestroy {
     }
 
     private setUp(): void {
-        if (this.layer instanceof RasterLayer) {
+        const layer = this.layer();
+        if (layer instanceof RasterLayer) {
             this.rasterSymbologyWorkflow$.next({
-                symbology: this.layer.symbology,
-                workflowId: this.layer.workflowId,
+                symbology: layer.symbology,
+                workflowId: layer.workflowId,
             });
         }
 
-        if (this.layer instanceof VectorLayer) {
+        if (layer instanceof VectorLayer) {
             this.vectorSymbologyWorkflow$.next({
-                symbology: this.layer.symbology,
-                workflowId: this.layer.workflowId,
+                symbology: layer.symbology,
+                workflowId: layer.workflowId,
             });
         }
     }

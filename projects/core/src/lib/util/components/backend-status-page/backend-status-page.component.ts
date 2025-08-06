@@ -1,28 +1,45 @@
-import {ChangeDetectorRef, Component} from '@angular/core';
+import {ChangeDetectorRef, Component, inject} from '@angular/core';
 import {Router} from '@angular/router';
 import {first, skipWhile, Subscription} from 'rxjs';
 import {BackendInfoDict} from '../../../backend/backend.model';
 import {BackendService} from '../../../backend/backend.service';
 import {BackendStatus} from '../../../users/user.model';
-import {UserService} from '@geoengine/common';
+import {UserService, FxLayoutDirective, FxLayoutAlignDirective} from '@geoengine/common';
+import {MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatCardActions} from '@angular/material/card';
+import {MatIcon} from '@angular/material/icon';
+import {MatListItem} from '@angular/material/list';
+import {MatLine} from '@angular/material/grid-list';
+import {MatButton} from '@angular/material/button';
 
 @Component({
     selector: 'geoengine-backend-status-page',
     templateUrl: './backend-status-page.component.html',
     styleUrls: ['./backend-status-page.component.scss'],
-    standalone: false,
+    imports: [
+        FxLayoutDirective,
+        FxLayoutAlignDirective,
+        MatCard,
+        MatCardHeader,
+        MatIcon,
+        MatCardTitle,
+        MatCardContent,
+        MatListItem,
+        MatLine,
+        MatCardActions,
+        MatButton,
+    ],
 })
 export class BackendStatusPageComponent {
+    private userService = inject(UserService);
+    private backendService = inject(BackendService);
+    private changeDetectorRef = inject(ChangeDetectorRef);
+    private router = inject(Router);
+
     public backendStatus: BackendStatus | undefined = undefined;
     public backendInfo: BackendInfoDict | undefined = undefined;
     public goToMapSubscription: Subscription | undefined = undefined;
 
-    constructor(
-        private userService: UserService,
-        private backendService: BackendService,
-        private changeDetectorRef: ChangeDetectorRef,
-        private router: Router,
-    ) {
+    constructor() {
         this.fetchBackendState();
     }
 
@@ -69,6 +86,7 @@ export class BackendStatusPageComponent {
                 first(),
             )
             .subscribe((_status) => {
+                // eslint-disable-next-line @typescript-eslint/no-misused-promises
                 setTimeout(() => this.router.navigate(['/map']));
             });
 

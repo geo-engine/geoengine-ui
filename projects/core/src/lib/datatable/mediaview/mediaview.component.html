@@ -1,11 +1,25 @@
 <span>
-    <button mat-icon-button *ngIf="mediaUrls.length > 0" (click)="openMediaviewDialog(0)">
-        <mat-icon color="primary" *ngIf="media === 'image'">image</mat-icon>
-        <mat-icon color="primary" *ngIf="media === 'audio'">music_video</mat-icon>
-        <mat-icon color="primary" *ngIf="media === 'video'">movie</mat-icon>
-        <mat-icon color="primary" *ngIf="media === 'media'">featured_play_list</mat-icon>
-        {{ mediaUrls.length }}
-        <ng-template [ngIf]="mediaUrls.length === 1">{{ media }}</ng-template>
-        <ng-template [ngIf]="mediaUrls.length !== 1">{{ media }}s</ng-template>
-    </button>
+    @if (mediaUrls.length > 0) {
+        <button mat-icon-button (click)="openMediaviewDialog(0)">
+            @if (media === 'image') {
+                <mat-icon color="primary">image</mat-icon>
+            }
+            @if (media === 'audio') {
+                <mat-icon color="primary">music_video</mat-icon>
+            }
+            @if (media === 'video') {
+                <mat-icon color="primary">movie</mat-icon>
+            }
+            @if (media === 'media') {
+                <mat-icon color="primary">featured_play_list</mat-icon>
+            }
+            {{ mediaUrls.length }}
+            @if (mediaUrls.length === 1) {
+                {{ media }}
+            }
+            @if (mediaUrls.length !== 1) {
+                {{ media }}s
+            }
+        </button>
+    }
 </span>

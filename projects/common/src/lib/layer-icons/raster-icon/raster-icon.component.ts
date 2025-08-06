@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, input, Input, OnChanges, OnInit, SimpleChange, untracked} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, input} from '@angular/core';
 import {Color, TRANSPARENT} from '../../colors/color';
 import {Colorizer, LinearGradient} from '../../colors/colorizer.model';
 import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
@@ -23,7 +23,6 @@ interface Cell {
     templateUrl: './raster-icon.component.svg',
     styleUrls: ['./raster-icon.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
 })
 export class RasterIconComponent {
     /** number of cells in x direction */

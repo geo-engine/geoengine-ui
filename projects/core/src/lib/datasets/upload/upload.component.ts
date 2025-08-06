@@ -1,7 +1,7 @@
 import {HttpEventType} from '@angular/common/http';
-import {Component, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef, OnDestroy} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {MatStepper} from '@angular/material/stepper';
+import {Component, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, inject, viewChild} from '@angular/core';
+import {FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatStepper, MatStep, MatStepLabel} from '@angular/material/stepper';
 import {Subject, Subscription} from 'rxjs';
 import {mergeMap} from 'rxjs/operators';
 import {UUID} from '../../backend/backend.model';
@@ -16,6 +16,12 @@ import {
 } from '@geoengine/common';
 import {DatasetService} from '../dataset.service';
 import {AddDataset, DatasetDefinition, MetaDataDefinition, MetaDataSuggestion, TimeGranularity} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
+import {DragAndDropComponent} from '../drag-and-drop/drag-and-drop.component';
+import {MatButton} from '@angular/material/button';
+import {MatProgressBar} from '@angular/material/progress-bar';
+import {MatFormField, MatLabel, MatInput, MatPrefix} from '@angular/material/input';
+import {AsyncPipe} from '@angular/common';
 
 interface NameDescription {
     name: FormControl<string>;
@@ -28,9 +34,33 @@ interface NameDescription {
     templateUrl: './upload.component.html',
     styleUrls: ['./upload.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        MatStepper,
+        MatStep,
+        MatStepLabel,
+        DragAndDropComponent,
+        MatButton,
+        MatProgressBar,
+        OgrDatasetComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormField,
+        MatLabel,
+        MatInput,
+        MatPrefix,
+        AsyncPipe,
+    ],
 })
 export class UploadComponent implements OnDestroy {
+    protected datasetsService = inject(DatasetsService);
+    protected uploadsService = inject(UploadsService);
+    protected notificationService = inject(NotificationService);
+    protected projectService = inject(ProjectService);
+    protected userService = inject(UserService);
+    protected changeDetectorRef = inject(ChangeDetectorRef);
+    protected datasetService = inject(DatasetService);
+
     vectorDataTypes = ['Data', 'MultiPoint', 'MultiLineString', 'MultiPolygon'];
     timeDurationValueTypes = ['infinite', 'value', 'zero'];
     timeTypes = ['None', 'Start', 'Start/End', 'Start/Duration'];
@@ -39,8 +69,8 @@ export class UploadComponent implements OnDestroy {
     errorHandlings = ['ignore', 'abort'];
     readonly timeGranularityOptions: Array<TimeGranularity> = timeStepGranularityOptions;
 
-    @ViewChild(MatStepper) stepper!: MatStepper;
-    @ViewChild(OgrDatasetComponent) ogrDatasetComponent!: OgrDatasetComponent;
+    readonly stepper = viewChild.required(MatStepper);
+    readonly ogrDatasetComponent = viewChild.required(OgrDatasetComponent);
 
     progress$ = new Subject<number>();
     metaDataSuggestion$ = new Subject<MetaDataSuggestion>();
@@ -60,15 +90,7 @@ export class UploadComponent implements OnDestroy {
 
     private displayNameChangeSubscription: Subscription;
 
-    constructor(
-        protected datasetsService: DatasetsService,
-        protected uploadsService: UploadsService,
-        protected notificationService: NotificationService,
-        protected projectService: ProjectService,
-        protected userService: UserService,
-        protected changeDetectorRef: ChangeDetectorRef,
-        protected datasetService: DatasetService,
-    ) {
+    constructor() {
         this.formNameDescription = new FormGroup<NameDescription>({
             name: new FormControl('', {
                 nonNullable: true,
@@ -129,13 +151,14 @@ export class UploadComponent implements OnDestroy {
                     const fraction = event.total ? event.loaded / event.total : 1;
                     this.progress$.next(Math.round(100 * fraction));
                 } else if (event.type === HttpEventType.Response) {
-                    const uploadId = event.body?.id as UUID;
+                    const uploadId = event.body?.id;
                     this.uploadId = uploadId;
-                    if (this.stepper.selected) {
-                        this.stepper.selected.completed = true;
-                        this.stepper.selected.editable = false;
+                    const stepper = this.stepper();
+                    if (stepper.selected) {
+                        stepper.selected.completed = true;
+                        stepper.selected.editable = false;
                     }
-                    this.stepper.next();
+                    stepper.next();
                 }
             },
             (err) => {
@@ -162,7 +185,7 @@ export class UploadComponent implements OnDestroy {
 
         const formDataset = this.formNameDescription.controls;
 
-        const metaData: MetaDataDefinition = this.ogrDatasetComponent.getMetaData();
+        const metaData: MetaDataDefinition = this.ogrDatasetComponent().getMetaData();
 
         const addData: AddDataset = {
             name: this.userNamePrefix + ':' + formDataset.name.value,
@@ -185,27 +208,40 @@ export class UploadComponent implements OnDestroy {
             );
 
             this.datasetName = datasetName;
-            if (this.stepper.selected) {
-                this.stepper.selected.completed = true;
-                this.stepper.selected.editable = false;
+            const stepper = this.stepper();
+            if (stepper.selected) {
+                stepper.selected.completed = true;
+                stepper.selected.editable = false;
             }
-            const prevStep = this.stepper.steps.get(this.stepper.selectedIndex - 1);
+            const prevStep = stepper.steps.get(stepper.selectedIndex - 1);
             if (prevStep) {
                 prevStep.completed = true;
                 prevStep.editable = false;
             }
 
-            this.stepper.next();
+            stepper.next();
         } catch (err) {
-            this.notificationService.error('Create dataset failed: ' + err);
+            let errorMessage;
+            if (err instanceof Error) {
+                errorMessage = err.message;
+            } else if (typeof err === 'string') {
+                errorMessage = err;
+            } else if (err && typeof err === 'object' && 'message' in err) {
+                errorMessage = (err as {message: string}).message;
+            } else {
+                throw new Error('Unknown error occurred while creating dataset');
+            }
+
+            this.notificationService.error('Create dataset failed: ' + errorMessage);
             return;
         }
     }
 
     get formMetaData(): FormGroup {
-        if (!this.ogrDatasetComponent) {
+        const ogrDatasetComponent = this.ogrDatasetComponent();
+        if (!ogrDatasetComponent) {
             return new FormGroup({});
         }
-        return this.ogrDatasetComponent.formMetaData;
+        return ogrDatasetComponent.formMetaData;
     }
 }

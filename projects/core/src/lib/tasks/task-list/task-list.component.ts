@@ -1,9 +1,39 @@
-import {Component, ChangeDetectionStrategy, ViewChild, AfterViewInit, OnDestroy, ChangeDetectorRef, Injectable} from '@angular/core';
+import {
+    Component,
+    ChangeDetectionStrategy,
+    AfterViewInit,
+    OnDestroy,
+    ChangeDetectorRef,
+    Injectable,
+    inject,
+    viewChild,
+} from '@angular/core';
 import {MatPaginator, MatPaginatorIntl, PageEvent} from '@angular/material/paginator';
 import {combineLatest, forkJoin, map, mergeMap, of, startWith, Subject, Subscription, switchMap} from 'rxjs';
 import {TaskStatusDict, TaskStatusType, UUID} from '../../backend/backend.model';
 import {BackendService} from '../../backend/backend.service';
 import {NotificationService, UserService} from '@geoengine/common';
+import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
+import {MatFormField, MatLabel} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatMiniFabButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {
+    MatTable,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatCellDef,
+    MatCell,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+} from '@angular/material/table';
+import {MatTooltip} from '@angular/material/tooltip';
+import {JsonPipe, TitleCasePipe} from '@angular/common';
 
 @Injectable()
 export class MyCustomPaginatorIntl implements MatPaginatorIntl {
@@ -36,9 +66,38 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     styleUrls: ['./task-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl}],
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        MatMiniFabButton,
+        MatIcon,
+        MatProgressSpinner,
+        MatTable,
+        MatColumnDef,
+        MatHeaderCellDef,
+        MatHeaderCell,
+        MatCellDef,
+        MatCell,
+        MatTooltip,
+        MatButton,
+        MatHeaderRowDef,
+        MatHeaderRow,
+        MatRowDef,
+        MatRow,
+        MatPaginator,
+        JsonPipe,
+        TitleCasePipe,
+    ],
 })
 export class TaskListComponent implements AfterViewInit, OnDestroy {
+    protected readonly userService = inject(UserService);
+    protected readonly backend = inject(BackendService);
+    protected readonly changeDetectorRef = inject(ChangeDetectorRef);
+    protected readonly notificationService = inject(NotificationService);
+
     taskStatusOptions: Array<TaskStatusType> = ['running', 'completed', 'aborted', 'failed'];
     pageSize = 15; // current backend does not allow > 20 and we need one more for the next page check
 
@@ -48,16 +107,9 @@ export class TaskListComponent implements AfterViewInit, OnDestroy {
 
     isLoading = true;
 
-    @ViewChild(MatPaginator) paginator!: MatPaginator;
+    readonly paginator = viewChild.required(MatPaginator);
 
     protected taskSubscription?: Subscription;
-
-    constructor(
-        protected readonly userService: UserService,
-        protected readonly backend: BackendService,
-        protected readonly changeDetectorRef: ChangeDetectorRef,
-        protected readonly notificationService: NotificationService,
-    ) {}
 
     ngOnDestroy(): void {
         this.taskSubscription?.unsubscribe();
@@ -66,11 +118,11 @@ export class TaskListComponent implements AfterViewInit, OnDestroy {
     ngAfterViewInit(): void {
         this.taskSubscription = combineLatest({
             sessionToken: this.userService.getSessionTokenStream(),
-            pageEvent: this.paginator.page.pipe(
+            pageEvent: this.paginator().page.pipe(
                 startWith({
-                    pageIndex: this.paginator.pageIndex,
-                    pageSize: this.paginator.pageSize,
-                    length: this.paginator.length,
+                    pageIndex: this.paginator().pageIndex,
+                    pageSize: this.paginator().pageSize,
+                    length: this.paginator().length,
                 } as PageEvent),
             ),
         })
@@ -98,7 +150,7 @@ export class TaskListComponent implements AfterViewInit, OnDestroy {
                         // indicate that there is a next page
                         newTotalResults -= 0.5;
                     }
-                    this.paginator.length = Math.max(this.paginator.length, newTotalResults);
+                    this.paginator().length = Math.max(this.paginator().length, newTotalResults);
 
                     // shrink to page since, since we queried one more
                     return tasks.slice(0, pageEvent.pageSize);
@@ -116,21 +168,23 @@ export class TaskListComponent implements AfterViewInit, OnDestroy {
         this.filter = taskStatus;
 
         // reset paginator and trigger reload
-        this.paginator.pageIndex = 0;
-        this.paginator.length = 0;
+        const paginator = this.paginator();
 
-        this.paginator.page.emit({
-            pageIndex: this.paginator.pageIndex,
-            pageSize: this.paginator.pageSize,
-            length: this.paginator.length,
+        paginator.pageIndex = 0;
+        paginator.length = 0;
+
+        paginator.page.emit({
+            pageIndex: paginator.pageIndex,
+            pageSize: paginator.pageSize,
+            length: paginator.length,
         } as PageEvent);
     }
 
     refreshPage(): void {
-        this.paginator.page.emit({
-            pageIndex: this.paginator.pageIndex,
-            pageSize: this.paginator.pageSize,
-            length: this.paginator.length,
+        this.paginator().page.emit({
+            pageIndex: this.paginator().pageIndex,
+            pageSize: this.paginator().pageSize,
+            length: this.paginator().length,
         } as PageEvent);
     }
 

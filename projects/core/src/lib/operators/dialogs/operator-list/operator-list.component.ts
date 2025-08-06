@@ -1,12 +1,11 @@
 import {BehaviorSubject, combineLatest, Observable, ReplaySubject} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges, Type} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnChanges, OnInit, SimpleChanges, Type, inject, input} from '@angular/core';
 import {LayoutService} from '../../../layout.service';
 import {StatisticsPlotComponent} from '../statistics-plot/statistics-plot.component';
 import {HistogramOperatorComponent} from '../histogram-operator/histogram-operator.component';
 import {BoxPlotOperatorComponent} from '../boxplot-operator/boxplot-operator.component';
-// eslint-disable-next-line max-len
 import {MeanRasterPixelValuesOverTimeDialogComponent} from '../mean-raster-pixel-values-over-time-dialog/mean-raster-pixel-values-over-time-dialog.component';
 import {PointInPolygonFilterOperatorComponent} from '../point-in-polygon-filter/point-in-polygon-filter.component';
 import {RasterVectorJoinComponent} from '../raster-vector-join/raster-vector-join.component';
@@ -30,6 +29,19 @@ import {VectorExpressionComponent} from '../vector-expression/vector-expression.
 import {BandwiseExpressionOperatorComponent} from '../bandwise-expression-operator/bandwise-expression-operator.component';
 import {BandNeighborhoodAggregateComponent} from '../band-neighborhood-aggregate/band-neighborhood-aggregate.component';
 import {createIconDataUrl} from '@geoengine/common';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {SidenavSearchComponent} from '../../../sidenav/sidenav-search/sidenav-search.component';
+import {
+    MatNavList,
+    MatListSubheaderCssMatStyler,
+    MatListItem,
+    MatListItemIcon,
+    MatListItemTitle,
+    MatListItemLine,
+} from '@angular/material/list';
+import {AsyncPipe} from '@angular/common';
+import {HighlightPipe} from '../../../util/pipes/highlight.pipe';
+import {SafeHtmlPipe} from '../../../util/pipes/safe-html.pipe';
 
 /**
  * This type encapsulates…
@@ -41,7 +53,7 @@ export interface OperatorListType {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     component: Type<any>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    config?: {[key: string]: any};
+    config?: Record<string, any>;
     type: {NAME: string; ICON_URL: string};
     description: string;
 }
@@ -64,9 +76,23 @@ export type OperatorListButtonGroups = Array<{
     templateUrl: './operator-list.component.html',
     styleUrls: ['./operator-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        SidenavSearchComponent,
+        MatNavList,
+        MatListSubheaderCssMatStyler,
+        MatListItem,
+        MatListItemIcon,
+        MatListItemTitle,
+        MatListItemLine,
+        AsyncPipe,
+        HighlightPipe,
+        SafeHtmlPipe,
+    ],
 })
 export class OperatorListComponent implements OnInit, OnChanges {
+    private layoutService = inject(LayoutService);
+
     static readonly DEFAULT_MIXED_OPERATOR_DIALOGS: Array<OperatorListType> = [
         {
             component: RasterVectorJoinComponent,
@@ -298,13 +324,13 @@ export class OperatorListComponent implements OnInit, OnChanges {
     /**
      * Specify (optionally) a custom set of operator groups and list entries (buttons)
      */
-    @Input() operators: OperatorListButtonGroups = [
+    readonly operators = input<OperatorListButtonGroups>([
         // default operator set
         {name: 'Mixed', list: OperatorListComponent.DEFAULT_MIXED_OPERATOR_DIALOGS},
         {name: 'Plots', list: OperatorListComponent.DEFAULT_PLOT_OPERATOR_DIALOGS},
         {name: 'Raster', list: OperatorListComponent.DEFAULT_RASTER_OPERATOR_DIALOGS},
         {name: 'Vector', list: OperatorListComponent.DEFAULT_VECTOR_OPERATOR_DIALOGS},
-    ];
+    ]);
 
     readonly operators$ = new ReplaySubject<OperatorListButtonGroups>(1);
     readonly operatorGroups$: Observable<Array<{name: string; list: Array<OperatorListType>}>>;
@@ -313,7 +339,7 @@ export class OperatorListComponent implements OnInit, OnChanges {
     /**
      * DI of services
      */
-    constructor(private layoutService: LayoutService) {
+    constructor() {
         this.operatorGroups$ = combineLatest([this.operators$, this.searchString$.pipe(map((s) => s.toLowerCase()))]).pipe(
             map(([operatorGroups, searchString]) => {
                 const nameComparator = (a: string, b: string): number => {
@@ -348,12 +374,12 @@ export class OperatorListComponent implements OnInit, OnChanges {
     }
 
     ngOnInit(): void {
-        this.operators$.next(this.operators);
+        this.operators$.next(this.operators());
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.operators) {
-            this.operators$.next(this.operators);
+            this.operators$.next(this.operators());
         }
     }
 
@@ -361,7 +387,7 @@ export class OperatorListComponent implements OnInit, OnChanges {
      * Load a selected dialog into the sidenav
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    load(component: Type<any>, config?: {[key: string]: any}): void {
+    load(component: Type<any>, config?: Record<string, any>): void {
         this.layoutService.setSidenavContentComponent({component, config, keepParent: true});
     }
 }

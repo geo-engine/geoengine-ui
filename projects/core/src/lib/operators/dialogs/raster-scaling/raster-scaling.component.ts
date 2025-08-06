@@ -1,5 +1,14 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
-import {FormControl, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors} from '@angular/forms';
+import {AfterViewInit, ChangeDetectionStrategy, Component, inject, viewChild} from '@angular/core';
+import {
+    FormControl,
+    FormGroup,
+    Validators,
+    ValidatorFn,
+    AbstractControl,
+    ValidationErrors,
+    FormsModule,
+    ReactiveFormsModule,
+} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 
 import {map, mergeMap} from 'rxjs/operators';
@@ -15,8 +24,24 @@ import {
     RasterUnScalingDict,
     ResultTypes,
     geoengineValidators,
+    FxLayoutDirective,
+    FxLayoutAlignDirective,
+    FxLayoutGapDirective,
+    FxFlexDirective,
+    AsyncValueDefault,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {MatFormField, MatLabel, MatInput, MatHint} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatDivider} from '@angular/material/list';
+import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
+import {AsyncPipe} from '@angular/common';
 
 interface RasterScalingForm {
     name: FormControl<string>;
@@ -38,9 +63,36 @@ interface SlopeOffsetForm {
     templateUrl: './raster-scaling.component.html',
     styleUrls: ['./raster-scaling.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        OperatorDialogContainerComponent,
+        MatIconButton,
+        MatIcon,
+        LayerSelectionComponent,
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        FxLayoutDirective,
+        FxLayoutAlignDirective,
+        FxLayoutGapDirective,
+        FxFlexDirective,
+        MatInput,
+        MatDivider,
+        OperatorOutputNameComponent,
+        MatHint,
+        SymbologyCreatorComponent,
+        MatButton,
+        AsyncPipe,
+        AsyncValueDefault,
+    ],
 })
 export class RasterScalingComponent implements AfterViewInit {
+    private readonly projectService = inject(ProjectService);
+    private readonly notificationService = inject(NotificationService);
+
     readonly inputTypes = [ResultTypes.RASTER];
     readonly rasterDataTypes = RasterDataTypes.ALL_DATATYPES;
 
@@ -56,16 +108,12 @@ export class RasterScalingComponent implements AfterViewInit {
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
 
-    @ViewChild(SymbologyCreatorComponent)
-    readonly symbologyCreator!: SymbologyCreatorComponent;
+    readonly symbologyCreator = viewChild.required(SymbologyCreatorComponent);
 
     form: FormGroup<RasterScalingForm>;
     disallowSubmit: Observable<boolean>;
 
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly notificationService: NotificationService,
-    ) {
+    constructor() {
         this.form = new FormGroup<RasterScalingForm>({
             name: new FormControl<string>('', {
                 nonNullable: true,
@@ -195,7 +243,7 @@ export class RasterScalingComponent implements AfterViewInit {
                     }),
                 ),
                 mergeMap((workflowId: UUID) => {
-                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator.symbologyForRasterLayer(workflowId, inputLayer);
+                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator().symbologyForRasterLayer(workflowId, inputLayer);
 
                     return combineLatest([of(workflowId), symbology$]);
                 }),
