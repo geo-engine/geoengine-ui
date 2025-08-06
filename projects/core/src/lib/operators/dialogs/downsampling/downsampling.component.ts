@@ -1,5 +1,5 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, ViewChild} from '@angular/core';
-import {FormControl, FormBuilder, FormGroup, Validators, ValidatorFn} from '@angular/forms';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, inject, viewChild} from '@angular/core';
+import {FormControl, FormBuilder, FormGroup, Validators, ValidatorFn, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
 
 import {mergeMap, tap} from 'rxjs/operators';
@@ -9,42 +9,74 @@ import {Layer} from 'ol/layer';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 import {
     OutputResolutionDict,
-    DownsamplingDict,
+    InterpolationDict,
+    NotificationService,
     RasterDataTypes,
     RasterLayer,
     RasterSymbology,
     ResultTypes,
     geoengineValidators,
-    NotificationService,
+    FxLayoutDirective,
+    AsyncValueDefault,
+    DownsamplingDict,
 } from '@geoengine/common';
 import {Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
+import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
+import {MatIconButton, MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {LayerSelectionComponent} from '../helpers/layer-selection/layer-selection.component';
+import {MatFormField, MatLabel, MatInput, MatHint} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
+import {MatOption} from '@angular/material/autocomplete';
+import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
     selector: 'geoengine-downsampling',
     templateUrl: './downsampling.component.html',
     styleUrls: ['./downsampling.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false,
+    imports: [
+        SidenavHeaderComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        OperatorDialogContainerComponent,
+        MatIconButton,
+        MatIcon,
+        LayerSelectionComponent,
+        MatFormField,
+        MatLabel,
+        MatSelect,
+        MatOption,
+        FxLayoutDirective,
+        MatInput,
+        MatHint,
+        OperatorOutputNameComponent,
+        SymbologyCreatorComponent,
+        MatButton,
+        AsyncPipe,
+        AsyncValueDefault,
+    ],
 })
 export class DownsamplingComponent implements AfterViewInit, OnDestroy {
+    private readonly projectService = inject(ProjectService);
+    private readonly notificationService = inject(NotificationService);
+    private readonly formBuilder = inject(FormBuilder);
+
     readonly downsamplingMethods = [['Nearest Neighbor', 'nearestNeighbor']];
     readonly inputTypes = [ResultTypes.RASTER];
     readonly rasterDataTypes = RasterDataTypes.ALL_DATATYPES;
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
 
-    @ViewChild(SymbologyCreatorComponent)
-    readonly symbologyCreator!: SymbologyCreatorComponent;
+    readonly symbologyCreator = viewChild.required(SymbologyCreatorComponent);
 
     form: FormGroup;
 
     private subscription!: Subscription;
 
-    constructor(
-        private readonly projectService: ProjectService,
-        private readonly notificationService: NotificationService,
-        private readonly formBuilder: FormBuilder,
-    ) {
+    constructor() {
         this.form = this.formBuilder.group({
             name: ['', [Validators.required, geoengineValidators.notOnlyWhitespace]],
             layer: new FormControl<Layer | null>(null, {validators: Validators.required}),
@@ -121,7 +153,7 @@ export class DownsamplingComponent implements AfterViewInit, OnDestroy {
                     }),
                 ),
                 mergeMap((workflowId: UUID) => {
-                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator.symbologyForRasterLayer(workflowId, inputLayer);
+                    const symbology$: Observable<RasterSymbology> = this.symbologyCreator().symbologyForRasterLayer(workflowId, inputLayer);
                     return combineLatest([of(workflowId), symbology$]);
                 }),
                 mergeMap(([workflowId, symbology]: [UUID, RasterSymbology]) =>

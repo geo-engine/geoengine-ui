@@ -31,6 +31,8 @@ export abstract class LayerMetadata implements HasLayerType {
         this.time = time;
     }
 
+    public abstract get bbox(): BoundingBox2D | undefined;
+
     public abstract get resultType(): ResultType;
 
     public static fromDict(

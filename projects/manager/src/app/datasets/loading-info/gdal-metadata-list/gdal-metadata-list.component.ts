@@ -12,6 +12,7 @@ import {
 } from '@angular/forms';
 import {GdalDatasetParametersComponent, GdalDatasetParametersForm} from '../gdal-dataset-parameters/gdal-dataset-parameters.component';
 import {
+    CommonModule,
     DatasetsService,
     GeoTransform,
     GridBoundingBox2D,
