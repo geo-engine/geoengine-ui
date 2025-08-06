@@ -1,4 +1,15 @@
-import {Component, ChangeDetectionStrategy, AfterViewInit, ElementRef, input, signal, viewChild, computed, effect} from '@angular/core';
+import {
+    Component,
+    ChangeDetectionStrategy,
+    AfterViewInit,
+    ElementRef,
+    input,
+    signal,
+    viewChild,
+    computed,
+    effect,
+    untracked,
+} from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {EditorView, ViewUpdate, lineNumbers, drawSelection, Panel, showPanel, PanelConstructor} from '@codemirror/view';
 import {syntaxHighlighting, defaultHighlightStyle} from '@codemirror/language';
@@ -43,6 +54,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
     readonly readonly = input<boolean>(false);
 
     private writtenCode = '';
+    private pristine = true;
     private readonly code = signal<string>(this.writtenCode);
 
     private readonly languageMode = computed(() => {
@@ -74,7 +86,9 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
             const code = this.code();
 
             if (!this.onChanged) return;
-            if (this.writtenCode === code) return; // don't call onChanged if the code has not changed
+            if (this.pristine && this.writtenCode === code) return; // don't call onChanged if the code has not changed
+
+            this.pristine = false;
 
             this.onChanged(code);
         });
@@ -130,6 +144,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
         if (typeof code !== 'string') return;
 
         this.writtenCode = code;
+        this.pristine = true;
 
         if (this.editor) {
             this.editor?.dispatch({
