@@ -9,7 +9,6 @@ import {Layer} from 'ol/layer';
 import {SymbologyCreatorComponent} from '../../../layers/symbology/symbology-creator/symbology-creator.component';
 import {
     OutputResolutionDict,
-    InterpolationDict,
     NotificationService,
     RasterDataTypes,
     RasterLayer,

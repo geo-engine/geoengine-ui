@@ -75,7 +75,7 @@ export * from './lib/spatial-grid/grid-bounding-box.model';
 export * from './lib/spatial-grid/grid-idx.model';
 export * from './lib/spatial-grid/spatial-grid-definition.model';
 export * from './lib/spatial-grid/spatial-grid-descriptor.model';
-export * from './lib/spatial-bounds/bounding-box'
+export * from './lib/spatial-bounds/bounding-box';
 
 // Pipes
 export * from './lib/util/pipes/async-converters.pipe';

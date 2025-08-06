@@ -10,7 +10,7 @@ import {CoreModule, RasterLegendComponent} from '@geoengine/core';
     imports: [CoreModule, RasterLegendComponent],
 })
 export class LegendComponent {
-    layer = input<RasterLayer>();
+    readonly layer = input<RasterLayer>();
 
-    visible = signal(true);
+    readonly visible = signal(true);
 }

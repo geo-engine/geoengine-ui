@@ -47,11 +47,11 @@ export class LayerSelectionComponent implements ControlValueAccessor {
     /**
      * An array of possible layers.
      */
-    _layers = input<Array<Layer>>(undefined, {
+    readonly _layers = input<Array<Layer>>(undefined, {
         // eslint-disable-next-line @angular-eslint/no-input-rename
         alias: 'layers',
     });
-    defaultLayers = toSignal(this.projectService.getLayerStream(), {initialValue: []});
+    readonly defaultLayers = toSignal(this.projectService.getLayerStream(), {initialValue: []});
     layers = resource({
         params: () => ({inputLayers: this._layers(), defaultLayers: this.defaultLayers(), types: this.types()}),
         defaultValue: [],
@@ -74,16 +74,16 @@ export class LayerSelectionComponent implements ControlValueAccessor {
     /**
      * The type is used as a filter for the layers to choose from.
      */
-    types = input<Array<ResultType>>(ResultTypes.ALL_TYPES);
+    readonly types = input<Array<ResultType>>(ResultTypes.ALL_TYPES);
 
     /**
      * The title of the component (optional).
      */
-    _title = input<string>(undefined, {
+    readonly _title = input<string>(undefined, {
         // eslint-disable-next-line @angular-eslint/no-input-rename
         alias: 'title',
     });
-    title = computed(
+    readonly title = computed(
         () =>
             this._title() ??
             this.types()
@@ -95,8 +95,8 @@ export class LayerSelectionComponent implements ControlValueAccessor {
     onTouched?: () => void;
     onChange?: (_: Layer | undefined) => void = undefined;
 
-    hasLayers = computed<boolean>(() => this.layers.value().length > 0);
-    selectedLayer = linkedSignal<Array<Layer>, Layer | undefined>({
+    readonly hasLayers = computed<boolean>(() => this.layers.value().length > 0);
+    readonly selectedLayer = linkedSignal<Array<Layer>, Layer | undefined>({
         source: () => this.layers.value(),
         computation: (newlayers, previous) => {
             const previousValue = previous?.value;
@@ -113,7 +113,7 @@ export class LayerSelectionComponent implements ControlValueAccessor {
             return undefined;
         },
     });
-    expanded = signal<boolean>(false);
+    readonly expanded = signal<boolean>(false);
     metadata = resource({
         params: () => ({selectedLayer: this.selectedLayer()}),
         defaultValue: undefined,

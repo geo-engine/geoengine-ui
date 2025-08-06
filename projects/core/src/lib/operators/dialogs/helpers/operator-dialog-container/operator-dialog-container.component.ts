@@ -10,5 +10,5 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
     imports: [MatCardModule, MatProgressBarModule],
 })
 export class OperatorDialogContainerComponent {
-    loading = input<boolean>(false);
+    readonly loading = input<boolean>(false);
 }

@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, input} from '@angular/core';
 import {BoundingBox2D, GeoTransform, GridBoundingBox2D} from '@geoengine/common';
 import {RasterBandDescriptor, TypedRasterResultDescriptor} from '@geoengine/openapi-client';
 import {FormsModule} from '@angular/forms';

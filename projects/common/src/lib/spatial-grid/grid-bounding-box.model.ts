@@ -12,9 +12,9 @@ export class GridBoundingBox2D implements ToDict<GridBoundingBox2DDict> {
     }
 
     public contains(idx: GridIdx2D): boolean {
-        const con_x = this.topLeftIdx.xIdx <= idx.xIdx && idx.xIdx <= this.bottomRightIdx.xIdx;
-        const con_y = this.topLeftIdx.yIdx <= idx.yIdx && idx.yIdx <= this.bottomRightIdx.yIdx;
-        return con_x && con_y;
+        const conX = this.topLeftIdx.xIdx <= idx.xIdx && idx.xIdx <= this.bottomRightIdx.xIdx;
+        const conY = this.topLeftIdx.yIdx <= idx.yIdx && idx.yIdx <= this.bottomRightIdx.yIdx;
+        return conX && conY;
     }
 
     public get numberOfPixelsX(): number {
@@ -32,7 +32,7 @@ export class GridBoundingBox2D implements ToDict<GridBoundingBox2DDict> {
         };
     }
 
-    public static fromDict(dict: GridBoundingBox2DDict) {
+    public static fromDict(dict: GridBoundingBox2DDict): GridBoundingBox2D {
         return new GridBoundingBox2D(GridIdx2D.fromDict(dict.topLeftIdx), GridIdx2D.fromDict(dict.bottomRightIdx));
     }
 }

@@ -45,7 +45,7 @@ export class SpatialGridDefinition implements ToDict<SpatialGridDefinitionDict> 
         };
     }
 
-    public static fromDict(dict: SpatialGridDefinitionDict) {
+    public static fromDict(dict: SpatialGridDefinitionDict): SpatialGridDefinition {
         return new SpatialGridDefinition(GeoTransform.fromDict(dict.geoTransform), GridBoundingBox2D.fromDict(dict.gridBounds));
     }
 }

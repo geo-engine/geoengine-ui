@@ -1,7 +1,5 @@
 import {SpatialGridDescriptor as SpatialGridDescriptorDict, SpatialGridDescriptorState} from '@geoengine/openapi-client';
 import {ToDict} from '../time/time.model';
-import {GeoTransform} from './geo-transform.model';
-import {GridBoundingBox2D} from './grid-bounding-box.model';
 import {BoundingBox2D} from '../spatial-bounds/bounding-box';
 import {SpatialGridDefinition} from './spatial-grid-definition.model';
 
@@ -31,7 +29,7 @@ export class SpatialGridDescriptor implements ToDict<SpatialGridDescriptorDict> 
         };
     }
 
-    public static fromDict(dict: SpatialGridDescriptorDict) {
+    public static fromDict(dict: SpatialGridDescriptorDict): SpatialGridDescriptor {
         const descriptor = dict.descriptor;
 
         return new SpatialGridDescriptor(SpatialGridDefinition.fromDict(dict.spatialGrid), descriptor);

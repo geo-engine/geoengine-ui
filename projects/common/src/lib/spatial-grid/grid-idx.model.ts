@@ -23,7 +23,7 @@ export class GridIdx2D implements ToDict<GridIdx2DDict> {
         };
     }
 
-    public static fromDict(dict: GridIdx2DDict) {
+    public static fromDict(dict: GridIdx2DDict): GridIdx2D {
         return new GridIdx2D(dict.xIdx, dict.yIdx);
     }
 }

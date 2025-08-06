@@ -154,14 +154,14 @@ export class BoundingBox2D implements ToDict<BBoxDict> {
      * @returns - A new `BoundingBox2D` covering all input boxes.
      */
     public static unionFold(iter: BoundingBox2D[]): BoundingBox2D | undefined {
-        let total_bounds: BoundingBox2D | undefined = undefined;
+        let totalBounds: BoundingBox2D | undefined = undefined;
         for (const b of iter) {
-            if (total_bounds) {
-                total_bounds = b.union(total_bounds);
+            if (totalBounds) {
+                totalBounds = b.union(totalBounds);
             } else {
-                total_bounds = b;
+                totalBounds = b;
             }
         }
-        return total_bounds;
+        return totalBounds;
     }
 }

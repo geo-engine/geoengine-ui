@@ -19,7 +19,6 @@ import {
     TypedRasterResultDescriptor as RasterResultDescriptorDict,
     Workflow as WorkflowDict,
     RasterBandDescriptor as RasterBandDescriptor,
-    SpatialGridDescriptor as SpatialGridDescriptorDict,
 } from '@geoengine/openapi-client';
 
 export type UUID = string;
