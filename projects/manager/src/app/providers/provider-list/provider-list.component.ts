@@ -151,7 +151,7 @@ class ProviderDataSource extends DataSource<LayerProviderListing> {
     /**
      * Clean up resources
      */
-     
+
     disconnect(): void {
         /* do nothing */
     }
