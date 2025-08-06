@@ -1,15 +1,4 @@
-import {
-    Component,
-    ChangeDetectionStrategy,
-    AfterViewInit,
-    ElementRef,
-    input,
-    signal,
-    viewChild,
-    computed,
-    effect,
-    untracked,
-} from '@angular/core';
+import {Component, ChangeDetectionStrategy, AfterViewInit, ElementRef, input, signal, viewChild, computed, effect} from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {EditorView, ViewUpdate, lineNumbers, drawSelection, Panel, showPanel, PanelConstructor} from '@codemirror/view';
 import {syntaxHighlighting, defaultHighlightStyle} from '@codemirror/language';
