@@ -53,7 +53,7 @@ export class RegisterComponent implements AfterViewInit {
 
     PASSWORD_MIN_LENGTH = 8;
 
-    loginRedirect = input('/map');
+    readonly loginRedirect = input('/map');
 
     loading$ = new BehaviorSubject<boolean>(false);
     notLoading$ = this.loading$.pipe(map((loading) => !loading));

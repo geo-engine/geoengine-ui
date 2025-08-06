@@ -23,7 +23,7 @@ export class LayerCollectionLayerComponent implements OnChanges {
     readonly layer = input<LayerCollectionLayerDict>();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    trackBy = input<any>(undefined);
+    readonly trackBy = input<any>(undefined);
 
     readonly addClick = output<ProviderLayerIdDict>();
     readonly isExpanded = output<boolean>();

@@ -15,7 +15,7 @@ export class ProviderJsonInputComponent {
     readonly provider = input<TypedDataProviderDefinition>();
     readonly visible = input<boolean>(false);
     readonly readonly = input<boolean>(false);
-    inputInvalid = signal<boolean>(false);
+    readonly inputInvalid = signal<boolean>(false);
     json = new FormControl<string | null>('');
 
     constructor() {

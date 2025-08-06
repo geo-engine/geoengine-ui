@@ -74,7 +74,7 @@ export class AddLayerItemComponent {
     parentCollectionId: ProviderLayerCollectionId;
     rootCollectionId = {providerId: LAYER_DB_PROVIDER_ID, collectionId: LAYER_DB_ROOT_COLLECTION_ID};
 
-    childType = signal(ChildType.Undefined);
+    readonly childType = signal(ChildType.Undefined);
 
     form: FormGroup<AddLayerItemForm> = new FormGroup<AddLayerItemForm>({
         itemType: new FormControl(ItemType.Collection, {

@@ -69,7 +69,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
     readonly FormStatus = FormStatus;
 
-    loginRedirect = input('/map');
+    readonly loginRedirect = input('/map');
 
     formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.Loading);
     canRegister = this.config.USER.REGISTRATION_AVAILABLE;

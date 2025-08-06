@@ -19,8 +19,8 @@ import {RasterIconComponent} from '../../layer-icons/raster-icon/raster-icon.com
     imports: [MatIconModule, FxLayoutDirective, PolygonIconComponent, LineIconComponent, PointIconComponent, RasterIconComponent],
 })
 export class LayerCollectionLayerDetailsComponent {
-    description = input<string | undefined>();
-    layerMetadata = input<LayerMetadata | undefined>(undefined);
+    readonly description = input<string | undefined>();
+    readonly layerMetadata = input<LayerMetadata | undefined>(undefined);
 
     readonly VectorDataTypes = VectorDataTypes;
 

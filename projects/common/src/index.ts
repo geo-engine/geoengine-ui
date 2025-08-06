@@ -70,6 +70,12 @@ export * from './lib/spatial-references/spatial-reference.model';
 export * from './lib/symbology/symbology.model';
 export * from './lib/time/time.model';
 export * from './lib/user/user.model';
+export * from './lib/spatial-grid/geo-transform.model';
+export * from './lib/spatial-grid/grid-bounding-box.model';
+export * from './lib/spatial-grid/grid-idx.model';
+export * from './lib/spatial-grid/spatial-grid-definition.model';
+export * from './lib/spatial-grid/spatial-grid-descriptor.model';
+export * from './lib/spatial-bounds/bounding-box';
 
 // Pipes
 export * from './lib/util/pipes/async-converters.pipe';

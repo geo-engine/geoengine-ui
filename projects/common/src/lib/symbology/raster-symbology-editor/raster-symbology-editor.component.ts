@@ -85,12 +85,12 @@ const FAUX_RASTER_SYMBOLOGY = new RasterSymbology(
 export class RasterSymbologyEditorComponent {
     private readonly workflowsService = inject(WorkflowsService);
 
-    symbologyWorkflow = input.required<SymbologyWorkflow<RasterSymbology>>();
-    queryParams = input<SymbologyQueryParams>();
+    readonly symbologyWorkflow = input.required<SymbologyWorkflow<RasterSymbology>>();
+    readonly queryParams = input<SymbologyQueryParams>();
 
     changedSymbology = output<RasterSymbology>();
 
-    symbology = signal(FAUX_RASTER_SYMBOLOGY);
+    readonly symbology = signal(FAUX_RASTER_SYMBOLOGY);
 
     readonly linearGradientColorizerType = LinearGradient.TYPE_NAME;
     readonly logarithmicGradientColorizerType = LogarithmicGradient.TYPE_NAME;

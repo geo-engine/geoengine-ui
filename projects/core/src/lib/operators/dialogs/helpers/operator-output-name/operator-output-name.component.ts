@@ -14,10 +14,10 @@ import {MatInputModule} from '@angular/material/input';
 export class OperatorOutputNameComponent implements ControlValueAccessor, AfterViewInit {
     private changeDetectorRef = inject(ChangeDetectorRef);
 
-    type = input<'Layer' | 'Plot'>('Layer');
-    suggestion = input<string>('');
+    readonly type = input<'Layer' | 'Plot'>('Layer');
+    readonly suggestion = input<string>('');
 
-    name = linkedSignal(() => this.suggestion());
+    readonly name = linkedSignal(() => this.suggestion());
 
     private onTouched?: () => void;
     private onChange?: (_: string) => void = undefined;

@@ -84,23 +84,23 @@ export class DashboardComponent implements AfterViewInit, AfterContentInit {
 
     maxScore = 5;
 
-    isSelectingBox = signal(false);
-    selectedFeature: WritableSignal<SelectedProperty | undefined> = signal(undefined);
-    isLandscape = signal(true);
-    plotWidthPx = signal(100);
-    plotHeightPx = signal(100);
-    layersReverse = toSignal(this.dataSelectionService.layers);
-    scoreLoading = signal(false);
-    score = signal<number | undefined>(undefined);
+    readonly isSelectingBox = signal(false);
+    readonly selectedFeature: WritableSignal<SelectedProperty | undefined> = signal(undefined);
+    readonly isLandscape = signal(true);
+    readonly plotWidthPx = signal(100);
+    readonly plotHeightPx = signal(100);
+    readonly layersReverse = toSignal(this.dataSelectionService.layers);
+    readonly scoreLoading = signal(false);
+    readonly score = signal<number | undefined>(undefined);
 
-    usageLoading = signal(false);
-    usage = signal<ComputationQuota | undefined>(undefined);
+    readonly usageLoading = signal(false);
+    readonly usage = signal<ComputationQuota | undefined>(undefined);
 
-    mapComponent = viewChild.required(MapContainerComponent);
+    readonly mapComponent = viewChild.required(MapContainerComponent);
 
-    analyzeCard = viewChild.required('analyzecard', {read: ElementRef});
+    readonly analyzeCard = viewChild.required('analyzecard', {read: ElementRef});
 
-    usageCompontent = viewChild.required(QuotaLogComponent);
+    readonly usageCompontent = viewChild.required(QuotaLogComponent);
 
     timeSteps: Time[] = [new Time(utc('2021-05-01')), new Time(utc('2022-05-01'))];
 

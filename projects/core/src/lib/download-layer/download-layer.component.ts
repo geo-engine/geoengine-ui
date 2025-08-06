@@ -85,7 +85,7 @@ export class DownloadLayerComponent implements OnInit {
     private readonly formBuilder = inject(UntypedFormBuilder);
     public readonly config = inject(CoreConfig);
 
-    layer = input.required<Layer>();
+    readonly layer = input.required<Layer>();
 
     readonly rasterInterpolationMethods = [
         ['Nearest Neighbor', 'nearestNeighbor'],

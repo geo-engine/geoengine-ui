@@ -39,7 +39,7 @@ import {ErrorStateMatcher} from '@angular/material/core';
 })
 export class ArunaComponent {
     readonly provider = input<TypedDataProviderDefinition>();
-    _provider = signal<TypedDataProviderDefinition | undefined>(undefined);
+    readonly _provider = signal<TypedDataProviderDefinition | undefined>(undefined);
     readonly createNew = input<boolean>(false);
     readonly readonly = input<boolean>(false);
     readonly visible = input<boolean>(false);

@@ -37,7 +37,7 @@ export class RasterIconComponent {
     /**
      * the array of generated (colored and positioned) cells.
      */
-    cells = computed<Array<Cell>>(() => {
+    readonly cells = computed<Array<Cell>>(() => {
         const rasterColorizer = this.colorizer();
         const cellSpace = this.cellSpace();
         const xCells = this.xCells();
