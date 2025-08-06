@@ -1,7 +1,7 @@
 import {DataSource} from '@angular/cdk/collections';
 import {AfterViewInit, Component, OnChanges, SimpleChanges, inject, input, viewChild} from '@angular/core';
 import {Permission, PermissionListing} from '@geoengine/openapi-client';
-import {BehaviorSubject, Observable, Subject, firstValueFrom, tap} from 'rxjs';
+import {BehaviorSubject, firstValueFrom, Observable, Subject, tap} from 'rxjs';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ConfirmationComponent, PermissionsService, ResourceType, UserService, errorToText} from '@geoengine/common';
@@ -153,6 +153,13 @@ export class PermissionsComponent implements AfterViewInit, OnChanges {
 
     protected setUpSource(): void {
         this.source = new PermissionDataSource(this.permissionsService, this.paginator(), this.resourceType(), this.resourceId());
+        this.source.isOwner$.subscribe((isOwner) => {
+            if (isOwner) {
+                this.displayedColumns = ['roleName', 'roleId', 'permission', 'remove'];
+            } else {
+                this.displayedColumns = ['roleName', 'roleId', 'permission'];
+            }
+        });
         this.source.loadPermissions(0, 5);
     }
 
@@ -177,6 +184,8 @@ class PermissionDataSource extends DataSource<PermissionListing> {
     readonly loading$ = new BehaviorSubject(false);
 
     protected permissions$ = new Subject<Array<PermissionListing>>();
+
+    readonly isOwner$ = new BehaviorSubject(false);
 
     constructor(
         private permissionsService: PermissionsService,
@@ -206,6 +215,9 @@ class PermissionDataSource extends DataSource<PermissionListing> {
         this.loading$.next(false);
 
         this.permissionsService.getPermissions(this.resourceType, this.resourceId, pageIndex * pageSize, pageSize).then((permissions) => {
+            if (pageIndex * pageSize == 0) {
+                this.isOwner$.next(permissions.length > 0 && permissions[0].permission == Permission.Owner);
+            }
             this.loading$.next(false);
             if (this.paginator && permissions.length === pageSize) {
                 // we do not know the number of items in total, so instead for each full page set the length to show the "next" button

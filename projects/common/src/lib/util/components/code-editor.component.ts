@@ -2,7 +2,7 @@ import {Component, ChangeDetectionStrategy, AfterViewInit, ElementRef, input, si
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {EditorView, ViewUpdate, lineNumbers, drawSelection, Panel, showPanel, PanelConstructor} from '@codemirror/view';
 import {syntaxHighlighting, defaultHighlightStyle} from '@codemirror/language';
-import {Compartment} from '@codemirror/state';
+import {Compartment, EditorState} from '@codemirror/state';
 import {json} from '@codemirror/lang-json';
 import {rust} from '@codemirror/lang-rust';
 
@@ -40,8 +40,10 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
 
     readonly language = input.required<Language>();
     readonly header = input<string>();
+    readonly readonly = input<boolean>(false);
 
     private writtenCode = '';
+    private pristine = true;
     private readonly code = signal<string>(this.writtenCode);
 
     private readonly languageMode = computed(() => {
@@ -56,6 +58,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
     private editor?: EditorView;
     private readonly languageCompartment = new Compartment();
     private readonly headerCompartment = new Compartment();
+    private readonly readonlyCompartment = new Compartment();
     private readonly headerPanel: Panel = createHeaderPanel();
 
     private onChanged?: (code: string) => void;
@@ -72,7 +75,9 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
             const code = this.code();
 
             if (!this.onChanged) return;
-            if (this.writtenCode === code) return; // don't call onChanged if the code has not changed
+            if (this.pristine && this.writtenCode === code) return; // don't call onChanged if the code has not changed
+
+            this.pristine = false;
 
             this.onChanged(code);
         });
@@ -87,6 +92,10 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
             this.editor?.dispatch({
                 effects: this.headerCompartment.reconfigure(showPanel.of(panelConstructor)),
             });
+        });
+
+        effect(() => {
+            this.editor?.dispatch({effects: this.readonlyCompartment.reconfigure(EditorState.readOnly.of(this.readonly()))});
         });
     }
 
@@ -105,6 +114,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
                 this.languageCompartment.of(this.languageMode()),
                 syntaxHighlighting(defaultHighlightStyle),
                 this.headerCompartment.of(showPanel.of(null)),
+                this.readonlyCompartment.of(EditorState.readOnly.of(this.readonly())),
                 minHeightEditor,
                 EditorView.updateListener.of((v: ViewUpdate) => {
                     if (v.docChanged) {
@@ -123,6 +133,7 @@ export class CodeEditorComponent implements ControlValueAccessor, AfterViewInit 
         if (typeof code !== 'string') return;
 
         this.writtenCode = code;
+        this.pristine = true;
 
         if (this.editor) {
             this.editor?.dispatch({
