@@ -258,7 +258,6 @@ const CORE_COMPONENTS = [
     VectorExpressionComponent,
     VectorLegendComponent,
     ZoomHandlesComponent,
-    DownsamplingComponent,
 ];
 
 const CORE_COMPONENT_IMPORTS = [
