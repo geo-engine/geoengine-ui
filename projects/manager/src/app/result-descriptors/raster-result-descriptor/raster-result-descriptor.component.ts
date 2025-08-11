@@ -52,15 +52,15 @@ export class RasterResultDescriptorComponent {
     }
 
     get boundingBox(): BoundingBox2D {
-        const gt = GeoTransform.fromGdalDatasetGeoTransform(this.resultDescriptor.spatialGrid.spatialGrid.geoTransform);
-        const pxBounds = GridBoundingBox2D.fromDict(this.resultDescriptor.spatialGrid.spatialGrid.gridBounds);
+        const gt = GeoTransform.fromGdalDatasetGeoTransform(this.resultDescriptor().spatialGrid.spatialGrid.geoTransform);
+        const pxBounds = GridBoundingBox2D.fromDict(this.resultDescriptor().spatialGrid.spatialGrid.gridBounds);
         return gt.gridBoundsToSpatialBounds(pxBounds);
     }
 
     get spatialResolution(): SpatialResolution {
         return {
-            x: this.resultDescriptor.spatialGrid.spatialGrid.geoTransform.xPixelSize,
-            y: this.resultDescriptor.spatialGrid.spatialGrid.geoTransform.yPixelSize,
+            x: this.resultDescriptor().spatialGrid.spatialGrid.geoTransform.xPixelSize,
+            y: this.resultDescriptor().spatialGrid.spatialGrid.geoTransform.yPixelSize,
         };
     }
 }
