@@ -125,14 +125,25 @@ export class OgrDatasetComponent implements OnChanges, OnInit {
                 layerName: metaData.loadingInfo.layerName,
                 metaData: metaData,
             });
+            // reflect changes of selected dataset in the
+            // select measurement part of the form
+            this.setupColumnMeasurementSelect();
+            // clear out the classes of the measurementComponent
+            // to avoid their (visual) duplication
+            this.measurementComponent?.clearClasses();
             return;
         }
     }
 
     ngOnInit() {
+        this.setupColumnMeasurementSelect();
+    }
+
+    private setupColumnMeasurementSelect() {
         this.columns = this.getColumnsAsMap();
-        if (this.columns) {
-            this.setSelectedColumn(this.sortedNonTextColumns()[0].name);
+        const nonTextColumns = this.sortedNonTextColumns();
+        if (this.columns && nonTextColumns.length > 0) {
+            this.setSelectedColumn(nonTextColumns[0].name);
         }
     }
 

@@ -99,6 +99,10 @@ export class MeasurementComponent implements OnChanges {
         }
     }
 
+    public clearClasses(): void {
+        this.classes.clear();
+    }
+
     /**
      * If created with a measurement as @Input, set the appropriate fields
      * for Classification and Continuous MeasurementType's.
