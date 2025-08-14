@@ -131,6 +131,12 @@ export class OgrDatasetComponent implements OnChanges, OnInit {
             // clear out the classes of the measurementComponent
             // to avoid their (visual) duplication
             this.measurementComponent?.clearClasses();
+            // reset the rest of the measurement component
+            // to avoid cached data in between different datasets
+            this.measurementComponent?.reset();
+            // this disables the Apply Button when the ogr data set gets changed
+            // otherwise an unchanged data-set could be saved
+            this.formMetaData.markAsPristine();
             return;
         }
     }

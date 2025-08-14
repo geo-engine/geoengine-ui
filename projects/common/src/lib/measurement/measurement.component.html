@@ -18,7 +18,7 @@
             </mat-form-field>
         </div>
 
-        <form [formGroup]="addClassForm">
+        <form [formGroup]="classForm">
             <ng-container formArrayName="classes">
                 <ng-container *ngFor="let cl of classes.controls; let i = index">
                     <div class="flex-container" [formGroup]="cl">
@@ -31,19 +31,32 @@
                             <input matInput type="text" formControlName="value" (input)="onClassLabelChange($event, i)" />
                         </mat-form-field>
 
-                        @if (this.isLast(i)) {
-                            <button mat-icon-button [disabled]="!addClassForm.valid" (click)="addClass(i)">
-                                <mat-icon aria-label="Add class">add_circle_outline</mat-icon>
-                            </button>
-                        } @else {
-                            <button mat-icon-button (click)="removeClass(i)">
-                                <mat-icon aria-label="Delete row">remove_circle_outline</mat-icon>
-                            </button>
-                        }
+                        <button mat-icon-button (click)="removeClass(i)">
+                            <mat-icon aria-label="Delete row">remove_circle_outline</mat-icon>
+                        </button>
                     </div>
                 </ng-container>
             </ng-container>
         </form>
+
+        <ng-container>
+            <form [formGroup]="addClassForm">
+                <div class="flex-container">
+                    <mat-form-field appearance="fill">
+                        <mat-label>New class value</mat-label>
+                        <input matInput type="number" formControlName="key" />
+                    </mat-form-field>
+                    <mat-form-field appearance="fill">
+                        <mat-label>New class label</mat-label>
+                        <input matInput type="text" formControlName="value" />
+                    </mat-form-field>
+
+                    <button mat-icon-button [disabled]="addClassForm.invalid" (click)="addClass(classes.length - 1)">
+                        <mat-icon aria-label="Add class">add_circle_outline</mat-icon>
+                    </button>
+                </div>
+            </form>
+        </ng-container>
     }
 
     @if (measurement.type === MeasurementType.Continuous && continuousMeasurement) {

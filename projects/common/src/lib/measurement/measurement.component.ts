@@ -52,7 +52,9 @@ export class MeasurementComponent implements OnChanges {
     continuousMeasurement?: ContinuousMeasurement;
     unitlessMeasurement?: UnitlessMeasurement;
 
-    addClassForm: FormGroup<ClassForms> = new FormGroup({
+    addClassForm: FormGroup<AddClassForm> = this.newClassRow();
+
+    classForm: FormGroup<ClassForms> = new FormGroup({
         classes: new FormArray<FormGroup<AddClassForm>>([]),
     });
 
@@ -72,7 +74,7 @@ export class MeasurementComponent implements OnChanges {
     }
 
     get classes(): FormArray<FormGroup<AddClassForm>> {
-        return this.addClassForm.controls.classes;
+        return this.classForm.controls.classes;
     }
 
     newClassRow(key: string | null = null, label: string | null = null): FormGroup<AddClassForm> {
@@ -111,10 +113,11 @@ export class MeasurementComponent implements OnChanges {
         switch (measurement.type) {
             case MeasurementType.Classification:
                 this.classificationMeasurement = measurement;
-                this.pushEmptyClassValue();
-                for (let classesKey in this.classificationMeasurement.classes) {
-                    const value = this.classificationMeasurement.classes[classesKey];
-                    this.addClassForm.controls.classes.push(this.newClassRow(classesKey, value));
+                if (this.classForm.controls.classes.length < 1) {
+                    for (let classesKey in this.classificationMeasurement.classes) {
+                        const value = this.classificationMeasurement.classes[classesKey];
+                        this.classForm.controls.classes.push(this.newClassRow(classesKey, value));
+                    }
                 }
                 break;
             case MeasurementType.Continuous:
@@ -125,18 +128,6 @@ export class MeasurementComponent implements OnChanges {
                 break;
         }
         this.measurement = measurement;
-    }
-
-    private pushEmptyClassValue() {
-        if (!this.classificationMeasurement) {
-            return;
-        }
-        if (Object.keys(this.classificationMeasurement.classes).length == 0 && this.addClassForm.controls.classes.length < 1) {
-            // there must always be one of those forms, s.t.
-            // users can always enter some first class.
-            // This is not necessary if there are some classes already in the system
-            this.addClassForm.controls.classes.push(this.newClassRow());
-        }
     }
 
     updateMeasurementType(type: MeasurementType): void {
@@ -151,7 +142,6 @@ export class MeasurementComponent implements OnChanges {
                 }
 
                 this.measurement = this.classificationMeasurement;
-                this.pushEmptyClassValue();
                 break;
             case MeasurementType.Continuous:
                 if (!this.continuousMeasurement) {
@@ -183,15 +173,15 @@ export class MeasurementComponent implements OnChanges {
             return;
         }
 
-        const key = this.addClassForm.controls.classes.at(index).controls.key.value;
-        this.addClassForm.controls.classes.removeAt(index);
+        const key = this.classForm.controls.classes.at(index).controls.key.value;
+        this.classForm.controls.classes.removeAt(index);
         delete this.classificationMeasurement.classes[key];
         // notify observers to mark forms as dirty
         this.onInputChange.emit();
     }
 
     protected isLast(i: number): boolean {
-        return this.addClassForm.controls.classes.length - 1 === i;
+        return this.classForm.controls.classes.length - 1 === i;
     }
 
     addClass(i: number) {
@@ -199,13 +189,15 @@ export class MeasurementComponent implements OnChanges {
             return;
         }
 
-        const key = this.addClassForm.controls.classes.at(i).value.key;
-        const value = this.addClassForm.controls.classes.at(i).value.value;
+        const key = this.addClassForm.controls.key.value;
+        const value = this.addClassForm.controls.value.value;
         // x == null is sufficient to test for both null and undefined
         if (!(key == null || value == null)) {
             this.classificationMeasurement.classes[key] = value;
         }
-        this.addClassForm.controls.classes.push(this.newClassRow());
+        this.classForm.controls.classes.push(this.newClassRow(key, value));
+        this.onInputChange.emit();
+        this.addClassForm.reset();
     }
 
     inputChange(content: Event) {
@@ -214,8 +206,8 @@ export class MeasurementComponent implements OnChanges {
 
     onClassValueChange(content: Event, i: number) {
         // Save the currently edited class to the measurement iff it is valid
-        if (i != undefined && this.addClassForm.controls.classes.at(i).valid && this.classificationMeasurement) {
-            const key = this.addClassForm.controls.classes.at(i).value.key!;
+        if (i != undefined && this.classForm.controls.classes.at(i).valid && this.classificationMeasurement) {
+            const key = this.classForm.controls.classes.at(i).value.key!;
             const old = this.classificationMeasurement.classes[key];
             delete this.classificationMeasurement.classes[key];
             const value = content.target as HTMLInputElement;
@@ -226,8 +218,8 @@ export class MeasurementComponent implements OnChanges {
 
     onClassLabelChange(content: Event, i: number) {
         // Save the currently edited class to the measurement iff it is valid
-        if (i != undefined && this.addClassForm.controls.classes.at(i).valid && this.classificationMeasurement) {
-            const key = this.addClassForm.controls.classes.at(i).value.key!;
+        if (i != undefined && this.classForm.controls.classes.at(i).valid && this.classificationMeasurement) {
+            const key = this.classForm.controls.classes.at(i).value.key!;
             const value = content.target as HTMLInputElement;
             this.classificationMeasurement.classes[key] = value.value;
         }
@@ -235,7 +227,22 @@ export class MeasurementComponent implements OnChanges {
     }
 
     public isInvalid(): boolean {
-        const noUnitForContinuous = this.continuousMeasurement?.unit ?? "";
-        return this.addClassForm.invalid || noUnitForContinuous === "";
+        const measurementType = this.measurement.type;
+        switch (measurementType) {
+            case MeasurementType.Classification:
+                return this.classForm.invalid || (!this.addClassFormIsEmpty() && this.classes.length === 0);
+            case MeasurementType.Continuous:
+                const noUnitForContinuous = this.continuousMeasurement?.unit ?? '';
+                return noUnitForContinuous === '';
+            default:
+                return false;
+        }
+    }
+
+    protected addClassFormIsEmpty(): boolean {
+        const key = this.addClassForm.controls.key.value;
+        const value = this.addClassForm.controls.value.value;
+        // if a user enters 0, then deletes it, the field is not 'null' not '' as before
+        return (key === '' || key === null) && value === '';
     }
 }
