@@ -255,6 +255,9 @@ export class DatasetEditorComponent implements OnChanges {
             if (this.gdalMetadataListComponent) {
                 this.gdalMetadataListComponent.form.markAsPristine();
             }
+            if (this.ogrDatasetComponent) {
+                this.ogrDatasetComponent.formMetaData.markAsPristine();
+            }
         } catch (error) {
             const errorMessage = await errorToText(error, 'Updating dataset loading information failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
