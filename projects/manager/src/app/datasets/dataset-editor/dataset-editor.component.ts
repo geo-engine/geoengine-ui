@@ -229,9 +229,9 @@ export class DatasetEditorComponent implements OnChanges {
 
     isSaveLoadingInfoDisabled(): boolean {
         if (this.gdalMetadataListComponent) {
-            return this.gdalMetadataListComponent.form.pristine || this.gdalMetadataListComponent.form.invalid;
+            return this.gdalMetadataListComponent.isSaveLoadingInfoDisabled();
         } else if (this.ogrDatasetComponent) {
-            return this.ogrDatasetComponent.formMetaData.pristine || this.ogrDatasetComponent.formMetaData.invalid;
+            return this.ogrDatasetComponent.isSaveLoadingInfoDisabled();
         } else {
             return this.rawLoadingInfo === '' || this.rawLoadingInfoPristine;
         }

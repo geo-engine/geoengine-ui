@@ -233,4 +233,9 @@ export class MeasurementComponent implements OnChanges {
         }
         this.onInputChange.emit(content);
     }
+
+    public isInvalid(): boolean {
+        const noUnitForContinuous = this.continuousMeasurement?.unit ?? "";
+        return this.addClassForm.invalid || noUnitForContinuous === "";
+    }
 }

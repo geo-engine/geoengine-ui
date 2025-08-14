@@ -702,4 +702,9 @@ export class OgrDatasetComponent implements OnChanges, OnInit {
         }
         this.measurementComponent?.reset(); // reset cached components for new column
     }
+
+    public isSaveLoadingInfoDisabled(): boolean {
+        const measurementInvalid = this.measurementComponent?.isInvalid() ?? false;
+        return this.formMetaData.pristine || this.formMetaData.invalid || measurementInvalid;
+    }
 }

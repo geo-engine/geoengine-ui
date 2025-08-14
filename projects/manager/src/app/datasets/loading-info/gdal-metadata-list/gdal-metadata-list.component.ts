@@ -329,6 +329,12 @@ export class GdalMetadataListComponent implements OnChanges {
     markDirty() {
         this.form.markAsDirty();
     }
+
+    public isSaveLoadingInfoDisabled(): boolean {
+        const measurementInvalid = this.measurementComponent?.isInvalid() ?? false;
+        return this.form.pristine || this.form.invalid || measurementInvalid;
+    }
+
 }
 
 export const overlappingTimeIntervalsValidator =
