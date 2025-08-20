@@ -1631,8 +1631,9 @@ function createClusteredPointLayerQueryWorkflow(
         operator: {
             type: 'VisualPointClustering',
             params: {
-                minRadius: PointSymbology.DEFAULT_POINT_RADIUS * resolution,
-                delta: ClusteredPointSymbology.DELTA_PX * resolution,
+                minRadiusPx: PointSymbology.DEFAULT_POINT_RADIUS,
+                deltaPx: ClusteredPointSymbology.DELTA_PX,
+                resolution,
                 radiusColumn: ClusteredPointSymbology.RADIUS_COLUMN,
                 countColumn: ClusteredPointSymbology.COUNT_COLUMN,
                 columnAggregates,
