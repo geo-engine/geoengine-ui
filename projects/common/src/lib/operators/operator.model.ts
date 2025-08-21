@@ -428,6 +428,7 @@ export interface RasterTypeConversionDict extends OperatorDict {
 export interface VisualPointClusteringParams extends OperatorParams {
     minRadiusPx: number;
     deltaPx: number;
+    resolution: number;
     radiusColumn: string;
     countColumn: string;
     columnAggregates: Record<

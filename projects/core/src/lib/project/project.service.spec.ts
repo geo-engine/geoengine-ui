@@ -11,16 +11,17 @@ import {BackendService} from '../backend/backend.service';
 import {SpatialReferenceService, WGS_84} from '../spatial-references/spatial-reference.service';
 import {first, mergeMap, tap} from 'rxjs/operators';
 import {Configuration, DefaultConfig} from '@geoengine/openapi-client';
-import {LayersService, NotificationService, SpatialReferenceSpecification, Time, UserService} from '@geoengine/common';
+import {LayersService, NotificationService, SpatialReferenceSpecification, Time, UserService, WorkflowsService} from '@geoengine/common';
 import {TestBed} from '@angular/core/testing';
 
 describe('test project methods in projectService', () => {
     let notificationServiceSpy: {get: jasmine.Spy};
     let mapServiceSpy: {get: jasmine.Spy};
     let backendSpy: {createProject: jasmine.Spy; listProjects: jasmine.Spy; updateProject: jasmine.Spy};
-    let userServiceSpy: {getSessionStream: jasmine.Spy; getSessionTokenForRequest: jasmine.Spy};
+    let userServiceSpy: {getSessionStream: jasmine.Spy; getSessionTokenStream: jasmine.Spy; getSessionTokenForRequest: jasmine.Spy};
     let spatialReferenceSpy: {getSpatialReferenceSpecification: jasmine.Spy};
     let layersServiceSpy: {resolveLayer: jasmine.Spy};
+    let workflowsServiceSpy: {getWorkflow: jasmine.Spy};
 
     let projectService: ProjectService;
 
@@ -28,9 +29,10 @@ describe('test project methods in projectService', () => {
         notificationServiceSpy = jasmine.createSpyObj('NotificationService', ['error']);
         mapServiceSpy = jasmine.createSpyObj('MapService', ['getViewportSizeStream']);
         backendSpy = jasmine.createSpyObj('BackendService', ['createProject', 'listProjects', 'setSessionProject', 'updateProject']);
-        userServiceSpy = jasmine.createSpyObj('UserService', ['getSessionStream', 'getSessionTokenForRequest']);
+        userServiceSpy = jasmine.createSpyObj('UserService', ['getSessionStream', 'getSessionTokenStream', 'getSessionTokenForRequest']);
         spatialReferenceSpy = jasmine.createSpyObj('SpatialRefernceService', ['getSpatialReferenceSpecification']);
         layersServiceSpy = jasmine.createSpyObj('LayersSerivce', ['resolveLayer']);
+        workflowsServiceSpy = jasmine.createSpyObj('WorkflowsService', ['getWorkflow']);
 
         const sessionToken = 'ffffffff-ffff-4fff-afff-ffffffffffff';
 
@@ -58,6 +60,7 @@ describe('test project methods in projectService', () => {
         );
 
         userServiceSpy.getSessionTokenForRequest.and.returnValue(of<UUID>('ffffffff-ffff-4fff-afff-ffffffffffff'));
+        userServiceSpy.getSessionTokenStream.and.returnValue(of<UUID>('ffffffff-ffff-4fff-afff-ffffffffffff'));
 
         spatialReferenceSpy.getSpatialReferenceSpecification.and.returnValue(
             of<SpatialReferenceSpecification>(
@@ -105,6 +108,7 @@ describe('test project methods in projectService', () => {
                 {provide: UserService, useValue: userServiceSpy},
                 {provide: SpatialReferenceService, useValue: spatialReferenceSpy},
                 {provide: LayersService, useValue: layersServiceSpy},
+                {provide: WorkflowsService, useValue: workflowsServiceSpy},
             ],
         });
 
