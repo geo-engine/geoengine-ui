@@ -234,4 +234,24 @@
         <mat-label>Spatial Reference</mat-label>
         <input matInput type="text" formControlName="spatialReference" />
     </mat-form-field>
+
+    <mat-form-field class="column">
+        <mat-label>Column</mat-label>
+        <mat-select
+            [ngModel]="selectedColumn()"
+            (ngModelChange)="setSelectedColumn($event)"
+            [ngModelOptions]="{standalone: true}"
+            (selectionChange)="onColumnMatSelectChange($event)"
+        >
+            @for (col of sortedNonTextColumns(); track col.name) {
+                <mat-option [value]="col.name">{{ col.name }}</mat-option>
+            }
+        </mat-select>
+    </mat-form-field>
+    <mat-card-subtitle>Specify the measurement for the selected column</mat-card-subtitle>
+    <geoengine-measurement
+        [measurement]="newMeasurementForColumn()"
+        (measurementChange)="onMeasurementChange($event)"
+        (eventInputChange)="markDirty()"
+    ></geoengine-measurement>
 </form>
