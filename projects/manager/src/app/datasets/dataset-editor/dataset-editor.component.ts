@@ -310,7 +310,7 @@ export class DatasetEditorComponent {
             this.snackBar.open('Dataset loading information successfully updated.', 'Close', {
                 duration: this.config.DEFAULTS.SNACKBAR_DURATION,
             });
-            this.dataset = await this.datasetsService.getDataset(this.datasetListing.name);
+            this.dataset = await this.datasetsService.getDataset(this._datasetListing().name);
 
             this.rawLoadingInfoPristine = true;
             const gdalMetadataListComponent = this.gdalMetadataListComponent();
