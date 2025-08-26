@@ -3,11 +3,11 @@ import {
     FormArray,
     FormControl,
     FormGroup,
+    FormsModule,
+    ReactiveFormsModule,
     ValidationErrors,
     ValidatorFn,
     Validators,
-    FormsModule,
-    ReactiveFormsModule,
 } from '@angular/forms';
 import {GdalDatasetParametersComponent, GdalDatasetParametersForm} from '../gdal-dataset-parameters/gdal-dataset-parameters.component';
 import {DatasetsService, errorToText, MeasurementComponent, TimeInterval} from '@geoengine/common';
@@ -21,11 +21,24 @@ import {
     RasterResultDescriptor,
 } from '@geoengine/openapi-client';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {MatFormField, MatLabel, MatInput, MatError} from '@angular/material/input';
+import {MatError, MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {MatButton} from '@angular/material/button';
-import {MatDivider, MatNavList, MatListItem, MatListItemTitle, MatListItemLine} from '@angular/material/list';
+import {MatDivider, MatListItem, MatListItemLine, MatListItemTitle, MatNavList} from '@angular/material/list';
 import {MatSelect} from '@angular/material/select';
 import {MatOption} from '@angular/material/autocomplete';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    inject,
+    Input,
+    input,
+    OnChanges,
+    SimpleChanges,
+    ViewChild,
+} from '@angular/core';
+import {MatCardSubtitle} from '@angular/material/card';
+import {NgIf} from '@angular/common';
 
 export interface GdalMetadataListForm {
     timeSlices: FormArray<FormGroup<TimeSliceForm>>;
@@ -64,8 +77,10 @@ export interface RasterResultDescriptorForm {
         MatListItemTitle,
         MatListItemLine,
         MatError,
-        CommonModule,
         GdalDatasetParametersComponent,
+        MatCardSubtitle,
+        MeasurementComponent,
+        NgIf,
     ],
 })
 export class GdalMetadataListComponent implements OnChanges {
@@ -87,9 +102,8 @@ export class GdalMetadataListComponent implements OnChanges {
 
     selectedTimeSlice = 0;
 
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/require-await
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
-        const metaData = this.metaData();
+        const metaData: GdalMetaDataList | undefined = this.metaData();
         if (changes.metaData && metaData) {
             this.setUpFormFromMetaData(metaData);
         }
@@ -193,7 +207,7 @@ export class GdalMetadataListComponent implements OnChanges {
 
         const resultDescriptorControl = this.form.controls.rasterResultDescriptor.controls;
 
-        const measurement = this.measurementComponent?.measurement || {type: 'unitless'};
+        const measurement = this.measurementComponent?.measurement ?? {type: 'unitless'};
 
         const resultDescriptor: RasterResultDescriptor = {
             bands: [
@@ -357,7 +371,7 @@ export class GdalMetadataListComponent implements OnChanges {
         return form;
     }
 
-    markDirty() {
+    markDirty(): void {
         this.form.markAsDirty();
     }
 

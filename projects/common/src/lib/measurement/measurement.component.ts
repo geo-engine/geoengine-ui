@@ -1,17 +1,11 @@
-import {Component, EventEmitter, Input, OnChanges, Output} from '@angular/core';
+import {Component, Input, OnChanges, output} from '@angular/core';
 import {FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ClassificationMeasurement, ContinuousMeasurement, Measurement, UnitlessMeasurement} from '@geoengine/openapi-client';
 import {CommonModule as AngularCommonModule} from '@angular/common';
 import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle';
-import {MatFormField, MatLabel} from '@angular/material/form-field';
-import {MatIcon} from '@angular/material/icon';
-import {MatInput} from '@angular/material/input';
-import {MatIconButton} from '@angular/material/button';
-import {MatButtonToggleGroup, MatButtonToggle} from '@angular/material/button-toggle';
-import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
+import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {MatIconButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
-import {KeyValuePipe} from '@angular/common';
 
 enum MeasurementType {
     Classification = 'classification',
@@ -35,7 +29,6 @@ interface ClassForms {
     imports: [
         AngularCommonModule,
         FormsModule,
-        KeyValuePipe,
         MatButtonToggle,
         MatButtonToggleGroup,
         MatFormField,
@@ -50,7 +43,7 @@ export class MeasurementComponent implements OnChanges {
     @Input() measurement!: Measurement;
 
     readonly measurementChange = output<Measurement>();
-    readonly onInputChange = output<Event>()
+    readonly outputInputChange = output<Event>();
 
     MeasurementType = MeasurementType;
 
@@ -60,11 +53,11 @@ export class MeasurementComponent implements OnChanges {
 
     addClassForm: FormGroup<AddClassForm> = this.newClassRow();
 
-    classForm: FormGroup<ClassForms> = new FormGroup({
+    classForm = new FormGroup<ClassForms>({
         classes: new FormArray<FormGroup<AddClassForm>>([]),
     });
 
-    ngOnChanges() {
+    ngOnChanges(): void {
         if (!this.measurement) {
             this.measurement = {
                 type: 'unitless',
@@ -73,7 +66,7 @@ export class MeasurementComponent implements OnChanges {
         this.initMeasurement(this.measurement);
     }
 
-    public reset() {
+    public reset(): void {
         this.classificationMeasurement = undefined;
         this.continuousMeasurement = undefined;
         this.unitlessMeasurement = undefined;
@@ -177,14 +170,14 @@ export class MeasurementComponent implements OnChanges {
         this.classForm.controls.classes.removeAt(index);
         delete this.classificationMeasurement.classes[key];
         // notify observers to mark forms as dirty
-        this.onInputChange.emit(new Event("removeClass"));
+        this.outputInputChange.emit(new Event('removeClass'));
     }
 
     protected isLast(i: number): boolean {
         return this.classForm.controls.classes.length - 1 === i;
     }
 
-    addClass(i: number): void {
+    addClass(): void {
         if (!this.classificationMeasurement) {
             return;
         }
@@ -196,15 +189,15 @@ export class MeasurementComponent implements OnChanges {
             this.classificationMeasurement.classes[key] = value;
         }
         this.classForm.controls.classes.push(this.newClassRow(key, value));
-        this.onInputChange.emit(new Event("addClass"));
+        this.outputInputChange.emit(new Event('addClass'));
         this.addClassForm.reset();
     }
 
-    inputChange(content: Event) {
-        this.onInputChange.emit(content);
+    inputChange(content: Event): void {
+        this.outputInputChange.emit(content);
     }
 
-    onClassValueChange(content: Event, i: number) {
+    onClassValueChange(content: Event, i: number): void {
         // Save the currently edited class to the measurement iff it is valid
         if (i != undefined && this.classForm.controls.classes.at(i).valid && this.classificationMeasurement) {
             const key = this.classForm.controls.classes.at(i).value.key!;
@@ -213,36 +206,37 @@ export class MeasurementComponent implements OnChanges {
             const value = content.target as HTMLInputElement;
             this.classificationMeasurement.classes[value.value] = old;
         }
-        this.onInputChange.emit(content);
+        this.outputInputChange.emit(content);
     }
 
-    onClassLabelChange(content: Event, i: number) {
+    onClassLabelChange(content: Event, i: number): void {
         // Save the currently edited class to the measurement iff it is valid
         if (i != undefined && this.classForm.controls.classes.at(i).valid && this.classificationMeasurement) {
             const key = this.classForm.controls.classes.at(i).value.key!;
             const value = content.target as HTMLInputElement;
             this.classificationMeasurement.classes[key] = value.value;
         }
-        this.onInputChange.emit(content);
+        this.outputInputChange.emit(content);
     }
 
     public isInvalid(): boolean {
         const measurementType = this.measurement.type;
         switch (measurementType) {
             case MeasurementType.Classification:
-                return this.classForm.invalid || (!this.addClassFormIsEmpty() && this.classes.length === 0);
-            case MeasurementType.Continuous:
+                return this.classForm.invalid || this.addClassFormIsNotEmpty();
+            case MeasurementType.Continuous: {
                 const noUnitForContinuous = this.continuousMeasurement?.unit ?? '';
                 return noUnitForContinuous === '';
+            }
             default:
                 return false;
         }
     }
 
-    protected addClassFormIsEmpty(): boolean {
+    protected addClassFormIsNotEmpty(): boolean {
         const key = this.addClassForm.controls.key.value;
         const value = this.addClassForm.controls.value.value;
         // if a user enters 0, then deletes it, the field is not 'null' not '' as before
-        return (key === '' || key === null) && value === '';
+        return !((key === '' || key === null) && value === '');
     }
 }

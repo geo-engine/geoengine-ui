@@ -59,20 +59,20 @@
             <ng-container matColumnDef="measurement">
                 <th mat-header-cell *matHeaderCellDef>Measurement</th>
                 <td mat-cell *matCellDef="let band">
-                 @if (band.measurement.type === 'classification') {
-                    <mat-expansion-panel>
-                        <mat-expansion-panel-header>Click to view classes</mat-expansion-panel-header>
-                        <ng-container *ngFor="let clazz of band.measurement.classes | keyvalue">
-                            <p>{{ clazz.key }}: {{ clazz.value }}</p>
-                        </ng-container>
-                    </mat-expansion-panel>
-                 }
-                 @if (band.measurement.type === 'continuous') {
-                    {{ band.measurement.measurement }} ({{ band.measurement.unit }})
-                 }
-                 @if (band.measurement.type === 'unitless') {
-                     Unitless
-                 }
+                    @if (band.measurement.type === 'classification') {
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>Click to view classes</mat-expansion-panel-header>
+                            <ng-container *ngFor="let clazz of band.measurement.classes | keyvalue">
+                                <p>{{ clazz.key }}: {{ clazz.value }}</p>
+                            </ng-container>
+                        </mat-expansion-panel>
+                    }
+                    @if (band.measurement.type === 'continuous') {
+                        {{ band.measurement.measurement }} ({{ band.measurement.unit }})
+                    }
+                    @if (band.measurement.type === 'unitless') {
+                        Unitless
+                    }
                 </td></ng-container
             >
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

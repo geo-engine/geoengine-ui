@@ -38,35 +38,36 @@
                 </ng-container>
             </ng-container>
 
-        <ng-container>
-            <form [formGroup]="addClassForm">
-                <div class="flex-container">
-                    <mat-form-field appearance="fill">
-                        <mat-label>New class value</mat-label>
-                        <input matInput type="number" formControlName="key" />
-                    </mat-form-field>
-                    <mat-form-field appearance="fill">
-                        <mat-label>New class label</mat-label>
-                        <input matInput type="text" formControlName="value" />
-                    </mat-form-field>
+            <ng-container>
+                <form [formGroup]="addClassForm">
+                    <div class="flex-container">
+                        <mat-form-field appearance="fill">
+                            <mat-label>New class value</mat-label>
+                            <input matInput type="number" formControlName="key" />
+                        </mat-form-field>
+                        <mat-form-field appearance="fill">
+                            <mat-label>New class label</mat-label>
+                            <input matInput type="text" formControlName="value" />
+                        </mat-form-field>
 
-                    <button mat-icon-button [disabled]="addClassForm.invalid" (click)="addClass(classes.length - 1)">
-                        <mat-icon aria-label="Add class">add_circle_outline</mat-icon>
-                    </button>
-                </div>
-            </form>
-        </ng-container>
+                        <button mat-icon-button [disabled]="addClassForm.invalid" (click)="addClass()">
+                            <mat-icon aria-label="Add class">add_circle_outline</mat-icon>
+                        </button>
+                    </div>
+                </form>
+            </ng-container>
+        </form>
     }
 
-    @if (measurement.type === MeasurementType.Continuous && continousMeasurement) {
+    @if (measurement.type === MeasurementType.Continuous && continuousMeasurement) {
         <div class="flex-container">
             <mat-form-field appearance="fill">
                 <mat-label>Measurement</mat-label>
-                <input matInput type="text" required="true" [(ngModel)]="continousMeasurement.measurement" (input)="inputChange($event)" />
+                <input matInput type="text" required="true" [(ngModel)]="continuousMeasurement.measurement" (input)="inputChange($event)" />
             </mat-form-field>
             <mat-form-field appearance="fill">
                 <mat-label>Unit</mat-label>
-                <input matInput type="text" [(ngModel)]="continousMeasurement.unit" (input)="inputChange($event)" />
+                <input matInput type="text" [(ngModel)]="continuousMeasurement.unit" (input)="inputChange($event)" />
             </mat-form-field>
         </div>
     }

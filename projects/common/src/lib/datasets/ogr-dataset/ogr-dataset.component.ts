@@ -141,11 +141,11 @@ export class OgrDatasetComponent implements OnChanges, OnInit {
         }
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.setupColumnMeasurementSelect();
     }
 
-    private setupColumnMeasurementSelect() {
+    private setupColumnMeasurementSelect(): void {
         this.columns = this.getColumnsAsMap();
         const nonTextColumns = this.sortedNonTextColumns();
         if (this.columns && nonTextColumns.length > 0) {
@@ -494,16 +494,16 @@ export class OgrDatasetComponent implements OnChanges, OnInit {
         return columns;
     }
 
-    private setColumnInfo(columns: ColumnInfo, name: string, type_: 'float' | 'int' | 'text') {
-        let vectorInfo = this.metaData?.resultDescriptor.columns[name] || {
-            dataType: type_,
+    private setColumnInfo(columns: ColumnInfo, name: string, ty: 'float' | 'int' | 'text'): void {
+        const vectorInfo = this.metaData()?.resultDescriptor.columns[name] ?? {
+            dataType: ty,
             measurement: {type: 'unitless'},
         };
         columns[name] = {
             name: name,
             vectorColumnInfo: vectorInfo,
             newMeasurement: vectorInfo.measurement,
-            dataType: type_,
+            dataType: ty,
         };
     }
 

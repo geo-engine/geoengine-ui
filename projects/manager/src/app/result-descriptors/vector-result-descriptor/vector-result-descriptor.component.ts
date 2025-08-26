@@ -1,19 +1,21 @@
 import {Component, input, OnChanges} from '@angular/core';
-import {Measurement, TypedVectorResultDescriptor, VectorColumnInfo} from '@geoengine/openapi-client';
+import {Measurement, TypedVectorResultDescriptor} from '@geoengine/openapi-client';
 import {FormsModule} from '@angular/forms';
-import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
+import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {
-    MatTable,
-    MatColumnDef,
-    MatHeaderCellDef,
-    MatHeaderCell,
-    MatCellDef,
     MatCell,
-    MatHeaderRowDef,
+    MatCellDef,
+    MatColumnDef,
+    MatHeaderCell,
+    MatHeaderCellDef,
     MatHeaderRow,
-    MatRowDef,
+    MatHeaderRowDef,
     MatRow,
+    MatRowDef,
+    MatTable,
 } from '@angular/material/table';
+import {MatExpansionPanel, MatExpansionPanelHeader} from '@angular/material/expansion';
+import {KeyValuePipe, NgForOf} from '@angular/common';
 
 interface Column {
     name: string;
@@ -40,6 +42,10 @@ interface Column {
         MatHeaderRow,
         MatRowDef,
         MatRow,
+        MatExpansionPanel,
+        MatExpansionPanelHeader,
+        NgForOf,
+        KeyValuePipe,
     ],
 })
 export class VectorResultDescriptorComponent implements OnChanges {
@@ -47,14 +53,14 @@ export class VectorResultDescriptorComponent implements OnChanges {
 
     displayedColumns: string[] = ['name', 'dataType', 'measurement'];
 
+    columns: Column[] = [];
+
     convertUnixToIso(timestamp: number): string {
         const date = new Date(timestamp);
         return date.toISOString();
     }
 
-    columns: Column[] = [];
-
-    ngOnChanges() {
+    ngOnChanges(): void {
         this.columns = this.columnsDataSource();
     }
 

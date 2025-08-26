@@ -287,10 +287,12 @@ export class DatasetEditorComponent {
     }
 
     isSaveLoadingInfoDisabled(): boolean {
-         if (this.gdalMetadataListComponent) {
-            return this.gdalMetadataListComponent.isSaveLoadingInfoDisabled();
-         } else if (this.ogrDatasetComponent) {
-            return this.ogrDatasetComponent.isSaveLoadingInfoDisabled();
+        const gdalMetadataListComponent = this.gdalMetadataListComponent();
+        const ogrDatasetComponent = this.ogrDatasetComponent();
+        if (gdalMetadataListComponent) {
+            return gdalMetadataListComponent.isSaveLoadingInfoDisabled();
+        } else if (ogrDatasetComponent) {
+            return ogrDatasetComponent.isSaveLoadingInfoDisabled();
         } else {
             return this.rawLoadingInfo === '' || this.rawLoadingInfoPristine;
         }
@@ -312,11 +314,12 @@ export class DatasetEditorComponent {
 
             this.rawLoadingInfoPristine = true;
             const gdalMetadataListComponent = this.gdalMetadataListComponent();
+            const ogrDatasetComponent = this.ogrDatasetComponent();
             if (gdalMetadataListComponent) {
                 gdalMetadataListComponent.form.markAsPristine();
             }
-            if (this.ogrDatasetComponent) {
-                this.ogrDatasetComponent.formMetaData.markAsPristine();
+            if (ogrDatasetComponent) {
+                ogrDatasetComponent.formMetaData.markAsPristine();
             }
         } catch (error) {
             const errorMessage = await errorToText(error, 'Updating dataset loading information failed.');
