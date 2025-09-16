@@ -2,14 +2,14 @@ import {CdkVirtualScrollViewport, CdkFixedSizeVirtualScroll, CdkVirtualForOf} fr
 import {
     ChangeDetectionStrategy,
     Component,
-    OnInit,
     ChangeDetectorRef,
-    OnChanges,
-    SimpleChanges,
     inject,
     input,
     output,
     viewChild,
+    computed,
+    linkedSignal,
+    effect,
 } from '@angular/core';
 import {WHITE} from '../color';
 import {
@@ -39,7 +39,7 @@ import {MatIcon} from '@angular/material/icon';
         MatIcon,
     ],
 })
-export class ColorTableEditorComponent implements OnInit, OnChanges {
+export class ColorTableEditorComponent {
     private ref = inject(ChangeDetectorRef);
 
     // Symbology to use for creating color tabs
@@ -52,26 +52,58 @@ export class ColorTableEditorComponent implements OnInit, OnChanges {
 
     readonly virtualScrollViewport = viewChild.required(CdkVirtualScrollViewport);
 
-    colorAttributes: Array<ColorAttributeInput> = [];
-    colorHints?: ColorAttributeInputHinter;
-
-    ngOnInit(): void {
-        this.updateColorAttributes();
+    readonly colorAttributes = linkedSignal<Array<ColorBreakpoint>, Array<ColorAttributeInput>>({
+        source: () => this.colorTable(),
+        computation: (colorTable: Array<ColorBreakpoint>) =>
+            colorTable.map((color: ColorBreakpoint) => {
+                return {key: color.value.toString(), value: color.color};
+            }),
+        equal: (a, b) => {
+            if (a.length !== b.length) {
+                return false;
+            }
+            for (let i = 0; i < a.length; i++) {
+                if (a[i].key !== b[i].key) {
+                    return false;
+                }
+                if (!a[i].value.equals(b[i].value)) {
+                    return false;
+                }
+            }
+            return true;
+        },
+    });
+    readonly colorHints = computed<ColorAttributeInputHinter | undefined>(() => {
         const measurement = this.measurement();
+
         if (measurement instanceof ClassificationMeasurement) {
-            this.colorHints = measurement as ColorAttributeInputHinter;
+            return measurement as ColorAttributeInputHinter;
         }
-    }
 
-    ngOnChanges(_changes: SimpleChanges): void {
-        this.updateColorAttributes();
-    }
+        return undefined;
+    });
 
-    updateColorAttributes(): void {
-        this.colorAttributes = this.colorTable().map((color: ColorBreakpoint) => {
-            return {key: color.value.toString(), value: color.color};
+    constructor() {
+        effect(() => {
+            const colorAttributes = this.colorAttributes();
+            let hadError = false;
+
+            const colorTable: Array<ColorBreakpoint> = colorAttributes.map((color: ColorAttributeInput) => {
+                const value = Number(color.key);
+
+                if (isNaN(value)) {
+                    hadError = true;
+                }
+
+                return new ColorBreakpoint(value, color.value);
+            });
+
+            if (hadError) {
+                return;
+            }
+
+            this.colorTableChanged.emit(colorTable);
         });
-        this.ref.detectChanges();
     }
 
     /**
@@ -81,75 +113,43 @@ export class ColorTableEditorComponent implements OnInit, OnChanges {
      * the time of updating.
      */
     updateColorAt(index: number, color: ColorAttributeInput): void {
-        this.colorAttributes.splice(index, 1, color);
+        const colorAttributes = [...this.colorAttributes()]; // copy
+        colorAttributes.splice(index, 1, color);
 
-        // TODO: only sort if necessary
-        this.sortColorAttributeInputs();
-
-        this.emitColorTable();
+        this.colorAttributes.set(sorted(colorAttributes));
     }
 
     removeColorAt(index: number): void {
-        this.colorAttributes.splice(index, 1);
-        this.colorAttributes = [...this.colorAttributes]; // new array
+        const colorAttributes = [...this.colorAttributes()]; // copy
+        colorAttributes.splice(index, 1);
 
-        setTimeout(() => this.ref.detectChanges());
-
-        this.emitColorTable();
-    }
-
-    /**
-     * Sort allColors by raster layer values, so ColorAttributeInputs are displayed in the correct order.
-     * Only called by parent when apply is pressed, so Inputs don't jump around while user is editing.
-     */
-    sortColorAttributeInputs(): void {
-        this.colorAttributes = this.colorAttributes.sort((a: ColorAttributeInput, b: ColorAttributeInput) =>
-            Math.sign(parseFloat(a.key) - parseFloat(b.key)),
-        );
-
-        setTimeout(() => this.ref.markForCheck());
+        this.colorAttributes.set(colorAttributes);
     }
 
     appendColor(): void {
+        const colorAttributes = this.colorAttributes();
+
         let newValue;
-        if (this.colorAttributes.length) {
+        if (colorAttributes.length) {
             // Determine a value so that the new tab will appear at the bottom of the list.
-            newValue = parseFloat(this.colorAttributes[this.colorAttributes.length - 1].key) + 1;
+            newValue = parseFloat(colorAttributes[colorAttributes.length - 1].key) + 1;
         } else {
             newValue = 0;
         }
 
-        this.colorAttributes = [...this.colorAttributes, {key: newValue.toString(), value: WHITE}];
-
-        // TODO: do we need that?
-        this.sortColorAttributeInputs();
+        this.colorAttributes.set(sorted([...colorAttributes, {key: newValue.toString(), value: WHITE}]));
 
         setTimeout(() => this.virtualScrollViewport().scrollTo({bottom: 0}), 0); // Delay of 0 to include new tab in scroll
-
-        this.emitColorTable();
     }
 
     isNoNumber(index: number): boolean {
-        return isNaN(Number(this.colorAttributes[index].key));
-    }
-
-    emitColorTable(): void {
-        let hadError = false;
-
-        const colorTable: Array<ColorBreakpoint> = this.colorAttributes.map((color: ColorAttributeInput) => {
-            const value = Number(color.key);
-
-            if (isNaN(value)) {
-                hadError = true;
-            }
-
-            return new ColorBreakpoint(value, color.value);
-        });
-
-        if (hadError) {
-            return;
-        }
-
-        this.colorTableChanged.emit(colorTable);
+        return isNaN(Number(this.colorAttributes()[index].key));
     }
 }
+
+/**
+ * Sort allColors by raster layer values, so ColorAttributeInputs are displayed in the correct order.
+ * Only called by parent when apply is pressed, so Inputs don't jump around while user is editing.
+ */
+const sorted = (colorAttributes: Array<ColorAttributeInput>): Array<ColorAttributeInput> =>
+    colorAttributes.sort((a: ColorAttributeInput, b: ColorAttributeInput) => Math.sign(parseFloat(a.key) - parseFloat(b.key)));

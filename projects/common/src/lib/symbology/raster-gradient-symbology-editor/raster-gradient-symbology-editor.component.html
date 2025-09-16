@@ -32,7 +32,7 @@
         </div>
     </mat-card-content>
 
-    <div class="colorizer-preview" [style.background]="colorizer | geoengineColorizerCssGradient: 90"></div>
+    <div class="colorizer-preview" [style.background]="colorizer() | geoengineColorizerCssGradient: 90"></div>
 </mat-card>
 
 <mat-card>
@@ -46,7 +46,7 @@
     <mat-card-content>
         <mat-tab-group>
             <mat-tab label="Min/Max">
-                @if (queryParams) {
+                @if (queryParams()) {
                     @if (histogramCreated === true) {
                         <div class="histogram">
                             @if (histogramData | async; as histogramData) {
@@ -87,7 +87,7 @@
 
                 <button mat-stroked-button (click)="createColorTable()">Create color table</button>
             </mat-tab>
-            @if (queryParams) {
+            @if (queryParams(); as queryParams) {
                 <mat-tab label="Percentiles">
                     <geoengine-percentile-breakpoint-selector
                         (breakpointsChange)="updateBreakpoints($event)"

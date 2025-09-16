@@ -1,18 +1,16 @@
 import {
     Component,
-    Input,
     ChangeDetectionStrategy,
-    OnDestroy,
-    OnInit,
     ChangeDetectorRef,
-    OnChanges,
-    SimpleChanges,
     inject,
     input,
     output,
     viewChild,
+    effect,
+    linkedSignal,
+    untracked,
 } from '@angular/core';
-import {BehaviorSubject, ReplaySubject, Subscription} from 'rxjs';
+import {BehaviorSubject, ReplaySubject} from 'rxjs';
 import {LinearGradient, LogarithmicGradient} from '../../colors/colorizer.model';
 import {ColorAttributeInput, ColorAttributeInputComponent} from '../../colors/color-attribute-input/color-attribute-input.component';
 import {ColorBreakpoint} from '../../colors/color-breakpoint.model';
@@ -69,26 +67,29 @@ import {ColorizerCssGradientPipe} from '../../util/pipes/color-gradients.pipe';
         ColorizerCssGradientPipe,
     ],
 })
-export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit, OnChanges {
+export class RasterGradientSymbologyEditorComponent {
     private readonly workflowsService = inject(WorkflowsService);
     private readonly plotsService = inject(PlotsService);
     private changeDetectorRef = inject(ChangeDetectorRef);
 
     readonly colorMapSelector = viewChild.required(ColorMapSelectorComponent);
-
     readonly percentileBreakpointSelector = viewChild.required(PercentileBreakpointSelectorComponent);
-
     readonly colorTableEditor = viewChild.required(ColorTableEditorComponent);
 
     readonly band = input.required<string>();
 
     readonly workflowId = input.required<UUID>();
 
-    @Input({required: true}) colorizer!: LinearGradient | LogarithmicGradient;
+    // eslint-disable-next-line @angular-eslint/no-input-rename
+    readonly colorizerInput = input.required<LinearGradient | LogarithmicGradient>({alias: 'colorizer'});
 
-    @Input() queryParams?: SymbologyQueryParams;
+    readonly queryParams = input<SymbologyQueryParams>();
 
     readonly colorizerChange = output<LinearGradient | LogarithmicGradient>();
+
+    readonly colorizer = linkedSignal<LinearGradient | LogarithmicGradient>(() => this.colorizerInput(), {
+        equal: (a, b) => a.equals(b),
+    });
 
     // The min value used for color table generation
     layerMinValue: number | undefined = undefined;
@@ -101,34 +102,28 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     histogramLoading = new BehaviorSubject(false);
     histogramCreated = false;
 
-    protected histogramSubscription?: Subscription;
-
     protected underColor?: ColorAttributeInput;
     protected overColor?: ColorAttributeInput;
     protected noDataColor?: ColorAttributeInput;
 
-    ngOnInit(): void {
-        this.updateNodataAndDefaultColor();
+    constructor() {
+        effect(() => {
+            const colorizer = this.colorizer();
+            untracked(() => {
+                this.updateScale(colorizer);
+                this.updateNodataAndDefaultColor(colorizer);
+                this.updateLayerMinMaxFromColorizer(colorizer);
+            });
+        });
 
-        this.updateLayerMinMaxFromColorizer();
-    }
-
-    ngOnDestroy(): void {
-        if (this.histogramSubscription) {
-            this.histogramSubscription.unsubscribe();
-        }
-    }
-
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes.colorizer) {
-            this.updateScale();
-            this.updateNodataAndDefaultColor();
-            this.initializeBreakpoints(this.colorizer.getBreakpoints());
-        }
+        effect(() => {
+            const colorizer = this.colorizer();
+            this.colorizerChange.emit(colorizer);
+        });
     }
 
     get colorTable(): Array<ColorBreakpoint> {
-        return this.colorizer.getBreakpoints();
+        return this.colorizer().getBreakpoints();
     }
 
     updateColorTable(colorTable: Array<ColorBreakpoint>): void {
@@ -136,8 +131,8 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
         for (const breakpoint of colorTable) {
             colors.set(breakpoint.value, breakpoint.color);
         }
-        this.colorizer = this.colorizer.cloneWith({breakpoints: colorTable});
-        this.colorizerChange.emit(this.colorizer);
+        const colorizer = this.colorizer().cloneWith({breakpoints: colorTable});
+        this.colorizer.set(colorizer);
     }
 
     /**
@@ -195,32 +190,26 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
 
     updateUnderColor(underColorInput: ColorAttributeInput): void {
         const underColor = underColorInput.value;
-        this.colorizer = this.colorizer.cloneWith({underColor});
-
-        this.colorizerChange.emit(this.colorizer);
+        this.colorizer.set(this.colorizer().cloneWith({underColor}));
     }
 
     updateOverColor(overColorInput: ColorAttributeInput): void {
         const overColor = overColorInput.value;
-        this.colorizer = this.colorizer.cloneWith({overColor});
-
-        this.colorizerChange.emit(this.colorizer);
+        this.colorizer.set(this.colorizer().cloneWith({overColor}));
     }
 
     updateNoDataColor(noDataColorInput: ColorAttributeInput): void {
         const noDataColor = noDataColorInput.value;
-        this.colorizer = this.colorizer.cloneWith({noDataColor});
-
-        this.colorizerChange.emit(this.colorizer);
+        this.colorizer.set(this.colorizer().cloneWith({noDataColor}));
     }
 
-    updateScale(): void {
-        if (this.colorizer instanceof LinearGradient) {
+    updateScale(colorizer: LinearGradient | LogarithmicGradient): void {
+        if (colorizer instanceof LinearGradient) {
             this.scale = 'linear';
             return;
         }
 
-        if (this.colorizer instanceof LogarithmicGradient) {
+        if (colorizer instanceof LogarithmicGradient) {
             this.scale = 'logarithmic';
             return;
         }
@@ -231,33 +220,23 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
             return;
         }
 
-        this.colorizer = this.colorizer.cloneWith({breakpoints});
-        this.colorizerChange.emit(this.colorizer);
-    }
-
-    initializeBreakpoints(breakpoints: Array<ColorBreakpoint>): void {
-        if (!breakpoints) {
-            return;
-        }
-
-        this.colorizer = this.colorizer.cloneWith({breakpoints});
+        this.colorizer.set(this.colorizer().cloneWith({breakpoints}));
     }
 
     /**
      * Sets the layer min/max values from the colorizer.
      */
-    updateLayerMinMaxFromColorizer(): void {
-        const breakpoints = this.colorizer.getBreakpoints();
+    updateLayerMinMaxFromColorizer(colorizer: LinearGradient | LogarithmicGradient): void {
+        const breakpoints = colorizer.getBreakpoints();
         this.updateLayerMinValue(breakpoints[0].value);
         this.updateLayerMaxValue(breakpoints[breakpoints.length - 1].value);
     }
 
     updateHistogram(): void {
-        if (!this.queryParams) {
+        const histogramParams = this.queryParams();
+        if (!histogramParams) {
             return;
         }
-
-        const histogramParams = this.queryParams;
 
         this.histogramCreated = true;
         this.createHistogramWorkflowId()
@@ -271,27 +250,26 @@ export class RasterGradientSymbologyEditorComponent implements OnDestroy, OnInit
     createColorTable(): void {
         this.colorMapSelector()?.applyChanges();
         this.changeDetectorRef.detectChanges();
-        this.colorTableEditor()?.updateColorAttributes();
     }
 
-    createPercentilesColorTable(): void {
-        this.percentileBreakpointSelector()?.createColorTable();
+    async createPercentilesColorTable(): Promise<void> {
+        await this.percentileBreakpointSelector().createColorTable();
     }
 
-    private updateNodataAndDefaultColor(): void {
+    private updateNodataAndDefaultColor(colorizer: LinearGradient | LogarithmicGradient): void {
         this.noDataColor = {
             key: 'No Data Color',
-            value: this.colorizer.noDataColor,
+            value: colorizer.noDataColor,
         };
 
         this.underColor = {
             key: 'Under Color',
-            value: this.colorizer.underColor,
+            value: colorizer.underColor,
         };
 
         this.overColor = {
             key: 'Over Color',
-            value: this.colorizer.overColor,
+            value: colorizer.overColor,
         };
     }
 
