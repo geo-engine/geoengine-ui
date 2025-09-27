@@ -1,0 +1,11 @@
+@if (isError()) {
+    <div class="error">An error occurred during authentication.</div>
+} @else {
+    <div class="info">You have been redirected here after authentication. You can close this window.</div>
+}
+
+<ul>
+    @for (param of params() | keyvalue; track param.key) {
+        <li>{{ param.key }}: {{ param.value }}</li>
+    }
+</ul>

@@ -1,9 +1,11 @@
-import {AfterViewInit, Component, forwardRef} from '@angular/core';
+import {AfterViewInit, Component, effect, forwardRef, signal} from '@angular/core';
 import {v4 as uuidv4} from 'uuid';
 import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
 import {MatFormField} from '@angular/material/form-field';
 import {MatInput, MatLabel} from '@angular/material/input';
 import {MatButton} from '@angular/material/button';
+import {UUID} from '@geoengine/common';
+import {toSignal} from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'geoengine-manager-id-input',
@@ -18,10 +20,21 @@ import {MatButton} from '@angular/material/button';
     ],
     imports: [ReactiveFormsModule, MatFormField, MatInput, MatButton, MatLabel],
 })
-export class IdInputComponent implements AfterViewInit, ControlValueAccessor {
-    idControl = new FormControl<string>('');
+export class IdInputComponent implements ControlValueAccessor, AfterViewInit {
+    readonly idControl = new FormControl<UUID>('', {nonNullable: true});
 
-    protected disabled = false;
+    readonly isDisabled = signal(false);
+
+    constructor() {
+        const valueChanged = toSignal<UUID | undefined>(this.idControl.valueChanges, {initialValue: undefined});
+
+        effect(() => {
+            const newValue = valueChanged();
+            if (!newValue) return;
+            this.onChange(newValue);
+        });
+    }
+
     protected onTouched: () => void = () => {
         /* do nothing */
     };
@@ -34,24 +47,19 @@ export class IdInputComponent implements AfterViewInit, ControlValueAccessor {
         if (!this.idControl.value) {
             this.generate();
         }
-
-        this.idControl.valueChanges.subscribe((value) => {
-            if (value) {
-                this.onChange(value);
-            }
-        });
     }
 
     generate(): void {
         const newId = uuidv4();
         this.idControl.patchValue(newId);
-        this.onChange(newId);
     }
 
-    writeValue(value: string): void {
-        if (value) {
-            this.idControl.patchValue(value, {emitEvent: false});
+    writeValue(value: unknown): void {
+        if (typeof value !== 'string') {
+            throw new Error('Value must be a string');
         }
+
+        this.idControl.patchValue(value, {emitEvent: false});
     }
 
     registerOnChange(fn: (value: string) => void): void {
@@ -63,7 +71,7 @@ export class IdInputComponent implements AfterViewInit, ControlValueAccessor {
     }
 
     setDisabledState(isDisabled: boolean): void {
-        this.disabled = isDisabled;
+        this.isDisabled.set(isDisabled);
         if (isDisabled) {
             this.idControl.disable();
         } else {

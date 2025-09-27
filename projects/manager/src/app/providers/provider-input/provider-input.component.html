@@ -11,6 +11,14 @@
                         (changed)="setChangedFormDefinition($event)"
                     />
                 }
+                @case (ProviderType.WildLIVE) {
+                    <geoengine-manager-wildlive-editor-form
+                        [isNew]="createNew()"
+                        [ngModel]="provider()"
+                        (ngModelChange)="setChangedFormDefinition($event)"
+                        [disabled]="readonly()"
+                    />
+                }
             }
         </mat-tab>
     }

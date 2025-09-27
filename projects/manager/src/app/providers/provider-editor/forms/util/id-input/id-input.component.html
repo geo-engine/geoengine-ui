@@ -1,5 +1,5 @@
 <mat-form-field>
     <mat-label>Id</mat-label>
-    <input matInput readonly [formControl]="idControl" [disabled]="disabled" (blur)="onTouched()" />
-    <button mat-button (click)="generate()">Generate</button>
+    <input matInput readonly [formControl]="idControl" (blur)="onTouched()" />
+    <button mat-button (click)="generate()" [disabled]="isDisabled()">Generate</button>
 </mat-form-field>
