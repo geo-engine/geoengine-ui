@@ -4,8 +4,13 @@
     <div class="info">You have been redirected here after authentication. You can close this window.</div>
 }
 
-<ul>
-    @for (param of params() | keyvalue; track param.key) {
-        <li>{{ param.key }}: {{ param.value }}</li>
-    }
-</ul>
+@if (isDebugMode) {
+    <table class="debug">
+        @for (param of params() | keyvalue; track param.key) {
+            <tr>
+                <td>{{ param.key }}</td>
+                <td>{{ param.value }}</td>
+            </tr>
+        }
+    </table>
+}

@@ -14,13 +14,12 @@
         @if (form.get('auth')) {
             <div formGroupName="auth">
                 <mat-form-field>
+                    <mat-label>User</mat-label>
+                    <input matInput formControlName="user" [errorStateMatcher]="errorStateMatcher" />
+                </mat-form-field>
+                <mat-form-field>
                     <mat-label>Refresh Token</mat-label>
-                    <textarea
-                        matInput
-                        cdkTextareaAutosize
-                        formControlName="refreshToken"
-                        [errorStateMatcher]="errorStateMatcher"
-                    ></textarea>
+                    <input matInput type="password" formControlName="refreshToken" [errorStateMatcher]="errorStateMatcher" />
                 </mat-form-field>
                 <mat-form-field>
                     <mat-label>Expiry Date</mat-label>
@@ -30,7 +29,13 @@
         } @else {
             <p [class]="{disabled: form.disabled}">No authentication set.</p>
         }
-        <button mat-raised-button (click)="connectToWildlivePortal()" [disabled]="form.disabled">User Login</button>
+        <button mat-raised-button (click)="connectToWildlivePortal()" [disabled]="form.disabled">
+            @if (form.get('auth')) {
+                Refresh Wildlive Portal Login
+            } @else {
+                Login to Wildlive Portal
+            }
+        </button>
         <mat-form-field>
             <mat-label>Listing priority</mat-label>
             <input matInput formControlName="priority" [errorStateMatcher]="errorStateMatcher" />

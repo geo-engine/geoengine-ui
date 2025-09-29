@@ -33,6 +33,7 @@ interface WildLiveForm {
     name: FormControl<string>;
     description: FormControl<string>;
     auth?: FormGroup<{
+        user: FormControl<string>;
         refreshToken: FormControl<string>;
         expiryDate: FormControl<Date>;
     }>;
@@ -138,8 +139,9 @@ export class WildLiveComponent implements ControlValueAccessor {
 
         let auth = undefined;
 
-        if (definition.refreshToken && definition.expiryDate) {
+        if (definition.user && definition.refreshToken && definition.expiryDate) {
             auth = {
+                user: definition.user,
                 refreshToken: definition.refreshToken,
                 expiryDate: definition.expiryDate,
             };
@@ -179,8 +181,9 @@ export class WildLiveComponent implements ControlValueAccessor {
             this.form.addControl(
                 'auth',
                 this.formBuilder.group({
+                    user: this.formBuilder.control({value: '', disabled: true}),
                     refreshToken: this.formBuilder.control('', Validators.required),
-                    expiryDate: this.formBuilder.control(new Date(), Validators.required),
+                    expiryDate: this.formBuilder.control({value: new Date(), disabled: true}, Validators.required),
                 }),
             );
         } else if (!hasAuth && this.form.controls.auth) {
@@ -245,6 +248,7 @@ export class WildLiveComponent implements ControlValueAccessor {
                 redirectUri,
             } as OidcAuthToken),
             expiryDate: new Date(), // TODO: set real expiry date
+            user: '', // TODO: set real user
         });
     }
 }
@@ -257,6 +261,8 @@ const definitionFromForm = (form: WildLiveFormRaw): TypedDataProviderDefinition 
         description: form.description,
         refreshToken: form.auth?.refreshToken,
         expiryDate: form.auth?.expiryDate,
+        user: form.auth?.user,
+        priority: form.priority,
     }) as WildliveDataConnectorDefinition;
 
 const generatePkcePair = async (): Promise<{verifier: string; challenge: string}> => {

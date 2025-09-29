@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, computed, effect, inject, signal} from '@angular/core';
+import {AfterViewInit, Component, computed, effect, inject, isDevMode, signal} from '@angular/core';
 import {AppConfig} from '../app-config.service';
 import {KeyValuePipe, Location} from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -23,6 +23,7 @@ export class OidcPopupComponent implements AfterViewInit {
     protected readonly route = inject(ActivatedRoute);
 
     readonly isError = computed(() => this.params().has('error'));
+    readonly isDebugMode = isDevMode();
 
     constructor() {
         effect(() => {
