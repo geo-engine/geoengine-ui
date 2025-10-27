@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, ChangeDetectorRef, AfterViewInit, input, linkedSignal, inject} from '@angular/core';
+import {Component, ChangeDetectionStrategy, input, linkedSignal, effect} from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor, FormsModule} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
@@ -11,9 +11,7 @@ import {MatInputModule} from '@angular/material/input';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [MatFormFieldModule, FormsModule, MatInputModule],
 })
-export class OperatorOutputNameComponent implements ControlValueAccessor, AfterViewInit {
-    private changeDetectorRef = inject(ChangeDetectorRef);
-
+export class OperatorOutputNameComponent implements ControlValueAccessor {
     readonly type = input<'Layer' | 'Plot'>('Layer');
     readonly suggestion = input<string>('');
 
@@ -22,15 +20,19 @@ export class OperatorOutputNameComponent implements ControlValueAccessor, AfterV
     private onTouched?: () => void;
     private onChange?: (_: string) => void = undefined;
 
-    ngAfterViewInit(): void {
-        // once for rendering the input properly
-        setTimeout(() => this.changeDetectorRef.markForCheck());
+    constructor() {
+        effect(() => {
+            const name = this.name();
+
+            if (!this.onChange) return;
+
+            this.onChange(name);
+        });
     }
 
     /** Implemented as part of ControlValueAccessor. */
     writeValue(value: string): void {
         this.name.set(value);
-        this.changeDetectorRef.markForCheck();
     }
 
     /** Implemented as part of ControlValueAccessor. */
