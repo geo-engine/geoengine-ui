@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges, inject, input} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges, inject, input } from '@angular/core';
 import {
     AbstractControl,
     FormArray,
@@ -10,7 +10,7 @@ import {
     FormsModule,
     ReactiveFormsModule,
 } from '@angular/forms';
-import {GdalDatasetParametersComponent, GdalDatasetParametersForm} from '../gdal-dataset-parameters/gdal-dataset-parameters.component';
+import { GdalDatasetParametersComponent, GdalDatasetParametersForm } from '../gdal-dataset-parameters/gdal-dataset-parameters.component';
 import {
     CommonModule,
     DatasetsService,
@@ -32,12 +32,12 @@ import {
     RasterDataType,
     RasterResultDescriptor,
 } from '@geoengine/openapi-client';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import {MatFormField, MatLabel, MatInput, MatError} from '@angular/material/input';
-import {MatButton} from '@angular/material/button';
-import {MatDivider, MatNavList, MatListItem, MatListItemTitle, MatListItemLine} from '@angular/material/list';
-import {MatSelect} from '@angular/material/select';
-import {MatOption} from '@angular/material/autocomplete';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatFormField, MatLabel, MatInput, MatError } from '@angular/material/input';
+import { MatButton } from '@angular/material/button';
+import { MatDivider, MatNavList, MatListItem, MatListItemTitle, MatListItemLine } from '@angular/material/list';
+import { MatSelect } from '@angular/material/select';
+import { MatOption } from '@angular/material/autocomplete';
 
 export interface GdalMetadataListForm {
     timeSlices: FormArray<FormGroup<TimeSliceForm>>;
@@ -234,6 +234,12 @@ export class GdalMetadataListComponent implements OnChanges {
             spatialReference: resultDescriptorControl.spatialReference.value,
             dataType: resultDescriptorControl.dataType.value,
             spatialGrid: spatialGridDesc.toDict(),
+            time: {
+                bounds: null,
+                dimension: {
+                    type: 'irregular',
+                },
+            },
         };
 
         return {
@@ -245,7 +251,7 @@ export class GdalMetadataListComponent implements OnChanges {
 
     async suggest(): Promise<void> {
         if (!this.dataPath) {
-            this.snackBar.open('No data path selected.', 'Close', {panelClass: ['error-snackbar']});
+            this.snackBar.open('No data path selected.', 'Close', { panelClass: ['error-snackbar'] });
             return;
         }
 
@@ -268,7 +274,7 @@ export class GdalMetadataListComponent implements OnChanges {
             const slices = gdalMetaDataList.params;
 
             if (slices.length === 0) {
-                this.snackBar.open('No time slices found in metadata suggestion.', 'Close', {panelClass: ['error-snackbar']});
+                this.snackBar.open('No time slices found in metadata suggestion.', 'Close', { panelClass: ['error-snackbar'] });
                 return;
             }
 
@@ -276,7 +282,7 @@ export class GdalMetadataListComponent implements OnChanges {
             const gdalParams = firstSlice.params;
 
             if (!gdalParams) {
-                this.snackBar.open('No gdal parameters found in metadata suggestion.', 'Close', {panelClass: ['error-snackbar']});
+                this.snackBar.open('No gdal parameters found in metadata suggestion.', 'Close', { panelClass: ['error-snackbar'] });
                 return;
             }
 
@@ -298,7 +304,7 @@ export class GdalMetadataListComponent implements OnChanges {
             this.setResultDescriptor(gdalMetaDataList.resultDescriptor);
         } catch (error) {
             const errorMessage = await errorToText(error, 'Metadata suggestion failed.');
-            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
+            this.snackBar.open(errorMessage, 'Close', { panelClass: ['error-snackbar'] });
         }
     }
 
@@ -310,7 +316,7 @@ export class GdalMetadataListComponent implements OnChanges {
 
     private setUpFormFromMetaData(metaData: GdalMetaDataList): void {
         this.form = new FormGroup<GdalMetadataListForm>({
-            timeSlices: new FormArray<FormGroup<TimeSliceForm>>([], {validators: overlappingTimeIntervalsValidator()}),
+            timeSlices: new FormArray<FormGroup<TimeSliceForm>>([], { validators: overlappingTimeIntervalsValidator() }),
             rasterResultDescriptor: new FormGroup<RasterResultDescriptorForm>({
                 bandName: new FormControl(metaData.resultDescriptor.bands[0].name, {
                     nonNullable: true,
@@ -366,7 +372,7 @@ export class GdalMetadataListComponent implements OnChanges {
                         }),
                     }),
                 ],
-                {validators: overlappingTimeIntervalsValidator()},
+                { validators: overlappingTimeIntervalsValidator() },
             ),
             rasterResultDescriptor: new FormGroup<RasterResultDescriptorForm>({
                 bandName: new FormControl('', {
@@ -390,36 +396,36 @@ export class GdalMetadataListComponent implements OnChanges {
 
 export const overlappingTimeIntervalsValidator =
     (): ValidatorFn =>
-    (control: AbstractControl): ValidationErrors | null => {
-        const timeIntervalIntersects = (a: TimeInterval, b: TimeInterval): boolean => {
-            // instants must be distinct
-            if (a.start == a.end || b.start == b.end) {
-                return a.start == b.start;
+        (control: AbstractControl): ValidationErrors | null => {
+            const timeIntervalIntersects = (a: TimeInterval, b: TimeInterval): boolean => {
+                // instants must be distinct
+                if (a.start == a.end || b.start == b.end) {
+                    return a.start == b.start;
+                }
+                // touching intervals are not overlapping
+                if (a.start == b.end || b.start == a.end) {
+                    return false;
+                }
+                // check if start of one interval is within the other
+                return (a.start >= b.start && a.start < b.end) || (b.start >= a.start && b.start < a.end);
+            };
+
+            if (!(control instanceof FormArray)) {
+                return null;
             }
-            // touching intervals are not overlapping
-            if (a.start == b.end || b.start == a.end) {
-                return false;
-            }
-            // check if start of one interval is within the other
-            return (a.start >= b.start && a.start < b.end) || (b.start >= a.start && b.start < a.end);
-        };
 
-        if (!(control instanceof FormArray)) {
-            return null;
-        }
+            const formArray = control;
 
-        const formArray = control;
+            const controls = formArray.controls;
+            const values: TimeInterval[] = controls.map((c) => c.value.time);
 
-        const controls = formArray.controls;
-        const values: TimeInterval[] = controls.map((c) => c.value.time);
-
-        for (let i = 0; i < values.length; i++) {
-            for (let j = i + 1; j < values.length; j++) {
-                if (timeIntervalIntersects(values[i], values[j])) {
-                    return {overlappingTimeInterval: true};
+            for (let i = 0; i < values.length; i++) {
+                for (let j = i + 1; j < values.length; j++) {
+                    if (timeIntervalIntersects(values[i], values[j])) {
+                        return { overlappingTimeInterval: true };
+                    }
                 }
             }
-        }
 
-        return null;
-    };
+            return null;
+        };

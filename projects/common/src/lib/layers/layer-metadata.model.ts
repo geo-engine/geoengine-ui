@@ -1,4 +1,4 @@
-import {HasLayerType, LayerType} from './layer.model';
+import { HasLayerType, LayerType } from './layer.model';
 import {
     RasterDataType,
     RasterDataTypes,
@@ -8,18 +8,18 @@ import {
     VectorDataTypes,
 } from '../operators/datatype.model';
 import * as Immutable from 'immutable';
-import {Measurement} from './measurement';
-import {ResultType, ResultTypes} from '../operators/result-type.model';
-import {SpatialReference} from '../spatial-references/spatial-reference.model';
-import {Time} from '../time/time.model';
-import {BoundingBox2D} from '../spatial-bounds/bounding-box';
+import { Measurement } from './measurement';
+import { ResultType, ResultTypes } from '../operators/result-type.model';
+import { SpatialReference } from '../spatial-references/spatial-reference.model';
+import { Time } from '../time/time.model';
+import { BoundingBox2D } from '../spatial-bounds/bounding-box';
 import {
     TypedRasterResultDescriptor as RasterResultDescriptorDict,
     TypedVectorResultDescriptor as VectorResultDescriptorDict,
     RasterBandDescriptor,
     TypedResultDescriptor,
 } from '@geoengine/openapi-client';
-import {SpatialGridDescriptor} from '../spatial-grid/spatial-grid-descriptor.model';
+import { SpatialGridDescriptor } from '../spatial-grid/spatial-grid-descriptor.model';
 
 export abstract class LayerMetadata implements HasLayerType {
     abstract readonly layerType: LayerType;
@@ -122,7 +122,7 @@ export class RasterLayerMetadata extends LayerMetadata {
     static override fromDict(dict: RasterResultDescriptorDict): RasterLayerMetadata {
         const dataType = RasterDataTypes.fromCode(dict.dataType);
         const bands = dict.bands;
-        const time = dict.time ? Time.fromDict(dict.time) : undefined;
+        const time = dict.time?.bounds ? Time.fromDict(dict.time.bounds) : undefined;
         const spatialGrid = SpatialGridDescriptor.fromDict(dict.spatialGrid);
 
         return new RasterLayerMetadata(dataType, SpatialReference.fromSrsString(dict.spatialReference), bands, spatialGrid, time);
