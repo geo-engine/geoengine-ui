@@ -1,4 +1,4 @@
-import { Measurement } from '../layers/measurement';
+import {Measurement} from '../layers/measurement';
 import {
     RasterDataType,
     RasterDataTypes,
@@ -7,10 +7,10 @@ import {
     VectorDataType,
     VectorDataTypes,
 } from '../operators/datatype.model';
-import { SourceOperatorDict } from '../operators/operator.model';
-import { SpatialGridDescriptor } from '../spatial-grid/spatial-grid-descriptor.model';
-import { SrsString } from '../spatial-references/spatial-reference.model';
-import { Symbology } from '../symbology/symbology.model';
+import {SourceOperatorDict} from '../operators/operator.model';
+import {SpatialGridDescriptor} from '../spatial-grid/spatial-grid-descriptor.model';
+import {SrsString} from '../spatial-references/spatial-reference.model';
+import {Symbology} from '../symbology/symbology.model';
 import {
     Dataset as DatasetDict,
     TypedResultDescriptor as TypedResultDescriptorDict,

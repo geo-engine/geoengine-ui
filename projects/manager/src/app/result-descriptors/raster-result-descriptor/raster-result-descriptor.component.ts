@@ -1,8 +1,8 @@
-import { Component, input } from '@angular/core';
-import { BoundingBox2D, GeoTransform, GridBoundingBox2D } from '@geoengine/common';
-import { RasterBandDescriptor, TypedRasterResultDescriptor, RegularTimeDimension } from '@geoengine/openapi-client';
-import { FormsModule } from '@angular/forms';
-import { MatFormField, MatLabel, MatInput } from '@angular/material/input';
+import {Component, input} from '@angular/core';
+import {BoundingBox2D, GeoTransform, GridBoundingBox2D} from '@geoengine/common';
+import {RasterBandDescriptor, TypedRasterResultDescriptor, RegularTimeDimension} from '@geoengine/openapi-client';
+import {FormsModule} from '@angular/forms';
+import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
 import {
     MatTable,
     MatColumnDef,
@@ -65,7 +65,7 @@ export class RasterResultDescriptorComponent {
     }
 
     get regularTimeDimension(): RegularTimeDimension | undefined {
-        let rd = this.resultDescriptor().time.dimension;
+        const rd = this.resultDescriptor().time.dimension;
 
         if (rd && rd.type === 'regular') {
             return rd;

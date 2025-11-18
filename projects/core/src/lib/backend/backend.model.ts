@@ -1,4 +1,4 @@
-import {SpatialGridDescriptor} from '@geoengine/openapi-client';
+import {SpatialGridDescriptor, TimeDescriptor} from '@geoengine/openapi-client';
 
 export type UUID = string;
 export type TimestampString = string;
@@ -288,7 +288,7 @@ export interface PlotDataDict {
 export interface ResultDescriptorDict {
     type: 'raster' | 'vector' | 'plot';
     spatialReference: SrsString;
-    time?: TimeIntervalDict;
+    time?: TimeDescriptor;
 }
 
 export type TypedResultDescriptorDict = VectorResultDescriptorDict | RasterResultDescriptorDict;
@@ -302,7 +302,7 @@ export interface RasterResultDescriptorDict extends ResultDescriptorDict {
     type: 'raster';
     dataType: 'U8' | 'U16' | 'U32' | 'U64' | 'I8' | 'I16' | 'I32' | 'I64' | 'F32' | 'F64';
     bands: RasterBandDescriptorDict[];
-    time?: TimeIntervalDict;
+    time: TimeDescriptor;
     spatialGrid: SpatialGridDescriptor;
     resolution?: SpatialResolution;
 }
