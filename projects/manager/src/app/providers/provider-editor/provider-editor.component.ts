@@ -1,5 +1,11 @@
 import {Component, inject, OnChanges, OnInit, SimpleChanges, output, input} from '@angular/core';
-import {LayerProviderListing, Permission, TypedDataProviderDefinition} from '@geoengine/openapi-client';
+import {
+    LayerProviderListing,
+    Permission,
+    TypedDataProviderDefinition,
+    TypedDataProviderDefinitionToJSON,
+    WildliveDataConnectorDefinitionTypeEnum,
+} from '@geoengine/openapi-client';
 import {ConfirmationComponent, errorToText, LayersService, PermissionsService} from '@geoengine/common';
 import {firstValueFrom} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
@@ -14,6 +20,7 @@ import {MatButton} from '@angular/material/button';
 
 export enum ProviderType {
     ARUNA = 'Aruna',
+    WildLIVE = 'WildLIVE',
     OTHER = 'Other / JSON',
 }
 
@@ -89,6 +96,14 @@ export class ProviderEditorComponent implements OnChanges, OnInit {
     }
 
     setUpdatedDefinition(definition?: TypedDataProviderDefinition): void {
+        const oldCmp = JSON.stringify(TypedDataProviderDefinitionToJSON(this.provider));
+        const newCmp = JSON.stringify(TypedDataProviderDefinitionToJSON(definition));
+
+        if (oldCmp === newCmp) {
+            this.updatedDefinition = undefined;
+            return; // no change
+        }
+
         this.updatedDefinition = definition;
     }
 
@@ -111,6 +126,9 @@ export class ProviderEditorComponent implements OnChanges, OnInit {
         switch (this.provider?.type) {
             case 'Aruna':
                 this.providerType = ProviderType.ARUNA;
+                return;
+            case WildliveDataConnectorDefinitionTypeEnum.WildLive:
+                this.providerType = ProviderType.WildLIVE;
                 return;
             default:
                 this.providerType = ProviderType.OTHER;

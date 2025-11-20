@@ -4,12 +4,14 @@ import {TypedDataProviderDefinition} from '@geoengine/openapi-client';
 import {MatTab, MatTabChangeEvent, MatTabGroup} from '@angular/material/tabs';
 import {ProviderJsonInputComponent} from '../provider-json-input/provider-json-input.component';
 import {ArunaComponent} from '../provider-editor/forms/aruna/aruna.component';
+import {WildLiveComponent} from '../provider-editor/forms/wildlive/wildlive.component';
+import {FormsModule} from '@angular/forms';
 
 @Component({
     selector: 'geoengine-manager-provider-input',
     templateUrl: './provider-input.component.html',
     styleUrl: './provider-input.component.scss',
-    imports: [ProviderJsonInputComponent, ArunaComponent, MatTabGroup, MatTab],
+    imports: [ProviderJsonInputComponent, ArunaComponent, WildLiveComponent, MatTabGroup, MatTab, FormsModule],
 })
 export class ProviderInputComponent {
     readonly providerType = input<ProviderType>(ProviderType.OTHER);
