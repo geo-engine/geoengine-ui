@@ -159,7 +159,7 @@ export class WildLiveComponent implements ControlValueAccessor {
                 priority: definition.priority ?? undefined,
                 auth,
             },
-            {emitEvent: false},
+            {emitEvent: true},
         );
     }
     registerOnChange(fn: unknown): void {
