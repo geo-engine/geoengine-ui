@@ -1,6 +1,6 @@
 import {Component, input} from '@angular/core';
 import {BoundingBox2D, GeoTransform, GridBoundingBox2D} from '@geoengine/common';
-import {RasterBandDescriptor, TypedRasterResultDescriptor} from '@geoengine/openapi-client';
+import {RasterBandDescriptor, TypedRasterResultDescriptor, RegularTimeDimension} from '@geoengine/openapi-client';
 import {FormsModule} from '@angular/forms';
 import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
 import {
@@ -62,6 +62,16 @@ export class RasterResultDescriptorComponent {
             x: this.resultDescriptor().spatialGrid.spatialGrid.geoTransform.xPixelSize,
             y: this.resultDescriptor().spatialGrid.spatialGrid.geoTransform.yPixelSize,
         };
+    }
+
+    get regularTimeDimension(): RegularTimeDimension | undefined {
+        const rd = this.resultDescriptor().time.dimension;
+
+        if (rd && rd.type === 'regular') {
+            return rd;
+        }
+
+        return undefined;
     }
 }
 

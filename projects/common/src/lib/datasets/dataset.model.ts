@@ -11,7 +11,6 @@ import {SourceOperatorDict} from '../operators/operator.model';
 import {SpatialGridDescriptor} from '../spatial-grid/spatial-grid-descriptor.model';
 import {SrsString} from '../spatial-references/spatial-reference.model';
 import {Symbology} from '../symbology/symbology.model';
-import {Time} from '../time/time.model';
 import {
     Dataset as DatasetDict,
     TypedResultDescriptor as TypedResultDescriptorDict,
@@ -19,6 +18,7 @@ import {
     TypedRasterResultDescriptor as RasterResultDescriptorDict,
     Workflow as WorkflowDict,
     RasterBandDescriptor as RasterBandDescriptor,
+    TimeDescriptor,
 } from '@geoengine/openapi-client';
 
 export type UUID = string;
@@ -89,14 +89,14 @@ export class RasterResultDescriptor extends ResultDescriptor {
     readonly dataType: RasterDataType;
     readonly bands: Array<RasterBandDescriptor>;
     readonly spatialGrid: SpatialGridDescriptor;
-    readonly time?: Time;
+    readonly time: TimeDescriptor;
 
     constructor(config: RasterResultDescriptorDict) {
         super(config.spatialReference);
         this.dataType = RasterDataTypes.fromCode(config.dataType);
         this.bands = config.bands;
         this.spatialGrid = SpatialGridDescriptor.fromDict(config.spatialGrid);
-        this.time = config.time ? Time.fromDict(config.time) : undefined;
+        this.time = config.time;
     }
 
     static override fromDict(dict: RasterResultDescriptorDict): RasterResultDescriptor {

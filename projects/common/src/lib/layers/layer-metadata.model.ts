@@ -122,7 +122,7 @@ export class RasterLayerMetadata extends LayerMetadata {
     static override fromDict(dict: RasterResultDescriptorDict): RasterLayerMetadata {
         const dataType = RasterDataTypes.fromCode(dict.dataType);
         const bands = dict.bands;
-        const time = dict.time ? Time.fromDict(dict.time) : undefined;
+        const time = dict.time?.bounds ? Time.fromDict(dict.time.bounds) : undefined;
         const spatialGrid = SpatialGridDescriptor.fromDict(dict.spatialGrid);
 
         return new RasterLayerMetadata(dataType, SpatialReference.fromSrsString(dict.spatialReference), bands, spatialGrid, time);

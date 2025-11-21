@@ -234,6 +234,12 @@ export class GdalMetadataListComponent implements OnChanges {
             spatialReference: resultDescriptorControl.spatialReference.value,
             dataType: resultDescriptorControl.dataType.value,
             spatialGrid: spatialGridDesc.toDict(),
+            time: {
+                bounds: null,
+                dimension: {
+                    type: 'irregular',
+                },
+            },
         };
 
         return {
