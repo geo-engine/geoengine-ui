@@ -43,14 +43,11 @@
         <mat-form-field>
             <mat-label>Listing priority</mat-label>
             <input matInput formControlName="priority" [errorStateMatcher]="errorStateMatcher" />
-            @if (priority.hasError('min')) {
-                <mat-error> Priority must be at least -32768 </mat-error>
-            }
-            @if (priority.hasError('max')) {
-                <mat-error> Priority must not exceed 32767 </mat-error>
+            @if (priority.hasError('outOfRange')) {
+                <mat-error>Priority must be between -32768 and 32767</mat-error>
             }
             @if (priority.hasError('notInteger')) {
-                <mat-error> Priority must be a number </mat-error>
+                <mat-error>Priority must be a number</mat-error>
             }
         </mat-form-field>
     </mat-card-content>

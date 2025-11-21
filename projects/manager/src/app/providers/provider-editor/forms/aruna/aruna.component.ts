@@ -19,6 +19,7 @@ import {MatInput, MatLabel} from '@angular/material/input';
 import {CdkTextareaAutosize} from '@angular/cdk/text-field';
 import {MatTooltip} from '@angular/material/tooltip';
 import {ErrorStateMatcher} from '@angular/material/core';
+import {priorityValidator} from '../util/validators';
 
 @Component({
     selector: 'geoengine-manager-aruna-editor-form',
@@ -78,11 +79,7 @@ export class ArunaComponent {
                 Validators.max(31536000),
                 this.integerValidator(),
             ]),
-            priority: this.fb.nonNullable.control<number | null | undefined>(0, [
-                Validators.min(-32768),
-                Validators.max(32767),
-                this.integerValidator(),
-            ]),
+            priority: this.fb.nonNullable.control<number | null | undefined>(0, [priorityValidator()]),
         });
 
         effect(() => {
