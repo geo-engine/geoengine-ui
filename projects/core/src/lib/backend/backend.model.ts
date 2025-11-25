@@ -570,8 +570,6 @@ export interface WfsParamsDict {
     resultType?: string;
     filter?: string;
     propertyName?: string;
-    // vendor parameter for specifying the spatial resolution
-    queryResolution?: number; // TODO: allow x and y seperately
 }
 
 export interface QuotaDict {
