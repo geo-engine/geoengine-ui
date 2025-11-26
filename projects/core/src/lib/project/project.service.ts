@@ -1416,7 +1416,7 @@ export class ProjectService implements OnDestroy {
 
                     const ogcWfsApi = await firstValueFrom(this.ogcWfsApi);
 
-                    const wfsResponse = await ogcWfsApi.wfsFeatureHandler({
+                    const wfsResponse = await ogcWfsApi.wfsHandler({
                         service: 'WFS',
                         version: '2.0.0',
                         request: 'GetFeature',

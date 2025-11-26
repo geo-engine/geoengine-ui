@@ -360,11 +360,8 @@ export class DownloadLayerComponent implements OnInit {
 
         const time = this.formToTime().toDict();
 
-        const resolution = this.formToResolution().x;
-
         return {
             bbox: bbox,
-            queryResolution: resolution,
             time: time,
             srsName: sref.srsString,
             workflowId: this.layer().workflowId,
