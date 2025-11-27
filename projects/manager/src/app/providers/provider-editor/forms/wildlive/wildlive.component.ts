@@ -24,7 +24,8 @@ import {ErrorStateMatcher} from '@angular/material/core';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {map, pairwise, startWith} from 'rxjs';
 import {MatButton} from '@angular/material/button';
-import {OidcPopupMessage} from 'projects/manager/src/app/oidc-popup/oidc-popup.component';
+import {OidcPopupMessage} from '../../../../oidc-popup/oidc-popup.component';
+import {oidcRedirectPath} from '../../../../util/location';
 
 const nop = (): null => null;
 
@@ -195,7 +196,8 @@ export class WildLiveComponent implements ControlValueAccessor {
         const orientation = window.innerWidth > window.innerHeight ? 'landscape' : 'portrait';
         const [popupWidth, popupHeight] = orientation === 'landscape' ? [700, 500] : [360, 660];
 
-        const redirectUri = `${window.location.origin}/#/oidc-popup`;
+        const redirectUri = oidcRedirectPath(window.location, '/oidc-popup');
+
         const clientId = 'geoengine';
         const keycloakBaseUrl = 'https://auth.geoengine.io/realms/AI4WildLIVE/protocol/openid-connect/auth';
 
