@@ -32,6 +32,7 @@ import {
     Dataset,
     DatasetListing,
     GdalMetaDataList,
+    GdalMultiBand,
     MetaDataDefinition,
     OgrMetaData,
     TypedRasterResultDescriptor,
@@ -51,6 +52,7 @@ import {RasterResultDescriptorComponent} from '../../result-descriptors/raster-r
 import {VectorResultDescriptorComponent} from '../../result-descriptors/vector-result-descriptor/vector-result-descriptor.component';
 import {PermissionsComponent} from '../../permissions/permissions.component';
 import {AsyncPipe} from '@angular/common';
+import {GdalMultiBandComponent} from '../loading-info/gdal-multiband/gdal-multiband.component';
 
 export interface DatasetForm {
     layerType: FormControl<'plot' | 'raster' | 'vector'>;
@@ -86,6 +88,7 @@ export interface DatasetForm {
         ProvenanceComponent,
         SymbologyEditorComponent,
         GdalMetadataListComponent,
+        GdalMultiBandComponent,
         OgrDatasetComponent,
         RasterResultDescriptorComponent,
         VectorResultDescriptorComponent,
@@ -115,6 +118,7 @@ export class DatasetEditorComponent {
     readonly tagInput = viewChild.required(MatChipInput);
     readonly provenanceComponent = viewChild.required(ProvenanceComponent);
     readonly gdalMetadataListComponent = viewChild(GdalMetadataListComponent);
+    readonly gdalMultiBandComponent = viewChild.required(GdalMultiBandComponent);
     readonly ogrDatasetComponent = viewChild(OgrDatasetComponent);
 
     dataset?: Dataset;
@@ -128,6 +132,7 @@ export class DatasetEditorComponent {
     rawLoadingInfo = '';
     rawLoadingInfoPristine = true;
     gdalMetaDataList?: GdalMetaDataList;
+    gdalMultiBand?: GdalMultiBand;
     ogrMetaData?: OgrMetaData;
 
     constructor() {
@@ -146,14 +151,22 @@ export class DatasetEditorComponent {
         const loadingInfo = await this.datasetsService.getLoadingInfo(this.dataset.name);
         if (loadingInfo.type === 'GdalMetaDataList') {
             this.gdalMetaDataList = loadingInfo;
+            this.gdalMultiBand = undefined;
+            this.ogrMetaData = undefined;
+            this.rawLoadingInfo = '';
+        } else if (loadingInfo.type === 'GdalMultiBand') {
+            this.gdalMultiBand = loadingInfo;
+            this.gdalMetaDataList = undefined;
             this.ogrMetaData = undefined;
             this.rawLoadingInfo = '';
         } else if (loadingInfo.type === 'OgrMetaData') {
             this.ogrMetaData = loadingInfo;
             this.gdalMetaDataList = undefined;
+            this.gdalMultiBand = undefined;
             this.rawLoadingInfo = '';
         } else {
             this.gdalMetaDataList = undefined;
+            this.gdalMultiBand = undefined;
             this.ogrMetaData = undefined;
             this.rawLoadingInfo = JSON.stringify(loadingInfo, null, 2);
             this.rawLoadingInfoPristine = true;
@@ -356,7 +369,7 @@ export class DatasetEditorComponent {
             return this.workflowsService.registerWorkflow({
                 type: 'Raster',
                 operator: {
-                    type: 'GdalSource',
+                    type: dataset.sourceOperator,
                     params: {
                         data: dataset.name,
                     },

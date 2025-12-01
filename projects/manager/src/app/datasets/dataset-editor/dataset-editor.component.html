@@ -114,8 +114,26 @@
             <mat-card-content>
                 @if (gdalMetaDataList) {
                     <geoengine-manager-gdal-metadata-list [metaData]="gdalMetaDataList"></geoengine-manager-gdal-metadata-list>
+                    <div class="actions">
+                        <button mat-raised-button color="primary" [disabled]="isSaveLoadingInfoDisabled()" (click)="saveLoadingInfo()">
+                            Apply
+                        </button>
+                    </div>
+                } @else if (gdalMultiBand) {
+                    @if (dataset && dataset.dataPath) {
+                        <geoengine-manager-gdal-multiband
+                            [metaData]="gdalMultiBand"
+                            [dataPath]="dataset.dataPath"
+                            [datasetName]="dataset.name"
+                        ></geoengine-manager-gdal-multiband>
+                    }
                 } @else if (ogrMetaData) {
                     <geoengine-ogr-dataset [metaData]="ogrMetaData"></geoengine-ogr-dataset>
+                    <div class="actions">
+                        <button mat-raised-button color="primary" [disabled]="isSaveLoadingInfoDisabled()" (click)="saveLoadingInfo()">
+                            Apply
+                        </button>
+                    </div>
                 } @else {
                     <geoengine-code-editor
                         [ngModel]="rawLoadingInfo"
@@ -123,12 +141,12 @@
                         [ngModelOptions]="{standalone: true}"
                         language="JSON"
                     ></geoengine-code-editor>
+                    <div class="actions">
+                        <button mat-raised-button color="primary" [disabled]="isSaveLoadingInfoDisabled()" (click)="saveLoadingInfo()">
+                            Apply
+                        </button>
+                    </div>
                 }
-                <div class="actions">
-                    <button mat-raised-button color="primary" [disabled]="isSaveLoadingInfoDisabled()" (click)="saveLoadingInfo()">
-                        Apply
-                    </button>
-                </div>
             </mat-card-content>
         </mat-card>
 

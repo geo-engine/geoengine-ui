@@ -1,0 +1,88 @@
+:host {
+    width: 100%;
+}
+
+.container {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+.left {
+    flex: 0 0 25%;
+    overflow: hidden;
+}
+
+.time-slice {
+    width: calc(75% - 1rem);
+    margin: 1rem;
+}
+
+.selected {
+    background-color: var(--geoengine-primary-color);
+}
+
+mat-form-field {
+    width: 100%;
+}
+
+.cachettl {
+    margin-top: 1rem;
+}
+
+mat-divider {
+    margin-bottom: 1rem;
+}
+
+geoengine-time-interval-input {
+    padding: 0;
+}
+
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.analyze {
+    height: 3rem;
+}
+
+.add-entry {
+    margin-top: 1rem;
+    width: 100%;
+}
+
+#gdal-params-divider {
+    margin-top: 1rem;
+}
+
+mat-nav-list {
+    height: 100%;
+    width: 100%;
+}
+
+mat-list-item {
+    width: 100%;
+
+    h4,
+    p {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+cdk-virtual-scroll-viewport {
+    height: 100%;
+}
+
+.actions {
+    text-align: right;
+    height: 3rem;
+    padding: 1rem;
+
+    button {
+        margin: 0.5rem;
+    }
+}

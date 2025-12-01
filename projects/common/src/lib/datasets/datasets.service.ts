@@ -5,6 +5,7 @@ import {
     DatasetDefinition,
     DatasetListing,
     DatasetsApi,
+    DatasetTile,
     MetaDataDefinition,
     MetaDataSuggestion,
     OrderBy,
@@ -131,5 +132,15 @@ export class DatasetsService {
         const uploadsApi = await firstValueFrom(this.datasetApi);
 
         return uploadsApi.listVolumeFileLayersHandler({volumeName, fileName});
+    }
+
+    async getDatasetTiles(datasetName: string, offset = 0, limit = 100): Promise<DatasetTile[]> {
+        const datasetApi = await firstValueFrom(this.datasetApi);
+
+        return datasetApi.getDatasetTilesHandler({
+            dataset: datasetName,
+            offset,
+            limit,
+        });
     }
 }

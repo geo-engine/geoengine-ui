@@ -1,0 +1,79 @@
+<form [formGroup]="form">
+    @if (dataPath) {
+        <div>
+            @if (dataPath) {
+                <div class="flex-container">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Path to probe file, relative to upload or volume (optional)</mat-label>
+                        <input matInput type="text" [(ngModel)]="mainFile" [ngModelOptions]="{standalone: true}" />
+                    </mat-form-field>
+                    <button mat-raised-button class="analyze" (click)="suggest()">Analyze file and suggest properties</button>
+                </div>
+            }
+            <mat-divider></mat-divider>
+        </div>
+    }
+
+    <div formGroupName="rasterResultDescriptor">
+        <mat-form-field appearance="fill">
+            <mat-label>Output Data Type</mat-label>
+            <mat-select formControlName="dataType">
+                @for (dataType of RasterDataTypes; track dataType) {
+                    <mat-option [value]="dataType">
+                        {{ dataType }}
+                    </mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Spatial Reference</mat-label>
+            <input matInput type="text" formControlName="spatialReference" />
+        </mat-form-field>
+
+        <geoengine-manager-rasterbands
+            [rasterbands]="metaData().resultDescriptor.bands"
+            (rasterbandsChange)="form.controls.rasterResultDescriptor.controls.bands.setValue($event); form.markAsDirty()"
+        ></geoengine-manager-rasterbands>
+
+        {{ form.errors | json }}
+
+        <div class="actions">
+            <button mat-raised-button color="primary" [disabled]="form.pristine || form.invalid" (click)="saveLoadingInfo()">Apply</button>
+        </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="container">
+        <div class="left">
+            <cdk-virtual-scroll-viewport [itemSize]="itemSizePx" (scrolledIndexChange)="onScrolledIndexChange($event)">
+                <mat-nav-list>
+                    <ng-container *cdkVirtualFor="let item of source; trackBy: trackById">
+                        <mat-list-item [class.selected]="(selectedTile$ | async) === item" (click)="select(item)">
+                            <h4 matListItemTitle>{{ tileTitle(item) }}</h4>
+                            <p matListItemLine>{{ item.id }}</p>
+                        </mat-list-item>
+                    </ng-container>
+                </mat-nav-list>
+
+                @if (source?.loading$ | async) {
+                    <mat-spinner [diameter]="loadingSpinnerDiameterPx"></mat-spinner>
+                }
+            </cdk-virtual-scroll-viewport>
+        </div>
+
+        <div class="time-slice" [formGroup]="tileForm">
+            <geoengine-time-interval-input [formControl]="tileForm.controls.time"></geoengine-time-interval-input>
+
+            <mat-divider></mat-divider>
+
+            <geoengine-manager-gdal-dataset-parameters
+                [form]="tileForm.controls.gdalParameters"
+                [dataPath]="dataPath"
+            ></geoengine-manager-gdal-dataset-parameters>
+
+            <mat-divider id="gdal-params-divider"></mat-divider>
+        </div>
+    </div>
+</form>

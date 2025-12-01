@@ -66,7 +66,7 @@
         "@codemirror/state": "~6.5.2",
         "@codemirror/view": "~6.38.1",
         "@egjs/hammerjs": "^2.0.17",
-        "@geoengine/openapi-client": "github:geo-engine/openapi-client#ogc_apis_fix",
+        "@geoengine/openapi-client": "github:geo-engine/openapi-client#tile_management",
         "d3": "~7.9.0",
         "dagre": "~0.8.5",
         "dagre-d3": "~0.6.4",

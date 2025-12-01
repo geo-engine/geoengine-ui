@@ -1,5 +1,7 @@
 <div>
-    Output Measurement:
+    @if (showOutputMeasurementLabel()) {
+        Output Measurement:
+    }
     <mat-button-toggle-group
         id="measurement-type"
         [multiple]="false"
@@ -15,6 +17,7 @@
         <div>
             <mat-form-field appearance="fill">
                 <mat-label>Measurement</mat-label>
+
                 <input matInput type="text" required="true" [(ngModel)]="classificationMeasurement.measurement" />
             </mat-form-field>
         </div>
