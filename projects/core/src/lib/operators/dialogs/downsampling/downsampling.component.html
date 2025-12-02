@@ -18,9 +18,11 @@
             <mat-form-field appearance="fill">
                 <mat-label>Downsampling method</mat-label>
                 <mat-select formControlName="downsamplingMethod">
-                    <mat-option *ngFor="let method of downsamplingMethods" [value]="method[1]">
-                        {{ method[0] }}
-                    </mat-option>
+                    @for (method of downsamplingMethods; track method) {
+                        <mat-option [value]="method[1]">
+                            {{ method[0] }}
+                        </mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
 
