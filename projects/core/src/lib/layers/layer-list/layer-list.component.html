@@ -21,7 +21,7 @@
                     }
                 </div>
             }
-            @for (layer of layerList; track layer.id) {
+            @for (layer of layerList; track layer) {
                 <div class="layer-list-box" cdkDrag cdkDragLockAxis="y">
                     <div class="layer-list-element-custom-placeholder" *cdkDragPlaceholder></div>
                     <geoengine-layer-list-element [layer]="layer"></geoengine-layer-list-element>
