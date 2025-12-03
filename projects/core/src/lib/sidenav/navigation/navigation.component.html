@@ -1,5 +1,5 @@
 <div>
-    @for (button of buttons(); track button) {
+    @for (button of buttons(); track button.tooltip) {
         <button
             mat-icon-button
             [color]="button.colorObservable ? (button.colorObservable | async) : buttonColor(button.sidenavConfig)"
