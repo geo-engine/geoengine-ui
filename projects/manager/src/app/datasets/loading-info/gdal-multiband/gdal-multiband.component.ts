@@ -33,6 +33,7 @@ import {
     SpatialGridDefinition,
     SpatialGridDescriptor,
     time_interval_from_dict,
+    time_interval_to_dict,
 } from '@geoengine/common';
 import moment from 'moment';
 import {
@@ -64,8 +65,15 @@ export interface GdalMultiBandForm {
 
 export interface TileForm {
     time: FormControl<TimeInterval>;
-    // TODO: bbox
+    bbox: FormGroup<BboxForm>;
     gdalParameters: FormGroup<GdalDatasetParametersForm>;
+}
+
+export interface BboxForm {
+    bboxMinX: FormControl<number>;
+    bboxMinY: FormControl<number>;
+    bboxMaxX: FormControl<number>;
+    bboxMaxY: FormControl<number>;
 }
 
 export interface RasterResultDescriptorForm {
@@ -152,11 +160,11 @@ export class GdalMultiBandComponent implements OnChanges {
     }
 
     select(item: DatasetTile): void {
+        if (!item) {
+            return;
+        }
         this.selectedTile$.next(item);
-        this.tileForm = this.setUpTileForm(
-            time_interval_from_dict(item.time),
-            item?.params ?? GdalDatasetParametersComponent.placeHolderGdalParams(),
-        );
+        this.tileForm = this.setUpTileForm(item);
     }
 
     tileTitle(tile: DatasetTile) {
@@ -194,6 +202,44 @@ export class GdalMultiBandComponent implements OnChanges {
             const errorMessage = await errorToText(error, 'Updating dataset loading information failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
         }
+    }
+
+    saveTile() {
+        if (this.tileForm.invalid || !this.selectedTile$.value) {
+            return;
+        }
+
+        const tileId = this.selectedTile$.value?.id;
+        const time = this.tileForm.controls.time.value;
+        const bboxControls = this.tileForm.controls.bbox.controls;
+        const spatialPartition = {
+            lowerRightCoordinate: {
+                x: bboxControls.bboxMaxX.value,
+                y: bboxControls.bboxMinY.value,
+            },
+            upperLeftCoordinate: {
+                x: bboxControls.bboxMinX.value,
+                y: bboxControls.bboxMaxY.value,
+            },
+        };
+
+        const params = this.getGdalParameters(this.tileForm.controls.gdalParameters);
+
+        const update = {
+            band: 0, // TODO
+            params,
+            spatialPartition,
+            time: {
+                start: time.start.valueOf(),
+                end: time.end.valueOf(),
+            },
+            zIndex: 0, // TODO
+        };
+
+        this.datasetsService.updateDatasetTile(this.datasetName(), tileId, update);
+        // TODO: handle errors and show success message
+
+        // TODO: refresh source so that selecting the tile again shows updated data
     }
 
     // addTimeSlicePlaceholder(): void {
@@ -439,23 +485,48 @@ export class GdalMultiBandComponent implements OnChanges {
     }
 
     private setUpPlaceHolderTileForm(): FormGroup<TileForm> {
-        return this.setUpTileForm(
-            {
+        return this.setUpTileForm({
+            band: 0,
+            id: 'placeholder',
+            spatialPartition: {
+                lowerRightCoordinate: {x: 0, y: 0},
+                upperLeftCoordinate: {x: 0, y: 0},
+            },
+            zIndex: 0,
+            time: time_interval_to_dict({
                 start: moment.utc(),
                 timeAsPoint: false,
                 end: moment.utc().add(1, 'days'),
-            },
-            GdalDatasetParametersComponent.placeHolderGdalParams(),
-        );
+            }),
+            params: GdalDatasetParametersComponent.placeHolderGdalParams(),
+        });
     }
 
-    private setUpTileForm(time: TimeInterval, gdalParams: GdalDatasetParameters): FormGroup<TileForm> {
+    private setUpTileForm(tile: DatasetTile): FormGroup<TileForm> {
         const form = new FormGroup<TileForm>({
-            time: new FormControl(time, {
+            time: new FormControl(time_interval_from_dict(tile.time), {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
-            gdalParameters: GdalDatasetParametersComponent.setUpForm(gdalParams),
+            bbox: new FormGroup<BboxForm>({
+                bboxMinX: new FormControl(tile.spatialPartition.upperLeftCoordinate.x, {
+                    nonNullable: true,
+                    validators: [Validators.required],
+                }),
+                bboxMinY: new FormControl(tile.spatialPartition.lowerRightCoordinate.y, {
+                    nonNullable: true,
+                    validators: [Validators.required],
+                }),
+                bboxMaxX: new FormControl(tile.spatialPartition.lowerRightCoordinate.x, {
+                    nonNullable: true,
+                    validators: [Validators.required],
+                }),
+                bboxMaxY: new FormControl(tile.spatialPartition.upperLeftCoordinate.y, {
+                    nonNullable: true,
+                    validators: [Validators.required],
+                }),
+            }),
+            gdalParameters: GdalDatasetParametersComponent.setUpForm(tile.params),
         });
 
         return form;

@@ -48,6 +48,16 @@ geoengine-time-interval-input {
     height: 3rem;
 }
 
+.bbox-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 1rem;
+
+    mat-form-field {
+        width: 100%;
+    }
+}
+
 .add-entry {
     margin-top: 1rem;
     width: 100%;

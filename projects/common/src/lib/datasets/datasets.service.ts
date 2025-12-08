@@ -13,6 +13,7 @@ import {
     SuggestMetaDataHandlerRequest,
     Symbology,
     UpdateDataset,
+    UpdateDatasetTile,
     Volume,
     VolumeFileLayersResponse,
 } from '@geoengine/openapi-client';
@@ -141,6 +142,16 @@ export class DatasetsService {
             dataset: datasetName,
             offset,
             limit,
+        });
+    }
+
+    async updateDatasetTile(datasetName: string, tileId: string, update: UpdateDatasetTile): Promise<void> {
+        const datasetApi = await firstValueFrom(this.datasetApi);
+
+        return datasetApi.updateDatasetTileHandler({
+            dataset: datasetName,
+            tile: tileId,
+            updateDatasetTile: update,
         });
     }
 }

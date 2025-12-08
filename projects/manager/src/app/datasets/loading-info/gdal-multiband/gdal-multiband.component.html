@@ -36,8 +36,6 @@
             (rasterbandsChange)="form.controls.rasterResultDescriptor.controls.bands.setValue($event); form.markAsDirty()"
         ></geoengine-manager-rasterbands>
 
-        {{ form.errors | json }}
-
         <div class="actions">
             <button mat-raised-button color="primary" [disabled]="form.pristine || form.invalid" (click)="saveLoadingInfo()">Apply</button>
         </div>
@@ -63,7 +61,29 @@
             </cdk-virtual-scroll-viewport>
         </div>
 
-        <div class="time-slice" [formGroup]="tileForm">
+        <div class="time-slice" [formGroup]="tileForm.controls.bbox">
+            <h3 class="mat-subtitle-1">Bounding Box</h3>
+            <div class="bbox-fields">
+                <mat-form-field appearance="fill">
+                    <mat-label>min X</mat-label>
+                    <input matInput type="number" formControlName="bboxMinX" />
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-label>min Y</mat-label>
+                    <input matInput type="number" formControlName="bboxMinY" />
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-label>max X</mat-label>
+                    <input matInput type="number" formControlName="bboxMaxX" />
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-label>max Y</mat-label>
+                    <input matInput type="number" formControlName="bboxMaxY" />
+                </mat-form-field>
+            </div>
+
+            <mat-divider></mat-divider>
+
             <geoengine-time-interval-input [formControl]="tileForm.controls.time"></geoengine-time-interval-input>
 
             <mat-divider></mat-divider>
@@ -73,7 +93,11 @@
                 [dataPath]="dataPath"
             ></geoengine-manager-gdal-dataset-parameters>
 
-            <mat-divider id="gdal-params-divider"></mat-divider>
+            <div class="actions">
+                <button mat-raised-button color="primary" [disabled]="tileForm.pristine || tileForm.invalid" (click)="saveTile()">
+                    Apply
+                </button>
+            </div>
         </div>
     </div>
 </form>

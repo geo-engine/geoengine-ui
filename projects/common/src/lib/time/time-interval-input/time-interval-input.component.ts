@@ -58,6 +58,13 @@ export function time_interval_from_dict(dict: TimeIntervalDict): TimeInterval {
     };
 }
 
+export function time_interval_to_dict(interval: TimeInterval): TimeIntervalDict {
+    return {
+        start: interval.start.valueOf(),
+        end: interval.timeAsPoint ? interval.start.valueOf() : interval.end.valueOf(),
+    };
+}
+
 @Component({
     selector: 'geoengine-time-interval-input',
     templateUrl: './time-interval-input.component.html',
