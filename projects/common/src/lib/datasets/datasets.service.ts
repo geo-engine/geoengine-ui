@@ -1,5 +1,6 @@
 import {Injectable, inject} from '@angular/core';
 import {
+    AddDatasetTile,
     DataPath,
     Dataset,
     DatasetDefinition,
@@ -152,6 +153,15 @@ export class DatasetsService {
             dataset: datasetName,
             tile: tileId,
             updateDatasetTile: update,
+        });
+    }
+
+    async addDatasetTiles(datasetName: string, tiles: Array<AddDatasetTile>): Promise<void> {
+        const datasetApi = await firstValueFrom(this.datasetApi);
+
+        return datasetApi.addDatasetTilesHandler({
+            dataset: datasetName,
+            addDatasetTile: tiles,
         });
     }
 }

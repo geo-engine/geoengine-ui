@@ -45,23 +45,39 @@
 
     <div class="container">
         <div class="left">
-            <cdk-virtual-scroll-viewport [itemSize]="itemSizePx" (scrolledIndexChange)="onScrolledIndexChange($event)">
-                <mat-nav-list>
-                    <ng-container *cdkVirtualFor="let item of source; trackBy: trackById">
-                        <mat-list-item [class.selected]="(selectedTile$ | async) === item" (click)="select(item)">
-                            <h4 matListItemTitle>{{ tileTitle(item) }}</h4>
-                            <p matListItemLine>{{ item.id }}</p>
-                        </mat-list-item>
-                    </ng-container>
-                </mat-nav-list>
-
-                @if (source?.loading$ | async) {
-                    <mat-spinner [diameter]="loadingSpinnerDiameterPx"></mat-spinner>
+            @switch (editMode) {
+                @case (EditMode.create) {
+                    Back
                 }
-            </cdk-virtual-scroll-viewport>
+                @case (EditMode.update) {
+                    <button mat-raised-button color="primary" class="add-dataset" (click)="addTile()"><mat-icon>add</mat-icon></button>
+                    <cdk-virtual-scroll-viewport [itemSize]="itemSizePx" (scrolledIndexChange)="onScrolledIndexChange($event)">
+                        <mat-nav-list>
+                            <ng-container *cdkVirtualFor="let item of source; trackBy: trackById">
+                                <mat-list-item [class.selected]="(selectedTileId$ | async) === item.id" (click)="select(item)">
+                                    <h4 matListItemTitle>{{ tileTitle(item) }}</h4>
+                                    <p matListItemLine>{{ item.id }}</p>
+                                </mat-list-item>
+                            </ng-container>
+                        </mat-nav-list>
+
+                        @if (source?.loading$ | async) {
+                            <mat-spinner [diameter]="loadingSpinnerDiameterPx"></mat-spinner>
+                        }
+                    </cdk-virtual-scroll-viewport>
+                }
+            }
         </div>
 
         <div class="time-slice" [formGroup]="tileForm.controls.bbox">
+            @switch (editMode) {
+                @case (EditMode.create) {
+                    <h2>Create New Tile</h2>
+                }
+                @case (EditMode.update) {
+                    <h2>Edit Tile {{ selectedTileId$ | async }}</h2>
+                }
+            }
             <h3 class="mat-subtitle-1">Bounding Box</h3>
             <div class="bbox-fields">
                 <mat-form-field appearance="fill">
@@ -94,9 +110,16 @@
             ></geoengine-manager-gdal-dataset-parameters>
 
             <div class="actions">
-                <button mat-raised-button color="primary" [disabled]="tileForm.pristine || tileForm.invalid" (click)="saveTile()">
-                    Apply
-                </button>
+                @switch (editMode) {
+                    @case (EditMode.update) {
+                        <button mat-raised-button color="primary" [disabled]="tileForm.pristine || tileForm.invalid" (click)="saveTile()">
+                            Apply
+                        </button>
+                    }
+                    @case (EditMode.create) {
+                        <button mat-raised-button color="primary" [disabled]="tileForm.invalid" (click)="createTile()">Create</button>
+                    }
+                }
             </div>
         </div>
     </div>

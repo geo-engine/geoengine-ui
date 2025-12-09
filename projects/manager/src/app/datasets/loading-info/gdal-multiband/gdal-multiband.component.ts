@@ -54,7 +54,7 @@ import {MatDivider, MatNavList, MatListItem, MatListItemTitle, MatListItemLine} 
 import {MatSelect} from '@angular/material/select';
 import {MatOption} from '@angular/material/autocomplete';
 import {DataSource} from '@angular/cdk/collections';
-import {BehaviorSubject, concatMap, Observable, range, scan, startWith, Subject} from 'rxjs';
+import {BehaviorSubject, concatMap, Observable, range, scan, startWith, Subject, filter, take, Subscription} from 'rxjs';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {RasterbandsComponent} from '../../../rasterbands/rasterbands.component';
 import {AppConfig} from '../../../app-config.service';
@@ -80,6 +80,11 @@ export interface RasterResultDescriptorForm {
     bands: FormControl<Array<RasterBandDescriptor>>;
     dataType: FormControl<RasterDataType>;
     spatialReference: FormControl<string>;
+}
+
+enum EditMode {
+    create,
+    update,
 }
 
 @Component({
@@ -117,7 +122,11 @@ export class GdalMultiBandComponent implements OnChanges {
 
     readonly viewport = viewChild.required(CdkVirtualScrollViewport);
 
+    EditMode = EditMode;
+    editMode = EditMode.update;
+
     source?: TileDataSource;
+    private sourceSubscription?: Subscription;
 
     RasterDataTypes = Object.values(RasterDataType);
 
@@ -132,7 +141,8 @@ export class GdalMultiBandComponent implements OnChanges {
     readonly datasetName = input.required<string>();
 
     selectedTile = 0;
-    selectedTile$ = new BehaviorSubject<DatasetTile | undefined>(undefined);
+    // hold only the selected tile id for stable identity comparison in the virtual scroll
+    selectedTileId$ = new BehaviorSubject<string | undefined>(undefined);
 
     setUpSource(): void {
         this.source = new TileDataSource(this.datasetsService, this.datasetName());
@@ -140,6 +150,26 @@ export class GdalMultiBandComponent implements OnChanges {
         setTimeout(() => {
             this.source?.init(this.calculateInitialNumberOfElements());
         });
+
+        // select the first tile in list
+        this.sourceSubscription?.unsubscribe();
+        if (this.source) {
+            this.sourceSubscription = this.source
+                .connect()
+                .pipe(
+                    filter((items) => items.length > 0),
+                    take(1),
+                )
+                .subscribe((items) => {
+                    if (items.length > 0) {
+                        setTimeout(() => {
+                            this.selectedTileId$.next(items[0].id);
+                            this.tileForm = this.setUpTileForm(items[0]);
+                            this.changeDetectorRef.markForCheck();
+                        }, 0);
+                    }
+                });
+        }
     }
 
     /**
@@ -160,11 +190,18 @@ export class GdalMultiBandComponent implements OnChanges {
     }
 
     select(item: DatasetTile): void {
+        console.log('Selecting tile', item);
         if (!item) {
             return;
         }
-        this.selectedTile$.next(item);
+        // store only the id for selection highlighting; keep tileForm derived from the item
+        this.selectedTileId$.next(item.id);
         this.tileForm = this.setUpTileForm(item);
+    }
+
+    addTile() {
+        this.editMode = EditMode.create;
+        this.tileForm = this.setUpPlaceHolderTileForm();
     }
 
     tileTitle(tile: DatasetTile) {
@@ -205,11 +242,11 @@ export class GdalMultiBandComponent implements OnChanges {
     }
 
     saveTile() {
-        if (this.tileForm.invalid || !this.selectedTile$.value) {
+        if (this.tileForm.invalid || !this.selectedTileId$.value) {
             return;
         }
 
-        const tileId = this.selectedTile$.value?.id;
+        const tileId = this.selectedTileId$.value as string;
         const time = this.tileForm.controls.time.value;
         const bboxControls = this.tileForm.controls.bbox.controls;
         const spatialPartition = {
@@ -237,6 +274,44 @@ export class GdalMultiBandComponent implements OnChanges {
         };
 
         this.datasetsService.updateDatasetTile(this.datasetName(), tileId, update);
+        // TODO: handle errors and show success message
+
+        // TODO: refresh source so that selecting the tile again shows updated data
+    }
+
+    createTile() {
+        if (this.tileForm.invalid || !this.selectedTileId$.value) {
+            return;
+        }
+
+        const tileId = this.selectedTileId$.value as string;
+        const time = this.tileForm.controls.time.value;
+        const bboxControls = this.tileForm.controls.bbox.controls;
+        const spatialPartition = {
+            lowerRightCoordinate: {
+                x: bboxControls.bboxMaxX.value,
+                y: bboxControls.bboxMinY.value,
+            },
+            upperLeftCoordinate: {
+                x: bboxControls.bboxMinX.value,
+                y: bboxControls.bboxMaxY.value,
+            },
+        };
+
+        const params = this.getGdalParameters(this.tileForm.controls.gdalParameters);
+
+        const add = {
+            band: 0, // TODO
+            params,
+            spatialPartition,
+            time: {
+                start: time.start.valueOf(),
+                end: time.end.valueOf(),
+            },
+            zIndex: 0, // TODO
+        };
+
+        this.datasetsService.addDatasetTiles(this.datasetName(), [add]);
         // TODO: handle errors and show success message
 
         // TODO: refresh source so that selecting the tile again shows updated data
