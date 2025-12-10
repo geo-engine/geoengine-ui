@@ -34,6 +34,8 @@ import {
     SpatialGridDescriptor,
     time_interval_from_dict,
     time_interval_to_dict,
+    extractSpatialPartition,
+    ConfirmationComponent,
 } from '@geoengine/common';
 import moment from 'moment';
 import {
@@ -43,6 +45,7 @@ import {
     GdalMetaDataList,
     GdalMultiBand,
     MetaDataDefinition,
+    MetaDataSuggestion,
     RasterBandDescriptor,
     RasterDataType,
     RasterResultDescriptor,
@@ -54,12 +57,14 @@ import {MatDivider, MatNavList, MatListItem, MatListItemTitle, MatListItemLine} 
 import {MatSelect} from '@angular/material/select';
 import {MatOption} from '@angular/material/autocomplete';
 import {DataSource} from '@angular/cdk/collections';
-import {BehaviorSubject, concatMap, Observable, range, scan, startWith, Subject, filter, take, Subscription} from 'rxjs';
+import {BehaviorSubject, concatMap, Observable, range, scan, startWith, Subject, filter, take, Subscription, firstValueFrom} from 'rxjs';
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {RasterbandsComponent} from '../../../rasterbands/rasterbands.component';
 import {AppConfig} from '../../../app-config.service';
+import {MatDialog} from '@angular/material/dialog';
 
 export interface GdalMultiBandForm {
+    // TODO: volume
     rasterResultDescriptor: FormGroup<RasterResultDescriptorForm>;
 }
 
@@ -84,6 +89,7 @@ export interface RasterResultDescriptorForm {
 
 enum EditMode {
     create,
+    created,
     update,
 }
 
@@ -114,6 +120,7 @@ enum EditMode {
 export class GdalMultiBandComponent implements OnChanges {
     private readonly datasetsService = inject(DatasetsService);
     private readonly snackBar = inject(MatSnackBar);
+    private readonly dialog = inject(MatDialog);
     private readonly config = inject(AppConfig);
     private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
@@ -133,7 +140,8 @@ export class GdalMultiBandComponent implements OnChanges {
     form: FormGroup<GdalMultiBandForm> = this.setUpForm();
     tileForm: FormGroup<TileForm> = this.setUpPlaceHolderTileForm();
 
-    mainFile = '';
+    probeFileDatasetProperties = '';
+    probeFileTileProperties = '';
 
     @Input() dataPath?: DataPath; // TODO is not mandatory
 
@@ -279,6 +287,34 @@ export class GdalMultiBandComponent implements OnChanges {
         // TODO: refresh source so that selecting the tile again shows updated data
     }
 
+    async deleteTile() {
+        if (!this.selectedTileId$.value) {
+            return;
+        }
+
+        const dialogRef = this.dialog.open(ConfirmationComponent, {
+            data: {message: 'Confirm the deletion of the tile. This cannot be undone.'},
+        });
+
+        const confirm = await firstValueFrom(dialogRef.afterClosed());
+
+        if (!confirm) {
+            return;
+        }
+
+        try {
+            const tileId = this.selectedTileId$.value as string;
+            await this.datasetsService.deleteDatasetTile(this.datasetName(), [tileId]);
+            this.snackBar.open('Tile successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
+
+            this.setUpSource();
+            this.changeDetectorRef.markForCheck();
+        } catch (error) {
+            const errorMessage = await errorToText(error, 'Deleting tile failed.');
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
+        }
+    }
+
     createTile() {
         if (this.tileForm.invalid || !this.selectedTileId$.value) {
             return;
@@ -315,6 +351,13 @@ export class GdalMultiBandComponent implements OnChanges {
         // TODO: handle errors and show success message
 
         // TODO: refresh source so that selecting the tile again shows updated data
+
+        this.editMode = EditMode.created;
+    }
+
+    backToAllTiles() {
+        this.setUpSource();
+        this.editMode = EditMode.update;
     }
 
     // addTimeSlicePlaceholder(): void {
@@ -437,7 +480,7 @@ export class GdalMultiBandComponent implements OnChanges {
         };
     }
 
-    async suggest(): Promise<void> {
+    async suggestDatasetProperties(): Promise<void> {
         if (!this.dataPath) {
             this.snackBar.open('No data path selected.', 'Close', {panelClass: ['error-snackbar']});
             return;
@@ -447,49 +490,64 @@ export class GdalMultiBandComponent implements OnChanges {
             const suggestion = await this.datasetsService.suggestMetaData({
                 suggestMetaData: {
                     dataPath: this.dataPath,
-                    mainFile: this.mainFile,
+                    mainFile: this.probeFileDatasetProperties,
                 },
             });
 
-            if (suggestion.metaData.type !== 'GdalMetaDataList') {
-                this.snackBar.open(`Metadata suggestion is not of type "GdalMetaDataList" but ${suggestion.metaData.type}`, 'Close', {
-                    panelClass: ['error-snackbar'],
-                });
+            const extractedSuggestion = this.extractSuggestion(suggestion);
+            if (!extractedSuggestion) {
                 return;
             }
-
-            const gdalMetaDataList = suggestion.metaData as GdalMetaDataList;
-            const slices = gdalMetaDataList.params;
-
-            if (slices.length === 0) {
-                this.snackBar.open('No time slices found in metadata suggestion.', 'Close', {panelClass: ['error-snackbar']});
-                return;
-            }
-
-            const firstSlice = slices[0];
-            const gdalParams = firstSlice.params;
+            const [resultDescriptor, gdalParams] = extractedSuggestion;
 
             if (!gdalParams) {
                 this.snackBar.open('No gdal parameters found in metadata suggestion.', 'Close', {panelClass: ['error-snackbar']});
                 return;
             }
 
-            // if (this.form.controls.timeSlices.length === 0) {
-            //     this.addTimeSlice(
-            //         {
-            //             start: moment.utc(),
-            //             timeAsPoint: false,
-            //             end: moment.utc().add(1, 'days'),
-            //         },
-            //         gdalParams,
-            //         0,
-            //     );
-            // } else {
-            //     this.form.controls.timeSlices
-            //         .at(this.selectedTimeSlice)
-            //         .setControl('gdalParameters', GdalDatasetParametersComponent.setUpForm(gdalParams));
-            // }
-            this.setResultDescriptor(gdalMetaDataList.resultDescriptor);
+            this.setResultDescriptor(resultDescriptor);
+        } catch (error) {
+            const errorMessage = await errorToText(error, 'Metadata suggestion failed.');
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
+        }
+    }
+
+    async suggestTileProperties(): Promise<void> {
+        if (!this.dataPath) {
+            this.snackBar.open('No data path selected.', 'Close', {panelClass: ['error-snackbar']});
+            return;
+        }
+
+        try {
+            const suggestion = await this.datasetsService.suggestMetaData({
+                suggestMetaData: {
+                    dataPath: this.dataPath,
+                    mainFile: this.probeFileTileProperties,
+                },
+            });
+
+            const extractedSuggestion = this.extractSuggestion(suggestion);
+            if (!extractedSuggestion) {
+                return;
+            }
+            const [_, gdalParams] = extractedSuggestion;
+
+            if (!gdalParams) {
+                this.snackBar.open('No gdal parameters found in metadata suggestion.', 'Close', {panelClass: ['error-snackbar']});
+                return;
+            }
+
+            const geoTransform = gdalParams.geoTransform;
+
+            this.tileForm = this.setUpTileForm({
+                band: this.tileForm.controls.gdalParameters.controls.rasterbandChannel.value,
+                id: 'placeholder',
+                spatialPartition: extractSpatialPartition(gdalParams),
+                zIndex: 0,
+                time: time_interval_to_dict(this.tileForm.controls.time.value),
+                params: gdalParams,
+            });
+            this.changeDetectorRef.markForCheck();
         } catch (error) {
             const errorMessage = await errorToText(error, 'Metadata suggestion failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
@@ -507,6 +565,30 @@ export class GdalMultiBandComponent implements OnChanges {
         const numberOfElements = Math.ceil(element.clientHeight / this.itemSizePx);
         // add one such that scrolling happens
         return numberOfElements + 1;
+    }
+
+    private extractSuggestion(
+        suggestion: MetaDataSuggestion,
+    ): [RasterResultDescriptor, GdalDatasetParameters | null | undefined] | undefined {
+        // TODO: replace with a proper API for suggestion once old GdalSource is removed form the backend
+        if (suggestion.metaData.type !== 'GdalMetaDataList') {
+            this.snackBar.open(`Metadata suggestion is not of type "GdalMetaDataList" but ${suggestion.metaData.type}`, 'Close', {
+                panelClass: ['error-snackbar'],
+            });
+            return;
+        }
+
+        const gdalMetaDataList = suggestion.metaData as GdalMetaDataList;
+        const slices = gdalMetaDataList.params;
+
+        if (slices.length === 0) {
+            this.snackBar.open('No time slices found in metadata suggestion.', 'Close', {panelClass: ['error-snackbar']});
+            return;
+        }
+
+        const firstSlice = slices[0];
+        const gdalParams = firstSlice.params;
+        return [gdalMetaDataList.resultDescriptor, gdalParams];
     }
 
     private setUpFormFromMetaData(metaData: GdalMultiBand): void {

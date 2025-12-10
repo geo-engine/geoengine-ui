@@ -5,9 +5,11 @@
                 <div class="flex-container">
                     <mat-form-field appearance="fill">
                         <mat-label>Path to probe file, relative to upload or volume (optional)</mat-label>
-                        <input matInput type="text" [(ngModel)]="mainFile" [ngModelOptions]="{standalone: true}" />
+                        <input matInput type="text" [(ngModel)]="probeFileDatasetProperties" [ngModelOptions]="{standalone: true}" />
                     </mat-form-field>
-                    <button mat-raised-button class="analyze" (click)="suggest()">Analyze file and suggest properties</button>
+                    <button mat-raised-button class="analyze" (click)="suggestDatasetProperties()">
+                        Analyze file and suggest properties
+                    </button>
                 </div>
             }
             <mat-divider></mat-divider>
@@ -46,8 +48,10 @@
     <div class="container">
         <div class="left">
             @switch (editMode) {
-                @case (EditMode.create) {
-                    Back
+                @case (EditMode.created) {
+                    <button mat-stroked-button class="browseButton" (click)="backToAllTiles()">
+                        <mat-icon>chevron_left</mat-icon>Back to all datasets
+                    </button>
                 }
                 @case (EditMode.update) {
                     <button mat-raised-button color="primary" class="add-dataset" (click)="addTile()"><mat-icon>add</mat-icon></button>
@@ -78,6 +82,14 @@
                     <h2>Edit Tile {{ selectedTileId$ | async }}</h2>
                 }
             }
+            <div class="flex-container">
+                <mat-form-field appearance="fill">
+                    <mat-label>Path to probe file, relative to upload or volume (optional)</mat-label>
+                    <input matInput type="text" [(ngModel)]="probeFileTileProperties" [ngModelOptions]="{standalone: true}" />
+                </mat-form-field>
+                <button mat-raised-button class="analyze" (click)="suggestTileProperties()">Analyze file and suggest properties</button>
+            </div>
+
             <h3 class="mat-subtitle-1">Bounding Box</h3>
             <div class="bbox-fields">
                 <mat-form-field appearance="fill">
@@ -115,6 +127,7 @@
                         <button mat-raised-button color="primary" [disabled]="tileForm.pristine || tileForm.invalid" (click)="saveTile()">
                             Apply
                         </button>
+                        <button mat-raised-button color="warn" (click)="deleteTile()">Delete</button>
                     }
                     @case (EditMode.create) {
                         <button mat-raised-button color="primary" [disabled]="tileForm.invalid" (click)="createTile()">Create</button>

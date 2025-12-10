@@ -4,7 +4,7 @@ import OlFormatGeoJson from 'ol/format/GeoJSON';
 import OlGeometry from 'ol/geom/Geometry';
 import {Extent as OlExtent} from 'ol/extent';
 import {Observable, ReplaySubject} from 'rxjs';
-import {BoundingBox2D as BBoxDict, ResponseError} from '@geoengine/openapi-client';
+import {BoundingBox2D as BBoxDict, GdalDatasetParameters, ResponseError, SpatialPartition2D} from '@geoengine/openapi-client';
 import {Time} from '../time/time.model';
 
 /**
@@ -143,4 +143,31 @@ export function estimateTimeFormat(timeSteps: Array<Time>): string {
 // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
 export function isDefined<T>(arg: T | null | undefined): arg is T {
     return arg !== null && arg !== undefined;
+}
+
+export function extractSpatialPartition(gdalParams: GdalDatasetParameters): SpatialPartition2D {
+    const geoTransform = gdalParams.geoTransform;
+
+    let minX, minY, maxX, maxY;
+
+    if (geoTransform.xPixelSize >= 0) {
+        minX = geoTransform.originCoordinate.x;
+        maxX = minX + geoTransform.xPixelSize * gdalParams.width;
+    } else {
+        maxX = geoTransform.originCoordinate.x;
+        minX = maxX + geoTransform.xPixelSize * gdalParams.width;
+    }
+
+    if (geoTransform.yPixelSize >= 0) {
+        minY = geoTransform.originCoordinate.y;
+        maxY = minY + geoTransform.yPixelSize * gdalParams.height;
+    } else {
+        maxY = geoTransform.originCoordinate.y;
+        minY = maxY + geoTransform.yPixelSize * gdalParams.height;
+    }
+
+    return {
+        lowerRightCoordinate: {x: maxX, y: minY},
+        upperLeftCoordinate: {x: minX, y: maxY},
+    };
 }

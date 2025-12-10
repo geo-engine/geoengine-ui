@@ -164,4 +164,15 @@ export class DatasetsService {
             addDatasetTile: tiles,
         });
     }
+
+    async deleteDatasetTile(datasetName: string, tileIds: Array<string>): Promise<void> {
+        const datasetApi = await firstValueFrom(this.datasetApi);
+
+        return datasetApi.deleteDatasetTilesHandler({
+            dataset: datasetName,
+            deleteDatasetTiles: {
+                tileIds,
+            },
+        });
+    }
 }
