@@ -36,6 +36,7 @@ import {
     time_interval_to_dict,
     extractSpatialPartition,
     ConfirmationComponent,
+    geoengineValidators,
 } from '@geoengine/common';
 import moment from 'moment';
 import {
@@ -71,6 +72,8 @@ export interface GdalMultiBandForm {
 export interface TileForm {
     time: FormControl<TimeInterval>;
     bbox: FormGroup<BboxForm>;
+    band: FormControl<number>;
+    zIndex: FormControl<number>;
     gdalParameters: FormGroup<GdalDatasetParametersForm>;
 }
 
@@ -140,6 +143,12 @@ export class GdalMultiBandComponent implements OnChanges {
     form: FormGroup<GdalMultiBandForm> = this.setUpForm();
     tileForm: FormGroup<TileForm> = this.setUpPlaceHolderTileForm();
 
+    // return an array of indices for the raster bands to iterate over in the template
+    get bandIndices(): number[] {
+        const bands = this.form?.controls?.rasterResultDescriptor?.controls?.bands?.value ?? [];
+        return Array.from({length: bands.length}, (_, i) => i);
+    }
+
     probeFileDatasetProperties = '';
     probeFileTileProperties = '';
 
@@ -148,9 +157,12 @@ export class GdalMultiBandComponent implements OnChanges {
     readonly metaData = input.required<GdalMultiBand>();
     readonly datasetName = input.required<string>();
 
-    selectedTile = 0;
+    selectedTile?: DatasetTile;
     // hold only the selected tile id for stable identity comparison in the virtual scroll
     selectedTileId$ = new BehaviorSubject<string | undefined>(undefined);
+
+    createdTileName?: string;
+    createdTileId?: string;
 
     setUpSource(): void {
         this.source = new TileDataSource(this.datasetsService, this.datasetName());
@@ -197,23 +209,38 @@ export class GdalMultiBandComponent implements OnChanges {
         return item.id;
     }
 
-    select(item: DatasetTile): void {
+    async select(item: DatasetTile): Promise<void> {
         console.log('Selecting tile', item);
         if (!item) {
             return;
         }
-        // store only the id for selection highlighting; keep tileForm derived from the item
+
+        if (this.tileForm.dirty) {
+            const confirmDialogRef = this.dialog.open(ConfirmationComponent, {
+                data: {message: 'Do you really want to stop editing the tile? All changes will be lost.'},
+            });
+
+            const confirm = await firstValueFrom(confirmDialogRef.afterClosed());
+
+            if (!confirm) {
+                return;
+            }
+        }
+
+        this.editMode = EditMode.update;
+
         this.selectedTileId$.next(item.id);
+        this.selectedTile = item;
         this.tileForm = this.setUpTileForm(item);
     }
 
     addTile() {
         this.editMode = EditMode.create;
         this.tileForm = this.setUpPlaceHolderTileForm();
+        this.selectedTileId$.next(undefined);
     }
 
-    tileTitle(tile: DatasetTile) {
-        const filePath = tile.params.filePath ?? '';
+    tileTitle(filePath: string) {
         const lastSlash = filePath.lastIndexOf('/');
         const lastDot = filePath.lastIndexOf('.');
         const start = lastSlash === -1 ? 0 : lastSlash + 1;
@@ -249,7 +276,7 @@ export class GdalMultiBandComponent implements OnChanges {
         }
     }
 
-    saveTile() {
+    async saveTile() {
         if (this.tileForm.invalid || !this.selectedTileId$.value) {
             return;
         }
@@ -271,20 +298,36 @@ export class GdalMultiBandComponent implements OnChanges {
         const params = this.getGdalParameters(this.tileForm.controls.gdalParameters);
 
         const update = {
-            band: 0, // TODO
+            band: this.tileForm.controls.band.value,
             params,
             spatialPartition,
             time: {
                 start: time.start.valueOf(),
                 end: time.end.valueOf(),
             },
-            zIndex: 0, // TODO
+            zIndex: this.tileForm.controls.zIndex.value,
         };
 
-        this.datasetsService.updateDatasetTile(this.datasetName(), tileId, update);
-        // TODO: handle errors and show success message
+        try {
+            await this.datasetsService.updateDatasetTile(this.datasetName(), tileId, update);
+            this.snackBar.open('Tile successfully saved.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
+            this.tileForm.markAsPristine();
 
-        // TODO: refresh source so that selecting the tile again shows updated data
+            // update in source, s.t. selecting the tile again shows updated data
+            if (this.selectedTile) {
+                this.selectedTile.band = update.band;
+                this.selectedTile.params = update.params;
+                this.selectedTile.spatialPartition = spatialPartition;
+                this.selectedTile.time = {
+                    start: update.time.start,
+                    end: update.time.end,
+                };
+                this.selectedTile.zIndex = update.zIndex;
+            }
+        } catch (error) {
+            const errorMessage = await errorToText(error, 'Saving tile failed.');
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
+        }
     }
 
     async deleteTile() {
@@ -315,8 +358,8 @@ export class GdalMultiBandComponent implements OnChanges {
         }
     }
 
-    createTile() {
-        if (this.tileForm.invalid || !this.selectedTileId$.value) {
+    async createTile() {
+        if (this.tileForm.invalid) {
             return;
         }
 
@@ -337,76 +380,34 @@ export class GdalMultiBandComponent implements OnChanges {
         const params = this.getGdalParameters(this.tileForm.controls.gdalParameters);
 
         const add = {
-            band: 0, // TODO
+            band: this.tileForm.controls.band.value,
             params,
             spatialPartition,
             time: {
                 start: time.start.valueOf(),
                 end: time.end.valueOf(),
             },
-            zIndex: 0, // TODO
+            zIndex: this.tileForm.controls.zIndex.value,
         };
 
-        this.datasetsService.addDatasetTiles(this.datasetName(), [add]);
-        // TODO: handle errors and show success message
+        try {
+            const tilesIds = await this.datasetsService.addDatasetTiles(this.datasetName(), [add]);
+            this.createdTileId = tilesIds[0];
+            this.createdTileName = this.tileTitle(params.filePath);
+            this.editMode = EditMode.created;
 
-        // TODO: refresh source so that selecting the tile again shows updated data
-
-        this.editMode = EditMode.created;
+            this.snackBar.open('Tile successfully created.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
+            this.changeDetectorRef.markForCheck();
+        } catch (error) {
+            const errorMessage = await errorToText(error, 'Creating tile failed.');
+            this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
+        }
     }
 
     backToAllTiles() {
         this.setUpSource();
         this.editMode = EditMode.update;
     }
-
-    // addTimeSlicePlaceholder(): void {
-    //     this.addTimeSlice(
-    //         {
-    //             start: moment.utc(),
-    //             timeAsPoint: false,
-    //             end: moment.utc().add(1, 'days'),
-    //         },
-    //         GdalDatasetParametersComponent.placeHolderGdalParams(),
-    //         0,
-    //     );
-    // }
-
-    // addTimeSlice(time: TimeInterval, gdalParams: GdalDatasetParameters, cacheTtl: number): void {
-    //     this.form.controls.timeSlices.push(
-    //         new FormGroup<TileForm>({
-    //             time: new FormControl(time, {
-    //                 nonNullable: true,
-    //                 validators: [Validators.required],
-    //             }),
-    //             gdalParameters: GdalDatasetParametersComponent.setUpForm(gdalParams),
-    //             cacheTtl: new FormControl<number>(cacheTtl, {
-    //                 nonNullable: true,
-    //                 validators: [Validators.required],
-    //             }),
-    //         }),
-    //     );
-    //     this.selectTimeSlice(this.form.controls.timeSlices.length - 1);
-    // }
-
-    // removeTimeSlice(): void {
-    //     this.form.controls.timeSlices.removeAt(this.selectedTimeSlice);
-    //     if (this.selectedTimeSlice >= this.form.controls.timeSlices.length) {
-    //         this.selectedTimeSlice = this.form.controls.timeSlices.length - 1;
-    //     }
-    //     this.selectTimeSlice(this.selectedTimeSlice);
-    // }
-
-    // selectTimeSlice(index: number): void {
-    //     this.selectedTimeSlice = index;
-    //     this.changeDetectorRef.detectChanges();
-    // }
-
-    // getTime(i: number): string {
-    //     const start = this.form.controls.timeSlices.at(i).controls.time.value.start.format('YYYY-MM-DD HH:mm');
-    //     const end = this.form.controls.timeSlices.at(i).controls.time.value.end.format('YYYY-MM-DD HH:mm');
-    //     return `${start} - ${end}`;
-    // }
 
     getResultDescriptor(form: FormGroup<RasterResultDescriptorForm>): RasterResultDescriptor {
         return {
@@ -537,8 +538,6 @@ export class GdalMultiBandComponent implements OnChanges {
                 return;
             }
 
-            const geoTransform = gdalParams.geoTransform;
-
             this.tileForm = this.setUpTileForm({
                 band: this.tileForm.controls.gdalParameters.controls.rasterbandChannel.value,
                 id: 'placeholder',
@@ -651,9 +650,9 @@ export class GdalMultiBandComponent implements OnChanges {
             },
             zIndex: 0,
             time: time_interval_to_dict({
-                start: moment.utc(),
+                start: moment.utc().startOf('day'),
                 timeAsPoint: false,
-                end: moment.utc().add(1, 'days'),
+                end: moment.utc().startOf('day').add(1, 'days'),
             }),
             params: GdalDatasetParametersComponent.placeHolderGdalParams(),
         });
@@ -682,6 +681,14 @@ export class GdalMultiBandComponent implements OnChanges {
                     nonNullable: true,
                     validators: [Validators.required],
                 }),
+            }),
+            band: new FormControl(tile.band ?? 0, {
+                nonNullable: true,
+                validators: [Validators.required],
+            }),
+            zIndex: new FormControl(tile.zIndex ?? 0, {
+                nonNullable: true,
+                validators: [Validators.required, geoengineValidators.largerThan(-1)],
             }),
             gdalParameters: GdalDatasetParametersComponent.setUpForm(tile.params),
         });

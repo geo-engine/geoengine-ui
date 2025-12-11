@@ -156,7 +156,7 @@ export class DatasetsService {
         });
     }
 
-    async addDatasetTiles(datasetName: string, tiles: Array<AddDatasetTile>): Promise<void> {
+    async addDatasetTiles(datasetName: string, tiles: Array<AddDatasetTile>): Promise<string[]> {
         const datasetApi = await firstValueFrom(this.datasetApi);
 
         return datasetApi.addDatasetTilesHandler({

@@ -44,36 +44,42 @@
     </div>
 
     <mat-divider></mat-divider>
+</form>
 
+<form [formGroup]="tileForm">
     <div class="container">
         <div class="left">
-            @switch (editMode) {
-                @case (EditMode.created) {
-                    <button mat-stroked-button class="browseButton" (click)="backToAllTiles()">
-                        <mat-icon>chevron_left</mat-icon>Back to all datasets
-                    </button>
-                }
-                @case (EditMode.update) {
-                    <button mat-raised-button color="primary" class="add-dataset" (click)="addTile()"><mat-icon>add</mat-icon></button>
-                    <cdk-virtual-scroll-viewport [itemSize]="itemSizePx" (scrolledIndexChange)="onScrolledIndexChange($event)">
-                        <mat-nav-list>
-                            <ng-container *cdkVirtualFor="let item of source; trackBy: trackById">
-                                <mat-list-item [class.selected]="(selectedTileId$ | async) === item.id" (click)="select(item)">
-                                    <h4 matListItemTitle>{{ tileTitle(item) }}</h4>
-                                    <p matListItemLine>{{ item.id }}</p>
-                                </mat-list-item>
-                            </ng-container>
-                        </mat-nav-list>
+            @if (editMode === EditMode.created) {
+                <button mat-stroked-button class="browseButton" (click)="backToAllTiles()">
+                    <mat-icon>chevron_left</mat-icon>Back to all datasets
+                </button>
+                <mat-nav-list>
+                    <mat-list-item class="selected">
+                        <h4 matListItemTitle>{{ createdTileName }}</h4>
+                        <p matListItemLine>{{ createdTileId }}</p>
+                    </mat-list-item></mat-nav-list
+                >
+            }
+            @if (editMode === EditMode.update || editMode === EditMode.create) {
+                <button mat-raised-button color="primary" class="add-dataset" (click)="addTile()"><mat-icon>add</mat-icon></button>
+                <cdk-virtual-scroll-viewport [itemSize]="itemSizePx" (scrolledIndexChange)="onScrolledIndexChange($event)">
+                    <mat-nav-list>
+                        <ng-container *cdkVirtualFor="let item of source; trackBy: trackById">
+                            <mat-list-item [class.selected]="(selectedTileId$ | async) === item.id" (click)="select(item)">
+                                <h4 matListItemTitle>{{ tileTitle(item.params.filePath) }}</h4>
+                                <p matListItemLine>{{ item.id }}</p>
+                            </mat-list-item>
+                        </ng-container>
+                    </mat-nav-list>
 
-                        @if (source?.loading$ | async) {
-                            <mat-spinner [diameter]="loadingSpinnerDiameterPx"></mat-spinner>
-                        }
-                    </cdk-virtual-scroll-viewport>
-                }
+                    @if (source?.loading$ | async) {
+                        <mat-spinner [diameter]="loadingSpinnerDiameterPx"></mat-spinner>
+                    }
+                </cdk-virtual-scroll-viewport>
             }
         </div>
 
-        <div class="time-slice" [formGroup]="tileForm.controls.bbox">
+        <div class="tile-editor">
             @switch (editMode) {
                 @case (EditMode.create) {
                     <h2>Create New Tile</h2>
@@ -90,8 +96,12 @@
                 <button mat-raised-button class="analyze" (click)="suggestTileProperties()">Analyze file and suggest properties</button>
             </div>
 
+            <mat-divider></mat-divider>
+
+            <h2>Tile Metadata</h2>
+
             <h3 class="mat-subtitle-1">Bounding Box</h3>
-            <div class="bbox-fields">
+            <div formGroupName="bbox" class="bbox-fields">
                 <mat-form-field appearance="fill">
                     <mat-label>min X</mat-label>
                     <input matInput type="number" formControlName="bboxMinX" />
@@ -115,6 +125,28 @@
             <geoengine-time-interval-input [formControl]="tileForm.controls.time"></geoengine-time-interval-input>
 
             <mat-divider></mat-divider>
+
+            <mat-form-field appearance="fill">
+                <mat-label>Raster Band</mat-label>
+                <mat-select formControlName="band">
+                    @for (i of bandIndices; track i) {
+                        <mat-option [value]="i">
+                            {{ form.controls.rasterResultDescriptor.controls.bands.value[i].name || 'Band ' + i }}
+                        </mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+
+            <mat-divider></mat-divider>
+
+            <mat-form-field appearance="fill">
+                <mat-label>Z-Index (higher value means more priority when overlapping with other tiles)</mat-label>
+                <input matInput type="number" formControlName="zIndex" />
+            </mat-form-field>
+
+            <mat-divider></mat-divider>
+
+            <h2>File Loading Parameters</h2>
 
             <geoengine-manager-gdal-dataset-parameters
                 [form]="tileForm.controls.gdalParameters"
