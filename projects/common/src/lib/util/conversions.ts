@@ -4,7 +4,14 @@ import OlFormatGeoJson from 'ol/format/GeoJSON';
 import OlGeometry from 'ol/geom/Geometry';
 import {Extent as OlExtent} from 'ol/extent';
 import {Observable, ReplaySubject} from 'rxjs';
-import {BoundingBox2D as BBoxDict, GdalDatasetParameters, ResponseError, SpatialPartition2D} from '@geoengine/openapi-client';
+import {
+    BoundingBox2D as BBoxDict,
+    GdalDatasetParameters,
+    GeoTransform,
+    ResponseError,
+    SpatialGridDefinition,
+    SpatialPartition2D,
+} from '@geoengine/openapi-client';
 import {Time} from '../time/time.model';
 
 /**
@@ -148,26 +155,55 @@ export function isDefined<T>(arg: T | null | undefined): arg is T {
 export function extractSpatialPartition(gdalParams: GdalDatasetParameters): SpatialPartition2D {
     const geoTransform = gdalParams.geoTransform;
 
-    let minX, minY, maxX, maxY;
+    const x1 = geoTransform.originCoordinate.x;
+    const x2 = x1 + geoTransform.xPixelSize * gdalParams.width;
+    const y1 = geoTransform.originCoordinate.y;
+    const y2 = y1 + geoTransform.yPixelSize * gdalParams.height;
 
-    if (geoTransform.xPixelSize >= 0) {
-        minX = geoTransform.originCoordinate.x;
-        maxX = minX + geoTransform.xPixelSize * gdalParams.width;
-    } else {
-        maxX = geoTransform.originCoordinate.x;
-        minX = maxX + geoTransform.xPixelSize * gdalParams.width;
-    }
-
-    if (geoTransform.yPixelSize >= 0) {
-        minY = geoTransform.originCoordinate.y;
-        maxY = minY + geoTransform.yPixelSize * gdalParams.height;
-    } else {
-        maxY = geoTransform.originCoordinate.y;
-        minY = maxY + geoTransform.yPixelSize * gdalParams.height;
-    }
+    const minX = Math.min(x1, x2);
+    const maxX = Math.max(x1, x2);
+    const minY = Math.min(y1, y2);
+    const maxY = Math.max(y1, y2);
 
     return {
         lowerRightCoordinate: {x: maxX, y: minY},
         upperLeftCoordinate: {x: minX, y: maxY},
+    };
+}
+
+export function spatialPartitionFromSpatialGridDefinition(grid: SpatialGridDefinition): SpatialPartition2D {
+    const geoTransform = grid.geoTransform;
+    const bounds = grid.gridBounds;
+
+    const minX = geoTransform.originCoordinate.x - geoTransform.xPixelSize * bounds.topLeftIdx.xIdx;
+    const maxX = geoTransform.originCoordinate.x + geoTransform.xPixelSize * bounds.bottomRightIdx.xIdx;
+
+    const minY = geoTransform.originCoordinate.y + geoTransform.yPixelSize * bounds.bottomRightIdx.yIdx;
+    const maxY = geoTransform.originCoordinate.y - geoTransform.yPixelSize * bounds.topLeftIdx.yIdx;
+
+    return {
+        lowerRightCoordinate: {x: maxX, y: minY},
+        upperLeftCoordinate: {x: minX, y: maxY},
+    };
+}
+
+export function spatialGridDefinitionFromSpatialPartitionAndGeoTransform(
+    spatialPartition: SpatialPartition2D,
+    geoTransform: GeoTransform,
+): SpatialGridDefinition {
+    const {originCoordinate, xPixelSize, yPixelSize} = geoTransform;
+
+    const topLeftXIdx = Math.round((spatialPartition.upperLeftCoordinate.x - originCoordinate.x) / xPixelSize);
+    const topLeftYIdx = Math.round((spatialPartition.upperLeftCoordinate.y - originCoordinate.y) / yPixelSize);
+
+    const bottomRightXIdx = Math.round((spatialPartition.lowerRightCoordinate.x - originCoordinate.x) / xPixelSize);
+    const bottomRightYIdx = Math.round((spatialPartition.lowerRightCoordinate.y - originCoordinate.y) / yPixelSize);
+
+    return {
+        geoTransform,
+        gridBounds: {
+            topLeftIdx: {xIdx: topLeftXIdx, yIdx: topLeftYIdx},
+            bottomRightIdx: {xIdx: bottomRightXIdx, yIdx: bottomRightYIdx},
+        },
     };
 }

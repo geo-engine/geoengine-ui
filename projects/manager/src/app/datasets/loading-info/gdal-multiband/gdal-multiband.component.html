@@ -33,13 +33,54 @@
             <input matInput type="text" formControlName="spatialReference" />
         </mat-form-field>
 
+        <div formGroupName="spatialGrid">
+            <div class="flex-container" formGroupName="geoTransform">
+                <mat-form-field>
+                    <mat-label>Origin X</mat-label>
+                    <input matInput type="number" formControlName="originX" />
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Origin Y</mat-label>
+                    <input matInput type="number" formControlName="originY" />
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Pixel Size X</mat-label>
+                    <input matInput type="number" formControlName="xPixelSize" />
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Pixel Size Y</mat-label>
+                    <input matInput type="number" formControlName="yPixelSize" />
+                </mat-form-field>
+            </div>
+
+            <div class="flex-container" formGroupName="gridBounds">
+                <mat-form-field>
+                    <mat-label>Min X Coordinate</mat-label>
+                    <input matInput type="number" formControlName="minX" />
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Min Y Coordinate</mat-label>
+                    <input matInput type="number" formControlName="minY" />
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Max X Coordinate</mat-label>
+                    <input matInput type="number" formControlName="maxX" />
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Max Y Coordinate</mat-label>
+                    <input matInput type="number" formControlName="maxY" />
+                </mat-form-field>
+            </div>
+        </div>
+        <mat-divider></mat-divider>
+
         <geoengine-manager-rasterbands
-            [rasterbands]="metaData().resultDescriptor.bands"
+            [rasterbands]="form.controls.rasterResultDescriptor.controls.bands.value"
             (rasterbandsChange)="form.controls.rasterResultDescriptor.controls.bands.setValue($event); form.markAsDirty()"
         ></geoengine-manager-rasterbands>
 
         <div class="actions">
-            <button mat-raised-button color="primary" [disabled]="form.pristine || form.invalid" (click)="saveLoadingInfo()">Apply</button>
+            <button mat-raised-button color="primary" [disabled]="form.pristine || form.invalid" (click)="saveMetadata()">Apply</button>
         </div>
     </div>
 

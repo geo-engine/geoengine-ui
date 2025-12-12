@@ -37,6 +37,9 @@ import {
     extractSpatialPartition,
     ConfirmationComponent,
     geoengineValidators,
+    spatialPartitionFromSpatialGridDefinition,
+    spatialGridDefinitionFromSpatialPartitionAndGeoTransform,
+    Coordinate2D,
 } from '@geoengine/common';
 import moment from 'moment';
 import {
@@ -50,6 +53,8 @@ import {
     RasterBandDescriptor,
     RasterDataType,
     RasterResultDescriptor,
+    SpatialPartition2D,
+    GeoTransform as GeoTransformDict,
 } from '@geoengine/openapi-client';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatFormField, MatLabel, MatInput, MatError} from '@angular/material/input';
@@ -88,6 +93,26 @@ export interface RasterResultDescriptorForm {
     bands: FormControl<Array<RasterBandDescriptor>>;
     dataType: FormControl<RasterDataType>;
     spatialReference: FormControl<string>;
+    spatialGrid: FormGroup<SpatialGridDescriptorForm>;
+}
+
+export interface SpatialGridDescriptorForm {
+    geoTransform: FormGroup<GeoTransformForm>;
+    gridBounds: FormGroup<GridBoundingBox2DForm>;
+}
+
+export interface GeoTransformForm {
+    originX: FormControl<number>;
+    originY: FormControl<number>;
+    xPixelSize: FormControl<number>;
+    yPixelSize: FormControl<number>;
+}
+
+export interface GridBoundingBox2DForm {
+    minX: FormControl<number>;
+    minY: FormControl<number>;
+    maxX: FormControl<number>;
+    maxY: FormControl<number>;
 }
 
 enum EditMode {
@@ -252,13 +277,13 @@ export class GdalMultiBandComponent implements OnChanges {
     async ngOnChanges(changes: SimpleChanges): Promise<void> {
         const metaData = this.metaData();
         if (changes.metaData && metaData) {
-            this.setUpFormFromMetaData(metaData);
+            this.setUpFormFromResultDescriptor(metaData.resultDescriptor);
         }
 
         this.setUpSource();
     }
 
-    async saveLoadingInfo(): Promise<void> {
+    async saveMetadata(): Promise<void> {
         if (this.form.invalid) {
             return;
         }
@@ -270,6 +295,7 @@ export class GdalMultiBandComponent implements OnChanges {
             this.snackBar.open('Dataset loading information successfully updated.', 'Close', {
                 duration: this.config.DEFAULTS.SNACKBAR_DURATION,
             });
+            this.form.markAsPristine();
         } catch (error) {
             const errorMessage = await errorToText(error, 'Updating dataset loading information failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
@@ -462,11 +488,36 @@ export class GdalMultiBandComponent implements OnChanges {
     getMetaData(): MetaDataDefinition {
         const resultDescriptorControl = this.form.controls.rasterResultDescriptor.controls;
 
+        const geoTransformControl = resultDescriptorControl.spatialGrid.controls.geoTransform.controls;
+        const geoTransform: GeoTransformDict = {
+            originCoordinate: {
+                x: geoTransformControl.originX.value,
+                y: geoTransformControl.originY.value,
+            },
+            xPixelSize: geoTransformControl.xPixelSize.value,
+            yPixelSize: geoTransformControl.yPixelSize.value,
+        };
+
+        const spatialGridControl = resultDescriptorControl.spatialGrid.controls.gridBounds.controls;
+        const spatialPartition: SpatialPartition2D = {
+            upperLeftCoordinate: {
+                x: spatialGridControl.minX.value,
+                y: spatialGridControl.maxY.value,
+            },
+            lowerRightCoordinate: {
+                x: spatialGridControl.maxX.value,
+                y: spatialGridControl.minY.value,
+            },
+        };
+
         const resultDescriptor: RasterResultDescriptor = {
             bands: resultDescriptorControl.bands.value,
             spatialReference: resultDescriptorControl.spatialReference.value,
             dataType: resultDescriptorControl.dataType.value,
-            spatialGrid: this.metaData().resultDescriptor.spatialGrid, // TODO: allow editing
+            spatialGrid: {
+                descriptor: 'source',
+                spatialGrid: spatialGridDefinitionFromSpatialPartitionAndGeoTransform(spatialPartition, geoTransform),
+            },
             time: {
                 bounds: null,
                 dimension: {
@@ -506,7 +557,8 @@ export class GdalMultiBandComponent implements OnChanges {
                 return;
             }
 
-            this.setResultDescriptor(resultDescriptor);
+            this.setUpFormFromResultDescriptor(resultDescriptor);
+            this.changeDetectorRef.markForCheck();
         } catch (error) {
             const errorMessage = await errorToText(error, 'Metadata suggestion failed.');
             this.snackBar.open(errorMessage, 'Close', {panelClass: ['error-snackbar']});
@@ -553,12 +605,6 @@ export class GdalMultiBandComponent implements OnChanges {
         }
     }
 
-    setResultDescriptor(resultDescriptor: RasterResultDescriptor): void {
-        this.form.controls.rasterResultDescriptor.controls.bands.setValue(resultDescriptor.bands);
-        this.form.controls.rasterResultDescriptor.controls.dataType.setValue(resultDescriptor.dataType);
-        this.form.controls.rasterResultDescriptor.controls.spatialReference.setValue(resultDescriptor.spatialReference);
-    }
-
     protected calculateInitialNumberOfElements(): number {
         const element = this.viewport().elementRef.nativeElement;
         const numberOfElements = Math.ceil(element.clientHeight / this.itemSizePx);
@@ -590,20 +636,60 @@ export class GdalMultiBandComponent implements OnChanges {
         return [gdalMetaDataList.resultDescriptor, gdalParams];
     }
 
-    private setUpFormFromMetaData(metaData: GdalMultiBand): void {
+    private setUpFormFromResultDescriptor(resultDescriptor: RasterResultDescriptor): void {
+        const spatialPartition = spatialPartitionFromSpatialGridDefinition(resultDescriptor.spatialGrid.spatialGrid);
+
         this.form = new FormGroup<GdalMultiBandForm>({
             rasterResultDescriptor: new FormGroup<RasterResultDescriptorForm>({
-                bands: new FormControl(metaData.resultDescriptor.bands, {
+                bands: new FormControl(resultDescriptor.bands, {
                     nonNullable: true,
                     validators: [Validators.required],
                 }),
-                dataType: new FormControl(metaData.resultDescriptor.dataType, {
+                dataType: new FormControl(resultDescriptor.dataType, {
                     nonNullable: true,
                     validators: [Validators.required],
                 }),
-                spatialReference: new FormControl(metaData.resultDescriptor.spatialReference, {
+                spatialReference: new FormControl(resultDescriptor.spatialReference, {
                     nonNullable: true,
                     validators: [Validators.required],
+                }),
+                spatialGrid: new FormGroup<SpatialGridDescriptorForm>({
+                    geoTransform: new FormGroup<GeoTransformForm>({
+                        originX: new FormControl(resultDescriptor.spatialGrid.spatialGrid.geoTransform.originCoordinate.x, {
+                            nonNullable: true,
+                            validators: [Validators.required],
+                        }),
+                        originY: new FormControl(resultDescriptor.spatialGrid.spatialGrid.geoTransform.originCoordinate.y, {
+                            nonNullable: true,
+                            validators: [Validators.required],
+                        }),
+                        xPixelSize: new FormControl(resultDescriptor.spatialGrid.spatialGrid.geoTransform.xPixelSize, {
+                            nonNullable: true,
+                            validators: [Validators.required],
+                        }),
+                        yPixelSize: new FormControl(resultDescriptor.spatialGrid.spatialGrid.geoTransform.yPixelSize, {
+                            nonNullable: true,
+                            validators: [Validators.required],
+                        }),
+                    }),
+                    gridBounds: new FormGroup<GridBoundingBox2DForm>({
+                        minX: new FormControl(spatialPartition.upperLeftCoordinate.x, {
+                            nonNullable: true,
+                            validators: [Validators.required],
+                        }),
+                        minY: new FormControl(spatialPartition.lowerRightCoordinate.y, {
+                            nonNullable: true,
+                            validators: [Validators.required],
+                        }),
+                        maxX: new FormControl(spatialPartition.lowerRightCoordinate.x, {
+                            nonNullable: true,
+                            validators: [Validators.required],
+                        }),
+                        maxY: new FormControl(spatialPartition.upperLeftCoordinate.y, {
+                            nonNullable: true,
+                            validators: [Validators.required],
+                        }),
+                    }),
                 }),
             }),
         });
@@ -633,6 +719,44 @@ export class GdalMultiBandComponent implements OnChanges {
                 spatialReference: new FormControl('', {
                     nonNullable: true,
                     validators: [Validators.required],
+                }),
+                spatialGrid: new FormGroup<SpatialGridDescriptorForm>({
+                    geoTransform: new FormGroup<GeoTransformForm>({
+                        originX: new FormControl(0, {
+                            nonNullable: true,
+                            validators: [Validators.required],
+                        }),
+                        originY: new FormControl(0, {
+                            nonNullable: true,
+                            validators: [Validators.required],
+                        }),
+                        xPixelSize: new FormControl(1, {
+                            nonNullable: true,
+                            validators: [Validators.required],
+                        }),
+                        yPixelSize: new FormControl(-1, {
+                            nonNullable: true,
+                            validators: [Validators.required],
+                        }),
+                    }),
+                    gridBounds: new FormGroup<GridBoundingBox2DForm>({
+                        minX: new FormControl(0, {
+                            nonNullable: true,
+                            validators: [Validators.required],
+                        }),
+                        minY: new FormControl(0, {
+                            nonNullable: true,
+                            validators: [Validators.required],
+                        }),
+                        maxX: new FormControl(1, {
+                            nonNullable: true,
+                            validators: [Validators.required],
+                        }),
+                        maxY: new FormControl(1, {
+                            nonNullable: true,
+                            validators: [Validators.required],
+                        }),
+                    }),
                 }),
             }),
         });
@@ -802,4 +926,12 @@ class TileDataSource extends DataSource<DatasetTile> {
             return items;
         });
     }
+}
+function spatialGridFromSpatialPartition(
+    value: Partial<{
+        geoTransform: Partial<{originX: number; originY: number; xPixelSize: number; yPixelSize: number}>;
+        gridBounds: Partial<{minX: number; minY: number; maxX: number; maxY: number}>;
+    }>,
+): import('@geoengine/openapi-client').SpatialGridDescriptor {
+    throw new Error('Function not implemented.');
 }
