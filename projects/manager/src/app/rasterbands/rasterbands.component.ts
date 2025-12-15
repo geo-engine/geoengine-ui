@@ -6,6 +6,7 @@ import {MatDivider} from '@angular/material/list';
 import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
 import {MatIconButton, MatButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
+import {Subscription} from 'rxjs';
 
 interface RasterbandsForm {
     rasterbands: FormArray<FormGroup<RasterbandForm>>;
@@ -29,7 +30,10 @@ export class RasterbandsComponent implements OnChanges {
 
     form: FormGroup<RasterbandsForm> = this.setUpForm();
 
+    sub?: Subscription;
+
     ngOnChanges(changes: SimpleChanges): void {
+        console.log('RasterbandsComponent.ngOnChanges', changes);
         if (changes.rasterbands) {
             this.form = this.setUpForm();
         }
@@ -64,7 +68,11 @@ export class RasterbandsComponent implements OnChanges {
             rasterbands: new FormArray<FormGroup<RasterbandForm>>(rasterbands?.map((p) => this.createRasterbandForm(p)) ?? []),
         });
 
-        form.valueChanges.subscribe(() => {
+        if (this.sub) {
+            this.sub.unsubscribe();
+        }
+
+        this.sub = form.valueChanges.subscribe(() => {
             this.rasterbandsChange.emit(this.getRasterbands());
         });
 
@@ -76,6 +84,7 @@ export class RasterbandsComponent implements OnChanges {
             name: new FormControl(p?.name ?? '', {
                 nonNullable: true,
                 validators: [Validators.required, geoengineValidators.notOnlyWhitespace],
+                updateOn: 'blur',
             }),
             measurement: new FormControl(p?.measurement ?? {type: 'unitless'}, {
                 nonNullable: true,
