@@ -55,6 +55,7 @@ import {
     RasterResultDescriptor,
     SpatialPartition2D,
     GeoTransform as GeoTransformDict,
+    TimeDescriptor,
 } from '@geoengine/openapi-client';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatFormField, MatLabel, MatInput, MatError} from '@angular/material/input';
@@ -68,6 +69,7 @@ import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {RasterbandsComponent} from '../../../rasterbands/rasterbands.component';
 import {AppConfig} from '../../../app-config.service';
 import {MatDialog} from '@angular/material/dialog';
+import {TimedescriptorComponent} from '../../../timedescriptor/timedescriptor.component';
 
 export interface GdalMultiBandForm {
     // TODO: volume
@@ -91,6 +93,7 @@ export interface BboxForm {
 
 export interface RasterResultDescriptorForm {
     bands: FormControl<Array<RasterBandDescriptor>>;
+    time: FormControl<TimeDescriptor>;
     dataType: FormControl<RasterDataType>;
     spatialReference: FormControl<string>;
     spatialGrid: FormGroup<SpatialGridDescriptorForm>;
@@ -143,6 +146,7 @@ enum EditMode {
         CommonModule,
         GdalDatasetParametersComponent,
         RasterbandsComponent,
+        TimedescriptorComponent,
     ],
 })
 export class GdalMultiBandComponent implements OnChanges {
@@ -691,6 +695,10 @@ export class GdalMultiBandComponent implements OnChanges {
                         }),
                     }),
                 }),
+                time: new FormControl(resultDescriptor.time, {
+                    nonNullable: true,
+                    validators: [Validators.required],
+                }),
             }),
         });
 
@@ -758,6 +766,13 @@ export class GdalMultiBandComponent implements OnChanges {
                         }),
                     }),
                 }),
+                time: new FormControl(
+                    {dimension: {type: 'irregular'}, bounds: null},
+                    {
+                        nonNullable: true,
+                        validators: [Validators.required],
+                    },
+                ),
             }),
         });
 

@@ -72,6 +72,13 @@
                 </mat-form-field>
             </div>
         </div>
+
+        <mat-divider></mat-divider>
+
+        <geoengine-manager-timedescriptor
+            [timeDescriptor]="form.controls.rasterResultDescriptor.controls.time.value"
+        ></geoengine-manager-timedescriptor>
+
         <mat-divider></mat-divider>
 
         <geoengine-manager-rasterbands

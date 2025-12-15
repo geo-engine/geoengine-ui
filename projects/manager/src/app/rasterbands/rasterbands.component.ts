@@ -33,7 +33,6 @@ export class RasterbandsComponent implements OnChanges {
     sub?: Subscription;
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log('RasterbandsComponent.ngOnChanges', changes);
         if (changes.rasterbands) {
             this.form = this.setUpForm();
         }
