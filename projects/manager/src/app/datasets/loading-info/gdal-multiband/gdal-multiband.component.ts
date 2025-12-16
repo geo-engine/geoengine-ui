@@ -1,14 +1,4 @@
-import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    Input,
-    OnChanges,
-    SimpleChanges,
-    inject,
-    input,
-    viewChild,
-} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnChanges, SimpleChanges, inject, input, viewChild} from '@angular/core';
 import {
     AbstractControl,
     FormArray,
@@ -24,14 +14,8 @@ import {GdalDatasetParametersComponent, GdalDatasetParametersForm} from '../gdal
 import {
     CommonModule,
     DatasetsService,
-    GeoTransform,
-    GridBoundingBox2D,
-    GridIdx2D,
     TimeInterval,
     errorToText,
-    BoundingBox2D,
-    SpatialGridDefinition,
-    SpatialGridDescriptor,
     time_interval_from_dict,
     time_interval_to_dict,
     extractSpatialPartition,
@@ -39,7 +23,6 @@ import {
     geoengineValidators,
     spatialPartitionFromSpatialGridDefinition,
     spatialGridDefinitionFromSpatialPartitionAndGeoTransform,
-    Coordinate2D,
 } from '@geoengine/common';
 import moment from 'moment';
 import {
@@ -58,7 +41,7 @@ import {
     TimeDescriptor,
 } from '@geoengine/openapi-client';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {MatFormField, MatLabel, MatInput, MatError} from '@angular/material/input';
+import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
 import {MatButton} from '@angular/material/button';
 import {MatDivider, MatNavList, MatListItem, MatListItemTitle, MatListItemLine} from '@angular/material/list';
 import {MatSelect} from '@angular/material/select';
@@ -119,9 +102,9 @@ export interface GridBoundingBox2DForm {
 }
 
 enum EditMode {
-    create,
-    created,
-    update,
+    Create,
+    Created,
+    Update,
 }
 
 @Component({
@@ -161,8 +144,12 @@ export class GdalMultiBandComponent implements OnChanges {
 
     readonly viewport = viewChild.required(CdkVirtualScrollViewport);
 
+    readonly dataPath = input<DataPath>();
+    readonly metaData = input.required<GdalMultiBand>();
+    readonly datasetName = input.required<string>();
+
     EditMode = EditMode;
-    editMode = EditMode.update;
+    editMode = EditMode.Update;
 
     source?: TileDataSource;
     private sourceSubscription?: Subscription;
@@ -172,19 +159,8 @@ export class GdalMultiBandComponent implements OnChanges {
     form: FormGroup<GdalMultiBandForm> = this.setUpForm();
     tileForm: FormGroup<TileForm> = this.setUpPlaceHolderTileForm();
 
-    // return an array of indices for the raster bands to iterate over in the template
-    get bandIndices(): number[] {
-        const bands = this.form?.controls?.rasterResultDescriptor?.controls?.bands?.value ?? [];
-        return Array.from({length: bands.length}, (_, i) => i);
-    }
-
     probeFileDatasetProperties = '';
     probeFileTileProperties = '';
-
-    @Input() dataPath?: DataPath; // TODO is not mandatory
-
-    readonly metaData = input.required<GdalMultiBand>();
-    readonly datasetName = input.required<string>();
 
     selectedTile?: DatasetTile;
     // hold only the selected tile id for stable identity comparison in the virtual scroll
@@ -238,8 +214,13 @@ export class GdalMultiBandComponent implements OnChanges {
         return item.id;
     }
 
+    // return an array of indices for the raster bands to iterate over in the template
+    get bandIndices(): number[] {
+        const bands = this.form?.controls?.rasterResultDescriptor?.controls?.bands?.value ?? [];
+        return Array.from({length: bands.length}, (_, i) => i);
+    }
+
     async select(item: DatasetTile): Promise<void> {
-        console.log('Selecting tile', item);
         if (!item) {
             return;
         }
@@ -256,20 +237,20 @@ export class GdalMultiBandComponent implements OnChanges {
             }
         }
 
-        this.editMode = EditMode.update;
+        this.editMode = EditMode.Update;
 
         this.selectedTileId$.next(item.id);
         this.selectedTile = item;
         this.tileForm = this.setUpTileForm(item);
     }
 
-    addTile() {
-        this.editMode = EditMode.create;
+    addTile(): void {
+        this.editMode = EditMode.Create;
         this.tileForm = this.setUpPlaceHolderTileForm();
         this.selectedTileId$.next(undefined);
     }
 
-    tileTitle(filePath: string) {
+    tileTitle(filePath: string): string {
         const lastSlash = filePath.lastIndexOf('/');
         const lastDot = filePath.lastIndexOf('.');
         const start = lastSlash === -1 ? 0 : lastSlash + 1;
@@ -306,12 +287,12 @@ export class GdalMultiBandComponent implements OnChanges {
         }
     }
 
-    async saveTile() {
+    async saveTile(): Promise<void> {
         if (this.tileForm.invalid || !this.selectedTileId$.value) {
             return;
         }
 
-        const tileId = this.selectedTileId$.value as string;
+        const tileId = this.selectedTileId$.value;
         const time = this.tileForm.controls.time.value;
         const bboxControls = this.tileForm.controls.bbox.controls;
         const spatialPartition = {
@@ -360,7 +341,7 @@ export class GdalMultiBandComponent implements OnChanges {
         }
     }
 
-    async deleteTile() {
+    async deleteTile(): Promise<void> {
         if (!this.selectedTileId$.value) {
             return;
         }
@@ -376,7 +357,7 @@ export class GdalMultiBandComponent implements OnChanges {
         }
 
         try {
-            const tileId = this.selectedTileId$.value as string;
+            const tileId = this.selectedTileId$.value;
             await this.datasetsService.deleteDatasetTile(this.datasetName(), [tileId]);
             this.snackBar.open('Tile successfully deleted.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
 
@@ -388,12 +369,11 @@ export class GdalMultiBandComponent implements OnChanges {
         }
     }
 
-    async createTile() {
+    async createTile(): Promise<void> {
         if (this.tileForm.invalid) {
             return;
         }
 
-        const tileId = this.selectedTileId$.value as string;
         const time = this.tileForm.controls.time.value;
         const bboxControls = this.tileForm.controls.bbox.controls;
         const spatialPartition = {
@@ -424,7 +404,7 @@ export class GdalMultiBandComponent implements OnChanges {
             const tilesIds = await this.datasetsService.addDatasetTiles(this.datasetName(), [add]);
             this.createdTileId = tilesIds[0];
             this.createdTileName = this.tileTitle(params.filePath);
-            this.editMode = EditMode.created;
+            this.editMode = EditMode.Created;
 
             this.snackBar.open('Tile successfully created.', 'Close', {duration: this.config.DEFAULTS.SNACKBAR_DURATION});
             this.changeDetectorRef.markForCheck();
@@ -434,9 +414,9 @@ export class GdalMultiBandComponent implements OnChanges {
         }
     }
 
-    backToAllTiles() {
+    backToAllTiles(): void {
         this.setUpSource();
-        this.editMode = EditMode.update;
+        this.editMode = EditMode.Update;
     }
 
     getResultDescriptor(form: FormGroup<RasterResultDescriptorForm>): RasterResultDescriptor {
@@ -532,7 +512,8 @@ export class GdalMultiBandComponent implements OnChanges {
     }
 
     async suggestDatasetProperties(): Promise<void> {
-        if (!this.dataPath) {
+        const path = this.dataPath();
+        if (!path) {
             this.snackBar.open('No data path selected.', 'Close', {panelClass: ['error-snackbar']});
             return;
         }
@@ -540,7 +521,7 @@ export class GdalMultiBandComponent implements OnChanges {
         try {
             const suggestion = await this.datasetsService.suggestMetaData({
                 suggestMetaData: {
-                    dataPath: this.dataPath,
+                    dataPath: path,
                     mainFile: this.probeFileDatasetProperties,
                 },
             });
@@ -565,7 +546,8 @@ export class GdalMultiBandComponent implements OnChanges {
     }
 
     async suggestTileProperties(): Promise<void> {
-        if (!this.dataPath) {
+        const path = this.dataPath();
+        if (!path) {
             this.snackBar.open('No data path selected.', 'Close', {panelClass: ['error-snackbar']});
             return;
         }
@@ -573,7 +555,7 @@ export class GdalMultiBandComponent implements OnChanges {
         try {
             const suggestion = await this.datasetsService.suggestMetaData({
                 suggestMetaData: {
-                    dataPath: this.dataPath,
+                    dataPath: path,
                     mainFile: this.probeFileTileProperties,
                 },
             });
@@ -936,12 +918,4 @@ class TileDataSource extends DataSource<DatasetTile> {
             return items;
         });
     }
-}
-function spatialGridFromSpatialPartition(
-    value: Partial<{
-        geoTransform: Partial<{originX: number; originY: number; xPixelSize: number; yPixelSize: number}>;
-        gridBounds: Partial<{minX: number; minY: number; maxX: number; maxY: number}>;
-    }>,
-): import('@geoengine/openapi-client').SpatialGridDescriptor {
-    throw new Error('Function not implemented.');
 }

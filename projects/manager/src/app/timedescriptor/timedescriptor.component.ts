@@ -1,27 +1,8 @@
 import {Component, OnChanges, SimpleChanges, input, output} from '@angular/core';
-import {FormArray, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {
-    geoengineValidators,
-    MeasurementComponent,
-    time_interval_from_dict,
-    time_interval_to_dict,
-    TimeInterval,
-    CommonModule,
-    timeStepGranularityOptions,
-} from '@geoengine/common';
-import {
-    Measurement,
-    Provenance,
-    RasterBandDescriptor,
-    TimeDescriptor,
-    TimeDimensionOneOf1TypeEnum,
-    TimeDimensionOneOfTypeEnum,
-    TimeGranularity,
-} from '@geoengine/openapi-client';
-import {MatDivider} from '@angular/material/list';
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {time_interval_from_dict, time_interval_to_dict, TimeInterval, CommonModule, timeStepGranularityOptions} from '@geoengine/common';
+import {TimeDescriptor, TimeDimensionOneOf1TypeEnum, TimeDimensionOneOfTypeEnum, TimeGranularity} from '@geoengine/openapi-client';
 import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
-import {MatIconButton, MatButton} from '@angular/material/button';
-import {MatIcon} from '@angular/material/icon';
 import {Subscription} from 'rxjs';
 import {MatSelect, MatOption} from '@angular/material/select';
 import moment from 'moment';
@@ -53,21 +34,7 @@ enum Regularity {
     selector: 'geoengine-manager-timedescriptor',
     templateUrl: './timedescriptor.component.html',
     styleUrl: './timedescriptor.component.scss',
-    imports: [
-        FormsModule,
-        ReactiveFormsModule,
-        MatFormField,
-        MatLabel,
-        MatInput,
-        MatIconButton,
-        MatIcon,
-        MatButton,
-        MeasurementComponent,
-        MatSelect,
-        MatOption,
-        CommonModule,
-        MatCheckbox,
-    ],
+    imports: [FormsModule, ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatSelect, MatOption, CommonModule, MatCheckbox],
 })
 export class TimedescriptorComponent implements OnChanges {
     Regularity = [TimeDimensionOneOf1TypeEnum.Irregular, TimeDimensionOneOfTypeEnum.Regular] as const;
@@ -106,17 +73,17 @@ export class TimedescriptorComponent implements OnChanges {
                 }),
             });
         } else {
-            let bounds = timeDescriptor.bounds;
-            let form_bounds = null;
-            if (!!bounds) {
-                form_bounds = time_interval_from_dict(bounds);
+            const bounds = timeDescriptor.bounds;
+            let formBounds = null;
+            if (bounds) {
+                formBounds = time_interval_from_dict(bounds);
             } else {
-                form_bounds = this.placeholderTimeInterval(false);
+                formBounds = this.placeholderTimeInterval(false);
             }
 
             form = new FormGroup<TimeDescriptorForm>({
                 hasBounds: new FormControl<boolean>(!!bounds, {nonNullable: true}),
-                bounds: new FormControl<TimeInterval>(form_bounds ? form_bounds : this.placeholderTimeInterval(false), {nonNullable: true}),
+                bounds: new FormControl<TimeInterval>(formBounds ? formBounds : this.placeholderTimeInterval(false), {nonNullable: true}),
                 dimension: new FormControl<Regularity>(
                     timeDescriptor.dimension.type == 'irregular' ? Regularity.Irregular : Regularity.Regular,
                     {nonNullable: true},
@@ -146,7 +113,6 @@ export class TimedescriptorComponent implements OnChanges {
         }
 
         this.sub = form.valueChanges.subscribe(() => {
-            console.log('TimeDescriptor changed:', this.getTimeDescriptor());
             this.timeDescriptorChange.emit(this.getTimeDescriptor());
         });
 
@@ -179,8 +145,8 @@ export class TimedescriptorComponent implements OnChanges {
     }
 
     private getTimeDescriptor(): TimeDescriptor {
-        let formBounds = this.form.controls.bounds.value;
-        let hasBounds = this.form.controls.hasBounds.value;
+        const formBounds = this.form.controls.bounds.value;
+        const hasBounds = this.form.controls.hasBounds.value;
 
         let bounds = null;
 
@@ -191,7 +157,7 @@ export class TimedescriptorComponent implements OnChanges {
         const dimension = this.form.controls.dimension.value;
 
         switch (dimension) {
-            case Regularity.Regular:
+            case Regularity.Regular: {
                 const regular = this.form.controls.regularTimeDimension.controls;
                 return {
                     bounds: bounds,
@@ -204,6 +170,7 @@ export class TimedescriptorComponent implements OnChanges {
                         },
                     },
                 };
+            }
             case Regularity.Irregular:
                 return {
                     bounds: bounds,

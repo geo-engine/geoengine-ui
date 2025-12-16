@@ -1,7 +1,7 @@
 <form [formGroup]="form">
-    @if (dataPath) {
+    @if (dataPath()) {
         <div>
-            @if (dataPath) {
+            @if (dataPath()) {
                 <div class="flex-container">
                     <mat-form-field appearance="fill">
                         <mat-label>Path to probe file, relative to upload or volume (optional)</mat-label>
@@ -98,7 +98,7 @@
 <form [formGroup]="tileForm">
     <div class="container">
         <div class="left">
-            @if (editMode === EditMode.created) {
+            @if (editMode === EditMode.Created) {
                 <button mat-stroked-button class="browseButton" (click)="backToAllTiles()">
                     <mat-icon>chevron_left</mat-icon>Back to all datasets
                 </button>
@@ -109,7 +109,7 @@
                     </mat-list-item></mat-nav-list
                 >
             }
-            @if (editMode === EditMode.update || editMode === EditMode.create) {
+            @if (editMode === EditMode.Update || editMode === EditMode.Create) {
                 <button mat-raised-button color="primary" class="add-dataset" (click)="addTile()"><mat-icon>add</mat-icon></button>
                 <cdk-virtual-scroll-viewport [itemSize]="itemSizePx" (scrolledIndexChange)="onScrolledIndexChange($event)">
                     <mat-nav-list>
@@ -130,10 +130,10 @@
 
         <div class="tile-editor">
             @switch (editMode) {
-                @case (EditMode.create) {
+                @case (EditMode.Create) {
                     <h2>Create New Tile</h2>
                 }
-                @case (EditMode.update) {
+                @case (EditMode.Update) {
                     <h2>Edit Tile {{ selectedTileId$ | async }}</h2>
                 }
             }
@@ -199,18 +199,18 @@
 
             <geoengine-manager-gdal-dataset-parameters
                 [form]="tileForm.controls.gdalParameters"
-                [dataPath]="dataPath"
+                [dataPath]="dataPath()"
             ></geoengine-manager-gdal-dataset-parameters>
 
             <div class="actions">
                 @switch (editMode) {
-                    @case (EditMode.update) {
+                    @case (EditMode.Update) {
                         <button mat-raised-button color="primary" [disabled]="tileForm.pristine || tileForm.invalid" (click)="saveTile()">
                             Apply
                         </button>
                         <button mat-raised-button color="warn" (click)="deleteTile()">Delete</button>
                     }
-                    @case (EditMode.create) {
+                    @case (EditMode.Create) {
                         <button mat-raised-button color="primary" [disabled]="tileForm.invalid" (click)="createTile()">Create</button>
                     }
                 }
