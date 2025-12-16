@@ -1,7 +1,7 @@
 <form [formGroup]="form">
-    <mat-checkbox formControlName="has_bounds">Set Time Bounds</mat-checkbox>
+    <mat-checkbox formControlName="hasBounds">Set Time Bounds</mat-checkbox>
 
-    @if (form.controls.has_bounds.value) {
+    @if (form.controls.hasBounds.value) {
         <geoengine-time-interval-input [formControl]="form.controls.bounds"></geoengine-time-interval-input>
     }
 
@@ -18,10 +18,11 @@
 
     @if (form.controls.dimension.value === 'regular') {
         <div formGroupName="regularTimeDimension">
-            <mat-form-field appearance="fill">
-                <mat-label>Time Origin</mat-label>
-                <input matInput type="text" formControlName="origin" />
-            </mat-form-field>
+            Origin
+            <geoengine-time-interval-input
+                [allowRanges]="false"
+                [formControl]="form.controls.regularTimeDimension.controls.origin"
+            ></geoengine-time-interval-input>
 
             <div formGroupName="step" class="flex-container">
                 <mat-form-field appearance="fill">

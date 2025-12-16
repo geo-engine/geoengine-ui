@@ -77,6 +77,7 @@
 
         <geoengine-manager-timedescriptor
             [timeDescriptor]="form.controls.rasterResultDescriptor.controls.time.value"
+            (timeDescriptorChange)="form.controls.rasterResultDescriptor.controls.time.setValue($event); form.markAsDirty()"
         ></geoengine-manager-timedescriptor>
 
         <mat-divider></mat-divider>

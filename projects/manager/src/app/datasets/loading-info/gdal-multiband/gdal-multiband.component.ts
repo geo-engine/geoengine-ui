@@ -522,12 +522,7 @@ export class GdalMultiBandComponent implements OnChanges {
                 descriptor: 'source',
                 spatialGrid: spatialGridDefinitionFromSpatialPartitionAndGeoTransform(spatialPartition, geoTransform),
             },
-            time: {
-                bounds: null,
-                dimension: {
-                    type: 'irregular', // TODO: allow editing
-                },
-            },
+            time: resultDescriptorControl.time.value,
         };
 
         return {
