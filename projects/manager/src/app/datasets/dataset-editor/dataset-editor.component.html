@@ -55,6 +55,37 @@
                             }
                         </mat-chip-grid>
                     </mat-form-field>
+                    @if (dataset.dataPath) {
+                        <div>
+                            <mat-button-toggle-group
+                                id="path-type"
+                                [multiple]="false"
+                                formControlName="dataPathType"
+                                (ngModelChange)="updateDataPathType()"
+                            >
+                                <mat-button-toggle [value]="DataPaths.Upload">Upload</mat-button-toggle>
+                                <mat-button-toggle [value]="DataPaths.Volume">Volume</mat-button-toggle>
+                            </mat-button-toggle-group>
+
+                            @if (form.controls.dataPathType.value === DataPaths.Upload) {
+                                <mat-form-field appearance="fill">
+                                    <mat-label>Upload Id</mat-label>
+                                    <input matInput type="text" formControlName="uploadId" />
+                                </mat-form-field>
+                            } @else {
+                                <mat-form-field appearance="fill">
+                                    <mat-label>Volume</mat-label>
+                                    <mat-select formControlName="volumeName">
+                                        @for (volume of volumes$ | async; track volume) {
+                                            <mat-option [value]="volume.name">
+                                                {{ volume.name }}
+                                            </mat-option>
+                                        }
+                                    </mat-select>
+                                </mat-form-field>
+                            }
+                        </div>
+                    }
                 </form>
 
                 <div class="actions">

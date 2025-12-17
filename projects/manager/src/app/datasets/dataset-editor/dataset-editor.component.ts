@@ -33,11 +33,14 @@ import {
     DatasetListing,
     GdalMetaDataList,
     GdalMultiBand,
+    instanceOfDataPathOneOf,
+    instanceOfDataPathOneOf1,
     MetaDataDefinition,
     OgrMetaData,
     TypedRasterResultDescriptor,
     TypedResultDescriptor,
     TypedVectorResultDescriptor,
+    Volume as VolumeDict,
 } from '@geoengine/openapi-client';
 import {BehaviorSubject, firstValueFrom} from 'rxjs';
 import {ProvenanceComponent} from '../../provenance/provenance.component';
@@ -51,8 +54,11 @@ import {SymbologyEditorComponent} from '../../symbology/symbology-editor/symbolo
 import {RasterResultDescriptorComponent} from '../../result-descriptors/raster-result-descriptor/raster-result-descriptor.component';
 import {VectorResultDescriptorComponent} from '../../result-descriptors/vector-result-descriptor/vector-result-descriptor.component';
 import {PermissionsComponent} from '../../permissions/permissions.component';
-import {AsyncPipe} from '@angular/common';
+import {AsyncPipe, JsonPipe} from '@angular/common';
 import {GdalMultiBandComponent} from '../loading-info/gdal-multiband/gdal-multiband.component';
+import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle';
+import {MatOption} from '@angular/material/autocomplete';
+import {MatSelect} from '@angular/material/select';
 
 export interface DatasetForm {
     layerType: FormControl<'plot' | 'raster' | 'vector'>;
@@ -62,6 +68,14 @@ export interface DatasetForm {
     description: FormControl<string>;
     tags: FormControl<string[]>;
     newTag: FormControl<string>;
+    dataPathType: FormControl<DataPaths>;
+    uploadId: FormControl<string>;
+    volumeName: FormControl<string>;
+}
+
+enum DataPaths {
+    Upload,
+    Volume,
 }
 
 @Component({
@@ -75,6 +89,8 @@ export interface DatasetForm {
         MatCardContent,
         FormsModule,
         ReactiveFormsModule,
+        MatButtonToggle,
+        MatButtonToggleGroup,
         MatFormField,
         MatLabel,
         MatInput,
@@ -83,6 +99,8 @@ export interface DatasetForm {
         MatIcon,
         MatChipRemove,
         MatChipInput,
+        MatSelect,
+        MatOption,
         MatError,
         MatButton,
         ProvenanceComponent,
@@ -96,6 +114,7 @@ export interface DatasetForm {
         AsyncPipe,
         AsyncValueDefault,
         CodeEditorComponent,
+        JsonPipe,
     ],
 })
 export class DatasetEditorComponent {
@@ -121,6 +140,9 @@ export class DatasetEditorComponent {
     readonly gdalMultiBandComponent = viewChild.required(GdalMultiBandComponent);
     readonly ogrDatasetComponent = viewChild(OgrDatasetComponent);
 
+    DataPaths = DataPaths;
+    volumes$ = new BehaviorSubject<VolumeDict[]>([]);
+
     dataset?: Dataset;
     form: FormGroup<DatasetForm> = this.placeholderForm();
 
@@ -138,6 +160,10 @@ export class DatasetEditorComponent {
     constructor() {
         effect(() => {
             void this.loadDataset(this._datasetListing());
+        });
+
+        void this.datasetsService.getVolumes().then((volumes) => {
+            this.volumes$.next(volumes);
         });
     }
 
@@ -171,6 +197,7 @@ export class DatasetEditorComponent {
             this.rawLoadingInfo = JSON.stringify(loadingInfo, null, 2);
             this.rawLoadingInfoPristine = true;
         }
+        this.updateDataPathType();
         this.changeDetectorRef.detectChanges();
     }
 
@@ -183,10 +210,22 @@ export class DatasetEditorComponent {
         const displayName = this.form.controls.displayName.value;
         const description = this.form.controls.description.value;
         const tags = this.form.controls.tags.value;
+        let dataPath = null;
+        if (this.dataset?.dataPath) {
+            if (this.form.controls.dataPathType.value === DataPaths.Upload) {
+                dataPath = {
+                    upload: this.form.controls.uploadId.value,
+                };
+            } else {
+                dataPath = {
+                    volume: this.form.controls.volumeName.value,
+                };
+            }
+        }
 
         try {
             const datasetListing = this.datasetListing();
-            await this.datasetsService.updateDataset(datasetListing.name, {name, displayName, description, tags});
+            await this.datasetsService.updateDataset(datasetListing.name, {name, displayName, description, tags, dataPath});
             datasetListing.name = name;
             datasetListing.displayName = displayName;
             datasetListing.description = description;
@@ -224,6 +263,31 @@ export class DatasetEditorComponent {
         tags.push(tag);
 
         this.form.markAsDirty();
+    }
+
+    updateDataPathType(): void {
+        if (!this.dataset?.dataPath) {
+            this.form.controls.uploadId.clearValidators();
+            this.form.controls.uploadId.updateValueAndValidity();
+            this.form.controls.volumeName.clearValidators();
+            this.form.controls.volumeName.updateValueAndValidity();
+            return;
+        }
+
+        switch (this.form.controls.dataPathType.value) {
+            case DataPaths.Upload:
+                this.form.controls.uploadId.setValidators([Validators.required]);
+                this.form.controls.uploadId.updateValueAndValidity();
+                this.form.controls.volumeName.clearValidators();
+                this.form.controls.volumeName.updateValueAndValidity();
+                break;
+            case DataPaths.Volume:
+                this.form.controls.volumeName.setValidators([Validators.required]);
+                this.form.controls.volumeName.updateValueAndValidity();
+                this.form.controls.uploadId.clearValidators();
+                this.form.controls.uploadId.updateValueAndValidity();
+                break;
+        }
     }
 
     async saveProvenance(): Promise<void> {
@@ -460,6 +524,24 @@ export class DatasetEditorComponent {
                 validators: [geoengineValidators.duplicateValidator()],
             }),
             newTag: new FormControl('', {nonNullable: true, validators: [tagValidator()]}),
+            dataPathType: new FormControl(
+                dataset.dataPath ? (instanceOfDataPathOneOf(dataset.dataPath) ? DataPaths.Volume : DataPaths.Upload) : DataPaths.Volume,
+                {
+                    nonNullable: true,
+                    validators: [],
+                },
+            ),
+            uploadId: new FormControl(dataset.dataPath ? (instanceOfDataPathOneOf1(dataset.dataPath) ? dataset.dataPath.upload : '') : '', {
+                nonNullable: true,
+                validators: [],
+            }),
+            volumeName: new FormControl(
+                dataset.dataPath ? (instanceOfDataPathOneOf(dataset.dataPath) ? dataset.dataPath.volume : '') : '',
+                {
+                    nonNullable: true,
+                    validators: [],
+                },
+            ),
         });
     }
 
@@ -486,6 +568,18 @@ export class DatasetEditorComponent {
             }),
             tags: new FormControl<string[]>([], {nonNullable: true, validators: [geoengineValidators.duplicateValidator()]}),
             newTag: new FormControl('', {nonNullable: true, validators: [tagValidator()]}),
+            dataPathType: new FormControl(DataPaths.Volume, {
+                nonNullable: true,
+                validators: [],
+            }),
+            uploadId: new FormControl('', {
+                nonNullable: true,
+                validators: [],
+            }),
+            volumeName: new FormControl('', {
+                nonNullable: true,
+                validators: [],
+            }),
         });
     }
 }
