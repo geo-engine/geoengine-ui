@@ -152,11 +152,11 @@
                     </div>
                 } @else if (gdalMultiBand) {
                     @if (dataset && dataset.dataPath) {
-                        <geoengine-manager-gdal-multiband
+                        <geoengine-manager-gdal-multiband-editor
                             [metaData]="gdalMultiBand"
                             [dataPath]="dataset.dataPath"
                             [datasetName]="dataset.name"
-                        ></geoengine-manager-gdal-multiband>
+                        ></geoengine-manager-gdal-multiband-editor>
                     }
                 } @else if (ogrMetaData) {
                     <geoengine-ogr-dataset [metaData]="ogrMetaData"></geoengine-ogr-dataset>

@@ -65,14 +65,18 @@
             </mat-card-header>
 
             <mat-card-content>
-                <mat-button-toggle-group id="data-type" [multiple]="false" formControlName="dataType" (change)="updateDataType()">
-                    <mat-button-toggle [value]="DataTypes.Raster">Raster</mat-button-toggle>
+                <mat-button-toggle-group id="data-type" [multiple]="false" formControlName="datasetType" (change)="updateDataType()">
+                    <mat-button-toggle [value]="DataTypes.SingleBandRaster">Single-BandRaster</mat-button-toggle>
+                    <mat-button-toggle [value]="DataTypes.MultiBandRaster">Multi-Band Raster</mat-button-toggle>
                     <mat-button-toggle [value]="DataTypes.Vector">Vector</mat-button-toggle>
                 </mat-button-toggle-group>
 
-                @switch (form.controls.dataType.value) {
-                    @case (DataTypes.Raster) {
+                @switch (form.controls.datasetType.value) {
+                    @case (DataTypes.SingleBandRaster) {
                         <geoengine-manager-gdal-metadata-list [dataPath]="dataPath()"></geoengine-manager-gdal-metadata-list>
+                    }
+                    @case (DataTypes.MultiBandRaster) {
+                        <geoengine-manager-gdal-multiband [dataPath]="dataPath()"></geoengine-manager-gdal-multiband>
                     }
                     @case (DataTypes.Vector) {
                         <geoengine-ogr-dataset

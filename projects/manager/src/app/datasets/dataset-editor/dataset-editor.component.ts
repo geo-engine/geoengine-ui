@@ -54,8 +54,8 @@ import {SymbologyEditorComponent} from '../../symbology/symbology-editor/symbolo
 import {RasterResultDescriptorComponent} from '../../result-descriptors/raster-result-descriptor/raster-result-descriptor.component';
 import {VectorResultDescriptorComponent} from '../../result-descriptors/vector-result-descriptor/vector-result-descriptor.component';
 import {PermissionsComponent} from '../../permissions/permissions.component';
-import {AsyncPipe, JsonPipe} from '@angular/common';
-import {GdalMultiBandComponent} from '../loading-info/gdal-multiband/gdal-multiband.component';
+import {AsyncPipe} from '@angular/common';
+import {GdalMultiBandEditorComponent} from '../loading-info/gdal-multiband-editor/gdal-multiband-editor.component';
 import {MatButtonToggle, MatButtonToggleGroup} from '@angular/material/button-toggle';
 import {MatOption} from '@angular/material/autocomplete';
 import {MatSelect} from '@angular/material/select';
@@ -106,7 +106,7 @@ enum DataPaths {
         ProvenanceComponent,
         SymbologyEditorComponent,
         GdalMetadataListComponent,
-        GdalMultiBandComponent,
+        GdalMultiBandEditorComponent,
         OgrDatasetComponent,
         RasterResultDescriptorComponent,
         VectorResultDescriptorComponent,
@@ -114,7 +114,6 @@ enum DataPaths {
         AsyncPipe,
         AsyncValueDefault,
         CodeEditorComponent,
-        JsonPipe,
     ],
 })
 export class DatasetEditorComponent {
@@ -137,7 +136,7 @@ export class DatasetEditorComponent {
     readonly tagInput = viewChild.required(MatChipInput);
     readonly provenanceComponent = viewChild.required(ProvenanceComponent);
     readonly gdalMetadataListComponent = viewChild(GdalMetadataListComponent);
-    readonly gdalMultiBandComponent = viewChild.required(GdalMultiBandComponent);
+    readonly gdalMultiBandComponent = viewChild.required(GdalMultiBandEditorComponent);
     readonly ogrDatasetComponent = viewChild(OgrDatasetComponent);
 
     DataPaths = DataPaths;
@@ -330,7 +329,7 @@ export class DatasetEditorComponent {
             data: {message: 'Confirm the deletion of the dataset. This cannot be undone.'},
         });
 
-        const confirm = await firstValueFrom(dialogRef.afterClosed());
+        const confirm = (await firstValueFrom(dialogRef.afterClosed())) as boolean;
 
         if (!confirm) {
             return;
