@@ -1,10 +1,12 @@
 import {Injectable, inject} from '@angular/core';
 import {
+    AddDatasetTile,
     DataPath,
     Dataset,
     DatasetDefinition,
     DatasetListing,
     DatasetsApi,
+    DatasetTile,
     MetaDataDefinition,
     MetaDataSuggestion,
     OrderBy,
@@ -12,6 +14,7 @@ import {
     SuggestMetaDataHandlerRequest,
     Symbology,
     UpdateDataset,
+    UpdateDatasetTile,
     Volume,
     VolumeFileLayersResponse,
 } from '@geoengine/openapi-client';
@@ -131,5 +134,45 @@ export class DatasetsService {
         const uploadsApi = await firstValueFrom(this.datasetApi);
 
         return uploadsApi.listVolumeFileLayersHandler({volumeName, fileName});
+    }
+
+    async getDatasetTiles(datasetName: string, offset = 0, limit = 100): Promise<DatasetTile[]> {
+        const datasetApi = await firstValueFrom(this.datasetApi);
+
+        return datasetApi.getDatasetTilesHandler({
+            dataset: datasetName,
+            offset,
+            limit,
+        });
+    }
+
+    async updateDatasetTile(datasetName: string, tileId: string, update: UpdateDatasetTile): Promise<void> {
+        const datasetApi = await firstValueFrom(this.datasetApi);
+
+        return datasetApi.updateDatasetTileHandler({
+            dataset: datasetName,
+            tile: tileId,
+            updateDatasetTile: update,
+        });
+    }
+
+    async addDatasetTiles(datasetName: string, tiles: Array<AddDatasetTile>): Promise<string[]> {
+        const datasetApi = await firstValueFrom(this.datasetApi);
+
+        return datasetApi.addDatasetTilesHandler({
+            dataset: datasetName,
+            addDatasetTile: tiles,
+        });
+    }
+
+    async deleteDatasetTile(datasetName: string, tileIds: Array<string>): Promise<void> {
+        const datasetApi = await firstValueFrom(this.datasetApi);
+
+        return datasetApi.deleteDatasetTilesHandler({
+            dataset: datasetName,
+            deleteDatasetTiles: {
+                tileIds,
+            },
+        });
     }
 }

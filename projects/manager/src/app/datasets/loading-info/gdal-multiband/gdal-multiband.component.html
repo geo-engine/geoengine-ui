@@ -1,0 +1,92 @@
+<form [formGroup]="form">
+    @if (dataPath()) {
+        <div>
+            <div class="flex-container">
+                <mat-form-field appearance="fill">
+                    <mat-label>Path to probe file, relative to upload or volume (optional)</mat-label>
+                    <input matInput type="text" [(ngModel)]="probeFileDatasetProperties" [ngModelOptions]="{standalone: true}" />
+                </mat-form-field>
+                <button mat-raised-button class="analyze" (click)="suggestDatasetProperties()">Analyze file and suggest properties</button>
+            </div>
+            <mat-divider></mat-divider>
+        </div>
+    }
+
+    <div formGroupName="rasterResultDescriptor">
+        <mat-form-field appearance="fill">
+            <mat-label>Output Data Type</mat-label>
+            <mat-select formControlName="dataType">
+                @for (dataType of RasterDataTypes; track dataType) {
+                    <mat-option [value]="dataType">
+                        {{ dataType }}
+                    </mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Spatial Reference</mat-label>
+            <input matInput type="text" formControlName="spatialReference" />
+        </mat-form-field>
+
+        <div formGroupName="spatialGrid">
+            <div class="flex-container" formGroupName="geoTransform">
+                <mat-form-field>
+                    <mat-label>Origin X</mat-label>
+                    <input matInput type="number" formControlName="originX" />
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Origin Y</mat-label>
+                    <input matInput type="number" formControlName="originY" />
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Pixel Size X</mat-label>
+                    <input matInput type="number" formControlName="xPixelSize" />
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Pixel Size Y</mat-label>
+                    <input matInput type="number" formControlName="yPixelSize" />
+                </mat-form-field>
+            </div>
+
+            <div class="flex-container" formGroupName="gridBounds">
+                <mat-form-field>
+                    <mat-label>Min X Coordinate</mat-label>
+                    <input matInput type="number" formControlName="minX" />
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Min Y Coordinate</mat-label>
+                    <input matInput type="number" formControlName="minY" />
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Max X Coordinate</mat-label>
+                    <input matInput type="number" formControlName="maxX" />
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Max Y Coordinate</mat-label>
+                    <input matInput type="number" formControlName="maxY" />
+                </mat-form-field>
+            </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <geoengine-manager-timedescriptor
+            [timeDescriptor]="form.controls.rasterResultDescriptor.controls.time.value"
+            (timeDescriptorChange)="form.controls.rasterResultDescriptor.controls.time.setValue($event); form.markAsDirty()"
+        ></geoengine-manager-timedescriptor>
+
+        <mat-divider></mat-divider>
+
+        <geoengine-manager-rasterbands
+            [rasterbands]="form.controls.rasterResultDescriptor.controls.bands.value"
+            (rasterbandsChange)="form.controls.rasterResultDescriptor.controls.bands.setValue($event); form.markAsDirty()"
+        ></geoengine-manager-rasterbands>
+
+        @if (datasetName()) {
+            <div class="actions">
+                <button mat-raised-button color="primary" [disabled]="form.pristine || form.invalid" (click)="saveMetadata()">Apply</button>
+            </div>
+        }
+    </div>
+</form>

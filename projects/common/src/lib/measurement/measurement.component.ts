@@ -1,4 +1,4 @@
-import {Component, Input, output} from '@angular/core';
+import {Component, input, Input, output} from '@angular/core';
 import {FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ClassificationMeasurement, ContinuousMeasurement, Measurement, UnitlessMeasurement} from '@geoengine/openapi-client';
 import {MatButtonToggleGroup, MatButtonToggle} from '@angular/material/button-toggle';
@@ -39,6 +39,8 @@ export class MeasurementComponent {
     @Input() measurement!: Measurement;
 
     readonly measurementChange = output<Measurement>();
+
+    showOutputMeasurementLabel = input(true);
 
     MeasurementType = MeasurementType;
 

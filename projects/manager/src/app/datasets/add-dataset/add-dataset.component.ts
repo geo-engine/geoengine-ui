@@ -13,14 +13,16 @@ import {MatSelect} from '@angular/material/select';
 import {MatOption} from '@angular/material/autocomplete';
 import {MatButton} from '@angular/material/button';
 import {AsyncPipe} from '@angular/common';
+import {GdalMultiBandComponent} from '../loading-info/gdal-multiband/gdal-multiband.component';
 
 enum DataPaths {
     Upload,
     Volume,
 }
 
-enum DataTypes {
-    Raster,
+enum DatasetTypes {
+    SingleBandRaster,
+    MultiBandRaster,
     Vector,
 }
 
@@ -30,7 +32,7 @@ export interface AddDatasetForm {
     dataPathType: FormControl<DataPaths>;
     uploadId: FormControl<string>;
     volumeName: FormControl<string>;
-    dataType: FormControl<DataTypes>;
+    datasetType: FormControl<DatasetTypes>;
     rawLoadingInfo: FormControl<string>;
 }
 
@@ -55,6 +57,7 @@ export interface AddDatasetForm {
         MatOption,
         GdalMetadataListComponent,
         OgrDatasetComponent,
+        GdalMultiBandComponent,
         MatButton,
         AsyncPipe,
     ],
@@ -66,10 +69,11 @@ export class AddDatasetComponent {
     private readonly dialog = inject(MatDialog);
 
     DataPaths = DataPaths;
-    DataTypes = DataTypes;
+    DataTypes = DatasetTypes;
 
     readonly gdalMetaDataList = viewChild(GdalMetadataListComponent);
     readonly ogrDatasetComponent = viewChild(OgrDatasetComponent);
+    readonly gdalMultiBandComponent = viewChild(GdalMultiBandComponent);
 
     volumes$ = new BehaviorSubject<VolumeDict[]>([]);
 
@@ -94,7 +98,7 @@ export class AddDatasetComponent {
             nonNullable: true,
             validators: [Validators.required],
         }),
-        dataType: new FormControl(DataTypes.Raster, {
+        datasetType: new FormControl(DatasetTypes.SingleBandRaster, {
             nonNullable: true,
             validators: [Validators.required],
         }),
@@ -126,7 +130,7 @@ export class AddDatasetComponent {
             },
         );
 
-        this.datasetsService.getVolumes().then((volumes) => {
+        void this.datasetsService.getVolumes().then((volumes) => {
             this.volumes$.next(volumes);
         });
     }
@@ -158,7 +162,7 @@ export class AddDatasetComponent {
     }
 
     updateDataType(): void {
-        if (this.form.controls.dataType.value === DataTypes.Raster) {
+        if (this.form.controls.datasetType.value === DatasetTypes.SingleBandRaster) {
             this.form.controls.rawLoadingInfo.clearValidators();
         } else {
             this.form.controls.rawLoadingInfo.setValidators([Validators.required]);
@@ -168,10 +172,11 @@ export class AddDatasetComponent {
     isCreateDisabled(): boolean {
         const general = this.form.pristine || this.form.invalid;
 
-        const raster = this.form.controls.dataType.value === DataTypes.Raster && (this.gdalMetaDataList()?.form?.invalid ?? false);
+        const raster =
+            this.form.controls.datasetType.value === DatasetTypes.SingleBandRaster && (this.gdalMetaDataList()?.form?.invalid ?? false);
 
         const vector =
-            this.form.controls.dataType.value === DataTypes.Vector && (this.ogrDatasetComponent()?.formMetaData?.invalid ?? false);
+            this.form.controls.datasetType.value === DatasetTypes.Vector && (this.ogrDatasetComponent()?.formMetaData?.invalid ?? false);
 
         return general || raster || vector;
     }
@@ -184,7 +189,7 @@ export class AddDatasetComponent {
         let sourceOperator = undefined;
         let metaData: MetaDataDefinition | undefined = undefined;
 
-        if (this.form.controls.dataType.value === DataTypes.Raster) {
+        if (this.form.controls.datasetType.value === DatasetTypes.SingleBandRaster) {
             const gdalMetaDataList = this.gdalMetaDataList();
             if (!gdalMetaDataList) {
                 return;
@@ -193,7 +198,16 @@ export class AddDatasetComponent {
             metaData = gdalMetaDataList.getMetaData();
 
             sourceOperator = 'GdalSource';
-        } else if (this.form.controls.dataType.value === DataTypes.Vector) {
+        } else if (this.form.controls.datasetType.value === DatasetTypes.MultiBandRaster) {
+            const gdalMultiBandComponent = this.gdalMultiBandComponent();
+            if (!gdalMultiBandComponent) {
+                return;
+            }
+
+            metaData = gdalMultiBandComponent.getMetaData();
+
+            sourceOperator = 'MultiBandGdalSource';
+        } else if (this.form.controls.datasetType.value === DatasetTypes.Vector) {
             const ogrDatasetComponent = this.ogrDatasetComponent();
             if (!ogrDatasetComponent) {
                 return;

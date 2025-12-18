@@ -1,0 +1,30 @@
+<form [formGroup]="form">
+    @for (control of form.controls.rasterbands.controls; track control; let i = $index) {
+        <div formArrayName="rasterbands">
+            <div class="container" [formGroupName]="i">
+                <mat-form-field appearance="fill" class="name-field">
+                    <mat-label>Name</mat-label>
+                    <input matInput formControlName="name" />
+                </mat-form-field>
+                <div class="measurement-wrapper">
+                    <geoengine-measurement
+                        [showOutputMeasurementLabel]="false"
+                        [measurement]="control.controls.measurement.value"
+                        (measurementChange)="control.controls.measurement.setValue($event)"
+                    ></geoengine-measurement>
+                </div>
+                <button
+                    mat-icon-button
+                    class="delete-button"
+                    [disabled]="form.controls.rasterbands.controls.length === 1"
+                    (click)="removeEntry(i)"
+                >
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </div>
+        </div>
+    }
+    <div class="actions">
+        <button mat-raised-button (click)="addEntry()">Add Band</button>
+    </div>
+</form>

@@ -1,0 +1,32 @@
+:host {
+    width: 100%;
+    display: block;
+}
+
+mat-form-field {
+    width: 100%;
+}
+
+mat-divider {
+    margin-bottom: 1rem;
+}
+
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.analyze {
+    height: 3rem;
+}
+
+.actions {
+    text-align: right;
+    height: 3rem;
+    padding: 1rem;
+
+    button {
+        margin: 0.5rem;
+    }
+}

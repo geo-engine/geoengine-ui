@@ -1,0 +1,46 @@
+<form [formGroup]="form">
+    <mat-checkbox formControlName="hasBounds">Set Time Bounds</mat-checkbox>
+
+    @if (form.controls.hasBounds.value) {
+        <geoengine-time-interval-input [formControl]="form.controls.bounds"></geoengine-time-interval-input>
+    }
+
+    <mat-form-field appearance="fill">
+        <mat-label>Time Dimension</mat-label>
+        <mat-select formControlName="dimension">
+            @for (r of Regularity; track r) {
+                <mat-option [value]="r">
+                    {{ r }}
+                </mat-option>
+            }
+        </mat-select>
+    </mat-form-field>
+
+    @if (form.controls.dimension.value === 'regular') {
+        <div formGroupName="regularTimeDimension">
+            Origin
+            <geoengine-time-interval-input
+                [allowRanges]="false"
+                [formControl]="form.controls.regularTimeDimension.controls.origin"
+            ></geoengine-time-interval-input>
+
+            <div formGroupName="step" class="flex-container">
+                <mat-form-field appearance="fill">
+                    <mat-label>Time Step</mat-label>
+                    <input matInput type="number" formControlName="step" />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Time Granularity</mat-label>
+                    <mat-select formControlName="granularity">
+                        @for (g of TimeGranularities; track g) {
+                            <mat-option [value]="g">
+                                {{ g }}
+                            </mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+    }
+</form>

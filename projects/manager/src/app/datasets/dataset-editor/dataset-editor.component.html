@@ -55,6 +55,37 @@
                             }
                         </mat-chip-grid>
                     </mat-form-field>
+                    @if (dataset.dataPath) {
+                        <div>
+                            <mat-button-toggle-group
+                                id="path-type"
+                                [multiple]="false"
+                                formControlName="dataPathType"
+                                (ngModelChange)="updateDataPathType()"
+                            >
+                                <mat-button-toggle [value]="DataPaths.Upload">Upload</mat-button-toggle>
+                                <mat-button-toggle [value]="DataPaths.Volume">Volume</mat-button-toggle>
+                            </mat-button-toggle-group>
+
+                            @if (form.controls.dataPathType.value === DataPaths.Upload) {
+                                <mat-form-field appearance="fill">
+                                    <mat-label>Upload Id</mat-label>
+                                    <input matInput type="text" formControlName="uploadId" />
+                                </mat-form-field>
+                            } @else {
+                                <mat-form-field appearance="fill">
+                                    <mat-label>Volume</mat-label>
+                                    <mat-select formControlName="volumeName">
+                                        @for (volume of volumes$ | async; track volume) {
+                                            <mat-option [value]="volume.name">
+                                                {{ volume.name }}
+                                            </mat-option>
+                                        }
+                                    </mat-select>
+                                </mat-form-field>
+                            }
+                        </div>
+                    }
                 </form>
 
                 <div class="actions">
@@ -114,8 +145,26 @@
             <mat-card-content>
                 @if (gdalMetaDataList) {
                     <geoengine-manager-gdal-metadata-list [metaData]="gdalMetaDataList"></geoengine-manager-gdal-metadata-list>
+                    <div class="actions">
+                        <button mat-raised-button color="primary" [disabled]="isSaveLoadingInfoDisabled()" (click)="saveLoadingInfo()">
+                            Apply
+                        </button>
+                    </div>
+                } @else if (gdalMultiBand) {
+                    @if (dataset && dataset.dataPath) {
+                        <geoengine-manager-gdal-multiband-editor
+                            [metaData]="gdalMultiBand"
+                            [dataPath]="dataset.dataPath"
+                            [datasetName]="dataset.name"
+                        ></geoengine-manager-gdal-multiband-editor>
+                    }
                 } @else if (ogrMetaData) {
                     <geoengine-ogr-dataset [metaData]="ogrMetaData"></geoengine-ogr-dataset>
+                    <div class="actions">
+                        <button mat-raised-button color="primary" [disabled]="isSaveLoadingInfoDisabled()" (click)="saveLoadingInfo()">
+                            Apply
+                        </button>
+                    </div>
                 } @else {
                     <geoengine-code-editor
                         [ngModel]="rawLoadingInfo"
@@ -123,12 +172,12 @@
                         [ngModelOptions]="{standalone: true}"
                         language="JSON"
                     ></geoengine-code-editor>
+                    <div class="actions">
+                        <button mat-raised-button color="primary" [disabled]="isSaveLoadingInfoDisabled()" (click)="saveLoadingInfo()">
+                            Apply
+                        </button>
+                    </div>
                 }
-                <div class="actions">
-                    <button mat-raised-button color="primary" [disabled]="isSaveLoadingInfoDisabled()" (click)="saveLoadingInfo()">
-                        Apply
-                    </button>
-                </div>
             </mat-card-content>
         </mat-card>
 

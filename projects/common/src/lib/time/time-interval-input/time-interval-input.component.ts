@@ -20,6 +20,7 @@ import {Time, TimeStepDuration} from '../time.model';
 import {TimeInputComponent} from '../time-input/time-input.component';
 import {FxLayoutDirective, FxLayoutAlignDirective} from '../../util/directives/flexbox-legacy.directive';
 import {MatSlideToggle} from '@angular/material/slide-toggle';
+import {TimeInterval as TimeIntervalDict} from '@geoengine/openapi-client';
 
 const startBeforeEndValidator = (control: AbstractControl): ValidationErrors | null => {
     if (!(control instanceof UntypedFormGroup)) {
@@ -47,6 +48,21 @@ export interface TimeInterval {
     start: Moment;
     timeAsPoint: boolean;
     end: Moment;
+}
+
+export function time_interval_from_dict(dict: TimeIntervalDict): TimeInterval {
+    return {
+        start: moment.utc(dict.start),
+        timeAsPoint: dict.start == dict.end,
+        end: moment.utc(dict.end),
+    };
+}
+
+export function time_interval_to_dict(interval: TimeInterval): TimeIntervalDict {
+    return {
+        start: interval.start.valueOf(),
+        end: interval.timeAsPoint ? interval.start.valueOf() : interval.end.valueOf(),
+    };
 }
 
 @Component({

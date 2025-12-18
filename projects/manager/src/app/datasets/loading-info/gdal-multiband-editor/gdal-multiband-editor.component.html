@@ -1,0 +1,13 @@
+<geoengine-manager-gdal-multiband
+    [resultDescriptor]="metaData().resultDescriptor"
+    [dataPath]="dataPath()"
+    [datasetName]="datasetName()"
+></geoengine-manager-gdal-multiband>
+
+<mat-divider></mat-divider>
+
+<geoengine-manager-gdal-multiband-tiles
+    [dataPath]="dataPath()"
+    [datasetName]="datasetName()"
+    [bands]="metaData().resultDescriptor.bands"
+></geoengine-manager-gdal-multiband-tiles>

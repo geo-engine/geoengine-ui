@@ -1,0 +1,42 @@
+mat-form-field {
+    width: 100%;
+}
+
+.actions {
+    text-align: left;
+    height: 3rem;
+    padding-bottom: 2rem;
+
+    button {
+        margin: 0.5rem;
+    }
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+.name-field {
+    flex: 1 1 50%;
+}
+
+.measurement-wrapper {
+    flex: 1 1 50%;
+}
+
+.delete-button {
+    flex: 0 0 auto;
+}
+
+mat-divider {
+    margin-bottom: 1rem;
+}
+
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
