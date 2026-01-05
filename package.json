@@ -84,7 +84,7 @@
         "uuid": "11.1.0",
         "vega-embed": "~7.0.2",
         "vega-lite": "~6.2.0",
-        "vega": "~6.1.2",
+        "vega": "~6.2.0",
         "vis-data": "8.0.1",
         "vis-timeline": "8.2.1",
         "vis-util": "6.0.0",
