@@ -15,6 +15,7 @@
         "paths": {
             "@geoengine/core": ["dist/core", "projects/core/src"],
             "@geoengine/common": ["dist/common", "projects/common/src"],
+            "@geoengine/manager": ["projects/manager/src"],
             "fast-json-patch/index.mjs": ["./node_modules/fast-json-patch/index.d.ts"]
         },
         "forceConsistentCasingInFileNames": true,

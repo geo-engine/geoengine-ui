@@ -5,7 +5,7 @@ import {LogInGuard} from './util/guards/log-in.guard';
 import {BackendAvailableGuard, CanRegisterGuard, LoginComponent, RegisterComponent} from '@geoengine/common';
 import {OidcPopupComponent} from './oidc-popup/oidc-popup.component';
 
-const routes: Routes = [
+export const routes: Routes = [
     {path: '', redirectTo: 'navigation', pathMatch: 'full'},
     {path: 'navigation', component: NavigationComponent, canActivate: [LogInGuard]},
     {path: 'signin', component: LoginComponent, data: {loginRedirect: '/navigation'}},

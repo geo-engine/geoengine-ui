@@ -36,8 +36,14 @@ export class AppComponent implements OnInit {
             // remove the query parameters before the hash from the url because they are not part of the app and cannot be removed later on
             // services can get the original query parameters from the `URLSearchParams` in their constructor which is called before the routing is initialized.
             const search = window.location.search;
+
+            let path = '/';
+            if (window.location.hash.length > 0) {
+                path = window.location.hash.substring(1); // remove the leading #
+            }
+
             window.history.replaceState(null, '', window.location.pathname);
-            this.location.go('/', search);
+            this.location.go(path, search);
         }
 
         this.router.initialNavigation();
@@ -68,7 +74,7 @@ export class AppComponent implements OnInit {
 
     private setupLogoutCallback(): void {
         this.userService.setLogoutCallback(() => {
-            this.router.navigate(['signin']);
+            void this.router.navigate(['signin']);
         });
     }
 }
