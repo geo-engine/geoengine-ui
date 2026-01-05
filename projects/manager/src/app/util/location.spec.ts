@@ -4,6 +4,7 @@ const urlToLocation = (url: URL): Location =>
     ({
         origin: url.origin,
         pathname: url.pathname,
+        hash: url.hash,
     }) as Location;
 
 describe('oidcRedirectPath', () => {
