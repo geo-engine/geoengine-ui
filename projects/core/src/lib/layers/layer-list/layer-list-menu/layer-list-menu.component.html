@@ -11,24 +11,27 @@
 
 <!-- TODO: use default font size for layer menu -->
 <mat-menu #layerListMenu="matMenu">
-    <button
-        mat-menu-item
-        aria-label="Toggle Layer List Visibility"
-        (click)="layoutService.toggleLayerListVisibility()"
-        [ngSwitch]="layerListVisibility$ | async"
-    >
-        <mat-icon *ngSwitchCase="true">expand_less</mat-icon>
-        <mat-icon *ngSwitchCase="false">expand_more</mat-icon>
+    <button mat-menu-item aria-label="Toggle Layer List Visibility" (click)="layoutService.toggleLayerListVisibility()">
+        @if (layerListIsVisibile()) {
+            <mat-icon>expand_less</mat-icon>
+        } @else {
+            <mat-icon>expand_more</mat-icon>
+        }
+
         <span class="mat-body-2">Show/Hide Layer List</span>
     </button>
-    <button mat-menu-item *ngIf="(mapIsGrid$ | async) === false" (click)="mapService.setGrid(true)">
-        <mat-icon>view_module</mat-icon>
-        <span class="mat-body-2">Switch to Grid View</span>
-    </button>
-    <button mat-menu-item *ngIf="mapIsGrid$ | async" (click)="mapService.setGrid(false)">
-        <mat-icon>aspect_ratio</mat-icon>
-        <span class="mat-body-2">Switch to Mono Map View</span>
-    </button>
+    @if (mapIsGrid()) {
+        <button mat-menu-item (click)="mapService.setGrid(false)">
+            <mat-icon>aspect_ratio</mat-icon>
+            <span class="mat-body-2">Switch to Mono Map View</span>
+        </button>
+    } @else {
+        <button mat-menu-item (click)="mapService.setGrid(true)">
+            <mat-icon>view_module</mat-icon>
+            <span class="mat-body-2">Switch to Grid View</span>
+        </button>
+    }
+
     <button mat-menu-item (click)="projectService.clearLayers()">
         <mat-icon>delete_sweep</mat-icon>
         <span class="mat-body-2">Remove All Layers</span>
