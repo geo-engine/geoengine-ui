@@ -96,20 +96,20 @@ export class DashboardComponent implements AfterViewInit {
 
     indicators = INDICATORS;
 
-    isSelectingBox = signal(false);
-    selectedIndicator: WritableSignal<Indicator | undefined> = signal(undefined);
-    selectedBBox: WritableSignal<Extent | undefined> = signal(undefined);
-    isLandscape = signal(true);
-    plotWidthPx = signal(100);
-    plotHeightPx = signal(100);
-    layersReverse = toSignal(this.dataSelectionService.layers);
+    readonly isSelectingBox = signal(false);
+    readonly selectedIndicator: WritableSignal<Indicator | undefined> = signal(undefined);
+    readonly selectedBBox: WritableSignal<Extent | undefined> = signal(undefined);
+    readonly isLandscape = signal(true);
+    readonly plotWidthPx = signal(100);
+    readonly plotHeightPx = signal(100);
+    readonly layersReverse = toSignal(this.dataSelectionService.layers);
     /* eslint-disable @typescript-eslint/no-explicit-any */
-    plotData = signal<any>(undefined);
-    plotLoading = signal(false);
+    readonly plotData = signal<any>(undefined);
+    readonly plotLoading = signal(false);
 
-    mapComponent = viewChild.required(MapContainerComponent);
+    readonly mapComponent = viewChild.required(MapContainerComponent);
 
-    analyzeCard = viewChild.required('analyzecard', {read: ElementRef});
+    readonly analyzeCard = viewChild.required('analyzecard', {read: ElementRef});
 
     timeSteps: Time[] = [new Time(utc('2021-01-01')), new Time(utc('2022-01-01'))];
 

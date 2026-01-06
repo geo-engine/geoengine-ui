@@ -173,7 +173,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     processVectorLayer(_layer: VectorLayer, metadata: VectorLayerMetadata, data: VectorData): void {
-        if (!data.data || (data.data && data.data.length === 0)) {
+        if (!data.data || (data.data?.length === 0)) {
             this.emptyTable();
             return;
         }

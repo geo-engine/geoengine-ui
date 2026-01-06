@@ -162,9 +162,9 @@ export class LayerCollectionNavigationComponent implements OnInit, OnChanges, On
     }
 
     get providerLayerCollectionIdOrSearch(): ProviderLayerCollectionId | LayerCollectionSearch | undefined {
-        if (this.selectedCollection && this.selectedCollection.type === 'collection') {
+        if (this.selectedCollection?.type === 'collection') {
             return this.selectedCollection.id;
-        } else if (this.selectedCollection && this.selectedCollection.type === 'search') {
+        } else if (this.selectedCollection?.type === 'search') {
             return this.selectedCollection as LayerCollectionSearch;
         } else {
             return undefined;

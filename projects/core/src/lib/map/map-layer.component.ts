@@ -282,7 +282,7 @@ export class OlRasterLayerComponent
     }
 
     private updateProjection(p: SpatialReference): void {
-        if (!this.spatialReference || p.srsString !== this.spatialReference.srsString) {
+        if (p.srsString !== this.spatialReference?.srsString) {
             this.spatialReference = p;
             this.updateOlLayerProjection();
         }

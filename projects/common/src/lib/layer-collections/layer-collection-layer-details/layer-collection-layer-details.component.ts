@@ -19,8 +19,8 @@ import {RasterIconComponent} from '../../layer-icons/raster-icon/raster-icon.com
     imports: [MatIconModule, FxLayoutDirective, PolygonIconComponent, LineIconComponent, PointIconComponent, RasterIconComponent],
 })
 export class LayerCollectionLayerDetailsComponent {
-    description = input<string | undefined>();
-    layerMetadata = input<LayerMetadata | undefined>(undefined);
+    readonly description = input<string | undefined>();
+    readonly layerMetadata = input<LayerMetadata | undefined>(undefined);
 
     readonly VectorDataTypes = VectorDataTypes;
 
@@ -40,7 +40,7 @@ export class LayerCollectionLayerDetailsComponent {
 
     get rasterLayerMetadata(): RasterLayerMetadata | undefined {
         const layerMetadata = this.layerMetadata();
-        if (layerMetadata && layerMetadata.layerType === 'raster') {
+        if (layerMetadata?.layerType === 'raster') {
             return layerMetadata as RasterLayerMetadata;
         }
         return undefined;
@@ -48,7 +48,7 @@ export class LayerCollectionLayerDetailsComponent {
 
     get vectorLayerMetadata(): VectorLayerMetadata | undefined {
         const layerMetadata = this.layerMetadata();
-        if (layerMetadata && layerMetadata.layerType === 'vector') {
+        if (layerMetadata?.layerType === 'vector') {
             return layerMetadata as VectorLayerMetadata;
         }
         return undefined;

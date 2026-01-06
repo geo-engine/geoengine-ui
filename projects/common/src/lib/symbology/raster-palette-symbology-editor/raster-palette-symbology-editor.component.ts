@@ -92,7 +92,7 @@ export class RasterPaletteSymbologyEditorComponent implements OnChanges {
     }
 
     updateBounds(histogramSignal: {binStart: [number, number]}): void {
-        if (!histogramSignal?.binStart || histogramSignal.binStart.length !== 2) {
+        if (histogramSignal?.binStart?.length !== 2) {
             return;
         }
 
