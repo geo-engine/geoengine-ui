@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, input, OnInit, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, OnInit, inject, signal} from '@angular/core';
 import {Router, RouterLink} from '@angular/router';
 import {CommonConfig} from '../config.service';
 import {UserService} from '../user/user.service';
@@ -55,7 +55,6 @@ enum FormStatus {
 })
 export class LoginComponent implements OnInit {
     readonly config = inject(CommonConfig);
-    private readonly changeDetectorRef = inject(ChangeDetectorRef);
     private readonly userService = inject(UserService);
     private readonly notificationService = inject(NotificationService);
     private readonly router = inject(Router);
