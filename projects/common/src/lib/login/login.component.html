@@ -1,11 +1,11 @@
-<form [formGroup]="loginForm" (ngSubmit)="login()">
+<form (ngSubmit)="login()">
     <div class="container" fxLayout="column" fxLayoutAlign="space-around">
         <div class="login">
             <mat-card appearance="outlined">
                 <mat-card-header>
                     <img [src]="config.BRANDING.LOGO_URL" class="logo" />
                     <mat-card-subtitle>
-                        @switch (formStatus$ | async) {
+                        @switch (formStatus()) {
                             @case (FormStatus.LoggedOut) {
                                 Login to this Geo Engine instance
                             }
@@ -17,23 +17,23 @@
                 </mat-card-header>
 
                 <mat-card-content>
-                    @switch (formStatus$ | async) {
+                    @switch (formStatus()) {
                         @case (FormStatus.Oidc) {
                             <mat-card-actions class="login-buttons">
                                 <button mat-raised-button (click)="oidcLogin()" color="primary">Sign in using OIDC</button>
                                 @if (config.USER.LOCAL_LOGIN_AVAILABLE) {
-                                    <button mat-raised-button (click)="formStatus$.next(FormStatus.LoggedOut)">Use local login</button>
+                                    <button mat-raised-button (click)="formStatus.set(FormStatus.LoggedOut)">Use local login</button>
                                 }
                             </mat-card-actions>
                         }
                         @case (FormStatus.LoggedOut) {
                             <mat-form-field>
-                                <input matInput type="text" placeholder="E-Mail" formControlName="email" />
+                                <input matInput type="text" placeholder="E-Mail" [field]="loginForm.email" />
                             </mat-form-field>
                             <mat-form-field>
-                                <input matInput type="password" placeholder="Password" formControlName="password" />
+                                <input matInput type="password" placeholder="Password" [field]="loginForm.password" />
                             </mat-form-field>
-                            @if (invalidCredentials$ | async) {
+                            @if (invalidCredentials()) {
                                 <p class="error">Invalid Credentials</p>
                             }
                         }
@@ -41,7 +41,7 @@
                             <mat-spinner></mat-spinner>
                         }
                         @case (FormStatus.LoggedIn) {
-                            @if (user) {
+                            @if (user(); as user) {
                                 <table>
                                     <tr>
                                         <th>E-Mail</th>
@@ -56,17 +56,11 @@
                         }
                     }
                 </mat-card-content>
-                @if ((formStatus$ | async | valueDefault: FormStatus.LoggedOut) !== FormStatus.Oidc) {
+                @if (formStatus() !== FormStatus.Oidc) {
                     <mat-card-actions fxLayout="row" fxLayoutGap="1rem" fxLayoutAlign="space-between center">
-                        @switch (formStatus$ | async) {
+                        @switch (formStatus()) {
                             @case (FormStatus.LoggedOut) {
-                                <button
-                                    mat-raised-button
-                                    type="submit"
-                                    [disabled]="(loginForm.statusChanges | async) !== 'VALID'"
-                                    color="primary"
-                                    fxFlex
-                                >
+                                <button mat-raised-button type="submit" [disabled]="!loginForm().valid" color="primary" fxFlex>
                                     Login
                                 </button>
                                 @if (canRegister) {
