@@ -11,7 +11,7 @@ import {
     CoreModule,
 } from '@geoengine/core';
 import {CommonConfig, NotificationService, RandomColorService, UserService} from '@geoengine/common';
-import {provideAppInitializer, inject, importProvidersFrom, provideZoneChangeDetection} from '@angular/core';
+import {provideAppInitializer, inject, importProvidersFrom, provideZonelessChangeDetection} from '@angular/core';
 import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {provideAnimations} from '@angular/platform-browser/animations';
 import {BrowserModule, bootstrapApplication} from '@angular/platform-browser';
@@ -22,7 +22,7 @@ import {AppComponent} from './app/app.component';
 
 bootstrapApplication(AppComponent, {
     providers: [
-        provideZoneChangeDetection(),
+        provideZonelessChangeDetection(),
         importProvidersFrom(BrowserModule, MatTableModule, MatButtonModule, CoreModule),
         AppConfig,
         {
