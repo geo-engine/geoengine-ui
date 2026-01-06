@@ -97,7 +97,7 @@ export class MainComponent implements OnInit, AfterViewInit {
     }
 
     @HostListener('window:resize')
-    private windowHeight(): void {
+    windowHeight(): void {
         this.windowHeight$.next(window.innerHeight);
     }
 }
