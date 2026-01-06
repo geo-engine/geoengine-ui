@@ -155,7 +155,7 @@ export class LoginComponent implements OnInit {
         }
     }
 
-    redirectToMainView(): void {
-        void this.router.navigate([this.loginRedirect()]);
+    async redirectToMainView(): Promise<void> {
+        await this.router.navigate([this.loginRedirect()]);
     }
 }
