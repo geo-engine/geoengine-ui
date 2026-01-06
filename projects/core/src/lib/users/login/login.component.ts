@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, inject, signal} from '@angular/core';
 import {CoreConfig} from '../../config.service';
 import {User} from '../user.model';
 import {geoengineValidators, NotificationService, UserService, FxLayoutDirective, FxFlexDirective} from '@geoengine/common';
@@ -24,7 +24,6 @@ enum FormStatus {
     imports: [Field, FxFlexDirective, FxLayoutDirective, MatButton, MatFormField, MatInput, MatProgressSpinner, SidenavHeaderComponent],
 })
 export class LoginComponent implements OnInit {
-    private readonly changeDetectorRef = inject(ChangeDetectorRef);
     private readonly config = inject(CoreConfig);
     private readonly userService = inject(UserService);
     private readonly notificationService = inject(NotificationService);
