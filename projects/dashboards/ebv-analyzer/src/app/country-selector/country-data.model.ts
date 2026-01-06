@@ -238,9 +238,8 @@ export const COUNTRY_METADATA: Array<[string, number, number, number, number, nu
     ['Ashmore and Cartier Is.', 123.597748243, -12.4266089819999, 123.575043165, -12.4385718729999, 252],
 ];
 
-export const countryDatasetName = (
-    countryName: string,
-): string => // remove non-ascii characters and replace non-alpha-numeric characters with underscores
+export const countryDatasetName = (countryName: string): string =>
+    // remove non-ascii characters and replace non-alpha-numeric characters with underscores
     countryName
         .split('')
         .filter((c) => c.charCodeAt(0) < 128)
