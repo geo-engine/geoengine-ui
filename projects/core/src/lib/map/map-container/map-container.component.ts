@@ -696,10 +696,13 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                 }
 
                 for await (const _feature of flatgeobuf.deserialize(response.body)) {
-                    const feature = _feature;
-                    const geometry = feature.getGeometry()!;
-
+                    const geometry = _feature.getGeometry()!;
                     geometry.transform(dataProjection, sourceProjection);
+
+                    const feature = new OlFeature(geometry);
+                    feature.setProperties(_feature.getProperties());
+                    feature.setId(_feature.getId());
+
                     source.addFeature(feature);
                 }
             });
