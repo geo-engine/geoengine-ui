@@ -1,6 +1,6 @@
 import {AppConfig} from './app/app-config.service';
 import {CommonConfig, RandomColorService, NotificationService, CommonModule} from '@geoengine/common';
-import {provideAppInitializer, inject, importProvidersFrom} from '@angular/core';
+import {provideAppInitializer, inject, importProvidersFrom, provideZoneChangeDetection} from '@angular/core';
 import {MAT_CARD_CONFIG, MatCardModule} from '@angular/material/card';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
@@ -70,6 +70,7 @@ export const MATERIAL_MODULES = [
 
 bootstrapApplication(AppComponent, {
     providers: [
+        provideZoneChangeDetection(),
         importProvidersFrom(
             ...MATERIAL_MODULES,
             FormsModule,

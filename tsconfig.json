@@ -11,7 +11,6 @@
         "moduleResolution": "bundler",
         "importHelpers": false,
         "target": "ES2022",
-        "lib": ["ES2022", "dom"],
         "paths": {
             "@geoengine/core": ["dist/core", "projects/core/src"],
             "@geoengine/common": ["dist/common", "projects/common/src"],
