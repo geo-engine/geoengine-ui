@@ -38,7 +38,7 @@
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "polyfills": ["zone.js", "zone.js/testing"],
+                        "polyfills": [],
                         "tsConfig": "projects/core/tsconfig.spec.json",
                         "inlineStyleLanguage": "scss"
                     }
@@ -84,7 +84,7 @@
                             "base": "dist/gis"
                         },
                         "index": "projects/gis/src/index.html",
-                        "polyfills": ["zone.js"],
+                        "polyfills": [],
                         "tsConfig": "projects/gis/tsconfig.app.json",
                         "assets": [
                             "projects/gis/src/favicon.ico",
@@ -156,7 +156,7 @@
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "polyfills": ["zone.js", "zone.js/testing"],
+                        "polyfills": [],
                         "tsConfig": "projects/gis/tsconfig.spec.json",
                         "inlineStyleLanguage": "scss",
                         "assets": ["projects/gis/src/favicon.ico", "projects/gis/src/assets"],
@@ -220,7 +220,7 @@
                             "base": "dist/dashboards/data-atlas"
                         },
                         "index": "projects/dashboards/data-atlas/src/index.html",
-                        "polyfills": ["zone.js"],
+                        "polyfills": [],
                         "tsConfig": "projects/dashboards/data-atlas/tsconfig.app.json",
                         "assets": [
                             "projects/dashboards/data-atlas/src/favicon.ico",
@@ -291,7 +291,7 @@
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "polyfills": ["zone.js", "zone.js/testing"],
+                        "polyfills": [],
                         "tsConfig": "projects/dashboards/data-atlas/tsconfig.spec.json",
                         "inlineStyleLanguage": "scss",
                         "assets": ["projects/dashboards/data-atlas/src/favicon.ico", "projects/dashboards/data-atlas/src/assets"],
@@ -355,7 +355,7 @@
                             "base": "dist/dashboards/ebv-analyzer"
                         },
                         "index": "projects/dashboards/ebv-analyzer/src/index.html",
-                        "polyfills": ["zone.js"],
+                        "polyfills": [],
                         "tsConfig": "projects/dashboards/ebv-analyzer/tsconfig.app.json",
                         "assets": [
                             "projects/dashboards/ebv-analyzer/src/favicon.ico",
@@ -426,7 +426,7 @@
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "polyfills": ["zone.js", "zone.js/testing"],
+                        "polyfills": [],
                         "tsConfig": "projects/dashboards/ebv-analyzer/tsconfig.spec.json",
                         "inlineStyleLanguage": "scss",
                         "assets": ["projects/dashboards/ebv-analyzer/src/favicon.ico", "projects/dashboards/ebv-analyzer/src/assets"],
@@ -490,7 +490,7 @@
                             "base": "dist/dashboards/nfdi-portal-demo"
                         },
                         "index": "projects/dashboards/nfdi-portal-demo/src/index.html",
-                        "polyfills": ["zone.js"],
+                        "polyfills": [],
                         "tsConfig": "projects/dashboards/nfdi-portal-demo/tsconfig.app.json",
                         "assets": [
                             "projects/dashboards/nfdi-portal-demo/src/favicon.ico",
@@ -561,7 +561,7 @@
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "polyfills": ["zone.js", "zone.js/testing"],
+                        "polyfills": [],
                         "tsConfig": "projects/dashboards/nfdi-portal-demo/tsconfig.spec.json",
                         "assets": [
                             "projects/dashboards/nfdi-portal-demo/src/favicon.ico",
@@ -631,7 +631,7 @@
                             "base": "dist/dashboards/gfbio"
                         },
                         "index": "projects/dashboards/gfbio/src/index.html",
-                        "polyfills": ["zone.js"],
+                        "polyfills": [],
                         "tsConfig": "projects/dashboards/gfbio/tsconfig.app.json",
                         "assets": [
                             "projects/dashboards/gfbio/src/favicon.ico",
@@ -702,7 +702,7 @@
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "polyfills": ["zone.js", "zone.js/testing"],
+                        "polyfills": [],
                         "tsConfig": "projects/dashboards/gfbio/tsconfig.spec.json",
                         "assets": ["projects/dashboards/gfbio/src/favicon.ico", "projects/dashboards/gfbio/src/assets"],
                         "inlineStyleLanguage": "scss",
@@ -758,7 +758,7 @@
                             "base": "dist/manager"
                         },
                         "index": "projects/manager/src/index.html",
-                        "polyfills": ["zone.js"],
+                        "polyfills": [],
                         "tsConfig": "projects/manager/tsconfig.app.json",
                         "inlineStyleLanguage": "scss",
                         "assets": [
@@ -823,7 +823,7 @@
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "polyfills": ["zone.js", "zone.js/testing"],
+                        "polyfills": [],
                         "tsConfig": "projects/manager/tsconfig.spec.json",
                         "inlineStyleLanguage": "scss",
                         "assets": ["projects/manager/src/favicon.ico", "projects/manager/src/assets"],
@@ -905,7 +905,7 @@
                             "base": "dist/dashboards/ecometrics"
                         },
                         "index": "projects/dashboards/ecometrics/src/index.html",
-                        "polyfills": ["zone.js"],
+                        "polyfills": [],
                         "tsConfig": "projects/dashboards/ecometrics/tsconfig.app.json",
                         "inlineStyleLanguage": "scss",
                         "assets": [
@@ -971,7 +971,7 @@
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "polyfills": ["zone.js", "zone.js/testing"],
+                        "polyfills": [],
                         "tsConfig": "projects/dashboards/ecometrics/tsconfig.spec.json",
                         "inlineStyleLanguage": "scss",
                         "assets": ["projects/dashboards/ecometrics/src/favicon.ico", "projects/dashboards/ecometrics/src/assets"],
@@ -1017,7 +1017,7 @@
                             "base": "dist/dashboards/esg-indicator-service"
                         },
                         "index": "projects/dashboards/esg-indicator-service/src/index.html",
-                        "polyfills": ["zone.js"],
+                        "polyfills": [],
                         "tsConfig": "projects/dashboards/esg-indicator-service/tsconfig.app.json",
                         "inlineStyleLanguage": "scss",
                         "assets": [
@@ -1083,7 +1083,7 @@
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "polyfills": ["zone.js", "zone.js/testing"],
+                        "polyfills": [],
                         "tsConfig": "projects/dashboards/esg-indicator-service/tsconfig.spec.json",
                         "inlineStyleLanguage": "scss",
                         "assets": [

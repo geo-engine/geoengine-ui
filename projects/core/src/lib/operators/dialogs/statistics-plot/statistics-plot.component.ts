@@ -115,7 +115,7 @@ export class StatisticsPlotComponent implements AfterViewInit, OnDestroy {
                 [],
                 geoengineValidators.conditionalValidator(Validators.required, () => isVectorLayer(layerControl.value)),
             ),
-            additionalRasterLayers: this.formBuilder.control<Array<RasterLayer> | null>(null), // new FormControl<Array<RasterLayer> | null>(null),
+            additionalRasterLayers: this.formBuilder.control<Array<RasterLayer> | null>([]), // new FormControl<Array<RasterLayer> | null>(null),
         });
         this.subscriptions.push(
             this.form.controls['layer'].valueChanges
@@ -123,7 +123,7 @@ export class StatisticsPlotComponent implements AfterViewInit, OnDestroy {
                     // reset
                     tap(() => {
                         this.columnNames.clear();
-                        this.additionalRasterLayers.setValue(null);
+                        this.additionalRasterLayers.setValue([]);
                         if (isVectorLayer(layerControl.value)) {
                             this.addColumn();
                         }

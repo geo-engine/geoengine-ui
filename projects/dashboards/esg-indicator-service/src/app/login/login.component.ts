@@ -91,7 +91,7 @@ export class LoginComponent implements OnInit {
             this.invalidCredentials.set(false);
             this.formStatus.set(FormStatus.LoggedIn);
 
-            this.redirectToMainView();
+            await this.redirectToMainView();
         } catch {
             // on error
             this.invalidCredentials.set(true);

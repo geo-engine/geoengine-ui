@@ -1,47 +1,45 @@
 <div fxLayout="row">
     <h4>Select input {{ title() }}</h4>
     <div fxFlex fxLayout="row" fxLayoutAlign="end">
-        @if (max() - min() > 0) {
-            <button mat-icon-button color="primary" type="button" (click)="add()" [disabled]="layersAtMax | async">
+        @if (minNotEqualMax()) {
+            <button mat-icon-button color="primary" type="button" (click)="add()" [disabled]="layersAtMax()">
                 <mat-icon>add_circle_outline</mat-icon>
             </button>
-        }
-        @if (max() - min() > 0) {
-            <button mat-icon-button color="primary" type="button" (click)="remove()" [disabled]="layersAtMin | async">
+            <button mat-icon-button color="primary" type="button" (click)="remove()" [disabled]="layersAtMin()">
                 <mat-icon>remove_circle_outline</mat-icon>
             </button>
         }
     </div>
 </div>
-@if (hasLayers | async) {
+@if (hasLayers()) {
     <div fxLayout="column">
-        @for (number of [].constructor(this.selectedLayers.value.length); track number; let i = $index) {
+        @for (selectedLayer of value(); track i; let i = $index) {
             <div fxLayout="row">
                 <mat-form-field fxFlex>
                     <mat-label>{{ inputNaming()(i) }}</mat-label>
                     <mat-select
                         class="mat-select-{{ i }}"
-                        [(value)]="selectedLayers.value[i]"
+                        [value]="selectedLayer"
                         (selectionChange)="updateLayer(i, $event.value)"
-                        (onBlur)="onBlur()"
+                        (onBlur)="touched.emit(true)"
                     >
-                        @for (layer of filteredLayers | async; track layer) {
+                        @for (layer of filteredLayers.value(); track layer.id) {
                             <mat-option class="mat-option-{{ i }}" [value]="layer">{{ layer.name }}</mat-option>
                         }
                     </mat-select>
                 </mat-form-field>
                 <button type="button" mat-icon-button class="info" (click)="toggleExpand(i)">
-                    @if (!layerDetails[i].expanded) {
+                    @if (!layerDetails()[i].expanded) {
                         <mat-icon>expand_more</mat-icon>
                     }
-                    @if (layerDetails[i].expanded) {
+                    @if (layerDetails()[i].expanded) {
                         <mat-icon>expand_less</mat-icon>
                     }
                 </button>
             </div>
-            @if (layerDetails[i].expanded) {
+            @if (layerDetails()[i].expanded) {
                 <geoengine-layer-collection-layer-details
-                    [layerMetadata]="layerDetails[i].metadata"
+                    [layerMetadata]="layerDetails()[i].metadata"
                 ></geoengine-layer-collection-layer-details>
             }
         }

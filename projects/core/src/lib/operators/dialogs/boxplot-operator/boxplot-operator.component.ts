@@ -123,7 +123,7 @@ export class BoxPlotOperatorComponent implements AfterViewInit, OnDestroy {
                 [],
                 geoengineValidators.conditionalValidator(Validators.required, () => isVectorLayer(layerControl.value)),
             ),
-            additionalRasterLayers: new UntypedFormControl(undefined),
+            additionalRasterLayers: new UntypedFormControl([]),
         });
 
         this.subscriptions.push(
@@ -131,7 +131,7 @@ export class BoxPlotOperatorComponent implements AfterViewInit, OnDestroy {
                 .pipe(
                     tap(() => {
                         this.columnNames.clear();
-                        this.additionalRasterLayers.setValue(undefined);
+                        this.additionalRasterLayers.setValue([]);
                         if (isVectorLayer(layerControl.value)) {
                             this.addColumn();
                         }
