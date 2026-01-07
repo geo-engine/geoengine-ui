@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, input} from '@angular/core';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {Observable} from 'rxjs';
 import {map, shareReplay} from 'rxjs/operators';
@@ -42,6 +42,8 @@ export class NavigationComponent {
     private router = inject(Router);
     readonly config = inject<AppConfig>(AppConfig);
 
+    readonly logoutNavigation = input('/signin');
+
     isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
         map((result) => result.matches),
         shareReplay(),
@@ -51,9 +53,9 @@ export class NavigationComponent {
 
     selectedType: NavigationType = NavigationType.Datasets;
 
-    logout(): void {
+    async logout(): Promise<void> {
         this.userService.logout();
-        this.router.navigate(['/signin']);
+        await this.router.navigate([this.logoutNavigation()]);
     }
 
     toggleSelection(selection: NavigationType): void {

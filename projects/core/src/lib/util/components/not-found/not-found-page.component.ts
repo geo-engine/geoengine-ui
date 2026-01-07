@@ -24,7 +24,7 @@ import {MatButton} from '@angular/material/button';
 export class NotFoundPageComponent {
     private router = inject(Router);
 
-    goBack(): void {
-        this.router.navigate(['/']);
+    async goBack(): Promise<void> {
+        await this.router.navigate(['/']);
     }
 }

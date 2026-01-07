@@ -20,7 +20,7 @@ const routes: Routes = [
     // manager
     {
         path: 'manager',
-        loadChildren: () => import('@geoengine/manager').then((m) => (m as {routes: Routes}).routes),
+        loadChildren: () => import('@geoengine/manager').then((m) => (m as {routes: (subdir?: string) => Routes}).routes('/manager')),
         canActivate: [routeToManager, BackendAvailableGuard],
     },
     // fallback to not found page
@@ -33,6 +33,7 @@ const routes: Routes = [
             useHash: true,
             initialNavigation: 'disabled', // navigation is enabled in app component after removing query params before the hash
             onSameUrlNavigation: 'reload', // for reload the page and checking if the user is logged in again
+            bindToComponentInputs: true,
         }),
     ],
     providers: [BackendAvailableGuard, LogInGuard, CanRegisterGuard],
