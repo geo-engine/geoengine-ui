@@ -195,77 +195,6 @@ export class MultiLayerSelectionComponent implements FormValueControl<Array<Laye
         });
     }
 
-    // private selectionSubscription: Subscription;
-    // private layerChangesSubscription?: Subscription;
-
-    // constructor() {
-    // this.selectionSubscription = this.selectedLayers.subscribe((selectedLayers) => {
-    //     if (this.onChange) {
-    //         this.onChange(selectedLayers);
-    //     }
-    // });
-    // this.hasLayers = this.filteredLayers.pipe(map((layers) => layers.length > 0));
-    // this.layersAtMin = combineLatest([this.selectedLayers, this.hasLayers]).pipe(
-    //     map(([selectedLayers, hasLayers]) => !hasLayers || selectedLayers.length <= this.min()),
-    // );
-    // this.layersAtMax = combineLatest([this.selectedLayers, this.hasLayers]).pipe(
-    //     map(([selectedLayers, hasLayers]) => !hasLayers || selectedLayers.length >= this.max()),
-    // );
-    // }
-
-    // ngOnInit(): void {
-    // this.updateLayersForSelection();
-    // }
-
-    // ngOnChanges(changes: Record<string, SimpleChange>): void {
-    //     let minMaxChanged = false;
-
-    //     // eslint-disable-next-line guard-for-in
-    //     for (const propName in changes) {
-    //         switch (propName) {
-    //             case 'min':
-    //             case 'max':
-    //                 minMaxChanged = true;
-    //                 break;
-    //             case 'layers':
-    //             case 'types': {
-    //                 let layers$: Observable<Array<Layer>>;
-    //                 const layersValue = this.layers();
-    //                 if (layersValue instanceof Array) {
-    //                     layers$ = of(layersValue);
-    //                 } else {
-    //                     layers$ = layersValue;
-    //                 }
-
-    //                 if (this.layerChangesSubscription) {
-    //                     this.layerChangesSubscription.unsubscribe();
-    //                 }
-
-    //                 this.layerChangesSubscription = layers$
-    //                     .pipe(
-    //                         mergeMap((layers) => {
-    //                             const layersAndMetadata = layers.map((l) => zip(of(l), this.projectService.getLayerMetadata(l)));
-    //                             return forkJoin(layersAndMetadata);
-    //                         }),
-    //                         map((layers: Array<[Layer, LayerMetadata]>) =>
-    //                             layers.filter(([_layer, meta]) => this.types().includes(meta.resultType)).map(([layer, _]) => layer),
-    //                         ),
-    //                     )
-    //                     .subscribe((l) => this.filteredLayers.next(l));
-
-    //                 break;
-    //             }
-
-    //             default:
-    //             // DO NOTHING
-    //         }
-    //     }
-
-    //     if (minMaxChanged) {
-    //         this.updateLayersForSelection();
-    //     }
-    // }
-
     updateLayer(index: number, layer: Layer): void {
         const newSelectedLayers = [...this.value()];
         const newLayerDetails = [...this.layerDetails()];
@@ -274,38 +203,6 @@ export class MultiLayerSelectionComponent implements FormValueControl<Array<Laye
         this.value.set(newSelectedLayers);
         this.layerDetails.set(newLayerDetails);
     }
-
-    // updateLayersForSelection(): void {
-    //     combineLatest([this.filteredLayers, this.selectedLayers])
-    //         .pipe(first())
-    //         .subscribe(([filteredLayers, selectedLayers]) => {
-    //             const amountOfLayers = selectedLayers.length;
-
-    //             if (this.max() < amountOfLayers) {
-    //                 // remove selected layers
-    //                 const difference = amountOfLayers - this.max();
-    //                 this.selectedLayers.next(selectedLayers.slice(0, amountOfLayers - difference));
-    //                 this.layerDetails = this.layerDetails.slice(0, amountOfLayers - difference);
-    //             } else if (this.min() > amountOfLayers) {
-    //                 // add selected layers
-    //                 const difference = this.min() - amountOfLayers;
-    //                 this.selectedLayers.next(selectedLayers.concat(this.layersForInitialSelection(filteredLayers, [], difference)));
-    //                 this.layerDetails = this.layerDetails.concat(
-    //                     Array(difference)
-    //                         .fill(null)
-    //                         .map(() => ({expanded: false})),
-    //                 );
-    //             }
-    //         });
-    // }
-
-    // ngOnDestroy(): void {
-    //     this.selectionSubscription.unsubscribe();
-
-    //     if (this.layerChangesSubscription) {
-    //         this.layerChangesSubscription.unsubscribe();
-    //     }
-    // }
 
     add(): void {
         const selectedLayers = this.value();
@@ -329,30 +226,6 @@ export class MultiLayerSelectionComponent implements FormValueControl<Array<Laye
         this.layerDetails.set(this.layerDetails().slice(0, selectedLayers.length - 1));
         this.value.set(selectedLayers.slice(0, selectedLayers.length - 1));
     }
-
-    // onBlur(): void {
-    //     if (this.onTouched) {
-    //         this.onTouched();
-    //     }
-    // }
-
-    // writeValue(layers: Array<Layer>): void {
-    //     if (layers) {
-    //         this.selectedLayers.next(layers);
-    //     } else if (this.onChange) {
-    //         this.onChange(this.selectedLayers.getValue());
-    //     }
-    // }
-
-    // registerOnChange(fn: (_: Array<Layer>) => void): void {
-    //     this.onChange = fn;
-
-    //     this.onChange(this.selectedLayers.getValue());
-    // }
-
-    // registerOnTouched(fn: () => void): void {
-    //     this.onTouched = fn;
-    // }
 
     // noinspection JSMethodCanBeStatic
     toLetters(i: number): string {
