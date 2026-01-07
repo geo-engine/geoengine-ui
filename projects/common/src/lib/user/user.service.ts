@@ -261,7 +261,7 @@ export class UserService {
 
     async guestLogin(): Promise<Session> {
         const oldSession = await firstValueFrom(this.session$);
-        
+
         if (oldSession) {
             await new SessionApi(oldSession.apiConfiguration).logoutHandler();
         }

@@ -160,7 +160,7 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.layerDataSubscription = combineLatest([dataStream, metadataStream]).subscribe(
             ([data, metadata]) => {
-                if (layer instanceof VectorLayer) {
+                if (layer instanceof VectorLayer && data instanceof VectorData) {
                     this.processVectorLayer(layer, metadata as VectorLayerMetadata, data);
                 } else if (layer instanceof RasterLayer) {
                     this.processRasterLayer(layer, metadata as RasterLayerMetadata, data);
@@ -172,8 +172,8 @@ export class DataTableComponent implements OnInit, AfterViewInit, OnDestroy {
         );
     }
 
-    processVectorLayer(_layer: VectorLayer, metadata: VectorLayerMetadata, data: VectorData): void {
-        if (!data.data || data.data?.length === 0) {
+    processVectorLayer(_layer: VectorLayer, metadata: VectorLayerMetadata, data?: VectorData): void {
+        if (!data?.data || data.data.length === 0) {
             this.emptyTable();
             return;
         }

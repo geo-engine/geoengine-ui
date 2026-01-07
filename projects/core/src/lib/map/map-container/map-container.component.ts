@@ -58,11 +58,11 @@ import {MatGridList, MatGridListModule, MatGridTile} from '@angular/material/gri
 import {SpatialReferenceService, WGS_84} from '../../spatial-references/spatial-reference.service';
 import {containsCoordinate, getCenter} from 'ol/extent';
 import {applyBackground, stylefunction} from 'ol-mapbox-style';
-import {olExtentToTuple, SpatialReference, VectorSymbology} from '@geoengine/common';
+import {olExtentToTuple, SpatialReference, Symbology, VectorSymbology} from '@geoengine/common';
 import {allowedBasemapProjections, BasemapService} from '../../layers/basemap.service';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type MapLayer = MapLayerComponent<OlLayer<OlSource, any>, OlSource>;
+type MapLayer = MapLayerComponent<OlLayer<OlSource, any>, OlSource, Symbology>;
 
 const DEFAULT_ZOOM_LEVEL = 2;
 const MIN_ZOOM_LEVEL = 0;
@@ -417,7 +417,7 @@ export class MapContainerComponent implements AfterViewInit, OnChanges, OnDestro
                     if (feature.getId() === selection.feature) {
                         this.selectedFeature = feature;
                         this.selectedFeatureOriginalStyle = feature.getStyle();
-                        const style = (layer.symbology as VectorSymbology).createHighlightStyle(feature);
+                        const style = (layer.symbology() as VectorSymbology).createHighlightStyle(feature);
                         feature.setStyle(style);
                         this.userSelect?.getFeatures().push(feature);
                         return;

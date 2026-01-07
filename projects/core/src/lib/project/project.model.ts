@@ -21,8 +21,7 @@ export class Project implements ToDict<ProjectDict> {
 
     readonly _spatialReference: SpatialReference;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    readonly _plots: Array<any>;
+    readonly _plots: Array<Plot>;
     readonly _layers: Array<Layer>;
 
     readonly _time: Time;
@@ -73,8 +72,7 @@ export class Project implements ToDict<ProjectDict> {
         description?: string;
         spatialReference?: SpatialReference;
         time?: Time;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        plots?: Array<any>;
+        plots?: Array<Plot>;
         layers?: Array<Layer>;
         timeStepDuration?: TimeStepDuration;
         bbox?: BBoxDict;
@@ -102,9 +100,7 @@ export class Project implements ToDict<ProjectDict> {
         return this._spatialReference;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    get plots(): Array<any> {
-        // TODO: type correctly
+    get plots(): Array<Plot> {
         return this._plots;
     }
 
