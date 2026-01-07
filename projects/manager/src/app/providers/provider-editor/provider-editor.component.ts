@@ -92,7 +92,6 @@ export class ProviderEditorComponent {
         });
     }
 
-
     async submitUpdate(): Promise<void> {
         const provider = this.updatedDefinition();
 
@@ -111,7 +110,6 @@ export class ProviderEditorComponent {
             this.snackBar.open(error, 'Close');
         }
     }
-
 
     async delete(): Promise<void> {
         const dialogRef = this.dialog.open(ConfirmationComponent, {
