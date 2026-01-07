@@ -1,9 +1,14 @@
-import {NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
+import {inject, NgModule} from '@angular/core';
+import {ActivatedRouteSnapshot, CanActivateFn, RouterModule, RouterStateSnapshot, Routes} from '@angular/router';
 import {BackendStatusPageComponent, NotFoundPageComponent} from '@geoengine/core';
 import {MainComponent} from './main/main.component';
 import {BackendAvailableGuard, CanRegisterGuard, LoginComponent, LogInGuard, RegisterComponent} from '@geoengine/common';
-import {routes as managerRoutes} from '@geoengine/manager';
+import {AppConfig} from './app-config.service';
+
+export const routeToManager: CanActivateFn = (_route: ActivatedRouteSnapshot, _state: RouterStateSnapshot) => {
+    const config = inject(AppConfig);
+    return config.ROUTES.MANAGER;
+};
 
 const routes: Routes = [
     {path: '', redirectTo: 'map', pathMatch: 'full'},
@@ -15,8 +20,8 @@ const routes: Routes = [
     // manager
     {
         path: 'manager',
-        children: managerRoutes,
-        canActivate: [BackendAvailableGuard],
+        loadChildren: () => import('@geoengine/manager').then((m) => (m as {routes: Routes}).routes),
+        canActivate: [routeToManager, BackendAvailableGuard],
     },
     // fallback to not found page
     {path: '**', redirectTo: '404', pathMatch: 'full'},
