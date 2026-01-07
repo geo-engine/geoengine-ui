@@ -92,51 +92,6 @@ export class ProviderEditorComponent {
         });
     }
 
-    // async ngOnInit(): Promise<void> {
-    //     const provider = await this.layersService.getProviderDefinition(this.providerListing().id);
-    //     this.provider.set(provider);
-
-    //     this.permissionsService.getPermissions('provider', this.providerListing().id, 0, 1).then(
-    //         (permissions) => {
-    //             this.readonly = permissions.length < 1 || permissions[0].permission != Permission.Owner;
-    //         },
-    //         (_error) => {
-    //             this.readonly = true;
-    //         },
-    //     );
-
-    //     return void 0;
-    // }
-
-    // ngOnChanges(_: SimpleChanges): void {
-    //     this.provider = undefined;
-    //     this.updatedDefinition = undefined;
-    //     this.layersService.getProviderDefinition(this.providerListing().id).then((provider) => {
-    //         this.provider = provider;
-    //         this.setProviderType();
-
-    //         this.permissionsService.getPermissions('provider', this.providerListing().id).then(
-    //             (permissions) => {
-    //                 this.readonly = !permissions.find((permission) => permission.permission === Permission.Owner);
-    //             },
-    //             (_error) => {
-    //                 this.readonly = true;
-    //             },
-    //         );
-    //     });
-    // }
-
-    // setUpdatedDefinition(definition?: TypedDataProviderDefinition): void {
-    //     const oldCmp = JSON.stringify(TypedDataProviderDefinitionToJSON(this.provider));
-    //     const newCmp = JSON.stringify(TypedDataProviderDefinitionToJSON(definition));
-
-    //     if (oldCmp === newCmp) {
-    //         this.updatedDefinition = undefined;
-    //         return; // no change
-    //     }
-
-    //     this.updatedDefinition = definition;
-    // }
 
     async submitUpdate(): Promise<void> {
         const provider = this.updatedDefinition();
@@ -157,18 +112,6 @@ export class ProviderEditorComponent {
         }
     }
 
-    // private setProviderType(): void {
-    //     switch (this.provider?.type) {
-    //         case 'Aruna':
-    //             this.providerType = ProviderType.ARUNA;
-    //             return;
-    //         case WildliveDataConnectorDefinitionTypeEnum.WildLive:
-    //             this.providerType = ProviderType.WildLIVE;
-    //             return;
-    //         default:
-    //             this.providerType = ProviderType.OTHER;
-    //     }
-    // }
 
     async delete(): Promise<void> {
         const dialogRef = this.dialog.open(ConfirmationComponent, {
