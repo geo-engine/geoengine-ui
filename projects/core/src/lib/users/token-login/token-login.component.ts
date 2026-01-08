@@ -57,19 +57,7 @@ export class TokenLoginComponent implements OnInit {
         required(schemaPath.sessionToken, {message: 'Session token is required'});
     });
 
-    // loginForm: FormGroup<{
-    //     sessionToken: FormControl<string>;
-    // }>;
-
     readonly invalidCredentials = signal<boolean>(false);
-
-    // private formStatusSubscription?: Subscription;
-
-    // constructor() {
-    //     this.loginForm = new FormGroup({
-    //         sessionToken: new FormControl<string>('', {nonNullable: true, validators: Validators.required}),
-    //     });
-    // }
 
     ngOnInit(): void {
         this.userService
@@ -80,21 +68,7 @@ export class TokenLoginComponent implements OnInit {
                     this.redirectRoute();
                 }
             });
-
-        // this essentially allows checking for the sidenav-header component on status changes
-        // this.formStatusSubscription = this.formStatus$.subscribe(() => setTimeout(() => this.changeDetectorRef.markForCheck()));
     }
-
-    // ngAfterViewInit(): void {
-    // do this once for observables
-    // setTimeout(() => this.loginForm.updateValueAndValidity());
-    // }
-
-    // ngOnDestroy(): void {
-    // if (this.formStatusSubscription) {
-    //     this.formStatusSubscription.unsubscribe();
-    // }
-    // }
 
     async login(): Promise<void> {
         this.formStatus.set(FormStatus.Loading);
