@@ -69,7 +69,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
     readonly FormStatus = FormStatus;
 
-    loginRedirect = input('/map');
+    readonly loginRedirect = input('/map');
 
     formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.Loading);
     canRegister = this.config.USER.REGISTRATION_AVAILABLE;
@@ -94,7 +94,10 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        const redirectUri = window.location.href.replace(/\/signin$/, this.loginRedirect());
+        const usesHashNavigation = window.location.hash.startsWith('#/');
+        const hashPrefix = usesHashNavigation ? '#' : '';
+
+        const redirectUri = new URL(hashPrefix + this.loginRedirect(), window.location.href).toString();
 
         // check if OIDC login is enabled
         this.userService.oidcInit(redirectUri).subscribe(
@@ -180,7 +183,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
         );
     }
 
-    redirectToMainView(): void {
-        this.router.navigate([this.loginRedirect()]);
+    async redirectToMainView(): Promise<void> {
+        await this.router.navigate([this.loginRedirect()]);
     }
 }

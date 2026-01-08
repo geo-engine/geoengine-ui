@@ -1,4 +1,4 @@
-import {Component, inject, OnChanges, OnInit, SimpleChanges, output, input} from '@angular/core';
+import {Component, inject, output, input, ChangeDetectionStrategy, Signal, computed, resource, effect, signal} from '@angular/core';
 import {
     LayerProviderListing,
     Permission,
@@ -39,21 +39,44 @@ export enum ProviderType {
         PermissionsComponent,
         MatButton,
     ],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProviderEditorComponent implements OnChanges, OnInit {
+export class ProviderEditorComponent {
     readonly providerListing = input.required<LayerProviderListing>();
 
     readonly providerUpdated = output<void>();
 
     readonly providerDeleted = output<void>();
 
-    provider?: TypedDataProviderDefinition;
+    readonly provider = resource({
+        params: () => ({providerId: this.providerListing().id}),
+        loader: ({params}): Promise<TypedDataProviderDefinition> => this.layersService.getProviderDefinition(params.providerId),
+    });
 
-    updatedDefinition?: TypedDataProviderDefinition;
+    readonly updatedDefinition = signal<TypedDataProviderDefinition | undefined>(undefined, {
+        equal: (a, b) => JSON.stringify(TypedDataProviderDefinitionToJSON(a)) === JSON.stringify(TypedDataProviderDefinitionToJSON(b)),
+    });
 
-    providerType: ProviderType = ProviderType.OTHER;
+    readonly providerType: Signal<ProviderType> = computed(() => {
+        const type = this.provider.value()?.type;
+        switch (type) {
+            case 'Aruna':
+                return ProviderType.ARUNA;
+            case WildliveDataConnectorDefinitionTypeEnum.WildLive:
+                return ProviderType.WildLIVE;
+            default:
+                return ProviderType.OTHER;
+        }
+    });
 
-    readonly = false;
+    readonly isReadonly = resource({
+        defaultValue: false,
+        params: () => ({providerId: this.providerListing().id}),
+        loader: async ({params}): Promise<boolean> => {
+            const permissions = await this.permissionsService.getPermissions('provider', params.providerId, 0, 1);
+            return permissions.length < 1 || permissions[0].permission != Permission.Owner;
+        },
+    });
 
     private readonly layersService = inject(LayersService);
     private readonly permissionsService = inject(PermissionsService);
@@ -61,77 +84,30 @@ export class ProviderEditorComponent implements OnChanges, OnInit {
     private readonly snackBar = inject(MatSnackBar);
     private readonly config = inject(AppConfig);
 
-    ngOnInit(): void {
-        this.layersService.getProviderDefinition(this.providerListing().id).then((provider) => {
-            this.provider = provider;
-            this.setProviderType();
-
-            this.permissionsService.getPermissions('provider', this.providerListing().id, 0, 1).then(
-                (permissions) => {
-                    this.readonly = permissions.length < 1 || permissions[0].permission != Permission.Owner;
-                },
-                (_error) => {
-                    this.readonly = true;
-                },
-            );
+    constructor() {
+        effect(() => {
+            // reset updated definition when provider changes
+            this.provider.value();
+            this.updatedDefinition.set(undefined);
         });
-    }
-
-    ngOnChanges(_: SimpleChanges): void {
-        this.provider = undefined;
-        this.updatedDefinition = undefined;
-        this.layersService.getProviderDefinition(this.providerListing().id).then((provider) => {
-            this.provider = provider;
-            this.setProviderType();
-
-            this.permissionsService.getPermissions('provider', this.providerListing().id).then(
-                (permissions) => {
-                    this.readonly = !permissions.find((permission) => permission.permission === Permission.Owner);
-                },
-                (_error) => {
-                    this.readonly = true;
-                },
-            );
-        });
-    }
-
-    setUpdatedDefinition(definition?: TypedDataProviderDefinition): void {
-        const oldCmp = JSON.stringify(TypedDataProviderDefinitionToJSON(this.provider));
-        const newCmp = JSON.stringify(TypedDataProviderDefinitionToJSON(definition));
-
-        if (oldCmp === newCmp) {
-            this.updatedDefinition = undefined;
-            return; // no change
-        }
-
-        this.updatedDefinition = definition;
     }
 
     async submitUpdate(): Promise<void> {
-        const provider = this.updatedDefinition!;
+        const provider = this.updatedDefinition();
+
+        if (!provider) {
+            return;
+        }
 
         try {
             await this.layersService.updateProviderDefinition(this.providerListing().id, provider);
 
             this.providerUpdated.emit();
-            this.provider = provider;
-            this.updatedDefinition = undefined;
+            this.provider.set(provider);
+            this.updatedDefinition.set(undefined);
         } catch (e) {
             const error = await errorToText(e, 'Unknown error while updating provider');
             this.snackBar.open(error, 'Close');
-        }
-    }
-
-    private setProviderType(): void {
-        switch (this.provider?.type) {
-            case 'Aruna':
-                this.providerType = ProviderType.ARUNA;
-                return;
-            case WildliveDataConnectorDefinitionTypeEnum.WildLive:
-                this.providerType = ProviderType.WildLIVE;
-                return;
-            default:
-                this.providerType = ProviderType.OTHER;
         }
     }
 
@@ -140,7 +116,7 @@ export class ProviderEditorComponent implements OnChanges, OnInit {
             data: {message: 'Confirm the deletion of the provider. This cannot be undone.'},
         });
 
-        const confirm = await firstValueFrom(dialogRef.afterClosed());
+        const confirm = (await firstValueFrom(dialogRef.afterClosed())) as boolean;
 
         if (!confirm) {
             return;

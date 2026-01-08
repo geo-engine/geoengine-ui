@@ -16,11 +16,13 @@ import {provideAnimations} from '@angular/platform-browser/animations';
 import {BrowserModule, bootstrapApplication} from '@angular/platform-browser';
 import {AppRoutingModule} from './app/app-routing.module';
 import {AppComponent} from './app/app.component';
+import {AppConfig as ManagerAppConfig} from '@geoengine/manager';
 
 bootstrapApplication(AppComponent, {
     providers: [
         importProvidersFrom(BrowserModule, AppRoutingModule, CoreModule),
         AppConfig,
+        ManagerAppConfig,
         {
             provide: CoreConfig,
             useExisting: AppConfig,
@@ -31,9 +33,9 @@ bootstrapApplication(AppComponent, {
         },
         provideAppInitializer(() => {
             const initializerFn = (
-                (config: AppConfig) => (): Promise<void> =>
-                    config.load()
-            )(inject(AppConfig));
+                (config: AppConfig, managerConfig: ManagerAppConfig) => (): Promise<void> =>
+                    Promise.all([config.load(), managerConfig.load()]).then(() => void 0)
+            )(inject(AppConfig), inject(ManagerAppConfig));
             return initializerFn();
         }),
         LayoutService,

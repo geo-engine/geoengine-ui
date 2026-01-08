@@ -5,6 +5,7 @@
  */
 export function oidcRedirectPath(location: Location, route: string): string {
     const IS_HASHTAG_ROUTING = true;
+    const IS_UNDER_MANAGER_SUBPATH = location.hash.startsWith('#/manager');
 
     let redirectUri = location.origin;
     if (location.pathname) {
@@ -12,6 +13,9 @@ export function oidcRedirectPath(location: Location, route: string): string {
     }
     if (IS_HASHTAG_ROUTING) {
         redirectUri += `#`;
+    }
+    if (IS_UNDER_MANAGER_SUBPATH) {
+        redirectUri += `/manager`;
     }
 
     redirectUri += route;
