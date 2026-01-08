@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, input, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, inject, input, signal} from '@angular/core';
 import {first} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {UUID} from '../../backend/backend.model';
@@ -38,7 +38,6 @@ enum FormStatus {
     ],
 })
 export class TokenLoginComponent implements OnInit {
-    private readonly changeDetectorRef = inject(ChangeDetectorRef);
     private readonly userService = inject(UserService);
     private readonly router = inject(Router);
 
