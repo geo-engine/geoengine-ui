@@ -29,11 +29,10 @@
                     </mat-select>
                 </mat-form-field>
                 <button type="button" mat-icon-button class="info" (click)="toggleExpand(i)">
-                    @if (!layerDetails()[i].expanded) {
-                        <mat-icon>expand_more</mat-icon>
-                    }
                     @if (layerDetails()[i].expanded) {
                         <mat-icon>expand_less</mat-icon>
+                    } @else {
+                        <mat-icon>expand_more</mat-icon>
                     }
                 </button>
             </div>

@@ -237,12 +237,15 @@ export class MultiLayerSelectionComponent implements FormValueControl<Array<Laye
 
         const layer = this.value()[i];
         const details = newLayerDetails[i];
+
         if (!layer) return;
 
         if (!details.metadata) {
             const resultDescriptor = await firstValueFrom(this.projectService.getLayerMetadata(layer));
             details.metadata = resultDescriptor;
         }
+
+        details.expanded = !details.expanded;
 
         this.layerDetails.set(newLayerDetails);
     }
