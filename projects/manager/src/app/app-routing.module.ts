@@ -8,7 +8,7 @@ import {OidcPopupComponent} from './oidc-popup/oidc-popup.component';
 export const routes: (subdir: string) => Routes = (subdir) => [
     {path: '', redirectTo: 'navigation', pathMatch: 'full'},
     {path: 'navigation', component: NavigationComponent, data: {logoutNavigation: subdir + '/signin'}, canActivate: [LogInGuard]},
-    {path: 'signin', component: LoginComponent, data: {loginRedirect: '/navigation'}},
+    {path: 'signin', component: LoginComponent, data: {loginRedirect: subdir + '/navigation'}},
     {
         path: 'register',
         component: RegisterComponent,
