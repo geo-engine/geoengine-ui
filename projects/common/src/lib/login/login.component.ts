@@ -87,7 +87,10 @@ export class LoginComponent implements OnInit {
     }
 
     async onInit(): Promise<void> {
-        const redirectUri = window.location.href.replace(/\/signin$/, this.loginRedirect());
+        const usesHashNavigation = window.location.hash.startsWith('#/');
+        const hashPrefix = usesHashNavigation ? '#' : '';
+
+        const redirectUri = new URL(hashPrefix + this.loginRedirect(), window.location.href).toString();
 
         // check if OIDC login is enabled
         try {
