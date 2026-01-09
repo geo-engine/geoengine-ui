@@ -42,8 +42,8 @@
         "publish:core:major": "version=major scripts/publish-to-github.sh",
         "prettier": "prettier",
         "check": "prettier --check . && ng lint",
-        "test": "ng test --karma-config=karma.conf.js --watch=false --browsers=ChromeHeadless",
-        "test:ci": "ng test --karma-config=karma.conf.js --watch=false --no-progress --browsers=ChromeHeadlessNoSandbox",
+        "test": "ng test --watch=false",
+        "test:ci": "ng test --watch=false --no-progress",
         "lint": "ng lint",
         "e2e": "ng e2e"
     },
@@ -114,17 +114,13 @@
         "eslint-plugin-prefer-arrow": "1.2.3",
         "eslint-plugin-prettier": "^5.5.4",
         "jasmine-core": "~5.13.0",
-        "karma": "~6.4.4",
-        "karma-chrome-launcher": "~3.2.0",
-        "karma-coverage": "~2.2.1",
-        "karma-jasmine": "~5.1.0",
-        "karma-jasmine-html-reporter": "~2.1.0",
+        "jsdom": "^27.4.0",
         "ng-packagr": "^21.0.1",
         "prettier": "3.7.4",
-        "puppeteer": "~24.34.0",
         "ts-node": "~10.9.2",
         "typescript": "5.9.3",
-        "typescript-eslint": "^8.52.0"
+        "typescript-eslint": "^8.52.0",
+        "vitest": "^4.0.16"
     },
     "overrides": {
         "@angular-devkit/build-angular": {

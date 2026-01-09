@@ -1,3 +1,4 @@
+import {vi, type Mock} from 'vitest';
 import {Project} from './project.model';
 import {ProjectService} from './project.service';
 import moment from 'moment';
@@ -15,27 +16,59 @@ import {LayersService, NotificationService, SpatialReferenceSpecification, Time,
 import {TestBed} from '@angular/core/testing';
 
 describe('test project methods in projectService', () => {
-    let notificationServiceSpy: {get: jasmine.Spy};
-    let mapServiceSpy: {get: jasmine.Spy};
-    let backendSpy: {createProject: jasmine.Spy; listProjects: jasmine.Spy; updateProject: jasmine.Spy};
-    let userServiceSpy: {getSessionStream: jasmine.Spy; getSessionTokenForRequest: jasmine.Spy};
-    let spatialReferenceSpy: {getSpatialReferenceSpecification: jasmine.Spy};
-    let layersServiceSpy: {resolveLayer: jasmine.Spy};
+    let notificationServiceSpy: {
+        error: Mock;
+    };
+    let mapServiceSpy: {
+        getViewportSizeStream: Mock;
+    };
+    let backendSpy: {
+        createProject: Mock;
+        listProjects: Mock;
+        setSessionProject: Mock;
+        updateProject: Mock;
+    };
+    let userServiceSpy: {
+        getSessionStream: Mock;
+        getSessionTokenForRequest: Mock;
+    };
+    let spatialReferenceSpy: {
+        getSpatialReferenceSpecification: Mock;
+    };
+    let layersServiceSpy: {
+        resolveLayer: Mock;
+    };
 
     let projectService: ProjectService;
 
     beforeEach(() => {
-        notificationServiceSpy = jasmine.createSpyObj('NotificationService', ['error']);
-        mapServiceSpy = jasmine.createSpyObj('MapService', ['getViewportSizeStream']);
-        backendSpy = jasmine.createSpyObj('BackendService', ['createProject', 'listProjects', 'setSessionProject', 'updateProject']);
-        userServiceSpy = jasmine.createSpyObj('UserService', ['getSessionStream', 'getSessionTokenForRequest']);
-        spatialReferenceSpy = jasmine.createSpyObj('SpatialRefernceService', ['getSpatialReferenceSpecification']);
-        layersServiceSpy = jasmine.createSpyObj('LayersSerivce', ['resolveLayer']);
+        notificationServiceSpy = {
+            error: vi.fn().mockName('NotificationService.error'),
+        };
+        mapServiceSpy = {
+            getViewportSizeStream: vi.fn().mockName('MapService.getViewportSizeStream'),
+        };
+        backendSpy = {
+            createProject: vi.fn().mockName('BackendService.createProject'),
+            listProjects: vi.fn().mockName('BackendService.listProjects'),
+            setSessionProject: vi.fn().mockName('BackendService.setSessionProject'),
+            updateProject: vi.fn().mockName('BackendService.updateProject'),
+        };
+        userServiceSpy = {
+            getSessionStream: vi.fn().mockName('UserService.getSessionStream'),
+            getSessionTokenForRequest: vi.fn().mockName('UserService.getSessionTokenForRequest'),
+        };
+        spatialReferenceSpy = {
+            getSpatialReferenceSpecification: vi.fn().mockName('SpatialRefernceService.getSpatialReferenceSpecification'),
+        };
+        layersServiceSpy = {
+            resolveLayer: vi.fn().mockName('LayersSerivce.resolveLayer'),
+        };
 
         const sessionToken = 'ffffffff-ffff-4fff-afff-ffffffffffff';
 
         // always return the same session
-        userServiceSpy.getSessionStream.and.returnValue(
+        userServiceSpy.getSessionStream.mockReturnValue(
             of<Session>({
                 sessionToken,
                 apiConfiguration: new Configuration({
@@ -57,9 +90,9 @@ describe('test project methods in projectService', () => {
             }),
         );
 
-        userServiceSpy.getSessionTokenForRequest.and.returnValue(of<UUID>('ffffffff-ffff-4fff-afff-ffffffffffff'));
+        userServiceSpy.getSessionTokenForRequest.mockReturnValue(of<UUID>('ffffffff-ffff-4fff-afff-ffffffffffff'));
 
-        spatialReferenceSpy.getSpatialReferenceSpecification.and.returnValue(
+        spatialReferenceSpy.getSpatialReferenceSpecification.mockReturnValue(
             of<SpatialReferenceSpecification>(
                 new SpatialReferenceSpecification({
                     name: 'WGS84',
@@ -81,15 +114,15 @@ describe('test project methods in projectService', () => {
         );
 
         // for constructor
-        backendSpy.listProjects.and.returnValue(NEVER); // never complete and set any project
+        backendSpy.listProjects.mockReturnValue(NEVER); // never complete and set any project
 
-        backendSpy.createProject.and.returnValue(
+        backendSpy.createProject.mockReturnValue(
             of<CreateProjectResponseDict>({
                 id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
             }),
         );
 
-        backendSpy.updateProject.and.returnValue(
+        backendSpy.updateProject.mockReturnValue(
             of<CreateProjectResponseDict>({
                 id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
             }),
@@ -111,7 +144,7 @@ describe('test project methods in projectService', () => {
         projectService = TestBed.inject(ProjectService);
     });
 
-    it('#createDefaultProject should create a default project', (done) => {
+    it('#createDefaultProject should create a default project', async () => {
         projectService.createDefaultProject().subscribe(
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             (project) =>
@@ -137,7 +170,8 @@ describe('test project methods in projectService', () => {
                 ),
             (error) => fail(error),
             () => {
-                expect(backendSpy.createProject).toHaveBeenCalledOnceWith(
+                expect(backendSpy.createProject).toHaveBeenCalledTimes(1);
+                expect(backendSpy.createProject).toHaveBeenCalledWith(
                     {
                         name: 'Default',
                         description: 'Default project',
@@ -162,13 +196,11 @@ describe('test project methods in projectService', () => {
                     },
                     'ffffffff-ffff-4fff-afff-ffffffffffff',
                 );
-
-                done();
             },
         );
     });
 
-    it('#createProject should create a project', (done) => {
+    it('#createProject should create a project', async () => {
         projectService
             .createProject({
                 name: 'testProject',
@@ -205,13 +237,11 @@ describe('test project methods in projectService', () => {
                         }).toDict(),
                     ),
                 (error) => fail(error),
-                () => {
-                    done();
-                },
+                () => {},
             );
     });
 
-    it('#cloneProject should clone a project', (done) => {
+    it('#cloneProject should clone a project', async () => {
         //erstelle Projekt Instanz
         projectService.createDefaultProject().subscribe((project) => {
             projectService.setProject(project);
@@ -242,13 +272,11 @@ describe('test project methods in projectService', () => {
                 );
             },
             (error) => fail(error),
-            () => {
-                done();
-            },
+            () => {},
         );
     });
 
-    it('#getProjectStream should return project stream', (done) => {
+    it('#getProjectStream should return project stream', async () => {
         projectService
             .createDefaultProject()
             .pipe(
@@ -316,13 +344,11 @@ describe('test project methods in projectService', () => {
                     );
                 },
                 error: (error) => fail(error),
-                complete: () => {
-                    done();
-                },
+                complete: () => {},
             });
     });
 
-    it('#getProjectOnce should return current project and #setProject should set a project', (done) => {
+    it('#getProjectOnce should return current project and #setProject should set a project', async () => {
         projectService
             .createDefaultProject()
             .pipe(
@@ -390,9 +416,7 @@ describe('test project methods in projectService', () => {
                     );
                 },
                 error: (error) => fail(error),
-                complete: () => {
-                    done();
-                },
+                complete: () => {},
             });
     });
 });
