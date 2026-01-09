@@ -1,8 +1,7 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component, inject, computed, effect, signal} from '@angular/core';
 import {FormControl, FormBuilder, FormGroup, Validators, FormArray, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
-import {mergeMap} from 'rxjs/operators';
-import {BehaviorSubject, Observable, of, firstValueFrom, merge} from 'rxjs';
+import {BehaviorSubject, of, firstValueFrom, merge} from 'rxjs';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {LetterNumberConverter, MultiLayerSelectionComponent} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {
@@ -18,6 +17,8 @@ import {
     NotificationService,
     SpatialGridDefinition,
     ReprojectionDict,
+    InterpolationDict,
+    DownsamplingDict,
 } from '@geoengine/common';
 import {Coordinate2D, SpatialResolution, TypedOperatorOperator} from '@geoengine/openapi-client';
 import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
@@ -201,6 +202,7 @@ export class RasterStackerComponent implements AfterViewInit {
     private readonly inputDataTypes = signal<Array<RasterDataType>>([]);
     private readonly layerMetadata = signal<Array<RasterLayerMetadata>>([]);
     private readonly reprojectedLayerMetadata = signal<Array<RasterLayerMetadata>>([]);
+    private readonly workflowOperators = signal<Array<TypedOperatorOperator>>([]);
     private readonly rasterLayersSignal!: ReturnType<typeof toSignal<Array<RasterLayer> | undefined>>;
     private readonly spatialReferenceSignal!: ReturnType<typeof toSignal<string | undefined>>;
 
@@ -244,20 +246,26 @@ export class RasterStackerComponent implements AfterViewInit {
             {initialValue: undefined},
         );
 
-        // Fetch metadata when raster layers change
+        // Fetch metadata and workflows when raster layers change
         effect(() => {
             const rasterLayers = this.rasterLayersSignal();
             if (!rasterLayers || rasterLayers.length === 0) {
                 this.layerMetadata.set([]);
                 this.inputDataTypes.set([]);
+                this.workflowOperators.set([]);
                 return;
             }
 
             const metadataPromises = rasterLayers.map((l) => firstValueFrom(this.projectService.getRasterLayerMetadata(l)));
-            void Promise.all(metadataPromises).then((metadata: Array<RasterLayerMetadata>) => {
-                this.layerMetadata.set(metadata);
-                this.inputDataTypes.set(metadata.map((layer: RasterLayerMetadata) => layer.dataType));
-            });
+            const workflowPromises = rasterLayers.map((l) => firstValueFrom(this.projectService.getWorkflow(l.workflowId)));
+
+            void Promise.all([Promise.all(metadataPromises), Promise.all(workflowPromises)]).then(
+                ([metadata, workflows]: [Array<RasterLayerMetadata>, Array<{operator: TypedOperatorOperator}>]) => {
+                    this.layerMetadata.set(metadata);
+                    this.inputDataTypes.set(metadata.map((layer: RasterLayerMetadata) => layer.dataType));
+                    this.workflowOperators.set(workflows.map((w) => w.operator));
+                },
+            );
         });
 
         // Update form when layer metadata changes
@@ -439,7 +447,7 @@ export class RasterStackerComponent implements AfterViewInit {
         )}, ${regrid.resolution.y.toFixed(2)})`;
     }
 
-    add(): void {
+    async add(): Promise<void> {
         if (this.loading$.value) {
             return; // don't add while loading
         }
@@ -447,82 +455,153 @@ export class RasterStackerComponent implements AfterViewInit {
         const name: string = this.form.controls['name'].value;
         const dataType: RasterDataType | undefined = this.form.controls['dataType'].value;
         const rasterLayers: Array<RasterLayer> | undefined = this.form.controls['rasterLayers'].value;
+        const targetSpatialReference: string = this.form.controls['spatialReference'].value;
+        const targetRegrid: Regrid = this.form.controls['regrid'].value;
 
         if (!dataType || !rasterLayers) {
             return; // checked by form validator
         }
 
         const renameBands = this.getRename();
-
-        // harmonize projection of all input layers
-        const projectedOperators = this.projectService.getAutomaticallyProjectedOperatorsFromLayers(rasterLayers);
-
-        // convert all input layers to the selected data type, if they are not already of that type
-        const convertedOperators: Observable<Array<TypedOperatorOperator>> = projectedOperators.pipe(
-            mergeMap((operators) =>
-                of(
-                    operators.map((operator, index) => {
-                        const inputDataType = this.inputDataTypes()[index];
-
-                        if (inputDataType === dataType) {
-                            return operator;
-                        } else {
-                            return {
-                                type: 'RasterTypeConversion',
-                                params: {
-                                    outputDataType: dataType.getCode(),
-                                },
-                                sources: {
-                                    raster: operator,
-                                },
-                            } as RasterTypeConversionDict as TypedOperatorOperator;
-                        }
-                    }),
-                ),
-            ),
-        );
+        const reprojectedMetadata = this.reprojectedLayerMetadata();
+        const originalMetadata = this.layerMetadata();
+        const workflowOperators = this.workflowOperators();
 
         this.loading$.next(true);
 
-        convertedOperators
-            .pipe(
-                mergeMap((operators: Array<TypedOperatorOperator>) =>
-                    this.projectService.registerWorkflow({
-                        type: 'Raster',
-                        operator: {
-                            type: 'RasterStacker',
+        try {
+            // Process each layer: reproject, regrid, convert data type
+            const processedOperators: Array<TypedOperatorOperator> = workflowOperators.map((operator, index) => {
+                let processedOperator: TypedOperatorOperator = operator;
+                const originalSpatialReference = originalMetadata[index].spatialReference.srsString;
+
+                // Step 1: Reproject to target spatial reference if needed
+                if (originalSpatialReference !== targetSpatialReference) {
+                    processedOperator = {
+                        type: 'Reprojection',
+                        params: {
+                            targetSpatialReference,
+                        },
+                        sources: {
+                            source: processedOperator,
+                        },
+                    } as ReprojectionDict;
+                }
+
+                // Step 2: Regrid if needed
+                const layerGrid = reprojectedMetadata[index].spatialGrid.spatialGrid;
+                const layerResolutionX = Math.abs(layerGrid.pixelSizeX);
+                const layerResolutionY = Math.abs(layerGrid.pixelSizeY);
+                const targetResolution = targetRegrid.resolution;
+
+                // Check if resolution differs
+                const resolutionDiffers =
+                    layerResolutionX !== Math.abs(targetResolution.x) || layerResolutionY !== Math.abs(targetResolution.y);
+
+                const layerOrigin = layerGrid.originCoordinate;
+                const targetOrigin = targetRegrid.origin;
+
+                // Check if origin differs
+                const originDiffers = layerOrigin.x !== targetOrigin.x || layerOrigin.y !== targetOrigin.y;
+
+                if (resolutionDiffers || originDiffers) {
+                    // Determine if layer resolution is coarser or finer than target
+                    const layerResolutionSize = layerResolutionX * layerResolutionY;
+                    const targetResolutionSize = Math.abs(targetResolution.x) * Math.abs(targetResolution.y);
+                    const isCoarser = layerResolutionSize > targetResolutionSize;
+
+                    const outputResolution = {
+                        type: 'resolution' as const,
+                        x: Math.abs(targetResolution.x),
+                        y: Math.abs(targetResolution.y),
+                    };
+
+                    const outputOriginReference = {
+                        x: targetOrigin.x,
+                        y: targetOrigin.y,
+                    };
+
+                    if (isCoarser) {
+                        // Use interpolation for coarser → finer
+                        processedOperator = {
+                            type: 'Interpolation',
                             params: {
-                                renameBands,
+                                interpolation: 'nearestNeighbor' as const,
+                                outputResolution,
+                                outputOriginReference,
                             },
                             sources: {
-                                rasters: operators,
+                                raster: processedOperator,
                             },
-                        } as RasterStackerDict,
+                        } as InterpolationDict;
+                    } else {
+                        // Use downsampling for finer → coarser
+                        processedOperator = {
+                            type: 'Downsampling',
+                            params: {
+                                samplingMethod: 'nearestNeighbor' as const,
+                                outputResolution,
+                                outputOriginReference,
+                            },
+                            sources: {
+                                raster: processedOperator,
+                            },
+                        } as DownsamplingDict;
+                    }
+                }
+
+                // Step 3: Convert data type if needed
+                const inputDataType = this.inputDataTypes()[index];
+                if (inputDataType !== dataType) {
+                    processedOperator = {
+                        type: 'RasterTypeConversion',
+                        params: {
+                            outputDataType: dataType.getCode(),
+                        },
+                        sources: {
+                            raster: processedOperator,
+                        },
+                    } as RasterTypeConversionDict;
+                }
+
+                return processedOperator;
+            });
+
+            // Register the final stacked workflow
+            const workflowId = await firstValueFrom(
+                this.projectService.registerWorkflow({
+                    type: 'Raster',
+                    operator: {
+                        type: 'RasterStacker',
+                        params: {
+                            renameBands,
+                        },
+                        sources: {
+                            rasters: processedOperators,
+                        },
+                    } as RasterStackerDict,
+                }),
+            );
+
+            // Add the layer to the project
+            await firstValueFrom(
+                this.projectService.addLayer(
+                    new RasterLayer({
+                        workflowId,
+                        name,
+                        symbology: rasterLayers[0].symbology.clone(),
+                        isLegendVisible: false,
+                        isVisible: true,
                     }),
                 ),
-                mergeMap((workflowId) =>
-                    this.projectService.addLayer(
-                        new RasterLayer({
-                            workflowId,
-                            name,
-                            symbology: rasterLayers[0].symbology.clone(),
-                            isLegendVisible: false,
-                            isVisible: true,
-                        }),
-                    ),
-                ),
-            )
-            .subscribe({
-                next: () => {
-                    this.loading$.next(false);
-                },
-                error: (error: {error?: {message?: string}}) => {
-                    const errorMsg = error.error?.message ?? 'An error occurred';
+            );
 
-                    this.notificationService.error(errorMsg);
-                    this.loading$.next(false);
-                },
-            });
+            this.loading$.next(false);
+        } catch (error) {
+            const errorMsg = (error as {error?: {message?: string}}).error?.message ?? 'An error occurred';
+            this.notificationService.error(errorMsg);
+            this.loading$.next(false);
+        }
     }
 
     get renameValues(): FormArray {
