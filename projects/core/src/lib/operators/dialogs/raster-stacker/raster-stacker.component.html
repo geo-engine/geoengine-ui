@@ -20,7 +20,7 @@
         </a>
 
         <ng-container operatorParameters>
-            <p>Specify handling of band names:</p>
+            <p>Specify handling of band name collisions:</p>
             <mat-button-toggle-group id="rename-type" [multiple]="false" formControlName="renameBands" (ngModelChange)="updateRenameType()">
                 <mat-button-toggle [value]="RenameBands.Default">Default</mat-button-toggle>
                 <mat-button-toggle [value]="RenameBands.Suffix">Suffix</mat-button-toggle>
@@ -29,7 +29,7 @@
 
             @if (form.controls.renameBands.value !== RenameBands.Default) {
                 <div formArrayName="renameValues">
-                    @for (control of renameValues.controls; track control; let i = $index) {
+                    @for (control of renameValues.controls; track $index; let i = $index) {
                         <mat-form-field>
                             <mat-label>{{ renameHint(i) }} </mat-label>
                             <input matInput type="text" [formControlName]="i" />
@@ -42,17 +42,47 @@
             }
 
             <p>
-                If the input rasters have different datatypes, you must select one common datatype the rasters are converted to before
-                stacking.
+                If the input rasters have different <i>data types</i>, you must select one common datatype the rasters are converted to
+                before stacking.
             </p>
             <mat-form-field>
                 <mat-label>Data Type</mat-label>
                 <mat-select formControlName="dataType">
-                    @for (dataType of outputDataTypes$ | async; track dataType[0]) {
+                    @for (dataType of outputDataTypes(); track $index) {
                         <mat-option [value]="dataType[0]"> {{ dataType[0] }} {{ dataType[1] }} </mat-option>
                     }
                 </mat-select>
             </mat-form-field>
+
+            @if (outputSpatialReferences().length > 1) {
+                <p>
+                    If the input rasters have different <i>spatial references</i>, you must select one common spatial reference the rasters
+                    are converted to before stacking.
+                </p>
+                <mat-form-field>
+                    <mat-label>Spatial Reference</mat-label>
+                    <mat-select formControlName="spatialReference">
+                        @for (spatialReference of outputSpatialReferences(); track $index) {
+                            <mat-option [value]="spatialReference[0]"> {{ spatialReference[0] }} {{ spatialReference[1] }} </mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            }
+
+            @if (outputRegrids().length > 1) {
+                <p>
+                    If the input rasters have different <i>spatial grids</i>, you must select one common spatial reference the rasters are
+                    converted to before stacking.
+                </p>
+                <mat-form-field>
+                    <mat-label>Spatial Grid</mat-label>
+                    <mat-select formControlName="regrid">
+                        @for (regrid of outputRegrids(); track $index) {
+                            <mat-option [value]="regrid[0]"> {{ regridToString(regrid[0]) }} {{ regrid[1] }} </mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+            }
         </ng-container>
 
         <ng-container layerSpecification>

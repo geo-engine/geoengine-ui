@@ -1,8 +1,9 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, inject, computed, effect, signal} from '@angular/core';
 import {FormControl, FormBuilder, FormGroup, Validators, FormArray, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ProjectService} from '../../../project/project.service';
-import {map, mergeMap, tap} from 'rxjs/operators';
-import {BehaviorSubject, EMPTY, Observable, combineLatest, of} from 'rxjs';
+import {mergeMap} from 'rxjs/operators';
+import {BehaviorSubject, Observable, of, firstValueFrom, merge} from 'rxjs';
+import {toSignal} from '@angular/core/rxjs-interop';
 import {LetterNumberConverter, MultiLayerSelectionComponent} from '../helpers/multi-layer-selection/multi-layer-selection.component';
 import {
     RasterDataType,
@@ -15,8 +16,10 @@ import {
     RenameBandsDict,
     geoengineValidators,
     NotificationService,
+    SpatialGridDefinition,
+    ReprojectionDict,
 } from '@geoengine/common';
-import {TypedOperatorOperator} from '@geoengine/openapi-client';
+import {Coordinate2D, SpatialResolution, TypedOperatorOperator} from '@geoengine/openapi-client';
 import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
 import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
 import {MatIconButton, MatButton} from '@angular/material/button';
@@ -31,15 +34,25 @@ import {AsyncPipe} from '@angular/common';
 interface RasterStackerForm {
     rasterLayers: FormControl<Array<RasterLayer> | undefined>;
     name: FormControl<string>;
-    dataType: FormControl<RasterDataType | undefined>;
     renameBands: FormControl<RenameBands>;
     renameValues: FormArray<FormControl<string>>;
+    dataType: FormControl<RasterDataType | undefined>;
+    spatialReference: FormControl<string>;
+    regrid: FormControl<Regrid>;
+    // TODO: up/downsampling method for each input?
 }
 
 enum RenameBands {
     Default,
     Suffix,
     Rename,
+}
+
+type SpatialReferenceString = string;
+
+interface Regrid {
+    origin: Coordinate2D;
+    resolution: SpatialResolution;
 }
 
 @Component({
@@ -81,12 +94,115 @@ export class RasterStackerComponent implements AfterViewInit {
 
     readonly form: FormGroup<RasterStackerForm>;
 
-    readonly outputDataTypes$: Observable<Array<[RasterDataType, string]>>;
+    readonly outputDataTypes = computed(() => {
+        const metadata = this.layerMetadata();
+        if (!metadata || metadata.length === 0) {
+            return [];
+        }
+
+        const outputDataTypes: Array<[RasterDataType, string]> = RasterDataTypes.ALL_DATATYPES.map((dataType: RasterDataType) => [
+            dataType,
+            '',
+        ]);
+
+        for (const output of outputDataTypes) {
+            const outputDataType = output[0];
+
+            const indices = metadata
+                .map((layer, index) => (layer.dataType === outputDataType ? index : -1))
+                .filter((index) => index >= 0)
+                .map((index) => LetterNumberConverter.toLetters(index + 1));
+
+            if (indices.length > 0) {
+                output[1] = `(like ${indices.length > 1 ? 'layers' : 'layer'} ${indices.join(', ')})`;
+            }
+        }
+        return outputDataTypes;
+    });
+
+    readonly outputSpatialReferences = computed(() => {
+        const metadata = this.layerMetadata();
+        if (!metadata || metadata.length === 0) {
+            return [];
+        }
+
+        const outputSpatialReferences: Array<[SpatialReferenceString, string]> = metadata.map((layer: RasterLayerMetadata) => [
+            layer.spatialReference.srsString,
+            '',
+        ]);
+
+        const dedupedOutputSpatialReferences = outputSpatialReferences.reduce(
+            (acc, spatialReference) => {
+                if (!acc.find((p) => p[0] === spatialReference[0])) {
+                    acc.push(spatialReference);
+                }
+                return acc;
+            },
+            [] as Array<[SpatialReferenceString, string]>,
+        );
+
+        for (const output of dedupedOutputSpatialReferences) {
+            const outputSpatialReference = output[0];
+
+            const indices = metadata
+                .map((layer, index) => (layer.spatialReference.srsString === outputSpatialReference ? index : -1))
+                .filter((index) => index >= 0)
+                .map((index) => LetterNumberConverter.toLetters(index + 1));
+
+            if (indices.length > 0) {
+                output[1] = `(like ${indices.length > 1 ? 'layers' : 'layer'} ${indices.join(', ')})`;
+            }
+        }
+        return dedupedOutputSpatialReferences;
+    });
+
+    readonly outputRegrids = computed(() => {
+        const metadata = this.reprojectedLayerMetadata();
+        const spatialReference = this.spatialReferenceSignal();
+        const rasterLayers = this.rasterLayersSignal();
+
+        if (!metadata || metadata.length === 0 || !spatialReference || !rasterLayers) {
+            return [];
+        }
+
+        // Use the spatial grids from the reprojected metadata
+        const outputRegrids: Array<[Regrid, string]> = metadata.map((layer: RasterLayerMetadata) => [
+            this.spatialGridToRegrid(layer.spatialGrid.spatialGrid),
+            '',
+        ]);
+
+        // Deduplicate based on regrid equality
+        const dedupedOutputRegrids: Array<[Regrid, string]> = [];
+        for (const regrid of outputRegrids) {
+            if (!dedupedOutputRegrids.find((r) => this.areRegridsEqual(r[0], regrid[0]))) {
+                dedupedOutputRegrids.push(regrid);
+            }
+        }
+
+        for (const output of dedupedOutputRegrids) {
+            const outputRegrid = output[0];
+
+            const indices = metadata
+                .map((layer, index) =>
+                    this.areRegridsEqual(this.spatialGridToRegrid(layer.spatialGrid.spatialGrid), outputRegrid) ? index : -1,
+                )
+                .filter((index) => index >= 0)
+                .map((index) => LetterNumberConverter.toLetters(index + 1));
+
+            if (indices.length > 0) {
+                output[1] = `(like ${indices.length > 1 ? 'layers' : 'layer'} ${indices.join(', ')})`;
+            }
+        }
+        return dedupedOutputRegrids;
+    });
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
 
-    private inputDataTypes: Array<RasterDataType> = [];
-    private layerMetadata: Array<RasterLayerMetadata> = [];
+    private readonly inputDataTypes = signal<Array<RasterDataType>>([]);
+    private readonly layerMetadata = signal<Array<RasterLayerMetadata>>([]);
+    private readonly reprojectedLayerMetadata = signal<Array<RasterLayerMetadata>>([]);
+    private readonly rasterLayersSignal!: ReturnType<typeof toSignal<Array<RasterLayer> | undefined>>;
+    private readonly spatialReferenceSignal!: ReturnType<typeof toSignal<string | undefined>>;
 
     constructor() {
         this.form = new FormGroup<RasterStackerForm>({
@@ -107,61 +223,173 @@ export class RasterStackerComponent implements AfterViewInit {
                 validators: [Validators.required],
             }),
             renameValues: new FormArray<FormControl<string>>([], {validators: geoengineValidators.duplicateInFormArrayValidator()}),
+            spatialReference: new FormControl('EPSG:4326', {nonNullable: true, validators: [Validators.required]}),
+            regrid: new FormControl(
+                {
+                    origin: {x: 0, y: 0},
+                    resolution: {x: 1, y: 1},
+                },
+                {
+                    nonNullable: true,
+                    validators: [Validators.required],
+                },
+            ),
         });
 
-        // TODO: also update when layer selection changes and not only when new layer is added
-        this.outputDataTypes$ = this.form.controls.rasterLayers.valueChanges.pipe(
-            mergeMap((rasterLayers: Array<RasterLayer> | undefined) => {
-                if (!rasterLayers) {
-                    return EMPTY;
-                }
-
-                const metaData = rasterLayers.map((l) => this.projectService.getRasterLayerMetadata(l));
-                return combineLatest(metaData);
-            }),
-            map((rasterLayers: Array<RasterLayerMetadata>) => {
-                this.inputDataTypes = rasterLayers.map((layer) => layer.dataType);
-
-                const outputDataTypes: Array<[RasterDataType, string]> = RasterDataTypes.ALL_DATATYPES.map((dataType: RasterDataType) => [
-                    dataType,
-                    '',
-                ]);
-
-                for (const output of outputDataTypes) {
-                    const outputDataType = output[0];
-
-                    const indices = rasterLayers
-                        .map((layer, index) => (layer.dataType === outputDataType ? index : -1))
-                        .filter((index) => index >= 0)
-                        .map((index) => LetterNumberConverter.toLetters(index + 1));
-
-                    if (indices.length > 0) {
-                        output[1] = `(like ${indices.length > 1 ? 'layers' : 'layer'} ${indices.join(', ')})`;
-                    }
-                }
-                return [rasterLayers, outputDataTypes] as [Array<RasterLayerMetadata>, Array<[RasterDataType, string]>];
-            }),
-            tap(([rasterLayers, outputDataTypes]: [Array<RasterLayerMetadata>, Array<[RasterDataType, string]>]) => {
-                this.layerMetadata = rasterLayers;
-                this.updateRenameType();
-
-                const dataTypeControl = this.form.controls.dataType;
-                const currentDataType: RasterDataType | undefined = dataTypeControl.value;
-                const rasterDataTypes = rasterLayers.map((layer) => layer.dataType);
-                if (currentDataType && rasterDataTypes.includes(currentDataType)) {
-                    // is already set at a meaningful type
-                    return;
-                }
-                let selectedDataType: RasterDataType = currentDataType ?? outputDataTypes[0][0]; // use default
-                if (rasterDataTypes.length) {
-                    selectedDataType = rasterDataTypes[0];
-                }
-                setTimeout(() => {
-                    dataTypeControl.setValue(selectedDataType);
-                });
-            }),
-            map(([_rasterLayers, outputDataTypes]: [Array<RasterLayerMetadata>, Array<[RasterDataType, string]>]) => outputDataTypes),
+        this.rasterLayersSignal = toSignal(merge(of(this.form.controls.rasterLayers.value), this.form.controls.rasterLayers.valueChanges), {
+            initialValue: undefined,
+        });
+        this.spatialReferenceSignal = toSignal(
+            merge(of(this.form.controls.spatialReference.value), this.form.controls.spatialReference.valueChanges),
+            {initialValue: undefined},
         );
+
+        // Fetch metadata when raster layers change
+        effect(() => {
+            const rasterLayers = this.rasterLayersSignal();
+            if (!rasterLayers || rasterLayers.length === 0) {
+                this.layerMetadata.set([]);
+                this.inputDataTypes.set([]);
+                return;
+            }
+
+            const metadataPromises = rasterLayers.map((l) => firstValueFrom(this.projectService.getRasterLayerMetadata(l)));
+            void Promise.all(metadataPromises).then((metadata: Array<RasterLayerMetadata>) => {
+                this.layerMetadata.set(metadata);
+                this.inputDataTypes.set(metadata.map((layer: RasterLayerMetadata) => layer.dataType));
+            });
+        });
+
+        // Update form when layer metadata changes
+        effect(() => {
+            const metadata = this.layerMetadata();
+            if (!metadata || metadata.length === 0) {
+                return;
+            }
+
+            this.updateRenameType();
+
+            // datatypes
+            const dataTypeControl = this.form.controls.dataType;
+            const currentDataType: RasterDataType | undefined = dataTypeControl.value;
+            const rasterDataTypes = metadata.map((layer) => layer.dataType);
+
+            if (currentDataType && rasterDataTypes.includes(currentDataType)) {
+                // is already set at a meaningful type
+                return;
+            }
+
+            const outputDataTypes = this.outputDataTypes();
+            let selectedDataType: RasterDataType = currentDataType ?? outputDataTypes[0][0]; // use default
+            if (rasterDataTypes.length) {
+                selectedDataType = rasterDataTypes[0];
+            }
+
+            setTimeout(() => {
+                dataTypeControl.setValue(selectedDataType);
+            });
+
+            // spatial references
+            const spatialReferenceControl = this.form.controls.spatialReference;
+            const currentSpatialReference: string = spatialReferenceControl.value;
+            const rasterSpatialReferences = metadata.map((layer) => layer.spatialReference.srsString);
+
+            if (currentSpatialReference && rasterSpatialReferences.includes(currentSpatialReference)) {
+                // is already set at a meaningful spatial reference
+                return;
+            }
+
+            let selectedSpatialReference: string = currentSpatialReference; // use current
+            if (rasterSpatialReferences.length) {
+                selectedSpatialReference = rasterSpatialReferences[0];
+            }
+
+            setTimeout(() => {
+                spatialReferenceControl.setValue(selectedSpatialReference);
+            });
+        });
+
+        // Update regrid when output regrids change
+        effect(() => {
+            const outputRegrids = this.outputRegrids();
+
+            if (outputRegrids.length === 0) {
+                return;
+            }
+
+            const regridControl = this.form.controls.regrid;
+            const currentRegrid: Regrid = regridControl.value;
+
+            // Find the matching regrid from the new options (if it exists)
+            const matchingRegrid = outputRegrids.find((r) => this.areRegridsEqual(r[0], currentRegrid));
+
+            // Select the matching regrid or the first available one
+            const selectedRegrid: Regrid = matchingRegrid ? matchingRegrid[0] : outputRegrids[0][0];
+
+            setTimeout(() => {
+                regridControl.setValue(selectedRegrid);
+            });
+        });
+
+        // Fetch reprojected metadata when spatial reference or layers change
+        effect(() => {
+            const rasterLayers = this.rasterLayersSignal();
+            const spatialReference = this.spatialReferenceSignal() ?? this.form.controls.spatialReference.value;
+
+            if (!rasterLayers || rasterLayers.length === 0 || !spatialReference) {
+                this.reprojectedLayerMetadata.set([]);
+                return;
+            }
+
+            // Get workflows for all layers and create reprojected operators
+            const workflowPromises = rasterLayers.map((layer) => firstValueFrom(this.projectService.getWorkflow(layer.workflowId)));
+
+            void Promise.all(workflowPromises).then((workflows) => {
+                // Create reprojected operators
+                const reprojectedOperators = workflows.map((workflow, index) => {
+                    const layerSref = this.layerMetadata()[index]?.spatialReference.srsString;
+
+                    if (layerSref === spatialReference) {
+                        // No reprojection needed
+                        return workflow.operator;
+                    } else {
+                        // Create reprojection operator
+                        return {
+                            type: 'Reprojection',
+                            params: {
+                                targetSpatialReference: spatialReference,
+                            },
+                            sources: {
+                                source: workflow.operator,
+                            },
+                        } as ReprojectionDict;
+                    }
+                });
+
+                // Register temporary workflows and fetch their metadata
+                const metadataPromises = reprojectedOperators.map((operator) => {
+                    const workflowPromise = firstValueFrom(
+                        this.projectService.registerWorkflow({
+                            type: 'Raster',
+                            operator,
+                        }),
+                    );
+
+                    return workflowPromise.then((workflowId) =>
+                        firstValueFrom(this.projectService.getWorkflowMetaData(workflowId)).then((descriptor) => {
+                            if (descriptor.type !== 'raster') {
+                                throw new Error('Expected raster result descriptor');
+                            }
+                            return RasterLayerMetadata.fromDict(descriptor);
+                        }),
+                    );
+                });
+
+                void Promise.all(metadataPromises).then((metadata) => {
+                    this.reprojectedLayerMetadata.set(metadata);
+                });
+            });
+        });
     }
 
     ngAfterViewInit(): void {
@@ -185,7 +413,7 @@ export class RasterStackerComponent implements AfterViewInit {
 
         const renameType = this.form.controls.renameBands.value;
 
-        this.layerMetadata.forEach((layer, layerIndex) => {
+        this.layerMetadata().forEach((layer, layerIndex) => {
             if (renameType === RenameBands.Suffix) {
                 renameControl.push(
                     new FormControl(`_${layerIndex}`, {
@@ -203,6 +431,12 @@ export class RasterStackerComponent implements AfterViewInit {
                 });
             }
         });
+    }
+
+    regridToString(regrid: Regrid): string {
+        return `Origin: (${regrid.origin.x.toFixed(2)}, ${regrid.origin.y.toFixed(2)}), Resolution: (${regrid.resolution.x.toFixed(
+            2,
+        )}, ${regrid.resolution.y.toFixed(2)})`;
     }
 
     add(): void {
@@ -228,7 +462,7 @@ export class RasterStackerComponent implements AfterViewInit {
             mergeMap((operators) =>
                 of(
                     operators.map((operator, index) => {
-                        const inputDataType = this.inputDataTypes[index];
+                        const inputDataType = this.inputDataTypes()[index];
 
                         if (inputDataType === dataType) {
                             return operator;
@@ -282,8 +516,8 @@ export class RasterStackerComponent implements AfterViewInit {
                 next: () => {
                     this.loading$.next(false);
                 },
-                error: (error) => {
-                    const errorMsg = error.error.message;
+                error: (error: {error?: {message?: string}}) => {
+                    const errorMsg = error.error?.message ?? 'An error occurred';
 
                     this.notificationService.error(errorMsg);
                     this.loading$.next(false);
@@ -323,5 +557,24 @@ export class RasterStackerComponent implements AfterViewInit {
                     values: this.form.controls.renameValues.value,
                 };
         }
+    }
+
+    private spatialGridToRegrid(spatialGrid: SpatialGridDefinition): Regrid {
+        return {
+            origin: spatialGrid.geoTransform.originCoordinate,
+            resolution: {
+                x: Math.abs(spatialGrid.geoTransform.pixelSizeX),
+                y: Math.abs(spatialGrid.geoTransform.pixelSizeY),
+            },
+        };
+    }
+
+    private areRegridsEqual(regrid1: Regrid, regrid2: Regrid): boolean {
+        return (
+            regrid1.origin.x === regrid2.origin.x &&
+            regrid1.origin.y === regrid2.origin.y &&
+            regrid1.resolution.x === regrid2.resolution.x &&
+            regrid1.resolution.y === regrid2.resolution.y
+        );
     }
 }
