@@ -26,12 +26,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install Dependencies
-        run: npm ci
+        run: |
+          npm ci
+          npx playwright install --with-deps --only-shell chromium
       - name: Build app ${{ matrix.app }}
         run: npm run build-prod:${{ matrix.app }}
         env:
           CI: true
-      - run: npm run test:ci
+      - run: npm run test:browser:ci
         env:
           CI: true
   

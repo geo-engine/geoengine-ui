@@ -43,7 +43,8 @@
         "prettier": "prettier",
         "check": "prettier --check . && ng lint",
         "test": "ng test --watch=false",
-        "test:ci": "ng test --watch=false --no-progress",
+        "test:browser": "ng test --watch=false --browsers=chromiumHeadless",
+        "test:browser:ci": "ng test --watch=false --no-progress --browsers=chromiumHeadless",
         "lint": "ng lint",
         "e2e": "ng e2e"
     },
