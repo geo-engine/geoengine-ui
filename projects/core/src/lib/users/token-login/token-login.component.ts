@@ -1,17 +1,14 @@
-import {BehaviorSubject, Subscription} from 'rxjs';
-
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject, input} from '@angular/core';
-import {UntypedFormControl, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
-
+import {ChangeDetectionStrategy, Component, OnInit, inject, input, signal} from '@angular/core';
 import {first} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {UUID} from '../../backend/backend.model';
 import {UserService, FxLayoutDirective, FxLayoutAlignDirective, FxLayoutGapDirective, FxFlexDirective} from '@geoengine/common';
-import {NgClass, NgSwitch, NgSwitchCase, NgIf, AsyncPipe} from '@angular/common';
+import {NgClass} from '@angular/common';
 import {MatCard, MatCardContent, MatCardActions} from '@angular/material/card';
 import {MatFormField, MatInput} from '@angular/material/input';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatButton} from '@angular/material/button';
+import {form, Field, required} from '@angular/forms/signals';
 
 enum FormStatus {
     LoggedOut,
@@ -25,28 +22,22 @@ enum FormStatus {
     styleUrls: ['./token-login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        FormsModule,
-        ReactiveFormsModule,
+        Field,
         FxLayoutDirective,
         FxLayoutAlignDirective,
         NgClass,
         MatCard,
         MatCardContent,
-        NgSwitch,
-        NgSwitchCase,
         MatFormField,
         MatInput,
-        NgIf,
         MatProgressSpinner,
         MatCardActions,
         FxLayoutGapDirective,
         MatButton,
         FxFlexDirective,
-        AsyncPipe,
     ],
 })
-export class TokenLoginComponent implements OnInit, AfterViewInit, OnDestroy {
-    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+export class TokenLoginComponent implements OnInit {
     private readonly userService = inject(UserService);
     private readonly router = inject(Router);
 
@@ -56,19 +47,16 @@ export class TokenLoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
     readonly FormStatus = FormStatus;
 
-    formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.LoggedOut);
+    readonly formStatus = signal<FormStatus>(FormStatus.LoggedOut);
 
-    loginForm: UntypedFormGroup;
+    readonly loginModel = signal({
+        sessionToken: '',
+    });
+    readonly loginForm = form(this.loginModel, (schemaPath) => {
+        required(schemaPath.sessionToken, {message: 'Session token is required'});
+    });
 
-    invalidCredentials$ = new BehaviorSubject<boolean>(false);
-
-    private formStatusSubscription?: Subscription;
-
-    constructor() {
-        this.loginForm = new UntypedFormGroup({
-            sessionToken: new UntypedFormControl('', Validators.required),
-        });
-    }
+    readonly invalidCredentials = signal<boolean>(false);
 
     ngOnInit(): void {
         this.userService
@@ -79,41 +67,26 @@ export class TokenLoginComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.redirectRoute();
                 }
             });
-
-        // this essentially allows checking for the sidenav-header component on status changes
-        this.formStatusSubscription = this.formStatus$.subscribe(() => setTimeout(() => this.changeDetectorRef.markForCheck()));
     }
 
-    ngAfterViewInit(): void {
-        // do this once for observables
-        setTimeout(() => this.loginForm.updateValueAndValidity());
-    }
+    async login(): Promise<void> {
+        this.formStatus.set(FormStatus.Loading);
 
-    ngOnDestroy(): void {
-        if (this.formStatusSubscription) {
-            this.formStatusSubscription.unsubscribe();
+        const sessionToken: UUID = this.loginModel().sessionToken;
+
+        try {
+            await this.userService.createSessionWithToken(sessionToken);
+
+            this.invalidCredentials.set(false);
+            this.formStatus.set(FormStatus.LoggedIn);
+
+            this.redirectRoute();
+        } catch {
+            // on error
+            this.invalidCredentials.set(true);
+            this.loginForm.sessionToken().value.set('');
+            this.formStatus.set(FormStatus.LoggedOut);
         }
-    }
-
-    login(): void {
-        this.formStatus$.next(FormStatus.Loading);
-
-        const sessionToken: UUID = this.loginForm.controls['sessionToken'].value;
-
-        this.userService.createSessionWithToken(sessionToken).subscribe(
-            () => {
-                this.invalidCredentials$.next(false);
-                this.formStatus$.next(FormStatus.LoggedIn);
-
-                this.redirectRoute();
-            },
-            () => {
-                // on error
-                this.invalidCredentials$.next(true);
-                (this.loginForm.controls['sessionToken'] as UntypedFormControl).setValue('');
-                this.formStatus$.next(FormStatus.LoggedOut);
-            },
-        );
     }
 
     redirectRoute(): void {
@@ -121,6 +94,6 @@ export class TokenLoginComponent implements OnInit, AfterViewInit, OnDestroy {
         if (!routeTo) {
             return;
         }
-        this.router.navigate(routeTo);
+        void this.router.navigate(routeTo);
     }
 }

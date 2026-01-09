@@ -48,7 +48,7 @@
             <mat-form-field>
                 <mat-label>Data Type</mat-label>
                 <mat-select formControlName="dataType">
-                    @for (dataType of outputDataTypes$ | async; track dataType) {
+                    @for (dataType of outputDataTypes$ | async; track dataType[0].getCode()) {
                         <mat-option [value]="dataType[0]"> {{ dataType[0] }} {{ dataType[1] }} </mat-option>
                     }
                 </mat-select>

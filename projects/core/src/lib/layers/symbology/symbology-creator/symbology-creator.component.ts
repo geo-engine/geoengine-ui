@@ -155,7 +155,7 @@ export class SymbologyCreatorComponent implements OnInit, OnDestroy, ControlValu
         this._onTouched = fn;
     }
 
-    @HostListener('blur', ['$event']) onBlur(): void {
+    @HostListener('blur', ['$event']) onBlur(_event: FocusEvent): void {
         if (!this._onTouched) {
             return;
         }

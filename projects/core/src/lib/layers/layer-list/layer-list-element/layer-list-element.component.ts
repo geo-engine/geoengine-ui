@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy, ChangeDetectorRef, Input, inject, input} from '@angular/core';
+import {Component, ChangeDetectionStrategy, ChangeDetectorRef, inject, input} from '@angular/core';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {MatDialog} from '@angular/material/dialog';
 import {TabsService} from '../../../tabs/tabs.service';
@@ -36,7 +36,7 @@ import {RasterBandDescriptor} from '@geoengine/openapi-client';
 import {SymbologyEditorComponent} from '../../symbology/symbology-editor/symbology-editor.component';
 import {DownloadLayerComponent} from '../../../download-layer/download-layer.component';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
-import {NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault, AsyncPipe} from '@angular/common';
+import {AsyncPipe} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
 import {MatTooltip} from '@angular/material/tooltip';
@@ -54,19 +54,15 @@ import {MatProgressBar} from '@angular/material/progress-bar';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         MatMenu,
-        NgIf,
         MatMenuItem,
         MatIcon,
         FxLayoutDirective,
         FxLayoutAlignDirective,
         MatIconButton,
         MatTooltip,
-        NgSwitch,
-        NgSwitchCase,
         PointIconComponent,
         LineIconComponent,
         PolygonIconComponent,
-        NgSwitchDefault,
         RasterIconComponent,
         CdkDragHandle,
         FxFlexDirective,
@@ -90,8 +86,7 @@ export class LayerListElementComponent {
     protected readonly clipboard = inject(Clipboard);
     protected readonly notificationService = inject(NotificationService);
 
-    @Input()
-    layer!: Layer;
+    readonly layer = input.required<Layer>();
 
     readonly menu = input(true);
 

@@ -143,7 +143,7 @@ export class ProjectService implements OnDestroy {
     async ngOnDestroy(): Promise<void> {
         if (this.config.PROJECT.CREATE_TEMPORARY_PROJECT_AT_STARTUP) {
             const session = await firstValueFrom(this.userService.getSessionTokenForRequest());
-            this.deleteCurrentProject(session);
+            await this.deleteCurrentProject(session);
         }
     }
 
@@ -636,7 +636,7 @@ export class ProjectService implements OnDestroy {
         const result = this.getProjectOnce().pipe(
             mergeMap((project) => {
                 const plots = [...project.plots];
-                const plotIndex = plots.indexOf(plot);
+                const plotIndex = plots.findIndex((p) => p.id === plot.id);
                 if (plotIndex >= 0) {
                     plots.splice(plotIndex, 1);
                     return this.changeProjectConfig({
@@ -708,8 +708,7 @@ export class ProjectService implements OnDestroy {
     /**
      * Retrieve the data of the layer as a stream.
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    getLayerDataStream(layer: HasLayerId): Observable<any> {
+    getLayerDataStream(layer: HasLayerId): Observable<LayerData | undefined> {
         // TODO: the plot type needs to be defined
         const data = this.layerData$.get(layer.id);
 
@@ -854,7 +853,7 @@ export class ProjectService implements OnDestroy {
      * Remove all plots from the current project.
      */
     clearPlots(): Observable<void> {
-        let removedPlots: Array<Layer>;
+        let removedPlots: Array<Plot>;
 
         const result = this.getProjectOnce().pipe(
             mergeMap((project) => {
@@ -1161,7 +1160,7 @@ export class ProjectService implements OnDestroy {
         spatialReference?: SpatialReference;
         bbox?: BBoxDict;
         time?: Time;
-        plots?: Array<unknown>;
+        plots?: Array<Plot>;
         layers?: Array<Layer>;
         timeStepDuration?: TimeStepDuration;
     }): Observable<void> {
@@ -1298,6 +1297,7 @@ export class ProjectService implements OnDestroy {
             )
             .subscribe({
                 next: (data) => data$.next(data),
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-return
                 error: (error) => error, // ignore error
             });
     }

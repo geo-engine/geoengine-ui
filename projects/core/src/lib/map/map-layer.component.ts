@@ -2,7 +2,6 @@ import {
     ChangeDetectionStrategy,
     Component,
     Directive,
-    Input,
     OnChanges,
     OnDestroy,
     OnInit,
@@ -34,25 +33,23 @@ import {
     SpatialReference,
     Symbology,
     Time,
+    VectorData,
     VectorSymbology,
     olExtentToTuple,
 } from '@geoengine/common';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type VectorData = any; // TODO: use correct type
 
 /**
  * The `ol-layer` component represents a single layer object of open layers.
  */
 @Directive()
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export abstract class MapLayerComponent<OL extends OlLayer<OS, any>, OS extends OlSource> {
+export abstract class MapLayerComponent<OL extends OlLayer<OS, any>, OS extends OlSource, S extends Symbology> {
     protected projectService = inject(ProjectService);
 
     readonly layerId = input.required<number>();
     readonly isVisible = input(true);
     readonly workflow = input<UUID>();
-    @Input() symbology?: Symbology;
+    readonly symbology = input<S>();
 
     /**
      * Event emitter that forces a redraw of the map.
@@ -109,10 +106,10 @@ export abstract class MapLayerComponent<OL extends OlLayer<OS, any>, OS extends 
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OlVectorLayerComponent
-    extends MapLayerComponent<OlLayerVector<OlVectorSource<OlFeature>>, OlVectorSource<OlFeature>>
+    extends MapLayerComponent<OlLayerVector<OlVectorSource<OlFeature>>, OlVectorSource<OlFeature>, VectorSymbology>
     implements OnInit, OnDestroy, OnChanges
 {
-    override symbology?: VectorSymbology;
+    override readonly symbology = input<VectorSymbology>();
 
     protected dataSubscription?: Subscription;
 
@@ -128,12 +125,12 @@ export class OlVectorLayerComponent
     }
 
     ngOnInit(): void {
-        this.dataSubscription = this.projectService.getLayerDataStream({id: this.layerId()}).subscribe((x: VectorData) => {
+        this.dataSubscription = this.projectService.getLayerDataStream({id: this.layerId()}).subscribe((x) => {
             this.source.clear(); // TODO: check if this is needed always...
-            if (!(x === null || x === undefined)) {
+            if (!(x === null || x === undefined) && x instanceof VectorData) {
                 this.source.addFeatures(x.data);
             }
-            this.updateOlLayer({symbology: this.symbology}); // FIXME: HACK until data is a part of a layer
+            this.updateOlLayer({symbology: this.symbology()}); // FIXME: HACK until data is a part of a layer
             this.loadedData$.next();
         });
     }
@@ -164,8 +161,9 @@ export class OlVectorLayerComponent
             this.mapRedraw.emit();
         }
 
-        if (changes.symbology && this.symbology) {
-            this.mapLayer.setStyle(this.symbology.createStyleFunction());
+        const symbology = this.symbology();
+        if (changes.symbology && symbology) {
+            this.mapLayer.setStyle(symbology.createStyleFunction());
         }
     }
 }
@@ -180,14 +178,14 @@ export class OlVectorLayerComponent
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OlRasterLayerComponent
-    extends MapLayerComponent<OlLayerTile<OlTileWmsSource>, OlTileWmsSource>
+    extends MapLayerComponent<OlLayerTile<OlTileWmsSource>, OlTileWmsSource, RasterSymbology>
     implements OnInit, OnDestroy, OnChanges
 {
     protected backend = inject(BackendService);
     protected config = inject(CoreConfig);
     protected notificationService = inject(NotificationService);
 
-    override symbology?: RasterSymbology;
+    override readonly symbology = input<RasterSymbology>();
 
     readonly sessionToken = input<UUID>();
 
@@ -213,8 +211,8 @@ export class OlRasterLayerComponent
     }
 
     ngOnInit(): void {
-        this.dataSubscription = this.projectService.getLayerDataStream({id: this.layerId()}).subscribe((rasterData: RasterData) => {
-            if (!rasterData) {
+        this.dataSubscription = this.projectService.getLayerDataStream({id: this.layerId()}).subscribe((rasterData) => {
+            if (!rasterData || !(rasterData instanceof RasterData)) {
                 return;
             }
 
@@ -266,10 +264,11 @@ export class OlRasterLayerComponent
             this._mapLayer.setVisible(this.isVisible());
             this.mapRedraw.emit();
         }
-        if (changes.symbology && this.symbology) {
-            this._mapLayer.setOpacity(this.symbology.opacity);
+        const symbology = this.symbology();
+        if (changes.symbology && symbology) {
+            this._mapLayer.setOpacity(symbology.opacity);
             this.source.updateParams({
-                STYLES: this.stylesFromColorizer(this.symbology.rasterColorizer),
+                STYLES: this.stylesFromColorizer(symbology.rasterColorizer),
             });
         }
         if (changes.workflow !== undefined || changes.sessionToken !== undefined) {
@@ -282,7 +281,7 @@ export class OlRasterLayerComponent
     }
 
     private updateProjection(p: SpatialReference): void {
-        if (!this.spatialReference || p.srsString !== this.spatialReference.srsString) {
+        if (p.srsString !== this.spatialReference?.srsString) {
             this.spatialReference = p;
             this.updateOlLayerProjection();
         }
@@ -294,10 +293,11 @@ export class OlRasterLayerComponent
     }
 
     private updateOlLayerTime(): void {
-        if (this.source && this.time && this.symbology) {
+        const symbology = this.symbology();
+        if (this.source && this.time && symbology) {
             this.source.updateParams({
                 time: this.time.asRequestString(),
-                STYLES: this.stylesFromColorizer(this.symbology.rasterColorizer),
+                STYLES: this.stylesFromColorizer(symbology.rasterColorizer),
             });
         }
     }
@@ -310,7 +310,8 @@ export class OlRasterLayerComponent
     }
 
     private initializeOrReplaceOlSource(): void {
-        if (!this.time || !this.symbology || !this.spatialReference) {
+        const symbology = this.symbology();
+        if (!this.time || !symbology || !this.spatialReference) {
             return;
         }
 
@@ -319,7 +320,7 @@ export class OlRasterLayerComponent
             params: {
                 layers: this.workflow(),
                 time: this.time.asRequestString(),
-                STYLES: this.stylesFromColorizer(this.symbology.rasterColorizer),
+                STYLES: this.stylesFromColorizer(symbology.rasterColorizer),
                 EXCEPTIONS: 'application/json',
             },
             projection: this.spatialReference.srsString,
@@ -374,12 +375,13 @@ export class OlRasterLayerComponent
     }
 
     private initializeOrUpdateOlMapLayer(): void {
+        const symbology = this.symbology();
         if (this._mapLayer) {
             this._mapLayer.setSource(this.source);
-        } else if (this.symbology) {
+        } else if (symbology) {
             this._mapLayer = new OlLayerTile({
                 source: this.source,
-                opacity: this.symbology.opacity,
+                opacity: symbology.opacity,
             });
         }
     }

@@ -6,9 +6,10 @@
                 <td colspan="3" class="measurement">
                     @if (showBandNames()) {
                         <span>
-                            Bandname
                             @if (bands.length > 1) {
-                                <span>s</span>
+                                Bandnames
+                            } @else {
+                                Bandname
                             }
                             :
                             <i>

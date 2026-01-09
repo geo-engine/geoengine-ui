@@ -246,7 +246,7 @@ export class ColumnRangeFilterComponent implements OnDestroy {
     }
 
     updateBounds(histogramSignal: {binStart: [number, number]} | null, filterIndex: number, rangeIndex: number): void {
-        if (!histogramSignal?.binStart || histogramSignal.binStart.length !== 2) {
+        if (histogramSignal?.binStart?.length !== 2) {
             return;
         }
 

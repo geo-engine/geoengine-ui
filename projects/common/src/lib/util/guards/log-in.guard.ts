@@ -1,6 +1,6 @@
 import {Injectable, inject} from '@angular/core';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router} from '@angular/router';
-import {Observable, map} from 'rxjs';
+import {Observable} from 'rxjs';
 import {UserService} from '../../user/user.service';
 
 @Injectable({
@@ -14,14 +14,12 @@ export class LogInGuard {
         _route: ActivatedRouteSnapshot,
         _state: RouterStateSnapshot,
     ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-        const loggedInOrRedirect = this.userService.isLoggedIn().pipe(
-            map((loggedIn) => {
-                if (loggedIn) {
-                    return true;
-                }
-                return this.router.createUrlTree(['/signin']);
-            }),
-        );
+        const loggedInOrRedirect = this.userService.isLoggedIn().then((loggedIn) => {
+            if (loggedIn) {
+                return true;
+            }
+            return this.router.createUrlTree(['/signin']);
+        });
         return loggedInOrRedirect;
     }
 }

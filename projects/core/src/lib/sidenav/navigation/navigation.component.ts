@@ -134,7 +134,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
                 mergeScan<[boolean, SidenavConfig | undefined], [boolean, string | undefined]>(
                     // abort inner observable when new source event arises
                     ([wasGuest, _state], [isGuest, sidenavConfig], _index) => {
-                        if (sidenavConfig && loginSidenavConfig && sidenavConfig.component === loginSidenavConfig.component) {
+                        if (sidenavConfig?.component === loginSidenavConfig?.component) {
                             return observableOf([isGuest, 'primary']);
                         } else if (!wasGuest && isGuest) {
                             // show 'accent' color for some time

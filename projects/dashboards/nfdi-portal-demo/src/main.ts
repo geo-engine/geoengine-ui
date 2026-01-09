@@ -1,7 +1,7 @@
 import {AppConfig} from './app/app-config.service';
 import {CoreConfig, LayoutService, MapService, ProjectService, SidenavRef, SpatialReferenceService, CoreModule} from '@geoengine/core';
 import {CommonConfig, NotificationService, RandomColorService, UserService} from '@geoengine/common';
-import {provideAppInitializer, inject, importProvidersFrom} from '@angular/core';
+import {provideAppInitializer, inject, importProvidersFrom, provideZonelessChangeDetection} from '@angular/core';
 import {DataSelectionService} from './app/data-selection.service';
 import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {AppRoutingModule} from './app/app-routing.module';
@@ -14,6 +14,7 @@ import {AppComponent} from './app/app.component';
 
 bootstrapApplication(AppComponent, {
     providers: [
+        provideZonelessChangeDetection(),
         importProvidersFrom(AppRoutingModule, BrowserModule, CoreModule, FormsModule, NgxMatSelectSearchModule, PortalModule),
         AppConfig,
         {

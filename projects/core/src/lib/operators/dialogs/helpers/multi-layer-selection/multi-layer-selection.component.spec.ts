@@ -1,21 +1,32 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MultiLayerSelectionComponent} from './multi-layer-selection.component';
 import {ProjectService} from '../../../../project/project.service';
-import {DebugElement, SimpleChange} from '@angular/core';
+import {inputBinding, provideZonelessChangeDetection, signal, WritableSignal} from '@angular/core';
 import {of} from 'rxjs';
 import {DialogSectionHeadingComponent} from '../../../../dialogs/dialog-section-heading/dialog-section-heading.component';
 import {MATERIAL_MODULES} from '../../../../core.module';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {By} from '@angular/platform-browser';
 import {WGS_84} from '../../../../spatial-references/spatial-reference.service';
-import {Layer, RasterDataTypes, RasterLayer, RasterLayerMetadata, RasterSymbology, UnitlessMeasurement} from '@geoengine/common';
+import {
+    Layer,
+    RasterDataTypes,
+    RasterLayer,
+    RasterLayerMetadata,
+    RasterSymbology,
+    ResultType,
+    ResultTypes,
+    UnitlessMeasurement,
+} from '@geoengine/common';
 import {RasterBandDescriptor} from '@geoengine/openapi-client';
 
 describe('MultiLayerSelectionComponent', () => {
     let component: MultiLayerSelectionComponent;
     let fixture: ComponentFixture<MultiLayerSelectionComponent>;
-    let deb: DebugElement;
-    let html: HTMLElement;
+    let layersInput: WritableSignal<Array<Layer>>;
+    let minInput: WritableSignal<number>;
+    let maxInput: WritableSignal<number>;
+    let typesInput: WritableSignal<Array<ResultType>>;
 
     /** Mock Layers **/
     const layer1: Layer = new RasterLayer({
@@ -96,7 +107,10 @@ describe('MultiLayerSelectionComponent', () => {
     let projectServiceSpy: {getLayerStream: jasmine.Spy; getLayerMetadata: jasmine.Spy};
 
     beforeEach(async () => {
-        projectServiceSpy = jasmine.createSpyObj('ProjectService', ['getLayerStream', 'getLayerMetadata']);
+        projectServiceSpy = jasmine.createSpyObj('ProjectService', ['getLayerStream', 'getLayerMetadata']) as {
+            getLayerStream: jasmine.Spy;
+            getLayerMetadata: jasmine.Spy;
+        };
 
         /** ProjectService returns Mock Layers **/
         projectServiceSpy.getLayerStream.and.returnValue(of<Array<Layer>>(mockLayers));
@@ -109,59 +123,75 @@ describe('MultiLayerSelectionComponent', () => {
         );
 
         await TestBed.configureTestingModule({
-            providers: [{provide: ProjectService, useValue: projectServiceSpy}],
+            providers: [provideZonelessChangeDetection(), {provide: ProjectService, useValue: projectServiceSpy}],
             imports: [...MATERIAL_MODULES, NoopAnimationsModule, MultiLayerSelectionComponent, DialogSectionHeadingComponent],
         }).compileComponents();
 
-        fixture = TestBed.createComponent(MultiLayerSelectionComponent);
+        layersInput = signal([]);
+        minInput = signal(1);
+        maxInput = signal(1);
+        typesInput = signal(ResultTypes.ALL_TYPES);
+
+        fixture = TestBed.createComponent(MultiLayerSelectionComponent, {
+            bindings: [
+                inputBinding('layers', layersInput),
+                inputBinding('min', minInput),
+                inputBinding('max', maxInput),
+                inputBinding('types', typesInput),
+            ],
+        });
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
 
     /** create app **/
-    it('should create the app', () => {
-        expect(component).toBeTruthy();
+    it('should create the app', async () => {
+        await expect(component).toBeTruthy();
     });
 
     /** initially no Layers -> 'No Input Available' should be displayed **/
-    it('should display "No Input Available", if no Layer is available', () => {
-        html = fixture.nativeElement.querySelector('p');
-        expect(component.selectedLayers.value).toEqual([]);
-        expect(html.textContent).toEqual('No Input Available');
+    it('should display "No Input Available", if no Layer is available', async () => {
+        const html = (fixture.nativeElement as HTMLElement).querySelector('p');
+        if (!html) throw new Error('no paragraph element found in DOM');
+        await expect(component.value()).toEqual([]);
+        await expect(html.textContent).toEqual('No Input Available');
     });
 
     /** Adding three layers
      * checking the number of possible layers to select from
      * checking the default layer displayed **/
     it('should display the first of selectedLayers per default, min = max = 1', async () => {
-        component.ngOnChanges({layers: new SimpleChange(undefined, component.layers(), true)});
-        fixture.detectChanges();
+        layersInput.set(mockLayers);
+        minInput.set(1);
+        maxInput.set(1);
+
         await fixture.whenStable();
-        html = fixture.nativeElement.querySelector('mat-select');
-        html.click();
-        fixture.detectChanges();
-        await fixture.whenStable();
-        const inquiryOptions = fixture.debugElement.queryAll(By.css('.mat-option-0'));
-        expect(inquiryOptions.length).toEqual(mockLayers.length);
-        expect(component.selectedLayers.value).not.toEqual([]);
-        expect(html.textContent).toEqual(component.selectedLayers.value[0].name);
+
+        const layers = layerNamesFromDom(fixture);
+
+        await expect(layers.length).toEqual(1);
+        await expect(component.value().length).toEqual(1);
+        await expect(layers[0]).toEqual(component.value()[0].name);
     });
 
     /** checking the layer displayed after changing the selected layer **/
     it('should update the layer displayed to equal selected layer, min = max = 1', async () => {
-        component.ngOnChanges({layers: new SimpleChange(undefined, component.layers(), true)});
-        fixture.detectChanges();
+        layersInput.set(mockLayers);
+        minInput.set(1);
+        maxInput.set(1);
+
+        await fixture.whenStable();
+
         for (let i = mockLayers.length; i > 0; i--) {
             component.updateLayer(0, mockLayers[i - 1]);
-            fixture.detectChanges();
+
             await fixture.whenStable();
-            html = fixture.nativeElement.querySelector('mat-select');
-            html.click();
-            fixture.detectChanges();
-            await fixture.whenStable();
-            expect(component.selectedLayers.value).not.toEqual([]);
-            expect(html.textContent).toEqual(component.selectedLayers.value[0].name);
-            expect(html.textContent).toEqual(mockLayers[i - 1].name);
+
+            const layers = layerNamesFromDom(fixture);
+
+            await expect(component.value().length).toEqual(1);
+            await expect(layers[0]).toEqual(component.value()[0].name);
+            await expect(layers[0]).toEqual(mockLayers[i - 1].name);
         }
     });
 
@@ -169,64 +199,73 @@ describe('MultiLayerSelectionComponent', () => {
      * adding two more input fields
      * checking the default layers displayed and the number of possible layers to select **/
     it('should display the selectedLayers per default, max = 3', async () => {
-        component.ngOnChanges({
-            max: new SimpleChange(component.max(), 3, true),
-            layers: new SimpleChange(undefined, component.layers(), true),
-        });
-        fixture.detectChanges();
+        layersInput.set(mockLayers);
+        minInput.set(1);
+        maxInput.set(3);
+
+        await fixture.whenStable();
+
         component.add();
         component.add();
-        const amount = component.selectedLayers.value.length;
-        expect(amount).toEqual(mockLayers.length);
-        for (let j = 0; j < amount; j++) {
-            await fixture.whenStable();
-            deb = fixture.debugElement.query(By.css('.mat-select-' + j));
-            html = deb.nativeElement;
-            html.click();
-            fixture.detectChanges();
-            await fixture.whenStable();
-            expect(component.selectedLayers.value).not.toEqual([]);
-            expect(html.textContent).toEqual(component.selectedLayers.value[j].name);
-            const inquiryOptions = fixture.debugElement.queryAll(By.css('.mat-option-' + j));
-            expect(inquiryOptions.length).toEqual(mockLayers.length);
+
+        await fixture.whenStable();
+
+        const layers = layerNamesFromDom(fixture);
+
+        await expect(component.value().length).toEqual(3);
+        await expect(layers.length).toEqual(3);
+
+        for (let i = 0; i < mockLayers.length; i++) {
+            await expect(layers[i]).toEqual(component.value()[i].name);
         }
     });
 
     /** checking the layer displayed after changing the selected layer **/
     it('should update the layer displayed to equal selected layer, max = 3', async () => {
-        async function testInputs(noOfInputs: number): Promise<void> {
-            for (let j = 0; j < noOfInputs; j++) {
+        async function testInputs(numLayers: number): Promise<void> {
+            for (let j = 0; j < numLayers; j++) {
                 await fixture.whenStable();
-                deb = fixture.debugElement.query(By.css('.mat-select-' + j));
-                html = deb.nativeElement;
-                html.click();
-                fixture.detectChanges();
-                await fixture.whenStable();
-                expect(component.selectedLayers.value).not.toEqual([]);
-                expect(html.textContent).toEqual(component.selectedLayers.value[j].name);
+
+                const layers = layerNamesFromDom(fixture);
+
+                for (let k = 0; k < numLayers; k++) {
+                    await expect(layers[k]).toEqual(component.value()[k].name);
+                }
             }
         }
 
-        component.ngOnChanges({
-            max: new SimpleChange(component.max(), 3, true),
-            layers: new SimpleChange(undefined, component.layers(), true),
-        });
-        fixture.detectChanges();
-        component.add();
-        component.add();
-        const amount = component.selectedLayers.value.length;
-        expect(amount).toEqual(mockLayers.length);
-        await testInputs(amount);
+        layersInput.set(mockLayers);
+        minInput.set(1);
+        maxInput.set(3);
 
-        for (let i = 0; i < amount; i++) {
+        await fixture.whenStable();
+
+        component.add();
+        component.add();
+
+        const numLayers = component.value().length;
+        await expect(numLayers).toEqual(mockLayers.length);
+        await testInputs(numLayers);
+
+        for (let i = 0; i < numLayers; i++) {
             component.updateLayer(i, mockLayers[2]);
-            await testInputs(amount);
+            await testInputs(numLayers);
 
             component.updateLayer(i, mockLayers[1]);
-            await testInputs(amount);
+            await testInputs(numLayers);
 
             component.updateLayer(i, mockLayers[0]);
-            await testInputs(amount);
+            await testInputs(numLayers);
         }
     });
 });
+
+function layerNamesFromDom(fixture: ComponentFixture<MultiLayerSelectionComponent>): Array<string> {
+    const layers: Array<string> = [];
+    const selects = fixture.debugElement.queryAll(By.css('mat-select'));
+    for (const select of selects) {
+        const element = select.nativeElement as HTMLElement;
+        layers.push(element.textContent.trim());
+    }
+    return layers;
+}

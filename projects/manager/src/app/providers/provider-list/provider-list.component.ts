@@ -42,7 +42,7 @@ export class ProviderListComponent implements AfterContentInit {
     source?: ProviderDataSource;
 
     readonly selectedProvider$ = input<LayerProviderListing>();
-    _selectedProvider$ = signal<LayerProviderListing | undefined>(undefined);
+    readonly _selectedProvider$ = signal<LayerProviderListing | undefined>(undefined);
 
     private readonly layersService = inject(LayersService);
     private readonly dialog = inject(MatDialog);
@@ -151,7 +151,7 @@ class ProviderDataSource extends DataSource<LayerProviderListing> {
     /**
      * Clean up resources
      */
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
+
     disconnect(): void {
         /* do nothing */
     }

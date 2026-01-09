@@ -6,14 +6,14 @@
 
     <mat-card-content>
         <ng-container *geoengineIfLoggedIn>
-            @if (user) {
+            @if (user.value(); as user) {
                 <p>Welcome {{ user.realName }}!</p>
             }
             <button mat-raised-button color="primary" (click)="logout()">Logout</button>
         </ng-container>
         <ng-container *geoengineIfGuest>
             <p>You are currently not logged in. By clicking the button below, you will be redirected to a login page.</p>
-            <button mat-raised-button color="primary" [disabled]="loginDisabled | async" (click)="login()">Login</button>
+            <button mat-raised-button color="primary" [disabled]="loginDisabled()" (click)="login()">Login</button>
         </ng-container>
     </mat-card-content>
 </mat-card>

@@ -1,19 +1,17 @@
-@switch (formStatus$ | async) {
+@switch (formStatus()) {
     @case (FormStatus.LoggedOut) {
         <geoengine-sidenav-header>Login</geoengine-sidenav-header>
-        <form [formGroup]="loginForm" (ngSubmit)="login()">
+        <form (ngSubmit)="login()">
             <mat-form-field>
-                <input matInput type="text" placeholder="E-Mail" formControlName="email" />
+                <input matInput type="text" placeholder="E-Mail" [field]="loginForm.email" />
             </mat-form-field>
             <mat-form-field>
-                <input matInput type="password" placeholder="Password" formControlName="password" />
+                <input matInput type="password" placeholder="Password" [field]="loginForm.password" />
             </mat-form-field>
-            @if (invalidCredentials$ | async) {
+            @if (invalidCredentials()) {
                 <p class="error">Invalid Credentials</p>
             }
-            <button mat-raised-button type="submit" [disabled]="(loginForm.statusChanges | async) !== 'VALID'" color="primary">
-                Login
-            </button>
+            <button mat-raised-button type="submit" [disabled]="!loginForm().valid" color="primary">Login</button>
         </form>
     }
     @case (FormStatus.Loading) {
@@ -26,7 +24,7 @@
                 <p>E-Mail</p>
                 <p>Real Name</p>
             </div>
-            @if (user) {
+            @if (user(); as user) {
                 <div>
                     <p>{{ user.email }}</p>
                     <p>{{ user.realName }}</p>
