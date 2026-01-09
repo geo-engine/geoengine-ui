@@ -37,12 +37,25 @@
                 },
                 "test": {
                     "builder": "@angular/build:unit-test",
-                    "options": {"runnerConfig": "vitest.config.ts"}
+                    "options": {
+                        "runnerConfig": "vitest.config.ts"
+                    }
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
                         "lintFilePatterns": ["projects/core/**/*.ts", "projects/core/**/*.html"]
+                    }
+                },
+                "e2e": {
+                    "builder": "playwright-ng-schematics:playwright",
+                    "options": {
+                        "devServerTarget": "core:serve"
+                    },
+                    "configurations": {
+                        "production": {
+                            "devServerTarget": "core:serve:production"
+                        }
                     }
                 }
             }
@@ -159,19 +172,15 @@
                     }
                 },
                 "e2e": {
-                    "builder": "@angular-devkit/build-angular:protractor",
+                    "builder": "playwright-ng-schematics:playwright",
                     "options": {
-                        "protractorConfig": "projects/gis/e2e/protractor.conf.js"
+                        "devServerTarget": "gis:serve"
                     },
                     "configurations": {
                         "production": {
                             "devServerTarget": "gis:serve:production"
-                        },
-                        "development": {
-                            "devServerTarget": "gis:serve:development"
                         }
-                    },
-                    "defaultConfiguration": "development"
+                    }
                 }
             }
         },
@@ -286,19 +295,15 @@
                     }
                 },
                 "e2e": {
-                    "builder": "@angular-devkit/build-angular:protractor",
+                    "builder": "playwright-ng-schematics:playwright",
                     "options": {
-                        "protractorConfig": "projects/dashboards/data-atlas/e2e/protractor.conf.js"
+                        "devServerTarget": "data-atlas:serve"
                     },
                     "configurations": {
                         "production": {
                             "devServerTarget": "data-atlas:serve:production"
-                        },
-                        "development": {
-                            "devServerTarget": "data-atlas:serve:development"
                         }
-                    },
-                    "defaultConfiguration": "development"
+                    }
                 }
             }
         },
@@ -413,19 +418,15 @@
                     }
                 },
                 "e2e": {
-                    "builder": "@angular-devkit/build-angular:protractor",
+                    "builder": "playwright-ng-schematics:playwright",
                     "options": {
-                        "protractorConfig": "projects/dashboards/ebv-analyzer/e2e/protractor.conf.js"
+                        "devServerTarget": "ebv-analyzer:serve"
                     },
                     "configurations": {
                         "production": {
                             "devServerTarget": "ebv-analyzer:serve:production"
-                        },
-                        "development": {
-                            "devServerTarget": "ebv-analyzer:serve:development"
                         }
-                    },
-                    "defaultConfiguration": "development"
+                    }
                 }
             }
         },
@@ -543,19 +544,15 @@
                     }
                 },
                 "e2e": {
-                    "builder": "@angular-devkit/build-angular:protractor",
+                    "builder": "playwright-ng-schematics:playwright",
                     "options": {
-                        "protractorConfig": "projects/dashboards/nfdi-portal-demo/e2e/protractor.conf.js"
+                        "devServerTarget": "nfdi-portal-demo:serve"
                     },
                     "configurations": {
                         "production": {
                             "devServerTarget": "nfdi-portal-demo:serve:production"
-                        },
-                        "development": {
-                            "devServerTarget": "nfdi-portal-demo:serve:development"
                         }
-                    },
-                    "defaultConfiguration": "development"
+                    }
                 }
             }
         },
@@ -670,19 +667,15 @@
                     }
                 },
                 "e2e": {
-                    "builder": "@angular-devkit/build-angular:protractor",
+                    "builder": "playwright-ng-schematics:playwright",
                     "options": {
-                        "protractorConfig": "projects/dashboards/gfbio/e2e/protractor.conf.js"
+                        "devServerTarget": "gfbio:serve"
                     },
                     "configurations": {
                         "production": {
                             "devServerTarget": "gfbio:serve:production"
-                        },
-                        "development": {
-                            "devServerTarget": "gfbio:serve:development"
                         }
-                    },
-                    "defaultConfiguration": "development"
+                    }
                 }
             }
         },
@@ -781,6 +774,17 @@
                     "options": {
                         "lintFilePatterns": ["projects/manager/**/*.ts", "projects/manager/**/*.html"]
                     }
+                },
+                "e2e": {
+                    "builder": "playwright-ng-schematics:playwright",
+                    "options": {
+                        "devServerTarget": "manager:serve"
+                    },
+                    "configurations": {
+                        "production": {
+                            "devServerTarget": "manager:serve:production"
+                        }
+                    }
                 }
             }
         },
@@ -812,6 +816,17 @@
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
                         "lintFilePatterns": ["projects/common/**/*.ts", "projects/common/**/*.html"]
+                    }
+                },
+                "e2e": {
+                    "builder": "playwright-ng-schematics:playwright",
+                    "options": {
+                        "devServerTarget": "common:serve"
+                    },
+                    "configurations": {
+                        "production": {
+                            "devServerTarget": "common:serve:production"
+                        }
                     }
                 }
             }
@@ -916,6 +931,17 @@
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
                         "lintFilePatterns": ["projects/dashboards/ecometrics/**/*.ts", "projects/dashboards/ecometrics/**/*.html"]
+                    }
+                },
+                "e2e": {
+                    "builder": "playwright-ng-schematics:playwright",
+                    "options": {
+                        "devServerTarget": "ecometrics:serve"
+                    },
+                    "configurations": {
+                        "production": {
+                            "devServerTarget": "ecometrics:serve:production"
+                        }
                     }
                 }
             }
@@ -1023,6 +1049,17 @@
                             "projects/dashboards/esg-indicator-service/**/*.ts",
                             "projects/dashboards/esg-indicator-service/**/*.html"
                         ]
+                    }
+                },
+                "e2e": {
+                    "builder": "playwright-ng-schematics:playwright",
+                    "options": {
+                        "devServerTarget": "esg-indicator-service:serve"
+                    },
+                    "configurations": {
+                        "production": {
+                            "devServerTarget": "esg-indicator-service:serve:production"
+                        }
                     }
                 }
             }
