@@ -1,9 +1,10 @@
+import {vi, type Mock} from 'vitest';
 import {Project} from './project.model';
 import {ProjectService} from './project.service';
 import moment from 'moment';
 import {Session} from '../users/session.model';
 import {User} from '../users/user.model';
-import {NEVER, of} from 'rxjs';
+import {firstValueFrom, NEVER, of} from 'rxjs';
 import {CoreConfig, DEFAULT_CORE_CONFIG} from '../config.service';
 import {CreateProjectResponseDict, STRectangleDict, TimeStepDict, UUID} from '../backend/backend.model';
 import {MapService} from '../map/map.service';
@@ -15,27 +16,59 @@ import {LayersService, NotificationService, SpatialReferenceSpecification, Time,
 import {TestBed} from '@angular/core/testing';
 
 describe('test project methods in projectService', () => {
-    let notificationServiceSpy: {get: jasmine.Spy};
-    let mapServiceSpy: {get: jasmine.Spy};
-    let backendSpy: {createProject: jasmine.Spy; listProjects: jasmine.Spy; updateProject: jasmine.Spy};
-    let userServiceSpy: {getSessionStream: jasmine.Spy; getSessionTokenForRequest: jasmine.Spy};
-    let spatialReferenceSpy: {getSpatialReferenceSpecification: jasmine.Spy};
-    let layersServiceSpy: {resolveLayer: jasmine.Spy};
+    let notificationServiceSpy: {
+        error: Mock;
+    };
+    let mapServiceSpy: {
+        getViewportSizeStream: Mock;
+    };
+    let backendSpy: {
+        createProject: Mock;
+        listProjects: Mock;
+        setSessionProject: Mock;
+        updateProject: Mock;
+    };
+    let userServiceSpy: {
+        getSessionStream: Mock;
+        getSessionTokenForRequest: Mock;
+    };
+    let spatialReferenceSpy: {
+        getSpatialReferenceSpecification: Mock;
+    };
+    let layersServiceSpy: {
+        resolveLayer: Mock;
+    };
 
     let projectService: ProjectService;
 
     beforeEach(() => {
-        notificationServiceSpy = jasmine.createSpyObj('NotificationService', ['error']);
-        mapServiceSpy = jasmine.createSpyObj('MapService', ['getViewportSizeStream']);
-        backendSpy = jasmine.createSpyObj('BackendService', ['createProject', 'listProjects', 'setSessionProject', 'updateProject']);
-        userServiceSpy = jasmine.createSpyObj('UserService', ['getSessionStream', 'getSessionTokenForRequest']);
-        spatialReferenceSpy = jasmine.createSpyObj('SpatialRefernceService', ['getSpatialReferenceSpecification']);
-        layersServiceSpy = jasmine.createSpyObj('LayersSerivce', ['resolveLayer']);
+        notificationServiceSpy = {
+            error: vi.fn().mockName('NotificationService.error'),
+        };
+        mapServiceSpy = {
+            getViewportSizeStream: vi.fn().mockName('MapService.getViewportSizeStream'),
+        };
+        backendSpy = {
+            createProject: vi.fn().mockName('BackendService.createProject'),
+            listProjects: vi.fn().mockName('BackendService.listProjects'),
+            setSessionProject: vi.fn().mockName('BackendService.setSessionProject'),
+            updateProject: vi.fn().mockName('BackendService.updateProject'),
+        };
+        userServiceSpy = {
+            getSessionStream: vi.fn().mockName('UserService.getSessionStream'),
+            getSessionTokenForRequest: vi.fn().mockName('UserService.getSessionTokenForRequest'),
+        };
+        spatialReferenceSpy = {
+            getSpatialReferenceSpecification: vi.fn().mockName('SpatialRefernceService.getSpatialReferenceSpecification'),
+        };
+        layersServiceSpy = {
+            resolveLayer: vi.fn().mockName('LayersSerivce.resolveLayer'),
+        };
 
         const sessionToken = 'ffffffff-ffff-4fff-afff-ffffffffffff';
 
         // always return the same session
-        userServiceSpy.getSessionStream.and.returnValue(
+        userServiceSpy.getSessionStream.mockReturnValue(
             of<Session>({
                 sessionToken,
                 apiConfiguration: new Configuration({
@@ -57,9 +90,9 @@ describe('test project methods in projectService', () => {
             }),
         );
 
-        userServiceSpy.getSessionTokenForRequest.and.returnValue(of<UUID>('ffffffff-ffff-4fff-afff-ffffffffffff'));
+        userServiceSpy.getSessionTokenForRequest.mockReturnValue(of<UUID>('ffffffff-ffff-4fff-afff-ffffffffffff'));
 
-        spatialReferenceSpy.getSpatialReferenceSpecification.and.returnValue(
+        spatialReferenceSpy.getSpatialReferenceSpecification.mockReturnValue(
             of<SpatialReferenceSpecification>(
                 new SpatialReferenceSpecification({
                     name: 'WGS84',
@@ -81,15 +114,15 @@ describe('test project methods in projectService', () => {
         );
 
         // for constructor
-        backendSpy.listProjects.and.returnValue(NEVER); // never complete and set any project
+        backendSpy.listProjects.mockReturnValue(NEVER); // never complete and set any project
 
-        backendSpy.createProject.and.returnValue(
+        backendSpy.createProject.mockReturnValue(
             of<CreateProjectResponseDict>({
                 id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
             }),
         );
 
-        backendSpy.updateProject.and.returnValue(
+        backendSpy.updateProject.mockReturnValue(
             of<CreateProjectResponseDict>({
                 id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
             }),
@@ -111,66 +144,59 @@ describe('test project methods in projectService', () => {
         projectService = TestBed.inject(ProjectService);
     });
 
-    it('#createDefaultProject should create a default project', (done) => {
-        projectService.createDefaultProject().subscribe(
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
-            (project) =>
-                expect(project.toDict()).toEqual(
-                    new Project({
-                        id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
-                        name: 'Default',
-                        description: 'Default project',
-                        spatialReference: WGS_84.spatialReference,
-                        time: new Time(moment.utc('2014-04-01 12:00:00')),
-                        bbox: {lowerLeftCoordinate: {x: -180, y: -90}, upperRightCoordinate: {x: 180, y: 90}},
-                        plots: [],
-                        layers: [],
-                        timeStepDuration: {
-                            durationAmount: 1,
-                            durationUnit: 'month',
+    it('#createDefaultProject should create a default project', async () => {
+        const project = await firstValueFrom(projectService.createDefaultProject());
+        await expect(project.toDict()).toEqual(
+            new Project({
+                id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
+                name: 'Default',
+                description: 'Default project',
+                spatialReference: WGS_84.spatialReference,
+                time: new Time(moment.utc('2014-04-01 12:00:00')),
+                bbox: {lowerLeftCoordinate: {x: -180, y: -90}, upperRightCoordinate: {x: 180, y: 90}},
+                plots: [],
+                layers: [],
+                timeStepDuration: {
+                    durationAmount: 1,
+                    durationUnit: 'month',
+                },
+                version: {
+                    changed: project.version.changed,
+                    id: '0',
+                },
+            }).toDict(),
+        );
+        await expect(backendSpy.createProject).toHaveBeenCalledTimes(1);
+        expect(backendSpy.createProject).toHaveBeenCalledWith(
+            {
+                name: 'Default',
+                description: 'Default project',
+                bounds: {
+                    boundingBox: {
+                        lowerLeftCoordinate: {
+                            x: -180,
+                            y: -90,
                         },
-                        version: {
-                            changed: project.version.changed,
-                            id: '0',
+                        upperRightCoordinate: {
+                            x: 180,
+                            y: 90,
                         },
-                    }).toDict(),
-                ),
-            (error) => fail(error),
-            () => {
-                expect(backendSpy.createProject).toHaveBeenCalledOnceWith(
-                    {
-                        name: 'Default',
-                        description: 'Default project',
-                        bounds: {
-                            boundingBox: {
-                                lowerLeftCoordinate: {
-                                    x: -180,
-                                    y: -90,
-                                },
-                                upperRightCoordinate: {
-                                    x: 180,
-                                    y: 90,
-                                },
-                            },
-                            spatialReference: 'EPSG:4326',
-                            timeInterval: {start: 1396353600000, end: 1396353600000},
-                        } as STRectangleDict,
-                        timeStep: {
-                            step: 1,
-                            granularity: 'months',
-                        } as TimeStepDict,
                     },
-                    'ffffffff-ffff-4fff-afff-ffffffffffff',
-                );
-
-                done();
+                    spatialReference: 'EPSG:4326',
+                    timeInterval: {start: 1396353600000, end: 1396353600000},
+                } as STRectangleDict,
+                timeStep: {
+                    step: 1,
+                    granularity: 'months',
+                } as TimeStepDict,
             },
+            'ffffffff-ffff-4fff-afff-ffffffffffff',
         );
     });
 
-    it('#createProject should create a project', (done) => {
-        projectService
-            .createProject({
+    it('#createProject should create a project', async () => {
+        const project = await firstValueFrom(
+            projectService.createProject({
                 name: 'testProject',
                 description: 'testDescription',
                 spatialReference: WGS_84.spatialReference,
@@ -180,82 +206,67 @@ describe('test project methods in projectService', () => {
                     durationAmount: 1,
                     durationUnit: 'month',
                 },
-            })
-            .subscribe(
-                // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                (project) =>
-                    expect(project.toDict()).toEqual(
-                        new Project({
-                            id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
-                            name: 'testProject',
-                            description: 'testDescription',
-                            spatialReference: WGS_84.spatialReference,
-                            time: new Time(moment.utc('2021-07-04 11:00:00')),
-                            bbox: {lowerLeftCoordinate: {x: -180, y: -90}, upperRightCoordinate: {x: 180, y: 90}},
-                            plots: [],
-                            layers: [],
-                            timeStepDuration: {
-                                durationAmount: 1,
-                                durationUnit: 'month',
-                            },
-                            version: {
-                                changed: project.version.changed,
-                                id: '0',
-                            },
-                        }).toDict(),
-                    ),
-                (error) => fail(error),
-                () => {
-                    done();
+            }),
+        );
+        await expect(project.toDict()).toEqual(
+            new Project({
+                id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
+                name: 'testProject',
+                description: 'testDescription',
+                spatialReference: WGS_84.spatialReference,
+                time: new Time(moment.utc('2021-07-04 11:00:00')),
+                bbox: {lowerLeftCoordinate: {x: -180, y: -90}, upperRightCoordinate: {x: 180, y: 90}},
+                plots: [],
+                layers: [],
+                timeStepDuration: {
+                    durationAmount: 1,
+                    durationUnit: 'month',
                 },
-            );
+                version: {
+                    changed: project.version.changed,
+                    id: '0',
+                },
+            }).toDict(),
+        );
     });
 
-    it('#cloneProject should clone a project', (done) => {
-        //erstelle Projekt Instanz
+    it('#cloneProject should clone a project', async () => {
+        // create project instance
         projectService.createDefaultProject().subscribe((project) => {
             projectService.setProject(project);
         });
 
-        //kopiere das aktuelle Projekt und teste
-        projectService.cloneProject('newTestName').subscribe(
-            (project) => {
-                expect(project.toDict()).toEqual(
-                    new Project({
-                        id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
-                        name: 'newTestName',
-                        description: 'Default project',
-                        spatialReference: WGS_84.spatialReference,
-                        time: new Time(moment.utc('2014-04-01 12:00:00')),
-                        bbox: {lowerLeftCoordinate: {x: -180, y: -90}, upperRightCoordinate: {x: 180, y: 90}},
-                        plots: [],
-                        layers: [],
-                        timeStepDuration: {
-                            durationAmount: 1,
-                            durationUnit: 'month',
-                        },
-                        version: {
-                            changed: project.version.changed,
-                            id: '0',
-                        },
-                    }).toDict(),
-                );
-            },
-            (error) => fail(error),
-            () => {
-                done();
-            },
+        // clone the current project and test
+        const project = await firstValueFrom(projectService.cloneProject('newTestName'));
+        await expect(project.toDict()).toEqual(
+            new Project({
+                id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
+                name: 'newTestName',
+                description: 'Default project',
+                spatialReference: WGS_84.spatialReference,
+                time: new Time(moment.utc('2014-04-01 12:00:00')),
+                bbox: {lowerLeftCoordinate: {x: -180, y: -90}, upperRightCoordinate: {x: 180, y: 90}},
+                plots: [],
+                layers: [],
+                timeStepDuration: {
+                    durationAmount: 1,
+                    durationUnit: 'month',
+                },
+                version: {
+                    changed: project.version.changed,
+                    id: '0',
+                },
+            }).toDict(),
         );
     });
 
-    it('#getProjectStream should return project stream', (done) => {
-        projectService
-            .createDefaultProject()
-            .pipe(
-                tap((project) => projectService.setProject(project)),
+    it('#getProjectStream should return project stream', async () => {
+        const project = await firstValueFrom(
+            projectService.createDefaultProject().pipe(
+                tap((theProject) => projectService.setProject(theProject)),
                 mergeMap(() => projectService.getProjectStream().pipe(first())),
-                tap((project) => {
-                    expect(project.toDict()).toEqual(
+                mergeMap(async (theProject) => {
+                    await expect(theProject.toDict()).toEqual(
                         new Project({
                             id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
                             name: 'Default',
@@ -270,11 +281,13 @@ describe('test project methods in projectService', () => {
                                 durationUnit: 'month',
                             },
                             version: {
-                                changed: project.version.changed,
+                                changed: theProject.version.changed,
                                 id: '0',
                             },
                         }).toDict(),
                     );
+
+                    return theProject;
                 }),
                 mergeMap(() =>
                     projectService.createProject({
@@ -289,47 +302,39 @@ describe('test project methods in projectService', () => {
                         },
                     }),
                 ),
-                tap((project) => projectService.setProject(project)),
+                tap((theProject) => projectService.setProject(theProject)),
                 mergeMap(() => projectService.getProjectOnce()),
-            )
-            .subscribe({
-                next: (project) => {
-                    expect(project.toDict()).toEqual(
-                        new Project({
-                            id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
-                            name: 'testProject',
-                            description: 'testDescription',
-                            spatialReference: WGS_84.spatialReference,
-                            time: new Time(moment.utc('2021-07-04 11:00:00')),
-                            bbox: {lowerLeftCoordinate: {x: -180, y: -90}, upperRightCoordinate: {x: 180, y: 90}},
-                            plots: [],
-                            layers: [],
-                            timeStepDuration: {
-                                durationAmount: 1,
-                                durationUnit: 'month',
-                            },
-                            version: {
-                                changed: project.version.changed,
-                                id: '0',
-                            },
-                        }).toDict(),
-                    );
+            ),
+        );
+        await expect(project.toDict()).toEqual(
+            new Project({
+                id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
+                name: 'testProject',
+                description: 'testDescription',
+                spatialReference: WGS_84.spatialReference,
+                time: new Time(moment.utc('2021-07-04 11:00:00')),
+                bbox: {lowerLeftCoordinate: {x: -180, y: -90}, upperRightCoordinate: {x: 180, y: 90}},
+                plots: [],
+                layers: [],
+                timeStepDuration: {
+                    durationAmount: 1,
+                    durationUnit: 'month',
                 },
-                error: (error) => fail(error),
-                complete: () => {
-                    done();
+                version: {
+                    changed: project.version.changed,
+                    id: '0',
                 },
-            });
+            }).toDict(),
+        );
     });
 
-    it('#getProjectOnce should return current project and #setProject should set a project', (done) => {
-        projectService
-            .createDefaultProject()
-            .pipe(
-                tap((project) => projectService.setProject(project)),
+    it('#getProjectOnce should return current project and #setProject should set a project', async () => {
+        const project = await firstValueFrom(
+            projectService.createDefaultProject().pipe(
+                tap((theProject) => projectService.setProject(theProject)),
                 mergeMap(() => projectService.getProjectOnce()),
-                tap((project) => {
-                    expect(project.toDict()).toEqual(
+                mergeMap(async (theProject) => {
+                    await expect(theProject.toDict()).toEqual(
                         new Project({
                             id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
                             name: 'Default',
@@ -344,11 +349,13 @@ describe('test project methods in projectService', () => {
                                 durationUnit: 'month',
                             },
                             version: {
-                                changed: project.version.changed,
+                                changed: theProject.version.changed,
                                 id: '0',
                             },
                         }).toDict(),
                     );
+
+                    return theProject;
                 }),
                 mergeMap(() =>
                     projectService.createProject({
@@ -363,36 +370,29 @@ describe('test project methods in projectService', () => {
                         },
                     }),
                 ),
-                tap((project) => projectService.setProject(project)),
+                tap((theProject) => projectService.setProject(theProject)),
                 mergeMap(() => projectService.getProjectOnce()),
-            )
-            .subscribe({
-                next: (project) => {
-                    expect(project.toDict()).toEqual(
-                        new Project({
-                            id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
-                            name: 'testProject',
-                            description: 'testDescription',
-                            spatialReference: WGS_84.spatialReference,
-                            time: new Time(moment.utc('2021-07-04 11:00:00')),
-                            bbox: {lowerLeftCoordinate: {x: -180, y: -90}, upperRightCoordinate: {x: 180, y: 90}},
-                            plots: [],
-                            layers: [],
-                            timeStepDuration: {
-                                durationAmount: 1,
-                                durationUnit: 'month',
-                            },
-                            version: {
-                                changed: project.version.changed,
-                                id: '0',
-                            },
-                        }).toDict(),
-                    );
+            ),
+        );
+        await expect(project.toDict()).toEqual(
+            new Project({
+                id: 'dddddddd-dddd-4ddd-addd-dddddddddddd',
+                name: 'testProject',
+                description: 'testDescription',
+                spatialReference: WGS_84.spatialReference,
+                time: new Time(moment.utc('2021-07-04 11:00:00')),
+                bbox: {lowerLeftCoordinate: {x: -180, y: -90}, upperRightCoordinate: {x: 180, y: 90}},
+                plots: [],
+                layers: [],
+                timeStepDuration: {
+                    durationAmount: 1,
+                    durationUnit: 'month',
                 },
-                error: (error) => fail(error),
-                complete: () => {
-                    done();
+                version: {
+                    changed: project.version.changed,
+                    id: '0',
                 },
-            });
+            }).toDict(),
+        );
     });
 });

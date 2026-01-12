@@ -1,3 +1,4 @@
+import {vi, type Mock} from 'vitest';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {MultiLayerSelectionComponent} from './multi-layer-selection.component';
 import {ProjectService} from '../../../../project/project.service';
@@ -104,17 +105,23 @@ describe('MultiLayerSelectionComponent', () => {
     const mockLayers: Array<Layer> = [layer1, layer2, layer3];
 
     /** Mock project Service **/
-    let projectServiceSpy: {getLayerStream: jasmine.Spy; getLayerMetadata: jasmine.Spy};
+    let projectServiceSpy: {
+        getLayerStream: Mock;
+        getLayerMetadata: Mock;
+    };
 
     beforeEach(async () => {
-        projectServiceSpy = jasmine.createSpyObj('ProjectService', ['getLayerStream', 'getLayerMetadata']) as {
-            getLayerStream: jasmine.Spy;
-            getLayerMetadata: jasmine.Spy;
+        projectServiceSpy = {
+            getLayerStream: vi.fn().mockName('ProjectService.getLayerStream'),
+            getLayerMetadata: vi.fn().mockName('ProjectService.getLayerMetadata'),
+        } as {
+            getLayerStream: Mock;
+            getLayerMetadata: Mock;
         };
 
         /** ProjectService returns Mock Layers **/
-        projectServiceSpy.getLayerStream.and.returnValue(of<Array<Layer>>(mockLayers));
-        projectServiceSpy.getLayerMetadata.and.returnValue(
+        projectServiceSpy.getLayerStream.mockReturnValue(of<Array<Layer>>(mockLayers));
+        projectServiceSpy.getLayerMetadata.mockReturnValue(
             of<RasterLayerMetadata>(
                 new RasterLayerMetadata(RasterDataTypes.Byte, WGS_84.spatialReference, [
                     {name: 'band', measurement: new UnitlessMeasurement().toDict()} as RasterBandDescriptor,
