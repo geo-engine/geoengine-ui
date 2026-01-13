@@ -442,9 +442,7 @@ export class RasterStackerComponent implements AfterViewInit {
     }
 
     regridToString(regrid: Regrid): string {
-        return `Origin: (${regrid.origin.x.toFixed(2)}, ${regrid.origin.y.toFixed(2)}), Resolution: (${regrid.resolution.x.toFixed(
-            2,
-        )}, ${regrid.resolution.y.toFixed(2)})`;
+        return `Origin: (${regrid.origin.x}, ${regrid.origin.y}), Resolution: (${regrid.resolution.x}, ${regrid.resolution.y})`;
     }
 
     async add(): Promise<void> {
