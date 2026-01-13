@@ -482,7 +482,7 @@ export interface RelativeTimeShiftDictParams extends OperatorParams {
 export interface InterpolationDict extends OperatorDict {
     type: 'Interpolation';
     params: {
-        interpolation: 'nearestNeighbor' | 'bilinear';
+        interpolation: 'nearestNeighbor' | 'biLinear';
         outputResolution: OutputResolutionDict;
         outputOriginReference?: Coordinate2DDict;
     };
