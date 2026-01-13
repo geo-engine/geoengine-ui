@@ -93,7 +93,7 @@
     },
     "devDependencies": {
         "@angular-devkit/architect": "^0.2100.4",
-        "@angular-devkit/build-angular": "^21.0.4",
+        "@angular-devkit/build-angular": "^21.0.5",
         "@angular/cli": "^21.0.4",
         "@angular/compiler-cli": "^21.0.6",
         "@angular/language-service": "^21.0.6",
