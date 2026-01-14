@@ -24,25 +24,29 @@ jobs:
           - dashboards/esg-indicator-service
     
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install Dependencies
-        run: npm ci
-      - name: Build common
-        run: npm run build-prod:common
-        env:
-          CI: true
-      - name: Build core
-        run: npm run build-prod:core
-        env:
-          CI: true
+        run: |
+          npm ci
       - name: Build app ${{ matrix.app }}
         run: npm run build-prod:${{ matrix.app }}
         env:
           CI: true
-      - run: npm run test:ci
+  
+  test:
+    runs-on: ubuntu-24.04
+    container: quay.io/geoengine/devcontainer:latest
+
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install Dependencies
+        run: |
+          npm ci
+          npx playwright install --with-deps --only-shell chromium
+      - run: npm run test:browser:ci
         env:
           CI: true
-  
+
   codestyle:
     name: Code Format and Lints
 
@@ -51,7 +55,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Install Dependencies
         run: npm ci
       - name: Code Format Check with Prettier

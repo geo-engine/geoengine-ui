@@ -1,17 +1,14 @@
-import {BehaviorSubject, Subscription} from 'rxjs';
-
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject} from '@angular/core';
-import {UntypedFormControl, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
-
+import {ChangeDetectionStrategy, Component, OnInit, inject, signal} from '@angular/core';
 import {CoreConfig} from '../../config.service';
 import {User} from '../user.model';
-import {first} from 'rxjs/operators';
 import {geoengineValidators, NotificationService, UserService, FxLayoutDirective, FxFlexDirective} from '@geoengine/common';
 import {SidenavHeaderComponent} from '../../sidenav/sidenav-header/sidenav-header.component';
 import {MatFormField, MatInput} from '@angular/material/input';
 import {MatButton} from '@angular/material/button';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
-import {AsyncPipe} from '@angular/common';
+import {HttpErrorResponse} from '@angular/common/http';
+import {required, form, Field} from '@angular/forms/signals';
+import {firstValueFrom} from 'rxjs';
 
 enum FormStatus {
     LoggedOut,
@@ -24,109 +21,84 @@ enum FormStatus {
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        SidenavHeaderComponent,
-        FormsModule,
-        ReactiveFormsModule,
-        MatFormField,
-        MatInput,
-        MatButton,
-        MatProgressSpinner,
-        FxLayoutDirective,
-        FxFlexDirective,
-        AsyncPipe,
-    ],
+    imports: [Field, FxFlexDirective, FxLayoutDirective, MatButton, MatFormField, MatInput, MatProgressSpinner, SidenavHeaderComponent],
 })
-export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
-    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+export class LoginComponent implements OnInit {
     private readonly config = inject(CoreConfig);
     private readonly userService = inject(UserService);
     private readonly notificationService = inject(NotificationService);
 
     readonly FormStatus = FormStatus;
 
-    formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.Loading);
+    readonly formStatus = signal<FormStatus>(FormStatus.Loading);
 
-    loginForm: UntypedFormGroup;
+    readonly loginModel = signal({
+        email: '',
+        password: '',
+    });
+    readonly loginForm = form(this.loginModel, (schemaPath) => {
+        required(schemaPath.email);
+        required(schemaPath.password);
 
-    user?: User;
-    invalidCredentials$ = new BehaviorSubject<boolean>(false);
+        geoengineValidators.keyword2(schemaPath.email, [this.config.USER.GUEST.NAME]);
+    });
 
-    private formStatusSubscription?: Subscription;
-
-    constructor() {
-        this.loginForm = new UntypedFormGroup({
-            email: new UntypedFormControl(
-                '',
-                Validators.compose([Validators.required, geoengineValidators.keyword([this.config.USER.GUEST.NAME])]),
-            ),
-            password: new UntypedFormControl('', Validators.required),
-        });
-    }
+    readonly user = signal<User | undefined>(undefined);
+    readonly invalidCredentials = signal<boolean>(false);
 
     ngOnInit(): void {
-        this.userService
-            .getSessionStream()
-            .pipe(first())
-            .subscribe((session) => {
-                if (!session.user || session.user.isGuest) {
-                    this.formStatus$.next(FormStatus.LoggedOut);
-                } else {
-                    this.user = session.user;
-                    this.formStatus$.next(FormStatus.LoggedIn);
-                }
-            });
-
-        // this essentially allows checking for the sidenav-header component on status changes
-        this.formStatusSubscription = this.formStatus$.subscribe(() => setTimeout(() => this.changeDetectorRef.markForCheck()));
+        void this.onInit();
     }
 
-    ngAfterViewInit(): void {
-        // do this once for observables
-        setTimeout(() => this.loginForm.updateValueAndValidity());
-    }
+    async onInit(): Promise<void> {
+        const session = await firstValueFrom(this.userService.getSessionStream());
 
-    ngOnDestroy(): void {
-        if (this.formStatusSubscription) {
-            this.formStatusSubscription.unsubscribe();
+        if (!session.user || session.user.isGuest) {
+            this.formStatus.set(FormStatus.LoggedOut);
+        } else {
+            this.user.set(session.user);
+            this.formStatus.set(FormStatus.LoggedIn);
         }
     }
 
-    login(): void {
-        this.formStatus$.next(FormStatus.Loading);
+    async login(): Promise<void> {
+        this.formStatus.set(FormStatus.Loading);
 
-        this.userService
-            .login({
-                email: this.loginForm.controls['email'].value,
-                password: this.loginForm.controls['password'].value,
-            })
-            .subscribe(
-                (session) => {
-                    this.user = session.user;
-                    this.invalidCredentials$.next(false);
-                    this.formStatus$.next(FormStatus.LoggedIn);
-                },
-                () => {
-                    // on error
-                    this.invalidCredentials$.next(true);
-                    (this.loginForm.controls['password'] as UntypedFormControl).setValue('');
-                    this.formStatus$.next(FormStatus.LoggedOut);
-                },
-            );
+        try {
+            const session = await this.userService.login({
+                email: this.loginModel().email,
+                password: this.loginModel().password,
+            });
+
+            this.user.set(session.user);
+            this.invalidCredentials.set(false);
+            this.formStatus.set(FormStatus.LoggedIn);
+        } catch {
+            // on error
+            this.invalidCredentials.set(true);
+            this.loginForm.password().value.set('');
+            this.formStatus.set(FormStatus.LoggedOut);
+        }
     }
 
-    logout(): void {
-        this.formStatus$.next(FormStatus.LoggedOut);
+    async logout(): Promise<void> {
+        this.formStatus.set(FormStatus.LoggedOut);
 
-        this.userService.guestLogin().subscribe(
-            (_) => {
-                this.loginForm.controls['password'].setValue('');
-            },
-            (error) => {
-                if (error.error.error !== 'AnonymousAccessDisabled') {
-                    this.notificationService.error(`The backend is currently unavailable (${error})`);
-                }
-            },
-        );
+        // we log out by trying to perform a guest login
+        // if this fails, we will get logged out
+        try {
+            await this.userService.guestLogin();
+            this.loginForm.password().value.set('');
+        } catch (error) {
+            if (
+                error instanceof HttpErrorResponse &&
+                error.error &&
+                typeof error.error === 'object' &&
+                'error' in error.error &&
+                (error.error as {error?: string}).error !== 'AnonymousAccessDisabled'
+            ) {
+                this.notificationService.error(`The backend is currently unavailable (${error.message})`);
+            }
+        }
     }
 }

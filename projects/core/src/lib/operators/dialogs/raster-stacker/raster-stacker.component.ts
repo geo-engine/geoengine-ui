@@ -208,7 +208,7 @@ export class RasterStackerComponent implements AfterViewInit {
 
     constructor() {
         this.form = new FormGroup<RasterStackerForm>({
-            rasterLayers: new FormControl<Array<RasterLayer> | undefined>(undefined, {
+            rasterLayers: new FormControl<Array<RasterLayer> | undefined>([], {
                 nonNullable: true,
                 validators: [Validators.required],
             }),

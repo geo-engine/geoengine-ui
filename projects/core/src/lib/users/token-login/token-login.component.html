@@ -1,23 +1,25 @@
-<form [formGroup]="loginForm" (ngSubmit)="login()">
+<form (ngSubmit)="login()">
     <div class="container" [ngClass]="{'accent-color': color() === 'accent'}" fxLayout="column" fxLayoutAlign="space-around">
         <mat-card appearance="outlined" class="login">
             <ng-content select="mat-card-header"></ng-content>
 
-            <mat-card-content [ngSwitch]="formStatus$ | async">
-                <ng-template [ngSwitchCase]="FormStatus.LoggedOut">
-                    <mat-form-field>
-                        <input matInput type="password" placeholder="Token" formControlName="sessionToken" />
-                    </mat-form-field>
-                    <p class="error" *ngIf="invalidCredentials$ | async">{{ invalidTokenText() }}</p>
-                </ng-template>
-                <ng-template [ngSwitchCase]="FormStatus.Loading">
-                    <mat-spinner></mat-spinner>
-                </ng-template>
+            <mat-card-content>
+                @switch (formStatus()) {
+                    @case (FormStatus.LoggedOut) {
+                        <mat-form-field>
+                            <input matInput type="password" placeholder="Token" [field]="loginForm.sessionToken" />
+                        </mat-form-field>
+                        @if (invalidCredentials()) {
+                            <p class="error">{{ invalidTokenText() }}</p>
+                        }
+                    }
+                    @case (FormStatus.Loading) {
+                        <mat-spinner></mat-spinner>
+                    }
+                }
             </mat-card-content>
-            <mat-card-actions [ngSwitch]="formStatus$ | async" fxLayout="row" fxLayoutGap="1rem" fxLayoutAlign="space-between center">
-                <button mat-raised-button type="submit" [disabled]="(loginForm.statusChanges | async) !== 'VALID'" color="primary" fxFlex>
-                    Login
-                </button>
+            <mat-card-actions fxLayout="row" fxLayoutGap="1rem" fxLayoutAlign="space-between center">
+                <button mat-raised-button type="submit" [disabled]="!loginForm().valid()" color="primary" fxFlex>Login</button>
             </mat-card-actions>
         </mat-card>
     </div>

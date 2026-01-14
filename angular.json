@@ -36,17 +36,26 @@
                     "defaultConfiguration": "production"
                 },
                 "test": {
-                    "builder": "@angular-devkit/build-angular:karma",
+                    "builder": "@angular/build:unit-test",
                     "options": {
-                        "polyfills": ["zone.js", "zone.js/testing"],
-                        "tsConfig": "projects/core/tsconfig.spec.json",
-                        "inlineStyleLanguage": "scss"
+                        "runnerConfig": "vitest.config.ts"
                     }
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
                         "lintFilePatterns": ["projects/core/**/*.ts", "projects/core/**/*.html"]
+                    }
+                },
+                "e2e": {
+                    "builder": "playwright-ng-schematics:playwright",
+                    "options": {
+                        "devServerTarget": "core:serve"
+                    },
+                    "configurations": {
+                        "production": {
+                            "devServerTarget": "core:serve:production"
+                        }
                     }
                 }
             }
@@ -84,7 +93,7 @@
                             "base": "dist/gis"
                         },
                         "index": "projects/gis/src/index.html",
-                        "polyfills": ["zone.js"],
+                        "polyfills": [],
                         "tsConfig": "projects/gis/tsconfig.app.json",
                         "assets": [
                             "projects/gis/src/favicon.ico",
@@ -154,15 +163,7 @@
                     }
                 },
                 "test": {
-                    "builder": "@angular-devkit/build-angular:karma",
-                    "options": {
-                        "polyfills": ["zone.js", "zone.js/testing"],
-                        "tsConfig": "projects/gis/tsconfig.spec.json",
-                        "inlineStyleLanguage": "scss",
-                        "assets": ["projects/gis/src/favicon.ico", "projects/gis/src/assets"],
-                        "styles": ["projects/gis/src/styles.scss"],
-                        "scripts": []
-                    }
+                    "builder": "@angular/build:unit-test"
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
@@ -171,19 +172,15 @@
                     }
                 },
                 "e2e": {
-                    "builder": "@angular-devkit/build-angular:protractor",
+                    "builder": "playwright-ng-schematics:playwright",
                     "options": {
-                        "protractorConfig": "projects/gis/e2e/protractor.conf.js"
+                        "devServerTarget": "gis:serve"
                     },
                     "configurations": {
                         "production": {
                             "devServerTarget": "gis:serve:production"
-                        },
-                        "development": {
-                            "devServerTarget": "gis:serve:development"
                         }
-                    },
-                    "defaultConfiguration": "development"
+                    }
                 }
             }
         },
@@ -220,7 +217,7 @@
                             "base": "dist/dashboards/data-atlas"
                         },
                         "index": "projects/dashboards/data-atlas/src/index.html",
-                        "polyfills": ["zone.js"],
+                        "polyfills": [],
                         "tsConfig": "projects/dashboards/data-atlas/tsconfig.app.json",
                         "assets": [
                             "projects/dashboards/data-atlas/src/favicon.ico",
@@ -289,15 +286,7 @@
                     }
                 },
                 "test": {
-                    "builder": "@angular-devkit/build-angular:karma",
-                    "options": {
-                        "polyfills": ["zone.js", "zone.js/testing"],
-                        "tsConfig": "projects/dashboards/data-atlas/tsconfig.spec.json",
-                        "inlineStyleLanguage": "scss",
-                        "assets": ["projects/dashboards/data-atlas/src/favicon.ico", "projects/dashboards/data-atlas/src/assets"],
-                        "styles": ["projects/dashboards/data-atlas/src/styles.scss"],
-                        "scripts": []
-                    }
+                    "builder": "@angular/build:unit-test"
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
@@ -306,19 +295,15 @@
                     }
                 },
                 "e2e": {
-                    "builder": "@angular-devkit/build-angular:protractor",
+                    "builder": "playwright-ng-schematics:playwright",
                     "options": {
-                        "protractorConfig": "projects/dashboards/data-atlas/e2e/protractor.conf.js"
+                        "devServerTarget": "data-atlas:serve"
                     },
                     "configurations": {
                         "production": {
                             "devServerTarget": "data-atlas:serve:production"
-                        },
-                        "development": {
-                            "devServerTarget": "data-atlas:serve:development"
                         }
-                    },
-                    "defaultConfiguration": "development"
+                    }
                 }
             }
         },
@@ -355,7 +340,7 @@
                             "base": "dist/dashboards/ebv-analyzer"
                         },
                         "index": "projects/dashboards/ebv-analyzer/src/index.html",
-                        "polyfills": ["zone.js"],
+                        "polyfills": [],
                         "tsConfig": "projects/dashboards/ebv-analyzer/tsconfig.app.json",
                         "assets": [
                             "projects/dashboards/ebv-analyzer/src/favicon.ico",
@@ -424,15 +409,7 @@
                     }
                 },
                 "test": {
-                    "builder": "@angular-devkit/build-angular:karma",
-                    "options": {
-                        "polyfills": ["zone.js", "zone.js/testing"],
-                        "tsConfig": "projects/dashboards/ebv-analyzer/tsconfig.spec.json",
-                        "inlineStyleLanguage": "scss",
-                        "assets": ["projects/dashboards/ebv-analyzer/src/favicon.ico", "projects/dashboards/ebv-analyzer/src/assets"],
-                        "styles": ["projects/dashboards/ebv-analyzer/src/styles.scss"],
-                        "scripts": []
-                    }
+                    "builder": "@angular/build:unit-test"
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
@@ -441,19 +418,15 @@
                     }
                 },
                 "e2e": {
-                    "builder": "@angular-devkit/build-angular:protractor",
+                    "builder": "playwright-ng-schematics:playwright",
                     "options": {
-                        "protractorConfig": "projects/dashboards/ebv-analyzer/e2e/protractor.conf.js"
+                        "devServerTarget": "ebv-analyzer:serve"
                     },
                     "configurations": {
                         "production": {
                             "devServerTarget": "ebv-analyzer:serve:production"
-                        },
-                        "development": {
-                            "devServerTarget": "ebv-analyzer:serve:development"
                         }
-                    },
-                    "defaultConfiguration": "development"
+                    }
                 }
             }
         },
@@ -490,7 +463,7 @@
                             "base": "dist/dashboards/nfdi-portal-demo"
                         },
                         "index": "projects/dashboards/nfdi-portal-demo/src/index.html",
-                        "polyfills": ["zone.js"],
+                        "polyfills": [],
                         "tsConfig": "projects/dashboards/nfdi-portal-demo/tsconfig.app.json",
                         "assets": [
                             "projects/dashboards/nfdi-portal-demo/src/favicon.ico",
@@ -559,18 +532,7 @@
                     }
                 },
                 "test": {
-                    "builder": "@angular-devkit/build-angular:karma",
-                    "options": {
-                        "polyfills": ["zone.js", "zone.js/testing"],
-                        "tsConfig": "projects/dashboards/nfdi-portal-demo/tsconfig.spec.json",
-                        "assets": [
-                            "projects/dashboards/nfdi-portal-demo/src/favicon.ico",
-                            "projects/dashboards/nfdi-portal-demo/src/assets"
-                        ],
-                        "inlineStyleLanguage": "scss",
-                        "styles": ["projects/dashboards/nfdi-portal-demo/src/styles.scss"],
-                        "scripts": []
-                    }
+                    "builder": "@angular/build:unit-test"
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
@@ -582,19 +544,15 @@
                     }
                 },
                 "e2e": {
-                    "builder": "@angular-devkit/build-angular:protractor",
+                    "builder": "playwright-ng-schematics:playwright",
                     "options": {
-                        "protractorConfig": "projects/dashboards/nfdi-portal-demo/e2e/protractor.conf.js"
+                        "devServerTarget": "nfdi-portal-demo:serve"
                     },
                     "configurations": {
                         "production": {
                             "devServerTarget": "nfdi-portal-demo:serve:production"
-                        },
-                        "development": {
-                            "devServerTarget": "nfdi-portal-demo:serve:development"
                         }
-                    },
-                    "defaultConfiguration": "development"
+                    }
                 }
             }
         },
@@ -631,7 +589,7 @@
                             "base": "dist/dashboards/gfbio"
                         },
                         "index": "projects/dashboards/gfbio/src/index.html",
-                        "polyfills": ["zone.js"],
+                        "polyfills": [],
                         "tsConfig": "projects/dashboards/gfbio/tsconfig.app.json",
                         "assets": [
                             "projects/dashboards/gfbio/src/favicon.ico",
@@ -700,15 +658,7 @@
                     }
                 },
                 "test": {
-                    "builder": "@angular-devkit/build-angular:karma",
-                    "options": {
-                        "polyfills": ["zone.js", "zone.js/testing"],
-                        "tsConfig": "projects/dashboards/gfbio/tsconfig.spec.json",
-                        "assets": ["projects/dashboards/gfbio/src/favicon.ico", "projects/dashboards/gfbio/src/assets"],
-                        "inlineStyleLanguage": "scss",
-                        "styles": ["projects/dashboards/gfbio/src/styles.scss"],
-                        "scripts": []
-                    }
+                    "builder": "@angular/build:unit-test"
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
@@ -717,19 +667,15 @@
                     }
                 },
                 "e2e": {
-                    "builder": "@angular-devkit/build-angular:protractor",
+                    "builder": "playwright-ng-schematics:playwright",
                     "options": {
-                        "protractorConfig": "projects/dashboards/gfbio/e2e/protractor.conf.js"
+                        "devServerTarget": "gfbio:serve"
                     },
                     "configurations": {
                         "production": {
                             "devServerTarget": "gfbio:serve:production"
-                        },
-                        "development": {
-                            "devServerTarget": "gfbio:serve:development"
                         }
-                    },
-                    "defaultConfiguration": "development"
+                    }
                 }
             }
         },
@@ -758,7 +704,7 @@
                             "base": "dist/manager"
                         },
                         "index": "projects/manager/src/index.html",
-                        "polyfills": ["zone.js"],
+                        "polyfills": [],
                         "tsConfig": "projects/manager/tsconfig.app.json",
                         "inlineStyleLanguage": "scss",
                         "assets": [
@@ -821,20 +767,23 @@
                     }
                 },
                 "test": {
-                    "builder": "@angular-devkit/build-angular:karma",
-                    "options": {
-                        "polyfills": ["zone.js", "zone.js/testing"],
-                        "tsConfig": "projects/manager/tsconfig.spec.json",
-                        "inlineStyleLanguage": "scss",
-                        "assets": ["projects/manager/src/favicon.ico", "projects/manager/src/assets"],
-                        "styles": ["projects/manager/src/styles.scss"],
-                        "scripts": []
-                    }
+                    "builder": "@angular/build:unit-test"
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
                         "lintFilePatterns": ["projects/manager/**/*.ts", "projects/manager/**/*.html"]
+                    }
+                },
+                "e2e": {
+                    "builder": "playwright-ng-schematics:playwright",
+                    "options": {
+                        "devServerTarget": "manager:serve"
+                    },
+                    "configurations": {
+                        "production": {
+                            "devServerTarget": "manager:serve:production"
+                        }
                     }
                 }
             }
@@ -861,16 +810,23 @@
                     "defaultConfiguration": "production"
                 },
                 "test": {
-                    "builder": "@angular-devkit/build-angular:karma",
-                    "options": {
-                        "tsConfig": "projects/common/tsconfig.spec.json",
-                        "polyfills": ["zone.js", "zone.js/testing"]
-                    }
+                    "builder": "@angular/build:unit-test"
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
                         "lintFilePatterns": ["projects/common/**/*.ts", "projects/common/**/*.html"]
+                    }
+                },
+                "e2e": {
+                    "builder": "playwright-ng-schematics:playwright",
+                    "options": {
+                        "devServerTarget": "common:serve"
+                    },
+                    "configurations": {
+                        "production": {
+                            "devServerTarget": "common:serve:production"
+                        }
                     }
                 }
             }
@@ -905,7 +861,7 @@
                             "base": "dist/dashboards/ecometrics"
                         },
                         "index": "projects/dashboards/ecometrics/src/index.html",
-                        "polyfills": ["zone.js"],
+                        "polyfills": [],
                         "tsConfig": "projects/dashboards/ecometrics/tsconfig.app.json",
                         "inlineStyleLanguage": "scss",
                         "assets": [
@@ -969,20 +925,23 @@
                     }
                 },
                 "test": {
-                    "builder": "@angular-devkit/build-angular:karma",
-                    "options": {
-                        "polyfills": ["zone.js", "zone.js/testing"],
-                        "tsConfig": "projects/dashboards/ecometrics/tsconfig.spec.json",
-                        "inlineStyleLanguage": "scss",
-                        "assets": ["projects/dashboards/ecometrics/src/favicon.ico", "projects/dashboards/ecometrics/src/assets"],
-                        "styles": ["projects/dashboards/ecometrics/src/styles.scss"],
-                        "scripts": []
-                    }
+                    "builder": "@angular/build:unit-test"
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
                         "lintFilePatterns": ["projects/dashboards/ecometrics/**/*.ts", "projects/dashboards/ecometrics/**/*.html"]
+                    }
+                },
+                "e2e": {
+                    "builder": "playwright-ng-schematics:playwright",
+                    "options": {
+                        "devServerTarget": "ecometrics:serve"
+                    },
+                    "configurations": {
+                        "production": {
+                            "devServerTarget": "ecometrics:serve:production"
+                        }
                     }
                 }
             }
@@ -1017,7 +976,7 @@
                             "base": "dist/dashboards/esg-indicator-service"
                         },
                         "index": "projects/dashboards/esg-indicator-service/src/index.html",
-                        "polyfills": ["zone.js"],
+                        "polyfills": [],
                         "tsConfig": "projects/dashboards/esg-indicator-service/tsconfig.app.json",
                         "inlineStyleLanguage": "scss",
                         "assets": [
@@ -1081,18 +1040,7 @@
                     }
                 },
                 "test": {
-                    "builder": "@angular-devkit/build-angular:karma",
-                    "options": {
-                        "polyfills": ["zone.js", "zone.js/testing"],
-                        "tsConfig": "projects/dashboards/esg-indicator-service/tsconfig.spec.json",
-                        "inlineStyleLanguage": "scss",
-                        "assets": [
-                            "projects/dashboards/esg-indicator-service/src/favicon.ico",
-                            "projects/dashboards/esg-indicator-service/src/assets"
-                        ],
-                        "styles": ["projects/dashboards/esg-indicator-service/src/styles.scss"],
-                        "scripts": []
-                    }
+                    "builder": "@angular/build:unit-test"
                 },
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
@@ -1101,6 +1049,17 @@
                             "projects/dashboards/esg-indicator-service/**/*.ts",
                             "projects/dashboards/esg-indicator-service/**/*.html"
                         ]
+                    }
+                },
+                "e2e": {
+                    "builder": "playwright-ng-schematics:playwright",
+                    "options": {
+                        "devServerTarget": "esg-indicator-service:serve"
+                    },
+                    "configurations": {
+                        "production": {
+                            "devServerTarget": "esg-indicator-service:serve:production"
+                        }
                     }
                 }
             }

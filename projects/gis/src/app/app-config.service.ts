@@ -11,8 +11,13 @@ interface Components {
     };
 }
 
+interface Routes {
+    readonly MANAGER: boolean;
+}
+
 interface AppConfigStructure extends CoreConfigStructure {
     readonly COMPONENTS: Components;
+    readonly ROUTES: Routes;
 }
 
 const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CORE_CONFIG, {
@@ -33,6 +38,9 @@ const APP_CONFIG_DEFAULTS = mergeDeepOverrideLists(DEFAULT_CORE_CONFIG, {
         LOGO_ALT_URL: 'assets/geoengine-white.svg',
         PAGE_TITLE: 'Geo Engine',
     },
+    ROUTES: {
+        MANAGER: true,
+    },
 }) as AppConfigStructure;
 
 @Injectable()
@@ -41,6 +49,10 @@ export class AppConfig extends CoreConfig {
 
     get COMPONENTS(): Components {
         return this.config.COMPONENTS;
+    }
+
+    get ROUTES(): Routes {
+        return this.config.ROUTES;
     }
 
     override load(): Promise<void> {

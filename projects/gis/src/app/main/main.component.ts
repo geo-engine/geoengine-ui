@@ -75,7 +75,9 @@ export class MainComponent implements OnInit, AfterViewInit {
     readonly bottomTabs = viewChild.required(MatTabGroup);
 
     readonly rightSidenav = viewChild.required(MatSidenav);
-    readonly sidenavContainerElement = viewChild.required(MatSidenavContainer, {read: ElementRef});
+    readonly sidenavContainerElement = viewChild.required<MatSidenavContainer, ElementRef<HTMLElement>>(MatSidenavContainer, {
+        read: ElementRef,
+    });
     readonly rightSidenavContainer = viewChild.required(SidenavContainerComponent);
 
     readonly layersReverse$: Observable<Array<Layer>>;
@@ -139,7 +141,7 @@ export class MainComponent implements OnInit, AfterViewInit {
                 openClosePromise = this.rightSidenav().close();
             }
 
-            openClosePromise.then(() => this.mapComponent().resize());
+            void openClosePromise.then(() => this.mapComponent().resize());
         });
         this.projectService
             .getNewPlotStream()
@@ -257,7 +259,7 @@ export class MainComponent implements OnInit, AfterViewInit {
     }
 
     @HostListener('window:resize')
-    private windowHeight(): void {
+    windowHeight(): void {
         this.windowHeight$.next(window.innerHeight);
     }
 

@@ -1,18 +1,15 @@
-import {BehaviorSubject, Subscription} from 'rxjs';
-
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject} from '@angular/core';
-import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
-
-import {User, CoreModule, ProjectService} from '@geoengine/core';
-import {first} from 'rxjs/operators';
+import {ChangeDetectionStrategy, Component, OnInit, inject, signal} from '@angular/core';
+import {User, CoreModule} from '@geoengine/core';
 import {Router} from '@angular/router';
-import {AsyncPipe} from '@angular/common';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatIconModule} from '@angular/material/icon';
 import {MatMenuModule} from '@angular/material/menu';
 import {NotificationService, UserService} from '@geoengine/common';
+import {Field, required, form} from '@angular/forms/signals';
+import {firstValueFrom} from 'rxjs';
+import {HttpErrorResponse} from '@angular/common/http';
 
 enum FormStatus {
     LoggedOut,
@@ -25,112 +22,106 @@ enum FormStatus {
     selector: 'geoengine-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
-    imports: [CoreModule, AsyncPipe, MatGridListModule, MatMenuModule, MatIconModule, MatButtonModule, MatCardModule],
+    imports: [CoreModule, Field, MatGridListModule, MatMenuModule, MatIconModule, MatButtonModule, MatCardModule],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
-    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+export class LoginComponent implements OnInit {
     private readonly userService = inject(UserService);
     private readonly notificationService = inject(NotificationService);
-    private readonly projectService = inject(ProjectService);
     private readonly router = inject(Router);
 
     readonly FormStatus = FormStatus;
 
-    formStatus$ = new BehaviorSubject<FormStatus>(FormStatus.Loading);
+    readonly formStatus = signal<FormStatus>(FormStatus.Loading);
 
-    loginForm: UntypedFormGroup;
+    readonly loginModel = signal({
+        email: '',
+        password: '',
+    });
+    readonly loginForm = form(this.loginModel, (schemaPath) => {
+        required(schemaPath.email);
+        required(schemaPath.password);
+    });
 
-    user?: User;
-    invalidCredentials$ = new BehaviorSubject<boolean>(false);
+    readonly user = signal<User | undefined>(undefined);
+    readonly invalidCredentials = signal<boolean>(false);
 
     private oidcUrl = '';
 
-    private formStatusSubscription?: Subscription;
-
-    constructor() {
-        this.loginForm = new UntypedFormGroup({
-            email: new UntypedFormControl('', Validators.compose([Validators.required])),
-            password: new UntypedFormControl('', Validators.required),
-        });
+    ngOnInit(): void {
+        void this.onInit();
     }
 
-    ngOnInit(): void {
+    async onInit(): Promise<void> {
         const redirectUri = window.location.href.replace(/\/signin$/, '/dashboard');
 
         // check if OIDC login is enabled
-        this.userService.oidcInit(redirectUri).subscribe(
-            (idr) => {
-                this.oidcUrl = idr.url;
-                this.formStatus$.next(FormStatus.Oidc);
-            },
-            (_error) => {
-                // OIDC login failed show local login
-                this.userService
-                    .getSessionOrUndefinedStream()
-                    .pipe(first())
-                    .subscribe((session) => {
-                        if (!session?.user || session.user.isGuest) {
-                            this.formStatus$.next(FormStatus.LoggedOut);
-                        } else {
-                            this.user = session.user;
-                            this.formStatus$.next(FormStatus.LoggedIn);
-                        }
-                    });
-            },
-        );
+        try {
+            const idr = await this.userService.oidcInit(redirectUri);
+            this.oidcUrl = idr.url;
+            this.formStatus.set(FormStatus.Oidc);
+        } catch {
+            // OIDC login failed show local login
+            const session = await firstValueFrom(this.userService.getSessionOrUndefinedStream());
 
-        // this essentially allows checking for the sidenav-header component on status changes
-        this.formStatusSubscription = this.formStatus$.subscribe(() => setTimeout(() => this.changeDetectorRef.markForCheck()));
-    }
-
-    ngAfterViewInit(): void {
-        // do this once for observables
-        setTimeout(() => this.loginForm.updateValueAndValidity());
-    }
-
-    ngOnDestroy(): void {
-        if (this.formStatusSubscription) {
-            this.formStatusSubscription.unsubscribe();
+            if (!session?.user || session.user.isGuest) {
+                this.formStatus.set(FormStatus.LoggedOut);
+            } else {
+                this.user.set(session.user);
+                this.formStatus.set(FormStatus.LoggedIn);
+            }
         }
     }
 
     oidcLogin(): void {
-        this.formStatus$.next(FormStatus.Loading);
+        this.formStatus.set(FormStatus.Loading);
         window.location.href = this.oidcUrl;
     }
 
-    login(): void {
-        this.formStatus$.next(FormStatus.Loading);
+    async login(): Promise<void> {
+        this.formStatus.set(FormStatus.Loading);
 
-        this.userService
-            .login({
-                email: this.loginForm.controls['email'].value,
-                password: this.loginForm.controls['password'].value,
-            })
-            .subscribe(
-                // eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/require-await
-                async (session) => {
-                    this.user = session.user;
-                    this.invalidCredentials$.next(false);
-                    this.formStatus$.next(FormStatus.LoggedIn);
+        try {
+            const session = await this.userService.login({
+                email: this.loginModel().email,
+                password: this.loginModel().password,
+            });
 
-                    this.redirectToMainView();
-                },
-                () => {
-                    // on error
-                    this.invalidCredentials$.next(true);
-                    (this.loginForm.controls['password'] as UntypedFormControl).setValue('');
-                    this.formStatus$.next(FormStatus.LoggedOut);
-                },
-            );
+            this.user.set(session.user);
+            this.invalidCredentials.set(false);
+            this.formStatus.set(FormStatus.LoggedIn);
+
+            await this.redirectToMainView();
+        } catch {
+            // on error
+            this.invalidCredentials.set(true);
+            this.loginForm.password().value.set('');
+            this.formStatus.set(FormStatus.LoggedOut);
+        }
     }
 
-    logout(): void {
-        this.formStatus$.next(FormStatus.LoggedOut);
+    async logout(): Promise<void> {
+        this.formStatus.set(FormStatus.LoggedOut);
+
+        // we log out by trying to perform a guest login
+        // if this fails, we will get logged out
+        try {
+            await this.userService.guestLogin();
+            this.loginForm.password().value.set('');
+        } catch (error) {
+            if (
+                error instanceof HttpErrorResponse &&
+                error.error &&
+                typeof error.error === 'object' &&
+                'error' in error.error &&
+                (error.error as {error?: string}).error !== 'AnonymousAccessDisabled'
+            ) {
+                this.notificationService.error(`The backend is currently unavailable (${error.message})`);
+            }
+        }
     }
 
-    redirectToMainView(): void {
-        this.router.navigate(['dashboard']);
+    async redirectToMainView(): Promise<void> {
+        await this.router.navigate(['dashboard']);
     }
 }

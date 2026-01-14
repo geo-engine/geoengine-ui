@@ -2,6 +2,7 @@ import {Observable, Observer} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AbstractControl, AsyncValidatorFn, FormArray, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {Moment} from 'moment';
+import {PathKind, SchemaPath, SchemaPathRules, validate} from '@angular/forms/signals';
 
 const isFiniteNumber = (value: null | undefined | number): boolean =>
     value !== null && value !== undefined && !isNaN(value) && isFinite(value);
@@ -156,6 +157,21 @@ const keywordValidator =
     (keywords: Array<string>) =>
     (control: AbstractControl): {keyword: true} | null =>
         keywords.includes(control.value) ? {keyword: true} : null;
+
+function keywordSignalValidator<TPathKind extends PathKind = PathKind.Root>(
+    path: SchemaPath<string, SchemaPathRules.Supported, TPathKind>,
+    keywords: Array<string>,
+): void {
+    validate(path, ({value}) => {
+        if (keywords.includes(value())) {
+            return {
+                kind: 'keyword',
+                message: `${value()} is a reserved keyword.`,
+            };
+        }
+        return null;
+    });
+}
 
 /**
  * Checks if the project name is unique.
@@ -427,6 +443,7 @@ export const geoengineValidators = {
     conditionalAsyncValidator,
     isNumber,
     keyword: keywordValidator,
+    keyword2: keywordSignalValidator,
     minAndMax,
     notOnlyWhitespace,
     uniqueProjectName: uniqueProjectNameValidator,

@@ -40,7 +40,7 @@ export class LayerCollectionLayerDetailsComponent {
 
     get rasterLayerMetadata(): RasterLayerMetadata | undefined {
         const layerMetadata = this.layerMetadata();
-        if (layerMetadata && layerMetadata.layerType === 'raster') {
+        if (layerMetadata?.layerType === 'raster') {
             return layerMetadata as RasterLayerMetadata;
         }
         return undefined;
@@ -48,7 +48,7 @@ export class LayerCollectionLayerDetailsComponent {
 
     get vectorLayerMetadata(): VectorLayerMetadata | undefined {
         const layerMetadata = this.layerMetadata();
-        if (layerMetadata && layerMetadata.layerType === 'vector') {
+        if (layerMetadata?.layerType === 'vector') {
             return layerMetadata as VectorLayerMetadata;
         }
         return undefined;

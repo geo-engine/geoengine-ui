@@ -65,7 +65,7 @@ export class CountrySelectorComponent implements OnInit, AfterViewInit, OnDestro
 
     protected setInitialValue(): void {
         this.filteredCountries.pipe(take(1), takeUntil(this._onDestroy)).subscribe(() => {
-            this.countrySelect().compareWith = (a: Country, b: Country): boolean => a && b && a.name === b.name;
+            this.countrySelect().compareWith = (a: Country, b: Country): boolean => a?.name === b?.name;
         });
     }
 

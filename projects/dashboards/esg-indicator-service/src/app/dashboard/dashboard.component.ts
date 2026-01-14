@@ -284,12 +284,12 @@ export class DashboardComponent implements AfterViewInit, AfterContentInit {
         this.score.set(score);
         this.scoreLoading.set(false);
 
-        this.usageCompontent().refresh();
+        await this.usageCompontent().refresh();
     }
 
     logout(): void {
         this.userService.logout();
-        this.router.navigate(['/signin']);
+        void this.router.navigate(['/signin']);
     }
 }
 

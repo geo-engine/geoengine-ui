@@ -25,7 +25,6 @@ import {
     map,
     mergeMap,
     of,
-    tap,
 } from 'rxjs';
 import {UUID} from '../datasets/dataset.model';
 import {isDefined} from '../util/conversions';
@@ -74,7 +73,7 @@ export class UserService {
         });
 
         this.getBackendStatus().subscribe((status) => {
-            this.tryLogin(status, oidcParams);
+            void this.tryLogin(status, oidcParams);
         });
 
         // update backend info when backend is available
@@ -96,10 +95,9 @@ export class UserService {
         // update quota when session changes or update is triggered
         this.createSessionQuotaStream();
 
-        this.triggerBackendStatusUpdate();
+        void this.triggerBackendStatusUpdate();
     }
 
-    // eslint-disable-next-line @typescript-eslint/require-await
     async tryLogin(
         status: BackendStatus,
         oidcParams:
@@ -133,26 +131,31 @@ export class UserService {
             this.oidcLogin(oidcParams)
                 .pipe(first())
                 .subscribe(() => {
-                    this.router.navigate([], {
+                    void this.router.navigate([], {
                         // eslint-disable-next-line @typescript-eslint/naming-convention
                         queryParams: {session_state: undefined, state: undefined, code: undefined},
                         queryParamsHandling: 'merge',
                     });
                 });
         } else {
-            // restore old session if possible
-            this.sessionFromBrowser(this.config.USER.AUTO_GUEST_LOGIN).subscribe({
-                next: (session) => {
-                    this.session$.next(session);
-                },
-                error: (error) => {
-                    // only show error if we did not expect it
-                    if (error?.error?.error !== 'Unauthorized') {
-                        this.notificationService.error(error?.error?.message);
-                    }
-                    this.session$.next(undefined);
-                },
-            });
+            try {
+                // restore old session if possible
+                const session = await this.sessionFromBrowser(this.config.USER.AUTO_GUEST_LOGIN);
+                this.session$.next(session);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            } catch (error: any) {
+                // only show error if we did not expect it
+                if (
+                    error instanceof HttpErrorResponse &&
+                    error.error &&
+                    typeof error.error === 'object' &&
+                    'error' in error.error &&
+                    (error.error as {error?: string}).error !== 'Unauthorized'
+                ) {
+                    this.notificationService.error(error.message);
+                }
+                this.session$.next(undefined);
+            }
         }
     }
 
@@ -170,20 +173,21 @@ export class UserService {
         return this.backendStatus$;
     }
 
-    sessionFromBrowser(fallbackToGuest: boolean): Observable<Session | undefined> {
-        return this.restoreSessionFromBrowser().pipe(
-            catchError((_error) => {
-                if (fallbackToGuest) {
-                    return this.createGuestUser();
-                } else {
-                    return of(undefined);
-                }
-            }),
-        );
+    async sessionFromBrowser(fallbackToGuest: boolean): Promise<Session | undefined> {
+        try {
+            return await this.restoreSessionFromBrowser();
+        } catch {
+            if (fallbackToGuest) {
+                return this.createGuestUser();
+            } else {
+                return undefined;
+            }
+        }
     }
 
-    createGuestUser(): Observable<Session> {
-        return from(new SessionApi().anonymousHandler().then((response) => this.sessionFromDict(response)));
+    async createGuestUser(): Promise<Session> {
+        const response = await new SessionApi().anonymousHandler();
+        return this.sessionFromDict(response);
     }
 
     /**
@@ -244,46 +248,35 @@ export class UserService {
      * @param credentials.password The user's password.
      * @returns `true` if the login was successful, `false` otherwise.
      */
-    login(userCredentials: {email: string; password: string}): Observable<Session> {
-        const result = new ReplaySubject<Session>();
+    async login(userCredentials: {email: string; password: string}): Promise<Session> {
+        const response = await new SessionApi().loginHandler({
+            userCredentials,
+        });
+        const session = this.sessionFromDict(response);
 
-        new SessionApi()
-            .loginHandler({
-                userCredentials,
-            })
-            .then((response) => this.sessionFromDict(response))
-            .then((session) => {
-                this.session$.next(session);
-                result.next(session);
-                result.complete();
-            })
-            .catch((error) => result.error(error));
+        this.session$.next(session);
 
-        return result.asObservable();
+        return session;
     }
 
-    guestLogin(): Observable<Session> {
-        const result = new ReplaySubject<Session>();
-        this.session$.pipe(first()).subscribe((oldSession) => {
-            if (oldSession) {
-                new SessionApi(oldSession.apiConfiguration).logoutHandler();
-            }
+    async guestLogin(): Promise<Session> {
+        const oldSession = await firstValueFrom(this.session$);
 
-            this.createGuestUser().subscribe({
-                next: (session) => {
-                    this.session$.next(session);
-                    result.next(session);
-                },
-                error: (error) => {
-                    // failing on a guest login means we cannot do it,
-                    // so we are logged out
-                    this.session$.next(undefined);
-                    result.error(error);
-                },
-                complete: () => result.complete(),
-            });
-        });
-        return result.asObservable();
+        if (oldSession) {
+            await new SessionApi(oldSession.apiConfiguration).logoutHandler();
+        }
+
+        try {
+            const session = await this.createGuestUser();
+            this.session$.next(session);
+
+            return session;
+        } catch (error) {
+            // failing on a guest login means we cannot do it,
+            // so we are logged out
+            this.session$.next(undefined);
+            throw error;
+        }
     }
 
     logout(): void {
@@ -307,10 +300,14 @@ export class UserService {
         });
     }
 
-    createSessionWithToken(sessionToken: UUID): Observable<Session> {
-        return from(
-            new SessionApi(apiConfigurationWithAccessKey(sessionToken)).sessionHandler().then((response) => this.sessionFromDict(response)),
-        ).pipe(tap((session) => this.session$.next(session)));
+    async createSessionWithToken(sessionToken: UUID): Promise<Session> {
+        const response = await new SessionApi(apiConfigurationWithAccessKey(sessionToken)).sessionHandler();
+
+        const session = this.sessionFromDict(response);
+
+        this.session$.next(session);
+
+        return session;
     }
 
     getSessionOnce(): Observable<Session> {
@@ -333,8 +330,8 @@ export class UserService {
         );
     }
 
-    isLoggedIn(): Observable<boolean> {
-        return this.session$.pipe(first(), map(isDefined));
+    async isLoggedIn(): Promise<boolean> {
+        return await firstValueFrom(this.session$).then(isDefined);
     }
 
     /**
@@ -345,14 +342,12 @@ export class UserService {
         this.logoutCallback = callback;
     }
 
-    oidcInit(redirectUri: string): Observable<AuthCodeRequestURL> {
+    oidcInit(redirectUri: string): Promise<AuthCodeRequestURL> {
         sessionStorage.setItem('redirectUri', redirectUri);
 
-        return from(
-            new SessionApi().oidcInit({
-                redirectUri: redirectUri,
-            }),
-        );
+        return new SessionApi().oidcInit({
+            redirectUri: redirectUri,
+        });
     }
 
     oidcLogin(request: {sessionState: string; code: string; state: string}): Observable<Session> {
@@ -407,7 +402,7 @@ export class UserService {
         }
     }
 
-    protected restoreSessionFromBrowser(): Observable<Session> {
+    protected restoreSessionFromBrowser(): Promise<Session> {
         const sessionToken = localStorage.getItem(PATH_PREFIX + 'session') ?? '';
 
         return this.createSessionWithToken(sessionToken);
