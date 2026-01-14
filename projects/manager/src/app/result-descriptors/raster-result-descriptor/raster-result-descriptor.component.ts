@@ -66,12 +66,7 @@ export class RasterResultDescriptorComponent {
 
     get regularTimeDimension(): RegularTimeDimension | undefined {
         const rd = this.resultDescriptor().time.dimension;
-
-        if (rd && rd.type === 'regular') {
-            return rd;
-        }
-
-        return undefined;
+        return rd?.type === 'regular' ? rd : undefined;
     }
 }
 
