@@ -8,7 +8,7 @@ import {MatCard, MatCardContent, MatCardActions} from '@angular/material/card';
 import {MatFormField, MatInput} from '@angular/material/input';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatButton} from '@angular/material/button';
-import {form, Field, required} from '@angular/forms/signals';
+import {form, FormField, required} from '@angular/forms/signals';
 
 enum FormStatus {
     LoggedOut,
@@ -22,7 +22,7 @@ enum FormStatus {
     styleUrls: ['./token-login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        Field,
+        FormField,
         FxLayoutDirective,
         FxLayoutAlignDirective,
         NgClass,
