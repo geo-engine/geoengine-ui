@@ -7,7 +7,7 @@ import {MatFormField, MatInput} from '@angular/material/input';
 import {MatButton} from '@angular/material/button';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {HttpErrorResponse} from '@angular/common/http';
-import {required, form, Field} from '@angular/forms/signals';
+import {required, form, FormField} from '@angular/forms/signals';
 import {firstValueFrom} from 'rxjs';
 
 enum FormStatus {
@@ -21,7 +21,7 @@ enum FormStatus {
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [Field, FxFlexDirective, FxLayoutDirective, MatButton, MatFormField, MatInput, MatProgressSpinner, SidenavHeaderComponent],
+    imports: [FormField, FxFlexDirective, FxLayoutDirective, MatButton, MatFormField, MatInput, MatProgressSpinner, SidenavHeaderComponent],
 })
 export class LoginComponent implements OnInit {
     private readonly config = inject(CoreConfig);
