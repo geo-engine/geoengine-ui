@@ -52,7 +52,7 @@ export class RasterResultDescriptorComponent {
     }
 
     get boundingBox(): BoundingBox2D {
-        const gt = GeoTransform.fromGdalDatasetGeoTransform(this.resultDescriptor().spatialGrid.spatialGrid.geoTransform);
+        const gt = GeoTransform.fromDict(this.resultDescriptor().spatialGrid.spatialGrid.geoTransform);
         const pxBounds = GridBoundingBox2D.fromDict(this.resultDescriptor().spatialGrid.spatialGrid.gridBounds);
         return gt.gridBoundsToSpatialBounds(pxBounds);
     }

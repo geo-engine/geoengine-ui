@@ -1,4 +1,4 @@
-import {GdalDatasetGeoTransform, GeoTransform as GeoTransformDict} from '@geoengine/openapi-client';
+import {GeoTransform as GeoTransformDict} from '@geoengine/openapi-client';
 import {ToDict} from '../time/time.model';
 import {Coordinate2D} from '../spatial-features/coordinate.model';
 import {GridIdx2D} from './grid-idx.model';
@@ -58,10 +58,6 @@ export class GeoTransform implements ToDict<GeoTransformDict> {
     }
 
     public static fromDict(dict: GeoTransformDict): GeoTransform {
-        return new GeoTransform(Coordinate2D.fromDict(dict.originCoordinate), dict.xPixelSize, dict.yPixelSize);
-    }
-
-    public static fromGdalDatasetGeoTransform(dict: GdalDatasetGeoTransform): GeoTransform {
         return new GeoTransform(Coordinate2D.fromDict(dict.originCoordinate), dict.xPixelSize, dict.yPixelSize);
     }
 }

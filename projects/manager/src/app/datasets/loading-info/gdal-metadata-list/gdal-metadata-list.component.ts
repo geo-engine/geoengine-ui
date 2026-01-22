@@ -206,7 +206,7 @@ export class GdalMetadataListComponent implements OnChanges {
         const boundsIter = params
             .filter((p) => !!p.params)
             .map((p) => {
-                const gt = GeoTransform.fromGdalDatasetGeoTransform(p.params.geoTransform);
+                const gt = GeoTransform.fromDict(p.params.geoTransform);
                 const bounds = gt.gridBoundsToSpatialBounds(
                     new GridBoundingBox2D(new GridIdx2D(0, 0), new GridIdx2D(p.params.width - 1, p.params.height - 1)),
                 );
@@ -216,7 +216,7 @@ export class GdalMetadataListComponent implements OnChanges {
         if (!bounds) {
             return undefined;
         }
-        const gt = GeoTransform.fromGdalDatasetGeoTransform(params.filter((p) => !!p.params).map((p) => p.params.geoTransform)[0]);
+        const gt = GeoTransform.fromDict(params.filter((p) => !!p.params).map((p) => p.params.geoTransform)[0]);
         const pxBounds = gt.spatialToGridBounds(bounds);
 
         const spatialGrid = new SpatialGridDefinition(gt, pxBounds);
