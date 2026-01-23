@@ -7,7 +7,7 @@
                 @switch (formStatus()) {
                     @case (FormStatus.LoggedOut) {
                         <mat-form-field>
-                            <input matInput type="password" placeholder="Token" [field]="loginForm.sessionToken" />
+                            <input matInput type="password" placeholder="Token" [formField]="loginForm.sessionToken" />
                         </mat-form-field>
                         @if (invalidCredentials()) {
                             <p class="error">{{ invalidTokenText() }}</p>

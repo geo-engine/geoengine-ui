@@ -17,7 +17,7 @@ import {MatFormField, MatInput} from '@angular/material/input';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
-import {Field, required, form} from '@angular/forms/signals';
+import {FormField, required, form} from '@angular/forms/signals';
 import {firstValueFrom} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 
@@ -34,7 +34,7 @@ enum FormStatus {
     styleUrls: ['./login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        Field,
+        FormField,
         FxLayoutDirective,
         FxLayoutAlignDirective,
         MatCard,

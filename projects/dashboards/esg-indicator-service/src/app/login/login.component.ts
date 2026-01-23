@@ -7,7 +7,7 @@ import {MatGridListModule} from '@angular/material/grid-list';
 import {MatIconModule} from '@angular/material/icon';
 import {MatMenuModule} from '@angular/material/menu';
 import {NotificationService, UserService} from '@geoengine/common';
-import {Field, required, form} from '@angular/forms/signals';
+import {FormField, required, form} from '@angular/forms/signals';
 import {firstValueFrom} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 
@@ -22,7 +22,7 @@ enum FormStatus {
     selector: 'geoengine-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
-    imports: [CoreModule, Field, MatGridListModule, MatMenuModule, MatIconModule, MatButtonModule, MatCardModule],
+    imports: [CoreModule, FormField, MatGridListModule, MatMenuModule, MatIconModule, MatButtonModule, MatCardModule, FormField],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent implements OnInit {
