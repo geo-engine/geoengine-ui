@@ -14,6 +14,8 @@ import {
     MatRowDef,
     MatRow,
 } from '@angular/material/table';
+import {MatExpansionPanel, MatExpansionPanelHeader} from '@angular/material/expansion';
+import {KeyValuePipe, NgForOf} from '@angular/common';
 
 @Component({
     selector: 'geoengine-manager-raster-result-descriptor',
@@ -34,6 +36,10 @@ import {
         MatHeaderRow,
         MatRowDef,
         MatRow,
+        MatExpansionPanel,
+        MatExpansionPanelHeader,
+        NgForOf,
+        KeyValuePipe,
     ],
 })
 export class RasterResultDescriptorComponent {

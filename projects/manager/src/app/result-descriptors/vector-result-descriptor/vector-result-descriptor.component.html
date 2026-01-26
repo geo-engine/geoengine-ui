@@ -46,8 +46,8 @@
         </div>
     }
 
-    @if (columnsDataSource.length) {
-        <table mat-table [dataSource]="columnsDataSource">
+    @if (columns.length) {
+        <table mat-table [dataSource]="columns">
             <ng-container matColumnDef="name">
                 <th mat-header-cell *matHeaderCellDef>Column Name</th>
                 <td mat-cell *matCellDef="let band">{{ band.name }}</td>
@@ -60,12 +60,15 @@
                 <th mat-header-cell *matHeaderCellDef>Measurement</th>
                 <td mat-cell *matCellDef="let band">
                     @if (band.measurement.type === 'classification') {
-                        {{ band.measurement.measurement }}
-                        <!-- TODO classes -->
+                        <mat-expansion-panel>
+                            <mat-expansion-panel-header>Click to view classes</mat-expansion-panel-header>
+                            <ng-container *ngFor="let clazz of band.measurement.classes | keyvalue">
+                                <p>{{ clazz.key }}: {{ clazz.value }}</p>
+                            </ng-container>
+                        </mat-expansion-panel>
                     }
                     @if (band.measurement.type === 'continuous') {
-                        {{ band.measurement.measurement }}
-                        <!-- TODO unit -->
+                        {{ band.measurement.measurement }} ({{ band.measurement.unit }})
                     }
                     @if (band.measurement.type === 'unitless') {
                         Unitless
