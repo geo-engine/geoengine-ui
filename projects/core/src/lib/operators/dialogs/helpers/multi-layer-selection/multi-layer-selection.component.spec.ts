@@ -6,7 +6,6 @@ import {inputBinding, provideZonelessChangeDetection, signal, WritableSignal} fr
 import {of} from 'rxjs';
 import {DialogSectionHeadingComponent} from '../../../../dialogs/dialog-section-heading/dialog-section-heading.component';
 import {MATERIAL_MODULES} from '../../../../core.module';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {By} from '@angular/platform-browser';
 import {WGS_84} from '../../../../spatial-references/spatial-reference.service';
 import {
@@ -131,7 +130,7 @@ describe('MultiLayerSelectionComponent', () => {
 
         await TestBed.configureTestingModule({
             providers: [provideZonelessChangeDetection(), {provide: ProjectService, useValue: projectServiceSpy}],
-            imports: [...MATERIAL_MODULES, NoopAnimationsModule, MultiLayerSelectionComponent, DialogSectionHeadingComponent],
+            imports: [...MATERIAL_MODULES, MultiLayerSelectionComponent, DialogSectionHeadingComponent],
         }).compileComponents();
 
         layersInput = signal([]);

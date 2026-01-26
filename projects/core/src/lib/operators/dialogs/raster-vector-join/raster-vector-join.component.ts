@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy, inject} from '@angular/core';
 import {
     AbstractControl,
     FormArray,
@@ -48,7 +48,7 @@ type FeatureAggregation = 'first' | 'mean';
 
 interface RasterVectorJoinForm {
     vectorLayer: FormControl<VectorLayer | undefined>;
-    rasterLayers: FormControl<Array<RasterLayer> | undefined>;
+    rasterLayers: FormControl<Array<RasterLayer>>;
     columnNamesType: FormControl<ColumnNames>;
     columnNamesValues: FormArray<FormControl<string>>;
     temporalAggregation: FormControl<TemporalAggregation>;
@@ -98,7 +98,6 @@ export class RasterVectorJoinComponent implements OnDestroy {
     private readonly randomColorService = inject(RandomColorService);
     private readonly notificationService = inject(NotificationService);
     private readonly formBuilder = inject(FormBuilder);
-    private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
     minNumberOfRasterInputs = 1;
     maxNumberOfRasterInputs = 8;
@@ -120,7 +119,7 @@ export class RasterVectorJoinComponent implements OnDestroy {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
-            rasterLayers: new FormControl<Array<RasterLayer> | undefined>(undefined, {
+            rasterLayers: new FormControl<Array<RasterLayer>>([], {
                 nonNullable: true,
                 validators: [Validators.required],
             }),
@@ -138,7 +137,7 @@ export class RasterVectorJoinComponent implements OnDestroy {
 
         const rasterLayerSub = this.form.controls.rasterLayers.valueChanges
             .pipe(
-                mergeMap((rasterLayers: Array<RasterLayer> | undefined) => {
+                mergeMap((rasterLayers: Array<RasterLayer>) => {
                     if (!rasterLayers) {
                         return EMPTY;
                     }
@@ -244,7 +243,7 @@ export class RasterVectorJoinComponent implements OnDestroy {
 
     add(): void {
         const vectorLayer: VectorLayer | undefined = this.form.controls.vectorLayer.value;
-        const rasterLayers: Array<RasterLayer> | undefined = this.form.controls.rasterLayers.value;
+        const rasterLayers: Array<RasterLayer> = this.form.controls.rasterLayers.value;
         if (!vectorLayer || !rasterLayers) {
             return;
         }

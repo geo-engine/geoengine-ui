@@ -22,7 +22,7 @@
             "prefix": "geoengine",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:ng-packagr",
+                    "builder": "@angular/build:ng-packagr",
                     "options": {
                         "tsConfig": "projects/core/tsconfig.lib.json",
                         "project": "projects/core/ng-package.json"
@@ -79,7 +79,7 @@
             "prefix": "geoengine",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:application",
+                    "builder": "@angular/build:application",
                     "options": {
                         "allowedCommonJsDependencies": [
                             "dagre-d3",
@@ -144,7 +144,7 @@
                     "defaultConfiguration": "production"
                 },
                 "serve": {
-                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "builder": "@angular/build:dev-server:dev-server",
                     "options": {},
                     "configurations": {
                         "production": {
@@ -157,7 +157,7 @@
                     "defaultConfiguration": "development"
                 },
                 "extract-i18n": {
-                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "builder": "@angular/build:dev-server:extract-i18n",
                     "options": {
                         "buildTarget": "gis:build"
                     }
@@ -203,7 +203,7 @@
             "prefix": "geoengine",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:application",
+                    "builder": "@angular/build:application",
                     "options": {
                         "allowedCommonJsDependencies": [
                             "dagre-d3",
@@ -267,7 +267,7 @@
                     "defaultConfiguration": "production"
                 },
                 "serve": {
-                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "builder": "@angular/build:dev-server:dev-server",
                     "options": {},
                     "configurations": {
                         "production": {
@@ -280,7 +280,7 @@
                     "defaultConfiguration": "development"
                 },
                 "extract-i18n": {
-                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "builder": "@angular/build:dev-server:extract-i18n",
                     "options": {
                         "buildTarget": "data-atlas:build"
                     }
@@ -326,7 +326,7 @@
             "prefix": "geoengine",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:application",
+                    "builder": "@angular/build:application",
                     "options": {
                         "allowedCommonJsDependencies": [
                             "dagre-d3",
@@ -390,7 +390,7 @@
                     "defaultConfiguration": "production"
                 },
                 "serve": {
-                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "builder": "@angular/build:dev-server:dev-server",
                     "options": {},
                     "configurations": {
                         "production": {
@@ -403,7 +403,7 @@
                     "defaultConfiguration": "development"
                 },
                 "extract-i18n": {
-                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "builder": "@angular/build:dev-server:extract-i18n",
                     "options": {
                         "buildTarget": "ebv-analyzer:build"
                     }
@@ -449,7 +449,7 @@
             "prefix": "geoengine",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:application",
+                    "builder": "@angular/build:application",
                     "options": {
                         "allowedCommonJsDependencies": [
                             "dagre-d3",
@@ -513,7 +513,7 @@
                     "defaultConfiguration": "production"
                 },
                 "serve": {
-                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "builder": "@angular/build:dev-server:dev-server",
                     "options": {},
                     "configurations": {
                         "production": {
@@ -526,7 +526,7 @@
                     "defaultConfiguration": "development"
                 },
                 "extract-i18n": {
-                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "builder": "@angular/build:dev-server:extract-i18n",
                     "options": {
                         "buildTarget": "nfdi-portal-demo:build"
                     }
@@ -575,7 +575,7 @@
             "prefix": "geoengine",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:application",
+                    "builder": "@angular/build:application",
                     "options": {
                         "allowedCommonJsDependencies": [
                             "dagre-d3",
@@ -639,7 +639,7 @@
                     "defaultConfiguration": "production"
                 },
                 "serve": {
-                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "builder": "@angular/build:dev-server:dev-server",
                     "options": {},
                     "configurations": {
                         "production": {
@@ -652,7 +652,7 @@
                     "defaultConfiguration": "development"
                 },
                 "extract-i18n": {
-                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "builder": "@angular/build:dev-server:extract-i18n",
                     "options": {
                         "buildTarget": "gfbio:build"
                     }
@@ -698,7 +698,7 @@
             "prefix": "app",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:application",
+                    "builder": "@angular/build:application",
                     "options": {
                         "outputPath": {
                             "base": "dist/manager"
@@ -749,7 +749,7 @@
                     "defaultConfiguration": "production"
                 },
                 "serve": {
-                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "builder": "@angular/build:dev-server:dev-server",
                     "configurations": {
                         "production": {
                             "buildTarget": "manager:build:production"
@@ -761,7 +761,7 @@
                     "defaultConfiguration": "development"
                 },
                 "extract-i18n": {
-                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "builder": "@angular/build:dev-server:extract-i18n",
                     "options": {
                         "buildTarget": "manager:build"
                     }
@@ -795,7 +795,7 @@
             "prefix": "lib",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:ng-packagr",
+                    "builder": "@angular/build:ng-packagr",
                     "options": {
                         "project": "projects/common/ng-package.json"
                     },
@@ -847,7 +847,7 @@
             "prefix": "app",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:application",
+                    "builder": "@angular/build:application",
                     "options": {
                         "allowedCommonJsDependencies": [
                             "dagre-d3",
@@ -907,7 +907,7 @@
                     "defaultConfiguration": "production"
                 },
                 "serve": {
-                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "builder": "@angular/build:dev-server:dev-server",
                     "configurations": {
                         "production": {
                             "buildTarget": "ecometrics:build:production"
@@ -919,7 +919,7 @@
                     "defaultConfiguration": "development"
                 },
                 "extract-i18n": {
-                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "builder": "@angular/build:dev-server:extract-i18n",
                     "options": {
                         "buildTarget": "ecometrics:build"
                     }
@@ -962,7 +962,7 @@
             "prefix": "app",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:application",
+                    "builder": "@angular/build:application",
                     "options": {
                         "allowedCommonJsDependencies": [
                             "dagre-d3",
@@ -1022,7 +1022,7 @@
                     "defaultConfiguration": "production"
                 },
                 "serve": {
-                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "builder": "@angular/build:dev-server:dev-server",
                     "configurations": {
                         "production": {
                             "buildTarget": "esg-indicator-service:build:production"
@@ -1034,7 +1034,7 @@
                     "defaultConfiguration": "development"
                 },
                 "extract-i18n": {
-                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "builder": "@angular/build:dev-server:extract-i18n",
                     "options": {
                         "buildTarget": "esg-indicator-service:build"
                     }
