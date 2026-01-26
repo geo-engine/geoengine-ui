@@ -36,7 +36,7 @@ import {MatFormField, MatLabel, MatInput, MatError, MatHint} from '@angular/mate
 import {OperatorOutputNameComponent} from '../helpers/operator-output-name/operator-output-name.component';
 import {AsyncPipe} from '@angular/common';
 
-interface RasterStackerForm {
+interface BandNeighborhoodForm {
     rasterLayer: FormControl<RasterLayer | undefined>;
     name: FormControl<string>;
     neighborhoodAggregate: FormControl<NeighborhoodAggregate>;
@@ -86,12 +86,12 @@ export class BandNeighborhoodAggregateComponent {
     readonly lastError$ = new BehaviorSubject<string | undefined>(undefined);
     readonly loading$ = new BehaviorSubject<boolean>(false);
 
-    readonly form: FormGroup<RasterStackerForm>;
+    readonly form: FormGroup<BandNeighborhoodForm>;
 
     readonly symbologyCreator = viewChild.required(SymbologyCreatorComponent);
 
     constructor() {
-        this.form = new FormGroup<RasterStackerForm>({
+        this.form = new FormGroup<BandNeighborhoodForm>({
             rasterLayer: new FormControl<RasterLayer | undefined>(undefined, {
                 nonNullable: true,
                 validators: [Validators.required], // TODO: check that the input has at least 2 bands
@@ -200,7 +200,7 @@ export class BandNeighborhoodAggregateComponent {
                     this.loading$.next(false);
                 },
                 error: (error) => {
-                    const errorMsg = error.error.message;
+                    const errorMsg = error;
                     this.lastError$.next(errorMsg);
                     this.loading$.next(false);
                 },

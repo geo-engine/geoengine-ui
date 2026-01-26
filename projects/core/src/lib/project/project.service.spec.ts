@@ -30,6 +30,7 @@ describe('test project methods in projectService', () => {
     };
     let userServiceSpy: {
         getSessionStream: Mock;
+        getSessionTokenStream: Mock;
         getSessionTokenForRequest: Mock;
     };
     let spatialReferenceSpy: {
@@ -56,6 +57,7 @@ describe('test project methods in projectService', () => {
         };
         userServiceSpy = {
             getSessionStream: vi.fn().mockName('UserService.getSessionStream'),
+            getSessionTokenStream: vi.fn().mockName('UserService.getSessionTokenStream'),
             getSessionTokenForRequest: vi.fn().mockName('UserService.getSessionTokenForRequest'),
         };
         spatialReferenceSpy = {
@@ -90,7 +92,8 @@ describe('test project methods in projectService', () => {
             }),
         );
 
-        userServiceSpy.getSessionTokenForRequest.mockReturnValue(of<UUID>('ffffffff-ffff-4fff-afff-ffffffffffff'));
+        userServiceSpy.getSessionTokenForRequest.mockReturnValue(of<UUID>(sessionToken));
+        userServiceSpy.getSessionTokenStream.mockReturnValue(of<UUID>(sessionToken));
 
         spatialReferenceSpy.getSpatialReferenceSpecification.mockReturnValue(
             of<SpatialReferenceSpecification>(

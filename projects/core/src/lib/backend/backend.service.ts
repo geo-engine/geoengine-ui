@@ -226,7 +226,6 @@ export class BackendService {
         params.setMapped('bbox', request.bbox, (bbox) => bboxDictToExtent(bbox).join(','));
         params.setMapped('time', request.time, (time) => `${unixTimestampToIsoString(time.start)}/${unixTimestampToIsoString(time.end)}`);
         params.set('srsName', request.srsName);
-        params.setMapped('queryResolution', request.queryResolution, (r) => r.toString());
 
         // these probably do not work yet
         params.set('namespaces', request.namespaces);

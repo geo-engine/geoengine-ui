@@ -1,5 +1,6 @@
 import {Component, input} from '@angular/core';
-import {RasterBandDescriptor, TypedRasterResultDescriptor} from '@geoengine/openapi-client';
+import {BoundingBox2D, GeoTransform, GridBoundingBox2D} from '@geoengine/common';
+import {RasterBandDescriptor, TypedRasterResultDescriptor, RegularTimeDimension} from '@geoengine/openapi-client';
 import {FormsModule} from '@angular/forms';
 import {MatFormField, MatLabel, MatInput} from '@angular/material/input';
 import {
@@ -49,4 +50,27 @@ export class RasterResultDescriptorComponent {
     get bandDataSource(): RasterBandDescriptor[] {
         return this.resultDescriptor().bands;
     }
+
+    get boundingBox(): BoundingBox2D {
+        const gt = GeoTransform.fromDict(this.resultDescriptor().spatialGrid.spatialGrid.geoTransform);
+        const pxBounds = GridBoundingBox2D.fromDict(this.resultDescriptor().spatialGrid.spatialGrid.gridBounds);
+        return gt.gridBoundsToSpatialBounds(pxBounds);
+    }
+
+    get spatialResolution(): SpatialResolution {
+        return {
+            x: this.resultDescriptor().spatialGrid.spatialGrid.geoTransform.xPixelSize,
+            y: this.resultDescriptor().spatialGrid.spatialGrid.geoTransform.yPixelSize,
+        };
+    }
+
+    get regularTimeDimension(): RegularTimeDimension | undefined {
+        const rd = this.resultDescriptor().time.dimension;
+        return rd?.type === 'regular' ? rd : undefined;
+    }
+}
+
+interface SpatialResolution {
+    x: number;
+    y: number;
 }
