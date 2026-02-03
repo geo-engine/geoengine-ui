@@ -3,6 +3,7 @@ import {
     TimeStep as TimeStepDict,
     TimeInterval as TimeIntervalDict,
     TimeGranularity as TimeStepGranularityDict,
+    Coordinate2D as Coordinate2DDict,
 } from '@geoengine/openapi-client';
 import {NamedDataDict} from '../datasets/dataset.model';
 import {SrsString} from '../spatial-references/spatial-reference.model';
@@ -427,6 +428,7 @@ export interface RasterTypeConversionDict extends OperatorDict {
 export interface VisualPointClusteringParams extends OperatorParams {
     minRadiusPx: number;
     deltaPx: number;
+    resolution: number;
     radiusColumn: string;
     countColumn: string;
     columnAggregates: Record<
@@ -480,12 +482,22 @@ export interface RelativeTimeShiftDictParams extends OperatorParams {
 export interface InterpolationDict extends OperatorDict {
     type: 'Interpolation';
     params: {
-        interpolation: 'nearestNeighbor' | 'bilinear';
-        inputResolution: InputResolutionDict;
+        interpolation: 'nearestNeighbor' | 'biLinear';
+        outputResolution: OutputResolutionDict;
+        outputOriginReference?: Coordinate2DDict;
     };
 }
 
-export type InputResolutionDict = {type: 'source'} | {type: 'value'; x: number; y: number};
+export interface DownsamplingDict extends OperatorDict {
+    type: 'Downsampling';
+    params: {
+        samplingMethod: 'nearestNeighbor';
+        outputResolution: OutputResolutionDict;
+        outputOriginReference?: Coordinate2DDict;
+    };
+}
+
+export type OutputResolutionDict = {type: 'resolution'; x: number; y: number} | {type: 'fraction'; x: number; y: number};
 
 export interface RasterUnScalingDict extends OperatorDict {
     type: 'RasterScaling';

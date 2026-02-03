@@ -131,4 +131,37 @@ export class BoundingBox2D implements ToDict<BBoxDict> {
             upperRightCoordinate: this.upperRightCoordinate.toDict(),
         };
     }
+
+    /**
+     * Returns the `BoundingBox2D` covering self and other.
+     *
+     * @param other
+     * @returns - A new union `BoundingBox2D`.
+     */
+    public union(other: BoundingBox2D): BoundingBox2D {
+        return BoundingBox2D.fromNumbers(
+            Math.min(this.xmin, other.xmin),
+            Math.min(this.ymin, other.ymin),
+            Math.max(this.xmax, other.xmax),
+            Math.max(this.ymax, other.ymax),
+        );
+    }
+
+    /**
+     * Folds an iterable of BoundingBox2D into the BoundingBox2D containing them all.
+     *
+     * @param iter
+     * @returns - A new `BoundingBox2D` covering all input boxes.
+     */
+    public static unionFold(iter: BoundingBox2D[]): BoundingBox2D | undefined {
+        let totalBounds: BoundingBox2D | undefined = undefined;
+        for (const b of iter) {
+            if (totalBounds) {
+                totalBounds = b.union(totalBounds);
+            } else {
+                totalBounds = b;
+            }
+        }
+        return totalBounds;
+    }
 }

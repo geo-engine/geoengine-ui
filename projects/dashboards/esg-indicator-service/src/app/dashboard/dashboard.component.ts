@@ -261,7 +261,6 @@ export class DashboardComponent implements AfterViewInit, AfterContentInit {
                 start: time.start.unix() * 1_000,
                 end: time.end.unix() * 1_000,
             },
-            queryResolution: CLASSIFICATION_RESOLUTION,
             srsName: 'EPSG:32632',
         };
 
@@ -334,8 +333,6 @@ const CLASSIFICATION_WORKFLOW: Workflow = {
     type: 'Raster',
     operator: CLASSIFICATION_SOURCE_OP,
 };
-
-const CLASSIFICATION_RESOLUTION = 10;
 
 const CLASSIFICIATION_DATA_RANGE = {
     min: 0,

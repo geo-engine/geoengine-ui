@@ -1,3 +1,5 @@
+import {SpatialGridDescriptor, TimeDescriptor} from '@geoengine/openapi-client';
+
 export type UUID = string;
 export type TimestampString = string;
 export type SrsString = string;
@@ -286,7 +288,7 @@ export interface PlotDataDict {
 export interface ResultDescriptorDict {
     type: 'raster' | 'vector' | 'plot';
     spatialReference: SrsString;
-    time?: TimeIntervalDict;
+    time?: TimeDescriptor;
 }
 
 export type TypedResultDescriptorDict = VectorResultDescriptorDict | RasterResultDescriptorDict;
@@ -300,8 +302,8 @@ export interface RasterResultDescriptorDict extends ResultDescriptorDict {
     type: 'raster';
     dataType: 'U8' | 'U16' | 'U32' | 'U64' | 'I8' | 'I16' | 'I32' | 'I64' | 'F32' | 'F64';
     bands: RasterBandDescriptorDict[];
-    time?: TimeIntervalDict;
-    bbox?: SpatialPartitionDict;
+    time: TimeDescriptor;
+    spatialGrid: SpatialGridDescriptor;
     resolution?: SpatialResolution;
 }
 
@@ -568,8 +570,6 @@ export interface WfsParamsDict {
     resultType?: string;
     filter?: string;
     propertyName?: string;
-    // vendor parameter for specifying the spatial resolution
-    queryResolution?: number; // TODO: allow x and y seperately
 }
 
 export interface QuotaDict {

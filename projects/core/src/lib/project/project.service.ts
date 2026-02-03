@@ -29,6 +29,8 @@ import {intersects as olIntersects} from 'ol/extent';
 import {getProjectionTarget} from '../util/spatial_reference';
 import {SpatialReferenceService} from '../spatial-references/spatial-reference.service';
 import {
+    apiConfigurationWithAccessKey,
+    bboxDictToExtent,
     ClusteredPointSymbology,
     extentToBboxDict,
     GeoEngineError,
@@ -54,19 +56,24 @@ import {
     SpatialReferenceSpecification,
     subscribeAndProvide,
     Symbology,
+    SymbologyType,
     Time,
     TimeStepDuration,
     timeStepDurationToTimeStepDict,
+    unixTimestampToIsoString,
     UserService,
     VectorColumnDataTypes,
     VectorData,
     VectorLayer,
     VectorLayerMetadata,
     VisualPointClusteringParams,
+    WorkflowsService,
 } from '@geoengine/common';
 import {
     CollectionItem,
+    GeoJson,
     LayerListing,
+    OGCWFSApi,
     ProjectLayer as ProjectLayerDict,
     ProviderLayerId,
     TypedOperatorOperator,
@@ -93,6 +100,7 @@ export class ProjectService implements OnDestroy {
     protected userService = inject(UserService);
     protected spatialReferenceService = inject(SpatialReferenceService);
     protected layersService = inject(LayersService);
+    protected readonly workflowsService = inject(WorkflowsService);
 
     private project$ = new ReplaySubject<Project | undefined>(1);
 
@@ -117,6 +125,8 @@ export class ProjectService implements OnDestroy {
 
     private readonly selectedFeature$ = new BehaviorSubject<FeatureSelection>({feature: undefined});
 
+    private readonly ogcWfsApi = new ReplaySubject<OGCWFSApi>(1);
+
     constructor() {
         const config = this.config;
 
@@ -137,6 +147,10 @@ export class ProjectService implements OnDestroy {
                 ),
             )
             .subscribe((project) => this.setProject(project));
+
+        this.userService.getSessionTokenStream().subscribe({
+            next: (sessionToken) => this.ogcWfsApi.next(new OGCWFSApi(apiConfigurationWithAccessKey(sessionToken))),
+        });
     }
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -1328,147 +1342,6 @@ export class ProjectService implements OnDestroy {
     }
 
     /**
-     * In order to visually cluster points depending on the symbology, we need to create a temporary workflow
-     * This puts a new operator on top of the actual workflow.
-     */
-    private createClusteredPointLayerQueryWorkflow(workflowId: UUID, metadata: VectorLayerMetadata): Observable<UUID> {
-        const columnAggregates: Record<
-            string,
-            {
-                columnName: string;
-                aggregateType: 'meanNumber' | 'stringSample' | 'null';
-            }
-        > = {};
-
-        for (const [columnName, dataType] of metadata.dataTypes.entries()) {
-            let aggregateType: 'meanNumber' | 'stringSample' | 'null';
-            switch (dataType) {
-                case VectorColumnDataTypes.Category:
-                case VectorColumnDataTypes.Float:
-                case VectorColumnDataTypes.Int:
-                    aggregateType = 'meanNumber';
-                    break;
-                case VectorColumnDataTypes.Text:
-                case VectorColumnDataTypes.DateTime:
-                    aggregateType = 'stringSample';
-                    break;
-                default:
-                    aggregateType = 'null';
-            }
-
-            columnAggregates[columnName] = {
-                columnName,
-                aggregateType,
-            };
-        }
-
-        return this.userService.getSessionTokenForRequest().pipe(
-            mergeMap((sessionToken) =>
-                combineLatest([of(sessionToken), this.backend.getWorkflow(workflowId, sessionToken), this.getSpatialReferenceStream()]),
-            ),
-            mergeMap(([sessionToken, workflow, mapSpatialReference]) =>
-                this.backend.registerWorkflow(
-                    {
-                        type: 'Vector',
-                        operator: {
-                            type: 'VisualPointClustering',
-                            params: {
-                                minRadiusPx: PointSymbology.DEFAULT_POINT_RADIUS,
-                                deltaPx: ClusteredPointSymbology.DELTA_PX,
-                                radiusColumn: ClusteredPointSymbology.RADIUS_COLUMN,
-                                countColumn: ClusteredPointSymbology.COUNT_COLUMN,
-                                columnAggregates,
-                            } as VisualPointClusteringParams,
-                            sources: {
-                                vector: this.createProjectedOperator(workflow.operator, metadata, mapSpatialReference),
-                            },
-                        },
-                    },
-                    sessionToken,
-                ),
-            ),
-            map((registerWorkflowResult) => registerWorkflowResult.id),
-        );
-    }
-
-    /**
-     * For point data, we need to react on symbology changes.
-     * Thus, we introduce a new layer of observables that react on changes of the symbology
-     * between clustered and normal.
-     */
-    private createPointLayerQueryWorkflow(layer: VectorLayer): Observable<UUID> {
-        return this.getLayerChangesStream(layer).pipe(
-            map((changedLayer) => changedLayer.symbology instanceof ClusteredPointSymbology),
-            distinctUntilChanged(),
-            mergeMap((isClustered) => {
-                if (!isClustered) {
-                    return of(layer.workflowId);
-                }
-
-                return this.getVectorLayerMetadata(layer).pipe(
-                    mergeMap((metadata) => this.createClusteredPointLayerQueryWorkflow(layer.workflowId, metadata)),
-                );
-            }),
-        );
-    }
-
-    /**
-     * In order to visualize simplified lines and polygons, we need to create a temporary workflow.
-     * This puts a new operator on top of the actual workflow.
-     */
-    private createSimplifiedLinesOrPolygonsLayerQueryWorkflow(workflowId: UUID, metadata: VectorLayerMetadata): Observable<UUID> {
-        return this.userService.getSessionTokenForRequest().pipe(
-            mergeMap((sessionToken) =>
-                combineLatest([of(sessionToken), this.backend.getWorkflow(workflowId, sessionToken), this.getSpatialReferenceStream()]),
-            ),
-            mergeMap(([sessionToken, workflow, mapSpatialReference]) =>
-                this.backend.registerWorkflow(
-                    {
-                        type: 'Vector',
-                        operator: {
-                            type: 'LineSimplification',
-                            params: {
-                                algorithm: 'douglasPeucker',
-                                epsilon: undefined, // derived by query resolution
-                            },
-                            sources: {
-                                vector: this.createProjectedOperator(workflow.operator, metadata, mapSpatialReference),
-                            },
-                        } as LineSimplificationDict,
-                    },
-                    sessionToken,
-                ),
-            ),
-            map((registerWorkflowResult) => registerWorkflowResult.id),
-        );
-    }
-
-    /**
-     * For line and polygon data, we need to react on symbology changes.
-     * Thus, we introduce a new layer of observables that react on changes of the symbology
-     * between simplified and normal.
-     */
-    private createLinesOrPolygonsLayerQueryWorkflow(layer: VectorLayer): Observable<UUID> {
-        return this.getLayerChangesStream(layer).pipe(
-            map(
-                (changedLayer) =>
-                    (changedLayer.symbology instanceof LineSymbology || changedLayer.symbology instanceof PolygonSymbology) &&
-                    changedLayer.symbology.autoSimplified,
-            ),
-            distinctUntilChanged(),
-            mergeMap((isSimplified) => {
-                if (!isSimplified) {
-                    return of(layer.workflowId);
-                }
-
-                return this.getVectorLayerMetadata(layer).pipe(
-                    mergeMap((metadata) => this.createSimplifiedLinesOrPolygonsLayerQueryWorkflow(layer.workflowId, metadata)),
-                );
-            }),
-        );
-    }
-
-    /**
      * Create a subscription for layer data, symbology and provenance with loading state checks and error handling
      */
     private createVectorLayerDataSubscription(
@@ -1476,45 +1349,87 @@ export class ProjectService implements OnDestroy {
         data$: Observer<VectorData>,
         loadingState$: Observer<LoadingState>,
     ): Subscription {
-        let workflowIdOnce = of(layer.workflowId);
+        const workflowIdCache = new Map<[SpatialReference, number /* resolution */], UUID>();
 
-        if (layer.symbology instanceof PointSymbology || layer.symbology instanceof ClusteredPointSymbology) {
-            workflowIdOnce = this.createPointLayerQueryWorkflow(layer);
-        }
+        const isClusteredOrSimplified$ = this.getLayerChangesStream(layer).pipe(
+            map((changedLayer) => {
+                if (changedLayer.symbology instanceof ClusteredPointSymbology) {
+                    return true;
+                }
+                if (changedLayer.symbology instanceof LineSymbology || changedLayer.symbology instanceof PolygonSymbology) {
+                    return changedLayer.symbology.autoSimplified;
+                }
+                return false;
+            }),
+            distinctUntilChanged(),
+        );
 
-        if (layer.symbology instanceof LineSymbology || layer.symbology instanceof PolygonSymbology) {
-            workflowIdOnce = this.createLinesOrPolygonsLayerQueryWorkflow(layer);
-        }
-
-        return combineLatest([
-            workflowIdOnce,
-            this.getTimeStream(),
-            combineLatest([this.getSpatialReferenceStream(), this.mapService.getViewportSizeStream()]).pipe(
-                debounceTime(this.config.DELAYS.DEBOUNCE),
-            ),
-            this.userService.getSessionTokenForRequest(),
-        ])
+        return combineLatest({
+            time: this.getTimeStream(),
+            spatialReference: this.getSpatialReferenceStream(),
+            viewport: this.mapService.getViewportSizeStream(),
+            isClusteredOrSimplified: isClusteredOrSimplified$,
+            workflowMetadata: this.getVectorLayerMetadata(layer),
+            originalWorkflow: this.workflowsService.getWorkflow(layer.workflowId), // TODO: capture possible changes to the layers's workflow?
+        })
             .pipe(
+                debounceTime(this.config.DELAYS.DEBOUNCE),
                 tap(() => loadingState$.next(LoadingState.LOADING)),
-                switchMap(([workflowId, time, [projection, viewport], sessionToken]) => {
-                    const requestExtent: [number, number, number, number] = [0, 0, 0, 0];
+                switchMap(async ({time, spatialReference, viewport, isClusteredOrSimplified, workflowMetadata, originalWorkflow}) => {
+                    let workflowId: UUID;
+                    const cacheEntry = workflowIdCache.get([spatialReference, viewport.resolution]);
+                    if (cacheEntry) {
+                        workflowId = cacheEntry;
+                    } else if (isClusteredOrSimplified) {
+                        let workflow;
+                        switch (layer.symbology.getSymbologyType()) {
+                            case SymbologyType.POINT: {
+                                workflow = createClusteredPointLayerQueryWorkflow(
+                                    originalWorkflow,
+                                    workflowMetadata,
+                                    spatialReference,
+                                    viewport.resolution,
+                                );
+                                break;
+                            }
+                            case SymbologyType.LINE:
+                            case SymbologyType.POLYGON: {
+                                workflow = createSimplifiedLinesOrPolygonsLayerQueryWorkflow(
+                                    originalWorkflow,
+                                    workflowMetadata,
+                                    spatialReference,
+                                    viewport.resolution,
+                                );
+                                break;
+                            }
+                            default:
+                                throw new Error(`Unsupported symbology type for simplification: ${layer.symbology.getSymbologyType()}`);
+                        }
 
-                    // TODO: add resolution
-                    return this.backend
-                        .wfsGetFeature(
-                            {
-                                workflowId,
-                                bbox: extentToBboxDict(viewport.extent),
-                                time: time.toDict(),
-                                srsName: projection.srsString,
-                                queryResolution: viewport.resolution, // TODO: use two seperate values for x and y
-                            },
-                            sessionToken,
-                        )
-                        .pipe(
-                            map((x) => this.addTimeToProperties(x)),
-                            map((x) => VectorData.olParse(time, projection, requestExtent, x)),
-                        );
+                        workflowId = await this.workflowsService.registerWorkflow(workflow);
+
+                        workflowIdCache.set([spatialReference, viewport.resolution], workflowId);
+                    } else {
+                        // no need to change the workflow
+                        workflowId = layer.workflowId;
+                    }
+
+                    const ogcWfsApi = await firstValueFrom(this.ogcWfsApi);
+
+                    const wfsResponse = await ogcWfsApi.wfsHandler({
+                        service: 'WFS',
+                        version: '2.0.0',
+                        request: 'GetFeature',
+                        workflow: workflowId,
+                        typeNames: workflowId,
+                        bbox: bboxDictToExtent(extentToBboxDict(viewport.extent)).join(','),
+                        time: `${unixTimestampToIsoString(time.toDict().start)}/${unixTimestampToIsoString(time.toDict().end)}`,
+                        srsName: spatialReference.srsString,
+                    });
+                    addTimeToProperties(wfsResponse);
+
+                    const requestExtent: [number, number, number, number] = [0, 0, 0, 0]; // TODO: why is this empty?
+                    return VectorData.olParse(time, spatialReference, requestExtent, wfsResponse);
                 }),
                 tap({
                     next: () => loadingState$.next(LoadingState.OK),
@@ -1526,21 +1441,8 @@ export class ProjectService implements OnDestroy {
             )
             .subscribe({
                 next: (data) => data$.next(data),
-                error: (error) => error, // ignore error
+                error: (_error) => /* ignore error */ undefined,
             });
-    }
-
-    // TODO: figure out the correct types
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private addTimeToProperties(x: any): any {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        x['features'].forEach((element: any) => {
-            const start: string = element['when']['start'];
-            const end: string = element['when']['end'];
-            element['properties']['_____table__start'] = start;
-            element['properties']['_____table__end'] = end;
-        });
-        return x;
     }
 
     private createLayerChangesStream(layer: Layer): void {
@@ -1673,4 +1575,121 @@ export class ProjectService implements OnDestroy {
         const layer = await this.layersService.resolveLayer(layerId);
         this.addLayer(layer);
     }
+}
+
+function addTimeToProperties(x: GeoJson): void {
+    x['features'].forEach((element: Record<string, Record<string, string>>) => {
+        const start: string = element['when']['start'];
+        const end: string = element['when']['end'];
+        element['properties']['_____table__start'] = start;
+        element['properties']['_____table__end'] = end;
+    });
+}
+
+/**
+ * In order to visually cluster points depending on the symbology, we need to create a temporary workflow
+ * This puts a new operator on top of the actual workflow.
+ */
+function createClusteredPointLayerQueryWorkflow(
+    workflow: WorkflowDict,
+    metadata: VectorLayerMetadata,
+    mapSpatialReference: SpatialReference,
+    resolution: number,
+): WorkflowDict {
+    const columnAggregates: Record<
+        string,
+        {
+            columnName: string;
+            aggregateType: 'meanNumber' | 'stringSample' | 'null';
+        }
+    > = {};
+
+    for (const [columnName, dataType] of metadata.dataTypes.entries()) {
+        let aggregateType: 'meanNumber' | 'stringSample' | 'null';
+        switch (dataType) {
+            case VectorColumnDataTypes.Category:
+            case VectorColumnDataTypes.Float:
+            case VectorColumnDataTypes.Int:
+                aggregateType = 'meanNumber';
+                break;
+            case VectorColumnDataTypes.Text:
+            case VectorColumnDataTypes.DateTime:
+                aggregateType = 'stringSample';
+                break;
+            default:
+                aggregateType = 'null';
+        }
+
+        columnAggregates[columnName] = {
+            columnName,
+            aggregateType,
+        };
+    }
+
+    return {
+        type: 'Vector',
+        operator: {
+            type: 'VisualPointClustering',
+            params: {
+                minRadiusPx: PointSymbology.DEFAULT_POINT_RADIUS,
+                deltaPx: ClusteredPointSymbology.DELTA_PX,
+                resolution,
+                radiusColumn: ClusteredPointSymbology.RADIUS_COLUMN,
+                countColumn: ClusteredPointSymbology.COUNT_COLUMN,
+                columnAggregates,
+            } as VisualPointClusteringParams,
+            sources: {
+                vector: createProjectedOperator(workflow.operator, metadata, mapSpatialReference),
+            },
+        },
+    };
+}
+
+/**
+ * In order to visualize simplified lines and polygons, we need to create a temporary workflow.
+ * This puts a new operator on top of the actual workflow.
+ */
+// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
+function createSimplifiedLinesOrPolygonsLayerQueryWorkflow(
+    workflow: WorkflowDict,
+    metadata: VectorLayerMetadata,
+    mapSpatialReference: SpatialReference,
+    resolution: number,
+): WorkflowDict {
+    return {
+        type: 'Vector',
+        operator: {
+            type: 'LineSimplification',
+            params: {
+                algorithm: 'douglasPeucker',
+                epsilon: resolution, // derived by query resolution
+            },
+            sources: {
+                vector: createProjectedOperator(workflow.operator, metadata, mapSpatialReference),
+            },
+        } as LineSimplificationDict,
+    };
+}
+
+/**
+ * Creates a projected operator if the layer has not the target spatial reference.
+ */
+function createProjectedOperator(
+    inputOperator: TypedOperatorOperator,
+    metadata: LayerMetadata,
+    targetSpatialReference: SpatialReference,
+): TypedOperatorOperator {
+    if (metadata.spatialReference.equals(targetSpatialReference)) {
+        return inputOperator;
+    }
+
+    return {
+        type: 'Reprojection',
+        params: {
+            targetSpatialReference: targetSpatialReference.srsString,
+        },
+        sources: {
+            source: inputOperator,
+        },
+    } as ReprojectionDict;
 }

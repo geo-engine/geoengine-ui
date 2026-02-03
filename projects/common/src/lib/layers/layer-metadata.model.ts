@@ -16,22 +16,22 @@ import {BoundingBox2D} from '../spatial-bounds/bounding-box';
 import {
     TypedRasterResultDescriptor as RasterResultDescriptorDict,
     TypedVectorResultDescriptor as VectorResultDescriptorDict,
-    SpatialResolution,
     RasterBandDescriptor,
     TypedResultDescriptor,
 } from '@geoengine/openapi-client';
+import {SpatialGridDescriptor} from '../spatial-grid/spatial-grid-descriptor.model';
 
 export abstract class LayerMetadata implements HasLayerType {
     abstract readonly layerType: LayerType;
     readonly spatialReference: SpatialReference;
     readonly time?: Time;
-    readonly bbox?: BoundingBox2D;
 
-    constructor(spatialReference: SpatialReference, time?: Time, bbox?: BoundingBox2D) {
+    constructor(spatialReference: SpatialReference, time?: Time) {
         this.spatialReference = spatialReference;
         this.time = time;
-        this.bbox = bbox;
     }
+
+    public abstract get bbox(): BoundingBox2D | undefined;
 
     public abstract get resultType(): ResultType;
 
@@ -55,6 +55,7 @@ export class VectorLayerMetadata extends LayerMetadata {
     readonly dataType: VectorDataType;
     readonly dataTypes: Immutable.Map<string, VectorColumnDataType>;
     readonly measurements: Immutable.Map<string, Measurement>;
+    readonly bbox: BoundingBox2D | undefined;
 
     constructor(
         dataType: VectorDataType,
@@ -64,11 +65,12 @@ export class VectorLayerMetadata extends LayerMetadata {
         time?: Time,
         bbox?: BoundingBox2D,
     ) {
-        super(spatialReference, time, bbox);
+        super(spatialReference, time);
 
         this.dataType = dataType;
         this.dataTypes = Immutable.Map(Object.entries(dataTypes));
         this.measurements = Immutable.Map(Object.entries(measurements));
+        this.bbox = bbox;
     }
 
     static override fromDict(dict: VectorResultDescriptorDict): VectorLayerMetadata {
@@ -101,38 +103,49 @@ export class RasterLayerMetadata extends LayerMetadata {
     readonly dataType: RasterDataType;
     readonly bands: RasterBandDescriptor[];
 
-    readonly resolution?: SpatialResolution;
+    readonly spatialGrid: SpatialGridDescriptor;
 
     constructor(
         dataType: RasterDataType,
         spatialReference: SpatialReference,
         bands: RasterBandDescriptor[],
+        spatialGrid: SpatialGridDescriptor,
         time?: Time,
-        bbox?: BoundingBox2D,
-        resolution?: SpatialResolution,
     ) {
-        super(spatialReference, time, bbox);
+        super(spatialReference, time);
 
         this.dataType = dataType;
         this.bands = bands;
-
-        this.resolution = resolution;
+        this.spatialGrid = spatialGrid;
     }
 
     static override fromDict(dict: RasterResultDescriptorDict): RasterLayerMetadata {
         const dataType = RasterDataTypes.fromCode(dict.dataType);
         const bands = dict.bands;
-        const time = dict.time ? Time.fromDict(dict.time) : undefined;
-        const bbox = dict.bbox ? BoundingBox2D.fromSpatialPartitionDict(dict.bbox) : undefined;
+        const time = dict.time?.bounds ? Time.fromDict(dict.time.bounds) : undefined;
+        const spatialGrid = SpatialGridDescriptor.fromDict(dict.spatialGrid);
 
-        return new RasterLayerMetadata(
-            dataType,
-            SpatialReference.fromSrsString(dict.spatialReference),
-            bands,
-            time,
-            bbox,
-            dict.resolution ?? undefined,
-        );
+        return new RasterLayerMetadata(dataType, SpatialReference.fromSrsString(dict.spatialReference), bands, spatialGrid, time);
+    }
+
+    public get bbox(): BoundingBox2D {
+        return this.spatialGrid.spatialGrid.bbox();
+    }
+
+    public get numberOfPixelsX(): number {
+        return this.spatialGrid.spatialGrid.numberOfPixelsX;
+    }
+
+    public get numberOfPixelsY(): number {
+        return this.spatialGrid.spatialGrid.numberOfPixelsY;
+    }
+
+    public get pixelSizeX(): number {
+        return this.spatialGrid.spatialGrid.pixelSizeX;
+    }
+
+    public get pixelSizeY(): number {
+        return this.spatialGrid.spatialGrid.pixelSizeY;
     }
 
     public get resultType(): ResultType {
