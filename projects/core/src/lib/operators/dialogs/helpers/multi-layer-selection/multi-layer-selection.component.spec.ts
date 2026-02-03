@@ -181,7 +181,6 @@ describe('MultiLayerSelectionComponent', () => {
     /** Adding three layers
      * checking the number of possible layers to select from
      * checking the default layer displayed **/
-    /*
     it('should display the first of selectedLayers per default, min = max = 1', async () => {
         layersInput.set(mockLayers);
         minInput.set(1);
@@ -195,7 +194,6 @@ describe('MultiLayerSelectionComponent', () => {
         await expect(component.value().length).toEqual(1);
         await expect(layers[0]).toEqual(component.value()[0].name);
     });
-    */
 
     /** checking the layer displayed after changing the selected layer **/
     it('should update the layer displayed to equal selected layer, min = max = 1', async () => {
@@ -221,7 +219,6 @@ describe('MultiLayerSelectionComponent', () => {
     /** Adding three layers
      * adding two more input fields
      * checking the default layers displayed and the number of possible layers to select **/
-    /*
     it('should display the selectedLayers per default, max = 3', async () => {
         layersInput.set(mockLayers);
         minInput.set(1);
@@ -243,10 +240,8 @@ describe('MultiLayerSelectionComponent', () => {
             await expect(layers[i]).toEqual(component.value()[i].name);
         }
     });
-    */
 
     /** checking the layer displayed after changing the selected layer **/
-    /*
     it('should update the layer displayed to equal selected layer, max = 3', async () => {
         async function testInputs(numLayers: number): Promise<void> {
             for (let j = 0; j < numLayers; j++) {
@@ -284,7 +279,6 @@ describe('MultiLayerSelectionComponent', () => {
             await testInputs(numLayers);
         }
     });
-    */
 });
 
 function layerNamesFromDom(fixture: ComponentFixture<MultiLayerSelectionComponent>): Array<string> {
