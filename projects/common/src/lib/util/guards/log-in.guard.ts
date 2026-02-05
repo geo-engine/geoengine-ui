@@ -18,7 +18,7 @@ export class LogInGuard {
             if (loggedIn) {
                 return true;
             }
-            return this.router.createUrlTree(['/signin']);
+            return this.router.createUrlTree(['/signin'], {queryParams: {returnUrl: _state.url}});
         });
         return loggedInOrRedirect;
     }

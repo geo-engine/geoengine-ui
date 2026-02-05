@@ -43,9 +43,9 @@ interface Plots {
 export const DEFAULT_COMMON_CONFIG: CommonConfigStructure = {
     API_URL: '/api',
     BRANDING: {
-        LOGO_URL: 'assets/geoengine.svg',
-        LOGO_ICON_URL: 'assets/geoengine-favicon-white.svg',
-        LOGO_ALT_URL: 'assets/geoengine-white.svg',
+        LOGO_URL: '/assets/geoengine.svg',
+        LOGO_ICON_URL: '/assets/geoengine-favicon-white.svg',
+        LOGO_ALT_URL: '/assets/geoengine-white.svg',
         PAGE_TITLE: 'Geo Engine',
     },
     DELAYS: {

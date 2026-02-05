@@ -55,7 +55,9 @@ export class NavigationComponent {
 
     async logout(): Promise<void> {
         this.userService.logout();
-        await this.router.navigate([this.logoutNavigation()]);
+        const current = this.router.url ?? '';
+        const returnUrl = current.split('?')[0];
+        await this.router.navigate([this.logoutNavigation()], {queryParams: {returnUrl}});
     }
 
     toggleSelection(selection: NavigationType): void {

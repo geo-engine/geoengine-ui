@@ -11,8 +11,7 @@ import {NotificationService} from '../notification.service';
 import {geoengineValidators} from '../util/form.validators';
 import {GeoEngineError} from '../util/errors';
 import {FxLayoutDirective, FxLayoutAlignDirective, FxLayoutGapDirective} from '../util/directives/flexbox-legacy.directive';
-import {MatCard, MatCardHeader, MatCardTitle, MatCardSubtitle, MatCardContent, MatCardActions} from '@angular/material/card';
-import {MatIcon} from '@angular/material/icon';
+import {MatCard, MatCardHeader, MatCardSubtitle, MatCardContent, MatCardActions} from '@angular/material/card';
 import {MatFormField, MatInput, MatHint} from '@angular/material/input';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatButton} from '@angular/material/button';
@@ -30,8 +29,6 @@ import {AsyncPipe} from '@angular/common';
         FxLayoutAlignDirective,
         MatCard,
         MatCardHeader,
-        MatIcon,
-        MatCardTitle,
         MatCardSubtitle,
         MatCardContent,
         MatFormField,
@@ -46,7 +43,7 @@ import {AsyncPipe} from '@angular/common';
     ],
 })
 export class RegisterComponent implements AfterViewInit {
-    private readonly config = inject(CommonConfig);
+    readonly config = inject(CommonConfig);
     private readonly userService = inject(UserService);
     private readonly notificationService = inject(NotificationService);
     private readonly router = inject(Router);

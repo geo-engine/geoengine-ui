@@ -5,9 +5,9 @@ import {LogInGuard} from './util/guards/log-in.guard';
 import {BackendAvailableGuard, CanRegisterGuard, LoginComponent, RegisterComponent} from '@geoengine/common';
 import {OidcPopupComponent} from './oidc-popup/oidc-popup.component';
 
-export const routes: (subdir: string) => Routes = (subdir) => [
+export const routes: (subdir: string, signindir: string) => Routes = (subdir, signindir) => [
     {path: '', redirectTo: 'navigation', pathMatch: 'full'},
-    {path: 'navigation', component: NavigationComponent, data: {logoutNavigation: subdir + '/signin'}, canActivate: [LogInGuard]},
+    {path: 'navigation', component: NavigationComponent, data: {logoutNavigation: signindir + '/signin'}, canActivate: [LogInGuard]},
     {path: 'signin', component: LoginComponent, data: {loginRedirect: subdir + '/navigation'}},
     {
         path: 'register',
@@ -23,8 +23,7 @@ export const routes: (subdir: string) => Routes = (subdir) => [
 
 @NgModule({
     imports: [
-        RouterModule.forRoot(routes(''), {
-            useHash: true,
+        RouterModule.forRoot(routes('', ''), {
             initialNavigation: 'disabled', // navigation is enabled in app component after removing query params before the hash
             onSameUrlNavigation: 'reload', // for reload the page and checking if the user is logged in again
             bindToComponentInputs: true,
