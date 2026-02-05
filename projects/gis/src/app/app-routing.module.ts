@@ -20,7 +20,10 @@ const routes: Routes = [
     // manager
     {
         path: 'manager',
-        loadChildren: () => import('@geoengine/manager').then((m) => (m as {routes: (subdir?: string) => Routes}).routes('/manager')),
+        loadChildren: () =>
+            import('@geoengine/manager').then((m) =>
+                (m as {routes: (subdir?: string, signindir?: string) => Routes}).routes('/manager', ''),
+            ),
         canActivate: [routeToManager, BackendAvailableGuard],
     },
     // fallback to not found page
@@ -30,7 +33,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forRoot(routes, {
-            useHash: true,
             initialNavigation: 'disabled', // navigation is enabled in app component after removing query params before the hash
             onSameUrlNavigation: 'reload', // for reload the page and checking if the user is logged in again
             bindToComponentInputs: true,

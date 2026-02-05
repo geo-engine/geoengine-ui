@@ -1,4 +1,4 @@
-<geoengine-sidenav-header>Login</geoengine-sidenav-header>
+<geoengine-sidenav-header>User</geoengine-sidenav-header>
 <mat-card>
     <mat-card-header>
         <mat-card-title>Login</mat-card-title>
@@ -13,7 +13,7 @@
         </ng-container>
         <ng-container *geoengineIfGuest>
             <p>You are currently not logged in. By clicking the button below, you will be redirected to a login page.</p>
-            <button mat-raised-button color="primary" [disabled]="loginDisabled()" (click)="login()">Login</button>
+            <button mat-raised-button color="primary" (click)="login()">Login</button>
         </ng-container>
     </mat-card-content>
 </mat-card>

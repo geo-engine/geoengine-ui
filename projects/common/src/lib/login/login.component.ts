@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, input, OnInit, inject, signal} from '@angular/core';
-import {Router, RouterLink} from '@angular/router';
+import {Router, RouterLink, ActivatedRoute} from '@angular/router';
 import {CommonConfig} from '../config.service';
 import {UserService} from '../user/user.service';
 import {geoengineValidators} from '../util/form.validators';
@@ -17,7 +17,8 @@ import {MatFormField, MatInput} from '@angular/material/input';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
-import {FormField, required, form} from '@angular/forms/signals';
+import {required, form} from '@angular/forms/signals';
+import {FormsModule} from '@angular/forms';
 import {firstValueFrom} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
 
@@ -34,7 +35,7 @@ enum FormStatus {
     styleUrls: ['./login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        FormField,
+        FormsModule,
         FxLayoutDirective,
         FxLayoutAlignDirective,
         MatCard,
@@ -58,13 +59,15 @@ export class LoginComponent implements OnInit {
     private readonly userService = inject(UserService);
     private readonly notificationService = inject(NotificationService);
     private readonly router = inject(Router);
+    private readonly route = inject(ActivatedRoute);
 
     readonly FormStatus = FormStatus;
+    readonly defaultRedirect = input('/map');
 
-    readonly loginRedirect = input('/map');
-
+    // Member properties declared first
     readonly formStatus = signal<FormStatus>(FormStatus.Loading);
     readonly canRegister = this.config.USER.REGISTRATION_AVAILABLE;
+    readonly canGuestLogin = this.config.USER.AUTO_GUEST_LOGIN;
 
     readonly loginModel = signal({
         email: '',
@@ -82,6 +85,18 @@ export class LoginComponent implements OnInit {
 
     private oidcUrl = '';
 
+    // Methods and getters after properties
+    readonly loginRedirect = (): string => {
+        // Priority: explicit returnUrl query param -> route data.loginRedirect -> default input
+        const qp = this.route.snapshot.queryParamMap.get('returnUrl');
+        if (qp) return qp;
+
+        const dataRedirect = this.route.snapshot.data['loginRedirect'];
+        if (dataRedirect) return dataRedirect as string;
+
+        return this.defaultRedirect();
+    };
+
     ngOnInit(): void {
         void this.onInit();
     }
@@ -97,6 +112,11 @@ export class LoginComponent implements OnInit {
             const idr = await this.userService.oidcInit(redirectUri);
             this.oidcUrl = idr.url;
             this.formStatus.set(FormStatus.Oidc);
+
+            // Auto-redirect to OIDC if local login is disabled
+            if (!this.config.USER.LOCAL_LOGIN_AVAILABLE) {
+                this.oidcLogin();
+            }
         } catch {
             // OIDC login failed show local login
             const session = await firstValueFrom(this.userService.getSessionOrUndefinedStream());
@@ -108,6 +128,11 @@ export class LoginComponent implements OnInit {
                 this.formStatus.set(FormStatus.LoggedIn);
             }
         }
+    }
+
+    async onSubmit(event: Event): Promise<void> {
+        event.preventDefault();
+        await this.login();
     }
 
     oidcLogin(): void {
@@ -159,6 +184,15 @@ export class LoginComponent implements OnInit {
     }
 
     async redirectToMainView(): Promise<void> {
-        await this.router.navigate([this.loginRedirect()]);
+        const target = this.loginRedirect();
+        await this.router.navigateByUrl(target, {replaceUrl: true});
+    }
+
+    setEmail(value: string): void {
+        this.loginModel.set({...this.loginModel(), email: value});
+    }
+
+    setPassword(value: string): void {
+        this.loginModel.set({...this.loginModel(), password: value});
     }
 }
