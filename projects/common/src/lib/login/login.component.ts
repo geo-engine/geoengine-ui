@@ -84,7 +84,6 @@ export class LoginComponent implements OnInit {
 
     private oidcUrl = '';
 
-    // Methods and getters after properties
     readonly loginRedirect = (): string => {
         // Priority: explicit returnUrl query param -> route data.loginRedirect -> default input
         const qp = this.route.snapshot.queryParamMap.get('returnUrl');
