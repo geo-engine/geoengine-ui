@@ -17,7 +17,7 @@ import {MatFormField, MatInput} from '@angular/material/input';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
-import {required, form} from '@angular/forms/signals';
+import {email, required, form, FormField} from '@angular/forms/signals';
 import {FormsModule} from '@angular/forms';
 import {firstValueFrom} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -52,6 +52,7 @@ enum FormStatus {
         RouterLink,
         MatIcon,
         MatTooltip,
+        FormField,
     ],
 })
 export class LoginComponent implements OnInit {
@@ -75,6 +76,7 @@ export class LoginComponent implements OnInit {
     readonly loginForm = form(this.loginModel, (schemaPath) => {
         required(schemaPath.email);
         required(schemaPath.password);
+        email(schemaPath.email);
 
         geoengineValidators.keyword2(schemaPath.email, [this.config.USER.GUEST.NAME]);
     });
@@ -184,13 +186,5 @@ export class LoginComponent implements OnInit {
     async redirectToMainView(): Promise<void> {
         const target = this.loginRedirect();
         await this.router.navigateByUrl(target, {replaceUrl: true});
-    }
-
-    setEmail(value: string): void {
-        this.loginModel.set({...this.loginModel(), email: value});
-    }
-
-    setPassword(value: string): void {
-        this.loginModel.set({...this.loginModel(), password: value});
     }
 }
