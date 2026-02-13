@@ -64,7 +64,6 @@ export class LoginComponent implements OnInit {
     readonly FormStatus = FormStatus;
     readonly defaultRedirect = input('/map');
 
-    // Member properties declared first
     readonly formStatus = signal<FormStatus>(FormStatus.Loading);
     readonly canRegister = this.config.USER.REGISTRATION_AVAILABLE;
     readonly canGuestLogin = this.config.USER.AUTO_GUEST_LOGIN;
