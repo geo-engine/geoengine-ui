@@ -20,10 +20,7 @@ const routes: Routes = [
     // manager
     {
         path: 'manager',
-        loadChildren: () =>
-            import('@geoengine/manager').then((m) =>
-                (m as {routes: (subdir?: string, signindir?: string) => Routes}).routes('/manager', ''),
-            ),
+        loadChildren: () => import('@geoengine/manager').then((m) => (m as {routes: (subdir?: string) => Routes}).routes('/manager')),
         canActivate: [routeToManager, BackendAvailableGuard],
     },
     // fallback to not found page
