@@ -12,13 +12,13 @@ export class LogInGuard {
 
     canActivate(
         _route: ActivatedRouteSnapshot,
-        _state: RouterStateSnapshot,
+        state: RouterStateSnapshot,
     ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
         const loggedInOrRedirect = this.userService.isLoggedIn().then((loggedIn) => {
             if (loggedIn) {
                 return true;
             }
-            return this.router.createUrlTree(['/signin']);
+            return this.router.createUrlTree(['/signin'], {queryParams: {returnUrl: state.url}});
         });
         return loggedInOrRedirect;
     }

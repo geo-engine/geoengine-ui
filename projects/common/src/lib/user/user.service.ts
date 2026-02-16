@@ -246,7 +246,7 @@ export class UserService {
      *
      * @param credentials.user The user name.
      * @param credentials.password The user's password.
-     * @returns `true` if the login was successful, `false` otherwise.
+     * @returns a 'Session' if login completes. Throws otherwise.
      */
     async login(userCredentials: {email: string; password: string}): Promise<Session> {
         const response = await new SessionApi().loginHandler({

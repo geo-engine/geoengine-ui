@@ -1,4 +1,4 @@
-import {Component, inject, signal, resource} from '@angular/core';
+import {Component, inject, resource} from '@angular/core';
 import {User} from '../user.model';
 import {Router} from '@angular/router';
 import {UserService} from '@geoengine/common';
@@ -44,24 +44,13 @@ export class OidcComponent {
             return session.user;
         },
     });
-    readonly loginDisabled = signal<boolean>(false);
-
-    private pendingLoginRequest = false;
 
     async login(): Promise<void> {
-        if (this.pendingLoginRequest) return;
-
-        this.pendingLoginRequest = true;
-        this.loginDisabled.set(true);
-
-        try {
-            const idr = await this.userService.oidcInit(window.location.href);
-            window.location.href = idr.url;
-        } catch {
-            // reset pending state on error
-            this.pendingLoginRequest = false;
-            this.loginDisabled.set(false);
-        }
+        // Redirect to /signin with returnUrl pointing back here
+        // LoginComponent will handle OIDC init and callback
+        await this.router.navigate(['/signin'], {
+            queryParams: {returnUrl: this.router.url},
+        });
     }
 
     async logout(): Promise<void> {
