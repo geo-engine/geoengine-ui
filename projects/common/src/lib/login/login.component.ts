@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, input, OnInit, inject, signal} from '@angular/core';
 import {Router, RouterLink, ActivatedRoute} from '@angular/router';
+import {Location} from '@angular/common';
 import {CommonConfig} from '../config.service';
 import {UserService} from '../user/user.service';
 import {geoengineValidators} from '../util/form.validators';
@@ -61,6 +62,7 @@ export class LoginComponent implements OnInit {
     private readonly notificationService = inject(NotificationService);
     private readonly router = inject(Router);
     private readonly route = inject(ActivatedRoute);
+    private readonly location = inject(Location);
 
     readonly FormStatus = FormStatus;
     readonly defaultRedirect = input('/map');
@@ -89,10 +91,14 @@ export class LoginComponent implements OnInit {
     readonly loginRedirect = (): string => {
         // Priority: explicit returnUrl query param -> route data.loginRedirect -> default input
         const qp = this.route.snapshot.queryParamMap.get('returnUrl');
-        if (qp) return qp;
+        if (qp) {
+            return qp;
+        }
 
         const dataRedirect = this.route.snapshot.data['loginRedirect'];
-        if (dataRedirect) return dataRedirect as string;
+        if (dataRedirect) {
+            return dataRedirect as string;
+        }
 
         return this.defaultRedirect();
     };
@@ -102,10 +108,13 @@ export class LoginComponent implements OnInit {
     }
 
     async onInit(): Promise<void> {
-        const usesHashNavigation = window.location.hash.startsWith('#/');
-        const hashPrefix = usesHashNavigation ? '#' : '';
-
-        const redirectUri = new URL(hashPrefix + this.loginRedirect(), window.location.href).toString();
+        // build a path that already contains the base-href; Location will add it
+        const loginRe = this.loginRedirect();
+        // this must be a relative path!
+        const relativePath = loginRe.startsWith('/') ? loginRe.substring(1) : loginRe;
+        // prepareExternalUrl takes care of # or base-href routing
+        const externalPath = this.location.prepareExternalUrl(relativePath);
+        const redirectUri = new URL(externalPath, window.location.origin).toString();
 
         // check if OIDC login is enabled
         try {
