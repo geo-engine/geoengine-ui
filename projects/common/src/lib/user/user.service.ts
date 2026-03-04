@@ -126,15 +126,15 @@ export class UserService {
         }
 
         this.sessionInitialized = true;
+        // get redrectUri used to track oidc login
+        const redirectUri = sessionStorage.getItem('redirectUri');
 
-        if (oidcParams && sessionStorage.getItem('redirectUri')) {
+        if (oidcParams && redirectUri) {
             this.oidcLogin(oidcParams)
                 .pipe(first())
                 .subscribe(() => {
-                    void this.router.navigate([], {
+                    void this.router.navigateByUrl(redirectUri, {
                         // eslint-disable-next-line @typescript-eslint/naming-convention
-                        queryParams: {session_state: undefined, state: undefined, code: undefined},
-                        queryParamsHandling: 'merge',
                     });
                 });
         } else {
