@@ -360,6 +360,7 @@ export class UserService {
             })
             .then((response) => {
                 const session = this.sessionFromDict(response);
+                console.log(session);
                 this.session$.next(session);
                 result.next(session);
                 result.complete();

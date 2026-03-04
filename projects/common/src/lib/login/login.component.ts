@@ -91,11 +91,13 @@ export class LoginComponent implements OnInit {
     readonly loginRedirect = (): string => {
         // Priority: explicit returnUrl query param -> route data.loginRedirect -> default input
         const qp = this.route.snapshot.queryParamMap.get('returnUrl');
+        console.log(qp);
         if (qp) {
             return qp;
         }
 
         const dataRedirect = this.route.snapshot.data['loginRedirect'];
+        console.log(dataRedirect);
         if (dataRedirect) {
             return dataRedirect as string;
         }
@@ -110,11 +112,15 @@ export class LoginComponent implements OnInit {
     async onInit(): Promise<void> {
         // build a path that already contains the base-href; Location will add it
         const loginRe = this.loginRedirect();
+        console.log(loginRe);
         // this must be a relative path!
         const relativePath = loginRe.startsWith('/') ? loginRe.substring(1) : loginRe;
+        console.log(relativePath);
         // prepareExternalUrl takes care of # or base-href routing
         const externalPath = this.location.prepareExternalUrl(relativePath);
+        console.log(externalPath);
         const redirectUri = new URL(externalPath, window.location.origin).toString();
+        console.log(redirectUri);
 
         // check if OIDC login is enabled
         try {
