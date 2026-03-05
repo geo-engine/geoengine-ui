@@ -106,7 +106,7 @@ export class UserService {
               }
             | undefined,
     ): Promise<void> {
-        const targetUr = sessionStorage.getItem('redirectionUri');
+        const targetUr = sessionStorage.getItem('redirectUri');
         console.log('tryLogin-sessInit', status, targetUr, oidcParams);
 
         // if the backend is not ready, we cannot do anything
