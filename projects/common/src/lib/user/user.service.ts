@@ -106,8 +106,10 @@ export class UserService {
               }
             | undefined,
     ): Promise<void> {
+        const targetUr = sessionStorage.getItem('redirectionUri');
+        console.log('tryLogin-sessInit', status, targetUr, oidcParams);
+
         // if the backend is not ready, we cannot do anything
-        console.log('tryLogin()', status, oidcParams);
         if (status.initial) {
             return;
         }
@@ -126,8 +128,7 @@ export class UserService {
 
         this.sessionInitialized = true;
 
-        const targetUr = sessionStorage.getItem('redirectionUri');
-        console.log(targetUr, oidcParams);
+        console.log('tryLogin-sessInit', targetUr, oidcParams);
 
         if (oidcParams && targetUr) {
             this.oidcLogin(oidcParams)

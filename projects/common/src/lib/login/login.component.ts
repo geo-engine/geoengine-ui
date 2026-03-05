@@ -149,7 +149,7 @@ export class LoginComponent implements OnInit {
     }
 
     oidcLogin(): void {
-        this.formStatus.set(FormStatus.Loading);
+        this.formStatus.set(FormStatus.Oidc);
         window.location.href = this.oidcUrl;
     }
 
