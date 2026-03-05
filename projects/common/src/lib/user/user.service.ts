@@ -347,6 +347,7 @@ export class UserService {
     }
 
     oidcInit(redirectUri: string): Promise<AuthCodeRequestURL> {
+        console.log('oidcInit', redirectUri);
         sessionStorage.setItem('redirectUri', redirectUri);
 
         return new SessionApi().oidcInit({
@@ -366,7 +367,7 @@ export class UserService {
             })
             .then((response) => {
                 const session = this.sessionFromDict(response);
-                console.log(session);
+                console.log('oidcLogin-then', session);
                 this.session$.next(session);
                 result.next(session);
                 result.complete();
