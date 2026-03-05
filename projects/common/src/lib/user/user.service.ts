@@ -62,34 +62,32 @@ export class UserService {
 
     protected logoutCallback?: () => void;
     protected sessionInitialized = false;
+    private ready: Promise<void>;
 
     constructor() {
+        this.ready = this.initialize();
+    }
+
+    async initialize(): Promise<void> {
         // get oidc paramters from url before routing is enabled
         const oidcParams = this.getOidcParametersFromUrl();
 
         this.session$.subscribe((session) => {
             // storage of the session
+            console.log('this.session$.subscribe', session);
             this.saveSessionInBrowser(session);
+            if (!session) return;
+            this.userApi.next(new UserApi(apiConfigurationWithAccessKey(session.sessionToken)));
+            this.sessionApi.next(new SessionApi(apiConfigurationWithAccessKey(session.sessionToken)));
         });
 
-        this.getBackendStatus().subscribe((status) => {
-            void this.tryLogin(status, oidcParams);
-        });
-
-        // update backend info when backend is available
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         this.getBackendStatus().subscribe(async (status) => {
+            console.log('this.getBackendStatus().subscribe', status);
+            await this.tryLogin(status, oidcParams);
             if (status.available) {
                 const info = await this.backendApi.serverInfoHandler();
                 this.backendInfo$.next(info);
             }
-        });
-
-        this.getSessionStream().subscribe({
-            next: (session) => {
-                this.userApi.next(new UserApi(apiConfigurationWithAccessKey(session.sessionToken)));
-                this.sessionApi.next(new SessionApi(apiConfigurationWithAccessKey(session.sessionToken)));
-            },
         });
 
         // update quota when session changes or update is triggered
@@ -109,6 +107,7 @@ export class UserService {
             | undefined,
     ): Promise<void> {
         // if the backend is not ready, we cannot do anything
+        console.log('tryLogin()', status, oidcParams);
         if (status.initial) {
             return;
         }
@@ -126,15 +125,20 @@ export class UserService {
         }
 
         this.sessionInitialized = true;
-        // get redrectUri used to track oidc login
-        const redirectUri = sessionStorage.getItem('redirectUri');
 
-        if (oidcParams && redirectUri) {
+        const targetUr = sessionStorage.getItem('redirectionUri');
+        console.log(targetUr, oidcParams);
+
+        if (oidcParams && targetUr) {
             this.oidcLogin(oidcParams)
                 .pipe(first())
                 .subscribe(() => {
-                    void this.router.navigateByUrl(redirectUri, {
-                        // eslint-disable-next-line @typescript-eslint/naming-convention
+                    void this.router.navigateByUrl(targetUr).then(() => {
+                        void this.router.navigate([], {
+                            // eslint-disable-next-line @typescript-eslint/naming-convention
+                            queryParams: {session_state: undefined, state: undefined, code: undefined},
+                            queryParamsHandling: 'merge',
+                        });
                     });
                 });
         } else {
@@ -353,10 +357,12 @@ export class UserService {
     oidcLogin(request: {sessionState: string; code: string; state: string}): Observable<Session> {
         const result = new ReplaySubject<Session>();
 
+        const targetUr = sessionStorage.getItem('redirectUri');
+        console.log('oidcLogin', request, targetUr);
         new SessionApi()
             .oidcLogin({
                 authCodeResponse: request,
-                redirectUri: sessionStorage.getItem('redirectUri')!,
+                redirectUri: targetUr!,
             })
             .then((response) => {
                 const session = this.sessionFromDict(response);
