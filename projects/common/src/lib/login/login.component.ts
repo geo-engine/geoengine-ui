@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, input, OnInit, inject, signal} from '@angular/core';
 import {Router, RouterLink, ActivatedRoute} from '@angular/router';
-import {Location} from '@angular/common';
 import {CommonConfig} from '../config.service';
 import {UserService} from '../user/user.service';
 import {geoengineValidators} from '../util/form.validators';
@@ -62,7 +61,6 @@ export class LoginComponent implements OnInit {
     private readonly notificationService = inject(NotificationService);
     private readonly router = inject(Router);
     private readonly route = inject(ActivatedRoute);
-    private readonly location = inject(Location);
 
     readonly FormStatus = FormStatus;
     readonly defaultRedirect = input('/map');
@@ -115,15 +113,14 @@ export class LoginComponent implements OnInit {
         // this must be a relative path!
         const relativePath = loginRe.startsWith('/') ? loginRe.substring(1) : loginRe;
         // prepareExternalUrl takes care of # or base-href routing
-        const externalPath = this.location.prepareExternalUrl(relativePath);
-        const redirectUri = new URL(externalPath, window.location.origin).toString();
-        console.log(redirectUri);
+
+        console.log(relativePath);
 
         // check if OIDC login is enabled
         try {
-            const idr = await this.userService.oidcInit(redirectUri);
+            const idr = await this.userService.oidcInit(relativePath);
             this.oidcUrl = idr.url;
-            console.log('onInit-try', redirectUri, idr);
+            console.log('onInit-try', relativePath, idr);
             this.formStatus.set(FormStatus.Oidc);
 
             // Auto-redirect to OIDC if local login is disabled

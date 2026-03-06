@@ -26,6 +26,7 @@ import {
     mergeMap,
     of,
 } from 'rxjs';
+import {Location} from '@angular/common';
 import {UUID} from '../datasets/dataset.model';
 import {isDefined} from '../util/conversions';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -49,6 +50,7 @@ export class UserService {
     protected readonly notificationService = inject(NotificationService);
     protected readonly router = inject(Router);
     protected readonly activatedRoute = inject(ActivatedRoute);
+    protected readonly location = inject(Location);
 
     protected readonly session$ = new ReplaySubject<Session | undefined>(1);
     protected readonly backendStatus$ = new BehaviorSubject<BackendStatus>({available: false, initial: true});
@@ -107,7 +109,7 @@ export class UserService {
             | undefined,
     ): Promise<void> {
         const targetUr = sessionStorage.getItem('redirectUri');
-        console.log('tryLogin-sessInit', status, targetUr, oidcParams);
+        console.log('tryLogin', status, targetUr, oidcParams);
 
         // if the backend is not ready, we cannot do anything
         if (status.initial) {
@@ -134,13 +136,8 @@ export class UserService {
             this.oidcLogin(oidcParams)
                 .pipe(first())
                 .subscribe(() => {
-                    void this.router.navigateByUrl(targetUr).then(() => {
-                        void this.router.navigate([], {
-                            // eslint-disable-next-line @typescript-eslint/naming-convention
-                            queryParams: {session_state: undefined, state: undefined, code: undefined},
-                            queryParamsHandling: 'merge',
-                        });
-                    });
+                    console.log('oidcLogin-pipe-first', this.router.routerState, targetUr);
+                    void this.router.navigateByUrl(targetUr);
                 });
         } else {
             try {
@@ -347,9 +344,12 @@ export class UserService {
         this.logoutCallback = callback;
     }
 
-    oidcInit(redirectUri: string): Promise<AuthCodeRequestURL> {
-        console.log('oidcInit', redirectUri);
-        sessionStorage.setItem('redirectUri', redirectUri);
+    oidcInit(relativePath: string): Promise<AuthCodeRequestURL> {
+        console.log('oidcInit', relativePath);
+        sessionStorage.setItem('redirectUri', relativePath);
+
+        const externalPath = this.location.prepareExternalUrl(relativePath);
+        const redirectUri = new URL(externalPath, window.location.origin).toString();
 
         return new SessionApi().oidcInit({
             redirectUri: redirectUri,
@@ -359,12 +359,15 @@ export class UserService {
     oidcLogin(request: {sessionState: string; code: string; state: string}): Observable<Session> {
         const result = new ReplaySubject<Session>();
 
-        const targetUr = sessionStorage.getItem('redirectUri');
+        const targetUr = sessionStorage.getItem('redirectUri')!;
+        const externalPath = this.location.prepareExternalUrl(targetUr);
+        const redirectUri = new URL(externalPath, window.location.origin).toString();
+
         console.log('oidcLogin', request, targetUr);
         new SessionApi()
             .oidcLogin({
                 authCodeResponse: request,
-                redirectUri: targetUr!,
+                redirectUri: redirectUri,
             })
             .then((response) => {
                 const session = this.sessionFromDict(response);
