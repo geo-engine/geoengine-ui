@@ -67,6 +67,7 @@ export class UserService {
     private ready: Promise<void>;
 
     constructor() {
+        console.log('UserService PATH_PREFIX: ', PATH_PREFIX);
         this.ready = this.initialize();
     }
 
@@ -410,13 +411,16 @@ export class UserService {
     protected saveSessionInBrowser(session: Session | undefined): void {
         if (session) {
             localStorage.setItem(PATH_PREFIX + 'session', session.sessionToken);
+            console.log('saveSessionInBrowser');
         } else {
             localStorage.removeItem(PATH_PREFIX + 'session');
+            console.log('saveSessionInBrowser --> clear');
         }
     }
 
     protected restoreSessionFromBrowser(): Promise<Session> {
         const sessionToken = localStorage.getItem(PATH_PREFIX + 'session') ?? '';
+        console.log('restoreSessionFromBrowser, prefix, token:', PATH_PREFIX, sessionToken);
 
         return this.createSessionWithToken(sessionToken);
     }
