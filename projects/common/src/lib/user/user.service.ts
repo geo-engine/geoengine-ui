@@ -349,10 +349,12 @@ export class UserService {
         sessionStorage.setItem('oidcRestoreRoute', oidcRestoreRoute);
 
         // this is a SPA, we always redirect to the app at '/'. Routes are handled by the app itself.
-        const spa_base_href = this.location.prepareExternalUrl('/');
+        const spaBaseHref = this.location.prepareExternalUrl('/');
+        const redirectUri = new URL(spaBaseHref, window.location.origin).toString();
+        console.log('oidcInit', oidcRestoreRoute, redirectUri);
 
         return new SessionApi().oidcInit({
-            redirectUri: spa_base_href,
+            redirectUri: redirectUri,
         });
     }
 
@@ -360,12 +362,13 @@ export class UserService {
         const result = new ReplaySubject<Session>();
 
         // this is a SPA, we always redirect to the app at '/'. Routes are handled by the app itself.
-        const spa_base_href = this.location.prepareExternalUrl('/');
-        console.log('oidcLogin', request, spa_base_href);
+        const spaBaseHref = this.location.prepareExternalUrl('/');
+        const redirectUri = new URL(spaBaseHref, window.location.origin).toString();
+        console.log('oidcLogin', request, redirectUri);
         new SessionApi()
             .oidcLogin({
                 authCodeResponse: request,
-                redirectUri: spa_base_href,
+                redirectUri: redirectUri,
             })
             .then((response) => {
                 const session = this.sessionFromDict(response);
