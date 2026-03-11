@@ -108,8 +108,8 @@ export class UserService {
               }
             | undefined,
     ): Promise<void> {
-        const targetUr = sessionStorage.getItem('redirectUri');
-        console.log('tryLogin', status, targetUr, oidcParams);
+        const oidcRestoreRoute = sessionStorage.getItem('oidcRestoreRoute');
+        console.log('tryLogin', status, oidcRestoreRoute, oidcParams);
 
         // if the backend is not ready, we cannot do anything
         if (status.initial) {
@@ -130,14 +130,14 @@ export class UserService {
 
         this.sessionInitialized = true;
 
-        console.log('tryLogin-sessInit', targetUr, oidcParams);
+        console.log('tryLogin-sessInit', oidcRestoreRoute, oidcParams);
 
-        if (oidcParams && targetUr) {
+        if (oidcParams && oidcRestoreRoute) {
             this.oidcLogin(oidcParams)
                 .pipe(first())
                 .subscribe(() => {
-                    console.log('oidcLogin-pipe-first', this.router.routerState, targetUr);
-                    void this.router.navigateByUrl(targetUr);
+                    console.log('oidcLogin-pipe-first', this.router.routerState, oidcRestoreRoute);
+                    void this.router.navigateByUrl(oidcRestoreRoute);
                 });
         } else {
             try {
@@ -344,30 +344,28 @@ export class UserService {
         this.logoutCallback = callback;
     }
 
-    oidcInit(relativePath: string): Promise<AuthCodeRequestURL> {
-        console.log('oidcInit', relativePath);
-        sessionStorage.setItem('redirectUri', relativePath);
+    oidcInit(oidcRestoreRoute: string): Promise<AuthCodeRequestURL> {
+        console.log('oidcInit', oidcRestoreRoute);
+        sessionStorage.setItem('oidcRestoreRoute', oidcRestoreRoute);
 
-        const externalPath = this.location.prepareExternalUrl(relativePath);
-        const redirectUri = new URL(externalPath, window.location.origin).toString();
+        // this is a SPA, we always redirect to the app at '/'. Routes are handled by the app itself.
+        const spa_base_href = this.location.prepareExternalUrl('/');
 
         return new SessionApi().oidcInit({
-            redirectUri: redirectUri,
+            redirectUri: spa_base_href,
         });
     }
 
     oidcLogin(request: {sessionState: string; code: string; state: string}): Observable<Session> {
         const result = new ReplaySubject<Session>();
 
-        const targetUr = sessionStorage.getItem('redirectUri')!;
-        const externalPath = this.location.prepareExternalUrl(targetUr);
-        const redirectUri = new URL(externalPath, window.location.origin).toString();
-
-        console.log('oidcLogin', request, targetUr);
+        // this is a SPA, we always redirect to the app at '/'. Routes are handled by the app itself.
+        const spa_base_href = this.location.prepareExternalUrl('/');
+        console.log('oidcLogin', request, spa_base_href);
         new SessionApi()
             .oidcLogin({
                 authCodeResponse: request,
-                redirectUri: redirectUri,
+                redirectUri: spa_base_href,
             })
             .then((response) => {
                 const session = this.sessionFromDict(response);
@@ -375,7 +373,7 @@ export class UserService {
                 this.session$.next(session);
                 result.next(session);
                 result.complete();
-                sessionStorage.removeItem('redirectUri');
+                sessionStorage.removeItem('oidcRestoreRoute');
             })
             .catch((error) => result.error(error));
 

@@ -111,16 +111,16 @@ export class LoginComponent implements OnInit {
         // build a path that already contains the base-href; Location will add it
         const loginRe = this.loginRedirect();
         // this must be a relative path!
-        const relativePath = loginRe.startsWith('/') ? loginRe.substring(1) : loginRe;
+        const oidcRestoreRoute = loginRe.startsWith('/') ? loginRe.substring(1) : loginRe;
         // prepareExternalUrl takes care of # or base-href routing
 
-        console.log(relativePath);
+        console.log(oidcRestoreRoute);
 
         // check if OIDC login is enabled
         try {
-            const idr = await this.userService.oidcInit(relativePath);
+            const idr = await this.userService.oidcInit(oidcRestoreRoute);
             this.oidcUrl = idr.url;
-            console.log('onInit-try', relativePath, idr);
+            console.log('onInit-try', oidcRestoreRoute, idr);
             this.formStatus.set(FormStatus.Oidc);
 
             // Auto-redirect to OIDC if local login is disabled
