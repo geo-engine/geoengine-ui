@@ -67,7 +67,6 @@ export class UserService {
     private ready: Promise<void>;
 
     constructor() {
-        console.log('UserService PATH_PREFIX: ', this.pathPrefix);
         this.ready = this.initialize();
     }
 
@@ -77,7 +76,6 @@ export class UserService {
 
         this.session$.subscribe((session) => {
             // storage of the session
-            console.log('this.session$.subscribe', session);
             this.saveSessionInBrowser(session);
             if (!session) return;
             this.userApi.next(new UserApi(apiConfigurationWithAccessKey(session.sessionToken)));
@@ -85,7 +83,6 @@ export class UserService {
         });
 
         this.getBackendStatus().subscribe(async (status) => {
-            console.log('this.getBackendStatus().subscribe', status);
             await this.tryLogin(status, oidcParams);
             if (status.available) {
                 const info = await this.backendApi.serverInfoHandler();
@@ -109,9 +106,6 @@ export class UserService {
               }
             | undefined,
     ): Promise<void> {
-        const oidcRestoreRoute = sessionStorage.getItem('oidcRestoreRoute');
-        console.log('tryLogin', status, oidcRestoreRoute, oidcParams);
-
         // if the backend is not ready, we cannot do anything
         if (status.initial) {
             return;
@@ -131,13 +125,11 @@ export class UserService {
 
         this.sessionInitialized = true;
 
-        console.log('tryLogin-sessInit', oidcRestoreRoute, oidcParams);
-
+        const oidcRestoreRoute = sessionStorage.getItem('oidcRestoreRoute');
         if (oidcParams && oidcRestoreRoute) {
             this.oidcLogin(oidcParams)
                 .pipe(first())
                 .subscribe(() => {
-                    console.log('oidcLogin-pipe-first', this.router.routerState, oidcRestoreRoute);
                     void this.router.navigateByUrl(oidcRestoreRoute);
                 });
         } else {
@@ -346,13 +338,11 @@ export class UserService {
     }
 
     oidcInit(oidcRestoreRoute: string): Promise<AuthCodeRequestURL> {
-        console.log('oidcInit', oidcRestoreRoute);
         sessionStorage.setItem('oidcRestoreRoute', oidcRestoreRoute);
 
         // this is a SPA, we always redirect to the app at '/'. Routes are handled by the app itself.
 
         const redirectUri = new URL(this.spaBaseHref, window.location.origin).toString();
-        console.log('oidcInit', oidcRestoreRoute, redirectUri);
 
         return new SessionApi().oidcInit({
             redirectUri: redirectUri,
@@ -364,7 +354,6 @@ export class UserService {
 
         // this is a SPA, we always redirect to the app at '/'. Routes are handled by the app itself.
         const redirectUri = new URL(this.spaBaseHref, window.location.origin).toString();
-        console.log('oidcLogin', request, redirectUri);
         new SessionApi()
             .oidcLogin({
                 authCodeResponse: request,
@@ -372,7 +361,6 @@ export class UserService {
             })
             .then((response) => {
                 const session = this.sessionFromDict(response);
-                console.log('oidcLogin-then', session);
                 this.session$.next(session);
                 result.next(session);
                 result.complete();
@@ -410,16 +398,13 @@ export class UserService {
     protected saveSessionInBrowser(session: Session | undefined): void {
         if (session) {
             localStorage.setItem(this.pathPrefix + 'session', session.sessionToken);
-            console.log('saveSessionInBrowser');
         } else {
             localStorage.removeItem(this.pathPrefix + 'session');
-            console.log('saveSessionInBrowser --> clear');
         }
     }
 
     protected restoreSessionFromBrowser(): Promise<Session> {
         const sessionToken = localStorage.getItem(this.pathPrefix + 'session') ?? '';
-        console.log('restoreSessionFromBrowser, prefix, token:', this.pathPrefix, sessionToken);
 
         return this.createSessionWithToken(sessionToken);
     }
