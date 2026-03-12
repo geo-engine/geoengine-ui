@@ -37,8 +37,6 @@ import {utc} from 'moment';
 import {CommonConfig} from '../config.service';
 import {NotificationService} from '../notification.service';
 
-const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
-
 /**
  * A service that is responsible for retrieving user information and modifying the current user.
  */
@@ -57,6 +55,8 @@ export class UserService {
     protected readonly backendInfo$ = new BehaviorSubject<ServerInfo | undefined>(undefined);
     protected readonly sessionQuota$ = new BehaviorSubject<Quota | undefined>(undefined);
     protected readonly refreshSessionQuota$ = new BehaviorSubject<void>(undefined);
+    protected readonly spaBaseHref: string = this.location.prepareExternalUrl('/');
+    protected readonly pathPrefix: string = this.spaBaseHref.replace(/\//g, '_').replace(/-/g, '_');
 
     userApi = new ReplaySubject<UserApi>(1);
     sessionApi = new ReplaySubject<SessionApi>(1);
@@ -67,7 +67,7 @@ export class UserService {
     private ready: Promise<void>;
 
     constructor() {
-        console.log('UserService PATH_PREFIX: ', PATH_PREFIX);
+        console.log('UserService PATH_PREFIX: ', this.pathPrefix);
         this.ready = this.initialize();
     }
 
@@ -350,8 +350,8 @@ export class UserService {
         sessionStorage.setItem('oidcRestoreRoute', oidcRestoreRoute);
 
         // this is a SPA, we always redirect to the app at '/'. Routes are handled by the app itself.
-        const spaBaseHref = this.location.prepareExternalUrl('/');
-        const redirectUri = new URL(spaBaseHref, window.location.origin).toString();
+
+        const redirectUri = new URL(this.spaBaseHref, window.location.origin).toString();
         console.log('oidcInit', oidcRestoreRoute, redirectUri);
 
         return new SessionApi().oidcInit({
@@ -363,8 +363,7 @@ export class UserService {
         const result = new ReplaySubject<Session>();
 
         // this is a SPA, we always redirect to the app at '/'. Routes are handled by the app itself.
-        const spaBaseHref = this.location.prepareExternalUrl('/');
-        const redirectUri = new URL(spaBaseHref, window.location.origin).toString();
+        const redirectUri = new URL(this.spaBaseHref, window.location.origin).toString();
         console.log('oidcLogin', request, redirectUri);
         new SessionApi()
             .oidcLogin({
@@ -385,11 +384,11 @@ export class UserService {
     }
 
     saveSettingInLocalStorage(keyValue: string, setting: string): void {
-        localStorage.setItem(PATH_PREFIX + keyValue, setting);
+        localStorage.setItem(this.pathPrefix + keyValue, setting);
     }
 
     getSettingFromLocalStorage(keyValue: string): string | null {
-        return localStorage.getItem(PATH_PREFIX + keyValue);
+        return localStorage.getItem(this.pathPrefix + keyValue);
     }
 
     /**
@@ -410,17 +409,17 @@ export class UserService {
 
     protected saveSessionInBrowser(session: Session | undefined): void {
         if (session) {
-            localStorage.setItem(PATH_PREFIX + 'session', session.sessionToken);
+            localStorage.setItem(this.pathPrefix + 'session', session.sessionToken);
             console.log('saveSessionInBrowser');
         } else {
-            localStorage.removeItem(PATH_PREFIX + 'session');
+            localStorage.removeItem(this.pathPrefix + 'session');
             console.log('saveSessionInBrowser --> clear');
         }
     }
 
     protected restoreSessionFromBrowser(): Promise<Session> {
-        const sessionToken = localStorage.getItem(PATH_PREFIX + 'session') ?? '';
-        console.log('restoreSessionFromBrowser, prefix, token:', PATH_PREFIX, sessionToken);
+        const sessionToken = localStorage.getItem(this.pathPrefix + 'session') ?? '';
+        console.log('restoreSessionFromBrowser, prefix, token:', this.pathPrefix, sessionToken);
 
         return this.createSessionWithToken(sessionToken);
     }
