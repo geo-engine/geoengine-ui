@@ -64,13 +64,15 @@ export class UserService {
 
     protected logoutCallback?: () => void;
     protected sessionInitialized = false;
-    private ready: Promise<void>;
 
     constructor() {
-        this.ready = this.initialize();
+        // initialize builds all the subscriptions where backend and session changes are handled.
+        this.initialize();
+        // now, trigger an update of the backend status once. There is no need to wait here.
+        void this.triggerBackendStatusUpdate();
     }
 
-    async initialize(): Promise<void> {
+    initialize() {
         // get oidc paramters from url before routing is enabled
         const oidcParams = this.getOidcParametersFromUrl();
 
@@ -92,8 +94,6 @@ export class UserService {
 
         // update quota when session changes or update is triggered
         this.createSessionQuotaStream();
-
-        void this.triggerBackendStatusUpdate();
     }
 
     async tryLogin(
@@ -340,8 +340,6 @@ export class UserService {
     oidcInit(oidcRestoreRoute: string): Promise<AuthCodeRequestURL> {
         sessionStorage.setItem('oidcRestoreRoute', oidcRestoreRoute);
 
-        // this is a SPA, we always redirect to the app at '/'. Routes are handled by the app itself.
-
         const redirectUri = new URL(this.spaBaseHref, window.location.origin).toString();
 
         return new SessionApi().oidcInit({
@@ -352,7 +350,6 @@ export class UserService {
     oidcLogin(request: {sessionState: string; code: string; state: string}): Observable<Session> {
         const result = new ReplaySubject<Session>();
 
-        // this is a SPA, we always redirect to the app at '/'. Routes are handled by the app itself.
         const redirectUri = new URL(this.spaBaseHref, window.location.origin).toString();
         new SessionApi()
             .oidcLogin({
