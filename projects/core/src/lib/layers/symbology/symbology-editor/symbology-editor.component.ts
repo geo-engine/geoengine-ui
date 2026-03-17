@@ -15,7 +15,6 @@ import {
 import {BehaviorSubject, Subscription, combineLatest} from 'rxjs';
 import {ProjectService} from '../../../project/project.service';
 import {MapService} from '../../../map/map.service';
-import {SpatialResolution} from '@geoengine/openapi-client';
 import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
 import {DialogHelpComponent} from '../../../dialogs/dialog-help/dialog-help.component';
 import {MatButton} from '@angular/material/button';
@@ -94,7 +93,7 @@ export class SymbologyEditorComponent implements OnInit, OnDestroy {
             this.queryParams$.next({
                 time,
                 bbox: extentToBboxDict(viewport.extent),
-                resolution: {x: viewport.resolution, y: viewport.resolution} as SpatialResolution,
+                resolution: {x: viewport.resolution, y: viewport.resolution},
                 spatialReference,
             } as SymbologyQueryParams);
         });

@@ -9,7 +9,7 @@ import {LayoutService} from '../../layout.service';
 import {ProjectService} from '../../project/project.service';
 
 import {createIconDataUrl, Layer, FxLayoutDirective, FxFlexDirective} from '@geoengine/common';
-import {TypedOperatorOperator} from '@geoengine/openapi-client';
+import {LegacyTypedOperatorOperator} from '@geoengine/openapi-client';
 import {DialogHeaderComponent} from '../../dialogs/dialog-header/dialog-header.component';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {DialogSectionHeadingComponent} from '../../dialogs/dialog-section-heading/dialog-section-heading.component';
@@ -77,7 +77,7 @@ export class LineageGraphComponent implements AfterViewInit {
     title = 'Layer Lineage';
     layer: Layer;
 
-    selectedOperator$ = new ReplaySubject<TypedOperatorOperator>(1);
+    selectedOperator$ = new ReplaySubject<LegacyTypedOperatorOperator>(1);
     selectedOperatorIcon$ = new ReplaySubject<string>(1);
     parameters$ = new ReplaySubject<Array<{key: string; value: string}>>(1);
 
@@ -156,10 +156,10 @@ export class LineageGraphComponent implements AfterViewInit {
         });
     }
 
-    private static addOperatorsToGraph(graph: dagreD3.graphlib.Graph, initialOperator: TypedOperatorOperator): void {
+    private static addOperatorsToGraph(graph: dagreD3.graphlib.Graph, initialOperator: LegacyTypedOperatorOperator): void {
         let nextOperatorId = 0;
 
-        const operatorQueue: Array<[number, TypedOperatorOperator]> = [[nextOperatorId++, initialOperator]];
+        const operatorQueue: Array<[number, LegacyTypedOperatorOperator]> = [[nextOperatorId++, initialOperator]];
         const edges: Array<[number, number, string]> = [];
 
         while (operatorQueue.length > 0) {
@@ -203,13 +203,16 @@ export class LineageGraphComponent implements AfterViewInit {
             if (nonSourceOperator.sources) {
                 const operatorSources = nonSourceOperator.sources as OperatorSourcesDict;
                 for (const sourceKey of Object.keys(operatorSources)) {
-                    const operatorSource = operatorSources[sourceKey] as TypedOperatorOperator | Array<TypedOperatorOperator> | undefined;
+                    const operatorSource = operatorSources[sourceKey] as
+                        | LegacyTypedOperatorOperator
+                        | Array<LegacyTypedOperatorOperator>
+                        | undefined;
 
                     if (!operatorSource) {
                         continue;
                     }
 
-                    let sources: Array<TypedOperatorOperator>;
+                    let sources: Array<LegacyTypedOperatorOperator>;
                     if (operatorSource instanceof Array) {
                         sources = operatorSource;
                     } else {
@@ -308,7 +311,7 @@ export class LineageGraphComponent implements AfterViewInit {
 
             const node = graph.node(nodeId);
             if (node.type === 'operator') {
-                const operator: TypedOperatorOperator = node.operator;
+                const operator: LegacyTypedOperatorOperator = node.operator;
 
                 // update operator type
                 this.selectedOperator$.next(operator);
@@ -325,7 +328,7 @@ export class LineageGraphComponent implements AfterViewInit {
         });
     }
 
-    private static parametersDisplayList(operator: TypedOperatorOperator): Array<{key: string; value: string}> {
+    private static parametersDisplayList(operator: LegacyTypedOperatorOperator): Array<{key: string; value: string}> {
         const list: Array<{key: string; value: string}> = [];
 
         const params = operator.params as OperatorParams | null;
