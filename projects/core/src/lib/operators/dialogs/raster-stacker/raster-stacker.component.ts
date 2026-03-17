@@ -20,7 +20,7 @@ import {
     InterpolationDict,
     DownsamplingDict,
 } from '@geoengine/common';
-import {Coordinate2D, SpatialResolution, TypedOperatorOperator} from '@geoengine/openapi-client';
+import {Coordinate2D, LegacyTypedOperatorOperator} from '@geoengine/openapi-client';
 import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
 import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
 import {MatIconButton, MatButton} from '@angular/material/button';
@@ -53,7 +53,7 @@ type SpatialReferenceString = string;
 
 interface Regrid {
     origin: Coordinate2D;
-    resolution: SpatialResolution;
+    resolution: {x: number; y: number};
 }
 
 @Component({
@@ -202,7 +202,7 @@ export class RasterStackerComponent implements AfterViewInit {
     private readonly inputDataTypes = signal<Array<RasterDataType>>([]);
     private readonly layerMetadata = signal<Array<RasterLayerMetadata>>([]);
     private readonly reprojectedLayerMetadata = signal<Array<RasterLayerMetadata>>([]);
-    private readonly workflowOperators = signal<Array<TypedOperatorOperator>>([]);
+    private readonly workflowOperators = signal<Array<LegacyTypedOperatorOperator>>([]);
     private readonly rasterLayersSignal!: ReturnType<typeof toSignal<Array<RasterLayer> | undefined>>;
     private readonly spatialReferenceSignal!: ReturnType<typeof toSignal<string | undefined>>;
 
@@ -260,7 +260,7 @@ export class RasterStackerComponent implements AfterViewInit {
             const workflowPromises = rasterLayers.map((l) => firstValueFrom(this.projectService.getWorkflow(l.workflowId)));
 
             void Promise.all([Promise.all(metadataPromises), Promise.all(workflowPromises)]).then(
-                ([metadata, workflows]: [Array<RasterLayerMetadata>, Array<{operator: TypedOperatorOperator}>]) => {
+                ([metadata, workflows]: [Array<RasterLayerMetadata>, Array<{operator: LegacyTypedOperatorOperator}>]) => {
                     this.layerMetadata.set(metadata);
                     this.inputDataTypes.set(metadata.map((layer: RasterLayerMetadata) => layer.dataType));
                     this.workflowOperators.set(workflows.map((w) => w.operator));
@@ -469,8 +469,8 @@ export class RasterStackerComponent implements AfterViewInit {
 
         try {
             // Process each layer: reproject, regrid, convert data type
-            const processedOperators: Array<TypedOperatorOperator> = workflowOperators.map((operator, index) => {
-                let processedOperator: TypedOperatorOperator = operator;
+            const processedOperators: Array<LegacyTypedOperatorOperator> = workflowOperators.map((operator, index) => {
+                let processedOperator: LegacyTypedOperatorOperator = operator;
                 const originalSpatialReference = originalMetadata[index].spatialReference.srsString;
 
                 // Step 1: Reproject to target spatial reference if needed
