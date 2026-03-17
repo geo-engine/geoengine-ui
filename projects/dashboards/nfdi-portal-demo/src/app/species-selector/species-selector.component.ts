@@ -42,7 +42,7 @@ import {
     FxLayoutAlignDirective,
     AsyncValueDefault,
 } from '@geoengine/common';
-import {TypedOperatorOperator, Workflow as WorkflowDict} from '@geoengine/openapi-client';
+import {LegacyTypedOperatorOperator, Workflow as WorkflowDict} from '@geoengine/openapi-client';
 import {MatFormField, MatLabel} from '@angular/material/input';
 import {MatSelect} from '@angular/material/select';
 import {MatOption} from '@angular/material/autocomplete';
@@ -920,7 +920,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                     ]),
                 ),
                 mergeMap(([workflow, metadata, dataRange]) => {
-                    let plotWorkflow: TypedOperatorOperator;
+                    let plotWorkflow: LegacyTypedOperatorOperator;
 
                     if (
                         environmentColumnName in metadata.columns &&
@@ -1106,7 +1106,7 @@ export class SpeciesSelectorComponent implements OnInit, OnDestroy {
                     ]),
                 ),
                 mergeMap(([workflow, metadata, dataRange]) => {
-                    let plotWorkflow: TypedOperatorOperator;
+                    let plotWorkflow: LegacyTypedOperatorOperator;
 
                     if (
                         environmentColumnName in metadata.columns &&
