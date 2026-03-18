@@ -68,11 +68,9 @@ export class UserService {
     constructor() {
         // initialize builds all the subscriptions where backend and session changes are handled.
         this.initialize();
-        // now, trigger an update of the backend status once. There is no need to wait here.
-        void this.triggerBackendStatusUpdate();
     }
 
-    initialize() {
+    initialize(): void {
         // get oidc paramters from url before routing is enabled
         const oidcParams = this.getOidcParametersFromUrl();
 
@@ -84,16 +82,36 @@ export class UserService {
             this.sessionApi.next(new SessionApi(apiConfigurationWithAccessKey(session.sessionToken)));
         });
 
-        this.getBackendStatus().subscribe(async (status) => {
-            await this.tryLogin(status, oidcParams);
-            if (status.available) {
-                const info = await this.backendApi.serverInfoHandler();
-                this.backendInfo$.next(info);
-            }
-        });
+        this.getBackendStatus()
+            .pipe(mergeMap((status, _index) => this.onBackendAvailable(status, oidcParams)))
+            .subscribe();
 
         // update quota when session changes or update is triggered
         this.createSessionQuotaStream();
+
+        // now, trigger an update of the backend status once. While this is an async call, we don't need to await here.
+        void this.triggerBackendStatusUpdate();
+    }
+
+    async onBackendAvailable(
+        status: BackendStatus,
+        oidcParams:
+            | {
+                  sessionState: string;
+                  code: string;
+                  state: string;
+              }
+            | undefined,
+    ): Promise<void> {
+        await this.setBackendInfo(status);
+        await this.tryLogin(status, oidcParams);
+    }
+
+    async setBackendInfo(status: BackendStatus): Promise<void> {
+        if (status.available) {
+            const info = await this.backendApi.serverInfoHandler();
+            this.backendInfo$.next(info);
+        }
     }
 
     async tryLogin(
@@ -128,10 +146,11 @@ export class UserService {
         const oidcRestoreRoute = sessionStorage.getItem('oidcRestoreRoute');
         if (oidcParams && oidcRestoreRoute) {
             this.oidcLogin(oidcParams)
-                .pipe(first())
-                .subscribe(() => {
-                    void this.router.navigateByUrl(oidcRestoreRoute);
-                });
+                .pipe(
+                    first(),
+                    mergeMap(() => this.router.navigateByUrl(oidcRestoreRoute)),
+                )
+                .subscribe();
         } else {
             try {
                 // restore old session if possible
