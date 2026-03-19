@@ -142,7 +142,11 @@ export class OlVectorLayerComponent
     }
 
     getExtent(): [number, number, number, number] {
-        return olExtentToTuple(this.source.getExtent());
+        const extent = this.source.getExtent();
+        if (!extent) {
+            throw Error('Vector source has no extent');
+        }
+        return olExtentToTuple(extent);
     }
 
     ngOnChanges(changes: SimpleChanges): void {
