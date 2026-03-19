@@ -88,9 +88,9 @@ export class LoginComponent implements OnInit {
 
     readonly loginRedirect = (): string => {
         // Priority: explicit returnUrl query param -> route data.loginRedirect -> default input
-        const qp = this.route.snapshot.queryParamMap.get('returnUrl');
-        if (qp) {
-            return qp;
+        const queryRedirect = this.route.snapshot.queryParamMap.get('returnUrl');
+        if (queryRedirect) {
+            return queryRedirect;
         }
 
         const dataRedirect = this.route.snapshot.data['loginRedirect'];
@@ -98,7 +98,13 @@ export class LoginComponent implements OnInit {
             return dataRedirect as string;
         }
 
-        return this.defaultRedirect();
+        const inputDefaultRedirect = this.defaultRedirect();
+        if (inputDefaultRedirect) {
+            return inputDefaultRedirect;
+        }
+
+        // if there is no redirect set, redirect to the application root.
+        return '/';
     };
 
     ngOnInit(): void {
