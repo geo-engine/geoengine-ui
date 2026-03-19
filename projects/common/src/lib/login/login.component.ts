@@ -88,13 +88,23 @@ export class LoginComponent implements OnInit {
 
     readonly loginRedirect = (): string => {
         // Priority: explicit returnUrl query param -> route data.loginRedirect -> default input
-        const qp = this.route.snapshot.queryParamMap.get('returnUrl');
-        if (qp) return qp;
+        const queryRedirect = this.route.snapshot.queryParamMap.get('returnUrl');
+        if (queryRedirect) {
+            return queryRedirect;
+        }
 
         const dataRedirect = this.route.snapshot.data['loginRedirect'];
-        if (dataRedirect) return dataRedirect as string;
+        if (dataRedirect) {
+            return dataRedirect as string;
+        }
 
-        return this.defaultRedirect();
+        const inputDefaultRedirect = this.defaultRedirect();
+        if (inputDefaultRedirect) {
+            return inputDefaultRedirect;
+        }
+
+        // if there is no redirect set, redirect to the application root.
+        return '/';
     };
 
     ngOnInit(): void {
@@ -102,14 +112,11 @@ export class LoginComponent implements OnInit {
     }
 
     async onInit(): Promise<void> {
-        const usesHashNavigation = window.location.hash.startsWith('#/');
-        const hashPrefix = usesHashNavigation ? '#' : '';
-
-        const redirectUri = new URL(hashPrefix + this.loginRedirect(), window.location.href).toString();
-
         // check if OIDC login is enabled
         try {
-            const idr = await this.userService.oidcInit(redirectUri);
+            // resolve the route to restore after login
+            const oidcRestoreRoute = this.loginRedirect();
+            const idr = await this.userService.oidcInit(oidcRestoreRoute);
             this.oidcUrl = idr.url;
             this.formStatus.set(FormStatus.Oidc);
 
@@ -136,7 +143,7 @@ export class LoginComponent implements OnInit {
     }
 
     oidcLogin(): void {
-        this.formStatus.set(FormStatus.Loading);
+        this.formStatus.set(FormStatus.Oidc);
         window.location.href = this.oidcUrl;
     }
 

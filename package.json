@@ -104,7 +104,6 @@
         "@types/jasminewd2": "~2.0.13",
         "@types/node": "^25.3.2",
         "@types/topojson-specification": "^1.0.5",
-        "@types/uuid": "^11.0.0",
         "@vitest/browser-playwright": "4.0.18",
         "angular-eslint": "^21.2.0",
         "eslint": "^9.39.3",

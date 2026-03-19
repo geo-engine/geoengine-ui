@@ -37,6 +37,7 @@ jobs:
           - {project: ecometrics}
           - {project: esg-indicator-service}
           - {project: manager, angular_base_href: "/manager/"}
+          - {project: gis, angular_base_href: "/gis/"}
 
     runs-on: ubuntu-24.04
 
@@ -68,7 +69,14 @@ jobs:
 
       - name: Set additional params
         if: matrix.app.angular_base_href
-        run: echo "ANGULAR_BASE_HREF=${{matrix.app.angular_base_href}}" >> $GITHUB_ENV        
+        run: |
+          echo "ANGULAR_BASE_HREF=${{matrix.app.angular_base_href}}" >> $GITHUB_ENV
+          # Use bash parameter expansion to normalize the path for a Docker tag
+          BASE_HREF="${{matrix.app.angular_base_href}}"
+          BASE_HREF="${BASE_HREF#/}"      # remove leading /
+          BASE_HREF="${BASE_HREF%/}"      # remove trailing /
+          BASE_HREF="${BASE_HREF//\//_}"  # replace remaining / with _
+          echo "FULL_TAG_NAME=${{env.FULL_TAG_NAME}}-basehref_${BASE_HREF}" >> $GITHUB_ENV        
 
       - name: Checkout code
         uses: actions/checkout@v4

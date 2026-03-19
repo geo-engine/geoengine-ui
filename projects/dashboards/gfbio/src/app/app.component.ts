@@ -317,7 +317,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         const state = params.get('state');
 
         let login;
-        if (sessionState && code && state && sessionStorage.getItem('redirectUri')) {
+        if (sessionState && code && state && sessionStorage.getItem('oidcRestoreRoute')) {
             login = this.userService.oidcLogin({sessionState, code, state}).pipe(first());
         }
 

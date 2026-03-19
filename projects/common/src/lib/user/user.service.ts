@@ -26,6 +26,7 @@ import {
     mergeMap,
     of,
 } from 'rxjs';
+import {Location} from '@angular/common';
 import {UUID} from '../datasets/dataset.model';
 import {isDefined} from '../util/conversions';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -35,8 +36,6 @@ import {BackendStatus, Quota, User} from './user.model';
 import {utc} from 'moment';
 import {CommonConfig} from '../config.service';
 import {NotificationService} from '../notification.service';
-
-const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
 
 /**
  * A service that is responsible for retrieving user information and modifying the current user.
@@ -49,12 +48,15 @@ export class UserService {
     protected readonly notificationService = inject(NotificationService);
     protected readonly router = inject(Router);
     protected readonly activatedRoute = inject(ActivatedRoute);
+    protected readonly location = inject(Location);
 
     protected readonly session$ = new ReplaySubject<Session | undefined>(1);
     protected readonly backendStatus$ = new BehaviorSubject<BackendStatus>({available: false, initial: true});
     protected readonly backendInfo$ = new BehaviorSubject<ServerInfo | undefined>(undefined);
     protected readonly sessionQuota$ = new BehaviorSubject<Quota | undefined>(undefined);
     protected readonly refreshSessionQuota$ = new BehaviorSubject<void>(undefined);
+    protected readonly spaBaseHref: string = this.location.prepareExternalUrl('/');
+    protected readonly pathPrefix: string = this.spaBaseHref.replace(/\//g, '_').replace(/-/g, '_');
 
     userApi = new ReplaySubject<UserApi>(1);
     sessionApi = new ReplaySubject<SessionApi>(1);
@@ -64,38 +66,52 @@ export class UserService {
     protected sessionInitialized = false;
 
     constructor() {
+        // initialize builds all the subscriptions where backend and session changes are handled.
+        this.initialize();
+    }
+
+    initialize(): void {
         // get oidc paramters from url before routing is enabled
         const oidcParams = this.getOidcParametersFromUrl();
 
         this.session$.subscribe((session) => {
             // storage of the session
             this.saveSessionInBrowser(session);
+            if (!session) return;
+            this.userApi.next(new UserApi(apiConfigurationWithAccessKey(session.sessionToken)));
+            this.sessionApi.next(new SessionApi(apiConfigurationWithAccessKey(session.sessionToken)));
         });
 
-        this.getBackendStatus().subscribe((status) => {
-            void this.tryLogin(status, oidcParams);
-        });
-
-        // update backend info when backend is available
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        this.getBackendStatus().subscribe(async (status) => {
-            if (status.available) {
-                const info = await this.backendApi.serverInfoHandler();
-                this.backendInfo$.next(info);
-            }
-        });
-
-        this.getSessionStream().subscribe({
-            next: (session) => {
-                this.userApi.next(new UserApi(apiConfigurationWithAccessKey(session.sessionToken)));
-                this.sessionApi.next(new SessionApi(apiConfigurationWithAccessKey(session.sessionToken)));
-            },
-        });
+        this.getBackendStatus()
+            .pipe(mergeMap((status, _index) => this.onBackendAvailable(status, oidcParams)))
+            .subscribe();
 
         // update quota when session changes or update is triggered
         this.createSessionQuotaStream();
 
+        // now, trigger an update of the backend status once. While this is an async call, we don't need to await here.
         void this.triggerBackendStatusUpdate();
+    }
+
+    async onBackendAvailable(
+        status: BackendStatus,
+        oidcParams:
+            | {
+                  sessionState: string;
+                  code: string;
+                  state: string;
+              }
+            | undefined,
+    ): Promise<void> {
+        await this.setBackendInfo(status);
+        await this.tryLogin(status, oidcParams);
+    }
+
+    async setBackendInfo(status: BackendStatus): Promise<void> {
+        if (status.available) {
+            const info = await this.backendApi.serverInfoHandler();
+            this.backendInfo$.next(info);
+        }
     }
 
     async tryLogin(
@@ -127,16 +143,14 @@ export class UserService {
 
         this.sessionInitialized = true;
 
-        if (oidcParams && sessionStorage.getItem('redirectUri')) {
+        const oidcRestoreRoute = sessionStorage.getItem('oidcRestoreRoute');
+        if (oidcParams && oidcRestoreRoute) {
             this.oidcLogin(oidcParams)
-                .pipe(first())
-                .subscribe(() => {
-                    void this.router.navigate([], {
-                        // eslint-disable-next-line @typescript-eslint/naming-convention
-                        queryParams: {session_state: undefined, state: undefined, code: undefined},
-                        queryParamsHandling: 'merge',
-                    });
-                });
+                .pipe(
+                    first(),
+                    mergeMap(() => this.router.navigateByUrl(oidcRestoreRoute)),
+                )
+                .subscribe();
         } else {
             try {
                 // restore old session if possible
@@ -342,8 +356,10 @@ export class UserService {
         this.logoutCallback = callback;
     }
 
-    oidcInit(redirectUri: string): Promise<AuthCodeRequestURL> {
-        sessionStorage.setItem('redirectUri', redirectUri);
+    oidcInit(oidcRestoreRoute: string): Promise<AuthCodeRequestURL> {
+        sessionStorage.setItem('oidcRestoreRoute', oidcRestoreRoute);
+
+        const redirectUri = new URL(this.spaBaseHref, window.location.origin).toString();
 
         return new SessionApi().oidcInit({
             redirectUri: redirectUri,
@@ -353,17 +369,18 @@ export class UserService {
     oidcLogin(request: {sessionState: string; code: string; state: string}): Observable<Session> {
         const result = new ReplaySubject<Session>();
 
+        const redirectUri = new URL(this.spaBaseHref, window.location.origin).toString();
         new SessionApi()
             .oidcLogin({
                 authCodeResponse: request,
-                redirectUri: sessionStorage.getItem('redirectUri')!,
+                redirectUri: redirectUri,
             })
             .then((response) => {
                 const session = this.sessionFromDict(response);
                 this.session$.next(session);
                 result.next(session);
                 result.complete();
-                sessionStorage.removeItem('redirectUri');
+                sessionStorage.removeItem('oidcRestoreRoute');
             })
             .catch((error) => result.error(error));
 
@@ -371,11 +388,11 @@ export class UserService {
     }
 
     saveSettingInLocalStorage(keyValue: string, setting: string): void {
-        localStorage.setItem(PATH_PREFIX + keyValue, setting);
+        localStorage.setItem(this.pathPrefix + keyValue, setting);
     }
 
     getSettingFromLocalStorage(keyValue: string): string | null {
-        return localStorage.getItem(PATH_PREFIX + keyValue);
+        return localStorage.getItem(this.pathPrefix + keyValue);
     }
 
     /**
@@ -396,14 +413,14 @@ export class UserService {
 
     protected saveSessionInBrowser(session: Session | undefined): void {
         if (session) {
-            localStorage.setItem(PATH_PREFIX + 'session', session.sessionToken);
+            localStorage.setItem(this.pathPrefix + 'session', session.sessionToken);
         } else {
-            localStorage.removeItem(PATH_PREFIX + 'session');
+            localStorage.removeItem(this.pathPrefix + 'session');
         }
     }
 
     protected restoreSessionFromBrowser(): Promise<Session> {
-        const sessionToken = localStorage.getItem(PATH_PREFIX + 'session') ?? '';
+        const sessionToken = localStorage.getItem(this.pathPrefix + 'session') ?? '';
 
         return this.createSessionWithToken(sessionToken);
     }
