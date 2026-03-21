@@ -71,11 +71,13 @@ jobs:
         if: matrix.app.angular_base_href
         run: |
           echo "ANGULAR_BASE_HREF=${{matrix.app.angular_base_href}}" >> $GITHUB_ENV
-          # Use bash parameter expansion to normalize the path for a Docker tag
+          # Since we may need multiple versions of a project (e.g. "gis") with variable --base-href, we need to adapt the Docker tag for each image.
+          # The angular_base_href contains "/" which is not a valid char in a docker tag. We need to replace them first:
           BASE_HREF="${{matrix.app.angular_base_href}}"
           BASE_HREF="${BASE_HREF#/}"      # remove leading /
           BASE_HREF="${BASE_HREF%/}"      # remove trailing /
           BASE_HREF="${BASE_HREF//\//_}"  # replace remaining / with _
+          # Now modify the "FULL_TAG_NAME" to include "-basehref_BASE_HREF"
           echo "FULL_TAG_NAME=${{env.FULL_TAG_NAME}}-basehref_${BASE_HREF}" >> $GITHUB_ENV        
 
       - name: Checkout code
