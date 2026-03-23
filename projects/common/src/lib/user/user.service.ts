@@ -44,6 +44,10 @@ import {NotificationService} from '../notification.service';
     providedIn: 'root',
 })
 export class UserService {
+    static readonly OIDC_RESTORE_ROUTE_KEY = 'oidcRestoreRoute';
+    static readonly IS_HASH_SUFFIX = '#/';
+    static readonly SESSION_KEY_SUFFIX = 'session';
+
     protected readonly config = inject(CommonConfig);
     protected readonly notificationService = inject(NotificationService);
     protected readonly router = inject(Router);
@@ -55,8 +59,6 @@ export class UserService {
     protected readonly backendInfo$ = new BehaviorSubject<ServerInfo | undefined>(undefined);
     protected readonly sessionQuota$ = new BehaviorSubject<Quota | undefined>(undefined);
     protected readonly refreshSessionQuota$ = new BehaviorSubject<void>(undefined);
-    protected readonly spaBaseHref: string = this.location.prepareExternalUrl('/');
-    protected readonly pathPrefix: string = this.spaBaseHref.replace(/\//g, '_').replace(/-/g, '_');
 
     userApi = new ReplaySubject<UserApi>(1);
     sessionApi = new ReplaySubject<SessionApi>(1);
@@ -66,11 +68,6 @@ export class UserService {
     protected sessionInitialized = false;
 
     constructor() {
-        // initialize builds all the subscriptions where backend and session changes are handled.
-        this.initialize();
-    }
-
-    initialize(): void {
         // get oidc paramters from url before routing is enabled
         const oidcParams = this.getOidcParametersFromUrl();
 
@@ -83,7 +80,7 @@ export class UserService {
         });
 
         this.getBackendStatus()
-            .pipe(mergeMap((status, _index) => this.onBackendAvailable(status, oidcParams)))
+            .pipe(mergeMap((status, _index) => this.setBackendInfo(status).then(() => this.tryLogin(status, oidcParams))))
             .subscribe();
 
         // update quota when session changes or update is triggered
@@ -91,20 +88,6 @@ export class UserService {
 
         // now, trigger an update of the backend status once. While this is an async call, we don't need to await here.
         void this.triggerBackendStatusUpdate();
-    }
-
-    async onBackendAvailable(
-        status: BackendStatus,
-        oidcParams:
-            | {
-                  sessionState: string;
-                  code: string;
-                  state: string;
-              }
-            | undefined,
-    ): Promise<void> {
-        await this.setBackendInfo(status);
-        await this.tryLogin(status, oidcParams);
     }
 
     async setBackendInfo(status: BackendStatus): Promise<void> {
@@ -143,14 +126,11 @@ export class UserService {
 
         this.sessionInitialized = true;
 
-        const oidcRestoreRoute = sessionStorage.getItem('oidcRestoreRoute');
+        const oidcRestoreRoute = sessionStorage.getItem(UserService.OIDC_RESTORE_ROUTE_KEY);
         if (oidcParams && oidcRestoreRoute) {
-            this.oidcLogin(oidcParams)
-                .pipe(
-                    first(),
-                    mergeMap(() => this.router.navigateByUrl(oidcRestoreRoute)),
-                )
-                .subscribe();
+            const sess = await this.oidcLogin(oidcParams);
+            this.session$.next(sess);
+            this.router.navigateByUrl(oidcRestoreRoute);
         } else {
             try {
                 // restore old session if possible
@@ -249,6 +229,53 @@ export class UserService {
 
     getBackendInfoStream(): Observable<ServerInfo | undefined> {
         return this.backendInfo$;
+    }
+
+    /**
+     * This returns the url incl. base path of the single page application.
+     * We use it for routung and restoring after OIDC login.
+     * In most cases it is 'https://abc.app.geoengine.io/'.
+     * If angulars '--base-href=something' is used, it is 'https://abc.app.geoengine.io/something/'.
+     *
+     * @returns the url string
+     **/
+    getSpaExternalUrl(): string {
+        return this.location.prepareExternalUrl('/');
+    }
+
+    /**
+     * This returns only the APP_BASE_HREF of the application.
+     * Since the APP_BASE_HREF is not directly accessable, we get it from the external url.
+     * @returns the APP_BASE_HREF
+     */
+    getSpaBaseHref(): string {
+        const baseHrefUrl = this.getSpaExternalUrl();
+        const withoutProto = baseHrefUrl.split('://');
+        const withoutDomainIdx = withoutProto[1].indexOf('/');
+        if (withoutDomainIdx) {
+            return withoutProto[1].substring(withoutDomainIdx);
+        } else {
+            // fallback case
+            return '/';
+        }
+    }
+
+    /**
+     * For local storage we use the APP_BASE_HREF as part of the key. (To be able to use multiple apps with one domain?)
+     * To get a uniform key, we replace '/' and '-' with '_'.
+     * @returns APP_BASE_HREF with '/' and '-' replaces by '_'.
+     */
+    getBaseHrefBasedKey(): string {
+        //
+        return this.getSpaBaseHref().replace(/\//g, '_').replace(/-/g, '_');
+    }
+
+    /**
+     * This allows to identify if hash or path routing is used.
+     * @returns 'true' if hash based routing is used.
+     */
+    isHashRouting(): boolean {
+        return this.getSpaExternalUrl().endsWith(UserService.IS_HASH_SUFFIX);
     }
 
     isGuestUserStream(): Observable<boolean> {
@@ -357,42 +384,34 @@ export class UserService {
     }
 
     oidcInit(oidcRestoreRoute: string): Promise<AuthCodeRequestURL> {
-        sessionStorage.setItem('oidcRestoreRoute', oidcRestoreRoute);
-
-        const redirectUri = new URL(this.spaBaseHref, window.location.origin).toString();
+        sessionStorage.setItem(UserService.OIDC_RESTORE_ROUTE_KEY, oidcRestoreRoute);
 
         return new SessionApi().oidcInit({
-            redirectUri: redirectUri,
+            redirectUri: this.getSpaExternalUrl(),
         });
     }
 
-    oidcLogin(request: {sessionState: string; code: string; state: string}): Observable<Session> {
-        const result = new ReplaySubject<Session>();
-
-        const redirectUri = new URL(this.spaBaseHref, window.location.origin).toString();
-        new SessionApi()
+    oidcLogin(request: {sessionState: string; code: string; state: string}): Promise<Session> {
+        const sess = new SessionApi()
             .oidcLogin({
                 authCodeResponse: request,
-                redirectUri: redirectUri,
+                redirectUri: this.getSpaExternalUrl(),
             })
             .then((response) => {
                 const session = this.sessionFromDict(response);
-                this.session$.next(session);
-                result.next(session);
-                result.complete();
-                sessionStorage.removeItem('oidcRestoreRoute');
-            })
-            .catch((error) => result.error(error));
+                sessionStorage.removeItem(UserService.OIDC_RESTORE_ROUTE_KEY);
+                return session;
+            });
 
-        return result.asObservable();
+        return sess;
     }
 
     saveSettingInLocalStorage(keyValue: string, setting: string): void {
-        localStorage.setItem(this.pathPrefix + keyValue, setting);
+        localStorage.setItem(this.getBaseHrefBasedKey() + keyValue, setting);
     }
 
     getSettingFromLocalStorage(keyValue: string): string | null {
-        return localStorage.getItem(this.pathPrefix + keyValue);
+        return localStorage.getItem(this.getBaseHrefBasedKey() + keyValue);
     }
 
     /**
@@ -413,14 +432,14 @@ export class UserService {
 
     protected saveSessionInBrowser(session: Session | undefined): void {
         if (session) {
-            localStorage.setItem(this.pathPrefix + 'session', session.sessionToken);
+            localStorage.setItem(this.getBaseHrefBasedKey() + UserService.SESSION_KEY_SUFFIX, session.sessionToken);
         } else {
-            localStorage.removeItem(this.pathPrefix + 'session');
+            localStorage.removeItem(this.getBaseHrefBasedKey() + UserService.SESSION_KEY_SUFFIX);
         }
     }
 
     protected restoreSessionFromBrowser(): Promise<Session> {
-        const sessionToken = localStorage.getItem(this.pathPrefix + 'session') ?? '';
+        const sessionToken = localStorage.getItem(this.getBaseHrefBasedKey() + UserService.SESSION_KEY_SUFFIX) ?? '';
 
         return this.createSessionWithToken(sessionToken);
     }
