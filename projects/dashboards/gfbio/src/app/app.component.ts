@@ -1,4 +1,4 @@
-import {BehaviorSubject, concat, first, from, ignoreElements, Observable, of, ReplaySubject} from 'rxjs';
+import {BehaviorSubject, concat, Observable, of, ReplaySubject} from 'rxjs';
 import {map, mergeMap, tap} from 'rxjs/operators';
 
 import {
@@ -320,8 +320,8 @@ export class AppComponent implements OnInit, AfterViewInit {
             const _login = await this.userService.oidcLogin({sessionState, code, state});
         }
 
-        const handleParams = async (params: ParamMap) => {
-            const collectionId = params.get('collectionId');
+        const handleParams = async (p: ParamMap) => {
+            const collectionId = p.get('collectionId');
             if (collectionId) {
                 const result = this.layersService.getLayerCollectionItems(
                     this.GFBIO_COLLECTIONS_DATA_PROVIDER_ID,
