@@ -323,7 +323,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         const handleParams = async (p: ParamMap): Promise<void> => {
             const collectionId = p.get('collectionId');
             if (collectionId) {
-                const result = this.layersService.getLayerCollectionItems(
+                const result = await this.layersService.getLayerCollectionItems(
                     this.GFBIO_COLLECTIONS_DATA_PROVIDER_ID,
                     `collections/${collectionId}`,
                 );
