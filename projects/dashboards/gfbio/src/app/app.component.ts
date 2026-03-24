@@ -192,7 +192,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             // emit window height once to resize components if necessary
             this.windowHeight();
         });
-        this.handleQueryParameters();
+        void this.handleQueryParameters();
     }
 
     setTabIndex(index: number): void {
@@ -308,27 +308,26 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     /**
      * @private
-     * @return true, if the splash dialog should be skipped, false otherwise
      */
-    private handleQueryParameters(): void {
+    private async handleQueryParameters(): Promise<void> {
         const params = new URLSearchParams(window.location.search);
         const sessionState = params.get('session_state');
         const code = params.get('code');
         const state = params.get('state');
 
-        let login;
-        if (sessionState && code && state && sessionStorage.getItem('oidcRestoreRoute')) {
-            login = this.userService.oidcLogin({sessionState, code, state}).pipe(first());
+        // this tries to restore an OIDC sesson
+        if (sessionState && code && state && sessionStorage.getItem(UserService.OIDC_RESTORE_ROUTE_KEY)) {
+            const _login = await this.userService.oidcLogin({sessionState, code, state});
         }
 
-        const handleBasketSubscription: (p: ParamMap) => void = (p: ParamMap) => {
-            const collectionId = p.get('collectionId');
-            if (collectionId != null) {
-                from(
-                    this.layersService.getLayerCollectionItems(this.GFBIO_COLLECTIONS_DATA_PROVIDER_ID, `collections/${collectionId}`),
-                ).subscribe((result) => {
-                    this.dialog.open(GfBioCollectionDialogComponent, {data: {result}});
-                });
+        const handleParams = async (params: ParamMap) => {
+            const collectionId = params.get('collectionId');
+            if (collectionId) {
+                const result = this.layersService.getLayerCollectionItems(
+                    this.GFBIO_COLLECTIONS_DATA_PROVIDER_ID,
+                    `collections/${collectionId}`,
+                );
+                this.dialog.open(GfBioCollectionDialogComponent, {data: {result}});
             } else {
                 const showSplash = this.userService.getSettingFromLocalStorage(SplashDialogComponent.SPLASH_DIALOG_NAME);
                 if (showSplash === null || JSON.parse(showSplash)) {
@@ -336,9 +335,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 }
             }
         };
-        const routeParams = this.activatedRoute.queryParamMap;
 
-        if (login) concat(login.pipe(ignoreElements()), routeParams).subscribe(handleBasketSubscription);
-        else routeParams.subscribe(handleBasketSubscription);
+        this.activatedRoute.queryParamMap.pipe(mergeMap((params) => handleParams(params))).subscribe();
     }
 }
