@@ -320,7 +320,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             const _login = await this.userService.oidcLogin({sessionState, code, state});
         }
 
-        const handleParams = async (p: ParamMap) => {
+        const handleParams = async (p: ParamMap): Promise<void> => {
             const collectionId = p.get('collectionId');
             if (collectionId) {
                 const result = this.layersService.getLayerCollectionItems(
@@ -336,6 +336,6 @@ export class AppComponent implements OnInit, AfterViewInit {
             }
         };
 
-        this.activatedRoute.queryParamMap.pipe(mergeMap((params) => handleParams(params))).subscribe();
+        this.activatedRoute.queryParamMap.pipe(mergeMap((p) => handleParams(p))).subscribe();
     }
 }
