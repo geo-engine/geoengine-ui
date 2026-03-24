@@ -250,10 +250,12 @@ export class UserService {
      */
     getSpaBaseHref(): string {
         const baseHrefUrl = this.getSpaExternalUrl();
-        const withoutProto = baseHrefUrl.split('://');
-        const withoutDomainIdx = withoutProto[1].indexOf('/');
+        const withoutProtoIdx = baseHrefUrl.indexOf('://');
+        const withoutProtoStart = withoutProtoIdx ? withoutProtoIdx + 3 : 0;
+        const withoutDomainIdx = baseHrefUrl.indexOf('/', withoutProtoStart);
+        console.log(baseHrefUrl, withoutDomainIdx, withoutProtoStart, withoutDomainIdx);
         if (withoutDomainIdx) {
-            return withoutProto[1].substring(withoutDomainIdx);
+            return baseHrefUrl.substring(withoutDomainIdx);
         } else {
             // fallback case
             return '/';
