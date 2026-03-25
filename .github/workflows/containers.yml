@@ -36,8 +36,7 @@ jobs:
           - {project: ebv-analyzer}
           - {project: ecometrics}
           - {project: esg-indicator-service}
-          - {project: manager, angular_base_href: "/manager/"}
-          - {project: gis, angular_base_href: "/gis/"}
+          - {project: manager, build_base_href: "/manager/"}
 
     runs-on: ubuntu-24.04
 
@@ -46,7 +45,7 @@ jobs:
       FULL_TAG_NAME: nightly
       CONTAINER_REPOSITORY_BRANCH: main
       BUILD_TAG: gis
-      ANGULAR_BASE_HREF:
+      BUILD_BASE_HREF:
 
     steps:
       - name: Modify TAG_NAME if on `tag_name` is set on `workflow_dispatch`
@@ -68,12 +67,12 @@ jobs:
         run: echo "BUILD_TAG=dashboards/${{env.BUILD_TAG}}" >> $GITHUB_ENV
 
       - name: Set additional params
-        if: matrix.app.angular_base_href
+        if: matrix.app.build_base_href
         run: |
-          echo "ANGULAR_BASE_HREF=${{matrix.app.angular_base_href}}" >> $GITHUB_ENV
+          echo "BUILD_BASE_HREF=${{matrix.app.build_base_href}}" >> $GITHUB_ENV
           # Since we may need multiple versions of a project (e.g. "gis") with variable --base-href, we need to adapt the Docker tag for each image.
-          # The angular_base_href contains "/" which is not a valid char in a docker tag. We need to replace them first:
-          BASE_HREF="${{matrix.app.angular_base_href}}"
+          # The build_base_href contains "/" which is not a valid char in a docker tag. We need to replace them first:
+          BASE_HREF="${{matrix.app.build_base_href}}"
           BASE_HREF="${BASE_HREF#/}"      # remove leading /
           BASE_HREF="${BASE_HREF%/}"      # remove trailing /
           BASE_HREF="${BASE_HREF//\//_}"  # replace remaining / with _
@@ -102,7 +101,7 @@ jobs:
           podman build \
             --tag "geoengine-ui:${{env.FULL_TAG_NAME}}" \
             --build-arg GEOENGINE_UI_PROJECT="${{env.BUILD_TAG}}" \
-            --build-arg GEOENGINE_UI_ANGULAR_BASE_HREF="${{env.ANGULAR_BASE_HREF}}" \
+            --build-arg GEOENGINE_UI_BUILD_BASE_HREF="${{env.BUILD_BASE_HREF}}" \
             -f container/geoengine-ui/Dockerfile \
             .
 
