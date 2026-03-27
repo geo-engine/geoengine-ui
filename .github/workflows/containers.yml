@@ -36,7 +36,7 @@ jobs:
           - {project: ebv-analyzer}
           - {project: ecometrics}
           - {project: esg-indicator-service}
-          - {project: manager, angular_base_href: "/manager/"}
+          - {project: manager}
 
     runs-on: ubuntu-24.04
 
@@ -45,7 +45,6 @@ jobs:
       FULL_TAG_NAME: nightly
       CONTAINER_REPOSITORY_BRANCH: main
       BUILD_TAG: gis
-      ANGULAR_BASE_HREF:
 
     steps:
       - name: Modify TAG_NAME if on `tag_name` is set on `workflow_dispatch`
@@ -65,10 +64,7 @@ jobs:
       - name: Modify `BUILD_TAG` if dashboard
         if: env.BUILD_TAG != 'gis' && env.BUILD_TAG != 'manager'
         run: echo "BUILD_TAG=dashboards/${{env.BUILD_TAG}}" >> $GITHUB_ENV
-
-      - name: Set additional params
-        if: matrix.app.angular_base_href
-        run: echo "ANGULAR_BASE_HREF=${{matrix.app.angular_base_href}}" >> $GITHUB_ENV        
+    
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -92,7 +88,6 @@ jobs:
           podman build \
             --tag "geoengine-ui:${{env.FULL_TAG_NAME}}" \
             --build-arg GEOENGINE_UI_PROJECT="${{env.BUILD_TAG}}" \
-            --build-arg GEOENGINE_UI_ANGULAR_BASE_HREF="${{env.ANGULAR_BASE_HREF}}" \
             -f container/geoengine-ui/Dockerfile \
             .
 
