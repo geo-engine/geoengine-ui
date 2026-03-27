@@ -259,15 +259,8 @@ export class UserService {
     getSpaBaseHref(): string {
         const baseHrefUrl = this.getSpaExternalUrl();
         if (!baseHrefUrl.startsWith('/')) {
-            console.warn("expected base_href to start with '/' got: " + baseHrefUrl);
-            const pre = baseHrefUrl.indexOf('://');
-            const start = pre < 0 ? 0 : pre;
-            const firstSlash = baseHrefUrl.indexOf('/', start);
-            if (firstSlash > 0) {
-                return baseHrefUrl.substring(firstSlash);
-            } else {
-                throw new Error("base_href needs at least one '/'");
-            }
+            // Angular allows to set APP_BASE_HREF to start with the origin. If that happens, this must be covered here!
+            throw new Error("base_href must start with '/'");
         }
         if (baseHrefUrl.endsWith('#')) {
             return baseHrefUrl.substring(0, baseHrefUrl.length - 2);
