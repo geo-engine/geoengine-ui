@@ -232,15 +232,27 @@ export class UserService {
     }
 
     /**
+     * This calls Angulars prepareExternalUrl for route "/".
+     * @returns the url string
+     **/
+    getSpaExternalUrl(): string {
+        return this.location.prepareExternalUrl('/');
+    }
+
+    /**
      * This returns the url incl. base path of the single page application.
      * We use it for routung and restoring after OIDC login.
      * In most cases it is 'https://abc.app.geoengine.io/'.
      * If angulars '--base-href=something' is used, it is 'https://abc.app.geoengine.io/something/'.
      *
      * @returns the url string
-     **/
-    getSpaExternalUrl(): string {
-        return this.location.prepareExternalUrl('/');
+     */
+    getSpaExternalUrlWithDomain(): string {
+        const g = this.getSpaExternalUrl();
+        if (g.indexOf('://') > 0) {
+            return g;
+        }
+        return (origin = window.location.origin + this.getSpaBaseHref());
     }
 
     /**
@@ -389,7 +401,7 @@ export class UserService {
         sessionStorage.setItem(UserService.OIDC_RESTORE_ROUTE_KEY, oidcRestoreRoute);
 
         return new SessionApi().oidcInit({
-            redirectUri: this.getSpaExternalUrl(),
+            redirectUri: this.getSpaExternalUrlWithDomain(),
         });
     }
 
@@ -397,7 +409,7 @@ export class UserService {
         const sess = new SessionApi()
             .oidcLogin({
                 authCodeResponse: request,
-                redirectUri: this.getSpaExternalUrl(),
+                redirectUri: this.getSpaExternalUrlWithDomain(),
             })
             .then((response) => {
                 const session = this.sessionFromDict(response);
