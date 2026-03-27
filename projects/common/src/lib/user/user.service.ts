@@ -248,9 +248,7 @@ export class UserService {
      * @returns the url string
      */
     getSpaExternalUrlWithDomain(): string {
-        const spaDomainBaseHref = window.location.origin + this.getSpaBaseHref();
-        console.log('spaDomainBaseHref: ' + spaDomainBaseHref);
-        return spaDomainBaseHref;
+        return window.location.origin + this.getSpaBaseHref();
     }
 
     /**
