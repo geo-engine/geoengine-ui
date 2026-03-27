@@ -248,11 +248,9 @@ export class UserService {
      * @returns the url string
      */
     getSpaExternalUrlWithDomain(): string {
-        const g = this.getSpaExternalUrl();
-        if (g.indexOf('://') > 0) {
-            return g;
-        }
-        return (origin = window.location.origin + this.getSpaBaseHref());
+        const spaDomainBaseHref = window.location.origin + this.getSpaBaseHref();
+        console.log('spaDomainBaseHref: ' + spaDomainBaseHref);
+        return spaDomainBaseHref;
     }
 
     /**
@@ -262,16 +260,21 @@ export class UserService {
      */
     getSpaBaseHref(): string {
         const baseHrefUrl = this.getSpaExternalUrl();
-        const withoutProtoIdx = baseHrefUrl.indexOf('://');
-        const withoutProtoStart = withoutProtoIdx ? withoutProtoIdx + 3 : 0;
-        const withoutDomainIdx = baseHrefUrl.indexOf('/', withoutProtoStart);
-        console.log(baseHrefUrl, withoutDomainIdx, withoutProtoStart, withoutDomainIdx);
-        if (withoutDomainIdx) {
-            return baseHrefUrl.substring(withoutDomainIdx);
-        } else {
-            // fallback case
-            return '/';
+        if (!baseHrefUrl.startsWith('/')) {
+            console.warn("expected base_href to start with '/' got: " + baseHrefUrl);
+            const pre = baseHrefUrl.indexOf('://');
+            const start = pre < 0 ? 0 : pre;
+            const firstSlash = baseHrefUrl.indexOf('/', start);
+            if (firstSlash > 0) {
+                return baseHrefUrl.substring(firstSlash);
+            } else {
+                throw new Error("base_href needs at least one '/'");
+            }
         }
+        if (baseHrefUrl.endsWith('#')) {
+            return baseHrefUrl.substring(0, baseHrefUrl.length - 2);
+        }
+        return baseHrefUrl;
     }
 
     /**
