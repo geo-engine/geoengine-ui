@@ -28,7 +28,7 @@ import {
     FxFlexDirective,
     FxLayoutAlignDirective,
 } from '@geoengine/common';
-import {TypedOperatorOperator} from '@geoengine/openapi-client';
+import {LegacyTypedOperatorOperator} from '@geoengine/openapi-client';
 import {SidenavHeaderComponent} from '../../../sidenav/sidenav-header/sidenav-header.component';
 import {OperatorDialogContainerComponent} from '../helpers/operator-dialog-container/operator-dialog-container.component';
 import {MatIconButton, MatButton} from '@angular/material/button';
@@ -216,7 +216,7 @@ export class BoxPlotOperatorComponent implements AfterViewInit, OnDestroy {
         this.projectService
             .getAutomaticallyProjectedOperatorsFromLayers(sources)
             .pipe(
-                mergeMap((inputOperators: Array<TypedOperatorOperator>) =>
+                mergeMap((inputOperators: Array<LegacyTypedOperatorOperator>) =>
                     this.projectService.registerWorkflow({
                         type: 'Plot',
                         operator: {

@@ -19,7 +19,6 @@ import {
     DerivedNumber as DerivedNumberDict,
     RasterSymbology as RasterSymbologyDict,
     RasterColorizer as RasterColorizerDict,
-    SpatialResolution,
     MultiBandRasterColorizer as MultiBandRasterColorizerDict,
 } from '@geoengine/openapi-client';
 import {PointIconStyle} from '../layer-icons/point-icon/point-icon.component';
@@ -1235,6 +1234,6 @@ function textSymbologyEquality(a?: TextSymbology, b?: TextSymbology): boolean {
 export interface SymbologyQueryParams {
     time: Time;
     bbox: BoundingBox2D;
-    resolution: SpatialResolution;
+    resolution: {x: number; y: number};
     spatialReference: SpatialReference;
 }

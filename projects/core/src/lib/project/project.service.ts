@@ -76,7 +76,7 @@ import {
     OGCWFSApi,
     ProjectLayer as ProjectLayerDict,
     ProviderLayerId,
-    TypedOperatorOperator,
+    LegacyTypedOperatorOperator,
     TypedResultDescriptor,
     Workflow as WorkflowDict,
 } from '@geoengine/openapi-client';
@@ -474,7 +474,7 @@ export class ProjectService implements OnDestroy {
     /**
      * Determines a common projection for all layers and return their operator with an added a propjection if necessary
      */
-    getAutomaticallyProjectedOperatorsFromLayers(layers: Array<Layer>): Observable<Array<TypedOperatorOperator>> {
+    getAutomaticallyProjectedOperatorsFromLayers(layers: Array<Layer>): Observable<Array<LegacyTypedOperatorOperator>> {
         const meta: Array<Observable<TypedResultDescriptor>> = layers.map((l) => this.getWorkflowMetaData(l.workflowId));
 
         return combineLatest(meta).pipe(
@@ -486,12 +486,12 @@ export class ProjectService implements OnDestroy {
 
                 return combineLatest(workflowsObservable).pipe(
                     map((workflows: Array<WorkflowDict>) => {
-                        const projectedOperators: Array<TypedOperatorOperator> = [];
+                        const projectedOperators: Array<LegacyTypedOperatorOperator> = [];
 
                         for (let i = 0; i < workflows.length; i++) {
                             const sref: SpatialReference = srefs[i];
                             const workflow = workflows[i];
-                            const operator: TypedOperatorOperator = workflow.operator;
+                            const operator: LegacyTypedOperatorOperator = workflow.operator;
                             if (sref.srsString === targetSref.srsString) {
                                 projectedOperators.push(operator);
                             } else {
@@ -1044,10 +1044,10 @@ export class ProjectService implements OnDestroy {
      * Creates a projected operator if the layer has not the target spatial reference.
      */
     createProjectedOperator(
-        inputOperator: TypedOperatorOperator,
+        inputOperator: LegacyTypedOperatorOperator,
         metadata: LayerMetadata,
         targetSpatialReference: SpatialReference,
-    ): TypedOperatorOperator {
+    ): LegacyTypedOperatorOperator {
         if (metadata.spatialReference.equals(targetSpatialReference)) {
             return inputOperator;
         }
@@ -1675,10 +1675,10 @@ function createSimplifiedLinesOrPolygonsLayerQueryWorkflow(
  * Creates a projected operator if the layer has not the target spatial reference.
  */
 function createProjectedOperator(
-    inputOperator: TypedOperatorOperator,
+    inputOperator: LegacyTypedOperatorOperator,
     metadata: LayerMetadata,
     targetSpatialReference: SpatialReference,
-): TypedOperatorOperator {
+): LegacyTypedOperatorOperator {
     if (metadata.spatialReference.equals(targetSpatialReference)) {
         return inputOperator;
     }

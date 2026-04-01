@@ -1,5 +1,5 @@
 import {Injectable, inject} from '@angular/core';
-import {BoundingBox2D, PlotsApi, SpatialResolution, WrappedPlotOutput} from '@geoengine/openapi-client';
+import {BoundingBox2D, PlotsApi, WrappedPlotOutput} from '@geoengine/openapi-client';
 import {ReplaySubject, firstValueFrom} from 'rxjs';
 import {UserService, apiConfigurationWithAccessKey} from '../user/user.service';
 import {Time} from '../time/time.model';
@@ -25,7 +25,7 @@ export class PlotsService {
         id: UUID,
         bbox: BoundingBox2D,
         time: Time,
-        spatialResolution: SpatialResolution,
+        spatialResolution: {x: number; y: number},
         crs?: SpatialReference,
     ): Promise<WrappedPlotOutput> {
         const plotApi = await firstValueFrom(this.plotApi);
