@@ -53,11 +53,11 @@ export class LoginComponent implements OnInit {
     }
 
     async onInit(): Promise<void> {
-        const redirectUri = window.location.href.replace(/\/signin$/, '/dashboard');
+        const restoreRoute = 'dashboard';
 
         // check if OIDC login is enabled
         try {
-            const idr = await this.userService.oidcInit(redirectUri);
+            const idr = await this.userService.oidcInit(restoreRoute);
             this.oidcUrl = idr.url;
             this.formStatus.set(FormStatus.Oidc);
         } catch {

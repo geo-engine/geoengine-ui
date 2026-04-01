@@ -26,6 +26,7 @@ import {
     mergeMap,
     of,
 } from 'rxjs';
+import {Location} from '@angular/common';
 import {UUID} from '../datasets/dataset.model';
 import {isDefined} from '../util/conversions';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -36,8 +37,6 @@ import {utc} from 'moment';
 import {CommonConfig} from '../config.service';
 import {NotificationService} from '../notification.service';
 
-const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '_');
-
 /**
  * A service that is responsible for retrieving user information and modifying the current user.
  */
@@ -45,10 +44,15 @@ const PATH_PREFIX = window.location.pathname.replace(/\//g, '_').replace(/-/g, '
     providedIn: 'root',
 })
 export class UserService {
+    static readonly OIDC_RESTORE_ROUTE_KEY = 'oidcRestoreRoute';
+    static readonly IS_HASH_SUFFIX = '#/';
+    static readonly SESSION_KEY_SUFFIX = 'session';
+
     protected readonly config = inject(CommonConfig);
     protected readonly notificationService = inject(NotificationService);
     protected readonly router = inject(Router);
     protected readonly activatedRoute = inject(ActivatedRoute);
+    protected readonly location = inject(Location);
 
     protected readonly session$ = new ReplaySubject<Session | undefined>(1);
     protected readonly backendStatus$ = new BehaviorSubject<BackendStatus>({available: false, initial: true});
@@ -70,32 +74,27 @@ export class UserService {
         this.session$.subscribe((session) => {
             // storage of the session
             this.saveSessionInBrowser(session);
+            if (!session) return;
+            this.userApi.next(new UserApi(apiConfigurationWithAccessKey(session.sessionToken)));
+            this.sessionApi.next(new SessionApi(apiConfigurationWithAccessKey(session.sessionToken)));
         });
 
-        this.getBackendStatus().subscribe((status) => {
-            void this.tryLogin(status, oidcParams);
-        });
-
-        // update backend info when backend is available
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        this.getBackendStatus().subscribe(async (status) => {
-            if (status.available) {
-                const info = await this.backendApi.serverInfoHandler();
-                this.backendInfo$.next(info);
-            }
-        });
-
-        this.getSessionStream().subscribe({
-            next: (session) => {
-                this.userApi.next(new UserApi(apiConfigurationWithAccessKey(session.sessionToken)));
-                this.sessionApi.next(new SessionApi(apiConfigurationWithAccessKey(session.sessionToken)));
-            },
-        });
+        this.getBackendStatus()
+            .pipe(mergeMap((status, _index) => this.setBackendInfo(status).then(() => this.tryLogin(status, oidcParams))))
+            .subscribe();
 
         // update quota when session changes or update is triggered
         this.createSessionQuotaStream();
 
+        // now, trigger an update of the backend status once. While this is an async call, we don't need to await here.
         void this.triggerBackendStatusUpdate();
+    }
+
+    async setBackendInfo(status: BackendStatus): Promise<void> {
+        if (status.available) {
+            const info = await this.backendApi.serverInfoHandler();
+            this.backendInfo$.next(info);
+        }
     }
 
     async tryLogin(
@@ -127,16 +126,11 @@ export class UserService {
 
         this.sessionInitialized = true;
 
-        if (oidcParams && sessionStorage.getItem('redirectUri')) {
-            this.oidcLogin(oidcParams)
-                .pipe(first())
-                .subscribe(() => {
-                    void this.router.navigate([], {
-                        // eslint-disable-next-line @typescript-eslint/naming-convention
-                        queryParams: {session_state: undefined, state: undefined, code: undefined},
-                        queryParamsHandling: 'merge',
-                    });
-                });
+        const oidcRestoreRoute = sessionStorage.getItem(UserService.OIDC_RESTORE_ROUTE_KEY);
+        if (oidcParams && oidcRestoreRoute) {
+            const sess = await this.oidcLogin(oidcParams);
+            this.session$.next(sess);
+            this.router.navigateByUrl(oidcRestoreRoute);
         } else {
             try {
                 // restore old session if possible
@@ -235,6 +229,61 @@ export class UserService {
 
     getBackendInfoStream(): Observable<ServerInfo | undefined> {
         return this.backendInfo$;
+    }
+
+    /**
+     * This calls Angulars prepareExternalUrl for route "/".
+     * @returns the url string
+     **/
+    getSpaExternalUrl(): string {
+        return this.location.prepareExternalUrl('/');
+    }
+
+    /**
+     * This returns the url incl. base path of the single page application.
+     * We use it for routung and restoring after OIDC login.
+     * In most cases it is 'https://abc.app.geoengine.io/'.
+     * If angulars '--base-href=something' is used, it is 'https://abc.app.geoengine.io/something/'.
+     *
+     * @returns the url string
+     */
+    getSpaExternalUrlWithDomain(): string {
+        return window.location.origin + this.getSpaBaseHref();
+    }
+
+    /**
+     * This returns only the APP_BASE_HREF of the application.
+     * Since the APP_BASE_HREF is not directly accessable, we get it from the external url.
+     * @returns the APP_BASE_HREF
+     */
+    getSpaBaseHref(): string {
+        const baseHrefUrl = this.getSpaExternalUrl();
+        if (!baseHrefUrl.startsWith('/')) {
+            // Angular allows to set APP_BASE_HREF to start with the origin. If that happens, this must be covered here!
+            throw new Error("base_href must start with '/'");
+        }
+        if (baseHrefUrl.endsWith('#')) {
+            return baseHrefUrl.substring(0, baseHrefUrl.length - 2);
+        }
+        return baseHrefUrl;
+    }
+
+    /**
+     * For local storage we use the APP_BASE_HREF as part of the key. (To be able to use multiple apps with one domain?)
+     * To get a uniform key, we replace '/' and '-' with '_'.
+     * @returns APP_BASE_HREF with '/' and '-' replaces by '_'.
+     */
+    getBaseHrefBasedKey(): string {
+        //
+        return this.getSpaBaseHref().replace(/\//g, '_').replace(/-/g, '_');
+    }
+
+    /**
+     * This allows to identify if hash or path routing is used.
+     * @returns 'true' if hash based routing is used.
+     */
+    isHashRouting(): boolean {
+        return this.getSpaExternalUrl().endsWith(UserService.IS_HASH_SUFFIX);
     }
 
     isGuestUserStream(): Observable<boolean> {
@@ -342,40 +391,35 @@ export class UserService {
         this.logoutCallback = callback;
     }
 
-    oidcInit(redirectUri: string): Promise<AuthCodeRequestURL> {
-        sessionStorage.setItem('redirectUri', redirectUri);
+    oidcInit(oidcRestoreRoute: string): Promise<AuthCodeRequestURL> {
+        sessionStorage.setItem(UserService.OIDC_RESTORE_ROUTE_KEY, oidcRestoreRoute);
 
         return new SessionApi().oidcInit({
-            redirectUri: redirectUri,
+            redirectUri: this.getSpaExternalUrlWithDomain(),
         });
     }
 
-    oidcLogin(request: {sessionState: string; code: string; state: string}): Observable<Session> {
-        const result = new ReplaySubject<Session>();
-
-        new SessionApi()
+    oidcLogin(request: {sessionState: string; code: string; state: string}): Promise<Session> {
+        const sess = new SessionApi()
             .oidcLogin({
                 authCodeResponse: request,
-                redirectUri: sessionStorage.getItem('redirectUri')!,
+                redirectUri: this.getSpaExternalUrlWithDomain(),
             })
             .then((response) => {
                 const session = this.sessionFromDict(response);
-                this.session$.next(session);
-                result.next(session);
-                result.complete();
-                sessionStorage.removeItem('redirectUri');
-            })
-            .catch((error) => result.error(error));
+                sessionStorage.removeItem(UserService.OIDC_RESTORE_ROUTE_KEY);
+                return session;
+            });
 
-        return result.asObservable();
+        return sess;
     }
 
     saveSettingInLocalStorage(keyValue: string, setting: string): void {
-        localStorage.setItem(PATH_PREFIX + keyValue, setting);
+        localStorage.setItem(this.getBaseHrefBasedKey() + keyValue, setting);
     }
 
     getSettingFromLocalStorage(keyValue: string): string | null {
-        return localStorage.getItem(PATH_PREFIX + keyValue);
+        return localStorage.getItem(this.getBaseHrefBasedKey() + keyValue);
     }
 
     /**
@@ -396,14 +440,14 @@ export class UserService {
 
     protected saveSessionInBrowser(session: Session | undefined): void {
         if (session) {
-            localStorage.setItem(PATH_PREFIX + 'session', session.sessionToken);
+            localStorage.setItem(this.getBaseHrefBasedKey() + UserService.SESSION_KEY_SUFFIX, session.sessionToken);
         } else {
-            localStorage.removeItem(PATH_PREFIX + 'session');
+            localStorage.removeItem(this.getBaseHrefBasedKey() + UserService.SESSION_KEY_SUFFIX);
         }
     }
 
     protected restoreSessionFromBrowser(): Promise<Session> {
-        const sessionToken = localStorage.getItem(PATH_PREFIX + 'session') ?? '';
+        const sessionToken = localStorage.getItem(this.getBaseHrefBasedKey() + UserService.SESSION_KEY_SUFFIX) ?? '';
 
         return this.createSessionWithToken(sessionToken);
     }
