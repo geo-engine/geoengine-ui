@@ -2,8 +2,8 @@ name: Create containers
 
 on:
   # run every night
-  schedule:
-    - cron: "0 22 * * *"
+  # schedule:
+  #   - cron: "0 22 * * *"
 
   # schedule manually
   workflow_dispatch:
